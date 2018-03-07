@@ -21,6 +21,7 @@ using BluePrints.Reports;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Core.ConditionalFormatting;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Grid;
@@ -33,6 +34,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
@@ -44,7 +46,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesProgressCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
-
+        IBluePrintsEntitiesUnitOfWork bluePrintsUOW;
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
@@ -55,30 +57,87 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
+
+        List<string> defaultColumnFieldNames = new List<string>();
+        List<string> hiddenColumnFieldNames = new List<string>();
+        string columnSubJob = "SubJob";
+        string columnWorkpack = "Workpack";
+        string columnArea = "Area";
+        string columnSubArea = "Sub-Area";
+        string columnDocumentType = "Document Type";
+        string columnDiscipline = "Discipline";
+        string columnDepartment = "Department";
+        string columnInternalNumber = "Internal Number";
+        string columnDeliverableType = "Deliverable Type";
+        string columnPrimaryTitle = "Primary Title";
+        string columnSecondaryTitle = "Secondary Title";
+        string columnComments = "Comments";
+        string columnId = "Id";
+        string columnEstimatedHours = "Estimated Hours";
+        string columnVariationHours = "Variation Hours";
+        string columnTotalHours = "Total Hours";
+        string columnRate = "Rate";
+        string columnStatus = "Status";
+        string columnBaselinePercentage = "Baseline %";
+        string columnTotalPercentage = "Total %";
+        string columnSchedulePercentage = "Schedule %";
+        string columnStartDate = "Start Date";
+        string columnDueDate = "Due Date";
+        string columnForecastFinishDate = "Forecast Finish Date";
+        string columnTargetDate = "Target Date";
+        string columnTotalEarnedUnits = "Total Earned Units";
+        string columnTotalEarnedCosts = "Total Earned Costs";
         protected override void resolveParameters(object parameter)
         {
-            defaultColumnFieldNames.Add(Id);
-            defaultColumnFieldNames.Add(subJob);
-            defaultColumnFieldNames.Add(workpack);
-            defaultColumnFieldNames.Add(area);
-            defaultColumnFieldNames.Add(subArea);
-            defaultColumnFieldNames.Add(documentType);
-            defaultColumnFieldNames.Add(discipline);
-            defaultColumnFieldNames.Add(department);
-            defaultColumnFieldNames.Add(internalNumber);
-            defaultColumnFieldNames.Add(deliverableType);
-            defaultColumnFieldNames.Add(primaryTitle);
-            defaultColumnFieldNames.Add(secondaryTitle);
-            defaultColumnFieldNames.Add(comments);
+            defaultColumnFieldNames.Add(columnId);
+            defaultColumnFieldNames.Add(columnSubJob);
+            defaultColumnFieldNames.Add(columnWorkpack);
+            defaultColumnFieldNames.Add(columnArea);
+            defaultColumnFieldNames.Add(columnSubArea);
+            defaultColumnFieldNames.Add(columnDocumentType);
+            defaultColumnFieldNames.Add(columnDiscipline);
+            defaultColumnFieldNames.Add(columnDepartment);
+            defaultColumnFieldNames.Add(columnInternalNumber);
+            defaultColumnFieldNames.Add(columnDeliverableType);
+            defaultColumnFieldNames.Add(columnPrimaryTitle);
+            defaultColumnFieldNames.Add(columnSecondaryTitle);
+            defaultColumnFieldNames.Add(columnComments);
+            defaultColumnFieldNames.Add(columnEstimatedHours);
+            defaultColumnFieldNames.Add(columnVariationHours);
+            defaultColumnFieldNames.Add(columnTotalHours);
+            defaultColumnFieldNames.Add(columnRate);
+            defaultColumnFieldNames.Add(columnStatus);
+            defaultColumnFieldNames.Add(columnBaselinePercentage);
+            defaultColumnFieldNames.Add(columnTotalPercentage);
+            defaultColumnFieldNames.Add(columnSchedulePercentage);
+            defaultColumnFieldNames.Add(columnStartDate);
+            defaultColumnFieldNames.Add(columnDueDate);
+            defaultColumnFieldNames.Add(columnForecastFinishDate);
+            defaultColumnFieldNames.Add(columnTargetDate);
+            defaultColumnFieldNames.Add(columnTotalEarnedUnits);
+            defaultColumnFieldNames.Add(columnTotalEarnedCosts);
 
-            hiddenColumnFieldNames.Add(Id);
-            hiddenColumnFieldNames.Add(comments);
-            hiddenColumnFieldNames.Add(secondaryTitle);
-            hiddenColumnFieldNames.Add(deliverableType);
-            hiddenColumnFieldNames.Add(subArea);
-            hiddenColumnFieldNames.Add(workpack);
+            hiddenColumnFieldNames.Add(columnId);
+            hiddenColumnFieldNames.Add(columnComments);
+            hiddenColumnFieldNames.Add(columnSecondaryTitle);
+            hiddenColumnFieldNames.Add(columnDeliverableType);
+            hiddenColumnFieldNames.Add(columnSubArea);
+            hiddenColumnFieldNames.Add(columnWorkpack);
+            hiddenColumnFieldNames.Add(columnEstimatedHours);
+            hiddenColumnFieldNames.Add(columnVariationHours);
+            hiddenColumnFieldNames.Add(columnTotalHours);
+            hiddenColumnFieldNames.Add(columnRate);
+            hiddenColumnFieldNames.Add(columnStatus);
+            hiddenColumnFieldNames.Add(columnBaselinePercentage);
+            hiddenColumnFieldNames.Add(columnTotalPercentage);
+            hiddenColumnFieldNames.Add(columnSchedulePercentage);
+            hiddenColumnFieldNames.Add(columnStartDate);
+            hiddenColumnFieldNames.Add(columnDueDate);
+            hiddenColumnFieldNames.Add(columnForecastFinishDate);
+            hiddenColumnFieldNames.Add(columnTargetDate);
 
             is_load_p6_task = true;
+            bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             base.resolveParameters(parameter);
         }
 
@@ -227,9 +286,60 @@ namespace BluePrints.ViewModels
                     e.Column.Visible = false;
                 }
 
+                if(e.Column.FieldName.ToUpper().Contains("PERCENT"))
+                {
+                    SpinEditSettings spinEdit = new SpinEditSettings();
+                    spinEdit.MaskType = MaskType.Numeric;
+                    spinEdit.Mask = "p2";
+                    spinEdit.MaskUseAsDisplayFormat = true;
+                    e.Column.EditSettings = spinEdit;
+                }
+                else if(e.Column.FieldName.ToUpper().Contains("COST"))
+                {
+                    SpinEditSettings spinEdit = new SpinEditSettings();
+                    spinEdit.MaskType = MaskType.Numeric;
+                    spinEdit.Mask = "c2";
+                    spinEdit.MaskUseAsDisplayFormat = true;
+                    e.Column.EditSettings = spinEdit;
+                }
+                else if (e.Column.FieldName.ToUpper().Contains("UNIT"))
+                {
+                    SpinEditSettings spinEdit = new SpinEditSettings();
+                    spinEdit.MaskType = MaskType.Numeric;
+                    spinEdit.Mask = "n2";
+                    spinEdit.MaskUseAsDisplayFormat = true;
+                    e.Column.EditSettings = spinEdit;
+                }
+
                 e.Column.Fixed = FixedStyle.Left;
                 e.Column.ReadOnly = true;
             }
+        }
+
+        public bool CanProgressUndo()
+        {
+            if (PROGRESS_ITEMSCollectionViewModel == null || PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager == null)
+                return false;
+
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo();
+        }
+
+        public bool CanProgressRedo()
+        {
+            if (PROGRESS_ITEMSCollectionViewModel == null || PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager == null)
+                return false;
+
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo();
+        }
+
+        public void ProgressUndo()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
+        }
+
+        public void ProgressRedo()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
         }
 
         private void reselectDeliverable()
@@ -259,7 +369,7 @@ namespace BluePrints.ViewModels
                     DateTime currentProgressDate = columnDate.AddDays(1).AddSeconds(-1);
 
                     DataRowView dataRowView = (DataRowView)e.Row;
-                    Guid id = (Guid)dataRowView.Row[Id];
+                    Guid id = (Guid)dataRowView.Row[columnId];
                     BASELINE_ITEMProgress currentDeliverable = DisplayEntities.FirstOrDefault(x => x.GUID == id);
 
                     List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
@@ -288,7 +398,7 @@ namespace BluePrints.ViewModels
                             newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                             newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                             newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
+                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                             progressToSave.Add(newPROGRESS_ITEM);
                         }
                         else if(currentPeriodPROGRESS_ITEM != null)
@@ -339,6 +449,34 @@ namespace BluePrints.ViewModels
                         }
                     }
 
+                    //Routine to reduce overhead for signal firing when saving
+                    //for(int i=0;i < progressToSave.Count;i++)
+                    //{
+                    //    //use viewmodel save to issue signal
+                    //    if(i == progressToSave.Count - 1)
+                    //    {
+                    //        PROGRESS_ITEM saveProgress = progressToSave[i];
+                    //        bool saveAnotherTimeToFireSignal = saveProgress.GUID == Guid.Empty;
+
+                    //        PROGRESS_ITEMSCollectionViewModel.Save(saveProgress);
+                    //        if(saveAnotherTimeToFireSignal)
+                    //            PROGRESS_ITEMSCollectionViewModel.Save(saveProgress);
+                    //    }
+                    //    else
+                    //    {
+                    //        PROGRESS_ITEM currentPROGRESS_ITEM = progressToSave[i];
+                    //        if (currentPROGRESS_ITEM.GUID == Guid.Empty)
+                    //        {
+                    //            bluePrintsUOW.PROGRESS_ITEMS.Add(currentPROGRESS_ITEM);
+                    //        }
+                    //        else
+                    //        {
+                    //            PROGRESS_ITEM repositoryPROGRESS_ITEM = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == currentPROGRESS_ITEM.GUID);
+                    //            DataUtils.ShallowCopy(repositoryPROGRESS_ITEM, currentPROGRESS_ITEM);
+                    //        }
+                    //    }
+                    //}
+
                     foreach (PROGRESS_ITEM progress in progressToSave)
                     {
                         PROGRESS_ITEMSCollectionViewModel.Save(progress);
@@ -370,21 +508,26 @@ namespace BluePrints.ViewModels
                 return deliverable.Total_Units;
         }
 
-        List<string> defaultColumnFieldNames = new List<string>();
-        List<string> hiddenColumnFieldNames = new List<string>();
-        string subJob = "SubJob";
-        string workpack = "Workpack";
-        string area = "Area";
-        string subArea = "Sub-Area";
-        string documentType = "Document Type";
-        string discipline = "Discipline";
-        string department = "Department";
-        string internalNumber = "Internal Number";
-        string deliverableType = "Deliverable Type";
-        string primaryTitle = "Primary Title";
-        string secondaryTitle = "Secondary Title";
-        string comments = "Comments";
-        string Id = "Id";
+        DataRowView selectedDataRow { get; set; }
+        public DataRowView SelectedDataRow
+        {
+            get
+            {
+                return selectedDataRow;
+            }
+            set
+            {
+                if (dataPointsTable == null || value == null)
+                    return;
+
+                int rowIndex = dataPointsTable.Rows.IndexOf(value.Row);
+                if (rowIndex == -1)
+                    return;
+
+                DataRowView dataRowView = dataPointsTable.DefaultView[rowIndex];
+                selectedDataRow = dataRowView;
+            }
+        }
 
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
@@ -402,16 +545,29 @@ namespace BluePrints.ViewModels
                     DateTime lastDataDate = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
-                    dataPointsTable.Columns.Add(Id, typeof(Guid));
+                    dataPointsTable.Columns.Add(columnId, typeof(Guid));
                     foreach(string defaultColumnFieldName in defaultColumnFieldNames)
                     {
-                        if(defaultColumnFieldName != Id)
+                        if(defaultColumnFieldName != columnId)
                             dataPointsTable.Columns.Add(defaultColumnFieldName, typeof(string));
                     }
 
+                    bool conditionalFormattingAdded = false;
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        dataPointsTable.Columns.Add(alignedDataDate.Date.ToShortDateString(), typeof(decimal));
+                        ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
+                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                        if (!conditionalFormattingAdded)
+                        { 
+                            colorScaleFormatCondition.FieldName = columnFieldName;
+                            colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
+                            colorScaleFormatCondition.MinValue = 0;
+                            colorScaleFormatCondition.MaxValue = 1;
+                            TableViewService.AddFormatCondition(colorScaleFormatCondition);
+                            //conditionalFormattingAdded = true;
+                        }
+
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
                     foreach(BASELINE_ITEMProgress entity in DisplayEntities)
@@ -435,26 +591,47 @@ namespace BluePrints.ViewModels
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
-                            where (Guid)dr[Id] == entity.GUID
+                            where (Guid)dr[columnId] == entity.GUID
                             select dr).FirstOrDefault();
             }
 
             if (newDataRow == null)
                 return;
 
-            newDataRow[Id] = entity.GUID;
-            newDataRow[subJob] = entity.Subjob_Name;
-            newDataRow[workpack] = entity.Entity.Entity.Workpack_Name;
-            newDataRow[area] = entity.Entity.Entity.Area_Name;
-            newDataRow[subArea] = entity.Entity.Entity.SubArea_Name;
-            newDataRow[documentType] = entity.Entity.Entity.DocType_Name;
-            newDataRow[discipline] = entity.Entity.Entity.Discipline_Name;
-            newDataRow[department] = entity.Entity.Entity.Department_Name;
-            newDataRow[internalNumber] = entity.Entity.Entity.INTERNAL_NUM;
-            newDataRow[deliverableType] = entity.Entity.Entity.DELIVERABLE_TYPE;
-            newDataRow[primaryTitle] = entity.Entity.Entity.PRIMARY_TITLE;
-            newDataRow[secondaryTitle] = entity.Entity.Entity.SECONDARY_TITLE;
-            newDataRow[comments] = entity.Entity.Entity.COMMENTS;
+            newDataRow[columnId] = entity.GUID;
+            newDataRow[columnSubJob] = entity.Subjob_Name;
+            newDataRow[columnWorkpack] = entity.Entity.Entity.Workpack_Name;
+            newDataRow[columnArea] = entity.Entity.Entity.Area_Name;
+            newDataRow[columnSubArea] = entity.Entity.Entity.SubArea_Name;
+            newDataRow[columnDocumentType] = entity.Entity.Entity.DocType_Name;
+            newDataRow[columnDiscipline] = entity.Entity.Entity.Discipline_Name;
+            newDataRow[columnDepartment] = entity.Entity.Entity.Department_Name;
+            newDataRow[columnInternalNumber] = entity.Entity.Entity.INTERNAL_NUM;
+            newDataRow[columnDeliverableType] = entity.Entity.Entity.DELIVERABLE_TYPE;
+            newDataRow[columnPrimaryTitle] = entity.Entity.Entity.PRIMARY_TITLE;
+            newDataRow[columnSecondaryTitle] = entity.Entity.Entity.SECONDARY_TITLE;
+            newDataRow[columnComments] = entity.Entity.Entity.COMMENTS;
+            newDataRow[columnEstimatedHours] = entity.Entity.Entity.BUDGET_HOURS;
+            newDataRow[columnVariationHours] = entity.Entity.Entity.DC_HOURS;
+            newDataRow[columnTotalHours] = entity.Entity.Entity.Total_Units;
+            newDataRow[columnRate] = entity.Budget_ItemRate;
+
+            if(entity.DeliverableStatusProgressGuid != null)
+            {
+                DELIVERABLES_STATUS status = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == entity.DeliverableStatusProgressGuid);
+                if (status != null)
+                    newDataRow[columnStatus] = status.NAME;
+            }
+
+            newDataRow[columnBaselinePercentage] = entity.Baseline_Percentage;
+            newDataRow[columnTotalPercentage] = entity.Total_Percentage_ToDate;
+            newDataRow[columnSchedulePercentage] = entity.SchedulePercentage;
+            newDataRow[columnStartDate] = entity.StartDate;
+            newDataRow[columnDueDate] = entity.DueDate;
+            newDataRow[columnForecastFinishDate] = entity.ForecastDate;
+            newDataRow[columnTargetDate] = entity.Entity.Entity.TARGET_DATE;
+            newDataRow[columnTotalEarnedUnits] = entity.Earned_Units_ToDate;
+            newDataRow[columnTotalEarnedCosts] = entity.Earned_Costs_ToDate;
 
             for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
             {

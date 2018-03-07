@@ -132,7 +132,7 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Rate" FieldName="Entity.ItemRate" HeaderToolTip="From rates table by deliverables discipline" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
+                            <dxg:GridColumn Header="Rate" FieldName="Entity.Budget_ItemRate" HeaderToolTip="From rates table by deliverables discipline" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
@@ -392,6 +392,9 @@
                                 <dxg:FormatCondition FieldName="IAmOverdue" ApplyToRow="True" Expression="[IAmOverdue] = 'True'">
                                     <dxc:Format Background="Salmon" />
                                 </dxg:FormatCondition>
+                                <dxg:ColorScaleFormatCondition FieldName="Total_Earned_Percentage" MaxValue="1" MinValue="0">
+                                    <dxc:ColorScaleFormat ColorMax="#FF63BE7B" ColorMiddle="#FFFFEB84" ColorMin="#FFF8696B" />
+                                </dxg:ColorScaleFormatCondition>
                             </dxg:TableView.FormatConditions>
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
