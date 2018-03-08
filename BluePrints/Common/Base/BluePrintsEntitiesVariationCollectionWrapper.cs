@@ -522,7 +522,9 @@ namespace BluePrints.Common.Base
 
         public override void CleanUpEntitiesLoader()
         {
-            //collectionViewModelWrapper.CleanUpEntitiesLoader();
+            if(InViewModelOnlyMode)
+                collectionViewModelWrapper.CleanUpEntitiesLoader();
+
             base.CleanUpEntitiesLoader();
         }
         #endregion

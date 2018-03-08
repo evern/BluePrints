@@ -217,6 +217,7 @@ namespace BluePrints.ViewModels
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = getParentIdFunc;
                 variation_itemsViewModelWrapper.SuppressNotification = true;
                 variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
+                variation_itemsViewModelWrapper.InViewModelOnlyMode = true;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
                 baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
 

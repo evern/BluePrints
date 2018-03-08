@@ -575,13 +575,13 @@ namespace BluePrints.ViewModels
                         ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
                         if (!conditionalFormattingAdded)
-                        { 
+                        {
                             colorScaleFormatCondition.FieldName = columnFieldName;
                             colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
                             colorScaleFormatCondition.MinValue = 0;
                             colorScaleFormatCondition.MaxValue = 1;
                             TableViewService.AddFormatCondition(colorScaleFormatCondition);
-                            //conditionalFormattingAdded = true;
+                            conditionalFormattingAdded = true;
                         }
 
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));

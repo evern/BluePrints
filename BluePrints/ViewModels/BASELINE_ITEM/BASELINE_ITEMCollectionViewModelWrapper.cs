@@ -380,6 +380,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -392,6 +393,17 @@ namespace BluePrints.ViewModels
             }
 
             SetViewSpecificProperties();
+        }
+
+        private bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        {
+            if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+            {
+                MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has been progressed");
+                return false;
+            }
+            
+            return true;
         }
 
         private void save_deliverable_users(BASELINE_ITEMProgress entity)

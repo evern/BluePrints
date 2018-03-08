@@ -130,8 +130,9 @@ namespace BluePrints.ViewModels
             }
             MainViewModel.BaseBulkDelete(removeWORKPACKS);
 
+            List<BASELINE_ITEMProgress> baseline_itemsToSave = new List<BASELINE_ITEMProgress>();
             LoadingScreenManager.CloseLoadingScreen();
-            LoadingScreenManager.ShowLoadingScreen(baseline_items.Count());
+            LoadingScreenManager.ShowLoadingScreen(baseline_items.Count() * 2);
             //LoadingScreenManager.SetMessage("Assigning workpacks to deliverables");
             foreach(BASELINE_ITEMProgress deliverable in baseline_items)
             {
@@ -159,10 +160,16 @@ namespace BluePrints.ViewModels
                     }
 
                     deliverable.Entity.Entity.GUID_WORKPACK = queryWORKPACK.GUID;
-                    baseline_itemCollectionViewModel.MainViewModel.Save(deliverable);
+                    baseline_itemsToSave.Add(deliverable);
                 }
 
                 LoadingScreenManager.Progress();
+            }
+
+            foreach(BASELINE_ITEMProgress deliverable in baseline_itemsToSave)
+            {
+                LoadingScreenManager.Progress();
+                baseline_itemCollectionViewModel.MainViewModel.Save(deliverable);
             }
 
             LoadingScreenManager.CloseLoadingScreen();
