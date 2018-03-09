@@ -361,6 +361,139 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
         }
 
+        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            GridControl gridControl = (GridControl)e.Source;
+            TableView gridTableView = (TableView)gridControl.View;
+
+            var selected_cells = gridTableView.GetSelectedCells();
+            if (selected_cells.Count == 0)
+                return;
+
+            string newValueString = Clipboard.GetText().ToString().Replace("%", "");
+            if(newValueString.Contains("\r\n"))
+            {
+                MessageBoxService.ShowMessage("Grid doesn't support pasting multiple cells, sorry for the inconvenience");
+                return;
+            }
+
+            decimal newValueDecimal = 0;
+            if(decimal.TryParse(newValueString, out newValueDecimal))
+            {
+                foreach (var selected_cell in selected_cells)
+                {
+                    DataRowView editing_row = (DataRowView)gridControl.GetRow(selected_cell.RowHandle);
+                    Guid Id = (Guid)editing_row[columnId];
+                    decimal oldValue = (decimal)editing_row[selected_cell.Column.FieldName];
+                    if (newValueDecimal > 1)
+                        newValueDecimal *= 0.01m;
+
+                    updatePercentage(Id, selected_cell.Column.FieldName, oldValue, newValueDecimal);
+                }
+            }
+
+            e.Handled = true;
+        }
+
+        private void updatePercentage(Guid Id, string fieldName, object oldValue, object newValue)
+        {
+            DateTime columnDate;
+            if (DateTime.TryParse(fieldName, out columnDate))
+            {
+                string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
+
+                PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                DateTime currentProgressDate = columnDate.AddDays(1).AddSeconds(-1);
+
+                BASELINE_ITEMProgress currentDeliverable = DisplayEntities.FirstOrDefault(x => x.GUID == Id);
+                List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
+
+                decimal currentProgressMaximumUnits = getDeliverableProgressMaximumUnits(currentDeliverable, currentProgressDate);
+                decimal oldPercentage = (decimal)oldValue;
+                decimal newPercentage = (decimal)newValue;
+                decimal percentageDifference = newPercentage - oldPercentage;
+
+                if (percentageDifference != 0)
+                {
+                    decimal totalUnitsDifferences = percentageDifference * currentProgressMaximumUnits;
+                    decimal maximumEarnUnits = currentProgressMaximumUnits;
+
+                    IEnumerable<PROGRESS_ITEM> previousProgresses = currentDeliverable.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
+                    PROGRESS_ITEM currentPeriodPROGRESS_ITEM = currentDeliverable.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE.Date == currentProgressDate.Date);
+                    List<PROGRESS_ITEM> futureProgressToEdit = currentDeliverable.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
+
+                    //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
+                    if (currentPeriodPROGRESS_ITEM == null && totalUnitsDifferences > 0)
+                    {
+                        PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                        newPROGRESS_ITEM.GUID_ORIBASEITEM = currentDeliverable.OriginalEntityKey;
+                        newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+                        newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
+                        newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
+                        progressToSave.Add(newPROGRESS_ITEM);
+                    }
+                    else if (currentPeriodPROGRESS_ITEM != null)
+                    {
+                        decimal postEditUnits = currentPeriodPROGRESS_ITEM.EARNED_UNITS + totalUnitsDifferences;
+                        if (postEditUnits < 0)
+                        {
+                            totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                            postEditUnits = 0;
+                            MessageBoxService.ShowMessage("Cannot go below currently assigned units. Please check past progress to lower % further");
+                        }
+
+                        decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
+                        progressToSave.Add(currentPeriodPROGRESS_ITEM);
+                    }
+
+                    //The addition of removal of units from current data date needs to be balanced by progress in the future, starting from the next progress
+                    totalUnitsDifferences = totalUnitsDifferences * -1;
+                    for (int i = 0; i < futureProgressToEdit.Count; i++)
+                    {
+                        if (totalUnitsDifferences == 0)
+                            break;
+
+                        PROGRESS_ITEM progress = futureProgressToEdit[i];
+                        decimal oldProgressValue = progress.EARNED_UNITS;
+                        decimal postEditEarnUnits = progress.EARNED_UNITS + totalUnitsDifferences;
+                        if (postEditEarnUnits < 0)
+                        {
+                            postEditEarnUnits = 0;
+                            totalUnitsDifferences -= progress.EARNED_UNITS;
+                        }
+                        else if (postEditEarnUnits > currentProgressMaximumUnits)
+                        {
+                            postEditEarnUnits = currentProgressMaximumUnits;
+                            totalUnitsDifferences -= currentProgressMaximumUnits;
+                        }
+                        else
+                        {
+                            totalUnitsDifferences = 0;
+                        }
+
+                        progress.EARNED_UNITS = postEditEarnUnits;
+
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(progress, earnedUnitsFieldName, oldProgressValue, postEditEarnUnits, EntityMessageType.Changed);
+                        progressToSave.Add(progress);
+                    }
+                }
+
+                foreach (PROGRESS_ITEM progress in progressToSave)
+                {
+                    PROGRESS_ITEMSCollectionViewModel.Save(progress);
+                }
+
+                //do this so that deliverable goes through the projection refresh
+                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(currentDeliverable.GUID, EntityMessageType.Changed));
+                PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+                //will be unpaused in existingrow or newrow save
+            }
+        }
+
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>
@@ -369,140 +502,9 @@ namespace BluePrints.ViewModels
             if (e.RowHandle == GridControl.AutoFilterRowHandle)
                 return;
 
-            if (!e.Handled)
-            {
-                DateTime columnDate;
-                if(DateTime.TryParse(e.Column.FieldName, out columnDate))
-                {
-                    string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
-
-                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    decimal oldValue = (decimal)e.OldValue;
-                    decimal newValue = (decimal)e.Value;
-                    DateTime currentProgressDate = columnDate.AddDays(1).AddSeconds(-1);
-
-                    DataRowView dataRowView = (DataRowView)e.Row;
-                    Guid id = (Guid)dataRowView.Row[columnId];
-                    BASELINE_ITEMProgress currentDeliverable = DisplayEntities.FirstOrDefault(x => x.GUID == id);
-
-                    List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
-                    
-                    decimal currentProgressMaximumUnits = getDeliverableProgressMaximumUnits(currentDeliverable, currentProgressDate);
-                    decimal percentageDifference = newValue - oldValue;
-
-                    if(percentageDifference != 0)
-                    {
-                        decimal totalUnitsDifferences = percentageDifference * currentProgressMaximumUnits;
-                        decimal maximumEarnUnits = currentProgressMaximumUnits;
-
-                        IEnumerable<PROGRESS_ITEM> previousProgresses = currentDeliverable.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
-                        //decimal minimumEarnUnits = 0;
-                        //if (previousProgresses.Count() > 0)
-                        //    minimumEarnUnits = previousProgresses.Sum(x => x.EARNED_UNITS);
-
-                        PROGRESS_ITEM currentPeriodPROGRESS_ITEM = currentDeliverable.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE == currentProgressDate);
-                        List<PROGRESS_ITEM> futureProgressToEdit = currentDeliverable.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
-
-                        //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
-                        if (currentPeriodPROGRESS_ITEM == null && totalUnitsDifferences > 0)
-                        {
-                            PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                            newPROGRESS_ITEM.GUID_ORIBASEITEM = currentDeliverable.OriginalEntityKey;
-                            newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
-                            newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
-                            newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
-                            progressToSave.Add(newPROGRESS_ITEM);
-                        }
-                        else if(currentPeriodPROGRESS_ITEM != null)
-                        {
-                            decimal postEditUnits = currentPeriodPROGRESS_ITEM.EARNED_UNITS + totalUnitsDifferences;
-                            if (postEditUnits < 0)
-                            {
-                                totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
-                                postEditUnits = 0;
-                                MessageBoxService.ShowMessage("Cannot go below currently assigned units. Please check past progress to lower % further");
-                            }
-
-                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
-                            currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
-                            progressToSave.Add(currentPeriodPROGRESS_ITEM);
-                        }
-
-                        //The addition of removal of units from current data date needs to be balanced by progress in the future, starting from the next progress
-                        totalUnitsDifferences = totalUnitsDifferences * -1;
-                        for (int i = 0; i < futureProgressToEdit.Count; i++)
-                        {
-                            if (totalUnitsDifferences == 0)
-                                break;
-
-                            PROGRESS_ITEM progress = futureProgressToEdit[i];
-                            decimal oldProgressValue = progress.EARNED_UNITS;
-                            decimal postEditEarnUnits = progress.EARNED_UNITS + totalUnitsDifferences;
-                            if (postEditEarnUnits < 0)
-                            {
-                                postEditEarnUnits = 0;
-                                totalUnitsDifferences -= progress.EARNED_UNITS;
-                            }
-                            else if(postEditEarnUnits > currentProgressMaximumUnits)
-                            {
-                                postEditEarnUnits = currentProgressMaximumUnits;
-                                totalUnitsDifferences -= currentProgressMaximumUnits;
-                            }
-                            else
-                            {
-                                totalUnitsDifferences = 0;
-                            }
-
-                            progress.EARNED_UNITS = postEditEarnUnits;
-
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(progress, earnedUnitsFieldName, oldProgressValue, postEditEarnUnits, EntityMessageType.Changed);
-                            progressToSave.Add(progress);
-                        }
-                    }
-
-                    //Routine to reduce overhead for signal firing when saving
-                    //for(int i=0;i < progressToSave.Count;i++)
-                    //{
-                    //    //use viewmodel save to issue signal
-                    //    if(i == progressToSave.Count - 1)
-                    //    {
-                    //        PROGRESS_ITEM saveProgress = progressToSave[i];
-                    //        bool saveAnotherTimeToFireSignal = saveProgress.GUID == Guid.Empty;
-
-                    //        PROGRESS_ITEMSCollectionViewModel.Save(saveProgress);
-                    //        if(saveAnotherTimeToFireSignal)
-                    //            PROGRESS_ITEMSCollectionViewModel.Save(saveProgress);
-                    //    }
-                    //    else
-                    //    {
-                    //        PROGRESS_ITEM currentPROGRESS_ITEM = progressToSave[i];
-                    //        if (currentPROGRESS_ITEM.GUID == Guid.Empty)
-                    //        {
-                    //            bluePrintsUOW.PROGRESS_ITEMS.Add(currentPROGRESS_ITEM);
-                    //        }
-                    //        else
-                    //        {
-                    //            PROGRESS_ITEM repositoryPROGRESS_ITEM = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == currentPROGRESS_ITEM.GUID);
-                    //            DataUtils.ShallowCopy(repositoryPROGRESS_ITEM, currentPROGRESS_ITEM);
-                    //        }
-                    //    }
-                    //}
-
-                    string s;
-                    foreach (PROGRESS_ITEM progress in progressToSave)
-                    {
-                        PROGRESS_ITEMSCollectionViewModel.Save(progress);
-                    }
-
-                    //do this so that deliverable goes through the projection refresh
-                    Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(currentDeliverable.GUID, EntityMessageType.Changed));
-                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-                    //will be unpaused in existingrow or newrow save
-                }
-            }
+            DataRowView dataRowView = (DataRowView)e.Row;
+            Guid id = (Guid)dataRowView.Row[columnId];
+            updatePercentage(id, e.Column.FieldName, e.OldValue, e.Value);
         }
 
         private decimal getDeliverableProgressMaximumUnits(BASELINE_ITEMProgress deliverable, DateTime progressDate)
@@ -569,20 +571,20 @@ namespace BluePrints.ViewModels
                             dataPointsTable.Columns.Add(defaultColumnFieldName, typeof(string));
                     }
 
-                    bool conditionalFormattingAdded = false;
+                    //bool conditionalFormattingAdded = false;
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        if (!conditionalFormattingAdded)
-                        {
+                        //if (!conditionalFormattingAdded)
+                        //{
                             colorScaleFormatCondition.FieldName = columnFieldName;
                             colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
                             colorScaleFormatCondition.MinValue = 0;
                             colorScaleFormatCondition.MaxValue = 1;
                             TableViewService.AddFormatCondition(colorScaleFormatCondition);
-                            conditionalFormattingAdded = true;
-                        }
+                        //    conditionalFormattingAdded = true;
+                        //}
 
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }

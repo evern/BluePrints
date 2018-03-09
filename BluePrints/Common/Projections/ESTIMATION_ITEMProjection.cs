@@ -260,7 +260,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Freight_Cost => Variation_Quantity * Budget_FreightRate;
 
-        public decimal Estimate_Install_Hours => Entity.STOCK_CODE == null ? 0 : Entity.ESTIMATE_QUANTITY * ESTIMATE_STOCK_CODE.HOURS_INSTALL;
+        public decimal Estimate_Install_Hours => ESTIMATE_STOCK_CODE == null ? 0 : Entity.ESTIMATE_QUANTITY * ESTIMATE_STOCK_CODE.HOURS_INSTALL;
 
         public decimal Variation_Install_Hours => Entity.Variation_Units;
 
@@ -288,7 +288,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimate_Quantity => Entity.ESTIMATE_QUANTITY;
 
-        public decimal Budget_Install_Hours => Entity.STOCK_CODE1 == null ? 0 : Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY * BUDGET_STOCK_CODE.HOURS_INSTALL;
+        public decimal Budget_Install_Hours => BUDGET_STOCK_CODE == null ? 0 : Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY * BUDGET_STOCK_CODE.HOURS_INSTALL;
 
         public decimal Budget_Install_Cost => Budget_Install_Hours * Budget_ItemRate;
 
