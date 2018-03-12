@@ -1109,6 +1109,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string P6AssignmentDescription => string.Empty;
 
+        public string P6AssignmentDescription2 => string.Empty;
+
         public PhaseType? Phase => Entity.Phase;
 
         public IEnumerable<User_Weight> AssignedUsers => Entity.AssignedUsers;

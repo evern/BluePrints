@@ -116,6 +116,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid DeliverableKey { get; }
         string P6AssignmentName { get; }
         string P6AssignmentDescription { get; }
+        string P6AssignmentDescription2 { get; }
         decimal Assigned_Percentage { get; }
         decimal Remaining_Percentage { get; }
         decimal P6_Assignment_Total_Quantity { get; }

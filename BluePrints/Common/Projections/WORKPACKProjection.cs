@@ -69,6 +69,8 @@ namespace BluePrints.Common.Projections
 
         public string P6AssignmentDescription => Entity.TITLE;
 
+        public string P6AssignmentDescription2 => Entity.DISCIPLINE == null ? string.Empty : Entity.DISCIPLINE.NAME;
+
         public Guid DeliverableKey => Entity.EntityKey;
 
         public void SetOriginalEntityKey(Guid newGuid)
