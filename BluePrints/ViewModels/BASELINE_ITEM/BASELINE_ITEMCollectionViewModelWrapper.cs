@@ -848,6 +848,7 @@ namespace BluePrints.ViewModels
         
         public void Insert()
         {
+            TableViewService.SetImmediateUpdateRowPosition(true);
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
@@ -861,6 +862,7 @@ namespace BluePrints.ViewModels
 
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
+            TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
         /// <summary>
@@ -909,6 +911,7 @@ namespace BluePrints.ViewModels
 
         public void Duplicate()
         {
+            TableViewService.SetImmediateUpdateRowPosition(true);
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
@@ -922,6 +925,8 @@ namespace BluePrints.ViewModels
 
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
+
+            TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
         /// <summary>
@@ -1020,6 +1025,7 @@ namespace BluePrints.ViewModels
 
         public void DuplicateMultiple(BarEditItem barEdit)
         {
+            TableViewService.SetImmediateUpdateRowPosition(true);
             PauseUndoRedo();
             _isProcessingMultiple = true;
             var timesToDuplicate = 0;
@@ -1033,10 +1039,12 @@ namespace BluePrints.ViewModels
             MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
             UnpauseUndoRedo();
+            TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
         public void InsertMultiple(BarEditItem barEdit)
         {
+            TableViewService.SetImmediateUpdateRowPosition(true);
             PauseUndoRedo();
             _isProcessingMultiple = true;
             var timesToInsert = 0;
@@ -1051,6 +1059,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
             UnpauseUndoRedo();
+            TableViewService.SetImmediateUpdateRowPosition(false);
         }
         
         public bool CanAutoPopulate(object button)
@@ -1317,7 +1326,6 @@ namespace BluePrints.ViewModels
 
                 UnpauseUndoRedo();
             }
-
         }
         #endregion
 

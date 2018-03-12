@@ -101,7 +101,9 @@ namespace BluePrints.ViewModels
         private bool IsContinueSaveCallBack(DELIVERABLES_STATUS entity, bool isNewEntity)
         {
             if (isNewEntity && isProjectSpecific)
+            {
                 entity.GUID_PROJECT = loadPROJECT.GUID;
+            }
 
             return true;
         }
@@ -115,7 +117,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "DELIVERABLES_STATUSCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "DELIVERABLES_STATUSCollectionViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -162,14 +164,23 @@ namespace BluePrints.ViewModels
             return barEdit.EditValue != null;
         }
 
+        public void Insert()
+        {
+            TableViewService.SetImmediateUpdateRowPosition(true);
+            VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities);
+            TableViewService.SetImmediateUpdateRowPosition(false);
+        }
+
         public void Duplicate(BarEditItem barEdit)
         {
+            TableViewService.SetImmediateUpdateRowPosition(true);
             Guid doctypeGuid;
             List<DELIVERABLES_STATUS> newEntities = new List<DELIVERABLES_STATUS>();
             if (Guid.TryParse(barEdit.EditValue.ToString(), out doctypeGuid))
             {
                 VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities, doctypeGuid);
             }
+            TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
         private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, Guid? docTypeGuid = null)
@@ -184,15 +195,29 @@ namespace BluePrints.ViewModels
                 if (isProjectSpecific)
                     newDeliverableStatus.GUID_PROJECT = loadPROJECT.GUID;
 
-                if(docTypeGuid != null)
+                if (docTypeGuid != null)
                     newDeliverableStatus.GUID_DOCTYPE = docTypeGuid;
+                //insert mode by default
+                else
+                {
+                    if(newDeliverableStatus.MAX_PERCENTAGE >= 1m)
+                    {
+                        MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
+                        continue;
+                    }
 
-                DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && x.GUID_DOCTYPE == newDeliverableStatus.GUID_DOCTYPE);
+                    newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
+                    newDeliverableStatus.MAX_PERCENTAGE = 1m;
+                }
+
+                DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && x.GUID_DOCTYPE == newDeliverableStatus.GUID_DOCTYPE);
                 if (findEntity == null)
                 {
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
                     duplicateDeliverableStatuses.Add(newDeliverableStatus);
                 }
+                else
+                    MessageBoxService.ShowMessage("Doctype with autopercentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists");
             }
 
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();

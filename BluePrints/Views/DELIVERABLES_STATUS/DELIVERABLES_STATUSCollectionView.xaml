@@ -33,22 +33,22 @@
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the status" />
-                            <dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from">
+                            <dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from" SortIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Maximum Percentage" FieldName="MAX_PERCENTAGE" HeaderToolTip="Maximum allowed percentage for this status">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Auto Percentage" FieldName="AUTO_PERCENTAGE" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress">
+                            <dxg:GridColumn Header="Auto Percentage" FieldName="AUTO_PERCENTAGE" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress" SortIndex="2">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:SpinEdit Name="PART_Editor" Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Maximum Percentage" FieldName="MAX_PERCENTAGE" HeaderToolTip="Maximum allowed percentage for this status" SortIndex="2">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="For Deliverable" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
                             <dxg:GridColumn Header="For Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
@@ -65,6 +65,7 @@
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />
+                                    <dxb:BarButtonItem Content="Insert" ToolTip="Insert new status below currently selected status." Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuInsert" />
                                     <dxb:BarSubItem Content="Duplicate" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
                                         <dxb:BarEditItem Content="Document Type" x:Name="contextMenuDuplicate">
                                             <dxb:BarEditItem.EditSettings>
