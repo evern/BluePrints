@@ -34,15 +34,15 @@ namespace BluePrints.Common.Base
 
         public void ShowNotification()
         {
-            if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
-                return;
+            //if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
+            //    return;
 
-            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
-            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Update 11 Dec 2017: Filter will not show (Blank)/(NonBlanks) now due instability issues", null, null, null);
+            //INotification notification1 = AppNotificationService.CreatePredefinedNotification("Update 15 Nov 2017: If anything doesn't work as expected, please push reset layout and reload this view. Have a nice day", null, null, null);
+            //INotification notification2 = AppNotificationService.CreatePredefinedNotification("Update 11 Dec 2017: Filter will not show (Blank)/(NonBlanks) now due instability issues", null, null, null);
 
-            GlobalVariables.IsNotificationShown = true;
-            notification1.ShowAsync();
-            notification2.ShowAsync();
+            //GlobalVariables.IsNotificationShown = true;
+            //notification1.ShowAsync();
+            //notification2.ShowAsync();
         }
         //protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         //{
