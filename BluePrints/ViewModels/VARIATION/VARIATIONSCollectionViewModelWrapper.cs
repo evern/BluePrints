@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.EntityKey == (Guid)parent_id);
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
-            BackgroundRefresh(true);
+            BackgroundRefresh();
         }
 
         #region CallBacks

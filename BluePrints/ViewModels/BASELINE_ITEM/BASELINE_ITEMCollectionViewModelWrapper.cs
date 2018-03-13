@@ -1293,6 +1293,8 @@ namespace BluePrints.ViewModels
                 UnpauseUndoRedo();
                 MainViewModel.BulkSave(save_entities);
             }
+
+            //FullRefresh();
         }
         #endregion
 

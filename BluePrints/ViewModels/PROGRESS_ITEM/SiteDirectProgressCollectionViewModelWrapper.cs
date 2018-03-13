@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
             ReloadEntitiesCollection();
         }
 
-        protected override void BackgroundRefresh(bool forceGridRefresh = false)
+        protected override void BackgroundRefresh()
         {
             if (MainViewModel == null)
                 return;
@@ -147,7 +147,7 @@ namespace BluePrints.ViewModels
                 reportable.Update();
             }
 
-            base.BackgroundRefresh(forceGridRefresh);
+            base.BackgroundRefresh();
         }
 
         private ReportablesDisplay getAffectedDisplayEntity(PROGRESS_ITEM newPROGRESS_ITEM)

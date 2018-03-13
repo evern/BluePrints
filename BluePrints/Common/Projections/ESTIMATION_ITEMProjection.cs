@@ -280,11 +280,11 @@ namespace BluePrints.Common.Projections
 
         public Guid? Procurement_Subjob_Guid { get => Entity.GUID_PSUBJOB; set => Entity.GUID_PSUBJOB = value; }
 
-        public Guid? Discipline_Guid => null;
+        public Guid? Discipline_Guid => Entity.GUID_DISCIPLINE;
 
-        public decimal Discipline_Number => 0;
+        public decimal Discipline_Number => Entity.DISCIPLINE_NUM;
 
-        public Guid? Workpack_Guid { get => Guid.Empty; set { } }
+        public Guid? Workpack_Guid { get => Entity.GUID_WORKPACK; set => Entity.GUID_WORKPACK = value; }
 
         public decimal Estimate_Quantity => Entity.ESTIMATE_QUANTITY;
 

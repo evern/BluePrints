@@ -22,9 +22,9 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <param name="entity"></param>
         public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false)
         {
-            //provision for when subjob is manually assigned or using legacy subjob
-            if (!loadPROJECT.USE_WORKPACKS && entity.Subjob_Guid != null)
-                return;
+            ////provision for when subjob is manually assigned or using legacy subjob
+            //if (entity.Subjob_Guid != null)
+            //    return;
 
             IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
             Guid? existingOrNewPhaseGuid;

@@ -110,6 +110,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
         }
 
         private void assign_estimation_direct(ESTIMATE estimation_direct)
@@ -137,6 +138,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == loadESTIMATE.GUID_PROJECT);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
@@ -303,6 +309,33 @@ namespace BluePrints.ViewModels
                 MessageBoxService.ShowMessage("Estimate is currently in read only mode because it has already been approved as a budget");
         }
 
+        private void onBeforeSavedDefaultCommodityCodeAssignment(ESTIMATE_ITEMProgress entity)
+        {
+            if(entity.Entity.Entity.GUID_COMMODITY_CODE == null)
+            {
+                if (entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE != null)
+                {
+                    STOCK_CODE estimateStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
+                    if (estimateStockCode != null)
+                    {
+                        COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == estimateStockCode.CODE);
+                        if(defaultCOMMODITY_CODE != null)
+                            entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
+                    }
+                }
+                else if(entity.Entity.Entity.GUID_BUDGET_STOCK_CODE != null)
+                {
+                    STOCK_CODE budgetStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_BUDGET_STOCK_CODE);
+                    if (budgetStockCode != null)
+                    {
+                        COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == budgetStockCode.CODE);
+                        if (defaultCOMMODITY_CODE != null)
+                            entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Each estimation entity will need to be assigned to a construction phased subjob and a procurement phased subjob
         /// </summary>
@@ -345,7 +378,6 @@ namespace BluePrints.ViewModels
 
         public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
-            onBeforeSavedDualSubjobAssignment(pasteEntity);
             KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid)));
 
             if (stock_code_data.Key != null)
@@ -433,6 +465,10 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+
+            onBeforeSavedDualSubjobAssignment(pasteEntity);
+            onBeforeSavedDefaultCommodityCodeAssignment(pasteEntity);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(pasteEntity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
         }
 
         /// <summary>
@@ -536,7 +572,8 @@ namespace BluePrints.ViewModels
 
             onBeforeSavedDualSubjobAssignment(entity);
             onBeforeSavedProjectStockCodeLogging(entity);
-
+            onBeforeSavedDefaultCommodityCodeAssignment(entity);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
             return true;
         }
@@ -1256,6 +1293,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+
+        public IEnumerable<WORKPACK> WORKPACKCollection
+        {
+            get
+            {
+                var collection = GetEntities<WORKPACK>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
         public IEnumerable<STOCK_CODE> GlobalSTOCK_CODECollection
         {
             get
@@ -1308,6 +1357,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<STOCK_GROUP, STOCK_GROUP, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_GROUP>();
+            }
+        }
+
+        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<WORKPACK>();
             }
         }
 

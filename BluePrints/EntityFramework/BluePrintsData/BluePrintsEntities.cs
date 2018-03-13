@@ -628,6 +628,11 @@ namespace BluePrints.Data
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
+
+            modelBuilder.Entity<WORKPACK>()
+                .HasMany(e => e.ESTIMATE_ITEM)
+                .WithOptional(e => e.WORKPACK)
+                .HasForeignKey(e => e.GUID_WORKPACK);
         }
     }
 }
