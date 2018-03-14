@@ -240,6 +240,23 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.ProcurementSUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number" Visible="true">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Created" FieldName="Entity.Entity.CREATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                                <dxg:GridColumn Header="Created By" FieldName="Entity.Entity.CREATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Updated" FieldName="Entity.Entity.UPDATED" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" />
+                                <dxg:GridColumn Header="Updated By" FieldName="Entity.Entity.UPDATEDBY" ReadOnly="True" AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="Commodity Code" FieldName="Entity.Entity.GUID_COMMODITY_CODE" HeaderToolTip="Automatically assigned field" FilterPopupMode="CheckedList">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -292,24 +309,36 @@
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.BUDGET_QUANTITY" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_QUANTITY" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Supply_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Install_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Freight_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Cost" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" SummaryType="Count" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Total_Budget_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Stock_Code_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Quantity" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.BUDGET_QUANTITY" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_QUANTITY" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Supply_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Install_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Freight_Cost" SummaryType="Sum" />
-                            <dxg:GridSummaryItem FieldName="Total_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="Total_Cost" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" SummaryType="Count" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Entity.Entity.DC_QUANTITY" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Budget_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Total_Budget_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Stock_Code_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Quantity" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Supply_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Install_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Install_Hours" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem FieldName="Variance_Freight_Cost" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" SummaryType="Sum" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" AllowEditing="{Binding DataContext.AllowEditingOnBudget, ElementName=userControl}" Style="{StaticResource DefaultTableViewTemplate}">

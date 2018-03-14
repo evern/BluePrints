@@ -15,7 +15,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static IQueryable<BASELINE_ITEMProgress> ProjectUser_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, PROJECT project, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection)
         {
             List<BASELINE_ITEMProgress> user_baseline_item_progresses = new List<BASELINE_ITEMProgress>();
-            PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
+            PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
             BASELINE live_baseline = project.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
             IEnumerable<SUBJOB> subjobs = project.SUBJOB;
             IEnumerable<VARIATION> approved_variations = project.VARIATION.Where(x => x.APPROVED != null);
@@ -71,7 +71,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 PROJECT project = user_baseline_item_by_project.Project;
 
-                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
+                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
                 if (live_progress == null)
                     continue;
 

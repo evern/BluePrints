@@ -19,7 +19,7 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string NAME { get; set; }
 
-        public ProgressType TYPE { get; set; }
+        public PhaseType TYPE { get; set; }
 
         public DateTime PROGRESS_START { get; set; }
 

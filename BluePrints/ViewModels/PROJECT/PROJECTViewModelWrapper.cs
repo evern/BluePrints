@@ -874,7 +874,7 @@ namespace BluePrints.ViewModels
 
                 PROGRESS livePROGRESS = null;
                 if (collection != null)
-                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Design);
+                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
 
                 if(livePROGRESS != null)
                 {
@@ -899,7 +899,7 @@ namespace BluePrints.ViewModels
 
                 PROGRESS livePROGRESS = null;
                 if (collection != null)
-                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == ProgressType.Construct);
+                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Construct);
 
                 if (livePROGRESS != null)
                 {

@@ -85,9 +85,16 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
 
-            KeyValuePair<DeliverablesViewType, EstimateViewMode> viewParameter = (KeyValuePair<DeliverablesViewType, EstimateViewMode>)receiveParameter.GetThirdEntity();
-            viewType = viewParameter.Key;
-            viewMode = viewParameter.Value;
+            try
+            {
+                KeyValuePair<DeliverablesViewType, EstimateViewMode> viewParameter = (KeyValuePair<DeliverablesViewType, EstimateViewMode>)receiveParameter.GetThirdEntity();
+                viewType = viewParameter.Key;
+                viewMode = viewParameter.Value;
+            }
+            catch
+            {
+
+            }
 
             IsProcurementSubjobVisible = viewType != DeliverablesViewType.Indirect;
             if (loadPROJECT != null)
@@ -116,7 +123,7 @@ namespace BluePrints.ViewModels
         private void assign_estimation_direct(ESTIMATE estimation_direct)
         {
             if (estimation_direct == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Working estimate not found")));
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(viewMode.ToString() + " not found")));
 
             if (viewMode == EstimateViewMode.Budget && (estimation_direct != null && estimation_direct.STATUS == BaselineStatus.Working))
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Budget (live estimate) not found")));
@@ -147,7 +154,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Construct && x.STATUS == ProgressStatus.Live);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live);
         }
 
         private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
@@ -168,9 +175,11 @@ namespace BluePrints.ViewModels
             if (isQueryForLiveStatus)
             {
                 if(viewMode == EstimateViewMode.Estimate)
-                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS != BaselineStatus.Superseded);
-                else
+                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Working);
+                else if(viewMode == EstimateViewMode.Budget)
                     return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+                else
+                    return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.STATUS == BaselineStatus.Live || x.STATUS == BaselineStatus.Working));
             }
             else
                 return query => query.Where(x => x.GUID == loadESTIMATE.GUID);
@@ -808,7 +817,7 @@ namespace BluePrints.ViewModels
         {
             string fieldName = DataUtils.FormatColumnFieldname(field_name);
             //budgeted hours field is disabled but just in case
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE))
+            if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().PROGRESS_TYPE))
             {
                 if (projection.Entity.Entity.STOCK_CODE == null)
                 {
@@ -838,7 +847,7 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP))
+            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_STOCK_GROUP))
             {
                 if (projection.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && new_value != null)
                 {
@@ -852,7 +861,7 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
+            else if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
             {
                 if (projection.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Trackable && new_value != null)
                 {
@@ -1077,6 +1086,11 @@ namespace BluePrints.ViewModels
         public void Save(ESTIMATE_ITEMProgress progress_entity)
         {
             MainViewModel.Save(progress_entity);
+        }
+
+        public void BulkSave(IEnumerable<ESTIMATE_ITEMProgress> progress_entities)
+        {
+            MainViewModel.BulkSave(progress_entities, true);
         }
 
         public void Delete(ESTIMATE_ITEMProgress progress_entity)

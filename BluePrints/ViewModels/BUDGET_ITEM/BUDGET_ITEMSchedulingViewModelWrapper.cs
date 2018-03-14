@@ -34,22 +34,22 @@ using System.Windows.Input;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATE_ITEMSchedulingViewModelWrapper :
+    public class BUDGET_ITEMSchedulingViewModelWrapper :
         BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static ESTIMATE_ITEMSchedulingViewModelWrapper Create()
+        public static BUDGET_ITEMSchedulingViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new ESTIMATE_ITEMSchedulingViewModelWrapper());
+            return ViewModelSource.Create(() => new BUDGET_ITEMSchedulingViewModelWrapper());
         }
 
         #region Database Operation
         private DEPARTMENT defaultConstructionDEPARTMENT;
 
-        protected override ProgressType progress_type => ProgressType.Construct;
+        protected override PhaseType phase_type => PhaseType.Construct;
 
         protected override void initializeEntitiesLoadersDescription()
         {
@@ -151,8 +151,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            //get { return "ESTIMATE_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
-            get { return "ESTIMATE_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
+            //get { return "BUDGET_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
+            get { return "BUDGET_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

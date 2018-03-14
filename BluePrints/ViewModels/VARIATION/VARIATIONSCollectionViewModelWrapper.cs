@@ -48,13 +48,13 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         private PROJECT loadPROJECT;
-        private ProgressType phaseType;
+        private PhaseType phaseType;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, ProgressTypeClass>) parameter;
+            var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, PhaseTypeClass>) parameter;
             loadPROJECT = project_phasetype_parameter.GetFirstEntity();
-            phaseType = project_phasetype_parameter.GetSecondEntity().progressType;
+            phaseType = project_phasetype_parameter.GetSecondEntity().phaseType;
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -131,7 +131,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if(phaseType == ProgressType.Design)
+            if(phaseType == PhaseType.Design)
             {
                 foreach (var entity in entities)
                 {
@@ -156,7 +156,8 @@ namespace BluePrints.ViewModels
 
             VARIATIONProjection projection = MainViewModel.Entities.First(x => x.EntityKey == (Guid)parent_id);
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
-            BackgroundRefresh();
+            projection.Update();
+            //BackgroundRefresh();
         }
 
         #region CallBacks
@@ -186,7 +187,7 @@ namespace BluePrints.ViewModels
 
             if (entity.Entity.APPROVED != null)
             {
-                if (phaseType == ProgressType.Design)
+                if (phaseType == PhaseType.Design)
                     entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
                 else
                     entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATE.GUID;
@@ -207,7 +208,7 @@ namespace BluePrints.ViewModels
             if (loadPROJECT != null)
             {
                 ICollectionViewModelsWrapper<TMainProjectionEntity> variation_itemsViewModelWrapper;
-                if (phaseType == ProgressType.Design)
+                if (phaseType == PhaseType.Design)
                     variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)OffsiteDirectVariationCollectionViewModelWrapper.Create();
                 else
                     variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)SiteDirectVariationCollectionViewModelWrapper.Create();
@@ -219,7 +220,14 @@ namespace BluePrints.ViewModels
                 variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
                 variation_itemsViewModelWrapper.InViewModelOnlyMode = true;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
-                baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
+
+                if (typeof(TMainProjectionEntity) == typeof(ESTIMATE_ITEMVariation))
+                {
+                    KeyValuePair<DeliverablesViewType, EstimateViewMode> valuePair = new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget);
+                    baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<PROJECT, VARIATION, object>(loadPROJECT, loadVARIATION, valuePair);
+                }
+                else
+                    baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
 
                 return variation_itemsViewModelWrapper;
             }
@@ -329,7 +337,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if(phaseType == ProgressType.Design)
+                if(phaseType == PhaseType.Design)
                     return BASELINECollection;
                 else
                     return ESTIMATECollection;
@@ -404,7 +412,7 @@ namespace BluePrints.ViewModels
 
             string view_name;
             string tab_title;
-            if (DisplaySelectedEntity.Entity.PHASE == ProgressType.Design)
+            if (DisplaySelectedEntity.Entity.PHASE == PhaseType.Design)
             {
                 view_name = "OffsiteDirectVariationCollectionView";
                 tab_title = "Design Variation";
@@ -497,9 +505,9 @@ namespace BluePrints.ViewModels
                 errorMessage = "Live progress not found";
             else
             {
-                if (phaseType == ProgressType.Design && LiveBASELINE == null)
+                if (phaseType == PhaseType.Design && LiveBASELINE == null)
                     errorMessage = "Live baseline not found";
-                else if(phaseType == ProgressType.Construct && LiveESTIMATE == null)
+                else if(phaseType == PhaseType.Construct && LiveESTIMATE == null)
                     errorMessage = "Live estimate not found";
             }
 
@@ -510,18 +518,18 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if(phaseType == ProgressType.Design)
+            if(phaseType == PhaseType.Design)
                 CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
-            else if(phaseType == ProgressType.Construct)
+            else if(phaseType == PhaseType.Construct)
                 CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
         }
 
         private void OnVARIATION_ITEMSLoaded(IEnumerable<object> projections, object parentId)
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            if(phaseType == ProgressType.Design)
+            if(phaseType == PhaseType.Design)
                 mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS)));
-            else if (phaseType == ProgressType.Construct)
+            else if (phaseType == PhaseType.Construct)
                 mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS)));
         }
 

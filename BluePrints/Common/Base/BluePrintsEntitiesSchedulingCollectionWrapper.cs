@@ -62,7 +62,7 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
         }
 
-        protected abstract ProgressType progress_type { get; }
+        protected abstract PhaseType phase_type { get; }
 
         private void assign_progress(PROGRESS progress)
         {
@@ -113,7 +113,7 @@ namespace BluePrints.Common.Base
 
         private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
         {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == progress_type.ToString().ToUpper()));
+            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == phase_type.ToString().ToUpper()));
         }
 
         private Func<IRepositoryQuery<TASKPRED>, IQueryable<TASKPRED>> P6TASKPREDProjectionFunc()
@@ -133,13 +133,13 @@ namespace BluePrints.Common.Base
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == progress_type);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == phase_type);
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
         {
             return
-                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == progress_type);
+                query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == phase_type);
         }
 
         #region Used as Dependency Delegate
@@ -584,7 +584,7 @@ namespace BluePrints.Common.Base
                     LOW_VALUE = deliverable.Assigned_Percentage + 0.01m,
                     P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
                     GUID_ORIGINAL = deliverable.OriginalEntityKey,
-                    TYPE = progress_type,
+                    TYPE = phase_type,
                     ISMODIFIEDBASELINE = false
                 });
             }

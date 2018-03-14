@@ -63,7 +63,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private BASELINE loadBASELINE;
 
-        protected override ProgressType progress_type => ProgressType.Design;
+        protected override PhaseType phase_type => PhaseType.Design;
 
         protected override void initializeEntitiesLoadersDescription()
         {

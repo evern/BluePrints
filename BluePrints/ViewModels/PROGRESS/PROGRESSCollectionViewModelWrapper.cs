@@ -224,7 +224,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo;
-            if(DisplaySelectedEntity.TYPE == ProgressType.Design)
+            if(DisplaySelectedEntity.TYPE == PhaseType.Design)
                 DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "OffsiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
             else
                 DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "SiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");

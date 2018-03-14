@@ -671,6 +671,7 @@
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
@@ -681,7 +682,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMSchedulingViewModelWrapper.cs" />
+    <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
@@ -703,6 +704,9 @@
     </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMSchedulingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingView.xaml.cs">
+      <DependentUpon>BUDGET_ITEMWorkpackSchedulingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BUDGET_ITEM\BUDGET_ITEMCollectionView.xaml.cs">
       <DependentUpon>BUDGET_ITEMCollectionView.xaml</DependentUpon>
@@ -740,8 +744,8 @@
     <Compile Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml.cs">
       <DependentUpon>BluePrintsSplashScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMSchedulingView.xaml.cs">
-      <DependentUpon>ESTIMATE_ITEMSchedulingView.xaml</DependentUpon>
+    <Compile Include="Views\BUDGET_ITEM\BUDGET_ITEMSchedulingView.xaml.cs">
+      <DependentUpon>BUDGET_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATE_ITEMCollectionView.xaml</DependentUpon>
@@ -1515,6 +1519,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\BUDGET_ITEM\BUDGET_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1563,7 +1571,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMSchedulingView.xaml">
+    <Page Include="Views\BUDGET_ITEM\BUDGET_ITEMSchedulingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

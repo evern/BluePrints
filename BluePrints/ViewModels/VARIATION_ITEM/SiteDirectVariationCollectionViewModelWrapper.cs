@@ -124,6 +124,17 @@ namespace BluePrints.ViewModels
         public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.STOCK_GROUPCollection;
         public IEnumerable<STOCK_CODE> STOCK_CODECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.STOCK_CODECollection;
         public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection => ESTIMATE_ITEMCollectionViewModelWrapper == null ? null : ESTIMATE_ITEMCollectionViewModelWrapper.COMMODITY_CODECollection;
+
+        public IEnumerable<SUBJOB> ProcurementSUBJOBCollection
+        {
+            get
+            {
+                var collection = SUBJOBCollection;
+                if (collection != null)
+                    collection = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Procurement).OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
         #endregion
     }
 }

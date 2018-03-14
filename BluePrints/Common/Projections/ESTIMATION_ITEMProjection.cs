@@ -101,7 +101,7 @@ namespace BluePrints.Common.Projections
                 }
                 else if (IsStockCodeValid(setValue))
                 {
-                    Entity.GUID_ESTIMATE_STOCK_CODE = setValue;
+                    Entity.GUID_BUDGET_STOCK_CODE = setValue;
                     if (StockCodeCollection != null)
                         BUDGET_STOCK_CODE = StockCodeCollection.FirstOrDefault(x => x.GUID == setValue);
                 }
@@ -175,16 +175,13 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity.STOCK_CODE == null)
-                    return 0;
+                if (Entity.STOCK_CODE != null)
+                    return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY; ;
 
-                if (BUDGET_STOCK_CODE == null)
-                    return 0;
+                if (BUDGET_STOCK_CODE != null)
+                    return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
 
-                if (Entity.BUDGET_QUANTITY == null)
-                    return 0;
-
-                return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
+                return 0;
             }
         }
             
@@ -313,7 +310,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<ESTIMATE_ITEMProgress> IDeliverable_Progress_Transformation(
             IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, 
-            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null, 
+            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null, 
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
@@ -354,7 +351,7 @@ namespace BluePrints.Common.Projections
 
         public static IQueryable<ESTIMATE_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, 
-            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES = null, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
+            IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
             IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Construction_Department);
             IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Procurement_Department);

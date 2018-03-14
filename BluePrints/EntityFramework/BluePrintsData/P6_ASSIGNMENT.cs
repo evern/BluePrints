@@ -18,7 +18,7 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
-        public ProgressType TYPE { get; set; }
+        public PhaseType TYPE { get; set; }
 
         [Required]
         [StringLength(50)]

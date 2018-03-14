@@ -331,7 +331,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ProgressType.Design && x.STATUS == ProgressStatus.Live);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
         }
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
@@ -554,10 +554,20 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Localization Helpers
-        private void setNestedValueWithUndo(BASELINE_ITEMProgress entity, string propertyName, object newValue)
+        private void setNestedValueWithUndo(BASELINE_ITEMProgress entity, string propertyName, object newValue, Dictionary<Guid, string> internalNumberUndoInfos = null)
         {
             string localizedPropertyName = localizeColumnFieldName(propertyName);
-            var oldValue = DataUtils.GetNestedValue(localizedPropertyName, entity);
+            object oldValue = null;
+            if (internalNumberUndoInfos != null)
+            {
+                var keyValuePair = internalNumberUndoInfos.FirstOrDefault(x => x.Key == entity.EntityKey);
+                oldValue = keyValuePair.Value;
+            }
+            else
+            {
+                oldValue = DataUtils.GetNestedValue(localizedPropertyName, entity);
+            }
+
             DataUtils.SetNestedValue(localizedPropertyName, entity, newValue);
             AddUndo(entity, localizedPropertyName, oldValue, newValue, EntityMessageType.Changed);
             entity.Update();
@@ -1086,9 +1096,16 @@ namespace BluePrints.ViewModels
             var entitiesToSave = new List<BASELINE_ITEMProgress>();
             string fieldName = localizeColumnFieldName(info.Column.FieldName);
 
+            Dictionary<Guid, string> internalNumberUndoInfos = new Dictionary<Guid, string>();
             if (fieldName == internalNumberFieldName)
                 foreach (var entity in SelectedEntities)
-                    entity.Entity.Entity.INTERNAL_NUM = string.Empty;
+                {
+                    if(entity.IsInternalNumberEditable)
+                    {
+                        internalNumberUndoInfos.Add(entity.GUID, entity.Entity.Entity.INTERNAL_NUM);
+                        entity.Entity.Entity.INTERNAL_NUM = string.Empty;
+                    }
+                }
 
             foreach (var entity in SelectedEntities)
             {
@@ -1096,7 +1113,7 @@ namespace BluePrints.ViewModels
                 if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
                 {
                     string internalNumber = generateInternalNumber(entity);
-                    setNestedValueWithUndo(entity, fieldName, internalNumber);
+                    setNestedValueWithUndo(entity, fieldName, internalNumber, internalNumberUndoInfos);
                     entitiesToSave.Add(entity);
                 }
                 else if (fieldName == areaFieldName || fieldName == subAreaFieldName)

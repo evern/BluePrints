@@ -59,7 +59,13 @@ namespace BluePrints.Common.Base
             collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
             collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
-            TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+            KeyValuePair<DeliverablesViewType, EstimateViewMode> valuePair = new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget);
+            TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter;
+            if (typeof(TMainEntity) == typeof(BASELINE_ITEM))
+                collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+            else
+                collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, valuePair);
+
             collectionViewModelWrapper.OnParameterChanged(collectionViewParameter);
             #endregion
         }

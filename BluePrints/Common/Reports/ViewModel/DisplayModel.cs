@@ -42,6 +42,30 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public string Description
+        {
+            get
+            {
+                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                if (estimate != null)
+                    return estimate.ReadOnlyEstimate.Entity.Entity.NAME;
+                else
+                    return string.Empty;
+            }
+        }
+
+        public string Comments
+        {
+            get
+            {
+                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                if (estimate != null)
+                    return estimate.ReadOnlyEstimate.Entity.Entity.COMMENTS;
+                else
+                    return string.Empty;
+            }
+        }
+
         public SingleObjectSummarizer StatSummarizer => ((IReportable)ProgressItem).StatSummarizer;
 
         public string Discipline_Code => ((IReportable)ProgressItem).Discipline_Code;
@@ -148,6 +172,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public IEnumerable<User_Weight> AssignedUsers => ((IReportable)ProgressItem).AssignedUsers;
 
+        public List<P6_ASSIGNMENT> P6_Assignments => throw new NotImplementedException();
+
+        public IEnumerable<PROGRESS_ITEM> Progresses => throw new NotImplementedException();
+
+        public Guid DeliverableKey => ((IReportable)ProgressItem).EntityKey;
+
+        public DateTime? TaskAssignmentStartDate { get; set; }
+        public decimal EarnedUnitsAccountedFor { get; set; }
+
+        
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -215,7 +250,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class DisplayQuantityReportable : BluePrintsEntityBase, IReportable_Quantity
+    public class DisplayQuantityReportable : BluePrintsEntityBase, IReportable_Quantity, IEstimateItem
     {
         public IReportable_Quantity Reportable { get; }
         public int ColorIndex { get; private set; }
@@ -465,6 +500,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PhaseType? Phase => Reportable.Phase;
 
         public IEnumerable<User_Weight> AssignedUsers => Reportable.AssignedUsers;
+
+        public ESTIMATE_ITEMProgress ReadOnlyEstimate => Reportable as ESTIMATE_ITEMProgress;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

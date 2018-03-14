@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
             variation_itemsViewModelWrapper.SetParentViewModel(this);
             variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = trim_unused_stock_code;
             var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
-            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget));
+            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Both));
         }
 
         private void trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)

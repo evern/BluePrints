@@ -304,13 +304,13 @@ namespace BluePrints.ViewModels
 
         protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATE_ITEMProgress>() : MainViewModel.Entities.Select(x => x.ProgressItem.Reportable);
 
-        private ESTIMATE_ITEMSchedulingViewModelWrapper estimation_direct_item_scheduling_view_model;
+        private BUDGET_ITEMSchedulingViewModelWrapper estimation_direct_item_scheduling_view_model;
         protected override IEntitiesSchedulingCollectionWrapper scheduling_view_model
         {
             get
             {
                 if (estimation_direct_item_scheduling_view_model == null)
-                    estimation_direct_item_scheduling_view_model = ESTIMATE_ITEMSchedulingViewModelWrapper.Create();
+                    estimation_direct_item_scheduling_view_model = BUDGET_ITEMSchedulingViewModelWrapper.Create();
 
                 return estimation_direct_item_scheduling_view_model;
             }
@@ -321,7 +321,7 @@ namespace BluePrints.ViewModels
             estimation_direct_item_scheduling_view_model = null;
         }
 
-        protected override ProgressType progress_type => ProgressType.Construct;
+        protected override PhaseType progress_type => PhaseType.Construct;
 
         protected override bool have_group_entity => true;
         #endregion

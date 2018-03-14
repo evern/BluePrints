@@ -367,7 +367,7 @@ namespace BluePrints.ViewModels
             baseline_item_scheduling_view_model = null;
         }
 
-        protected override ProgressType progress_type => ProgressType.Design;
+        protected override PhaseType progress_type => PhaseType.Design;
 
         protected override bool have_group_entity => false;
         #endregion

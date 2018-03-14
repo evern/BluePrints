@@ -54,6 +54,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal? Remaining_Productivity { get; }
     }
 
+    public interface IEstimateItem
+    {
+        ESTIMATE_ITEMProgress ReadOnlyEstimate { get; }
+    }
+
     public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
     {
         IEnumerable<IDeliverable_Quantity> Deliverables { get; }

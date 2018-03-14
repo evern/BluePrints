@@ -279,7 +279,7 @@ namespace BluePrints.ViewModels
                 newDesignPROGRESS.INTERVAL_COUNT = 1;
                 newDesignPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
                 newDesignPROGRESS.STATUS = ProgressStatus.Live;
-                newDesignPROGRESS.TYPE = ProgressType.Design;
+                newDesignPROGRESS.TYPE = PhaseType.Design;
                 PROGRESSViewModel.Save(newDesignPROGRESS);
 
                 PROGRESS newConstructionPROGRESS = new PROGRESS();
@@ -290,7 +290,7 @@ namespace BluePrints.ViewModels
                 newConstructionPROGRESS.INTERVAL_COUNT = 1;
                 newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
                 newConstructionPROGRESS.STATUS = ProgressStatus.Live;
-                newConstructionPROGRESS.TYPE = ProgressType.Construct;
+                newConstructionPROGRESS.TYPE = PhaseType.Construct;
                 PROGRESSViewModel.Save(newConstructionPROGRESS);
 
                 AREA defaultArea = new AREA();

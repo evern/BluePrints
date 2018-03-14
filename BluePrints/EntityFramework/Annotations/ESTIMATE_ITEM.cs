@@ -153,7 +153,16 @@ namespace BluePrints.Data
             }
         }
 
-        public decimal Variation_Units => STOCK_CODE == null ? 0 : DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+        public decimal Variation_Units
+        {
+            get
+            {
+                if (STOCK_CODE == null)
+                    return 0;
+                else
+                    return DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+            }
+        }
 
         [NotMapped]
         public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }

@@ -18,7 +18,7 @@
                         <dxr:RibbonPage Caption="Live Estimate Progress">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
+                            <!--<dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />-->
                             <dxr:RibbonPageGroup Caption="Data Date">
                                 <dxb:BarButtonItem Content="Backward" ToolTip="Rewind data date to previous interval" Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" />
                                 <!--<dxb:BarStaticItem Content="Data Date" />-->
@@ -71,6 +71,8 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Stock Code" FieldName="ProgressItem.Deliverable_Name" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Header="Name" FieldName="Description" ReadOnly="True" IsEnabled="False" />
+                                <dxg:GridColumn Header="Comments" FieldName="Comments" ReadOnly="True" IsEnabled="False" />
                                 <dxg:GridColumn Header="Total Qty" FieldName="ProgressItem.Total_Quantity" HeaderToolTip="Estimated quantity + variation quantity" ReadOnly="True" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -193,6 +195,8 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Header="Stock Code" ReadOnly="True" Binding="{Binding Deliverable_Name}" IsEnabled="False" />
+                                            <dxg:GridColumn Header="Name" ReadOnly="True" Binding="{Binding ReadOnlyEstimate.Entity.Entity.NAME}" IsEnabled="False" />
+                                            <dxg:GridColumn Header="Comments" ReadOnly="True" Binding="{Binding ReadOnlyEstimate.Entity.Entity.COMMENTS}" IsEnabled="False" />
                                             <dxg:GridColumn Header="Total Qty" HeaderToolTip="Estimated quantity + variation quantity" ReadOnly="True" Binding="{Binding Total_Quantity}" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

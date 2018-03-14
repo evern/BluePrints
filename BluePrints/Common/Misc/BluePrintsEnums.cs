@@ -511,7 +511,9 @@ namespace BluePrints.Common
         [Display(Name = "Estimate")]
         Estimate = 0,
         [Display(Name = "Budget")]
-        Budget = 1
+        Budget = 1,
+        [Display(Name = "Both")]
+        Both = 2,
     }
 
     public enum EstimateLineType
@@ -547,12 +549,12 @@ namespace BluePrints.Common
         }
     }
 
-    public class ProgressTypeClass
+    public class PhaseTypeClass
     {
-        public ProgressType progressType { get; set; }
-        public ProgressTypeClass(ProgressType progressType)
+        public PhaseType phaseType { get; set; }
+        public PhaseTypeClass(PhaseType phaseType)
         {
-            this.progressType = progressType;
+            this.phaseType = phaseType;
         }
     }
 

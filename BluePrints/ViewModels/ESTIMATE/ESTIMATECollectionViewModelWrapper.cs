@@ -175,7 +175,13 @@ namespace BluePrints.ViewModels
 
         public void P6BASELINE_ASSIGN()
         {
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT}, "ESTIMATE_ITEMSchedulingView", DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
+            string viewName;
+            if (loadPROJECT.USE_WORKPACKS)
+                viewName = "BUDGET_ITEMWorkpackSchedulingView";
+            else
+                viewName = "BUDGET_ITEMSchedulingView";
+
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
@@ -206,6 +212,7 @@ namespace BluePrints.ViewModels
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
+            List<ESTIMATE_ITEMProgress> estimateItemsToSave = new List<ESTIMATE_ITEMProgress>();
             foreach (ESTIMATE_ITEMProgress projection in projections)
             {
                 projection.Entity.Entity.BUDGET_QUANTITY = projection.Entity.Entity.ESTIMATE_QUANTITY;
@@ -225,9 +232,10 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.GUID_BUDGET_STOCK_CODE = budget_stock_code.GUID;
                 }
 
-                estimate_itemViewModelWrapper.Save(projection);
+                estimateItemsToSave.Add(projection);
             }
 
+            estimate_itemViewModelWrapper.BulkSave(estimateItemsToSave);
             estimate_itemViewModelWrapper.CleanUpEntitiesLoader();
 
             ESTIMATE estimate = this.DisplayEntities.FirstOrDefault(x => x.GUID.ToString() == parentId.ToString());

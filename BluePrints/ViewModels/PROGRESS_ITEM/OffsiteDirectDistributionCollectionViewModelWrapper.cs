@@ -407,7 +407,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage("Deliverable already achieve maximum percentage on this date, if you wish to reduce it please do so on past progresses");
+                        MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the last highest % datapoint");
                         Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, EntityMessageType.Changed));
                         return;
                     }
@@ -770,7 +770,7 @@ namespace BluePrints.ViewModels
             baseline_item_scheduling_view_model = null;
         }
 
-        protected override ProgressType progress_type => ProgressType.Design;
+        protected override PhaseType progress_type => PhaseType.Design;
 
         protected override bool have_group_entity => false;
         #endregion

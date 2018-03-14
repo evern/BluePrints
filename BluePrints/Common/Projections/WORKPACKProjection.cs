@@ -86,7 +86,7 @@ namespace BluePrints.Common.Projections
 
     public static class WORKPACKQueries
     {
-        public static IQueryable<WORKPACKProjection> WORKPACKProjectionTransormation(
+        public static IQueryable<WORKPACKProjection> WORKPACKProjectionOffsiteTransormation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<WORKPACK> WORKPACKS,
             PROJECT PROJECT,
@@ -104,6 +104,33 @@ namespace BluePrints.Common.Projections
                 WORKPACKProjection workpackProjection = new WORKPACKProjection();
                 workpackProjection.Entity = workpack;
                 workpackProjection.Deliverables = baseline_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+                workpackProjection.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == workpack.GUID).ToList();
+                workpacks.Add(workpackProjection);
+            }
+
+            return workpacks.AsQueryable();
+        }
+
+        public static IQueryable<WORKPACKProjection> WORKPACKProjectionSiteTransormation(
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS,
+            IEnumerable<WORKPACK> WORKPACKS,
+            PROJECT PROJECT,
+            PROGRESS PROGRESS,
+            IEnumerable<RATE> RATES,
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
+            IEnumerable<STOCK_GROUP> STOCK_GROUPS,
+            IEnumerable<STOCK_CODE> STOCK_CODES,
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
+        {
+            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES, STOCK_GROUPS).AsEnumerable();
+
+            List<WORKPACKProjection> workpacks = new List<WORKPACKProjection>();
+            var progress_item_by_subjobs = estimation_direct_item_progresses.GroupBy(x => x.Workpack_Guid).Select(group => new { SubjobName = group.Key, Progresses = group.ToList() });
+            foreach (WORKPACK workpack in WORKPACKS)
+            {
+                WORKPACKProjection workpackProjection = new WORKPACKProjection();
+                workpackProjection.Entity = workpack;
+                workpackProjection.Deliverables = estimation_direct_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
                 workpackProjection.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == workpack.GUID).ToList();
                 workpacks.Add(workpackProjection);
             }

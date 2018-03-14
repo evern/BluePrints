@@ -79,7 +79,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.TotalInstalledQuantity);
 
-        public override decimal MaxCurrentQuantity => Trackable_Total_Quantity - Trackable_Installed_Quantity;
+        public override decimal MaxCurrentQuantity
+        {
+            get
+            {
+                return Trackable_Total_Quantity - Trackable_Installed_Quantity;
+            }
+        }
 
         public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
 
@@ -154,7 +160,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportByDuration, ISupportVariation, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportByDuration, ISupportVariation, IHaveProcurementSubjob, IEstimateItem
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -196,6 +202,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
 
         public bool IsByDuration => Entity.IsByDuration;
+
+        public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
@@ -319,7 +327,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         #endregion
     }
 
-    public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity
+    public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity, ICanAssignP6
         where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveStock_Group, IHaveQuantity, new()
     {
         public BluePrintsProgressableByQuantityProjectionBase()

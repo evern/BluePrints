@@ -32,22 +32,22 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class BASELINE_ITEMWorkpackSchedulingViewModelWrapper :
+    public partial class BUDGET_ITEMWorkpackSchedulingViewModelWrapper :
         BluePrintsEntitiesSchedulingCollectionWrapper
-        <BASELINE_ITEM, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ESTIMATE_ITEM, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         public Action ShowSUBJOBInternalName1;
         public Action ShowSUBJOBInternalName2;
         public Action<bool> SetBaselineLockUnlock;
 
         /// <summary>
-        /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of BUDGET_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASELINE_ITEMWorkpackSchedulingViewModelWrapper Create(
+        public static BUDGET_ITEMWorkpackSchedulingViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASELINE_ITEMWorkpackSchedulingViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new BUDGET_ITEMWorkpackSchedulingViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -55,15 +55,15 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASELINE_ITEMWorkpackSchedulingViewModelWrapper(
+        protected BUDGET_ITEMWorkpackSchedulingViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
         #region Database Operations
-        private BASELINE loadBASELINE;
+        private ESTIMATE loadESTIMATE;
 
-        protected override PhaseType phase_type => PhaseType.Design;
+        protected override PhaseType phase_type => PhaseType.Construct;
 
         protected override void initializeEntitiesLoadersDescription()
         {
@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, assign_baseline);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, assign_budget);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -81,6 +81,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
 
             base.initializeEntitiesLoadersDescription();
         }
@@ -98,7 +100,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID && x.SUBJOB.PHASE.PHASE_TYPE == phase_type);
         }
 
-        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
@@ -106,17 +108,13 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
         }
 
-        private void assign_baseline(BASELINE entity)
+        private void assign_budget(ESTIMATE entity)
         {
             if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live budget not found")));
 
             p6_baseline_entity = entity;
-            loadBASELINE = entity;
-            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
-                SetBaselineLockUnlock?.Invoke(true);
-            else
-                SetBaselineLockUnlock?.Invoke(false);
+            loadESTIMATE = entity;
         }
 
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
@@ -156,17 +154,27 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
+        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
+        {
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
+        }
+
+        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
+        {
+            return query => query.Include(x => x.PROJECT);
+        }
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<WORKPACKProjection>>
+        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<WORKPACKProjection>>
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => WORKPACKQueries.WORKPACKProjectionOffsiteTransormation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
+            return query => WORKPACKQueries.WORKPACKProjectionSiteTransormation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, null, true, P6_ASSIGNMENTS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
@@ -195,20 +203,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        public decimal TotalAllowedUnits
-        {
-            get
-            {
-                return (loadBASELINE == null || loadBASELINE.BUDGETED_UNITS == null) ? 1000000000 : (decimal)loadBASELINE.BUDGETED_UNITS;
-            }
-        }
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASELINE_ITEMSSchedulingGroupViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "BUDGET_ITEMSSchedulingGroupViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -278,6 +278,28 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> STOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
         public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
         #endregion
 
@@ -314,7 +336,7 @@ namespace BluePrints.ViewModels
 
         protected override string ExportExcelFilename()
         {
-            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
+            return loadPROJECT.NUMBER + "_Estimate_Rev_" + loadESTIMATE.REVISION + ".xlsx";
         }
 
         public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value)

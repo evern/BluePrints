@@ -44,7 +44,7 @@ namespace BluePrints.Common.Base
         protected PROGRESS loadPROGRESS;
         protected bool isQueryForLiveStatus;
         protected abstract CostGroup cost_group { get; }
-        protected abstract ProgressType progress_type { get; }
+        protected abstract PhaseType progress_type { get; }
         //ensure mainviewmodel is loaded before calling background worker
         protected DispatcherTimer onMainViewModelFirstLoadedTimer;
         //calculates the planned values only for each deliverables

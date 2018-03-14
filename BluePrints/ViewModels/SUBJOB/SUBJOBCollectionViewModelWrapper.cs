@@ -186,7 +186,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<PHASE>();
                 if (collection != null)
-                    collection = collection.Where(x => x.PHASE_TYPE == PhaseType.Design).OrderBy(x => x.INTERNAL_NUM);
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
         }

@@ -25,7 +25,7 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string COMMENTS { get; set; }
 
-        public ProgressType PHASE { get; set; }
+        public PhaseType PHASE { get; set; }
 
         public VariationType TYPE { get; set; }
 
