@@ -35,6 +35,8 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool IHaveP6AssignmentProjection => P6_Assignment_Projection != null && P6_Assignment_Projection.Count > 0;
+
         private List<P6_AssignmentProjection> p6_assignment_projection;
         public List<P6_AssignmentProjection> P6_Assignment_Projection
         {
