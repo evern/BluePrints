@@ -78,7 +78,7 @@
                                         <dxg:GridColumn Header="Assigned Units" FieldName="UNITS" HeaderToolTip="Total units assigned to this activity" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1" AllowEditing="False" Style="{StaticResource DefaultDetailTableViewTemplate}" />
+                                        <dxg:TableView x:Name="tableView1" AllowEditing="False" NewItemRowPosition="None" Style="{StaticResource DefaultDetailTableViewTemplate}" />
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

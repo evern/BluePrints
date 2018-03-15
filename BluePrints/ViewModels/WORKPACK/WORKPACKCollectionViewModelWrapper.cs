@@ -46,8 +46,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private Data.PROJECT loadPROJECT;
-        private BASELINE loadBASELINE;
-        private ESTIMATE loadESTIMATE;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -62,8 +60,6 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, x => loadESTIMATE = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
@@ -140,17 +136,28 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID);
+
+            return query => query.Where(x => x.BASELINE.GUID_PROJECT == loadPROJECT.GUID && x.BASELINE.STATUS == BaselineStatus.Live);
         }
 
         private Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> ESTIMATE_ITEMProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID);
+            return query => query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live);
         }
 
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.proj_short_name == loadBASELINE.P6BASELINE_NAME || x.proj_short_name == loadESTIMATE.P6BASELINE_NAME);
+            BASELINE liveBASELINE = loadPROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+            ESTIMATE liveESTIMATE = loadPROJECT.ESTIMATE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+
+            if (liveBASELINE != null && liveESTIMATE != null)
+                return query => query.Where(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME || x.proj_short_name == liveESTIMATE.P6BASELINE_NAME);
+            else if (liveBASELINE != null)
+                return query => query.Where(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME);
+            else if (liveESTIMATE != null)
+                return query => query.Where(x => x.proj_short_name == liveESTIMATE.P6BASELINE_NAME);
+            else
+                return query => query.Where(x => x.proj_short_name == "N/A");
         }
 
         private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> TASKProjectionFunc()
