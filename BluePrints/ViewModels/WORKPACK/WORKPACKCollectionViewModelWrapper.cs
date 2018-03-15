@@ -5,9 +5,12 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -18,7 +21,7 @@ namespace BluePrints.ViewModels
 {
     public class WORKPACKCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>
+        <WORKPACK, WORKPACKProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of WORKPACKCollectionViewModelWrapper as a POCO view model.
@@ -42,24 +45,130 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-        private PROJECT loadPROJECT;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private Data.PROJECT loadPROJECT;
+        private BASELINE loadBASELINE;
+        private ESTIMATE loadESTIMATE;
 
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
+            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription<Data.PROJECT, Data.PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, x => loadESTIMATE = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS, ESTIMATE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS, ESTIMATE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, TASKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        {
+            return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+        }
+
+        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+        }
+
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
+        }
+
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Design);
+        }
+
+        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
+        {
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
+        }
+
+        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
+        {
+            return query => query.Include(x => x.PROJECT);
+        }
+
+        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID);
+        }
+
+        private Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> ESTIMATE_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID);
+        }
+
+        private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.proj_short_name == loadBASELINE.P6BASELINE_NAME || x.proj_short_name == loadESTIMATE.P6BASELINE_NAME);
+        }
+
+        private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> TASKProjectionFunc()
+        {
+            PROGRESS designPROGRESS = PROGRESSCollection.FirstOrDefault(x => x.TYPE == PhaseType.Design);
+            PROGRESS constructPROGRESS = PROGRESSCollection.FirstOrDefault(x => x.TYPE == PhaseType.Construct);
+
+            if (constructPROGRESS != null && designPROGRESS != null)
+                return query => query.Where(x => (x.PROJECT.proj_short_name == designPROGRESS.P6PROGRESS_NAME || x.PROJECT.proj_short_name == constructPROGRESS.P6PROGRESS_NAME) && x.delete_date == null).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && (taskact.ACTVCODE.actv_code_name.ToUpper() == ProgressType.Design.ToString().ToUpper() || taskact.ACTVCODE.actv_code_name.ToUpper() == PhaseType.Construct.ToString().ToUpper())));
+            else if (constructPROGRESS == null)
+                return query => query.Where(x => (x.PROJECT.proj_short_name == designPROGRESS.P6PROGRESS_NAME) && x.delete_date == null).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && (taskact.ACTVCODE.actv_code_name.ToUpper() == ProgressType.Design.ToString().ToUpper())));
+            else if (designPROGRESS == null)
+                return query => query.Where(x => (x.PROJECT.proj_short_name == constructPROGRESS.P6PROGRESS_NAME) && x.delete_date == null).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && (taskact.ACTVCODE.actv_code_name.ToUpper() == PhaseType.Construct.ToString().ToUpper())));
+            else
+                return query => query.Where(x => x.proj_id == 9999);
+        }
+
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -70,21 +179,111 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACKProjection>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
+            return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, null, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACK> entities)
+        public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<P6_ASSIGNMENT>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<BASELINE_ITEM> BASELINE_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<BASELINE_ITEM>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<TASK> P6TASKCollection
+        {
+            get
+            {
+                var collection = GetEntities<TASK>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<ESTIMATE_ITEM> ESTIMATE_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<ESTIMATE_ITEM>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<RATE> RATECollection
+        {
+            get
+            {
+                var collection = GetEntities<RATE>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROGRESS> PROGRESSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROGRESS>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROGRESS_ITEM>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<VARIATION> VARIATIONCollection
+        {
+            get
+            {
+                var collection = GetEntities<VARIATION>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> STOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                return collection;
+            }
+        }
+
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySave;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private bool OnBeforeEntitySave(WORKPACK workpack)
+        private bool OnBeforeEntitySave(WORKPACKProjection workpack)
         {
-            BluePrintsDataUtils.WORKPACK_Populate_Name(workpack, SUBJOBCollection, DISCIPLINECollection);
+            BluePrintsDataUtils.WORKPACK_Populate_Name(workpack.Entity, SUBJOBCollection, DISCIPLINECollection);
             return true;
         }
         #endregion
@@ -103,7 +302,7 @@ namespace BluePrints.ViewModels
             baseline_itemCollectionViewModel.SetParentViewModel(this);
             baseline_itemCollectionViewModel.OnEntitiesLoadedCallBack = onBASELINE_ITEMLoaded;
             var baselineSupportParameterObj = baseline_itemCollectionViewModel as ISupportParameter;
-            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+            baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
         }
 
         private void onBASELINE_ITEMLoaded(IEnumerable<BASELINE_ITEMProgress> baseline_items, object parentId)
@@ -113,12 +312,12 @@ namespace BluePrints.ViewModels
 
         private void generateWorkpacks(IEnumerable<BASELINE_ITEMProgress> baseline_items, object parentId)
         {
-            List<WORKPACK> removeWORKPACKS = new List<WORKPACK>();
+            List<WORKPACKProjection> removeWORKPACKS = new List<WORKPACKProjection>();
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
 
             LoadingScreenManager.ShowLoadingScreen(MainViewModel.Entities.Count);
             //LoadingScreenManager.SetMessage("Removing redundant workpacks");
-            foreach (WORKPACK workpack in MainViewModel.Entities)
+            foreach (WORKPACKProjection workpack in MainViewModel.Entities)
             {
                 if (!baseline_items.Any(x => x.Entity.Entity.GUID_WORKPACK == workpack.GUID))
                 {
@@ -142,13 +341,13 @@ namespace BluePrints.ViewModels
 
                 if(subjob_guid != null && discipline_guid != null)
                 {
-                    WORKPACK queryWORKPACK = MainViewModel.Entities.FirstOrDefault(x => x.GUID_DISCIPLINE == discipline_guid && x.GUID_SUBJOB == subjob_guid && x.DISCIPLINE_NUM == discipline_number);
+                    WORKPACKProjection queryWORKPACK = MainViewModel.Entities.FirstOrDefault(x => x.Entity.GUID_DISCIPLINE == discipline_guid && x.Entity.GUID_SUBJOB == subjob_guid && x.Entity.DISCIPLINE_NUM == discipline_number);
                     if (queryWORKPACK == null)
                     {
-                        WORKPACK newWORKPACK = new WORKPACK();
-                        newWORKPACK.GUID_SUBJOB = (Guid)subjob_guid;
-                        newWORKPACK.GUID_DISCIPLINE = (Guid)discipline_guid;
-                        newWORKPACK.DISCIPLINE_NUM = discipline_number;
+                        WORKPACKProjection newWORKPACK = new WORKPACKProjection();
+                        newWORKPACK.Entity.GUID_SUBJOB = (Guid)subjob_guid;
+                        newWORKPACK.Entity.GUID_DISCIPLINE = (Guid)discipline_guid;
+                        newWORKPACK.Entity.DISCIPLINE_NUM = discipline_number;
                         MainViewModel.Save(newWORKPACK);
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(newWORKPACK, null, null, null, EntityMessageType.Added);
                         queryWORKPACK = newWORKPACK;
@@ -213,7 +412,7 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override string UnifiedValueValidation(WORKPACK projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value)
         {
             return string.Empty;
         }

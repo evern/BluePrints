@@ -46,6 +46,8 @@ namespace BluePrints.Data
 
         public decimal? UTILIZATION { get; set; }
 
+        public int? EXO_STAFF_ID { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

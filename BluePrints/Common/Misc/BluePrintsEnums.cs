@@ -1,6 +1,7 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.P6Data;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -585,6 +586,8 @@ namespace BluePrints.Common
         public readonly P6_ASSIGNMENT deliverable_assignment;
         public readonly ICanAssignP6 deliverableProjection;
 
+        public TASK P6_TASK { get; set; }
+
         public string INTERNAL_NUM
         {
             get { return deliverableProjection.P6AssignmentName; }
@@ -597,7 +600,13 @@ namespace BluePrints.Common
 
         public decimal UNITS
         {
-            get { return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units; }
+            get
+            {
+                if (deliverableProjection == null)
+                    return 0;
+
+                return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units;
+            }
         }
 
         public Guid DeliverableKey

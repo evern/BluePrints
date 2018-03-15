@@ -5,6 +5,9 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.P6EntitiesDataModel;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -40,9 +43,8 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
         }
@@ -53,6 +55,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -85,12 +88,66 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool OnBeforeEntitySaved(USER entity)
+        {
+            entity.EXO_STAFF_ID = getExoStaffId(entity);
+            return true;
         }
         #endregion
 
         #region View Properties
+
+        private int? getExoStaffId(USER bluePrintsUser)
+        {
+            string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
+            STAFF exoSTAFF = PrimeroSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName);
+            if (exoSTAFF != null)
+            {
+                return exoSTAFF.STAFFNO;
+            }
+            else
+            {
+                List<string> delimitedNames = bluePrintsUser.NAME.Split('.').ToList();
+                string exoGuessUserName2 = string.Empty;
+                foreach (string delimitedName in delimitedNames)
+                {
+                    exoGuessUserName2 += delimitedName.ToUpper() + " ";
+                }
+
+                exoGuessUserName2 = exoGuessUserName2.Trim();
+                STAFF exoSTAFF2 = PrimeroSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName2);
+                if (exoSTAFF2 != null)
+                {
+                    return exoSTAFF2.STAFFNO;
+                }
+            }
+
+            return null;
+        }
+
+        public void MatchExoStaffId()
+        {
+            List<USER> userToSave = new List<USER>();
+            foreach(USER entity in MainViewModel.Entities)
+            {
+                int? exoId = getExoStaffId(entity);
+                if(exoId != null)
+                {
+                    entity.EXO_STAFF_ID = exoId;
+                    userToSave.Add(entity);
+                }
+            }
+
+            MainViewModel.BulkSave(userToSave);
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -98,6 +155,17 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "USERCollectionViewModelWrapper"; }
+        }
+
+        public IEnumerable<STAFF> PrimeroSTAFFCollection
+        {
+            get
+            {
+                var collection = GetEntities<STAFF>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
         }
 
         public IEnumerable<ROLE> ROLECollection

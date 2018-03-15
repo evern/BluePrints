@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.P6Data;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;

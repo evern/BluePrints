@@ -29,6 +29,7 @@
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarButtonItem Content="Import" Command="{Binding DataContext.ImportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" Glyph="{dx:DXImage Image=Download_16x16.png}" />
                                 <dxb:BarButtonItem Content="Update Users" Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" Glyph="{dx:DXImage Image=BODetails_16x16.png}" />
+                                <dxb:BarButtonItem Content="Update Exo Names" Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" Glyph="{dx:DXImage Image=Merge_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -62,6 +63,11 @@
                             <dxg:GridColumn Header="Role" FieldName="GUID_ROLE" HeaderToolTip="Role assigned will determine authorisation level within system. View role from navigation menu to view role authorisation">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.RestrictedROLECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Exo Name" FieldName="EXO_STAFF_ID" HeaderToolTip="User name in Exo">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.PrimeroSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Utilisation" HeaderToolTip="For reporting use only">

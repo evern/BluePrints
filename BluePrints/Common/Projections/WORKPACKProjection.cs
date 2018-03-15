@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using BluePrints.Common.Base;
+using BluePrints.P6Data;
 
 namespace BluePrints.Common.Projections
 {
@@ -33,6 +34,23 @@ namespace BluePrints.Common.Projections
                 p6_assignments = value;
             }
         }
+
+        private List<P6_AssignmentProjection> p6_assignment_projection;
+        public List<P6_AssignmentProjection> P6_Assignment_Projection
+        {
+            get
+            {
+                if (p6_assignment_projection == null)
+                    p6_assignment_projection = new List<P6_AssignmentProjection>();
+
+                return p6_assignment_projection;
+            }
+            set
+            {
+                p6_assignment_projection = value;
+            }
+        }
+
 
         public string P6AssignmentName => Entity.NAME;
 
@@ -86,10 +104,62 @@ namespace BluePrints.Common.Projections
 
     public static class WORKPACKQueries
     {
-        public static IQueryable<WORKPACKProjection> WORKPACKProjectionOffsiteTransormation(
+        public static IQueryable<WORKPACKProjection> WORKPACKProjectionSiteAndOffsiteTransformation(
+            IQueryable<WORKPACK> WORKPACKS,
+            IEnumerable<BASELINE_ITEM> BASELINE_ITEMS,
+            IEnumerable<ESTIMATE_ITEM> ESTIMATE_ITEMS,
+            IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS,
+            IEnumerable<RATE> RATES,
+            IEnumerable<VARIATION> VARIATIONS, 
+            IEnumerable<STOCK_GROUP> STOCK_GROUPS,
+            IEnumerable<STOCK_CODE> STOCK_CODES,
+            IEnumerable<PROGRESS> PROGRESSES,
+            IEnumerable<TASK> P6TASKS,
+            Data.PROJECT PROJECT
+            )
+        {
+            PROGRESS designPROGRESS = PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design);
+            PROGRESS constructPROGRESS = PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Construct);
+
+            List<BASELINE_ITEMProgress> baseline_item_progresses = new List<BASELINE_ITEMProgress>();
+            List<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATE_ITEMProgress>();
+            if (designPROGRESS != null)
+                baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS.AsQueryable(), PROJECT, designPROGRESS, RATES, designPROGRESS.PROGRESS_ITEM, null, true, null).ToList();
+
+            if(constructPROGRESS != null)
+                estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS.AsQueryable(), PROJECT, RATES, constructPROGRESS, constructPROGRESS.PROGRESS_ITEM.ToList(), false, STOCK_CODES, STOCK_GROUPS).ToList();
+
+            List<WORKPACKProjection> workpacks = new List<WORKPACKProjection>();
+            foreach (WORKPACK workpack in WORKPACKS)
+            {
+                WORKPACKProjection workpackProjection = new WORKPACKProjection();
+                workpackProjection.Entity = workpack;
+
+                workpackProjection.Deliverables = baseline_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+                workpackProjection.Deliverables.AddRange(estimation_direct_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList());
+
+                List<P6_AssignmentProjection> P6_AssignmentProjection = new List<Common.P6_AssignmentProjection>();
+                List<P6_ASSIGNMENT> p6_assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == workpack.GUID).ToList();
+                if(p6_assignments != null)
+                    foreach(P6_ASSIGNMENT p6_assignment in p6_assignments)
+                    {
+                        P6_AssignmentProjection projection = new P6_AssignmentProjection(workpackProjection, p6_assignment);
+                        projection.P6_TASK = P6TASKS.FirstOrDefault(x => x.task_code == p6_assignment.P6_ACTIVITYID);
+                        P6_AssignmentProjection.Add(projection);
+                    }
+
+                workpackProjection.P6_Assignment_Projection = P6_AssignmentProjection;
+                workpacks.Add(workpackProjection);
+            }
+
+            return workpacks.AsQueryable();
+        }
+
+
+        public static IQueryable<WORKPACKProjection> WORKPACKProjectionOffsiteTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<WORKPACK> WORKPACKS,
-            PROJECT PROJECT,
+            Data.PROJECT PROJECT,
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
@@ -103,7 +173,13 @@ namespace BluePrints.Common.Projections
             {
                 WORKPACKProjection workpackProjection = new WORKPACKProjection();
                 workpackProjection.Entity = workpack;
-                workpackProjection.Deliverables = baseline_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+
+                List<ICanAssignP6> deliverables = baseline_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+                if (workpackProjection.Deliverables != null)
+                    workpackProjection.Deliverables.AddRange(deliverables);   
+                else
+                    workpackProjection.Deliverables = baseline_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+
                 workpackProjection.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == workpack.GUID).ToList();
                 workpacks.Add(workpackProjection);
             }
@@ -114,7 +190,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<WORKPACKProjection> WORKPACKProjectionSiteTransormation(
             IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS,
             IEnumerable<WORKPACK> WORKPACKS,
-            PROJECT PROJECT,
+            Data.PROJECT PROJECT,
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
@@ -130,7 +206,13 @@ namespace BluePrints.Common.Projections
             {
                 WORKPACKProjection workpackProjection = new WORKPACKProjection();
                 workpackProjection.Entity = workpack;
-                workpackProjection.Deliverables = estimation_direct_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+
+                List<ICanAssignP6> deliverables = estimation_direct_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+                if (workpackProjection.Deliverables != null)
+                    workpackProjection.Deliverables.AddRange(deliverables);
+                else
+                    workpackProjection.Deliverables = estimation_direct_item_progresses.Where(x => x.Workpack_Guid == workpack.GUID).Select(x => (ICanAssignP6)x).ToList();
+
                 workpackProjection.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == workpack.GUID).ToList();
                 workpacks.Add(workpackProjection);
             }
