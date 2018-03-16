@@ -175,8 +175,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (Entity.BUDGET_QUANTITY == null)
+                    return 0;
+
                 if (Entity.STOCK_CODE != null)
-                    return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY; ;
+                    return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
 
                 if (BUDGET_STOCK_CODE != null)
                     return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
