@@ -306,8 +306,8 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageRole))
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roles", dataCategoryId, "Roles", "ROLECollectionView"));
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Gates", "DELIVERABLES_STATUSCollectionView"));
+            //if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
+            //    dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Gates", "DELIVERABLES_STATUSCollectionView"));
 
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView"));
 
