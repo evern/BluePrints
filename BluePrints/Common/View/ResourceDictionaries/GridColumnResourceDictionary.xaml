@@ -52,7 +52,7 @@
             <dxg:GridColumn Header="Number" FieldName="Entity.NUMBER" VisibleIndex="0" />
             <dxg:GridColumn Header="Name" FieldName="Entity.NAME" VisibleIndex="10" />
             <dxg:GridColumn Header="Client" FieldName="Entity.CLIENT" VisibleIndex="20" />
-            <dxg:GridColumn Header="Status" FieldName="Entity.STATUS" VisibleIndex="30">
+            <dxg:GridColumn Header="Gates" FieldName="Entity.STATUS" VisibleIndex="30">
                 <dxg:GridColumn.EditSettings>
                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
                 </dxg:GridColumn.EditSettings>

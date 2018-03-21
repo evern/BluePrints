@@ -18,6 +18,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<AREAMasterDetailProjection> Area_Master_Detail_Transformation(
             IQueryable<AREA> AREAS, Guid projectGuid)
         {
+            int i = AREAS.Where(x => x.GUID_PROJECT == projectGuid).Count();
             return AREAS.Where(x => x.GUID_PROJECT == projectGuid).ToArray().Select(x => new AREAMasterDetailProjection() { Entity = x}).AsQueryable();
         }
     }

@@ -80,6 +80,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription<PHASE, PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
+            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECT_DISCIPLINES);
@@ -304,16 +305,25 @@ namespace BluePrints.ViewModels
                 DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Department);
                 DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Discipline);
                 DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_DocType);
-                PROJECT defaultRATESProject = MainViewModel.Entities.FirstOrDefault(x => x.NUMBER == "00000");
-                if(defaultRATESProject != null)
+                PROJECT defaultCopyProject = MainViewModel.Entities.FirstOrDefault(x => x.NUMBER == "00000");
+                if(defaultCopyProject != null)
                 {
-                    foreach(RATE rate in defaultRATESProject.RATE)
+                    foreach(RATE rate in defaultCopyProject.RATE)
                     {
                         RATE newRATE = new RATE();
                         DataUtils.ShallowCopy(newRATE, rate);
                         newRATE.GUID = Guid.Empty;
                         newRATE.GUID_PROJECT = entity.GUID;
                         RATEViewModel.Save(newRATE);
+                    }
+
+                    foreach(DELIVERABLES_STATUS status in defaultCopyProject.DELIVERABLES_STATUS)
+                    {
+                        DELIVERABLES_STATUS newSTATUS = new DELIVERABLES_STATUS();
+                        DataUtils.ShallowCopy(newSTATUS, status);
+                        newSTATUS.GUID = Guid.Empty;
+                        newSTATUS.GUID_PROJECT = entity.GUID;
+                        DELIVERABLES_STATUSViewModel.Save(newSTATUS);
                     }
                 }
 
@@ -666,6 +676,20 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<RATE>();
+            }
+        }
+
+
+        public CollectionViewModel<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork> DELIVERABLES_STATUSViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<DELIVERABLES_STATUS>();
             }
         }
 

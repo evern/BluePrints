@@ -32,7 +32,6 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new AREACollectionViewModelWrapper(unitOfWorkFactory));
         }
 
-
         /// <summary>
         /// Initializes a new instance of the AREACollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the AREACollectionViewModelWrapper type without the POCO proxy factory.

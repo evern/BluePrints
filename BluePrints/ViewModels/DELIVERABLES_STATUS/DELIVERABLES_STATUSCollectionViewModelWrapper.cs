@@ -183,7 +183,7 @@ namespace BluePrints.ViewModels
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
-        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, Guid? docTypeGuid = null)
+        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, Guid? docTypeGuid = null, bool isCopyFrom = false)
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             List<DELIVERABLES_STATUS> duplicateDeliverableStatuses = new List<DELIVERABLES_STATUS>();
@@ -195,19 +195,22 @@ namespace BluePrints.ViewModels
                 if (isProjectSpecific)
                     newDeliverableStatus.GUID_PROJECT = loadPROJECT.GUID;
 
-                if (docTypeGuid != null)
-                    newDeliverableStatus.GUID_DOCTYPE = docTypeGuid;
-                //insert mode by default
-                else
+                if(!isCopyFrom)
                 {
-                    if(newDeliverableStatus.MAX_PERCENTAGE >= 1m)
+                    if (docTypeGuid != null)
+                        newDeliverableStatus.GUID_DOCTYPE = docTypeGuid;
+                    //insert mode by default
+                    else
                     {
-                        MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
-                        continue;
-                    }
+                        if (newDeliverableStatus.MAX_PERCENTAGE > 1m)
+                        {
+                            MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
+                            continue;
+                        }
 
-                    newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
-                    newDeliverableStatus.MAX_PERCENTAGE = 1m;
+                        newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
+                        newDeliverableStatus.MAX_PERCENTAGE = 1m;
+                    }
                 }
 
                 DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && x.GUID_DOCTYPE == newDeliverableStatus.GUID_DOCTYPE);
@@ -248,7 +251,7 @@ namespace BluePrints.ViewModels
                     {
                         Guid? queryGuid = entityWithGuid.EntityKey == Guid.Empty ? (Guid?)null : entityWithGuid.EntityKey;
                         var copyEntities = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
-                        VerifyAndSaveDuplicateItems(copyEntities);
+                        VerifyAndSaveDuplicateItems(copyEntities, null, true);
                     }
                 }
             }
