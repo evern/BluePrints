@@ -191,6 +191,12 @@ namespace BluePrints.ViewModels
             return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, null, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
         }
 
+        //Do not refresh because it is refresh heavy
+        private bool onEntityMessageCallBack(object primaryKey, Type entityType, EntityMessageType messageType, object sender, bool bulkRefresh)
+        {
+            return false;
+        }
+
         public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
         {
             get
@@ -283,6 +289,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
+            MainViewModel.OnBeforeEntitiesChangedCallBack = onEntityMessageCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySave;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);

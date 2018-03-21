@@ -35,5 +35,7 @@ namespace BluePrints.Data
         public double? RemainingDuration { get; set; }
 
         public bool IsLate { get; set; }
+
+        public bool IsCurrent { get; set; }
     }
 }

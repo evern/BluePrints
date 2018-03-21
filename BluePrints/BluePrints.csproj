@@ -521,6 +521,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\IReportableStatsMaximumUnitsConverter.cs" />
@@ -541,6 +542,9 @@
     <Compile Include="Common\ViewModel\Misc\XMLSettings.cs" />
     <Compile Include="Common\View\BasicMessageBox.xaml.cs">
       <DependentUpon>BasicMessageBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\BookTimeDialog.xaml.cs">
+      <DependentUpon>BookTimeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\DateFromTo.xaml.cs">
       <DependentUpon>DateFromTo.xaml</DependentUpon>
@@ -1460,6 +1464,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BasicMessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\BookTimeDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

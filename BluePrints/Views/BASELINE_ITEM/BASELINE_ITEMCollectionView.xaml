@@ -39,6 +39,15 @@
                     </Style>
                 </dxc:DialogService.DialogStyle>
             </dxc:DialogService>
+            <dxc:DialogService x:Name="BookTimeDialogService">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="1000" />
+                        <Setter Property="MinHeight" Value="1000" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
@@ -271,6 +280,8 @@
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItem Content="Book Time" ToolTip="Book time on deliverable" Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />

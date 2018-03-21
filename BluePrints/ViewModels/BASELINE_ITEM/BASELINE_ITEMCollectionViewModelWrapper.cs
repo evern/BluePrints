@@ -1228,6 +1228,11 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
         }
 
+        private DevExpress.Mvvm.IDialogService BookTimeDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BookTimeDialog"); }
+        }
+
         public bool CanFindReplace(object button)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
@@ -1621,6 +1626,15 @@ namespace BluePrints.ViewModels
                 if (projection.Entity.Entity.GUID_AREA != null && projection.Entity.Entity.AREA == null)
                     projection.Entity.Entity.AREA =
                         AREACollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_AREA);
+            }
+        }
+
+        public void BookTime()
+        {
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(DisplaySelectedEntity);
+            if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
+            {
+
             }
         }
 
