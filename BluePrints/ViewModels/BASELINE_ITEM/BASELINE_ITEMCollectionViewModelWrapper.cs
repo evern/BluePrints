@@ -1085,6 +1085,7 @@ namespace BluePrints.ViewModels
 
         public void AutoPopulate(object button)
         {
+            MainViewModel.isBackgroundEdit = true;
             PauseUndoRedo();
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject) button) as GridMenuInfo;
             if (info.Column == null)
@@ -1209,6 +1210,7 @@ namespace BluePrints.ViewModels
             }
 
             MainViewModel.BulkSave(entitiesToSave);
+            MainViewModel.isBackgroundEdit = false;
             UnpauseUndoRedo();
             BackgroundRefresh();
         }
