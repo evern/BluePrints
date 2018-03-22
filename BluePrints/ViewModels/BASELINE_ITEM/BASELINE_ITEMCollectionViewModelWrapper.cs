@@ -489,6 +489,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
         {
+            if (MainViewModel.isBackgroundEdit)
+                return true;
+
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
 

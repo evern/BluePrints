@@ -421,9 +421,12 @@ namespace BluePrints.ViewModels
                             break;
 
                         PROGRESS_ITEM progress = futureProgressToEdit[i];
+                        if (progress.EARNED_UNITS == 0 && totalUnitsDifferences < 0)
+                            continue;
+
                         decimal oldProgressValue = progress.EARNED_UNITS;
                         decimal postEditEarnUnits = progress.EARNED_UNITS + totalUnitsDifferences;
-                        decimal remainingUnitsToIncrease = currentProgressMaximumUnits - entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS);
+                        decimal remainingUnitsToIncrease = currentProgressMaximumUnits - (entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) - progress.EARNED_UNITS);
                         if (postEditEarnUnits < 0)
                         {
                             postEditEarnUnits = 0;
@@ -485,12 +488,12 @@ namespace BluePrints.ViewModels
 
         private decimal getDeliverableProgressMaximumUnits(BASELINE_ITEMProgress deliverable, DateTime progressDate)
         {
-            if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits != 0)
-                return deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits;
-            else if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
-                return deliverable.Stats.Budgeted.CumulativeDataPoints.Last().BudgetedUnits;
-            else
-                return deliverable.Total_Units;
+            //if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits != 0)
+            //    return deliverable.Stats.Budgeted.CurrentPeriodDataPoint.BudgetedUnits;
+            //else if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
+            //    return deliverable.Stats.Budgeted.CumulativeDataPoints.Last().BudgetedUnits;
+            //else
+            return deliverable.Total_Units;
         }
 
         private decimal getDeliverableProgressMinimumUnits(BASELINE_ITEMProgress deliverable, DateTime progressDate)
