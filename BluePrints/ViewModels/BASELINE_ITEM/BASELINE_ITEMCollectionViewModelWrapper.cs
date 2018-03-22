@@ -1636,7 +1636,7 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(DisplaySelectedEntity);
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity);
             if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
 
