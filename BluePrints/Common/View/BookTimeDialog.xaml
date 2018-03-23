@@ -26,6 +26,11 @@
                     <dxe:SpinEdit EditValue="{Binding BookHours, Mode=TwoWay}" Increment="1" MinValue="0" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Name="LayoutGroupResource" Height="50" Orientation="Horizontal" View="Group">
+                <dxlc:LayoutItem Height="50" Label="Resource:">
+                    <dxe:ComboBoxEdit DisplayMember="Name" EditValue="{Binding Selected_Resource, Mode=TwoWay}" ItemsSource="{Binding PRESOURCECollection}" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="50" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />
         </dxlc:LayoutGroup>
     </dxlc:LayoutControl>

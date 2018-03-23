@@ -107,5 +107,12 @@ namespace BluePrints.PrimeroData
 
         [StringLength(255)]
         public string X_DECLINE_REASON { get; set; }
+
+        public int? X_APPROVAL_MANAGER { get; set; }
+
+        public bool? X_SUBMITTED { get; set; }
+
+        [StringLength(10)]
+        public string X_VARIATIONCODE { get; set; }
     }
 }

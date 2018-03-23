@@ -32,6 +32,8 @@ using System.Linq;
 using System.Windows;
 using System.Linq.Expressions;
 using DevExpress.Data.Filtering;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.PrimeroData;
 
 namespace BluePrints.ViewModels
 {
@@ -221,9 +223,9 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            INotification notification = AppNotificationService.CreatePredefinedNotification("Resource has been changed to allow multiple resources, please re-assign them if you use them, sorry for any inconvenience!", null, null, null);
-            GlobalVariables.IsBaselineItemNotificationShown = true;
-            notification.ShowAsync();
+            //INotification notification = AppNotificationService.CreatePredefinedNotification("Resource has been changed to allow multiple resources, please re-assign them if you use them, sorry for any inconvenience!", null, null, null);
+            //GlobalVariables.IsBaselineItemNotificationShown = true;
+            //notification.ShowAsync();
 
             base.OnLoaded();
         }
@@ -1634,12 +1636,111 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         public void BookTime()
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity);
-            if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork);
+            if(bookTimeViewModel.GetResource() == null)
             {
+                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact Michelle");
+            }
+            else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
+            {
+                JOBCOST_HDR subJob = bookTimeViewModel.GetSubJob();
+                PrimeroResource bookResource = bookTimeViewModel.GetResource();
+                TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
+                PrimeroDiscipline bookCostGroup = bookTimeViewModel.GetCostGroup();
+                PrimeroCommodity bookCostType = bookTimeViewModel.GetCostType();
+                decimal bookTime = bookTimeViewModel.BookHours;
 
+                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookResource.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                if(timesheet != null)
+                {
+                    AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
+                }
+                else
+                {
+                    JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
+                    newTimeSheet.STAFFNO = bookResource.SeqNo;
+                    newTimeSheet.JOBNO = subJob.JOBNO;
+                    newTimeSheet.TITLE = subJob.JOBCODE + " : " + subJob.TITLE;
+                    newTimeSheet.STOCKCODE = bookResource.StockCode;
+                    newTimeSheet.DESCRIPTION = bookResource.Name;
+                    newTimeSheet.UNITPRICE = 0;
+                    newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
+                    AdjustTimeSheetHours(newTimeSheet, bookDate, DisplaySelectedEntity, bookTime);
+                    newTimeSheet.IS_OVERTIME = "N";
+                    newTimeSheet.DAY1_POSTED = "N";
+                    newTimeSheet.DAY2_POSTED = "N";
+                    newTimeSheet.DAY3_POSTED = "N";
+                    newTimeSheet.DAY4_POSTED = "N";
+                    newTimeSheet.DAY5_POSTED = "N";
+                    newTimeSheet.DAY6_POSTED = "N";
+                    newTimeSheet.DAY7_POSTED = "N";
+                    newTimeSheet.RATE_SEQNO = 0;
+                    newTimeSheet.RATE_FACTOR = 1;
+                    newTimeSheet.COST_GROUP = bookCostGroup.Id;
+                    newTimeSheet.COST_TYPE = bookCostType.Id;
+                    newTimeSheet.LABOUR_ALLOWANCE = 0;
+                    newTimeSheet.HAS_ALLOWANCE = "N";
+                    newTimeSheet.X_DECLINED = false;
+                    newTimeSheet.X_APPROVAL_MANAGER = -1;
+                    newTimeSheet.X_SUBMITTED = false;
+                    primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
+                }
+
+                primeroUnitOfWork.SaveChanges();
+            }
+        }
+
+        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, IDeliverable deliverable, decimal bookTime)
+        {
+            Double dblTime = Convert.ToDouble(bookTime);
+            switch(bookDate.DayNumber)
+            {
+                case 1:
+                    timesheet.DAY1 = dblTime;
+                    timesheet.DAY1_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 2:
+                    timesheet.DAY2 = dblTime;
+                    timesheet.DAY2_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 3:
+                    timesheet.DAY3 = dblTime;
+                    timesheet.DAY3_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 4:
+                    timesheet.DAY4 = dblTime;
+                    timesheet.DAY4_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 5:
+                    timesheet.DAY5 = dblTime;
+                    timesheet.DAY5_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 6:
+                    timesheet.DAY6 = dblTime;
+                    timesheet.DAY6_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+                case 7:
+                    timesheet.DAY7 = dblTime;
+                    timesheet.DAY7_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
+                    break;
+            }
+        }
+
+        private int FindExistingOrAddNewNarrative(string description)
+        {
+            NARRATIVES narrative = primeroUnitOfWork.NARRATIVES.FirstOrDefault(x => x.NARRATIVE == description);
+            if (narrative != null)
+                return narrative.SEQNO;
+            else
+            {
+                NARRATIVES newNarrative = new NARRATIVES();
+                newNarrative.NARRATIVE = description;
+                primeroUnitOfWork.NARRATIVES.Add(newNarrative);
+                primeroUnitOfWork.SaveChanges();
+                return newNarrative.SEQNO;
             }
         }
 
