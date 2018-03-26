@@ -24,11 +24,82 @@ namespace BaseModel.ViewModel.Dialogs
         private readonly IDeliverable deliverable;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         public List<JOBCOST_HDR> PSUBJOBCollection { get; set; }
-        public JOBCOST_HDR Selected_SubJob { get; set; }
-        public List<PrimeroDiscipline> PDISCIPLINECollection { get; set; }
-        public PrimeroDiscipline Selected_Discipline { get; set; }
-        public List<PrimeroCommodity> PCOMMODITYCollection { get; set; }
-        public PrimeroCommodity Selected_Commodity { get; set; }
+
+        JOBCOST_HDR selectedSubJob;
+        public JOBCOST_HDR Selected_SubJob
+        {
+            get
+            {
+                return selectedSubJob;
+            }
+            set
+            {
+                selectedSubJob = value;
+                selectedDiscipline = null;
+                Selected_Commodity = null;
+                this.RaisePropertyChanged(x => x.Selected_Discipline);
+                this.RaisePropertyChanged(x => x.Selected_Commodity);
+                this.RaisePropertyChanged(x => x.PDISCIPLINECollection);
+            }
+        }
+
+        List<PrimeroDiscipline> pDisciplineCollection;
+        public List<PrimeroDiscipline> PDISCIPLINECollection
+        {
+            get
+            {
+                if (selectedSubJob == null)
+                    return pDisciplineCollection;
+
+                return pDisciplineCollection.Where(x => x.SubjobId == selectedSubJob.JOBNO).ToList();
+            }
+            set
+            {
+                pDisciplineCollection = value;
+            }
+        }
+
+        PrimeroDiscipline selectedDiscipline;
+        public PrimeroDiscipline Selected_Discipline
+        {
+            get
+            {
+                return selectedDiscipline;
+            }
+            set
+            {
+                selectedDiscipline = value;
+                Selected_Commodity = null;
+                this.RaisePropertyChanged(x => x.Selected_Commodity);
+                this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
+            }
+        }
+
+        private List<PrimeroCommodity> pCommodityCollection;
+        public List<PrimeroCommodity> PCOMMODITYCollection
+        {
+            get
+            {
+                if (selectedDiscipline == null)
+                    return pCommodityCollection;
+
+                return pCommodityCollection.Where(x => x.DisciplineId == selectedDiscipline.Id).ToList();
+            }
+
+            set { pCommodityCollection = value; }
+        }
+
+        PrimeroCommodity selectedCommodity;
+        public PrimeroCommodity Selected_Commodity
+        {
+            get { return selectedCommodity; }
+            set
+            {
+                selectedCommodity = value;
+                this.RaisePropertyChanged(x => x.Selected_Commodity);
+            }
+        }
+
         public List<PrimeroResource> PRESOURCECollection { get; set; }
         public PrimeroResource Selected_Resource { get; set; }
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
@@ -71,6 +142,7 @@ namespace BaseModel.ViewModel.Dialogs
                 {
                     PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
                     newDiscipline.Id = availableLine.DISCIPLINE_ID;
+                    newDiscipline.SubjobId = availableLine.SUBJOBNO;
                     newDiscipline.Code = availableLine.DISCIPLINE_CODE;
                     newDiscipline.Name = availableLine.DISCIPLINE_NAME;
                     PDISCIPLINECollection.Add(newDiscipline);
@@ -80,6 +152,7 @@ namespace BaseModel.ViewModel.Dialogs
                 {
                     PrimeroCommodity newCommodity = new PrimeroCommodity();
                     newCommodity.Id = availableLine.COMMODITY_ID;
+                    newCommodity.DisciplineId = availableLine.DISCIPLINE_ID;
                     newCommodity.ResourceId = availableLine.RESOURCE_SEQNO;
                     newCommodity.Code = availableLine.COMMODITY_CODE;
                     newCommodity.SubJobNo = availableLine.SUBJOBNO;
@@ -97,6 +170,10 @@ namespace BaseModel.ViewModel.Dialogs
                     PRESOURCECollection.Add(newResource);
                 }
             }
+
+            PDISCIPLINECollection = PDISCIPLINECollection.OrderBy(x => x.Code).ToList();
+            PCOMMODITYCollection = PCOMMODITYCollection.OrderBy(x => x.Code).ToList();
+            PRESOURCECollection = PRESOURCECollection.OrderBy(x => x.Name).ToList();
 
             defaultDeliverableSelection(deliverable);
             setResource();
@@ -212,6 +289,7 @@ namespace BaseModel.ViewModel.Dialogs
     public class PrimeroDiscipline
     {
         public int? Id { get; set; }
+        public int? SubjobId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
     }
@@ -219,6 +297,7 @@ namespace BaseModel.ViewModel.Dialogs
     public class PrimeroCommodity
     {
         public int? Id { get; set; }
+        public int? DisciplineId { get; set; }
         public int? ResourceId { get; set; }
         public int? SubJobNo { get; set; }
         public string Code { get; set; }

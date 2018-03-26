@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using DevExpress.Xpf.Editors;
+using System.Windows.Controls;
 
 
 namespace BluePrints.Views
@@ -11,6 +12,7 @@ namespace BluePrints.Views
         public BookTimeDialog()
         {
             InitializeComponent();
+            hoursEdit.Focus();
         }
     }
 }

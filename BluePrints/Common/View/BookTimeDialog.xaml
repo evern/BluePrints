@@ -8,30 +8,30 @@
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupSubjob" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Sub Job:">
-                    <dxe:ComboBoxEdit DisplayMember="JOBCODE" EditValue="{Binding Selected_SubJob, Mode=TwoWay}" ItemsSource="{Binding PSUBJOBCollection}" />
+                    <dxe:ComboBoxEdit DisplayMember="JOBCODE" EditValue="{Binding Selected_SubJob, Mode=TwoWay}" EditValuePostMode="Immediate" ItemsSource="{Binding PSUBJOBCollection}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupDiscipline" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Discipline:">
-                    <dxe:ComboBoxEdit DisplayMember="Name" EditValue="{Binding Selected_Discipline, Mode=TwoWay}" ItemsSource="{Binding PDISCIPLINECollection}" />
+                    <dxe:ComboBoxEdit DisplayMember="Name" EditValue="{Binding Selected_Discipline, Mode=TwoWay}" EditValuePostMode="Immediate" ItemsSource="{Binding PDISCIPLINECollection}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupCommodity" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Commodity:">
-                    <dxe:ComboBoxEdit DisplayMember="Code" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" ItemsSource="{Binding PCOMMODITYCollection}" />
+                    <dxe:ComboBoxEdit DisplayMember="Code" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" EditValuePostMode="Immediate" ItemsSource="{Binding PCOMMODITYCollection}" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Height="50" Label="Stock Code:">
-                    <dxe:ComboBoxEdit DisplayMember="StockCode" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" ItemsSource="{Binding PCOMMODITYCollection}" />
+                    <dxe:ComboBoxEdit AllowDrop="False" DisplayMember="StockCode" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" EditValuePostMode="Immediate" IsReadOnly="True" ItemsSource="{Binding PCOMMODITYCollection}" ShowEditorButtons="False" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupHours" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Hours:">
-                    <dxe:SpinEdit EditValue="{Binding BookHours, Mode=TwoWay}" Increment="1" MinValue="0" />
+                    <dxe:SpinEdit x:Name="hoursEdit" EditValue="{Binding BookHours, Mode=TwoWay}" Increment="1" MinValue="0" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupResource" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Resource:">
-                    <dxe:ComboBoxEdit DisplayMember="Name" EditValue="{Binding Selected_Resource, Mode=TwoWay}" ItemsSource="{Binding PRESOURCECollection}" />
+                    <dxe:ComboBoxEdit AllowDrop="False" DisplayMember="Name" EditValue="{Binding Selected_Resource, Mode=TwoWay}" IsReadOnly="True" ItemsSource="{Binding PRESOURCECollection}" ShowEditorButtons="False" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="50" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />

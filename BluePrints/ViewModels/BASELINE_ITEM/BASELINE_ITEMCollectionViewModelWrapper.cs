@@ -1657,43 +1657,46 @@ namespace BluePrints.ViewModels
                 PrimeroCommodity bookCostType = bookTimeViewModel.GetCostType();
                 decimal bookTime = bookTimeViewModel.BookHours;
 
-                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
-                if(timesheet != null)
+                if(bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
-                    AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
-                }
-                else
-                {
-                    JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
-                    newTimeSheet.STAFFNO = bookResource.SeqNo;
-                    newTimeSheet.JOBNO = subJob.JOBNO;
-                    newTimeSheet.TITLE = subJob.JOBCODE + " : " + subJob.TITLE;
-                    newTimeSheet.STOCKCODE = bookCostType.StockCode;
-                    newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
-                    newTimeSheet.UNITPRICE = 0;
-                    newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
-                    AdjustTimeSheetHours(newTimeSheet, bookDate, DisplaySelectedEntity, bookTime);
-                    newTimeSheet.IS_OVERTIME = "N";
-                    newTimeSheet.DAY1_POSTED = "N";
-                    newTimeSheet.DAY2_POSTED = "N";
-                    newTimeSheet.DAY3_POSTED = "N";
-                    newTimeSheet.DAY4_POSTED = "N";
-                    newTimeSheet.DAY5_POSTED = "N";
-                    newTimeSheet.DAY6_POSTED = "N";
-                    newTimeSheet.DAY7_POSTED = "N";
-                    newTimeSheet.RATE_SEQNO = 0;
-                    newTimeSheet.RATE_FACTOR = 1;
-                    newTimeSheet.COST_GROUP = bookCostGroup.Id;
-                    newTimeSheet.COST_TYPE = bookCostType.Id;
-                    newTimeSheet.LABOUR_ALLOWANCE = 0;
-                    newTimeSheet.HAS_ALLOWANCE = "N";
-                    newTimeSheet.X_DECLINED = false;
-                    newTimeSheet.X_APPROVAL_MANAGER = -1;
-                    newTimeSheet.X_SUBMITTED = false;
-                    primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
-                }
+                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                    if (timesheet != null)
+                    {
+                        AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
+                    }
+                    else
+                    {
+                        JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
+                        newTimeSheet.STAFFNO = bookResource.SeqNo;
+                        newTimeSheet.JOBNO = subJob.JOBNO;
+                        newTimeSheet.TITLE = subJob.JOBCODE + " : " + subJob.TITLE;
+                        newTimeSheet.STOCKCODE = bookCostType.StockCode;
+                        newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
+                        newTimeSheet.UNITPRICE = 0;
+                        newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
+                        AdjustTimeSheetHours(newTimeSheet, bookDate, DisplaySelectedEntity, bookTime);
+                        newTimeSheet.IS_OVERTIME = "N";
+                        newTimeSheet.DAY1_POSTED = "N";
+                        newTimeSheet.DAY2_POSTED = "N";
+                        newTimeSheet.DAY3_POSTED = "N";
+                        newTimeSheet.DAY4_POSTED = "N";
+                        newTimeSheet.DAY5_POSTED = "N";
+                        newTimeSheet.DAY6_POSTED = "N";
+                        newTimeSheet.DAY7_POSTED = "N";
+                        newTimeSheet.RATE_SEQNO = 0;
+                        newTimeSheet.RATE_FACTOR = 1;
+                        newTimeSheet.COST_GROUP = bookCostGroup.Id;
+                        newTimeSheet.COST_TYPE = bookCostType.Id;
+                        newTimeSheet.LABOUR_ALLOWANCE = 0;
+                        newTimeSheet.HAS_ALLOWANCE = "N";
+                        newTimeSheet.X_DECLINED = false;
+                        newTimeSheet.X_APPROVAL_MANAGER = -1;
+                        newTimeSheet.X_SUBMITTED = false;
+                        primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
+                    }
 
-                primeroUnitOfWork.SaveChanges();
+                    primeroUnitOfWork.SaveChanges();
+                }
             }
         }
 
