@@ -1642,11 +1642,11 @@ namespace BluePrints.ViewModels
             var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork);
             if(bookTimeViewModel.GetResource() == null)
             {
-                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact Michelle for assistance");
+                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
             }
             else if(bookTimeViewModel.GetCostType() == null)
             {
-                MessageBoxService.ShowMessage("You do not have \nSub Job: " + DisplaySelectedEntity.Subjob_Name + "\nCost Group: " + DisplaySelectedEntity.Discipline_Code + "\nCost Type: " + DisplaySelectedEntity.Commodity_Code + "\nAdded in exo, please contact Michelle for assistance");
+                MessageBoxService.ShowMessage("You do not have \nSub Job: " + DisplaySelectedEntity.Subjob_Name + "\nCost Group: " + DisplaySelectedEntity.Discipline_Code + "\nCost Type: " + DisplaySelectedEntity.Commodity_Code + "\nAdded in exo, please contact the project manager for assistance");
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
