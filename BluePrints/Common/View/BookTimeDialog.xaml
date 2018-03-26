@@ -20,6 +20,9 @@
                 <dxlc:LayoutItem Height="50" Label="Commodity:">
                     <dxe:ComboBoxEdit DisplayMember="Code" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" ItemsSource="{Binding PCOMMODITYCollection}" />
                 </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="50" Label="Stock Code:">
+                    <dxe:ComboBoxEdit DisplayMember="StockCode" EditValue="{Binding Selected_Commodity, Mode=TwoWay}" ItemsSource="{Binding PCOMMODITYCollection}" />
+                </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupHours" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Hours:">

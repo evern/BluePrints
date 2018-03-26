@@ -1642,7 +1642,11 @@ namespace BluePrints.ViewModels
             var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork);
             if(bookTimeViewModel.GetResource() == null)
             {
-                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact Michelle");
+                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact Michelle for assistance");
+            }
+            else if(bookTimeViewModel.GetCostType() == null)
+            {
+                MessageBoxService.ShowMessage("You do not have \nSub Job: " + DisplaySelectedEntity.Subjob_Name + "\nCost Group: " + DisplaySelectedEntity.Discipline_Code + "\nCost Type: " + DisplaySelectedEntity.Commodity_Code + "\nAdded in exo, please contact Michelle for assistance");
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
@@ -1653,7 +1657,7 @@ namespace BluePrints.ViewModels
                 PrimeroCommodity bookCostType = bookTimeViewModel.GetCostType();
                 decimal bookTime = bookTimeViewModel.BookHours;
 
-                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookResource.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
                 if(timesheet != null)
                 {
                     AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
@@ -1664,8 +1668,8 @@ namespace BluePrints.ViewModels
                     newTimeSheet.STAFFNO = bookResource.SeqNo;
                     newTimeSheet.JOBNO = subJob.JOBNO;
                     newTimeSheet.TITLE = subJob.JOBCODE + " : " + subJob.TITLE;
-                    newTimeSheet.STOCKCODE = bookResource.StockCode;
-                    newTimeSheet.DESCRIPTION = bookResource.Name;
+                    newTimeSheet.STOCKCODE = bookCostType.StockCode;
+                    newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
                     newTimeSheet.UNITPRICE = 0;
                     newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
                     AdjustTimeSheetHours(newTimeSheet, bookDate, DisplaySelectedEntity, bookTime);

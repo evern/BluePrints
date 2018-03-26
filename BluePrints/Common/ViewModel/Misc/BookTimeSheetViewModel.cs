@@ -59,10 +59,12 @@ namespace BaseModel.ViewModel.Dialogs
                                   on JOBCOST_LINES.JOBNO equals JOB_RESOURCE_ALLOCATION.JOBNO
                                   join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                                   on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
-                                  where MAINJOB.JOBCODE == project.NUMBER
-                                  select new { SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.SHORTCODE, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE };
+                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
+                                  where MAINJOB.JOBCODE == project.NUMBER && JOBCOST_RESOURCE.STAFFNO == LoginCredentials.CurrentUser.EXO_STAFF_ID
+                                 select new { MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.SHORTCODE, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION };
 
-            var availableLinesList = availableLines.ToList();
+            var availableLinesList = availableLines;
             foreach(var availableLine in availableLinesList)
             {
                 if(!PDISCIPLINECollection.Any(x => x.Id == availableLine.DISCIPLINE_ID))
@@ -74,11 +76,15 @@ namespace BaseModel.ViewModel.Dialogs
                     PDISCIPLINECollection.Add(newDiscipline);
                 }
 
-                if(!PCOMMODITYCollection.Any(x => x.Id == availableLine.COMMODITY_ID))
+                if(!PCOMMODITYCollection.Any(x => x.Id == availableLine.COMMODITY_ID && x.ResourceId == availableLine.RESOURCE_SEQNO))
                 {
                     PrimeroCommodity newCommodity = new PrimeroCommodity();
                     newCommodity.Id = availableLine.COMMODITY_ID;
+                    newCommodity.ResourceId = availableLine.RESOURCE_SEQNO;
                     newCommodity.Code = availableLine.COMMODITY_CODE;
+                    newCommodity.SubJobNo = availableLine.SUBJOBNO;
+                    newCommodity.StockCode = availableLine.DEFAULT_STOCKCODE;
+                    newCommodity.StockDescription = availableLine.STOCK_CODE_DESC;
                     PCOMMODITYCollection.Add(newCommodity);
                 }
 
@@ -88,7 +94,6 @@ namespace BaseModel.ViewModel.Dialogs
                     newResource.Id = availableLine.RESOURCE_STAFF_ID;
                     newResource.SeqNo = availableLine.RESOURCE_SEQNO;
                     newResource.Name = availableLine.RESOURCENAME;
-                    newResource.StockCode = availableLine.DEFAULT_STOCKCODE;
                     PRESOURCECollection.Add(newResource);
                 }
             }
@@ -102,7 +107,6 @@ namespace BaseModel.ViewModel.Dialogs
         {
             Selected_SubJob = PSUBJOBCollection.FirstOrDefault(x => x.JOBCODE == deliverable.Subjob_Name);
             Selected_Discipline = PDISCIPLINECollection.FirstOrDefault(x => x.Code == deliverable.Discipline_Code);
-            Selected_Commodity = PCOMMODITYCollection.FirstOrDefault(x => x.Code == deliverable.Commodity_Code);
         }
 
         private void establishDefaultTime()
@@ -114,15 +118,18 @@ namespace BaseModel.ViewModel.Dialogs
             PrimeroCommodity bookCostType = GetCostType();
             decimal bookTime = BookHours;
 
-            JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookResource.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
-            Existing_TimeSheet = timesheet;
-            if(Existing_TimeSheet != null)
+            if(bookResource != null && subJob != null && bookCostType != null && bookCostGroup != null)
             {
-                TimesheetDate timesheetDate = GetTimesheetDate();
-                double? timeSheetHours = getTimesheetHours(timesheet, timesheetDate);
-                if(timeSheetHours != null)
+                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                Existing_TimeSheet = timesheet;
+                if (Existing_TimeSheet != null)
                 {
-                    BookHours = Convert.ToDecimal(timeSheetHours);
+                    TimesheetDate timesheetDate = GetTimesheetDate();
+                    double? timeSheetHours = getTimesheetHours(timesheet, timesheetDate);
+                    if (timeSheetHours != null)
+                    {
+                        BookHours = Convert.ToDecimal(timeSheetHours);
+                    }
                 }
             }
         }
@@ -153,6 +160,8 @@ namespace BaseModel.ViewModel.Dialogs
         private void setResource()
         {
             Selected_Resource = PRESOURCECollection.FirstOrDefault(x => x.Id == LoginCredentials.CurrentUser.EXO_STAFF_ID);
+            if(Selected_Resource != null && Selected_SubJob != null)
+                Selected_Commodity = PCOMMODITYCollection.FirstOrDefault(x => x.Code == deliverable.Commodity_Code && x.ResourceId == Selected_Resource.SeqNo && x.SubJobNo == Selected_SubJob.JOBNO);
         }
 
         public PrimeroResource GetResource()
@@ -210,19 +219,17 @@ namespace BaseModel.ViewModel.Dialogs
     public class PrimeroCommodity
     {
         public int? Id { get; set; }
+        public int? ResourceId { get; set; }
+        public int? SubJobNo { get; set; }
         public string Code { get; set; }
-    }
-
-    public class PrimeroStockCode
-    {
-        public string Code { get; set; }
+        public string StockCode { get; set; }
+        public string StockDescription { get; set; }
     }
 
     public class PrimeroResource
     {
         public int? Id { get; set; }
         public int? SeqNo { get; set; }
-        public string StockCode { get; set; }
         public string Name { get; set; }
     }
 
