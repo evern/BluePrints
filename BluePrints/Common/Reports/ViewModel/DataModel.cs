@@ -645,10 +645,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                if (PROGRESS_ITEM_Current == null)
-                    return null;
+                if (PROGRESS_ITEM_Current != null)
+                    return PROGRESS_ITEM_Current.UPDATED;
 
-                return PROGRESS_ITEM_Current.UPDATED;
+                return PROGRESS_ITEMS.OrderBy(x => x.UPDATED).Last().UPDATED;
             }
         }
 
@@ -659,10 +659,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                if (PROGRESS_ITEM_Current == null)
-                    return null;
+                if (PROGRESS_ITEM_Current != null)
+                    return PROGRESS_ITEM_Current.UPDATEDBY;
 
-                return PROGRESS_ITEM_Current.UPDATEDBY;
+                return PROGRESS_ITEMS.OrderBy(x => x.UPDATED).Last().UPDATEDBY;
             }
         }
 
@@ -673,10 +673,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                if (PROGRESS_ITEM_Current == null)
-                    return null;
+                if (PROGRESS_ITEM_Current != null)
+                    return PROGRESS_ITEM_Current.CREATED;
 
-                return PROGRESS_ITEM_Current.CREATED;
+                return PROGRESS_ITEMS.OrderBy(x => x.CREATED).Last().CREATED;
             }
         }
 
@@ -687,10 +687,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEMS.Count == 0)
                     return null;
 
-                if (PROGRESS_ITEM_Current == null)
-                    return null;
+                if (PROGRESS_ITEM_Current != null)
+                    return PROGRESS_ITEM_Current.CREATEDBY;
 
-                return PROGRESS_ITEM_Current.CREATEDBY;
+                return PROGRESS_ITEMS.OrderBy(x => x.CREATED).Last().CREATEDBY;
             }
         }
         #endregion
