@@ -35,7 +35,7 @@
                             <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Unique name" />
                             <dxg:GridColumn Header="Type" FieldName="TYPE" HeaderToolTip="Determine whether current progress is holding design or construction progress">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProgressType}}" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Start Date" FieldName="PROGRESS_START" HeaderToolTip="When progress is first started. It also determines when S-Curve should start plotting">
