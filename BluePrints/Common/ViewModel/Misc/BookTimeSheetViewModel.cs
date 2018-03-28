@@ -40,11 +40,15 @@ namespace BaseModel.ViewModel.Dialogs
             set
             {
                 selectedSubJob = value;
+                selected_commoditycode = string.Empty;
                 selectedDiscipline = null;
                 selectedCommodity = null;
                 this.RaisePropertyChanged(x => x.Selected_Discipline);
+                this.RaisePropertyChanged(x => x.Selected_CommodityCode);
                 this.RaisePropertyChanged(x => x.Selected_Commodity);
                 this.RaisePropertyChanged(x => x.PDISCIPLINECollection);
+                this.RaisePropertyChanged(x => x.COMMODITYCODECollection);
+                this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
             }
         }
 
@@ -74,8 +78,11 @@ namespace BaseModel.ViewModel.Dialogs
             set
             {
                 selectedDiscipline = value;
+                selected_commoditycode = string.Empty;
                 selectedCommodity = null;
+                this.RaisePropertyChanged(x => x.Selected_CommodityCode);
                 this.RaisePropertyChanged(x => x.Selected_Commodity);
+                this.RaisePropertyChanged(x => x.COMMODITYCODECollection);
                 this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
             }
         }
@@ -88,6 +95,7 @@ namespace BaseModel.ViewModel.Dialogs
             {
                 selected_commoditycode = value;
                 Selected_Commodity = null;
+                this.RaisePropertyChanged(x => x.COMMODITYCODECollection);
                 this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
             }
         }
