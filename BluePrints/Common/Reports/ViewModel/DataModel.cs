@@ -275,6 +275,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public bool CanBook { get; set; }
+
         public bool IsInternalNumberEditable => IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
 
         public bool IsInternalNumberAlwaysEditable { get; set; }

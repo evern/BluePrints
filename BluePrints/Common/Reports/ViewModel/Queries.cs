@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BluePrints.ViewModels;
 using BaseModel.Data.Helpers;
+using BaseModel.ViewModel.Dialogs;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -114,7 +115,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null )
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -182,6 +183,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (buildStats)
                     baseline_item_progress.BuildStats();
 
+            }
+
+            if(exoAuthorisation != null)
+            {
+                foreach(BASELINE_ITEMProgress deliverable in baseline_item_progresses)
+                {
+                    deliverable.CanBook = exoAuthorisation.Any(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
+                }
             }
 
             return baseline_item_progresses.AsQueryable();

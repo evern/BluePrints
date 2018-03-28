@@ -8,7 +8,7 @@
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupSubjob" Height="50" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="50" Label="Sub Job:">
-                    <dxe:ComboBoxEdit DisplayMember="JOBCODE" EditValue="{Binding Selected_SubJob, Mode=TwoWay}" EditValuePostMode="Immediate" ItemsSource="{Binding PSUBJOBCollection}" />
+                    <dxe:ComboBoxEdit DisplayMember="Code" EditValue="{Binding Selected_SubJob, Mode=TwoWay}" EditValuePostMode="Immediate" ItemsSource="{Binding PSUBJOBCollection}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupDiscipline" Height="50" Orientation="Horizontal" View="Group">

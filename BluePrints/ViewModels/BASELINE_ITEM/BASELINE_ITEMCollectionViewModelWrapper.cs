@@ -129,6 +129,7 @@ namespace BluePrints.ViewModels
         public Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         public PROGRESS livePROGRESS { get; set; }
         private bool isQueryForLiveStatus;
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         //public bool Is_Autofill_Internal_Number { get; set; }
         private bool allow_drag_drop { get; set; }
         public bool Allow_Drag_Drop
@@ -349,8 +350,10 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
+        List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
+            exoAuthorisations = ExoQueries.GetExoTimeAuthorisation(primeroUnitOfWork, loadPROJECT.NUMBER);
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
@@ -358,7 +361,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -1636,10 +1639,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         public void BookTime()
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork);
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations);
             if(bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
@@ -1650,7 +1652,7 @@ namespace BluePrints.ViewModels
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
-                JOBCOST_HDR subJob = bookTimeViewModel.GetSubJob();
+                PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
                 PrimeroResource bookResource = bookTimeViewModel.GetResource();
                 TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
                 PrimeroDiscipline bookCostGroup = bookTimeViewModel.GetCostGroup();
@@ -1659,7 +1661,7 @@ namespace BluePrints.ViewModels
 
                 if(bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
-                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.JOBNO && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
                     if (timesheet != null)
                     {
                         AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
@@ -1668,8 +1670,8 @@ namespace BluePrints.ViewModels
                     {
                         JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
                         newTimeSheet.STAFFNO = bookResource.SeqNo;
-                        newTimeSheet.JOBNO = subJob.JOBNO;
-                        newTimeSheet.TITLE = subJob.JOBCODE + " : " + subJob.TITLE;
+                        newTimeSheet.JOBNO = subJob.Id;
+                        newTimeSheet.TITLE = subJob.Code + " : " + subJob.Title;
                         newTimeSheet.STOCKCODE = bookCostType.StockCode;
                         newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
                         newTimeSheet.UNITPRICE = 0;

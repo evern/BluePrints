@@ -1063,12 +1063,16 @@ namespace BluePrints.Common.Base
                     continue;
 
                 bool isNullProgress = false;
+
+                string s = string.Empty;
+                if (current_progress_deliverable.Deliverable_Name == "12104-01-LAY-GE-001")
+                    s = string.Empty;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
-                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Count() == 0)
+                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
                     isNullProgress = true;
 
-                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Min(x => x.EARNED_DATE);
-                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Max(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null :  current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
                 decimal total_percentage_to_date;
                 //if(isSimulation)
                 //{
@@ -1169,7 +1173,7 @@ namespace BluePrints.Common.Base
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
                             //when user select none or user select start only, don't update finish
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.START.ToString());
-                            if (P6TASK.act_end_date == null || !any_write_exclusions)
+                            if (!any_write_exclusions)
                                 if (!isNullProgress)
                                 {
                                     P6TASK.act_end_date = ((DateTime)last_progress_date).Date.AddHours(18);
