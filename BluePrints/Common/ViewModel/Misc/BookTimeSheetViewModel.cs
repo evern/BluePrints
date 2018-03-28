@@ -80,15 +80,39 @@ namespace BaseModel.ViewModel.Dialogs
             }
         }
 
+        string selected_commoditycode;
+        public string Selected_CommodityCode
+        {
+            get { return selected_commoditycode; }
+            set
+            {
+                selected_commoditycode = value;
+                Selected_Commodity = null;
+                this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
+            }
+        }
+
+        public List<string> COMMODITYCODECollection
+        {
+            get
+            {
+                if (selectedDiscipline == null || selectedSubJob == null)
+                    return new List<string>();
+
+                IEnumerable<PrimeroCommodity> commodities = pCommodityCollection.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id);
+                return commodities.Select(x => x.Code).Distinct().ToList();
+            }
+        }
+
         private List<PrimeroCommodity> pCommodityCollection;
         public List<PrimeroCommodity> PCOMMODITYCollection
         {
             get
             {
-                if (selectedDiscipline == null)
+                if (selectedSubJob == null ||  selectedDiscipline == null || Selected_CommodityCode == null || Selected_CommodityCode == string.Empty)
                     return new List<PrimeroCommodity>();
 
-                return pCommodityCollection.Where(x => x.DisciplineId == selectedDiscipline.Id).ToList();
+                return pCommodityCollection.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.Code == Selected_CommodityCode).ToList();
             }
 
             set { pCommodityCollection = value; }
@@ -115,12 +139,14 @@ namespace BaseModel.ViewModel.Dialogs
         public PrimeroResource Selected_Resource { get; set; }
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
+        private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
         protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();
             this.deliverable = deliverable;
             this.primeroUnitOfWork = primeroUnitOfWork;
+            this.exoAuthorisations = exoAuthorisations;
 
             foreach (var availableLine in exoAuthorisations)
             {
@@ -133,7 +159,7 @@ namespace BaseModel.ViewModel.Dialogs
                     pSubJobCollection.Add(newSubJob);
                 }
 
-                if(!pDisciplineCollection.Any(x => x.Id == availableLine.DisciplineId))
+                if(!pDisciplineCollection.Any(x => x.Id == availableLine.DisciplineId && x.SubjobId == availableLine.SubJobNo))
                 {
                     PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
                     newDiscipline.Id = availableLine.DisciplineId;
@@ -143,7 +169,7 @@ namespace BaseModel.ViewModel.Dialogs
                     pDisciplineCollection.Add(newDiscipline);
                 }
 
-                if(!pCommodityCollection.Any(x => x.Id == availableLine.CommodityId && x.ResourceId == availableLine.ResourceSeqNo))
+                if(!pCommodityCollection.Any(x => x.Id == availableLine.CommodityId && x.DisciplineId == availableLine.DisciplineId && x.SubJobNo == availableLine.SubJobNo))
                 {
                     PrimeroCommodity newCommodity = new PrimeroCommodity();
                     newCommodity.Id = availableLine.CommodityId;
@@ -177,8 +203,9 @@ namespace BaseModel.ViewModel.Dialogs
 
         private void defaultDeliverableSelection(IDeliverable deliverable)
         {
-            Selected_SubJob = PSUBJOBCollection.FirstOrDefault(x => x.Code == deliverable.Subjob_Name);
-            Selected_Discipline = PDISCIPLINECollection.FirstOrDefault(x => x.Code == deliverable.Discipline_Code);
+            Selected_SubJob = pSubJobCollection.FirstOrDefault(x => x.Code == deliverable.Subjob_Name);
+            if(Selected_SubJob != null)
+                Selected_Discipline = pDisciplineCollection.FirstOrDefault(x => x.Code == deliverable.Discipline_Code && x.SubjobId == Selected_SubJob.Id);
         }
 
         private void establishDefaultTime()
@@ -232,8 +259,14 @@ namespace BaseModel.ViewModel.Dialogs
         private void setResource()
         {
             Selected_Resource = pResourceCollection.FirstOrDefault(x => x.Id == LoginCredentials.CurrentUser.EXO_STAFF_ID);
-            if(Selected_Resource != null && Selected_SubJob != null)
-                Selected_Commodity = pCommodityCollection.FirstOrDefault(x => x.Code == deliverable.Commodity_Code && x.ResourceId == Selected_Resource.SeqNo && x.SubJobNo == Selected_SubJob.Id);
+            if(Selected_Resource != null && Selected_SubJob != null && Selected_Discipline != null)
+            {
+                PrimeroCommodity findCommodity = pCommodityCollection.FirstOrDefault(x => x.Id == 3417);
+                IEnumerable<PrimeroCommodity> commodities = pCommodityCollection.Where(x => x.Code == deliverable.Commodity_Code);
+                Selected_Commodity = commodities.FirstOrDefault(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.Code == deliverable.Commodity_Code);
+                if(Selected_Commodity != null)
+                    selected_commoditycode = Selected_Commodity.Code;
+            }
         }
 
         public PrimeroResource GetResource()
@@ -301,8 +334,8 @@ namespace BaseModel.ViewModel.Dialogs
                                  on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where MAINJOB.JOBCODE == projectNumber
-                                 //where MAINJOB.JOBCODE == projectNumber && JOBCOST_RESOURCE.STAFFNO == LoginCredentials.CurrentUser.EXO_STAFF_ID
+                                 //where MAINJOB.JOBCODE == projectNumber
+                                 where MAINJOB.JOBCODE == projectNumber && JOBCOST_RESOURCE.STAFFNO == LoginCredentials.CurrentUser.EXO_STAFF_ID
                                  select new { MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.SHORTCODE, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION };
 
             List<ExoTimeAuthorisation> exoTimes = availableLines.Select(x => new ExoTimeAuthorisation()

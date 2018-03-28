@@ -65,6 +65,7 @@
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarCheckItem Content="Lock Baseline" ToolTip="Lock total budget units, so that units assigned to all deliverables cannot exceed the current total units" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" />
                                 <dxb:BarButtonItem Content="Import Client Numbers" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dx:DXImage Image=Wizard_16x16.png}" />
+                                <dxb:BarCheckItem Content="Show Bookable Only" ToolTip="Show bookable only" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -231,6 +232,7 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
+                        <dxg:GridColumn Header="Can Book" FieldName="CanBook" HeaderToolTip="Time can be booked in exo" ReadOnly="True" FilterPopupMode="CheckedList" />
                         <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name" FilterPopupMode="CheckedList">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />

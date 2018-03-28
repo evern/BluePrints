@@ -1364,6 +1364,68 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+
+        public bool CanShowBookable()
+        {
+            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
+                return false;
+
+            return true;
+        }
+
+        bool showBookable;
+        public bool ShowBookable
+        {
+            get
+            {
+                return showBookable;
+            }
+            set
+            {
+                showBookable = value;
+                if (GridControlService != null)
+                {
+                    if(value)
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator newCriteriaOperator;
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            string filterCriteria = criteriaOperator.ToString() + " And [CanBook] In (True)";
+                            newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
+                        }
+                        else
+                        {
+                            newCriteriaOperator = CriteriaOperator.Parse("[CanBook] In (True)");
+                        }
+
+                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                    }
+                    else
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            CriteriaOperator newCriteriaOperator;
+                            string currentFilterCriteria = criteriaOperator.ToString();
+                            string newfilterCriteria = currentFilterCriteria.Replace("And [CanBook] In (True)", "");
+                            newfilterCriteria = newfilterCriteria.Replace("[CanBook] In (True)", "");
+                            if (newfilterCriteria.Length >= 5)
+                            {
+                                string firstFiveChar = newfilterCriteria.Substring(0, 5);
+                                if(firstFiveChar.ToUpper().Contains("AND"))
+                                    newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
+                            }
+
+
+                            newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
+                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        }
+                    }
+                }
+            }
+        }
+
         public decimal TotalAllowedUnits
         {
             get
