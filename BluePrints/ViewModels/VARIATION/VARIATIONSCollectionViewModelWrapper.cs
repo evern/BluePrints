@@ -649,7 +649,7 @@ namespace BluePrints.ViewModels
 
                     if (variation_item.Variation_Units < 0)
                     {
-                        decimal maximumReducibleUnits = -1 * variation_item.Entity.Earned_Units_Total;
+                        decimal maximumReducibleUnits = -1 * (new_deliverable.Total_Units - variation_item.Entity.Earned_Units_Total);
                         if (variation_item.Variation_Units < maximumReducibleUnits)
                             edit_value += maximumReducibleUnits;
                         else

@@ -316,8 +316,11 @@ namespace BluePrints.Common.Base
                     else
                         entity.Variation_Action = VariationAction.Append;
 
-                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, entity.Variation_Action, EntityMessageType.Changed);
+                    if(MainViewModel != null)
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new TMainVariationEntity().Variation_Action), old_action, entity.Variation_Action, EntityMessageType.Changed);
+                    }
                 }
             }
             else

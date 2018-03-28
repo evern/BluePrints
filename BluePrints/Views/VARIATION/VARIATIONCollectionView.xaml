@@ -91,7 +91,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Content="Edit" Command="{Binding View.DataContext.EditCommand}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
+                                    <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                     <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" CommandParameter="{Binding Row.Row}" />
                                     <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Apply_16x16.png}" />
                                     <dxb:BarItemLinkSeparator />
