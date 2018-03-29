@@ -446,6 +446,7 @@
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
+    <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
@@ -677,6 +678,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_ACTION\MEETING_ACTIONCollectionViewModelWrapper.cs" />
@@ -717,6 +719,9 @@
     </Compile>
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXOSUBJOBCollectionView.xaml.cs">
+      <DependentUpon>EXOSUBJOBCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
@@ -1536,6 +1541,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CLIENT\CLIENTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXOSUBJOBCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

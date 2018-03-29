@@ -100,7 +100,7 @@ namespace BluePrints.Data
                 return DOCTYPE.CODE;
             }
         }
-        
+
         public string Commodity_Display_Code => Commodity_Code;
 
         [NotMapped]
@@ -130,6 +130,17 @@ namespace BluePrints.Data
                     return string.Empty;
 
                 return WORKPACK.NAME;
+            }
+        }
+
+        public string Workpack_Title
+        {
+            get
+            {
+                if (WORKPACK == null)
+                    return string.Empty;
+
+                return WORKPACK.TITLE;
             }
         }
 

@@ -150,6 +150,11 @@ namespace BluePrints.PrimeroData
 
         public int? BILLINGMODE { get; set; }
 
+        public double LINECHARGE_WRITEOFF { get; set; }
+
+        [StringLength(1)]
+        public string INVOICE_VIA_MASTER { get; set; }
+
         public int? PROJ_SEQNO { get; set; }
 
         [StringLength(5000)]
