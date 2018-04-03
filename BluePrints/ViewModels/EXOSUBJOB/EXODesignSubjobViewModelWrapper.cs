@@ -18,6 +18,7 @@ using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.Reports;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
@@ -181,6 +182,7 @@ namespace BluePrints.ViewModels
             refreshPermissions();
         }
 
+        public ExoSubJobAuth SelectedUser { get; set; }
         public IEnumerable<ExoSubJobAuth> Users
         {
             get
@@ -218,7 +220,13 @@ namespace BluePrints.ViewModels
 
         private void refreshPermissions()
         {
+            int? selectedUserId = SelectedUser == null ? null : SelectedUser.User.EXO_STAFF_ID;
             this.RaisePropertyChanged(x => x.Users);
+            if (selectedUserId != null)
+            {
+                SelectedUser = Users.FirstOrDefault(x => x.User.EXO_STAFF_ID == selectedUserId);
+                this.RaisePropertyChanged(x => x.SelectedUser);
+            }
         }
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
@@ -229,21 +237,86 @@ namespace BluePrints.ViewModels
             bool newValue = (bool)e.Value;
             if (newValue)
             {
+                foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities)
+                {
+                    findExistingOrAddResourceAllocation(editingSubJobAuth, selectedEntity);
+                    editingSubJobAuth.IsAssigned = true;
+                    selectedEntity.AuthUsers.Add(editingSubJobAuth);
+                }
+
                 e.Handled = true;
             }
             else
             {
-                ExoSubJobAuth existingPermission = DisplaySelectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
-                if (existingPermission != null)
+                foreach (ExoSubJobProjection selectedEntity in DisplaySelectedEntities)
                 {
-                    DisplaySelectedEntity.AuthUsers.Remove(existingPermission);
-                    e.Handled = true;
+                    ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
+                    if (existingPermission != null)
+                    {
+                        deleteResourceAllocation(editingSubJobAuth, selectedEntity);
+                        selectedEntity.AuthUsers.Remove(existingPermission);
+                        e.Handled = true;
+                    }
                 }
             }
 
-            refreshPermissions();
+            //refreshPermissions();
             base.CellValueChanging(e);
         }
+
+        bool showPreferred;
+        public bool ShowPreferred
+        {
+            get
+            {
+                return showPreferred;
+            }
+            set
+            {
+                showPreferred = value;
+                if (GridControlService != null)
+                {
+                    if (value)
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator newCriteriaOperator;
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            string filterCriteria = criteriaOperator.ToString() + " And [ShouldAssign] In (True)";
+                            newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
+                        }
+                        else
+                        {
+                            newCriteriaOperator = CriteriaOperator.Parse("[ShouldAssign] In (True)");
+                        }
+
+                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                    }
+                    else
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            CriteriaOperator newCriteriaOperator;
+                            string currentFilterCriteria = criteriaOperator.ToString();
+                            string newfilterCriteria = currentFilterCriteria.Replace("And [ShouldAssign] In (True)", "");
+                            newfilterCriteria = newfilterCriteria.Replace("[ShouldAssign] In (True)", "");
+                            if (newfilterCriteria.Length >= 5)
+                            {
+                                string firstFiveChar = newfilterCriteria.Substring(0, 5);
+                                if (firstFiveChar.ToUpper().Contains("AND"))
+                                    newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
+                            }
+
+
+                            newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
+                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        }
+                    }
+                }
+            }
+        }
+
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -282,7 +355,6 @@ namespace BluePrints.ViewModels
                         if (disciplineId != null)
                         {
                             selectedLine.Discipline.Id = disciplineId;
-
                         }
                     }
 
@@ -302,11 +374,74 @@ namespace BluePrints.ViewModels
                     selectedLine.Update();
 
                     if(selectedLine.LineId != null)
+                    {
+                        ExoSubJobProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJob.Id == selectedLine.SubJob.Id);
+                        if(existingSameSubJobLine != null)
+                        {
+                            foreach(ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                            {
+                                ExoSubJobAuth newUser = new ExoSubJobAuth();
+                                DataUtils.ShallowCopy(newUser, authUser);
+                                selectedLine.AuthUsers.Add(newUser);
+                            }
+                        }
+
+                        refreshPermissions();
                         updatedLineCount += 1;
+                    }
+
                 }
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+        }
+
+        private int? findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
+        {
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
+
+            if (resourceAllocation != null)
+                return resourceAllocation.SEQNO;
+            else
+            {
+                int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
+                if (resourceNo != null && subJob.SubJob.Id != null)
+                {
+                    JOB_RESOURCE_ALLOCATION newAllocation = new JOB_RESOURCE_ALLOCATION();
+                    newAllocation.RESOURCE_SEQNO = (int)resourceNo;
+                    newAllocation.JOBNO = (int)subJob.SubJob.Id;
+
+                    int year = DateTime.Now.Year;
+                    DateTime firstDay = new DateTime(year, 1, 1);
+                    DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                    DateTime lastDay = new DateTime(2099, 1, 1);
+
+                    newAllocation.START_DATE = firstDay;
+                    newAllocation.END_DATE = lastDay;
+                    newAllocation.START_TIME = startTime;
+                    newAllocation.END_TIME = startTime;
+                    newAllocation.TOTAL_HOURS = 999999;
+                    newAllocation.APPOINTMENT_SCHEDULED = "N";
+                    pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
+                    pUnitOfWork.SaveChanges();
+                    return newAllocation.SEQNO;
+                }
+                else
+                    return null;
+            }
+        }
+
+        private void deleteResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
+        {
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
+
+            if (resourceAllocation != null)
+            {
+                pUnitOfWork.JOB_RESOURCE_ALLOCATION.Remove(resourceAllocation);
+                pUnitOfWork.SaveChanges();
+            }
         }
 
         private int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES masterLine)

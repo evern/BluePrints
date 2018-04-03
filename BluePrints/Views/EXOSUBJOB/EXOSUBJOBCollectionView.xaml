@@ -15,6 +15,7 @@
                         <dxr:RibbonPage Caption="Workpack">
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarCheckItem Content="Show Preferred User Only" ToolTip="Show preferred user only (based on role)" IsChecked="{Binding DataContext.ShowPreferred, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" />
                                 <dxb:BarButtonItem Content="Upload Selected to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
@@ -31,7 +32,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                         <dxlc:LayoutGroup>
-                            <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <custom:GridControlEx x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="Subjob" FieldName="SubJob.Code" ReadOnly="True" />
                                     <dxg:GridColumn Header="Discipline" FieldName="Discipline.Code" ReadOnly="True" />
@@ -58,15 +59,16 @@
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                            <custom:GridControlEx x:Name="GridControlSubjobUsers" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
+                            <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="User.Full_Name" MinWidth="300" AllowEditing="False" />
-                                    <dxg:GridColumn FieldName="ShouldAssign">
+                                    <dxg:GridColumn Header="User" FieldName="User.Full_Name" MinWidth="150" AllowEditing="False" FilterPopupMode="CheckedList" />
+                                    <dxg:GridColumn Header="Role" FieldName="User.ROLE.NAME" MinWidth="200" AllowEditing="False" FilterPopupMode="CheckedList" />
+                                    <dxg:GridColumn FieldName="ShouldAssign" FilterPopupMode="CheckedList">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsAssigned">
+                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
@@ -79,7 +81,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView1" ShowGroupPanel="False">
+                                    <dxg:TableView x:Name="tableView1" MouseUp="tableView1_MouseUp">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>

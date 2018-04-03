@@ -209,6 +209,43 @@ namespace BluePrints.Common.Projections
             return subJobs.First();
         }
 
+        public static JOB_RESOURCE_ALLOCATION GetResourceAllocation(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, ExoSubJobAuth existingAuth, ExoSubJobProjection subJob)
+        {
+            if (existingAuth.User == null || existingAuth.User.EXO_STAFF_ID == null)
+                return null;
+
+            int staffId = (int)existingAuth.User.EXO_STAFF_ID;
+            var resourceAllocation = from JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
+                                     join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                     on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
+                                     join STAFF in primeroUnitOfWork.STAFF
+                                     on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                                     where STAFF.STAFFNO == staffId && JOB_RESOURCE_ALLOCATION.JOBNO == subJob.SubJob.Id
+                                     select JOB_RESOURCE_ALLOCATION;
+
+            if (resourceAllocation.Count() == 0)
+                return null;
+
+            return resourceAllocation.First();
+        }
+
+        public static int? GetStaffResourceNo(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffId)
+        {
+            if (staffId == null)
+                return null;
+
+            var resourceAllocation = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                     join STAFF in primeroUnitOfWork.STAFF
+                                     on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                                     where STAFF.STAFFNO == staffId
+                                     select JOBCOST_RESOURCE;
+
+            if (resourceAllocation.Count() == 0)
+                return null;
+
+            return resourceAllocation.First().SEQNO;
+        }
+
         public static JOB_COSTTYPES GetCommodity(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string commodityCode)
         {
             var costTypes = from JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
