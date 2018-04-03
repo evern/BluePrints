@@ -14,7 +14,7 @@ namespace BluePrints.PrimeroData
         [StringLength(50)]
         public string COSTDESC { get; set; }
 
-        [StringLength(3)]
+        [StringLength(4)]
         public string SHORTCODE { get; set; }
 
         [StringLength(1)]

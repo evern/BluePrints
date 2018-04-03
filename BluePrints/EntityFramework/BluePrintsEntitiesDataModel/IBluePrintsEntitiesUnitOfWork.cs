@@ -110,6 +110,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<RATE, Guid> RATES { get; }
 
         /// <summary>
+        /// The ROLE_COMMODITIES entities repository.
+        /// </summary>
+        IRepository<ROLE_COMMODITY, Guid> ROLE_COMMODITIES { get; }
+
+        /// <summary>
         /// The REGISTER_CHANGE entities repository.
         /// </summary>
         IRepository<REGISTER_CHANGE, Guid> REGISTER_CHANGE { get; }

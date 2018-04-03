@@ -15,6 +15,8 @@ namespace BluePrints.Common.Projections
     {
         public ObservableCollection<ROLE_PERMISSION> ROLE_PERMISSIONS { get; set; }
 
+        public ObservableCollection<ROLE_COMMODITY> ROLE_COMMODITIES { get; set; }
+
         //TreeView doesn't support nested property so have to expose it like this
         public Guid EntityGuid
         {
@@ -83,13 +85,14 @@ namespace BluePrints.Common.Projections
     public static class ROLEProjectionQueries
     {
         public static IQueryable<ROLEProjection> JoinROLE_PERMISSIONOnROLES(
-            IQueryable<ROLE> ROLES, IEnumerable<ROLE_PERMISSION> AllROLE_PERMISSIONS)
+            IQueryable<ROLE> ROLES, IEnumerable<ROLE_PERMISSION> AllROLE_PERMISSIONS, IEnumerable<ROLE_COMMODITY> AllROLE_COMMODITIES)
         {
             return ROLES.ToArray().Select(x => new ROLEProjection()
             {
                 EntityKey = x.GUID,
                 Entity = x,
-                ROLE_PERMISSIONS = new ObservableCollection<ROLE_PERMISSION>(AllROLE_PERMISSIONS.Where(z => z.GUID_ROLE == x.GUID))
+                ROLE_PERMISSIONS = new ObservableCollection<ROLE_PERMISSION>(AllROLE_PERMISSIONS.Where(z => z.GUID_ROLE == x.GUID)),
+                ROLE_COMMODITIES = new ObservableCollection<ROLE_COMMODITY>(AllROLE_COMMODITIES.Where(y => y.GUID_ROLE == x.GUID))
             }).AsQueryable();
         }
     }

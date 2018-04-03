@@ -122,6 +122,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((RATE x) => x.GUID); }
         }
 
+        IRepository<ROLE_COMMODITY, Guid> IBluePrintsEntitiesUnitOfWork.ROLE_COMMODITIES
+        {
+            get { return GetRepository((ROLE_COMMODITY x) => x.GUID); }
+        }
+
         IRepository<REGISTER_CHANGE, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CHANGE
         {
             get { return GetRepository((REGISTER_CHANGE x) => x.GUID); }

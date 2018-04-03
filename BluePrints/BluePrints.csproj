@@ -573,6 +573,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\Annotations\MEETING_ACTION.cs" />
@@ -614,6 +615,7 @@
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HOLIDAY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />

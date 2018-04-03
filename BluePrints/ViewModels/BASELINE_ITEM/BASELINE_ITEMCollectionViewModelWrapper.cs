@@ -353,7 +353,7 @@ namespace BluePrints.ViewModels
         List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            exoAuthorisations = ExoQueries.GetExoTimeAuthorisation(primeroUnitOfWork, loadPROJECT.NUMBER);
+            exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER);
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }

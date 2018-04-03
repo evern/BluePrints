@@ -46,6 +46,7 @@ namespace BluePrints.Data
         public virtual DbSet<REGISTER_RISK> REGISTER_RISK { get; set; }
         public virtual DbSet<ROLE> ROLE { get; set; }
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
+        public virtual DbSet<ROLE_COMMODITY> ROLE_COMMODITY { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
         public virtual DbSet<STOCK_CODE> STOCK_CODE { get; set; }
         public virtual DbSet<STOCK_GROUP> STOCK_GROUP { get; set; }
@@ -274,6 +275,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.DELIVERABLES_STATUS)
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DOCTYPE);
+
+            modelBuilder.Entity<DOCTYPE>()
+                .HasMany(e => e.ROLE_COMMODITY)
+                .WithRequired(e => e.DOCTYPE)
+                .HasForeignKey(e => e.GUID_COMMODITY)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ESTIMATE>()
                 .HasMany(e => e.ESTIMATE_ITEM)
@@ -528,6 +535,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.ROLE)
                 .HasForeignKey(e => e.GUID_ROLE);
+
+            modelBuilder.Entity<ROLE>()
+                .HasMany(e => e.ROLE_COMMODITY)
+                .WithRequired(e => e.ROLE)
+                .HasForeignKey(e => e.GUID_ROLE)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SETTINGS_GLOBAL>()
                 .Property(e => e.REVIEW_PERCENTAGE)

@@ -162,5 +162,10 @@ namespace BluePrints.PrimeroData
         public int? SNEXPDAYS { get; set; }
 
         public int? OPPLINEID { get; set; }
+
+        public int COST_LINENO { get; set; }
+
+        [StringLength(50)]
+        public string X_VARIATION_CODE { get; set; }
     }
 }

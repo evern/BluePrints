@@ -63,6 +63,8 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<ROLE_PERMISSION, ROLE_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.ROLE_PERMISSIONS);
+            loaderCollection.AddLoaderDescription<ROLE_COMMODITY, ROLE_COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.ROLE_COMMODITIES);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -74,7 +76,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ROLE>, IQueryable<ROLEProjection>>
             specifyMainViewModelProjection()
         {
-            return query => ROLEProjectionQueries.JoinROLE_PERMISSIONOnROLES(query, ROLE_PERMISSIONCollection);
+            return query => ROLEProjectionQueries.JoinROLE_PERMISSIONOnROLES(query, ROLE_PERMISSIONCollection, ROLE_COMMODITYCollection);
         }
         #endregion
 
@@ -130,9 +132,43 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public DocTypePermissionAssignment SelectedDocTypePermission { get; set; }
+        public IEnumerable<DocTypePermissionAssignment> DocTypePermissions
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+                var permissions = new List<DocTypePermissionAssignment>();
+                if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
+                    DisplaySelectedEntity = MainViewModel.Entities.First();
+
+                if (DisplaySelectedEntity == null)
+                    return null;
+
+                permissions.AddRange(DisplaySelectedEntity.ROLE_COMMODITIES.Select(x => new DocTypePermissionAssignment() { DocType = findDOCTYPE(x.GUID_COMMODITY), IsAssigned = true }).ToList());
+                foreach (DOCTYPE docType in DOCTYPECollection)
+                {
+                    DocTypePermissionAssignment findPermission = permissions.FirstOrDefault(x => x.DocType.GUID == docType.GUID);
+                    if (findPermission == null)
+                        permissions.Add(new DocTypePermissionAssignment() { DocType = docType, IsAssigned = false });
+                }
+
+                return permissions.OrderBy(x => x.DocType.NAME);
+            }
+        }
+
+        private DOCTYPE findDOCTYPE(Guid guid)
+        {
+            return DOCTYPECollection.FirstOrDefault(x => x.GUID == guid);
+        }
+
         private void refreshPermissions()
         {
             this.RaisePropertyChanged(x => x.Permissions);
+            this.RaisePropertyChanged(x => x.DocTypePermissions);
             //remove the selection instead of having it focused on first row
             SelectedPermission = null;
         }
@@ -165,6 +201,37 @@ namespace BluePrints.ViewModels
                 {
                     ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
                     DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
+                    e.Handled = true;
+                }
+            }
+
+            refreshPermissions();
+
+            base.CellValueChanging(e);
+        }
+
+        public void DocTypePermissionCellValueChanging(CellValueChangedEventArgs e)
+        {
+            DocTypePermissionAssignment editingDocTypePermissionAssignment = (DocTypePermissionAssignment)e.Row;
+            //don't need to validate fieldname since only this field is changeable in role permission grid control
+
+            bool newValue = (bool)e.Value;
+            if (newValue)
+            {
+                ROLE_COMMODITY newROLE_COMMODITY = new ROLE_COMMODITY();
+                newROLE_COMMODITY.GUID_ROLE = DisplaySelectedEntity.GUID;
+                newROLE_COMMODITY.GUID_COMMODITY = editingDocTypePermissionAssignment.DocType.GUID;
+                ROLE_COMMODITYViewModel.Save(newROLE_COMMODITY);
+                DisplaySelectedEntity.ROLE_COMMODITIES.Add(newROLE_COMMODITY);
+                e.Handled = true;
+            }
+            else
+            {
+                ROLE_COMMODITY existingROLE_COMMODITY = DisplaySelectedEntity.ROLE_COMMODITIES.FirstOrDefault(x => x.GUID_COMMODITY == editingDocTypePermissionAssignment.DocType.GUID);
+                if (existingROLE_COMMODITY != null)
+                {
+                    ROLE_COMMODITYViewModel.Delete(existingROLE_COMMODITY);
+                    DisplaySelectedEntity.ROLE_COMMODITIES.Remove(existingROLE_COMMODITY);
                     e.Handled = true;
                 }
             }
@@ -253,11 +320,42 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<ROLE_COMMODITY, ROLE_COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork> ROLE_COMMODITYViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<ROLE_COMMODITY, ROLE_COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<ROLE_COMMODITY>();
+            }
+        }
+
         public IEnumerable<ROLE_PERMISSION> ROLE_PERMISSIONCollection
         {
             get
             {
                 var collection = GetEntities<ROLE_PERMISSION>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<ROLE_COMMODITY> ROLE_COMMODITYCollection
+        {
+            get
+            {
+                var collection = GetEntities<ROLE_COMMODITY>();
+                return collection;
+            }
+
+        }
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
                 return collection;
             }
         }
@@ -275,6 +373,12 @@ namespace BluePrints.ViewModels
     public class RolePermissionAssignment
     {
         public string PermissionKey { get; set; }
+        public bool IsAssigned { get; set; }
+    }
+
+    public class DocTypePermissionAssignment
+    {
+        public DOCTYPE DocType { get; set; }
         public bool IsAssigned { get; set; }
     }
 }

@@ -103,9 +103,34 @@
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView">
+                                <dxg:TableView x:Name="tableView" ShowGroupPanel="False">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
+                        <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="DocType.CODE" MinWidth="300" AllowEditing="False" />
+                                <dxg:GridColumn FieldName="IsAssigned">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:CheckEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView1" ShowGroupPanel="False">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.DocTypePermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
