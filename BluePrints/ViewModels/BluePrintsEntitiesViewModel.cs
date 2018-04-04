@@ -513,7 +513,10 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectKey, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission"));
+            {
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Holidays" + keyString, projectKey, childTitlePrefix + "Holidays", "HOLIDAYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Holidays"));

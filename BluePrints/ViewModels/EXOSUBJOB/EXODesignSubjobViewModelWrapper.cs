@@ -235,7 +235,7 @@ namespace BluePrints.ViewModels
             {
                 foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
                 {
-                    findExistingOrAddResourceAllocation(editingSubJobAuth, selectedEntity);
+                    ExoMethods.findExistingOrAddResourceAllocation(editingSubJobAuth, selectedEntity);
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
                 }
@@ -249,7 +249,7 @@ namespace BluePrints.ViewModels
                     ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                     if (existingPermission != null)
                     {
-                        deleteResourceAllocation(editingSubJobAuth, selectedEntity);
+                        ExoMethods.deleteResourceAllocation(editingSubJobAuth, selectedEntity);
                         selectedEntity.AuthUsers.Remove(existingPermission);
                         e.Handled = true;
                     }
@@ -343,7 +343,7 @@ namespace BluePrints.ViewModels
                     newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.Commodity.Code == x.DOCTYPE.CODE));
                     if(newUser.ShouldAssign)
                     {
-                        if (findExistingOrAddResourceAllocation(newUser, subJob))
+                        if (ExoMethods.findExistingOrAddResourceAllocation(newUser, subJob))
                             addedCount += 1;
 
                         newUser.IsAssigned = true;
@@ -435,55 +435,6 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-        }
-
-        /// <returns>Whether new record is added</returns>
-        private bool findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
-        {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
-
-            if (resourceAllocation != null)
-                return false;
-            else
-            {
-                int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
-                if (resourceNo != null && subJob.SubJob.Id != null)
-                {
-                    JOB_RESOURCE_ALLOCATION newAllocation = new JOB_RESOURCE_ALLOCATION();
-                    newAllocation.RESOURCE_SEQNO = (int)resourceNo;
-                    newAllocation.JOBNO = (int)subJob.SubJob.Id;
-
-                    int year = DateTime.Now.Year;
-                    DateTime firstDay = new DateTime(year, 1, 1);
-                    DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                    DateTime lastDay = new DateTime(2099, 1, 1);
-
-                    newAllocation.START_DATE = firstDay;
-                    newAllocation.END_DATE = lastDay;
-                    newAllocation.START_TIME = startTime;
-                    newAllocation.END_TIME = startTime;
-                    newAllocation.TOTAL_HOURS = 999999;
-                    newAllocation.APPOINTMENT_SCHEDULED = "N";
-                    pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
-                    pUnitOfWork.SaveChanges();
-                    return true;
-                }
-                else
-                    return false;
-            }
-        }
-
-        private void deleteResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
-        {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
-
-            if (resourceAllocation != null)
-            {
-                pUnitOfWork.JOB_RESOURCE_ALLOCATION.Remove(resourceAllocation);
-                pUnitOfWork.SaveChanges();
-            }
         }
 
         private int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES masterLine)

@@ -680,6 +680,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
@@ -721,6 +722,9 @@
     </Compile>
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml.cs">
+      <DependentUpon>EXONATIVESUBJOBCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXOSUBJOBCollectionView.xaml.cs">
       <DependentUpon>EXOSUBJOBCollectionView.xaml</DependentUpon>
@@ -1543,6 +1547,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CLIENT\CLIENTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

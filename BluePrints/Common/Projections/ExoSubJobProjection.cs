@@ -97,8 +97,118 @@ namespace BluePrints.Common.Projections
         }
     }
 
+    public static class ExoMethods
+    {
+        /// <returns>Whether new record is added</returns>
+        public static bool findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
+        {
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
+
+            if (resourceAllocation != null)
+                return false;
+            else
+            {
+                int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
+                if (resourceNo != null && subJob.SubJob.Id != null)
+                {
+                    JOB_RESOURCE_ALLOCATION newAllocation = new JOB_RESOURCE_ALLOCATION();
+                    newAllocation.RESOURCE_SEQNO = (int)resourceNo;
+                    newAllocation.JOBNO = (int)subJob.SubJob.Id;
+
+                    int year = DateTime.Now.Year;
+                    DateTime firstDay = new DateTime(year, 1, 1);
+                    DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                    DateTime lastDay = new DateTime(2099, 1, 1);
+
+                    newAllocation.START_DATE = firstDay;
+                    newAllocation.END_DATE = lastDay;
+                    newAllocation.START_TIME = startTime;
+                    newAllocation.END_TIME = startTime;
+                    newAllocation.TOTAL_HOURS = 999999;
+                    newAllocation.APPOINTMENT_SCHEDULED = "N";
+                    pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
+                    pUnitOfWork.SaveChanges();
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+        public static void deleteResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
+        {
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
+
+            if (resourceAllocation != null)
+            {
+                pUnitOfWork.JOB_RESOURCE_ALLOCATION.Remove(resourceAllocation);
+                pUnitOfWork.SaveChanges();
+            }
+        }
+    }
+
     public static class ExoQueries
     {
+        public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS)
+        {
+            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
+            List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
+            foreach (ExoTimeAuthorisation exoLine in exoLines)
+            {
+                ExoSubJobProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
+                PrimeroSubJob newSubJob = new PrimeroSubJob();
+                newSubJob.Id = exoLine.SubJobNo;
+                newSubJob.MasterId = exoLine.MasterJobNo;
+                newSubJob.Code = exoLine.SubJobCode;
+                newSubJob.Title = exoLine.SubJobTitle;
+
+                PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
+                newDiscipline.Id = exoLine.DisciplineId;
+                newDiscipline.Code = exoLine.DisciplineCode;
+                newDiscipline.Name = exoLine.DisciplineName;
+
+                PrimeroCommodity newCommodity = new PrimeroCommodity();
+                newCommodity.Id = exoLine.CommodityId;
+                newCommodity.Code = exoLine.CommodityCode;
+                newCommodity.Name = exoLine.CommodityName;
+
+                newSubJobProjection.SubJob = newSubJob;
+                newSubJobProjection.Discipline = newDiscipline;
+                newSubJobProjection.Commodity = newCommodity;
+
+                newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
+                newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                if (exoLines.Count() > 0)
+                {
+                    newSubJobProjection.LineId = exoLines.First().LineSeqNo;
+                    foreach (ExoTimeAuthorisation exoAuth in exoAuths)
+                    {
+                        STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
+                        if (findSTAFF != null)
+                        {
+                            ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                            USER newUser = new USER();
+                            newUser.NAME = findSTAFF.NAME;
+                            newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
+                            newAuth.User = newUser;
+                            newAuth.ShouldAssign = false;
+                            newAuth.IsAssigned = true;
+                            newSubJobProjection.AuthUsers.Add(newAuth);
+                        }
+                    }
+                }
+
+                exoSubJobs.Add(newSubJobProjection);
+            }
+
+            return exoSubJobs.OrderBy(x => x.SubJob.Code).AsQueryable();
+        }
+
         public static IQueryable<ExoSubJobProjection> GetExoSubJobProjection(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<WORKPACK> WORKPACKS,
@@ -392,6 +502,45 @@ namespace BluePrints.Common.Projections
                 exoTimes = availableLines.ToList().Select(x => populateExoTimeAuth(x)).ToList();
 
             return exoTimes;
+        }
+
+
+        public static List<ExoTimeAuthorisation> GetAllExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                                 join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                                 on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                                 join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                                 on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 join JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
+                                 on JOBCOST_LINES.JOBNO equals JOB_RESOURCE_ALLOCATION.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC };
+
+
+            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoLine(x)).ToList();
+            return exoTimes;
+        }
+
+        private static ExoTimeAuthorisation populateExoLine(dynamic dbTime)
+        {
+            ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();
+            exoTime.LineSeqNo = dbTime.LINEID;
+            exoTime.MasterJobNo = dbTime.MASTERJOBNO;
+            exoTime.SubJobNo = dbTime.SUBJOBNO;
+            exoTime.SubJobCode = dbTime.SUBJOBNAME;
+            exoTime.SubJobTitle = dbTime.SUBJOBTITLE;
+            exoTime.DisciplineId = dbTime.DISCIPLINE_ID;
+            exoTime.DisciplineCode = dbTime.DISCIPLINE_CODE;
+            exoTime.DisciplineName = dbTime.DISCIPLINE_NAME;
+            exoTime.CommodityId = dbTime.COMMODITY_ID;
+            exoTime.CommodityCode = dbTime.COMMODITY_CODE;
+            exoTime.CommodityName = dbTime.COMMODITY_NAME;
+            return exoTime;
         }
 
         private static ExoTimeAuthorisation populateExoTimeAuth(dynamic dbTime)
