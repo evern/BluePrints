@@ -232,7 +232,7 @@ namespace BluePrints.ViewModels
             bool newValue = (bool)e.Value;
             if (newValue)
             {
-                foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities)
+                foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
                 {
                     findExistingOrAddResourceAllocation(editingSubJobAuth, selectedEntity);
                     editingSubJobAuth.IsAssigned = true;
@@ -243,7 +243,7 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                foreach (ExoSubJobProjection selectedEntity in DisplaySelectedEntities)
+                foreach (ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
                 {
                     ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                     if (existingPermission != null)
@@ -321,7 +321,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(fullProgress);
 
             int addedCount = 0;
-            foreach(ExoSubJobProjection subJob in DisplayEntities)
+            foreach(ExoSubJobProjection subJob in DisplayEntities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.AuthUsers.Clear();
                 foreach(USER user in USERCollection)
