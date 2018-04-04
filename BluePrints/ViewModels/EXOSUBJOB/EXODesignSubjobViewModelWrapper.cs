@@ -200,7 +200,6 @@ namespace BluePrints.ViewModels
                 foreach (USER user in USERCollection)
                 {
                     IEnumerable<ExoSubJobAuth> findUsers = DisplaySelectedEntities.SelectMany(x => x.AuthUsers);
-
                     ExoSubJobAuth newUser = new ExoSubJobAuth();
                     newUser.User = user;
                     if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == user.EXO_STAFF_ID)))
@@ -210,7 +209,9 @@ namespace BluePrints.ViewModels
                     else
                         newUser.IsAssigned = false;
 
-                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.Commodity.Code == x.DOCTYPE.CODE));
+                    if (newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.Commodity.Code == x.DOCTYPE.CODE)))
+                        newUser.ShouldAssign = true;
+
                     permissions.Add(newUser);
                 }
 
@@ -220,13 +221,7 @@ namespace BluePrints.ViewModels
 
         private void refreshPermissions()
         {
-            int? selectedUserId = SelectedUser == null ? null : SelectedUser.User.EXO_STAFF_ID;
             this.RaisePropertyChanged(x => x.Users);
-            if (selectedUserId != null)
-            {
-                SelectedUser = Users.FirstOrDefault(x => x.User.EXO_STAFF_ID == selectedUserId);
-                this.RaisePropertyChanged(x => x.SelectedUser);
-            }
         }
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
@@ -317,6 +312,40 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void AutoAssignPermission()
+        {
+            if (MessageBoxService.ShowMessage("This will auto grant permission based on document type authorisation by role, but will not delete existing authorisations, do you wish to continue?", "Auto Assign Permission", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            int fullProgress = DisplayEntities.Count * USERCollection.Count();
+            LoadingScreenManager.ShowLoadingScreen(fullProgress);
+
+            int addedCount = 0;
+            foreach(ExoSubJobProjection subJob in DisplayEntities)
+            {
+                subJob.AuthUsers.Clear();
+                foreach(USER user in USERCollection)
+                {
+                    ExoSubJobAuth newUser = new ExoSubJobAuth();
+                    newUser.User = user;
+                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.Commodity.Code == x.DOCTYPE.CODE));
+                    if(newUser.ShouldAssign)
+                    {
+                        if (findExistingOrAddResourceAllocation(newUser, subJob))
+                            addedCount += 1;
+
+                        newUser.IsAssigned = true;
+                        subJob.AuthUsers.Add(newUser);
+                    }
+
+                    LoadingScreenManager.Progress();
+                }
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            MessageBoxService.ShowMessage(addedCount + " user permission added");
+        }
+
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -396,13 +425,14 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
         }
 
-        private int? findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
+        /// <returns>Whether new record is added</returns>
+        private bool findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, ExoSubJobProjection subJob)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, subJob);
 
             if (resourceAllocation != null)
-                return resourceAllocation.SEQNO;
+                return false;
             else
             {
                 int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
@@ -425,10 +455,10 @@ namespace BluePrints.ViewModels
                     newAllocation.APPOINTMENT_SCHEDULED = "N";
                     pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
                     pUnitOfWork.SaveChanges();
-                    return newAllocation.SEQNO;
+                    return true;
                 }
                 else
-                    return null;
+                    return false;
             }
         }
 

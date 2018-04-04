@@ -17,6 +17,7 @@
                             <dxr:RibbonPageGroup Caption="Tools" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarCheckItem Content="Show Preferred User Only" ToolTip="Show preferred user only (based on role)" IsChecked="{Binding DataContext.ShowPreferred, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" />
                                 <dxb:BarButtonItem Content="Upload Selected to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
+                                <dxb:BarButtonItem Content="Auto Assign Permission" ToolTip="Auto assign permission by referencing authorised document type on role" Command="{Binding DataContext.AutoAssignPermissionCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -26,49 +27,46 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
-                        <dxlc:LayoutGroup>
-                            <custom:GridControlEx x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="Subjob" FieldName="SubJob.Code" ReadOnly="True" />
-                                    <dxg:GridColumn Header="Discipline" FieldName="Discipline.Code" ReadOnly="True" />
-                                    <dxg:GridColumn Header="Commodity" FieldName="Commodity.Code" ReadOnly="True" />
-                                    <dxg:GridColumn Header="Can Book Time" FieldName="IsLineExistsInExo" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
-                                </dxg:GridControl.Columns>
-                                <dxg:GridControl.TotalSummary>
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                </dxg:GridControl.TotalSummary>
-                                <dxg:GridControl.GroupSummary>
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                </dxg:GridControl.GroupSummary>
-                                <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                        <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Content="Upload to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
-                                            <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
-                                            <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                        </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                            </custom:GridControlEx>
-                        </dxlc:LayoutGroup>
-                        <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
+                <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="500" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <custom:GridControlEx x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn Header="Subjob" FieldName="SubJob.Code" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                <dxg:GridColumn Header="Cost Group" FieldName="Discipline.Code" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn Header="Cost Type" FieldName="Commodity.Code" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn Header="Bookable" FieldName="IsLineExistsInExo" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarButtonItem Content="Upload to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
+                                        <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
+                                        <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
+                                        <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
+                                        <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                    </dxlc:LayoutGroup>
+                    <dxc:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
+                        <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
                             <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="User" FieldName="User.Full_Name" MinWidth="150" AllowEditing="False" FilterPopupMode="CheckedList" />
                                     <dxg:GridColumn Header="Role" FieldName="User.ROLE.NAME" MinWidth="200" AllowEditing="False" FilterPopupMode="CheckedList" />
-                                    <dxg:GridColumn FieldName="ShouldAssign" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn FieldName="ShouldAssign" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role" FilterPopupMode="CheckedList">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn FieldName="IsAssigned" HeaderToolTip="Indicate whether user have permission to book the selected time in exo" FilterPopupMode="CheckedList">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
@@ -89,8 +87,8 @@
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>
-                    </dxlc:LayoutGroup>
-                </Grid>
+                    </dxc:LoadingDecorator>
+                </dxlc:LayoutControl>
             </DockPanel>
         </Grid>
     </Grid>
