@@ -85,12 +85,12 @@
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
                         <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="PermissionKey" MinWidth="300" AllowEditing="False">
+                                <dxg:GridColumn Header="Permission" FieldName="PermissionKey" HeaderToolTip="Permissions within the system" MinWidth="300" AllowEditing="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="Value" IsTextEditable="False" ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" ValueMember="Key" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsAssigned">
+                                <dxg:GridColumn Header="Assigned" FieldName="IsAssigned" HeaderToolTip="Indicate whether selected role have the permission">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
@@ -114,7 +114,8 @@
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
                         <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="Cost Type" FieldName="DocType.CODE" HeaderToolTip="Cost type in exo is document type code in Blueprints" MinWidth="300" AllowEditing="False" />
+                                <dxg:GridColumn Header="Cost Type" FieldName="DocType.CODE" HeaderToolTip="Cost type in exo is document type code in Blueprints" MinWidth="75" AllowEditing="False" />
+                                <dxg:GridColumn Header="Description" FieldName="DocType.NAME" AllowEditing="False" />
                                 <dxg:GridColumn Header="Assigned" FieldName="IsAssigned" HeaderToolTip="Indicate whether cost type is recommended for the selected role">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />

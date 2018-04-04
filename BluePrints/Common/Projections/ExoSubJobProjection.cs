@@ -192,7 +192,7 @@ namespace BluePrints.Common.Projections
                 exoSubJobs.Add(newSubJobProjection);
             }
 
-            return exoSubJobs.AsQueryable();
+            return exoSubJobs.OrderBy(x => x.SubJob.Code).AsQueryable();
         }
 
         public static JOBCOST_HDR GetProjectSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, string subJobCode)
