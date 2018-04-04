@@ -12,7 +12,10 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Workpack">
+                        <dxr:RibbonPage Caption="EXO Permission">
+                            <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarCheckItem Content="Show Preferred User Only" ToolTip="Show preferred user only (based on role)" IsChecked="{Binding DataContext.ShowPreferred, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" />
