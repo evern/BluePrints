@@ -222,6 +222,7 @@ namespace BluePrints.ViewModels
         private void refreshPermissions()
         {
             this.RaisePropertyChanged(x => x.Users);
+            this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
         }
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
@@ -309,6 +310,17 @@ namespace BluePrints.ViewModels
                         }
                     }
                 }
+            }
+        }
+
+        public bool IsPermissionGridEnabled
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplaySelectedEntities.Count == 0)
+                    return false;
+
+                return DisplaySelectedEntities.Any(x => x.IsLineExistsInExo);
             }
         }
 

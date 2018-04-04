@@ -46,7 +46,7 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView x:Name="tableView">
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Content="Upload to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
                                         <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
@@ -59,8 +59,8 @@
                         </custom:GridControlEx>
                     </dxlc:LayoutGroup>
                     <dxc:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
-                        <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
-                            <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
+                            <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="User" FieldName="User.Full_Name" MinWidth="150" AllowEditing="False" FilterPopupMode="CheckedList" />
                                     <dxg:GridColumn Header="Role" FieldName="User.ROLE.NAME" MinWidth="200" AllowEditing="False" FilterPopupMode="CheckedList" />
