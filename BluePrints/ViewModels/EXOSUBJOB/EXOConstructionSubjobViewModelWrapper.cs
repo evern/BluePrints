@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-            exoSTAFFS = primeroUnitOfWork.STAFF.ToList();
+            exoSTAFFS = primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").ToList();
         }
 
         protected override void initializeEntitiesLoadersDescription()
