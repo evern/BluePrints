@@ -114,8 +114,8 @@
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
                         <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="DocType.CODE" MinWidth="300" AllowEditing="False" />
-                                <dxg:GridColumn FieldName="IsAssigned">
+                                <dxg:GridColumn Header="Cost Type" FieldName="DocType.CODE" HeaderToolTip="Cost type in exo is document type code in Blueprints" MinWidth="300" AllowEditing="False" />
+                                <dxg:GridColumn Header="Assigned" FieldName="IsAssigned" HeaderToolTip="Indicate whether cost type is recommended for the selected role">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
