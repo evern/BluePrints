@@ -189,4 +189,7 @@
   <data name="ManageProgressDistribution" xml:space="preserve">
     <value>Allow user to manage progress distribution</value>
   </data>
+  <data name="BookOtherTime" xml:space="preserve">
+    <value>Allow user to book time for others</value>
+  </data>
 </root>

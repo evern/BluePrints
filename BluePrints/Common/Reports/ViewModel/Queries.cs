@@ -189,7 +189,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 foreach(BASELINE_ITEMProgress deliverable in baseline_item_progresses)
                 {
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
+                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
                     deliverable.CanBook = findAuthorisation != null;
                 }
             }

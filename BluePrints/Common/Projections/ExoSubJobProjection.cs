@@ -613,6 +613,8 @@ namespace BluePrints.Common.Projections
         public int? DebtorId { get; set; }
         public int JobCategory { get; set; }
         public int JobType { get; set; }
+
+        public int? ResourceSeqNo { get; set; }
     }
 
     public class PrimeroDiscipline
@@ -621,13 +623,15 @@ namespace BluePrints.Common.Projections
         public int? SubjobId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+
+        public int? ResourceSeqNo { get; set; }
     }
 
     public class PrimeroCommodity
     {
         public int? Id { get; set; }
         public int? DisciplineId { get; set; }
-        public int? ResourceId { get; set; }
+        public int? ResourceSeqNo { get; set; }
         public int? SubJobNo { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
