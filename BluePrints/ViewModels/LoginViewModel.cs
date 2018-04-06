@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername)
                     //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
-                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "PETER.GRIGSBY");
+                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "BEN.DAVIES");
                 else
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
 

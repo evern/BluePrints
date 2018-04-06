@@ -164,6 +164,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
         {
+            MainViewModel.RawPasteOverride = rawPasteOverride;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -213,6 +214,84 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void rawPasteOverride(IEnumerable<string> rowData)
+        {
+            foreach (string row in rowData)
+            {
+                List<string> ColumnStrings = row.Split('\t').ToList();
+                if (ColumnStrings.Count < 3)
+                    continue;
+
+                ExoSubJobProjection tempSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
+                tempSubJobProjection.SubJob = new PrimeroSubJob();
+                tempSubJobProjection.SubJob.Code = ColumnStrings[0];
+                tempSubJobProjection.Discipline = new PrimeroDiscipline();
+                tempSubJobProjection.Discipline.Code = ColumnStrings[1];
+                tempSubJobProjection.Commodity = new PrimeroCommodity();
+                tempSubJobProjection.Commodity.Code = ColumnStrings[2];
+
+                tempSubJobProjection.AuthUsers = new System.Collections.ObjectModel.ObservableCollection<ExoSubJobAuth>();
+                ExoSubJobProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJob.Code == tempSubJobProjection.SubJob.Code);
+                if (existingSameSubJobLine != null)
+                {
+                    foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                    {
+                        ExoSubJobAuth newUser = new ExoSubJobAuth();
+                        DataUtils.ShallowCopy(newUser, authUser);
+                        tempSubJobProjection.AuthUsers.Add(newUser);
+                    }
+                }
+
+                MainViewModel.Entities.Add(tempSubJobProjection);
+            }
+
+            this.RaisePropertyChanged(x => x.DisplayEntities);
+        }
+
+        public bool CanCommitUnbookableToExo()
+        {
+            if (DisplayEntities == null)
+                return false;
+
+            return DisplayEntities.Any(x => x.SubJob.Id == null);
+        }
+
+        public void CommitUnbookableToExo()
+        {
+            JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
+            JOBCOST_LINES masterLine = ExoQueries.GetProjectLineByCode(primeroUnitOfWork, loadPROJECT.NUMBER);
+            foreach (ExoSubJobProjection projection in DisplayEntities.Where(x => !x.IsLineExistsInExo))
+            {
+                int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER);
+                if (subJobId != null)
+                {
+                    projection.SubJob.Id = subJobId;
+                }
+
+                int? disciplineId = ExoMethods.findExistingOrAddDiscipline(projection.Discipline.Code);
+                if (disciplineId != null)
+                {
+                    projection.Discipline.Id = disciplineId;
+                    int? commodityId = ExoMethods.findExistingOrAddCommodity(projection.Commodity.Code, string.Empty, (int)disciplineId);
+                    if (commodityId != null)
+                    {
+                        projection.Commodity.Id = commodityId;
+                        projection.LineId = ExoMethods.findExistingOrAddLine(projection, masterLine, loadPROJECT.NUMBER);
+                        projection.Update();
+                    }
+                }
+            }
+        }
+
+        public void RemoveSelected()
+        {
+            List<ExoSubJobProjection> removeProjections = DisplaySelectedEntities.Where(x => x.IsLineExistsInExo).ToList();
+            foreach(ExoSubJobProjection removeProjection in removeProjections)
+                MainViewModel.Entities.Remove(removeProjection);
+
+            this.RaisePropertyChanged(x => x.DisplayEntities);
+        }
+
         private void refreshPermissions()
         {
             this.RaisePropertyChanged(x => x.Users);
@@ -226,9 +305,9 @@ namespace BluePrints.ViewModels
             bool newValue = (bool)e.Value;
             if (newValue)
             {
-                foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
+                foreach(ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJob != null && x.SubJob.Id != null))
                 {
-                    ExoMethods.findExistingOrAddResourceAllocation(editingSubJobAuth, selectedEntity);
+                    ExoMethods.findExistingOrAddResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJob.Id);
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
                 }
@@ -237,12 +316,12 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                foreach (ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
+                foreach (ExoSubJobProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJob != null && x.SubJob.Id != null))
                 {
                     ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                     if (existingPermission != null)
                     {
-                        ExoMethods.deleteResourceAllocation(editingSubJobAuth, selectedEntity);
+                        ExoMethods.deleteResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJob.Id);
                         selectedEntity.AuthUsers.Remove(existingPermission);
                         e.Handled = true;
                     }

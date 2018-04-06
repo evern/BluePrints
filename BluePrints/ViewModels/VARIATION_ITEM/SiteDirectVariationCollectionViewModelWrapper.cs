@@ -89,9 +89,9 @@ namespace BluePrints.ViewModels
             mainViewModel.ManualPasteAction = ManualPasteAction;
         }
 
-        public void ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMVariation pasteEntity)
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMVariation pasteEntity)
         {
-            ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
+            return ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
         }
 
         //when internal number is not unique, do not set internal number property

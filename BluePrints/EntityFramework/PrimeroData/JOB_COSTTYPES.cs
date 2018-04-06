@@ -22,7 +22,7 @@ namespace BluePrints.PrimeroData
         public string SHOWONQUOTE { get; set; }
 
         [Required]
-        [StringLength(3)]
+        [StringLength(4)]
         public string SHORTCODE { get; set; }
 
         public int? DEF_COSTGROUP { get; set; }
