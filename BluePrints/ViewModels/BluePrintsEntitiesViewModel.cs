@@ -245,7 +245,7 @@ namespace BluePrints.ViewModels
 
         private void initializeCategoryDescription()
         {
-            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", null, null, null, true, true, @"Programming\Project_16x16.png");
+            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", null, null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(myProjectCategoryId, projectCategoryId, "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
             myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(myTenderCategoryId, projectCategoryId, "My Tenders", null, null, null, null, true, false, @"Business Objects\BOReport2_16x16.png");
@@ -544,12 +544,14 @@ namespace BluePrints.Common.ViewModel
     {
         List<BluePrintsEntitiesModuleDescription> menuItems;
         Action<object> navigateAction;
-        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null)
+        public bool Animate { get; set; }
+        public BluePrintsEntitiesModuleDescription(object id, object parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false)
             : base(id, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode)
         {
             this.menuItems = menuItems;
             this.navigateAction = navigateAction;
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
+            this.Animate = showAnimation;
             if(imagePath != string.Empty)
                 Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/" + imagePath));
             else
@@ -564,11 +566,8 @@ namespace BluePrints.Common.ViewModel
 
         public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }
 
-        public override string ToString()
-        {
-            return this.NavigationTitle;
-        }
-
+        public string Caption => this.NavigationTitle;
+        
         public ContextMenu Menu
         {
             get

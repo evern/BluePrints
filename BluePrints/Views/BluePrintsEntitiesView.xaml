@@ -5,6 +5,31 @@
         <dxmvvm:CurrentWindowService ClosingCommand="{Binding OnClosingCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
+        <DataTemplate x:Key="NotificationTemplate">
+            <TextBlock Text="{Binding Caption}">
+                <TextBlock.RenderTransform>
+                    <TranslateTransform x:Name="transTransform1" X="0" Y="0" />
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Animate}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Name="bounce">
+                            <Storyboard>
+                                <DoubleAnimation AutoReverse="True" RepeatBehavior="10x" Storyboard.TargetName="transTransform1" Storyboard.TargetProperty="X" From="10" To="0" Duration="00:00:01">
+                                    <DoubleAnimation.EasingFunction>
+                                        <BounceEase Bounces="1" Bounciness="3" EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="bounce" />
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <dxmvvm:ObjectToObjectConverter x:Key="NavigationPaneIsExpandedConverter">
             <dxmvvm:MapItem Source="Minimized" Target="False" />
             <dxmvvm:MapItem Source="Normal" Target="True" />
@@ -96,6 +121,7 @@
                                 </DataTemplate>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="HeaderTemplate" Value="{StaticResource NotificationTemplate}" />
                         <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
                         <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapseMode}" />
                         <Setter Property="ContextMenu" Value="{Binding Menu}" />
