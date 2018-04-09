@@ -720,7 +720,10 @@ namespace BluePrints.ViewModels
                 PauseUndoRedo();
 
             List<ESTIMATE_ITEMProgress> newEntities = getNewEntities(1, false);
-            MainViewModel.BulkSave(newEntities);
+
+            foreach (ESTIMATE_ITEMProgress newEntity in newEntities)
+                MainViewModel.Save(newEntity);
+
             if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }

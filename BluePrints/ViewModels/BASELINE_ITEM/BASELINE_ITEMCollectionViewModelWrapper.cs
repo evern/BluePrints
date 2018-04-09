@@ -873,7 +873,9 @@ namespace BluePrints.ViewModels
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, MainViewModel.Entities, SelectedEntities);
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
-            MainViewModel.BulkSave(newEntities);
+            foreach(BASELINE_ITEMProgress newEntity in newEntities)
+                MainViewModel.Save(newEntity);
+
             //Add undo must happen after save so that variation can pick it up
             foreach (BASELINE_ITEMProgress newEntity in newEntities)
                 AddUndo(newEntity, null, null, null, EntityMessageType.Added);
@@ -935,7 +937,9 @@ namespace BluePrints.ViewModels
 
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, MainViewModel.Entities, SelectedEntities);
 
-            MainViewModel.BulkSave(newEntities);
+            //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
+            foreach(BASELINE_ITEMProgress newEntity in newEntities)
+                MainViewModel.Save(newEntity);
 
             //Add undo must happen after save so that variation can pick it up
             foreach (BASELINE_ITEMProgress newEntity in newEntities)
