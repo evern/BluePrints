@@ -824,7 +824,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + loadPROJECT.GUID.ToString() ,
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "BASELINECollectionView",
-                    "[" + loadPROJECT.NUMBER + "] Baselines");
+                    "[" + loadPROJECT.NUMBER + "] Baseline Revisions");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -837,7 +837,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "ESTIMATECollectionView",
-                    "[" + loadPROJECT.NUMBER + "] Estimates");
+                    "[" + loadPROJECT.NUMBER + "] Estimate Revisions");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -850,7 +850,7 @@ namespace BluePrints.ViewModels
             DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectProgress" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "PROGRESSCollectionView",
-                    "[" + loadPROJECT.NUMBER + "] Progresses");
+                    "[" + loadPROJECT.NUMBER + "] Progress Revisions");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
