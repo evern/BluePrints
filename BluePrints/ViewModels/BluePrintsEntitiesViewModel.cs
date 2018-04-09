@@ -524,7 +524,7 @@ namespace BluePrints.ViewModels
             {
                 string registerCategoryId = "View_RegisterCategory" + keyString;
 
-                BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false);
+                BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false, false, @"Miscellaneous\Content_16x16.png");
                 design_category_description.ChildModules.Add(registerCategoryDescription);
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issue Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issue Register", false, false, @"Support\Issue_16x16.png"));
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register", false, false, @"Scheduling\ChangeStatus_16x16.png"));
