@@ -514,7 +514,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Native Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Native Permission", false, false, @"Business Objects\BOUser_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
@@ -585,7 +585,7 @@ namespace BluePrints.Common.ViewModel
                             newMenuItem.Icon = image;
                         }
 
-                        newMenuItem.Header = item.ModuleTitle;
+                        newMenuItem.Header = item.NavigationTitle;
                         newMenuItem.Command = new RelayCommand(navigateAction);
                         newMenuItem.CommandParameter = item;
                         menu.Items.Add(newMenuItem);

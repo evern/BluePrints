@@ -237,7 +237,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Procurement Sub Job" FieldName="Entity.Entity.GUID_PSUBJOB" HeaderToolTip="Procurement sub job category for reporting. Automatically assigned field" ReadOnly="True" Visible="{Binding DataContext.IsProcurementSubjobVisible, ElementName=userControl}" VisibleIndex="2">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.ProcurementSUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" FilterPopupMode="CheckedList" Tag="True;True;Autofill from workpack, discipline and discipline number" Visible="true">

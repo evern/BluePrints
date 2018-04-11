@@ -302,6 +302,8 @@ namespace BluePrints.ViewModels
                 AREAViewModel.Save(defaultArea);
 
                 PHASE defaultDirectPhase = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == "D1");
+                PHASE defaultIndirectPhase = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == "I1");
+
                 DEPARTMENT defaultDepartment = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Department);
                 DISCIPLINE defaultDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Discipline);
                 DOCTYPE defaultDocType = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_DocType);
@@ -327,19 +329,19 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                if(defaultDirectPhase != null)
-                {
-                    SUBJOB newSUBJOB = new SUBJOB();
-                    newSUBJOB.GUID_PROJECT = entity.GUID;
-                    newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
-                    newSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                    newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
-                    newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
-                    newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
-                    newSUBJOB.GUID_DAREA = defaultArea.GUID;
-                    newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
-                    SUBJOBViewModel.Save(newSUBJOB);
+                SUBJOB newSUBJOB = new SUBJOB();
+                newSUBJOB.GUID_PROJECT = entity.GUID;
+                newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
+                newSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                newSUBJOB.GUID_DAREA = defaultArea.GUID;
+                newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                SUBJOBViewModel.Save(newSUBJOB);
 
+                if (defaultDirectPhase != null)
+                {
                     //if (defaultDepartment != null && defaultDiscipline != null)
                     //{
 
@@ -381,24 +383,6 @@ namespace BluePrints.ViewModels
                             dmBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
                             dmBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             BASELINE_ITEMViewModel.Save(dmBASELINE_ITEM);
-                        }
-
-                        DOCTYPE g02DOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "G02");
-                        DEPARTMENT adDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "AD");
-                        if (g02DOCTYPE != null && adDEPARTMENT != null)
-                        {
-                            BASELINE_ITEM dcBASELINE_ITEM = new BASELINE_ITEM();
-                            dcBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
-                            dcBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
-                            dcBASELINE_ITEM.GUID_DEPARTMENT = adDEPARTMENT.GUID;
-                            dcBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
-                            dcBASELINE_ITEM.GUID_DOCTYPE = g02DOCTYPE.GUID;
-                            dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-G02-PM-001";
-                            dcBASELINE_ITEM.PRIMARY_TITLE = "Document Control";
-                            dcBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
-                            dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
-                            dcBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
-                            BASELINE_ITEMViewModel.Save(dcBASELINE_ITEM);
                         }
                     }
 
@@ -444,6 +428,48 @@ namespace BluePrints.ViewModels
                             rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
                             BASELINE_ITEMViewModel.Save(rptBASELINE_ITEM);
+                        }
+                    }
+                }
+
+                if (defaultIndirectPhase != null)
+                {
+                    SUBJOB indirectDesignSUBJOB = new SUBJOB();
+                    indirectDesignSUBJOB.GUID_PROJECT = entity.GUID;
+                    indirectDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-I1";
+                    indirectDesignSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                    indirectDesignSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                    indirectDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                    indirectDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
+                    indirectDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    SUBJOBViewModel.Save(indirectDesignSUBJOB);
+
+                    DOCTYPE g02DOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "G02");
+                    DEPARTMENT adDEPARTMENT = DEPARTMENTViewModel.Entities.FirstOrDefault(x => x.CODE == "AD");
+                    DISCIPLINE PMDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.CODE == "PM");
+                    if (PMDiscipline != null)
+                    {
+                        WORKPACK pmWORKPACK = new WORKPACK();
+                        pmWORKPACK.GUID_SUBJOB = indirectDesignSUBJOB.GUID;
+                        pmWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        pmWORKPACK.NAME = entity.NUMBER + "-000-00-I1-PM01";
+                        WORKPACKViewModel.Save(pmWORKPACK);
+
+                        if (g02DOCTYPE != null && adDEPARTMENT != null)
+                        {
+                            BASELINE_ITEM dcBASELINE_ITEM = new BASELINE_ITEM();
+                            dcBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                            dcBASELINE_ITEM.GUID_SUBJOB = indirectDesignSUBJOB.GUID;
+                            dcBASELINE_ITEM.GUID_DEPARTMENT = adDEPARTMENT.GUID;
+                            dcBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                            dcBASELINE_ITEM.GUID_DOCTYPE = g02DOCTYPE.GUID;
+                            dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-G02-PM-001";
+                            dcBASELINE_ITEM.PRIMARY_TITLE = "Document Control";
+                            dcBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
+                            dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                            dcBASELINE_ITEM.GUID_PHASE = defaultIndirectPhase.GUID;
+                            BASELINE_ITEMViewModel.Save(dcBASELINE_ITEM);
                         }
                     }
                 }

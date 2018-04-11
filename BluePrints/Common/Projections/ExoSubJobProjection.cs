@@ -733,7 +733,8 @@ namespace BluePrints.Common.Projections
                                  on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber && !SUBJOB.JOBCODE.Contains("D1") && !SUBJOB.JOBCODE.Contains("I1")
+                                 //where MAINJOB.JOBCODE == projectNumber && !SUBJOB.JOBCODE.Contains("D1") && !SUBJOB.JOBCODE.Contains("I1")
+                                 where MAINJOB.JOBCODE == projectNumber
                                  select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC };
 
 

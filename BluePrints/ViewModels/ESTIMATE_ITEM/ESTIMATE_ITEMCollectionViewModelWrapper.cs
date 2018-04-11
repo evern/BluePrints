@@ -1214,6 +1214,7 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<SUBJOB>();
+                //Cannot filter by PHASE TYPE because upon first addition navigational properties for Collection cannot be obtained
                 if (collection != null)
                     collection = collection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Procurement).OrderBy(x => x.INTERNAL_NAME1);
                 return collection;

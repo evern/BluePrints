@@ -362,6 +362,11 @@ namespace BluePrints.ViewModels
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
             JOBCOST_LINES masterLine = ExoQueries.GetProjectLineByCode(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if(masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >=5 )
+            {
+                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact Michelle Wilson or Ryan McFarlane to enable this feature");
+                return;
+            }
 
             if(masterJob == null)
             {
