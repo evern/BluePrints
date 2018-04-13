@@ -88,7 +88,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -96,10 +97,10 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(USER entity)
+        public void OnAfterEntitySaved(USER projection, USER entity, bool isNewEntity)
         {
-            entity.EXO_STAFF_ID = getExoStaffId(entity);
-            return true;
+            if(isNewEntity && entity.EXO_STAFF_ID == null)
+                entity.EXO_STAFF_ID = getExoStaffId(entity);
         }
         #endregion
 
