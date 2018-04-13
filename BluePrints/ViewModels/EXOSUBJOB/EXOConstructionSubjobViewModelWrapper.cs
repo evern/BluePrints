@@ -316,6 +316,17 @@ namespace BluePrints.ViewModels
                     ExoMethods.findExistingOrAddResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJob.Id);
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
+
+                    foreach (ExoSubJobProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJob != null && x.SubJob.Id == selectedEntity.SubJob.Id))
+                    {
+                        ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
+                        if (findAuth == null)
+                        {
+                            sameSubJobEntity.AuthUsers.Add(editingSubJobAuth);
+                        }
+                        else if (findAuth.IsAssigned == null || !(bool)findAuth.IsAssigned)
+                            findAuth.IsAssigned = true;
+                    }
                 }
 
                 e.Handled = true;
@@ -330,6 +341,13 @@ namespace BluePrints.ViewModels
                         ExoMethods.deleteResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJob.Id);
                         selectedEntity.AuthUsers.Remove(existingPermission);
                         e.Handled = true;
+                    }
+
+                    foreach (ExoSubJobProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJob != null && x.SubJob.Id == selectedEntity.SubJob.Id))
+                    {
+                        ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
+                        if (findAuth != null)
+                            sameSubJobEntity.AuthUsers.Remove(findAuth);
                     }
                 }
             }

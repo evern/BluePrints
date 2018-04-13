@@ -354,10 +354,14 @@ namespace BluePrints.ViewModels
 
         public void FixProgressItem()
         {
+            if (MessageBoxService.ShowMessage("Fixing data will cause some progress to be changed, it is recommended to copy and paste a currency copy of progress to excel before continuing, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
             //update progress items so that it is accurate at run time
             IBluePrintsEntitiesUnitOfWork uow = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             IQueryable<PROGRESS_ITEM> allProgress = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID);
             List<PROGRESS_ITEM> progressItemToDelete = new List<PROGRESS_ITEM>();
+            int fixedCount = 0;
             foreach (PROGRESS_ITEM progress_item in allProgress)
             {
                 List<PROGRESS_ITEM> deliverablePROGRESS = allProgress.Where(x => x.GUID_ORIBASEITEM == progress_item.GUID_ORIBASEITEM).ToList();
@@ -369,7 +373,10 @@ namespace BluePrints.ViewModels
                     foreach (PROGRESS_ITEM progressItem in progressOnSameDate)
                     {
                         if (deleteAll)
+                        {
                             progressItemToDelete.Add(progressItem);
+
+                        }
                         else if (firstSelected)
                             progressItemToDelete.Add(progressItem);
                         else
@@ -377,6 +384,8 @@ namespace BluePrints.ViewModels
                             progressItem.EARNED_UNITS = progressOnSameDate.Sum(x => x.EARNED_UNITS);
                             firstSelected = true;
                         }
+
+                        fixedCount += 1;
                     }
                 }
 
@@ -393,6 +402,7 @@ namespace BluePrints.ViewModels
 
             uow.SaveChanges();
             FullRefresh();
+            MessageBoxService.ShowMessage(fixedCount + " progress fixed");
         }
 
         private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue)
