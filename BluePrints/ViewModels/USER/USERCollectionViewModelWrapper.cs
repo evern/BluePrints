@@ -254,8 +254,7 @@ namespace BluePrints.ViewModels
         public void Import()
         {
             var selectEntitiesViewModel = USERSelectionViewModel.Create(MainViewModel.Entities);
-            if (USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView",
-                    selectEntitiesViewModel) == MessageResult.OK)
+            if (USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView", selectEntitiesViewModel) == MessageResult.OK)
             {
                 List<USER> add_new_users = new List<USER>();
                 foreach(USER selected_entity in selectEntitiesViewModel.SelectedEntities)

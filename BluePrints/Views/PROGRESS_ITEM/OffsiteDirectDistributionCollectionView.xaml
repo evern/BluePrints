@@ -22,6 +22,7 @@
                                 <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
                                 <dxb:BarCheckItem Content="Cell Selection" ToolTip="Change selection to cells instead of row" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" />
                                 <dxb:BarButtonItem Content="Export" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                <dxb:BarButtonItem Content="Fix Data" ToolTip="Fix the data in database in case anything unexpected happens" Command="{Binding DataContext.FixProgressItemCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=IDE_32x32.png}" Glyph="{dxc:DXImage Image=IDE_16x16.png}" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />

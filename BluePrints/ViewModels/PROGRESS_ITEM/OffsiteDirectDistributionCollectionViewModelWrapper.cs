@@ -352,6 +352,49 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
+        public void FixProgressItem()
+        {
+            //update progress items so that it is accurate at run time
+            IBluePrintsEntitiesUnitOfWork uow = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IQueryable<PROGRESS_ITEM> allProgress = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID);
+            List<PROGRESS_ITEM> progressItemToDelete = new List<PROGRESS_ITEM>();
+            foreach (PROGRESS_ITEM progress_item in allProgress)
+            {
+                List<PROGRESS_ITEM> deliverablePROGRESS = allProgress.Where(x => x.GUID_ORIBASEITEM == progress_item.GUID_ORIBASEITEM).ToList();
+                List<PROGRESS_ITEM> progressOnSameDate = deliverablePROGRESS.Where(x => x.EARNED_DATE.Date == progress_item.EARNED_DATE.Date).ToList();
+                if (progressOnSameDate.Count > 1)
+                {
+                    bool firstSelected = false;
+                    bool deleteAll = progressOnSameDate.Sum(x => x.EARNED_UNITS) == 0;
+                    foreach (PROGRESS_ITEM progressItem in progressOnSameDate)
+                    {
+                        if (deleteAll)
+                            progressItemToDelete.Add(progressItem);
+                        else if (firstSelected)
+                            progressItemToDelete.Add(progressItem);
+                        else
+                        {
+                            progressItem.EARNED_UNITS = progressOnSameDate.Sum(x => x.EARNED_UNITS);
+                            firstSelected = true;
+                        }
+                    }
+                }
+
+                if (progress_item.EARNED_DATE.Hour == 0)
+                {
+                    progress_item.EARNED_DATE = progress_item.EARNED_DATE.AddDays(1).AddSeconds(-1);
+                }
+            }
+
+            foreach (PROGRESS_ITEM progressItemDelete in progressItemToDelete)
+            {
+                uow.PROGRESS_ITEMS.Remove(progressItemDelete);
+            }
+
+            uow.SaveChanges();
+            FullRefresh();
+        }
+
         private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue)
         {
             DateTime columnDate;
@@ -375,6 +418,12 @@ namespace BluePrints.ViewModels
                     decimal totalUnitsDifferences = percentageDifference * currentProgressMaximumUnits;
                     decimal maximumEarnUnits = currentProgressMaximumUnits;
 
+                    //update progress items so that it is accurate at run time
+                    IBluePrintsEntitiesUnitOfWork uow = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+                    //refresh from database routine
+                    List<PROGRESS_ITEM> setDeliverableProgress = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == entity.OriginalEntityKey).ToList();
+                    entity.SetProgressItems(setDeliverableProgress);
+
                     IEnumerable<PROGRESS_ITEM> previousProgresses = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE.Date == currentProgressDate.Date);
                     List<PROGRESS_ITEM> futureProgressToEdit = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
@@ -385,7 +434,6 @@ namespace BluePrints.ViewModels
                         PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
                         newPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
                         newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
-                        newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                         newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                         progressToSave.Add(newPROGRESS_ITEM);
@@ -402,6 +450,8 @@ namespace BluePrints.ViewModels
 
                         decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
                         currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                        //use this to fix time issue
+                        currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
                         progressToSave.Add(currentPeriodPROGRESS_ITEM);
                     }
