@@ -468,10 +468,14 @@ namespace BluePrints.ViewModels
 
         public async void Refresh_From_P6()
         {
+#if HYBRID
+            MessageBoxService.ShowMessage("Please recalculate stats from Perth office");
+#else
             LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
             LoadingScreenManager.Progress();
             FullRefresh();
+#endif
         }
 
         public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value)
@@ -503,9 +507,9 @@ namespace BluePrints.ViewModels
 
             return string.Empty;
         }
-        #endregion
+#endregion
 
-        #region View Properties
+#region View Properties
         protected override void OnAfterSelectedEntitiesChanged()
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseSelectionChanged()));
@@ -944,6 +948,6 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-        #endregion
+#endregion
     }
 }

@@ -20,8 +20,13 @@ namespace BluePrints
             this.Title = "BluePrints";
             Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));
 #else
-            this.Title = "BluePrints BETA";
-            Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/LogoBeta.ico", UriKind.Absolute));
+    #if HYBRID
+                this.Title = "BluePrints";
+                Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));
+    #else
+                this.Title = "BluePrints BETA";
+                Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/LogoBeta.ico", UriKind.Absolute));
+    #endif
 #endif
         }
     }
