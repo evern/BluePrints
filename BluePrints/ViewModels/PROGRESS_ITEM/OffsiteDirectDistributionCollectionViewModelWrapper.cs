@@ -444,6 +444,7 @@ namespace BluePrints.ViewModels
                         PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
                         newPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
                         newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+                        newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                         newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                         progressToSave.Add(newPROGRESS_ITEM);
