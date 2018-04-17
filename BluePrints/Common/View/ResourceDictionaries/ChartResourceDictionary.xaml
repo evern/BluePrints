@@ -42,7 +42,7 @@
         <Setter Property="ArgumentScaleType" Value="DateTime" />
         <Setter Property="ValueDataMember" Value="{Binding DataContext.BarSeriesValueDataMember, ElementName=userControl}" />
         <Setter Property="ValueScaleType" Value="Numerical" />
-        <Setter Property="BarWidth" Value="7" />
+        <Setter Property="BarWidth" Value="5" />
         <Setter Property="CheckableInLegend" Value="True" />
     </Style>
     <collections:ArrayList x:Key="dashboardXYChartSeries">
