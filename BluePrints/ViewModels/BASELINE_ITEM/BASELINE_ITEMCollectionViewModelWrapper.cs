@@ -714,6 +714,11 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
+            if(isNew)
+            {
+                projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
+            }
+
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
                 if ((bool)new_value)

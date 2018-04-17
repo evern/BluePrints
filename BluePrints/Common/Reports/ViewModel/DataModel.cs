@@ -588,6 +588,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return;
 
             StatSummarizer.SetBudgetDataPoints(weightingPortion);
+            StatSummarizer.SetCurrentDataPoints(weightingPortion);
         }
         #endregion
 

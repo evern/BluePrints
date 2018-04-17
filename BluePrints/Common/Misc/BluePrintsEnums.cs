@@ -20,6 +20,12 @@ namespace BluePrints.Common
         }
     }
 
+    public enum Office
+    {
+        [Display(Name = "Perth")] Perth = 0,
+        [Display(Name = "Montreal")] Montreal = 1,
+    }
+
     public enum DeliverableInternalNumberMode
     {
         [Display(Name = "Only Editable On Unprogressed")] Default = 0,

@@ -42,6 +42,8 @@ namespace BluePrints.Data
         [Required]
         public int DISCIPLINE_NUM { get; set; }
 
+        public Office OFFICE { get; set; }
+
         [StringLength(200)]
         public string INTERNAL_NUM { get; set; }
 

@@ -108,6 +108,11 @@
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Current, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Current_Units, ElementName=userControl}" HeaderToolTip="Schedule planned and variation to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding DataContext.Header_BudgetedLate, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_PlannedLate_Units, ElementName=userControl}" HeaderToolTip="Schedule late planned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -141,6 +146,11 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" HeaderToolTip="Planned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Current, ElementName=userControl}" FieldName="{Binding DataContext.Period_Current_Units, ElementName=userControl}" HeaderToolTip="Planned and variation for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

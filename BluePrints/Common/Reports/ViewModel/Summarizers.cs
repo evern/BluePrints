@@ -84,6 +84,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void BuildBudgetedOnly(decimal weightingPortion = 1)
         {
             SetBudgetDataPoints(weightingPortion);
+            SetCurrentDataPoints(weightingPortion);
         }
 
         public void BuildEarnedAndRemaining(decimal weightingPortion = 1)
@@ -201,6 +202,67 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetCurrentDataPoints(decimal weightingPortion = 1)
         {
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
+            {
+                List<StoredProcedure_PlannedDataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(this.projectNumber);
+
+                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                {
+                    ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
+                    if (reportablesDisplay != null)
+                    {
+                        IReportable_Group reportable_Group = reportablesDisplay.ProgressItem as IReportable_Group;
+                        if (reportable_Group != null)
+                        {
+                            List<StoredProcedure_PlannedDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                            foreach (IReportable reportable in reportable_Group.Reportables)
+                            {
+                                reportable.Stats.Current.SetPlannedData(currentDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                reportable.Update();
+                                currentGroupDeliverableDataPoints.AddRange(currentDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                            }
+
+                            reportable_Group.Stats.Current.SetPlannedData(currentGroupDeliverableDataPoints);
+                            reportable_Group.Update();
+                            continue;
+                        }
+                        else
+                        {
+                            reportablesDisplay.Stats.Current.SetPlannedData(currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
+                            reportablesDisplay.Update();
+                        }
+                    }
+                    else
+                    {
+                        List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                        foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        {
+                            if (reportableObject.AssignedUsers.Count() > 0)
+                            {
+                                foreach (User_Weight user in reportableObject.AssignedUsers)
+                                {
+                                    StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                                    DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                    weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                    weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                    weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                                }
+                            }
+                            else
+                            {
+                                StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                                DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                            }
+                        }
+
+                        reportableObject.Stats.Current.SetPlannedData(weightedPlannedDataPoints);
+                        reportableObject.Update();
+                    }
+
+                    LoadingScreenManager.Progress();
+                }
+            }
         }
 
         private void SummarizeRemainingDataPointsFromQuery(string ProjectNumber)

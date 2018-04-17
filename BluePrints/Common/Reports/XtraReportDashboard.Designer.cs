@@ -56,6 +56,10 @@
             DevExpress.XtraCharts.LineSeriesView lineSeriesView6 = new DevExpress.XtraCharts.LineSeriesView();
             DevExpress.XtraCharts.Series series12 = new DevExpress.XtraCharts.Series();
             DevExpress.XtraCharts.SideBySideBarSeriesView sideBySideBarSeriesView6 = new DevExpress.XtraCharts.SideBySideBarSeriesView();
+            DevExpress.XtraCharts.Series series13 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.SideBySideBarSeriesView sideBySideBarSeriesView7 = new DevExpress.XtraCharts.SideBySideBarSeriesView();
+            DevExpress.XtraCharts.Series series14 = new DevExpress.XtraCharts.Series();
+            DevExpress.XtraCharts.LineSeriesView lineSeriesView7 = new DevExpress.XtraCharts.LineSeriesView();
             DevExpress.XtraReports.Parameters.StaticListLookUpSettings staticListLookUpSettings1 = new DevExpress.XtraReports.Parameters.StaticListLookUpSettings();
             this.Detail = new DevExpress.XtraReports.UI.DetailBand();
             this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
@@ -139,6 +143,10 @@
             ((System.ComponentModel.ISupportInitialize)(lineSeriesView6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(series12)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series13)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(series14)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -904,6 +912,25 @@
             sideBySideBarSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             sideBySideBarSeriesView6.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series12.View = sideBySideBarSeriesView6;
+            series13.ArgumentDataMember = "Current.DataPoints.ProgressDate";
+            series13.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series13.Name = "Period Current";
+            series13.ShowInLegend = false;
+            series13.ValueDataMembersSerializable = "Current.DataPoints.Units";
+            sideBySideBarSeriesView7.AxisYName = "Secondary AxisY Units";
+            sideBySideBarSeriesView7.BarWidth = 3D;
+            sideBySideBarSeriesView7.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
+            sideBySideBarSeriesView7.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
+            sideBySideBarSeriesView7.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
+            series13.View = sideBySideBarSeriesView7;
+            series14.ArgumentDataMember = "Current.CumulativeDataPoints.ProgressDate";
+            series14.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            series14.Name = "Current";
+            series14.ValueDataMembersSerializable = "Current.CumulativeDataPoints.UnitsPercentage";
+            lineSeriesView7.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
+            lineSeriesView7.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
+            lineSeriesView7.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
+            series14.View = lineSeriesView7;
             this.xrChart1.SeriesSerializable = new DevExpress.XtraCharts.Series[] {
         series1,
         series2,
@@ -916,7 +943,9 @@
         series9,
         series10,
         series11,
-        series12};
+        series12,
+        series13,
+        series14};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1605F, 846.736F);
             // 
             // objectDataSource1
@@ -1023,6 +1052,10 @@
             ((System.ComponentModel.ISupportInitialize)(series11)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(series12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesView7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series13)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(lineSeriesView7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(series14)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();

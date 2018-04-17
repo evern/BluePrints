@@ -233,6 +233,11 @@
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Can Book" FieldName="CanBook" HeaderToolTip="Time can be booked in exo" ReadOnly="True" FilterPopupMode="CheckedList" />
+                        <dxg:GridColumn Header="Office" FieldName="Entity.Entity.OFFICE" FilterPopupMode="CheckedList">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name" FilterPopupMode="CheckedList">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
@@ -287,6 +292,8 @@
                                 <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
                                 <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding View.DataContext.KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
                                 <dxb:BarButtonItem Content="Paste" ToolTip="Ctrl + V" Command="{Binding View.DataContext.KeyboardPasteCommand}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" Glyph="{dx:DXImage Image=Paste_16x16.png}" />
+                                <dxb:BarButtonItem Content="Fill Up" ToolTip="Replicate column values for selected rows starting from last selection" Command="{Binding View.DataContext.FillUpCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" Name="contextMenuFillUp" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                <dxb:BarButtonItem Content="Fill Down" ToolTip="Replicate column values for selected rows starting from first selection" Command="{Binding View.DataContext.FillDownCommand}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" Name="contextMenuFillDown" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
                                 <dxb:BarItemLinkSeparator />

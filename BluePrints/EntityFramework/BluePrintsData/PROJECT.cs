@@ -29,6 +29,8 @@ namespace BluePrints.Data
 
         public ProjectType TYPE { get; set; }
 
+        public Office OFFICE { get; set; }
+
         public Guid? GUID_MANAGEUSER { get; set; }
 
         public decimal CURRENCYCONVERSION { get; set; }

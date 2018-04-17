@@ -336,6 +336,13 @@ namespace BluePrints.ViewModels
                 newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
                 newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                 newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+
+                if(entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+                {
+                    newSUBJOB.BELLSHAPEPARAMA = 0.5m;
+                    newSUBJOB.BELLSHAPEPARAMB = 0m;
+                }
+ 
                 newSUBJOB.GUID_DAREA = defaultArea.GUID;
                 newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                 SUBJOBViewModel.Save(newSUBJOB);
@@ -356,6 +363,12 @@ namespace BluePrints.ViewModels
                     defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     defaultDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
                     defaultDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+                    {
+                        defaultDesignSUBJOB.BELLSHAPEPARAMA = 0.5m;
+                        defaultDesignSUBJOB.BELLSHAPEPARAMB = 0m;
+                    }
+
                     SUBJOBViewModel.Save(defaultDesignSUBJOB);
 
                     DISCIPLINE PMDiscipline = DISCIPLINEViewModel.Entities.FirstOrDefault(x => x.CODE == "PM");
@@ -443,6 +456,12 @@ namespace BluePrints.ViewModels
                     indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     indirectDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
                     indirectDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+                    {
+                        indirectDesignSUBJOB.BELLSHAPEPARAMA = 0.5m;
+                        indirectDesignSUBJOB.BELLSHAPEPARAMB = 0m;
+                    }
+
                     SUBJOBViewModel.Save(indirectDesignSUBJOB);
 
                     DOCTYPE g02DOCTYPE = DOCTYPEViewModel.Entities.FirstOrDefault(x => x.CODE == "G02");
@@ -554,7 +573,7 @@ namespace BluePrints.ViewModels
                 ProjectStatus oldStatus = (ProjectStatus)old_value;
                 ProjectStatus newStatus = (ProjectStatus)new_value;
                 //switching between tender won't do anything
-                if ((oldStatus == ProjectStatus.Tender || oldStatus == ProjectStatus.TenderSubmitted) && (newStatus != ProjectStatus.Tender || newStatus != ProjectStatus.TenderSubmitted))
+                if ((oldStatus == ProjectStatus.Tender || oldStatus == ProjectStatus.TenderSubmitted) && (newStatus != ProjectStatus.Tender && newStatus != ProjectStatus.TenderSubmitted))
                 {
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_CHANCE_OF_WIN, null, EntityMessageType.Changed);
                     projection.TENDER_CHANCE_OF_WIN = null;
@@ -565,7 +584,7 @@ namespace BluePrints.ViewModels
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START), projection.TENDER_PROJECT_START, null, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_START = null;
                 }
-                else if ((oldStatus != ProjectStatus.Tender && oldStatus != ProjectStatus.TenderSubmitted) && (newStatus == ProjectStatus.Tender || newStatus == ProjectStatus.TenderSubmitted))
+                else if ((oldStatus != ProjectStatus.Tender || oldStatus != ProjectStatus.TenderSubmitted) && (newStatus == ProjectStatus.Tender || newStatus == ProjectStatus.TenderSubmitted))
                 {
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_CHANCE_OF_WIN, 0, EntityMessageType.Changed);
                     projection.TENDER_CHANCE_OF_WIN = 0;

@@ -50,6 +50,11 @@
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
                                 <dxg:GridColumn Header="Number" FieldName="NUMBER" />
+                                <dxg:GridColumn Header="Office" FieldName="OFFICE">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="Name" FieldName="NAME" />
                                 <dxg:GridColumn Header="Client" FieldName="CLIENT" />
                                 <dxg:GridColumn Header="Status" FieldName="STATUS" HeaderToolTip="Setting status as active/tender will allow project to be accessed through active/tender folder in the navigation menu. Other statuses will hide project navigation">
