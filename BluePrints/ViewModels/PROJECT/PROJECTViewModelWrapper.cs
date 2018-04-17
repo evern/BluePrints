@@ -385,7 +385,7 @@ namespace BluePrints.ViewModels
 
                     if (is_cost)
                     {
-                        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedCosts;
+                        runningTotals += ((IHaveStats)e.Row).Stats.TotalCosts;
 
                         if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
                         {
@@ -416,7 +416,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedUnits;
+                        runningTotals += ((IHaveStats)e.Row).Stats.TotalUnits;
                         if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
                         {
                             if (is_period)
