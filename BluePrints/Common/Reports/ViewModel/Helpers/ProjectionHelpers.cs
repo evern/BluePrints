@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
             foreach (VARIATION variation in ApprovedVARIATION)
             {
-                IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append);
+                IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append || x.ACTION == VariationAction.Cancel);
                 foreach (VARIATION_ITEM variation_item in applicableVariation_Item)
                 {
                     IDeliverable_Rates lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);

@@ -39,5 +39,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         public decimal AdjustmentCumulativeCosts { get; set; }
+
+        public override string ToString()
+        {
+            return AdjustmentUnits.ToString();
+        }
     }
 }
