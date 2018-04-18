@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,8 @@ namespace BluePrints.Data
         public string FIRST_NAME { get; set; }
 
         public string LAST_NAME { get; set; }
+
+        public Office OFFICE { get; set; }
 
         [Required]
         [StringLength(100)]
