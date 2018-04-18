@@ -339,8 +339,7 @@ namespace BluePrints.ViewModels
 
                 if(entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                 {
-                    newSUBJOB.BELLSHAPEPARAMA = 0.5m;
-                    newSUBJOB.BELLSHAPEPARAMB = 0m;
+                    newSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
                 }
  
                 newSUBJOB.GUID_DAREA = defaultArea.GUID;
@@ -365,8 +364,7 @@ namespace BluePrints.ViewModels
                     defaultDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                     if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                     {
-                        defaultDesignSUBJOB.BELLSHAPEPARAMA = 0.5m;
-                        defaultDesignSUBJOB.BELLSHAPEPARAMB = 0m;
+                        defaultDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
                     }
 
                     SUBJOBViewModel.Save(defaultDesignSUBJOB);
@@ -458,8 +456,7 @@ namespace BluePrints.ViewModels
                     indirectDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                     if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                     {
-                        indirectDesignSUBJOB.BELLSHAPEPARAMA = 0.5m;
-                        indirectDesignSUBJOB.BELLSHAPEPARAMB = 0m;
+                        indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
                     }
 
                     SUBJOBViewModel.Save(indirectDesignSUBJOB);

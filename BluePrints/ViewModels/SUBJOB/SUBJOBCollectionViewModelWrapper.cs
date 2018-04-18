@@ -257,10 +257,9 @@ namespace BluePrints.ViewModels
         string message_subjob_internal_name_change = "Do you wish to change subjob internal name too?";
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, SUBJOBProjection projection, bool isNew)
         {
-            if(isNew && (loadPROJECT.STATUS == ProjectStatus.Tender || loadPROJECT.STATUS == ProjectStatus.TenderSubmitted) && (projection.Entity.BELLSHAPEPARAMA == null || projection.Entity.BELLSHAPEPARAMB == null))
+            if(isNew && (loadPROJECT.STATUS == ProjectStatus.Tender || loadPROJECT.STATUS == ProjectStatus.TenderSubmitted) && projection.Entity.BELLCURVESHAPE == null)
             {
-                projection.Entity.BELLSHAPEPARAMA = 0.5m;
-                projection.Entity.BELLSHAPEPARAMB = 0m;
+                projection.Entity.BELLCURVESHAPE = BellCurveShape.Balanced;
             }
 
             if (field_name == "Entity.GUID_DPHASE" || field_name == "Entity.GUID_DDISCIPLINE" || field_name == "Entity.GUID_DDOCTYPE" || field_name == "Entity.GUID_DAREA" || field_name == "Entity.GUID_DSUBAREA")
