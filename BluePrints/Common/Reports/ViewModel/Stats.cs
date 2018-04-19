@@ -39,6 +39,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly DateTime firstAlignedDataDate;
         readonly TimeSpan reportInterval;
         readonly DateTime? extrapolateDate;
+        readonly bool isDebug;
         public bool FromP6 { get; private set; }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool isDebug = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -74,6 +75,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
             this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;
+            this.isDebug = isDebug;
         }
 
         public void SetData(IEnumerable<DataPoint> rawDataPoints)

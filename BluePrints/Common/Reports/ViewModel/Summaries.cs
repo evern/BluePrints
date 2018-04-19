@@ -323,7 +323,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
             Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
             BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
-            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
+            //Current = new Stats(ReportingDataDate, totalUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, null, false, true, extrapolateDate);
+            //Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
+            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true, extrapolateDate);
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true, false, extrapolateDate);
             //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
@@ -352,7 +354,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true);
             BudgetedLate.SetData(cleanProgressStats.Where(x => x.BudgetedLate != null && x.BudgetedLate.DataPoints != null).SelectMany(x => x.BudgetedLate.GetData()).ToList());
 
-            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            //Current = new Stats(ReportingDataDate, totalUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, null, false, true);
+            //Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true);
             Current.SetData(cleanProgressStats.Where(x => x.Current != null && x.Current.DataPoints != null).SelectMany(x => x.Current.GetData()).ToList());
 
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
