@@ -929,6 +929,7 @@
             series14.ValueDataMembersSerializable = "Current.CumulativeDataPoints.UnitsPercentage";
             lineSeriesView7.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
             lineSeriesView7.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
+            lineSeriesView7.LineMarkerOptions.Size = 5;
             lineSeriesView7.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series14.View = lineSeriesView7;
             this.xrChart1.SeriesSerializable = new DevExpress.XtraCharts.Series[] {
