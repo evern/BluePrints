@@ -225,7 +225,7 @@ namespace BluePrints.Data
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
-                dbContext.Database.CommandTimeout = 500;
+                dbContext.Database.CommandTimeout = 5000;
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshAllDataPoints");
                 var i = await returnTask;
             }
@@ -235,6 +235,7 @@ namespace BluePrints.Data
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
+                dbContext.Database.CommandTimeout = 5000;
                 var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesPlannedDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
                 var i = await returnTask;
@@ -245,6 +246,7 @@ namespace BluePrints.Data
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
+                dbContext.Database.CommandTimeout = 5000;
                 var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
                 var i = await returnTask;
