@@ -32,6 +32,8 @@ namespace BluePrints.Data
 
         public bool IS_AREA_SIGNIFICANT { get; set; }
 
+        public bool IS_INDIRECT_ONLY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

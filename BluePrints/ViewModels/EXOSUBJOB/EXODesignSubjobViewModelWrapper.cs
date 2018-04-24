@@ -401,9 +401,17 @@ namespace BluePrints.ViewModels
             int updatedLineCount = 0;
             foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
             {
+                ChargeType? subjobPhaseType = selectedLine.SubJob == null ? null : selectedLine.SubJob.ChargeType;
+                bool isIndirectOnly = selectedLine.Commodity == null ? false : selectedLine.Commodity.IsIndirectOnly;
+
+                if(subjobPhaseType == ChargeType.Direct && isIndirectOnly)
+                {
+                    MessageBoxService.ShowMessage("This commodity can only be assigned to indirect subjobs");
+                    continue;
+                }
+
                 if(!selectedLine.IsLineExistsInExo)
                 {
-                    
                     if (selectedLine.SubJob.Id == null)
                     {
                         int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJob.Code, masterJob, loadPROJECT.NUMBER);

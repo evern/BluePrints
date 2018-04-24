@@ -463,6 +463,7 @@ namespace BluePrints.Common.Projections
                         newSubJob.MasterId = exoAuthorisations.First().MasterJobNo;
                 }
 
+                newSubJob.ChargeType = groupedDeliverable.SubJob == null ? null : groupedDeliverable.SubJob.PHASE == null ? null : groupedDeliverable.SubJob.PHASE.CHARGE_TYPE;
                 ExoTimeAuthorisation exoDisciplineAuthorisation = exoAuthorisations.FirstOrDefault(x => x.DisciplineCode == groupedDeliverable.DisciplineCode);
                 PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
                 if(exoDisciplineAuthorisation != null)
@@ -492,6 +493,8 @@ namespace BluePrints.Common.Projections
                     newCommodity.Code = groupedDeliverable.Commodity.CODE;
                     newCommodity.Name = groupedDeliverable.Commodity.NAME;
                 }
+
+                newCommodity.IsIndirectOnly = groupedDeliverable.Commodity == null ? false : groupedDeliverable.Commodity.IS_INDIRECT_ONLY;
 
                 newSubJobProjection.SubJob = newSubJob;
                 newSubJobProjection.Discipline = newDiscipline;
@@ -829,6 +832,7 @@ namespace BluePrints.Common.Projections
         public int? DebtorId { get; set; }
         public int JobCategory { get; set; }
         public int JobType { get; set; }
+        public ChargeType? ChargeType { get; set; }
 
         public int? ResourceSeqNo { get; set; }
     }
@@ -853,6 +857,7 @@ namespace BluePrints.Common.Projections
         public string Name { get; set; }
         public string StockCode { get; set; }
         public string StockDescription { get; set; }
+        public bool IsIndirectOnly { get; set; }
     }
 
     public class PrimeroResource
