@@ -676,7 +676,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "17.2";
+            this.Version = "18.1";
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 

@@ -553,14 +553,14 @@ namespace BluePrints.Common.ViewModel
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
             this.Animate = showAnimation;
             if(imagePath != string.Empty)
-                Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/" + imagePath));
+                Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v18.1;component/Images/" + imagePath));
             else
             {
                 if (!CanNavigate)
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/Data/ManageDataSource_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v18.1;component/Images/Data/ManageDataSource_16x16.png"));
                     //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
                 else
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v17.2;component/Images/Actions/Open_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v18.1;component/Images/Actions/Open_16x16.png"));
             }
         }
 
