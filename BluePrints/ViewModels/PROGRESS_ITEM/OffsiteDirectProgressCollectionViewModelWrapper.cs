@@ -384,6 +384,30 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        public void FixVariation()
+        {
+            IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IQueryable<VARIATION> approvedVariations = unitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null && x.TYPE == VariationType.External);
+
+            List<BASELINE_ITEMProgress> saveEntities = new List<BASELINE_ITEMProgress>();
+            foreach (var entity in MainViewModel.Entities)
+            {
+                IQueryable<VARIATION_ITEM> variationItems = approvedVariations.SelectMany(x => x.VARIATION_ITEM);
+                IQueryable<VARIATION_ITEM> currentEntityVariationItems = variationItems.Where(x => x.GUID_ORIBASEITEM == entity.OriginalEntityKey);
+                if(currentEntityVariationItems.Count() > 0)
+                {
+                    decimal calculatedVariationUnits = currentEntityVariationItems.Sum(x => x.VARIATION_UNITS);
+                    if (entity.Entity.Entity.DC_HOURS != calculatedVariationUnits)
+                    {
+                        entity.Entity.Entity.DC_HOURS = calculatedVariationUnits;
+                        saveEntities.Add(entity);
+                    }
+                }
+            }
+
+            MainViewModel.BulkSave(saveEntities);
+        }
+
         public bool CanViewReport()
         {
             return true;
