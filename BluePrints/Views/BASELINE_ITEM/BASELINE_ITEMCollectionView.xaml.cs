@@ -22,16 +22,16 @@ namespace BluePrints.Views
             //    SetBaselineLockUnlock;
         }
 
-        public IEnumerable<BASELINE_ITEMProgress> GetGridVisibleRows()
-        {
-            List<BASELINE_ITEMProgress> visibleBaselineItemProjections = new List<BASELINE_ITEMProgress>();
-            for (int i = 0; i < GridControl.VisibleRowCount; i++)
-            {
-                BASELINE_ITEMProgress dataRow = (BASELINE_ITEMProgress)GridControl.GetRow(GridControl.GetRowHandleByVisibleIndex(i));
-                visibleBaselineItemProjections.Add(dataRow);
-            }
-            return visibleBaselineItemProjections;
-        }
+        //public IEnumerable<BASELINE_ITEMProgress> GetGridVisibleRows()
+        //{
+        //    List<BASELINE_ITEMProgress> visibleBaselineItemProjections = new List<BASELINE_ITEMProgress>();
+        //    for (int i = 0; i < GridControl.VisibleRowCount; i++)
+        //    {
+        //        BASELINE_ITEMProgress dataRow = (BASELINE_ITEMProgress)GridControl.GetRow(GridControl.GetRowHandleByVisibleIndex(i));
+        //        visibleBaselineItemProjections.Add(dataRow);
+        //    }
+        //    return visibleBaselineItemProjections;
+        //}
 
         public void SetBaselineLockUnlock(bool isLock)
         {

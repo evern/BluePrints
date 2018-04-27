@@ -740,7 +740,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else if (Total_Units > 0)
                 return Earned_Units_ToDate / Total_Units;
             else
-                return 1;
+                return 0;
         }
 
         public decimal SchedulePercentage

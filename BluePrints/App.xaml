@@ -9,7 +9,7 @@
                     <ColumnDefinition Width="15" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image ToolTip="Minimum Possible Progress" Grid.Column="0" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                <Image ToolTip="Minimum Possible Progress" Grid.Column="0">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>
@@ -20,7 +20,7 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" >
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>
@@ -41,7 +41,7 @@
                     <ColumnDefinition Width="15" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Image ToolTip="Minimum Possible Progress" Grid.Column="0" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                <Image ToolTip="Minimum Possible Progress" Grid.Column="0" Source="{dx:DXImage Image=BORules_32x32.png}">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>
@@ -52,7 +52,7 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" Source="{dx:DXImage Image=BORules_32x32.png}">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>

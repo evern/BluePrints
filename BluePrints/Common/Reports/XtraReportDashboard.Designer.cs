@@ -1025,7 +1025,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "17.2";
+            this.Version = "18.1";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).EndInit();

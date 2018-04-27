@@ -1,5 +1,7 @@
 ﻿using BaseModel.Attributes;
+using BaseModel.DataModel;
 using BaseModel.Misc;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -172,14 +174,25 @@ namespace BluePrints.Common.Projections
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
             IEnumerable<RATE> RATES)
         {
+            //IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            //IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            //return from baseline_item in bluePrintsUOW.BASELINE_ITEMS
+            //       join rate in bluePrintsUOW.RATES on
+            //        new { Dept = baseline_item.GUID_DEPARTMENT, Disc = baseline_item.GUID_DISCIPLINE } equals new { Dept = (Guid?)rate.GUID_DEPARTMENT, Disc = rate.GUID_DISCIPLINE }
+            //        into baseline_item_rate
+            //        from x in baseline_item_rate.DefaultIfEmpty()
+            //        select new BASELINE_ITEMProjection() { Entity = baseline_item, RATE = x };
+
+
             return
                 BASELINE_ITEMS.ToArray()
                     .Select(x => new BASELINE_ITEMProjection()
-                            {
-                                EntityKey = x.GUID,
-                                Entity = x,
-                                RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
-                            }).AsQueryable();
+                    {
+                        EntityKey = x.GUID,
+                        Entity = x,
+                        RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                    }).AsQueryable();
         }
     }
 }

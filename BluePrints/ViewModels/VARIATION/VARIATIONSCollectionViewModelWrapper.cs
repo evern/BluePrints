@@ -237,10 +237,32 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        Guid? selectedEntityKey = null;
         public override void FullRefresh()
         {
+            if (DisplaySelectedEntity != null)
+                selectedEntityKey = DisplaySelectedEntity.EntityKey;
+
             ReloadEntitiesCollection();
         }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+            if(selectedEntityKey != null && DisplayEntities != null)
+            {
+                DisplaySelectedEntity = DisplayEntities.FirstOrDefault(x => x.EntityKey == selectedEntityKey);
+                if (DisplaySelectedEntity != null)
+                {
+                    DisplaySelectedEntities.Clear();
+                    DisplaySelectedEntities.Add(DisplaySelectedEntity);
+                    selectedEntityKey = null;
+                    this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
+                    this.RaisePropertyChanged(x => x.DisplaySelectedEntities);
+                }
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -540,7 +562,7 @@ namespace BluePrints.ViewModels
 
         public void Revert()
         {
-            if (MessageBoxService.ShowMessage("Are you sure you want to revert changes to the baseline?", "Revert Baseline", MessageButton.OKCancel) == MessageResult.Cancel)
+            if (MessageBoxService.ShowMessage("This will revert from the latest variation onwards.\nCurrent live baseline will be superseded with suffix '_Reverted'\nAre you sure you want to revert changes to the baseline?", "Revert Baseline", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
             string liveBaselineRevision = LiveBASELINE.Revision;
@@ -579,6 +601,18 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.APPROVED))
+            {
+                if (projection.Entity.APPROVED == null && new_value != null)
+                    return "Please use the button above to approve this variation, if you wish to edit the date you can do so after approving it.";
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.SUBMITTED))
+            {
+                if (projection.Entity.SUBMITTED == null && new_value != null)
+                    return "Please use the button above to submit this variation, if you wish to edit the date you can do so after submitting it.";
+            }
+
             return string.Empty;
         }
 

@@ -114,7 +114,7 @@
                                                     <ColumnDefinition Width="15" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
-                                                <Image ToolTip="Cannot reduce anymore because these quantity has already been earned" Grid.Column="0" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                                                <Image ToolTip="Cannot reduce anymore because these quantity has already been earned" Grid.Column="0" Source="{dx:DXImage Image=BORules_32x32.png}">
                                                     <Image.Visibility>
                                                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                             <MultiBinding.ConverterParameter>
@@ -125,7 +125,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <Image ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1" Source="{Binding Source=DevExpress.Xpf.Core.Editors.Images.info.png, Converter={StaticResource EmbeddedResourceImageConverter}}">
+                                                <Image ToolTip="Maximum possible units, please reduce other deliverable units to increase this" Grid.Column="1" Source="{dx:DXImage Image=BORules_32x32.png}">
                                                     <Image.Visibility>
                                                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                             <MultiBinding.ConverterParameter>

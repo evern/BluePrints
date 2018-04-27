@@ -2,22 +2,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
                     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v17.1"
+                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v17.2"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:local="clr-namespace:BluePrints.Views">
     <Style x:Key="WBSBackgroundStyle" TargetType="{x:Type dxg:RowControl}">
         <Setter Property="Background">
             <Setter.Value>
-                <Binding Path="Row.WBSLevel" >
+                <Binding Path="Row.WBSLevel">
                     <Binding.Converter>
                         <dxmvvm:ObjectToObjectConverter>
-                            <dxmvvm:MapItem Source="1" Target="PowderBlue"/>
-                            <dxmvvm:MapItem Source="2" Target="PaleGreen"/>
-                            <dxmvvm:MapItem Source="3" Target="MistyRose"/>
-                            <dxmvvm:MapItem Source="4" Target="PaleTurquoise"/>
-                            <dxmvvm:MapItem Source="5" Target="Tomato"/>
-                            <dxmvvm:MapItem Source="6" Target="Plum"/>
-                            <dxmvvm:MapItem Source="7" Target="PeachPuff"/>
+                            <dxmvvm:MapItem Source="1" Target="PowderBlue" />
+                            <dxmvvm:MapItem Source="2" Target="PaleGreen" />
+                            <dxmvvm:MapItem Source="3" Target="MistyRose" />
+                            <dxmvvm:MapItem Source="4" Target="PaleTurquoise" />
+                            <dxmvvm:MapItem Source="5" Target="Tomato" />
+                            <dxmvvm:MapItem Source="6" Target="Plum" />
+                            <dxmvvm:MapItem Source="7" Target="PeachPuff" />
                         </dxmvvm:ObjectToObjectConverter>
                     </Binding.Converter>
                 </Binding>
