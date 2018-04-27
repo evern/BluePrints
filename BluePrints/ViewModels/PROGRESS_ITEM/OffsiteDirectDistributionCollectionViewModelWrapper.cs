@@ -146,7 +146,7 @@ namespace BluePrints.ViewModels
         {
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
-            MainViewModel.IsPasteCellLevel = true;
+            MainViewModel.IsPasteCellLevel = false;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #region Collection Call Backs
