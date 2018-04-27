@@ -165,7 +165,7 @@
                                                     <ColumnDefinition Width="15" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
-                                                <Image ToolTip="Minimum Possible Progress" Grid.Column="0" Source="{dx:DXImage Image=BORules_32x32.png}">
+                                                <Image ToolTip="Minimum Possible Progress" Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}">
                                                     <Image.Visibility>
                                                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                             <MultiBinding.ConverterParameter>
@@ -176,7 +176,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" Source="{dx:DXImage Image=BORules_32x32.png}">
+                                                <Image ToolTip="Maximum Possible Progress" Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}">
                                                     <Image.Visibility>
                                                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                             <MultiBinding.ConverterParameter>
