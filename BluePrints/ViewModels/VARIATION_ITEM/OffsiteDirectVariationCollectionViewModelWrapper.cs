@@ -105,6 +105,26 @@ namespace BluePrints.ViewModels
                 if (projection.Entity.Earned_Units_Total > 0)
                     return "Cannot change deliverable tracking type when percentage is already earned";
             }
+            else if (field_name == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            {
+                if(projection.Entity.Entity.Entity.GUID_PHASE != null && newValue != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)newValue);
+                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.Entity.GUID_PHASE);
+                    if ((findPHASE != null && findDOCTYPE != null) && findDOCTYPE.IS_INDIRECT_ONLY && findPHASE.CHARGE_TYPE == ChargeType.Direct)
+                        return "Selected document type is valid for indirect only, please change phase to indirect";
+                }
+            }
+            else if (field_name == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_PHASE))
+            {
+                if (projection.Entity.Entity.Entity.GUID_DOCTYPE != null && newValue != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.Entity.GUID_DOCTYPE);
+                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == (Guid)newValue);
+                    if ((findPHASE != null && findDOCTYPE != null) && findDOCTYPE.IS_INDIRECT_ONLY && findPHASE.CHARGE_TYPE == ChargeType.Direct)
+                        return "Selected document type is valid for indirect only, please change phase to indirect";
+                }
+            }
 
             return base.UnifiedValueValidation(projection, field_name, newValue);
         }

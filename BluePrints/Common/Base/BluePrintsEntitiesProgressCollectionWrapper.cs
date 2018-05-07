@@ -183,7 +183,7 @@ namespace BluePrints.Common.Base
 
         protected Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_GROUP == cost_group);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()

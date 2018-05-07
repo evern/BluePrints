@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class BluePrintsResources {
@@ -408,6 +408,15 @@ namespace BluePrints.Common.Resources {
         internal static string UncategorisedStockCode {
             get {
                 return ResourceManager.GetString("UncategorisedStockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Any.
+        /// </summary>
+        internal static string Value_Any {
+            get {
+                return ResourceManager.GetString("Value_Any", resourceCulture);
             }
         }
         

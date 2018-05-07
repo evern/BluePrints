@@ -437,6 +437,7 @@
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
+    <Compile Include="Common\Misc\CombinedCommodityCode.cs" />
     <Compile Include="Common\Misc\Dashboard.cs" />
     <Compile Include="Common\Misc\Deliverable_Milestone.cs" />
     <Compile Include="Common\Misc\GlobalVariables.cs" />

@@ -191,7 +191,7 @@ namespace BluePrints.Common.Projections
                     {
                         EntityKey = x.GUID,
                         Entity = x,
-                        RATE = RATES.FirstOrDefault(y => y.GUID_DEPARTMENT == x.GUID_DEPARTMENT && y.GUID_DISCIPLINE == x.GUID_DISCIPLINE)
+                        RATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == x.Phase) && (y.CHARGE_TYPE == x.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == x.GUID_DEPARTMENT || y.GUID_DEPARTMENT == null) && (y.GUID_DISCIPLINE == x.GUID_DISCIPLINE || y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == x.GUID_DOCTYPE || y.GUID_COMMODITY == null))
                     }).AsQueryable();
         }
     }

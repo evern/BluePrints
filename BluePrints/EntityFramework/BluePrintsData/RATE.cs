@@ -15,12 +15,15 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
-        public CostGroup COST_GROUP { get; set; }
+        public PhaseType PHASE_TYPE { get; set; }
 
-        [Required]
-        public Guid GUID_DEPARTMENT { get; set; }
+        public ChargeType CHARGE_TYPE { get; set; }
+
+        public Guid? GUID_DEPARTMENT { get; set; }
 
         public Guid? GUID_DISCIPLINE { get; set; }
+
+        public Guid? GUID_COMMODITY { get; set; }
 
         [Column("RATE")]
         public decimal? RATE1 { get; set; }

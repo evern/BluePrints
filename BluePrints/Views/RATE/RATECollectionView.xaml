@@ -29,23 +29,42 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                        </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Group" FieldName="COST_GROUP" HeaderToolTip="Indicate whether rate will be used onsite or offsite">
+                            <dxg:GridColumn FieldName="Phase_Type" Header="Phase Type" HeaderToolTip="Indicate which phase this rate belongs to">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CostGroup}}" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" HeaderToolTip="Which discipline the current rate will be applied to" DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxg:GridColumn FieldName="CHARGE_TYPE" Header="Charge Type" HeaderToolTip="Indicate whether rate will be used for direct or indirect">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Department" FieldName="GUID_DEPARTMENT" HeaderToolTip="Which department the current rate will be applied to" DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Charge Rate" FieldName="RATE1" HeaderToolTip="Charge rate per hour">
+                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="CommodityCodeId" Header="Commodity" HeaderToolTip="Which commodity the current rate will be applied to">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="Code" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.CommodityCodes}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Key" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--  For Filtering  -->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>

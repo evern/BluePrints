@@ -2,9 +2,13 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +59,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -70,7 +76,20 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<RATE>, IQueryable<RATE>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => rateCommodityProjection(query);
+        }
+
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
+        }
+
+        private IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
+        {
+            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).ToList();
+            rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
+
+            return rateCollection.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
@@ -96,11 +115,43 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
+        {      
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
+            {
+                //rate is not instantiated with commodity codes to be selected, hence initialization begins here
+                if(isNew && new_value != null)
+                {
+                    projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+                }
+
+                Guid? oldValue = projection.CommodityCodeId;
+                Guid? newValue = null;
+                projection.CommodityCodeId = newValue;
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().CommodityCodeId), oldValue, newValue, EntityMessageType.Changed);
+                projection.Update();
+            }
+
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
         #endregion
 
         #endregion
 
         #region View Properties
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().CommodityCodeId) ||
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) ||
+                e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            {
+                if (e.Row != null && e.Value == null)
+                {
+                    e.DisplayText = "Any";
+                }
+            }
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -108,7 +159,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "RATECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "RATECollectionViewModelWrapper_v1"; }
+            get { return "RATECollectionViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix
@@ -121,6 +172,50 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<CombinedCommodityCode> CombinedCommodityCodeCollection
+        {
+            get
+            {
+                List<CombinedCommodityCode> combinedCommodityCodes = new List<CombinedCommodityCode>();
+                if (DOCTYPECollection != null)
+                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Design, Code = x.CODE, Key = x.GUID }));
+
+                if (COMMODITY_CODECollection != null)
+                    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Construct, Code = x.CODE, Key = x.GUID }));
+
+                if (COMMODITY_CODECollection != null)
+                    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Procurement, Code = x.CODE, Key = x.GUID }));
+
+                return combinedCommodityCodes;
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+
+                return collection;
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
+
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+
+                return collection;
+            }
+        }
+
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection
         {
             get
@@ -128,6 +223,7 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<DEPARTMENT>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
+
                 return collection;
             }
         }
@@ -139,6 +235,7 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<DISCIPLINE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
+
                 return collection;
             }
         }

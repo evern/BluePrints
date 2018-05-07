@@ -207,7 +207,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATE.PROJECT.GUID && x.COST_GROUP == CostGroup.Site);
+            return query => query.Where(x => x.GUID_PROJECT == loadESTIMATE.PROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()

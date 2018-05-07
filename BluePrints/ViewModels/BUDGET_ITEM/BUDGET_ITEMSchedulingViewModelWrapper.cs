@@ -123,7 +123,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID && x.COST_GROUP == CostGroup.Site);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()

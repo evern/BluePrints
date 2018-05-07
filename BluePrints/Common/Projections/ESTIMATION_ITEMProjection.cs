@@ -356,8 +356,8 @@ namespace BluePrints.Common.Projections
             IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, 
             IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
-            IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Construction_Department);
-            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.DEPARTMENT.NAME.ToUpper() == BluePrintsResources.Default_Procurement_Department);
+            IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Construct);
+            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
 
             return
                 ESTIMATE_ITEMS.OrderBy(x => x.CREATED).ToArray()
@@ -368,8 +368,8 @@ namespace BluePrints.Common.Projections
                                 Entity = estimate_item,
                                 ESTIMATE_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE),
                                 BUDGET_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE),
-                                RATE = INSTALL_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
-                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE),
+                                RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null)),
+                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null)),
                                 StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
                             }).AsQueryable();
         }

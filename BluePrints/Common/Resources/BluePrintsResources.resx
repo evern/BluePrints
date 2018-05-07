@@ -237,4 +237,7 @@
   <data name="Default_Area" xml:space="preserve">
     <value>000</value>
   </data>
+  <data name="Value_Any" xml:space="preserve">
+    <value>Any</value>
+  </data>
 </root>
