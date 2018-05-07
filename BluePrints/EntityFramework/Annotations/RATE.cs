@@ -52,7 +52,9 @@ namespace BluePrints.Data
             get { return GUID_COMMODITY; }
             set
             {
-                if (value == null || CommodityCodes.Any(x => x.Key.ToString().ToUpper() == value.ToString().ToUpper()))
+                if (CommodityCodes == null)
+                    GUID_COMMODITY = value;
+                else if (value == null || CommodityCodes.Any(x => x.Key.ToString().ToUpper() == value.ToString().ToUpper()))
                     GUID_COMMODITY = value;
             }
         }
