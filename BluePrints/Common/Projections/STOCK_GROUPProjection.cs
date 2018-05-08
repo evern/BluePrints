@@ -108,6 +108,8 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid { get => null; set => throw new NotImplementedException(); }
 
+        public bool IsByDuration { get; set; }
+
         public decimal Estimate_Quantity => Deliverables == null ? 0 : Deliverables.Sum(x => x.Estimate_Quantity);
 
         public decimal Budget_Install_Hours => Deliverables == null ? 0 : Deliverables.Sum(x => x.Budget_Install_Hours);
@@ -133,6 +135,8 @@ namespace BluePrints.Common.Projections
         public string Budget_UOM => Entity.UOM;
 
         public PhaseType? Phase => null;
+
+        public ChargeType? Charge => null;
 
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
 

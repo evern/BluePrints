@@ -18,6 +18,7 @@ using System.Linq;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using BaseModel.Data.Helpers;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {
@@ -209,6 +210,79 @@ namespace BluePrints.ViewModels
 
             //only DisplayQuantityReportable is allowed to be saved
             return !is_group;
+        }
+
+        public bool CanAutoProgressIndirects()
+        {
+            return !IsLoading && loadPROGRESS != null;
+        }
+
+        public void AutoProgressIndirects()
+        {
+            if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on baseline start and finish dates and is not reversible\nDo you wish to continue?",
+                         BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            IEnumerable<ReportablesDisplay> deliverables = MainViewModel.Entities;
+            List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
+            
+            foreach (var deliverable in deliverables)
+            {
+                if(deliverable.Stats.Budgeted.CumulativeDataPoints != null)
+                {
+                    DateTime firstProgressDate = deliverable.Stats.Budgeted.CumulativeDataPoints.Min(x => x.ProgressDate);
+                    DateTime lastProgressDate = deliverable.Stats.Budgeted.CumulativeDataPoints.Max(x => x.ProgressDate);
+
+                    if (lastProgressDate > firstProgressDate && loadPROGRESS.DATA_DATE > firstProgressDate)
+                    {
+                        double elapsedDays = (loadPROGRESS.DATA_DATE - firstProgressDate).TotalDays;
+                        double totalDays = (lastProgressDate - firstProgressDate).TotalDays;
+
+                        if (totalDays > 0)
+                        {
+                            decimal autoPercent = Convert.ToDecimal(elapsedDays / totalDays);
+                            if (deliverable.Total_Earned_Percentage < autoPercent)
+                            {
+                                decimal oldPercentage = deliverable.Total_Earned_Percentage;
+                                decimal newPercentage = autoPercent;
+
+                                decimal totalQuantity = deliverable.ProgressItem.Total_Quantity;
+                                decimal currentPeriodInstalledQuantity = totalQuantity * newPercentage;
+
+                                deliverable.ProgressItem.CurrentPeriodInstalledQuantity = currentPeriodInstalledQuantity;
+                                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                                updateProgress.AddRange(newPRORESS_ITEMS);
+                            }
+                            else if (deliverable.Total_Earned_Percentage > autoPercent)
+                            {
+                                decimal totalDeliverableUnits = deliverable.Total_Units;
+                                decimal maxAllowableEarnedUnit = totalDeliverableUnits * autoPercent;
+                                if (maxAllowableEarnedUnit > 0)
+                                {
+                                    decimal iterateEarnedUnits = 0;
+                                    List<PROGRESS_ITEM> progressesByDate = deliverable.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
+                                    foreach (PROGRESS_ITEM progressByDate in progressesByDate)
+                                    {
+                                        decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
+                                        decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
+                                        if (postProgressEarnedUnit > maxAllowableEarnedUnit)
+                                        {
+                                            decimal newProgressEarnUnit = (maxAllowableEarnedUnit - iterateEarnedUnits);
+                                            progressByDate.EARNED_UNITS = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
+                                            updateProgress.Add(progressByDate);
+                                        }
+
+                                        iterateEarnedUnits += oldProgressEarnUnit;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
+            FullRefresh();
         }
 
         private bool save_reportables_display(ReportablesDisplay entity)

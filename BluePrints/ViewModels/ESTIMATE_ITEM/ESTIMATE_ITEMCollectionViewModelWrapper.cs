@@ -63,7 +63,6 @@ namespace BluePrints.ViewModels
         public string Projection_Entity_String => "Entity.";
 
         public string DefaultPhaseInternalNumber { get; set; }
-        private DEPARTMENT defaultDepartment;
         public Func<ESTIMATE_ITEMProgress> SelectedEntityCallBack { get; set; }
         public ESTIMATE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
         public IEnumerable<ESTIMATE_ITEMProgress> SelectedEntities { get; set; }
@@ -114,7 +113,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
@@ -155,11 +154,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
@@ -454,7 +448,6 @@ namespace BluePrints.ViewModels
                                 discipline_guid = (Guid)pasteEntity.Entity.Entity.GUID_DISCIPLINE;
 
                             editing_stock_code.GUID_DISCIPLINE = discipline_guid;
-                            editing_stock_code.GUID_DEPARTMENT = defaultDepartment.GUID;
 
                             //use global stock code as original guid
                             STOCK_CODE from_stock_code = STOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code_data.Value);
@@ -577,8 +570,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(ESTIMATE_ITEMProgress entity)
         {
-            if (viewType == DeliverablesViewType.Indirect)
-                entity.Entity.Entity.BY_DURATION = true;
+            //if (viewType == DeliverablesViewType.Indirect)
+            //    entity.Entity.Entity.BY_DURATION = true;
 
             onBeforeSavedDualSubjobAssignment(entity);
             onBeforeSavedProjectStockCodeLogging(entity);

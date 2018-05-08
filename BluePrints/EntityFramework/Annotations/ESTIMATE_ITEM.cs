@@ -216,6 +216,9 @@ namespace BluePrints.Data
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
 
         [NotMapped]
-        public bool IsByDuration => BY_DURATION;
+        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
+
+        [NotMapped]
+        public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
     }
 }

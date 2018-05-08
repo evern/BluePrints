@@ -198,14 +198,13 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
-                .HasMany(e => e.STOCK_CODE)
-                .WithRequired(e => e.DEPARTMENT)
-                .HasForeignKey(e => e.GUID_DEPARTMENT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.DEPARTMENT1)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
+
+            modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.ESTIMATE_ITEM)
+                .WithOptional(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DISCIPLINE>()

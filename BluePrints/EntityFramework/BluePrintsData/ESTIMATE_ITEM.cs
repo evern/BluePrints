@@ -30,6 +30,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_SUBAREA { get; set; }
 
+        public Guid? GUID_DEPARTMENT { get; set; }
+
         public Guid? GUID_DISCIPLINE { get; set; }
 
         public Guid? GUID_COMMODITY_CODE { get; set; }
@@ -90,6 +92,8 @@ namespace BluePrints.Data
         public virtual AREA AREA1 { get; set; }
 
         public virtual PHASE PHASE { get; set; }
+
+        public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

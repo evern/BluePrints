@@ -65,7 +65,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Costs => Entity.Variation_Units * Budget_ItemRate;
 
-        public bool IsByDuration => Entity.IsByDuration;
+        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
 
         public DELIVERABLES_STATUS Deliverable_Status => Entity.DELIVERABLES_STATUS;
 
@@ -98,6 +98,8 @@ namespace BluePrints.Common.Projections
         public Guid? Workpack_Guid { get => Entity.GUID_WORKPACK; set => Entity.GUID_WORKPACK = value; }
 
         public PhaseType? Phase => Entity.Phase;
+
+        public ChargeType? Charge => Entity.Charge;
 
         [NotMapped]
         private IEnumerable<object> assignUserObject;

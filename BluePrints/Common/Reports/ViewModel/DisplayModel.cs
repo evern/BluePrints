@@ -170,6 +170,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public PhaseType? Phase => ((IReportable)ProgressItem).Phase;
 
+        public ChargeType? Charge => ((IReportable)ProgressItem).Charge;
+
         public IEnumerable<User_Weight> AssignedUsers => ((IReportable)ProgressItem).AssignedUsers;
 
         public List<P6_ASSIGNMENT> P6_Assignments => throw new NotImplementedException();
@@ -177,6 +179,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<PROGRESS_ITEM> Progresses => throw new NotImplementedException();
 
         public Guid DeliverableKey => ((IReportable)ProgressItem).EntityKey;
+
+        public bool IsByDuration { get => ((IReportable)ProgressItem).IsByDuration; set => ((IReportable)ProgressItem).IsByDuration = value; }
 
         public DateTime? TaskAssignmentStartDate { get; set; }
         public decimal EarnedUnitsAccountedFor { get; set; }
@@ -502,6 +506,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<User_Weight> AssignedUsers => Reportable.AssignedUsers;
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => Reportable as ESTIMATE_ITEMProgress;
+
+        public bool IsByDuration { get => Reportable.IsByDuration; set => Reportable.IsByDuration = value; }
+
+        public ChargeType? Charge => Reportable.Charge;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

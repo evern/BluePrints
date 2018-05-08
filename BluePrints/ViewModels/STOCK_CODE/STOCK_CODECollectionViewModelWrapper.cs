@@ -43,7 +43,6 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-        private DEPARTMENT defaultDepartment;
         private bool isProjectSpecific
         {
             get { return loadPROJECT != null; }
@@ -65,15 +64,9 @@ namespace BluePrints.ViewModels
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDepartment = x);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<UOM, UOM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.UOMS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-        }
-
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
         }
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -114,8 +107,6 @@ namespace BluePrints.ViewModels
         {
             if(isProjectSpecific)
                 entity.GUID_PROJECT = loadPROJECT.GUID;
-
-            entity.GUID_DEPARTMENT = defaultDepartment.GUID;
 
             //new item is not allowed, so stock code type will be whatever it was previously
             //entity.STOCK_CODE_TYPE = loadCommodityCodeType;

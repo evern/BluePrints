@@ -331,7 +331,7 @@ namespace BluePrints.Data
         public decimal Variation_Units => DC_HOURS;
 
         [NotMapped]
-        public bool IsByDuration => BY_DURATION;
+        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
 
         [NotMapped]
         public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }
@@ -365,5 +365,8 @@ namespace BluePrints.Data
         public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
 
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
+
+        [NotMapped]
+        public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
     }
 }

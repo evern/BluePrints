@@ -83,6 +83,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         string Subjob_Name { get; }
         PhaseType? Phase { get; }
+        ChargeType? Charge { get; }
         string Phase_Code { get; }
         string Department_Code { get; }
         string Discipline_Code { get; }
@@ -94,6 +95,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? Discipline_Guid { get; }
         decimal Discipline_Number { get; }
         Guid? Workpack_Guid { get; set; }
+        bool IsByDuration { get; set; }
     }
 
     public interface IHaveProcurementSubjob

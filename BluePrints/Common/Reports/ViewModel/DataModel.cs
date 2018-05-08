@@ -201,8 +201,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
 
-        public bool IsByDuration => Entity.IsByDuration;
-
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
     }
 
@@ -282,8 +280,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool IsInternalNumberAlwaysEditable { get; set; }
 
         public bool IsInternalNumberManualOnly { get; set; }
-
-        public bool IsByDuration => Entity.IsByDuration;
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
@@ -626,6 +622,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
 
+        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
         #region local non-interface variables
         public Guid? GuidCurrent
         {
@@ -1123,6 +1120,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string P6AssignmentDescription2 => string.Empty;
 
         public PhaseType? Phase => Entity.Phase;
+
+        public ChargeType? Charge => Entity.Charge;
 
         public IEnumerable<User_Weight> AssignedUsers => Entity.AssignedUsers;
 

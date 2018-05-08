@@ -16,8 +16,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_PROJECT { get; set; }
 
-        public Guid GUID_DEPARTMENT { get; set; }
-
         public Guid? GUID_COMMODITY_CODE { get; set; }
 
         [Required]
@@ -62,8 +60,6 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
-
-        public virtual DEPARTMENT DEPARTMENT { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

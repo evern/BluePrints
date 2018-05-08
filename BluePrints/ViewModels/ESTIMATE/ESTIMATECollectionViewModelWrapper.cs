@@ -186,6 +186,12 @@ namespace BluePrints.ViewModels
         }
 
         ESTIMATE_ITEMCollectionViewModelWrapper estimate_itemViewModelWrapper;
+        public bool CanApprove()
+        {
+            return DisplaySelectedEntity != null;
+        }
+
+
         public void Approve()
         {
             if (DisplaySelectedEntity.STATUS == BaselineStatus.Live)

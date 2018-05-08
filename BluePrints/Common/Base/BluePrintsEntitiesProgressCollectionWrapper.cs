@@ -391,7 +391,7 @@ namespace BluePrints.Common.Base
                         loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
                     } while (loadPROGRESS.DATA_DATE > DateTime.Now);
                 }
-                else
+                else if (timeDifferenceFromCurrent.TotalSeconds < interval.TotalSeconds)
                 {
                     if (timeDifferenceFromCurrent.TotalSeconds < -1 * interval.TotalSeconds)
                         do

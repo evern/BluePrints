@@ -59,9 +59,13 @@ namespace BluePrints.Common.Projections
 
         public PhaseType? Phase => Entity.PHASE == null ? null : Entity.PHASE.PHASE_TYPE;
 
+        public ChargeType? Charge => Entity.PHASE == null ? null : Entity.PHASE.CHARGE_TYPE;
+
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
 
         Guid? IDeliverable.Subjob_Guid { get => Guid.Empty; set { } }
+
+        public bool IsByDuration { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
