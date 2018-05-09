@@ -122,6 +122,21 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((RATE x) => x.GUID); }
         }
 
+        IRepository<RA_STUDY_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_TYPES
+        {
+            get { return GetRepository((RA_STUDY_TYPE x) => x.GUID); }
+        }
+
+        IRepository<RA_GUIDE_PROMPT, Guid> IBluePrintsEntitiesUnitOfWork.RA_GUIDE_PROMPTS
+        {
+            get { return GetRepository((RA_GUIDE_PROMPT x) => x.GUID); }
+        }
+
+        IRepository<RA_GUIDE_SUBPROMPT, Guid> IBluePrintsEntitiesUnitOfWork.RA_GUIDE_SUBPROMPTS
+        {
+            get { return GetRepository((RA_GUIDE_SUBPROMPT x) => x.GUID); }
+        }
+
         IRepository<ROLE_COMMODITY, Guid> IBluePrintsEntitiesUnitOfWork.ROLE_COMMODITIES
         {
             get { return GetRepository((ROLE_COMMODITY x) => x.GUID); }

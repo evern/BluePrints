@@ -453,6 +453,7 @@
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_ITEMVariation.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
+    <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />
     <Compile Include="Common\Projections\MEETING_MINUTEProjection.cs" />
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
@@ -574,6 +575,9 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_GUIDE_SUBPROMPT.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_GUIDE_PROMPT.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_TYPE.cs" />
     <Compile Include="EntityFramework\Annotations\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\Annotations\CLIENT_PROJECT.cs" />
@@ -600,6 +604,9 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_SUBPROMPT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_PROMPT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_DISCIPLINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\MEETING_ACTION.cs" />
@@ -691,6 +698,7 @@
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\RA_STUDY_TYPE\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -753,6 +761,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RA_STUDY_TYPE\RA_STUDY_TYPECollectionView.xaml.cs">
+      <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1590,6 +1601,10 @@
     <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RA_STUDY_TYPE\RA_STUDY_TYPECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

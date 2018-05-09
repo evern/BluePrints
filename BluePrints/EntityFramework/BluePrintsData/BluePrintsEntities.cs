@@ -36,6 +36,9 @@ namespace BluePrints.Data
         public virtual DbSet<PROJECT> PROJECT { get; set; }
         public virtual DbSet<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
+        public virtual DbSet<RA_GUIDE_PROMPT> RA_GUIDE_PROMPT { get; set; }
+        public virtual DbSet<RA_GUIDE_SUBPROMPT> RA_GUIDE_SUBPROMPT { get; set; }
+        public virtual DbSet<RA_STUDY_TYPE> RA_STUDY_TYPE { get; set; }
         public virtual DbSet<RATE> RATE { get; set; }
         public virtual DbSet<REGISTER> REGISTER { get; set; }
         public virtual DbSet<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
@@ -518,6 +521,18 @@ namespace BluePrints.Data
                 .HasMany(e => e.VARIATION)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_GUIDE_PROMPT>()
+                .HasMany(e => e.RA_GUIDE_SUBPROMPT)
+                .WithRequired(e => e.RA_GUIDE_PROMPT)
+                .HasForeignKey(e => e.GUID_GUIDE_PROMPT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY_TYPE>()
+                .HasMany(e => e.RA_GUIDE_PROMPT)
+                .WithRequired(e => e.RA_STUDY_TYPE)
+                .HasForeignKey(e => e.GUID_STUDY_TYPE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<REGISTER>()

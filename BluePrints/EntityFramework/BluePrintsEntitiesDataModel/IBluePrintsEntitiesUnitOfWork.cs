@@ -105,6 +105,21 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROJECT_DISCIPLINE, Guid> PROJECT_DISCIPLINES { get; }
 
         /// <summary>
+        /// The RA_STUDY_TYPE entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_TYPE, Guid> RA_STUDY_TYPES { get; }
+
+        /// <summary>
+        /// The RA_GUIDE_PROMPT entities repository.
+        /// </summary>
+        IRepository<RA_GUIDE_PROMPT, Guid> RA_GUIDE_PROMPTS { get; }
+
+        /// <summary>
+        /// The RA_GUIDE_SUBPROMPT entities repository.
+        /// </summary>
+        IRepository<RA_GUIDE_SUBPROMPT, Guid> RA_GUIDE_SUBPROMPTS { get; }
+
+        /// <summary>
         /// The RATE entities repository.
         /// </summary>
         IRepository<RATE, Guid> RATES { get; }

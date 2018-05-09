@@ -329,6 +329,11 @@ namespace BluePrints.ViewModels
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
+            {
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStudyType", dataCategoryId, "Study Types", "RA_STUDY_TYPECollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
+            }
+
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView", null, null, null, false, false, @"Business Objects\BOCustomer_16x16.png"));
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView", null, null, null, false, false, @"Reports\Parameters_16x16.png"));
 

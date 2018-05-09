@@ -232,6 +232,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage study types.
+        /// </summary>
+        internal static string ManageStudyType {
+            get {
+                return ResourceManager.GetString("ManageStudyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage subjobs.
         /// </summary>
         internal static string ManageSubjob {

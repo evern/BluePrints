@@ -192,4 +192,7 @@
   <data name="BookOtherTime" xml:space="preserve">
     <value>Allow user to book time for others</value>
   </data>
+  <data name="ManageStudyType" xml:space="preserve">
+    <value>Allow user to manage study types</value>
+  </data>
 </root>

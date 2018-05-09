@@ -150,6 +150,21 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<RATE>(), (RATE x) => x.GUID); }
         }
 
+        IRepository<RA_STUDY_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_TYPES
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY_TYPE>(), (RA_STUDY_TYPE x) => x.GUID); }
+        }
+        
+        IRepository<RA_GUIDE_PROMPT, Guid> IBluePrintsEntitiesUnitOfWork.RA_GUIDE_PROMPTS
+        {
+            get { return GetRepository(x => x.Set<RA_GUIDE_PROMPT>(), (RA_GUIDE_PROMPT x) => x.GUID); }
+        }
+
+        IRepository<RA_GUIDE_SUBPROMPT, Guid> IBluePrintsEntitiesUnitOfWork.RA_GUIDE_SUBPROMPTS
+        {
+            get { return GetRepository(x => x.Set<RA_GUIDE_SUBPROMPT>(), (RA_GUIDE_SUBPROMPT x) => x.GUID); }
+        }
+
         IRepository<ROLE_COMMODITY, Guid> IBluePrintsEntitiesUnitOfWork.ROLE_COMMODITIES
         {
             get { return GetRepository(x => x.Set<ROLE_COMMODITY>(), (ROLE_COMMODITY x) => x.GUID); }
