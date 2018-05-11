@@ -15,7 +15,10 @@ namespace BluePrints.Data
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
-            PROJECT = new HashSet<PROJECT>();
+            RA_STUDY = new HashSet<RA_STUDY>();
+            RA_STUDY1 = new HashSet<RA_STUDY>();
+            RA_STUDY_DATA = new HashSet<RA_STUDY_DATA>();
+            RA_STUDY_USER = new HashSet<RA_STUDY_USER>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
         }
 
@@ -24,19 +27,19 @@ namespace BluePrints.Data
 
         public Guid? GUID_ROLE { get; set; }
 
-        public Guid? GUID_DEPARTMENT { get; set; }
-
-        public Guid? GUID_DISCIPLINE { get; set; }
-        
-        public string FIRST_NAME { get; set; }
-
-        public string LAST_NAME { get; set; }
-
-        public Office OFFICE { get; set; }
-
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
+
+        [StringLength(100)]
+        public string FIRST_NAME { get; set; }
+
+        [StringLength(100)]
+        public string LAST_NAME { get; set; }
+
+        public Guid? GUID_DEPARTMENT { get; set; }
+
+        public Guid? GUID_DISCIPLINE { get; set; }
 
         [StringLength(100)]
         public string DEPARTMENT { get; set; }
@@ -48,6 +51,15 @@ namespace BluePrints.Data
         public string DESCRIPTION { get; set; }
 
         public decimal? UTILIZATION { get; set; }
+
+        [StringLength(50)]
+        public string CODE { get; set; }
+
+        [StringLength(50)]
+        public string PHONE { get; set; }
+
+        [StringLength(100)]
+        public string EMAIL { get; set; }
 
         public int? EXO_STAFF_ID { get; set; }
 
@@ -63,21 +75,32 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        public Office OFFICE { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PROJECT> PROJECT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
-
         public virtual DEPARTMENT DEPARTMENT1 { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY> RA_STUDY { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY> RA_STUDY1 { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY_USER> RA_STUDY_USER { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
 
         public virtual ROLE ROLE { get; set; }
     }

@@ -150,6 +150,31 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<RATE>(), (RATE x) => x.GUID); }
         }
 
+        IRepository<RA_STUDY, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDIES
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY>(), (RA_STUDY x) => x.GUID); }
+        }
+
+        IRepository<RA_STUDY_DATA, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_DATAS
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY_DATA>(), (RA_STUDY_DATA x) => x.GUID); }
+        }
+
+        IRepository<RA_STUDY_DRAWING, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_DRAWINGS
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY_DRAWING>(), (RA_STUDY_DRAWING x) => x.GUID); }
+        }
+
+        IRepository<RA_STUDY_NODE, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_NODES
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY_NODE>(), (RA_STUDY_NODE x) => x.GUID); }
+        }
+
+        IRepository<RA_STUDY_USER, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_USERS
+        {
+            get { return GetRepository(x => x.Set<RA_STUDY_USER>(), (RA_STUDY_USER x) => x.GUID); }
+        }
+
         IRepository<RA_STUDY_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_TYPES
         {
             get { return GetRepository(x => x.Set<RA_STUDY_TYPE>(), (RA_STUDY_TYPE x) => x.GUID); }

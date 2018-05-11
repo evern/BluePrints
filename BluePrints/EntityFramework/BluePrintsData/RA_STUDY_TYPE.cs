@@ -12,6 +12,7 @@ namespace BluePrints.Data
         public RA_STUDY_TYPE()
         {
             RA_GUIDE_PROMPT = new HashSet<RA_GUIDE_PROMPT>();
+            RA_STUDY = new HashSet<RA_STUDY>();
         }
 
         [Key]
@@ -35,5 +36,8 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_GUIDE_PROMPT> RA_GUIDE_PROMPT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY> RA_STUDY { get; set; }
     }
 }

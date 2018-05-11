@@ -53,9 +53,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
         }
@@ -102,6 +100,9 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        public bool PROMPTEnabled => DisplaySelectedEntity != null;
+        public bool SUBPROMPTEnabled => PROMPTEnabled && RA_GUIDE_PROMPTViewModel != null && RA_GUIDE_PROMPTViewModel.SelectedEntity != null;
+
         public override void OnDisplaySelectedEntityChanged(RA_STUDY_TYPEProjection entity)
         {
             refreshGuidePrompts();
@@ -111,6 +112,10 @@ namespace BluePrints.ViewModels
         private void refreshGuidePrompts()
         {
             guide_prompts = null;
+            guide_subprompts = null;
+            this.RaisePropertyChanged(x => x.NewPromptInstruction);
+            this.RaisePropertyChanged(x => x.PROMPTEnabled);
+            this.RaisePropertyChanged(x => x.SUBPROMPTEnabled);
             this.RaisePropertyChanged(x => x.GUIDE_PROMPTS);
         }
 
@@ -143,6 +148,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public string NewPromptInstruction
+        {
+            get
+            {
+                if (DisplaySelectedEntity == null)
+                    return "Please select a study type before adding new prompt";
+
+                return "Type here to add new agenda, push enter when complete";
+            }
+        }
+
         private void onSelectedGuide_PromptChanged(RA_GUIDE_PROMPT entity)
         {
             refreshGuideSubPrompts();
@@ -151,6 +167,9 @@ namespace BluePrints.ViewModels
         private void refreshGuideSubPrompts()
         {
             guide_subprompts = null;
+            this.RaisePropertyChanged(x => x.NewPromptInstruction);
+            this.RaisePropertyChanged(x => x.PROMPTEnabled);
+            this.RaisePropertyChanged(x => x.SUBPROMPTEnabled);
             this.RaisePropertyChanged(x => x.GUIDE_SUBPROMPTS);
         }
         #endregion
@@ -183,7 +202,6 @@ namespace BluePrints.ViewModels
                 return guide_subprompts;
             }
         }
-
         #endregion
         #endregion
 
@@ -212,9 +230,7 @@ namespace BluePrints.ViewModels
                 if (loaderCollection == null)
                     return null;
 
-                return
-                    (CollectionViewModel<RA_GUIDE_PROMPT, RA_GUIDE_PROMPT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<RA_GUIDE_PROMPT>();
+                return (CollectionViewModel<RA_GUIDE_PROMPT, RA_GUIDE_PROMPT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<RA_GUIDE_PROMPT>();
             }
         }
 
@@ -225,9 +241,7 @@ namespace BluePrints.ViewModels
                 if (loaderCollection == null)
                     return null;
 
-                return
-                    (CollectionViewModel<RA_GUIDE_SUBPROMPT, RA_GUIDE_SUBPROMPT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<RA_GUIDE_SUBPROMPT>();
+                return (CollectionViewModel<RA_GUIDE_SUBPROMPT, RA_GUIDE_SUBPROMPT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<RA_GUIDE_SUBPROMPT>();
             }
         }
 

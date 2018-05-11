@@ -575,8 +575,13 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_NODE.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_DRAWING.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_DATA.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY.cs" />
     <Compile Include="EntityFramework\Annotations\RA_GUIDE_SUBPROMPT.cs" />
     <Compile Include="EntityFramework\Annotations\RA_GUIDE_PROMPT.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_USER.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_TYPE.cs" />
     <Compile Include="EntityFramework\Annotations\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
@@ -606,6 +611,11 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_SUBPROMPT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_PROMPT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_DATA.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_USER.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_NODE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_DRAWING.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_TYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CLIENT_PROJECT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_DISCIPLINE.cs" />
@@ -698,7 +708,8 @@
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\RA_STUDY_TYPE\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -762,7 +773,10 @@
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RA_STUDY_TYPE\RA_STUDY_TYPECollectionView.xaml.cs">
+    <Compile Include="Views\RA_STUDY\RA_STUDYCollectionView.xaml.cs">
+      <DependentUpon>RA_STUDYCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
@@ -1602,7 +1616,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\RA_STUDY_TYPE\RA_STUDY_TYPECollectionView.xaml">
+    <Page Include="Views\RA_STUDY\RA_STUDYCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

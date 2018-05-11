@@ -329,7 +329,7 @@ namespace BluePrints.ViewModels
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
+            if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
             {
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStudyType", dataCategoryId, "Study Types", "RA_STUDY_TYPECollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
             }
@@ -537,6 +537,12 @@ namespace BluePrints.ViewModels
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register", false, false, @"Business Objects\BORules_16x16.png"));
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LLRegister" + keyString, registerCategoryId, childTitlePrefix + "Lesson's Learned Register", "REGISTER_LLCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Lesson's Learned Register", false, false, @"Business Objects\BOTask_16x16.png"));
                 registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_NCRegister" + keyString, registerCategoryId, childTitlePrefix + "Non-Conformance Register", "REGISTER_NCCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Non-Conformance Register", false, false, @"Programming\BugReport_16x16.png"));
+            }
+
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
+            {
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
             }
         }
 

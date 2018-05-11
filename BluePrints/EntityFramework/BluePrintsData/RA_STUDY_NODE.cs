@@ -1,4 +1,4 @@
-namespace BluePrints.Data
+﻿namespace BluePrints.Data
 {
     using System;
     using System.Collections.Generic;
@@ -6,10 +6,10 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class RA_GUIDE_SUBPROMPT
+    public partial class RA_STUDY_NODE
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public RA_GUIDE_SUBPROMPT()
+        public RA_STUDY_NODE()
         {
             RA_STUDY_DATA = new HashSet<RA_STUDY_DATA>();
         }
@@ -17,11 +17,14 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_GUIDE_PROMPT { get; set; }
+        public Guid? GUID_DRAWING { get; set; }
 
         [Required]
+        [StringLength(50)]
+        public string NUMBER { get; set; }
+
         [StringLength(500)]
-        public string GUIDE_SUBPROMPT { get; set; }
+        public string DESCRIPTION { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -35,9 +38,9 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual RA_GUIDE_PROMPT RA_GUIDE_PROMPT { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+
+        public virtual RA_STUDY_DRAWING RA_STUDY_DRAWING { get; set; }
     }
 }

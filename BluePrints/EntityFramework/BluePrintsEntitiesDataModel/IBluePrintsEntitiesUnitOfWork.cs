@@ -120,6 +120,31 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<RA_GUIDE_SUBPROMPT, Guid> RA_GUIDE_SUBPROMPTS { get; }
 
         /// <summary>
+        /// The RA_STUDY entities repository.
+        /// </summary>
+        IRepository<RA_STUDY, Guid> RA_STUDIES { get; }
+
+        /// <summary>
+        /// The RA_STUDY_DATA entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_DATA, Guid> RA_STUDY_DATAS { get; }
+
+        /// <summary>
+        /// The RA_STUDY_DRAWING entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_DRAWING, Guid> RA_STUDY_DRAWINGS { get; }
+
+        /// <summary>
+        /// The RA_STUDY_NODE entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_NODE, Guid> RA_STUDY_NODES { get; }
+
+        /// <summary>
+        /// The RA_STUDY_USER entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_USER, Guid> RA_STUDY_USERS { get; }
+
+        /// <summary>
         /// The RATE entities repository.
         /// </summary>
         IRepository<RATE, Guid> RATES { get; }

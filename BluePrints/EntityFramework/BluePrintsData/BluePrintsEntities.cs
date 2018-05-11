@@ -38,7 +38,12 @@ namespace BluePrints.Data
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
         public virtual DbSet<RA_GUIDE_PROMPT> RA_GUIDE_PROMPT { get; set; }
         public virtual DbSet<RA_GUIDE_SUBPROMPT> RA_GUIDE_SUBPROMPT { get; set; }
+        public virtual DbSet<RA_STUDY> RA_STUDY { get; set; }
+        public virtual DbSet<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+        public virtual DbSet<RA_STUDY_DRAWING> RA_STUDY_DRAWING { get; set; }
+        public virtual DbSet<RA_STUDY_NODE> RA_STUDY_NODE { get; set; }
         public virtual DbSet<RA_STUDY_TYPE> RA_STUDY_TYPE { get; set; }
+        public virtual DbSet<RA_STUDY_USER> RA_STUDY_USER { get; set; }
         public virtual DbSet<RATE> RATE { get; set; }
         public virtual DbSet<REGISTER> REGISTER { get; set; }
         public virtual DbSet<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
@@ -69,9 +74,9 @@ namespace BluePrints.Data
             Database.CommandTimeout = 100000;
 
             modelBuilder.Entity<AREA>()
-                            .HasMany(e => e.AREA1)
-                            .WithOptional(e => e.AREA2)
-                            .HasForeignKey(e => e.GUID_PARENT);
+                .HasMany(e => e.AREA1)
+                .WithOptional(e => e.AREA2)
+                .HasForeignKey(e => e.GUID_PARENT);
 
             modelBuilder.Entity<AREA>()
                 .HasMany(e => e.BASELINE_ITEM)
@@ -195,19 +200,13 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
-                .HasMany(e => e.RATE)
-                .WithRequired(e => e.DEPARTMENT)
-                .HasForeignKey(e => e.GUID_DEPARTMENT)
-                .WillCascadeOnDelete(false);
+                .HasMany(e => e.ESTIMATE_ITEM)
+                .WithOptional(e => e.DEPARTMENT)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.DEPARTMENT1)
-                .HasForeignKey(e => e.GUID_DEPARTMENT);
-
-            modelBuilder.Entity<DEPARTMENT>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DISCIPLINE>()
@@ -230,11 +229,6 @@ namespace BluePrints.Data
                 .WithRequired(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.RATE)
-                .WithOptional(e => e.DISCIPLINE)
-                .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.REGISTER_ISSUE)
@@ -461,12 +455,6 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.RATE)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.REGISTER_CHANGE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -529,8 +517,41 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_GUIDE_PROMPT)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<RA_GUIDE_PROMPT>()
+                .HasMany(e => e.RA_STUDY_DATA)
+                .WithOptional(e => e.RA_GUIDE_PROMPT)
+                .HasForeignKey(e => e.GUID_GUIDE_PROMPT);
+
+            modelBuilder.Entity<RA_GUIDE_SUBPROMPT>()
+                .HasMany(e => e.RA_STUDY_DATA)
+                .WithOptional(e => e.RA_GUIDE_SUBPROMPT)
+                .HasForeignKey(e => e.GUID_GUIDE_SUBPROMPT);
+
+            modelBuilder.Entity<RA_STUDY>()
+                .HasMany(e => e.RA_STUDY_USER)
+                .WithRequired(e => e.RA_STUDY)
+                .HasForeignKey(e => e.GUID_STUDY)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY_DRAWING>()
+                .HasMany(e => e.RA_STUDY_NODE)
+                .WithOptional(e => e.RA_STUDY_DRAWING)
+                .HasForeignKey(e => e.GUID_DRAWING);
+
+            modelBuilder.Entity<RA_STUDY_NODE>()
+                .HasMany(e => e.RA_STUDY_DATA)
+                .WithRequired(e => e.RA_STUDY_NODE)
+                .HasForeignKey(e => e.GUID_NODE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<RA_STUDY_TYPE>()
                 .HasMany(e => e.RA_GUIDE_PROMPT)
+                .WithRequired(e => e.RA_STUDY_TYPE)
+                .HasForeignKey(e => e.GUID_STUDY_TYPE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY_TYPE>()
+                .HasMany(e => e.RA_STUDY)
                 .WithRequired(e => e.RA_STUDY_TYPE)
                 .HasForeignKey(e => e.GUID_STUDY_TYPE)
                 .WillCascadeOnDelete(false);
@@ -538,6 +559,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<REGISTER>()
                 .Property(e => e.UNIQUE_H_NUM)
                 .IsFixedLength();
+
+            modelBuilder.Entity<ROLE>()
+                .HasMany(e => e.ROLE_COMMODITY)
+                .WithRequired(e => e.ROLE)
+                .HasForeignKey(e => e.GUID_ROLE)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ROLE>()
                 .HasMany(e => e.ROLE_PERMISSION)
@@ -549,12 +576,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.ROLE)
                 .HasForeignKey(e => e.GUID_ROLE);
-
-            modelBuilder.Entity<ROLE>()
-                .HasMany(e => e.ROLE_COMMODITY)
-                .WithRequired(e => e.ROLE)
-                .HasForeignKey(e => e.GUID_ROLE)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SETTINGS_GLOBAL>()
                 .Property(e => e.REVIEW_PERCENTAGE)
@@ -626,9 +647,25 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
-                .HasMany(e => e.PROJECT)
+                .HasMany(e => e.RA_STUDY)
                 .WithOptional(e => e.USER)
-                .HasForeignKey(e => e.GUID_MANAGEUSER);
+                .HasForeignKey(e => e.GUID_FACILITATOR);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.RA_STUDY1)
+                .WithOptional(e => e.USER1)
+                .HasForeignKey(e => e.GUID_MINUTESBY);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.RA_STUDY_DATA)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_ACTION_BY);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.RA_STUDY_USER)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.GUID_STUDY_USER)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.REGISTER_ISSUE)
