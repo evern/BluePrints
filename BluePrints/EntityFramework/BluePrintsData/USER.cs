@@ -18,8 +18,8 @@ namespace BluePrints.Data
             RA_STUDY = new HashSet<RA_STUDY>();
             RA_STUDY1 = new HashSet<RA_STUDY>();
             RA_STUDY_DATA = new HashSet<RA_STUDY_DATA>();
-            RA_STUDY_USER = new HashSet<RA_STUDY_USER>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
+            PROJECT = new HashSet<PROJECT>();
         }
 
         [Key]
@@ -78,6 +78,9 @@ namespace BluePrints.Data
         public Office OFFICE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PROJECT> PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -94,10 +97,10 @@ namespace BluePrints.Data
         public virtual ICollection<RA_STUDY> RA_STUDY1 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+        public virtual ICollection<RA_STUDY_TEAM> RA_STUDY_TEAM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RA_STUDY_USER> RA_STUDY_USER { get; set; }
+        public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }

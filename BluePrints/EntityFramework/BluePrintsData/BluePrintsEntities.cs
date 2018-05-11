@@ -43,7 +43,7 @@ namespace BluePrints.Data
         public virtual DbSet<RA_STUDY_DRAWING> RA_STUDY_DRAWING { get; set; }
         public virtual DbSet<RA_STUDY_NODE> RA_STUDY_NODE { get; set; }
         public virtual DbSet<RA_STUDY_TYPE> RA_STUDY_TYPE { get; set; }
-        public virtual DbSet<RA_STUDY_USER> RA_STUDY_USER { get; set; }
+        public virtual DbSet<RA_STUDY_TEAM> RA_STUDY_TEAM { get; set; }
         public virtual DbSet<RATE> RATE { get; set; }
         public virtual DbSet<REGISTER> REGISTER { get; set; }
         public virtual DbSet<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
@@ -205,6 +205,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.RATE)
+                .WithOptional(e => e.DEPARTMENT)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
+
+            modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.USER)
                 .WithOptional(e => e.DEPARTMENT1)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
@@ -229,6 +234,11 @@ namespace BluePrints.Data
                 .WithRequired(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.RATE)
+                .WithOptional(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.REGISTER_ISSUE)
@@ -455,6 +465,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.RATE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.REGISTER_CHANGE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -528,7 +544,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_GUIDE_SUBPROMPT);
 
             modelBuilder.Entity<RA_STUDY>()
-                .HasMany(e => e.RA_STUDY_USER)
+                .HasMany(e => e.RA_STUDY_TEAM)
                 .WithRequired(e => e.RA_STUDY)
                 .HasForeignKey(e => e.GUID_STUDY)
                 .WillCascadeOnDelete(false);
@@ -647,6 +663,11 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
+                .HasMany(e => e.PROJECT)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_MANAGEUSER);
+
+            modelBuilder.Entity<USER>()
                 .HasMany(e => e.RA_STUDY)
                 .WithOptional(e => e.USER)
                 .HasForeignKey(e => e.GUID_FACILITATOR);
@@ -662,9 +683,9 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_ACTION_BY);
 
             modelBuilder.Entity<USER>()
-                .HasMany(e => e.RA_STUDY_USER)
+                .HasMany(e => e.RA_STUDY_TEAM)
                 .WithRequired(e => e.USER)
-                .HasForeignKey(e => e.GUID_STUDY_USER)
+                .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()

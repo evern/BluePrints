@@ -581,7 +581,7 @@
     <Compile Include="EntityFramework\Annotations\RA_STUDY.cs" />
     <Compile Include="EntityFramework\Annotations\RA_GUIDE_SUBPROMPT.cs" />
     <Compile Include="EntityFramework\Annotations\RA_GUIDE_PROMPT.cs" />
-    <Compile Include="EntityFramework\Annotations\RA_STUDY_USER.cs" />
+    <Compile Include="EntityFramework\Annotations\RA_STUDY_TEAM.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_TYPE.cs" />
     <Compile Include="EntityFramework\Annotations\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_DISCIPLINE.cs" />
@@ -612,7 +612,6 @@
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_SUBPROMPT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_PROMPT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_DATA.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_NODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_DRAWING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY.cs" />
@@ -633,6 +632,7 @@
     <Compile Include="EntityFramework\BluePrintsData\BluePrintsEntities.cs" />
     <Compile Include="EntityFramework\BluePrintsData\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HOLIDAY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_TEAM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE_COMMODITY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />

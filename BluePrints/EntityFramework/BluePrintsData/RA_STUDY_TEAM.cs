@@ -6,20 +6,20 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class RA_STUDY_USER
+    public partial class RA_STUDY_TEAM
     {
         [Key]
         public Guid GUID { get; set; }
 
         public Guid GUID_STUDY { get; set; }
 
-        public Guid GUID_STUDY_USER { get; set; }
+        public Guid GUID_USER { get; set; }
 
         [StringLength(500)]
-        public string USER_STUDY_ROLE { get; set; }
+        public string STUDY_ROLE { get; set; }
 
         [StringLength(50)]
-        public string USER_STUDY_INITIALS { get; set; }
+        public string STUDY_INITIALS { get; set; }
 
         public DateTime CREATED { get; set; }
 

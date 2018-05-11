@@ -540,10 +540,10 @@ namespace BluePrints.ViewModels
             }
 
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
-            {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
-            }
+            //if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
+            //{
+            //    projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
+            //}
         }
 
     }

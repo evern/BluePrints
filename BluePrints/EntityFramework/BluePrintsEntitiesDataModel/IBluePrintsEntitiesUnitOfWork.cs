@@ -140,11 +140,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<RA_STUDY_NODE, Guid> RA_STUDY_NODES { get; }
 
         /// <summary>
-        /// The RA_STUDY_USER entities repository.
-        /// </summary>
-        IRepository<RA_STUDY_USER, Guid> RA_STUDY_USERS { get; }
-
-        /// <summary>
         /// The RATE entities repository.
         /// </summary>
         IRepository<RATE, Guid> RATES { get; }

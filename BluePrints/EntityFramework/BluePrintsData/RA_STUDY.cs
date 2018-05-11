@@ -11,7 +11,7 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RA_STUDY()
         {
-            RA_STUDY_USER = new HashSet<RA_STUDY_USER>();
+            RA_STUDY_TEAM = new HashSet<RA_STUDY_TEAM>();
         }
 
         [Key]
@@ -50,6 +50,6 @@
         public virtual RA_STUDY_TYPE RA_STUDY_TYPE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RA_STUDY_USER> RA_STUDY_USER { get; set; }
+        public virtual ICollection<RA_STUDY_TEAM> RA_STUDY_TEAM { get; set; }
     }
 }
