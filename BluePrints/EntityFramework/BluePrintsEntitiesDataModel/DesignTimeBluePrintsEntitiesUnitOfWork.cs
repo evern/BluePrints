@@ -142,6 +142,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((RA_STUDY_NODE x) => x.GUID); }
         }
 
+        IRepository<RA_STUDY_TEAM, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_TEAMS
+        {
+            get { return GetRepository((RA_STUDY_TEAM x) => x.GUID); }
+        }
+
         IRepository<RA_STUDY_TYPE, Guid> IBluePrintsEntitiesUnitOfWork.RA_STUDY_TYPES
         {
             get { return GetRepository((RA_STUDY_TYPE x) => x.GUID); }

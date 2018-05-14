@@ -17,6 +17,8 @@
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid GUID_STUDY { get; set; }
+
         [Required]
         [StringLength(50)]
         public string NUMBER { get; set; }
@@ -43,6 +45,8 @@
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        public virtual RA_STUDY RA_STUDY { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_NODE> RA_STUDY_NODE { get; set; }

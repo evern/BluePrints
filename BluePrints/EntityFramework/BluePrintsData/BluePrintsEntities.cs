@@ -566,6 +566,18 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_STUDY_TYPE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<RA_STUDY>()
+                .HasMany(e => e.RA_STUDY_DRAWING)
+                .WithRequired(e => e.RA_STUDY)
+                .HasForeignKey(e => e.GUID_STUDY)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY>()
+                .HasMany(e => e.RA_STUDY_NODE)
+                .WithRequired(e => e.RA_STUDY)
+                .HasForeignKey(e => e.GUID_STUDY)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<RA_STUDY_TYPE>()
                 .HasMany(e => e.RA_STUDY)
                 .WithRequired(e => e.RA_STUDY_TYPE)

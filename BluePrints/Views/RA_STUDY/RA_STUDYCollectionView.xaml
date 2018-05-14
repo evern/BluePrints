@@ -30,16 +30,9 @@
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTUDY" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="NAME" Header="Name" HeaderToolTip="Unique name" />
-                            <dxg:GridColumn FieldName="GUID_STUDY_TYPE" Header="Study Type" />
-                            <dxg:GridColumn FieldName="COMMENTS" Header="Comments" />
-                            <dxg:GridColumn FieldName="BUDGETED_UNITS" Header="Budgeted Units" HeaderToolTip="Keying in budgeted unit here will restrict maximum units allowed in deliverables">
+                            <dxg:GridColumn FieldName="GUID_STUDY_TYPE" Header="Study Type">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="10" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="STATUS" Header="Status">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STUDY_TYPE" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="START_DATE" Header="Start Date">
@@ -67,6 +60,8 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditCommand, ElementName=userControl}" Content="Edit" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" />
+                                    <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />

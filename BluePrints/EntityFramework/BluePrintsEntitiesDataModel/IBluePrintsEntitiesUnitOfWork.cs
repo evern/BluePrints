@@ -135,6 +135,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<RA_STUDY_DRAWING, Guid> RA_STUDY_DRAWINGS { get; }
 
         /// <summary>
+        /// The RA_STUDY_TEAM entities repository.
+        /// </summary>
+        IRepository<RA_STUDY_TEAM, Guid> RA_STUDY_TEAMS { get; }
+
+        /// <summary>
         /// The RA_STUDY_NODE entities repository.
         /// </summary>
         IRepository<RA_STUDY_NODE, Guid> RA_STUDY_NODES { get; }

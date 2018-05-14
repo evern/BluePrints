@@ -17,6 +17,8 @@
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid GUID_STUDY { get; set; }
+
         public Guid? GUID_DRAWING { get; set; }
 
         [Required]
@@ -40,6 +42,8 @@
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+
+        public virtual RA_STUDY RA_STUDY { get; set; }
 
         public virtual RA_STUDY_DRAWING RA_STUDY_DRAWING { get; set; }
     }

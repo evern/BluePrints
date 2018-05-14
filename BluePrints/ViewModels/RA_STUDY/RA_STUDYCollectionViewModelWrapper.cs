@@ -93,6 +93,27 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
 
+        public bool CanEdit()
+        {
+            if (DisplaySelectedEntity == null)
+                return false;
+
+            return true;
+        }
+
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        public void Edit()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new EntitiesParameter<RA_STUDY>(DisplaySelectedEntity), "RA_STUDYSingleObjectView", "[" + DisplaySelectedEntity.NAME + "] Risk Assessment");
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
         #endregion
 
         #region View Properties

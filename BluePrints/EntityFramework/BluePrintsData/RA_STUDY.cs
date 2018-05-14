@@ -11,6 +11,8 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RA_STUDY()
         {
+            RA_STUDY_DRAWING = new HashSet<RA_STUDY_DRAWING>();
+            RA_STUDY_NODE = new HashSet<RA_STUDY_NODE>();
             RA_STUDY_TEAM = new HashSet<RA_STUDY_TEAM>();
         }
 
@@ -51,5 +53,11 @@
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_TEAM> RA_STUDY_TEAM { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY_NODE> RA_STUDY_NODE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RA_STUDY_DRAWING> RA_STUDY_DRAWING { get; set; }
     }
 }

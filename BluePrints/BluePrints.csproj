@@ -708,6 +708,7 @@
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
@@ -772,6 +773,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml.cs">
+      <DependentUpon>RA_STUDYSingleObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDYCollectionView.xaml.cs">
       <DependentUpon>RA_STUDYCollectionView.xaml</DependentUpon>
@@ -1615,6 +1619,10 @@
     <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDYCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
