@@ -1,0 +1,2441 @@
+﻿USE [BLUEPRINT]
+GO
+/****** Object:  Table [dbo].[AREA]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AREA](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_PARENT] [uniqueidentifier] NULL,
+	[INTERNAL_NUM] [nvarchar](100) NOT NULL,
+	[CLIENT_NUM] [nvarchar](100) NULL,
+	[TITLE] [nvarchar](200) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_AREA] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[BASELINE]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[BASELINE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[REVISION] [nvarchar](50) NOT NULL,
+	[COMMENTS] [nvarchar](100) NULL,
+	[ACTUAL_UNITS] [decimal](10, 2) NULL,
+	[BUDGETED_UNITS] [decimal](10, 2) NULL,
+	[ALLOW_EXCEED] [bit] NOT NULL,
+	[STATUS] [int] NOT NULL,
+	[P6BASELINE_NAME] [nvarchar](20) NULL,
+	[P6MODBASELINE_NAME] [nvarchar](20) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_BASELINE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[BASELINE_ITEM]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[BASELINE_ITEM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ORIGINAL] [uniqueidentifier] NOT NULL,
+	[GUID_BASELINE] [uniqueidentifier] NULL,
+	[GUID_VARIATION] [uniqueidentifier] NULL,
+	[GUID_PHASE] [uniqueidentifier] NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[GUID_SUBAREA] [uniqueidentifier] NULL,
+	[GUID_SUBJOB] [uniqueidentifier] NULL,
+	[GUID_WORKPACK] [uniqueidentifier] NULL,
+	[GUID_DEPARTMENT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[GUID_DOCTYPE] [uniqueidentifier] NULL,
+	[GUID_STATUS] [uniqueidentifier] NULL,
+	[GUID_USER] [uniqueidentifier] NULL,
+	[DISCIPLINE_NUM] [int] NOT NULL,
+	[INTERNAL_NUM] [nvarchar](200) NULL,
+	[CLIENT_NUM] [nvarchar](200) NULL,
+	[DELIVERABLE_TYPE] [int] NOT NULL,
+	[PRIMARY_TITLE] [nvarchar](500) NULL,
+	[SECONDARY_TITLE] [nvarchar](500) NULL,
+	[COMMENTS] [nvarchar](1000) NULL,
+	[BUDGET_HOURS] [decimal](18, 2) NOT NULL,
+	[DC_HOURS] [decimal](18, 2) NOT NULL,
+	[REVISION_NUMBER] [nvarchar](50) NULL,
+	[P6_ASSIGNMENT_STARTUNIT] [decimal](18, 0) NULL,
+	[BY_DURATION] [bit] NOT NULL,
+	[TARGET_DATE] [datetime] NULL,
+	[PRODUCTIVITY_OVERRIDE] [decimal](18, 2) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[CANCELLED] [datetime] NULL,
+	[CANCELLEDBY] [uniqueidentifier] NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[OFFICE] [int] NOT NULL,
+ CONSTRAINT [PK_BASELINE_ITEM] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[BASELINE_ITEM_WORK]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[BASELINE_ITEM_WORK](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_BASELINE_ITEM_ORIGINAL] [uniqueidentifier] NOT NULL,
+	[GUID_USER] [uniqueidentifier] NOT NULL,
+	[WEIGHTING] [decimal](5, 2) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_BASELINE_ITEM_WORK] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Calendar]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Calendar](
+	[DDate] [datetime] NOT NULL,
+	[wkDay] [float] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[DDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CLIENT]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CLIENT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[FIRST_NAME] [nvarchar](100) NULL,
+	[LAST_NAME] [nvarchar](100) NULL,
+	[PHONE] [nvarchar](50) NULL,
+	[EMAIL] [nvarchar](100) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_CLIENT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CLIENT_PROJECT]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CLIENT_PROJECT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_CLIENT] [uniqueidentifier] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_CLIENT_PROJECT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[COMMODITY_CODE]    Script Date: 14/5/2018 7:14:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[COMMODITY_CODE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[DESCRIPTION] [nvarchar](200) NULL,
+	[UOM] [nvarchar](10) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_COMMODITY_CODE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DataPoint]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DataPoint](
+	[Guid_DataPoint] [uniqueidentifier] NOT NULL,
+	[ProjectNumber] [nvarchar](50) NOT NULL,
+	[Type] [int] NOT NULL,
+	[IsPlanned] [bit] NOT NULL,
+	[Deliverable_Guid] [uniqueidentifier] NOT NULL,
+	[Original_Guid] [uniqueidentifier] NOT NULL,
+	[UniversalPeriodStartDate] [datetime] NOT NULL,
+	[UniversalPeriodEndDate] [datetime] NOT NULL,
+	[PeriodUnits] [float] NOT NULL,
+	[PeriodPrice] [float] NOT NULL,
+	[IsFromP6] [bit] NOT NULL,
+	[RemainingDuration] [float] NULL,
+	[IsLate] [bit] NOT NULL,
+	[IsCurrent] [bit] NOT NULL,
+ CONSTRAINT [PK_DataPoints] PRIMARY KEY CLUSTERED 
+(
+	[Guid_DataPoint] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DELIVERABLES_STATUS]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DELIVERABLES_STATUS](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NULL,
+	[GUID_DOCTYPE] [uniqueidentifier] NULL,
+	[NAME] [nvarchar](500) NOT NULL,
+	[MAX_PERCENTAGE] [decimal](5, 2) NOT NULL,
+	[AUTO_PERCENTAGE] [decimal](5, 2) NULL,
+	[FOR_DELIVERABLE] [bit] NOT NULL,
+	[FOR_TASK] [bit] NOT NULL,
+	[FOR_NCR] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_DELIVERABLES_STATUS] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DEPARTMENT]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DEPARTMENT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[ISDESIGNCOMMODITY] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_DEPARTMENT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DISCIPLINE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DISCIPLINE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_DISCIPLINE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DOCTYPE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DOCTYPE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_DDEPARTMENT] [uniqueidentifier] NOT NULL,
+	[CODE] [nvarchar](10) NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[IS_AREA_SIGNIFICANT] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[IS_INDIRECT_ONLY] [bit] NOT NULL,
+ CONSTRAINT [PK_DOCTYPE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ESTIMATE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ESTIMATE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[REVISION] [nvarchar](50) NOT NULL,
+	[COMMENTS] [nvarchar](100) NULL,
+	[MARGIN] [decimal](18, 2) NOT NULL,
+	[CONTINGENCY] [decimal](18, 2) NOT NULL,
+	[P6BASELINE_NAME] [nvarchar](20) NULL,
+	[P6MODBASELINE_NAME] [nvarchar](20) NULL,
+	[STATUS] [int] NOT NULL,
+	[ISBUDGET] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_ESTIMATION_DIRECT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ESTIMATE_ITEM]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ESTIMATE_ITEM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ORIGINAL] [uniqueidentifier] NOT NULL,
+	[GUID_PSUBJOB] [uniqueidentifier] NULL,
+	[GUID_SUBJOB] [uniqueidentifier] NULL,
+	[GUID_ESTIMATE] [uniqueidentifier] NULL,
+	[GUID_PHASE] [uniqueidentifier] NULL,
+	[GUID_VARIATION] [uniqueidentifier] NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[GUID_SUBAREA] [uniqueidentifier] NULL,
+	[GUID_DEPARTMENT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[GUID_COMMODITY_CODE] [uniqueidentifier] NULL,
+	[GUID_ESTIMATE_STOCK_CODE] [uniqueidentifier] NULL,
+	[GUID_BUDGET_STOCK_CODE] [uniqueidentifier] NULL,
+	[GUID_STOCK_GROUP] [uniqueidentifier] NULL,
+	[GUID_WORKPACK] [uniqueidentifier] NULL,
+	[DISCIPLINE_NUM] [int] NOT NULL,
+	[BY_DURATION] [bit] NOT NULL,
+	[NAME] [nvarchar](1000) NULL,
+	[COMMENTS] [nvarchar](1000) NULL,
+	[BUDGET_TRUCK_PERCENTAGE] [decimal](18, 2) NULL,
+	[ESTIMATE_TRUCK_PERCENTAGE] [decimal](18, 2) NULL,
+	[ESTIMATE_QUANTITY] [decimal](18, 2) NOT NULL,
+	[BUDGET_QUANTITY] [decimal](18, 2) NULL,
+	[DC_QUANTITY] [decimal](18, 2) NOT NULL,
+	[PROGRESS_TYPE] [int] NOT NULL,
+	[PRODUCTIVITY_OVERRIDE] [decimal](18, 2) NULL,
+	[ESTIMATE_INSTALL_RATE] [decimal](18, 2) NOT NULL,
+	[BUDGET_INSTALL_RATE] [decimal](18, 2) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[CANCELLED] [datetime] NULL,
+	[CANCELLEDBY] [uniqueidentifier] NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_ESTIMATION_ITEM] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[HOLIDAY]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[HOLIDAY](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[HOLIDAY_DATE] [datetime] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_HOLIDAY] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Holidays]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Holidays](
+	[HolidayDate] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[HolidayDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[INDIRECT_TYPE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[INDIRECT_TYPE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_INDIRECT_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MEETING]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MEETING](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_MEETING_TYPE] [uniqueidentifier] NOT NULL,
+	[TITLE] [nvarchar](1000) NOT NULL,
+	[DOC_NUMBER] [nvarchar](100) NULL,
+	[NUMBER] [nvarchar](50) NULL,
+	[VENUE] [nvarchar](2000) NULL,
+	[MEETING_DATE] [datetime] NOT NULL,
+	[CHAIRED_BY] [uniqueidentifier] NULL,
+	[MEETING_START] [datetime] NULL,
+	[MEETING_END] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MEETING] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MEETING_ACTION]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MEETING_ACTION](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](1000) NOT NULL,
+	[IS_HIDE] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MEETING_ACTION] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MEETING_TYPE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MEETING_TYPE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](1000) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MEETING_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MEETING_USER]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MEETING_USER](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_MEETING] [uniqueidentifier] NOT NULL,
+	[TYPE] [int] NOT NULL,
+	[USER_TYPE] [int] NOT NULL,
+	[GUID_USER] [uniqueidentifier] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MEETING_USER] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MINUTE_AGENDA]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MINUTE_AGENDA](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_MINUTE_TITLE] [uniqueidentifier] NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_PARENT] [uniqueidentifier] NULL,
+	[GUID_ACTION] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](50) NULL,
+	[NAME] [nvarchar](4000) NOT NULL,
+	[PRIORITY] [int] NOT NULL,
+	[GUID_RAISE_USER] [uniqueidentifier] NULL,
+	[GUID_ACTION_USER] [uniqueidentifier] NULL,
+	[RAISE_DATE] [datetime] NULL,
+	[DUE_DATE] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MINUTE_AGENDA] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MINUTE_COMMENT]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MINUTE_COMMENT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_AGENDA] [uniqueidentifier] NULL,
+	[COMMENTS] [nvarchar](2000) NOT NULL,
+	[COMMENTS_BY] [uniqueidentifier] NULL,
+	[DATE_RAISED] [datetime] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MEETING_COMMENT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MINUTE_TITLE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MINUTE_TITLE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_MEETING_TYPE] [uniqueidentifier] NOT NULL,
+	[GUID_PARENT] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](50) NOT NULL,
+	[NAME] [nvarchar](1000) NOT NULL,
+	[SORTORDER] [int] NOT NULL,
+	[ISEXPANDED] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_MINUTE_TITLE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[P6_ASSIGNMENT]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[P6_ASSIGNMENT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[TYPE] [int] NOT NULL,
+	[ISMODIFIEDBASELINE] [bit] NOT NULL,
+	[GUID_ORIGINAL] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[P6_ACTIVITYID] [nvarchar](50) NOT NULL,
+	[LOW_VALUE] [decimal](10, 2) NOT NULL,
+	[HIGH_VALUE] [decimal](10, 2) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_BASELINE_ITEM_ASSIGNMENT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PHASE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PHASE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[INTERNAL_NUM] [nvarchar](100) NOT NULL,
+	[CLIENT_NUM] [nvarchar](100) NULL,
+	[PHASE_TYPE] [int] NULL,
+	[CHARGE_TYPE] [int] NULL,
+	[TITLE] [nvarchar](200) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_PHASE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PROGRESS]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PROGRESS](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[TYPE] [int] NOT NULL,
+	[PROGRESS_START] [datetime] NOT NULL,
+	[DATA_DATE] [datetime] NOT NULL,
+	[INTERVAL_COUNT] [int] NOT NULL,
+	[INTERVAL_TYPE] [int] NOT NULL,
+	[STATUS] [int] NOT NULL,
+	[COMMENTS] [nvarchar](100) NULL,
+	[P6PROGRESS_NAME] [nvarchar](20) NULL,
+	[PREVIOUS_REPORT_DATE] [datetime] NULL,
+	[REPORT_DATE] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_PROGRESS] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PROGRESS_ITEM]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PROGRESS_ITEM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROGRESS] [uniqueidentifier] NOT NULL,
+	[GUID_ORIBASEITEM] [uniqueidentifier] NOT NULL,
+	[EARNED_UNITS] [decimal](18, 7) NOT NULL,
+	[EARNED_DATE] [datetime] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_PROGRESS_ITEM] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PROJECT]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PROJECT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[NUMBER] [nvarchar](100) NOT NULL,
+	[NAME] [nvarchar](100) NULL,
+	[CLIENT] [nvarchar](100) NULL,
+	[STATUS] [int] NOT NULL,
+	[CONTRACTTYPE] [int] NOT NULL,
+	[TYPE] [int] NOT NULL,
+	[GUID_MANAGEUSER] [uniqueidentifier] NULL,
+	[CURRENCYCONVERSION] [decimal](10, 2) NOT NULL,
+	[REVIEWPERCENTAGE] [decimal](2, 2) NOT NULL,
+	[REVIEWPERIOD] [decimal](2, 0) NOT NULL,
+	[DOC_KICKOFF] [int] NULL,
+	[DOC_KICKOFF_PATH] [nvarchar](500) NULL,
+	[DOC_SIDREPORT] [int] NULL,
+	[DOC_SIDREPORT_PATH] [nvarchar](500) NULL,
+	[DOC_CLOSEOUT] [int] NULL,
+	[DOC_CLOSEOUT_PATH] [nvarchar](500) NULL,
+	[MEETING_DROP_OFF] [int] NOT NULL,
+	[USE_WORKPACKS] [bit] NOT NULL,
+	[TENDER_CHANCE_OF_WIN] [decimal](18, 2) NULL,
+	[TENDER_DUE] [datetime] NULL,
+	[TENDER_PROJECT_START] [datetime] NULL,
+	[TENDER_PROJECT_DURATION] [decimal](18, 2) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[OFFICE] [int] NOT NULL,
+ CONSTRAINT [PK_PROJECT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PROJECT_DISCIPLINE]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PROJECT_DISCIPLINE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_PROJECT_DISCIPLINE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PROJECT_REPORT]    Script Date: 14/5/2018 7:14:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PROJECT_REPORT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[REPORT_TYPE] [nvarchar](100) NOT NULL,
+	[REPORT] [nvarchar](max) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_PROJECT_REPORT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_GUIDE_PROMPT]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_GUIDE_PROMPT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_STUDY_TYPE] [uniqueidentifier] NOT NULL,
+	[GUIDE_PROMPT] [nvarchar](500) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_GUIDE_PROMPT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_GUIDE_SUBPROMPT]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_GUIDE_SUBPROMPT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_GUIDE_PROMPT] [uniqueidentifier] NOT NULL,
+	[GUIDE_SUBPROMPT] [nvarchar](500) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_GUIDE_SUBPROMPT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_STUDY_TYPE] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](500) NOT NULL,
+	[GUID_FACILITATOR] [uniqueidentifier] NULL,
+	[GUID_MINUTESBY] [uniqueidentifier] NULL,
+	[START_DATE] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY_DATA]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY_DATA](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_NODE] [uniqueidentifier] NOT NULL,
+	[GUID_GUIDE_PROMPT] [uniqueidentifier] NULL,
+	[GUID_GUIDE_SUBPROMPT] [uniqueidentifier] NULL,
+	[GUID_ACTION_BY] [uniqueidentifier] NULL,
+	[TITLE] [nvarchar](500) NOT NULL,
+	[POSSIBLE_CAUSES] [nvarchar](2000) NULL,
+	[CONSEQUENCES] [nvarchar](2000) NULL,
+	[SAFEGUARDS] [nvarchar](2000) NULL,
+	[RECOMMENDATIONS] [nvarchar](2000) NULL,
+	[DONE] [bit] NOT NULL,
+	[COMMENTS] [nvarchar](2000) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY_DATA] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY_DRAWING]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY_DRAWING](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_STUDY] [uniqueidentifier] NOT NULL,
+	[NUMBER] [nvarchar](50) NOT NULL,
+	[DESCRIPTION] [nvarchar](500) NULL,
+	[REVISION] [nvarchar](50) NULL,
+	[REVISION_DESCRIPTION] [nvarchar](500) NULL,
+	[REVISION_DATE] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY_DRAWING] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY_NODE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY_NODE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_STUDY] [uniqueidentifier] NOT NULL,
+	[GUID_DRAWING] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](50) NOT NULL,
+	[DESCRIPTION] [nvarchar](500) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY_NODE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY_TEAM]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY_TEAM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_STUDY] [uniqueidentifier] NOT NULL,
+	[GUID_USER] [uniqueidentifier] NOT NULL,
+	[STUDY_ROLE] [nvarchar](500) NULL,
+	[STUDY_INITIALS] [nvarchar](50) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY_USER] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RA_STUDY_TYPE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RA_STUDY_TYPE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[STUDY_TYPE] [nvarchar](100) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RA_STUDY_TYPE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RATE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RATE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_DEPARTMENT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[RATE] [decimal](18, 2) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[CHARGE_TYPE] [int] NOT NULL,
+	[PHASE_TYPE] [int] NOT NULL,
+	[GUID_COMMODITY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_RATE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[UNIQUE_DI_NUM] [nvarchar](50) NULL,
+	[UNIQUE_DC_NUM] [nvarchar](50) NULL,
+	[UNIQUE_R_NUM] [nvarchar](50) NULL,
+	[UNIQUE_H_NUM] [nchar](10) NULL,
+	[TITLE] [nvarchar](150) NOT NULL,
+	[DESCRIPTION] [nvarchar](1000) NULL,
+	[DESCRIPTION_H] [nvarchar](1000) NULL,
+	[COMMENTS] [nvarchar](1000) NULL,
+	[FINAL_RESOLUTION] [nvarchar](1000) NULL,
+	[CLIENT_NOTIFICATION] [nvarchar](1000) NULL,
+	[NOTIFIED_PERSON] [nvarchar](50) NULL,
+	[DATERAISED_DI] [date] NULL,
+	[DATERAISED_DC] [date] NULL,
+	[DATERAISED_H] [date] NULL,
+	[RAISEDBY_DI] [nvarchar](50) NULL,
+	[RAISEDBY_DC] [nvarchar](50) NULL,
+	[RAISEDBY_H] [nvarchar](50) NULL,
+	[DATECLOSED_DI] [date] NULL,
+	[DATECLOSED_DC] [date] NULL,
+	[DATECLOSED_H] [date] NULL,
+	[DATEAPPROVED_DC] [date] NULL,
+	[DATEIDENTIFIED_R] [date] NULL,
+	[CLOSING_MECHANISM] [nvarchar](150) NULL,
+	[DWG_ACTIONED] [bit] NOT NULL,
+	[SCHEDULE_IMPACT] [bit] NOT NULL,
+	[COST_IMPACT] [bit] NOT NULL,
+	[IMPACT_TYPE] [int] NOT NULL,
+	[CHANGE_APPROVED] [bit] NOT NULL,
+	[INTERDISC_CHECKED] [bit] NOT NULL,
+	[HAZARD_GROUP] [int] NULL,
+	[HAZARD_TYPE] [nvarchar](500) NULL,
+	[HAZARD_CAUSE] [nvarchar](500) NULL,
+	[RISK_LIKELIHOOD] [int] NULL,
+	[RISK_CONSEQ] [int] NULL,
+	[CONTROL_MEASURES] [nvarchar](500) NULL,
+	[RRISK_LIKELIHOOD] [int] NULL,
+	[RRISK_CONSEQ] [int] NULL,
+	[RHAZARD] [nvarchar](500) NULL,
+	[FURTHER_ACTION] [nvarchar](500) NULL,
+	[REFERENCE] [nvarchar](500) NULL,
+	[ACTION] [nvarchar](500) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_CHANGE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_CHANGE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[CLIENT_NUMBER] [nvarchar](150) NULL,
+	[TITLE] [nvarchar](300) NULL,
+	[DESCRIPTION] [nvarchar](4000) NULL,
+	[SCHEDULE_IMPACT] [int] NULL,
+	[COST_IMPACT] [int] NULL,
+	[IMPACT_TYPE] [int] NOT NULL,
+	[INTERDISC_CHECK_COMPLETE] [bit] NOT NULL,
+	[APPROVED] [bit] NULL,
+	[DATE_RAISED] [datetime] NULL,
+	[DATE_CLOSED] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_CHANGE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_HOLD]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_HOLD](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[DESCRIPTION] [nvarchar](4000) NULL,
+	[REFERENCE] [nvarchar](4000) NULL,
+	[RAISEDBY] [nvarchar](300) NULL,
+	[ACTION] [nvarchar](4000) NULL,
+	[DATE_RAISED] [datetime] NULL,
+	[DATE_CLOSED] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_HOLD] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_ISSUE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_ISSUE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[GUID_CHANGE] [uniqueidentifier] NULL,
+	[GUID_HOLD] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[GUID_RESPONSIBLE_PERSON] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[TITLE] [nvarchar](300) NULL,
+	[DESCRIPTION] [nvarchar](4000) NULL,
+	[PROPOSED_SOLUTION] [nvarchar](4000) NULL,
+	[FINAL_RESOLUTION] [nvarchar](4000) NULL,
+	[CLIENT_NOTIFICATION] [nvarchar](300) NULL,
+	[NOTIFIED_PERSON] [nvarchar](300) NULL,
+	[DATE_RAISED] [datetime] NULL,
+	[DATE_CLOSED] [datetime] NULL,
+	[ACTIONED_ON_DWG] [int] NULL,
+	[SCHEDULE_IMPACT] [int] NULL,
+	[COST_IMPACT] [int] NULL,
+	[WAY_CLOSED] [nvarchar](300) NULL,
+	[CLOSED_NOTIFIED_PERSON] [nvarchar](300) NULL,
+	[ISSUE_TYPE] [int] NOT NULL,
+	[IMPORTANCE] [int] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_ISSUE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_LL]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_LL](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[RAISEDBY_TYPE] [int] NULL,
+	[RAISEDBY] [nvarchar](300) NULL,
+	[TYPE] [nvarchar](150) NULL,
+	[TITLE] [nvarchar](300) NULL,
+	[DESCRIPTION] [nvarchar](4000) NULL,
+	[PROCESS_ISSUE] [bit] NULL,
+	[FURTHER_ACTION] [nvarchar](4000) NULL,
+	[DATE_IDENTIFIED] [datetime] NULL,
+	[DATE_CLOSED] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_LL] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_NC]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_NC](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[RAISEDBY_TYPE] [int] NULL,
+	[RAISEDBY] [nvarchar](300) NULL,
+	[TITLE] [nvarchar](300) NULL,
+	[DESCRIPTION] [nvarchar](4000) NULL,
+	[CAUSE] [nvarchar](4000) NULL,
+	[CORRECTIVE_ACTION_TYPE] [int] NULL,
+	[CORRECTIVE_ACTION] [nvarchar](4000) NULL,
+	[ESTIMATED_RECTIFICATION_COST] [decimal](18, 2) NULL,
+	[DATE_IDENTIFIED] [datetime] NULL,
+	[DATE_CLOSED] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_NC] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[REGISTER_RISK]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[REGISTER_RISK](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_AREA] [uniqueidentifier] NULL,
+	[NUMBER] [nvarchar](150) NULL,
+	[HAZARD_GROUP] [int] NULL,
+	[HAZARD_TYPE] [nvarchar](4000) NULL,
+	[HAZARD_CAUSE] [nvarchar](4000) NULL,
+	[RISK_LIKELIHOOD] [int] NULL,
+	[RISK_CONSEQUENCES] [int] NULL,
+	[RISK_RANKING] [int] NULL,
+	[CONTROL_MEASURES] [nvarchar](4000) NULL,
+	[RESIDUE_RISK_LIKELIHOOD] [int] NULL,
+	[RESIDUE_RISK_CONSEQUENCES] [int] NULL,
+	[RESIDUE_RISK_RANKING] [int] NULL,
+	[RESIDUE_HAZARD] [nvarchar](4000) NULL,
+	[FURTHER_ACTION] [nvarchar](4000) NULL,
+	[DATE_IDENTIFIED] [datetime] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_REGISTER_RISK] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ROLE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ROLE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[PARENTGUID] [uniqueidentifier] NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[ISMANAGER] [bit] NOT NULL,
+	[ISEXPANDED] [bit] NOT NULL,
+	[SORTORDER] [int] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_ROLE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ROLE_COMMODITY]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ROLE_COMMODITY](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ROLE] [uniqueidentifier] NOT NULL,
+	[GUID_COMMODITY] [uniqueidentifier] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ROLE_PERMISSION]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ROLE_PERMISSION](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ROLE] [uniqueidentifier] NOT NULL,
+	[PERMISSION] [nvarchar](50) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_ROLE_PERMISSION] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SETTINGS_GLOBAL]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SETTINGS_GLOBAL](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[REVIEW_PERCENTAGE] [decimal](2, 2) NOT NULL,
+	[REVIEW_PERIOD] [decimal](2, 0) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_SETTINGS_GLOBAL] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[STOCK_CODE]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[STOCK_CODE](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ORIGINAL] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NOT NULL,
+	[GUID_COMMODITY_CODE] [uniqueidentifier] NULL,
+	[STOCK_CODE_TYPE] [int] NOT NULL,
+	[NAME] [nvarchar](1000) NOT NULL,
+	[TYPE] [nvarchar](1000) NULL,
+	[SPEC] [nvarchar](1000) NULL,
+	[DESCRIPTION] [nvarchar](1000) NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[UOM] [nvarchar](50) NULL,
+	[RATE_SUPPLY] [numeric](18, 2) NOT NULL,
+	[HOURS_INSTALL] [numeric](18, 2) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_STOCK_CODE] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[STOCK_GROUP]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[STOCK_GROUP](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NULL,
+	[CODE] [nvarchar](50) NOT NULL,
+	[DESCRIPTION] [nvarchar](200) NULL,
+	[UOM] [nvarchar](10) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_STOCK_GROUP] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SUBJOB]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SUBJOB](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_DPHASE] [uniqueidentifier] NULL,
+	[GUID_DAREA] [uniqueidentifier] NULL,
+	[GUID_DSUBAREA] [uniqueidentifier] NULL,
+	[INTERNAL_NAME1] [nvarchar](200) NULL,
+	[INTERNAL_NAME2] [nvarchar](200) NULL,
+	[COMMENTS] [nvarchar](500) NULL,
+	[STARTDATE] [datetime] NULL,
+	[ENDDATE] [datetime] NULL,
+	[REVIEWSTARTDATE] [datetime] NULL,
+	[REVIEWENDDATE] [datetime] NULL,
+	[FORECASTSTARTDATE] [datetime] NULL,
+	[FORECASTENDDATE] [datetime] NULL,
+	[AUTOGENERATED] [bit] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[BELLCURVESHAPE] [int] NULL,
+ CONSTRAINT [PK_SUBJOB] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SUBJOB_ASSIGNMENT]    Script Date: 14/5/2018 7:14:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SUBJOB_ASSIGNMENT](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[ISMODIFIEDBASELINE] [bit] NOT NULL,
+	[GUID_SUBJOB] [uniqueidentifier] NOT NULL,
+	[P6_ACTIVITYID] [nvarchar](50) NOT NULL,
+	[LOW_VALUE] [decimal](10, 2) NOT NULL,
+	[HIGH_VALUE] [decimal](10, 2) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_SUBJOB_ASSIGNMENT] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UOM]    Script Date: 14/5/2018 7:14:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UOM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[UOM] [nvarchar](50) NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_UOM] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[USER]    Script Date: 14/5/2018 7:14:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[USER](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_ROLE] [uniqueidentifier] NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[FIRST_NAME] [nvarchar](100) NULL,
+	[LAST_NAME] [nvarchar](100) NULL,
+	[GUID_DEPARTMENT] [uniqueidentifier] NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NULL,
+	[DEPARTMENT] [nvarchar](100) NULL,
+	[TITLE] [nvarchar](100) NULL,
+	[DESCRIPTION] [nvarchar](500) NULL,
+	[UTILIZATION] [decimal](18, 2) NULL,
+	[CODE] [nvarchar](50) NULL,
+	[PHONE] [nvarchar](50) NULL,
+	[EMAIL] [nvarchar](100) NULL,
+	[EXO_STAFF_ID] [int] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+	[OFFICE] [int] NULL,
+ CONSTRAINT [PK_TEST] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VARIATION]    Script Date: 14/5/2018 7:14:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VARIATION](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_PROJECT] [uniqueidentifier] NOT NULL,
+	[GUID_ORIBASELINE] [uniqueidentifier] NULL,
+	[GUID_BASELINE] [uniqueidentifier] NULL,
+	[PHASE] [int] NOT NULL,
+	[NAME] [nvarchar](100) NOT NULL,
+	[COMMENTS] [nvarchar](500) NULL,
+	[TYPE] [int] NOT NULL,
+	[SUBMITTED] [datetime] NULL,
+	[SUBMITTEDBY] [uniqueidentifier] NULL,
+	[APPROVED] [datetime] NULL,
+	[APPROVEDBY] [uniqueidentifier] NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_VARIATION] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VARIATION_ITEM]    Script Date: 14/5/2018 7:14:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VARIATION_ITEM](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_VARIATION] [uniqueidentifier] NOT NULL,
+	[GUID_ORIBASEITEM] [uniqueidentifier] NOT NULL,
+	[VARIATION_UNITS] [decimal](18, 2) NOT NULL,
+	[ACTION] [int] NOT NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_VARIATION_ITEM] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[WORKPACK]    Script Date: 14/5/2018 7:14:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[WORKPACK](
+	[GUID] [uniqueidentifier] NOT NULL,
+	[GUID_SUBJOB] [uniqueidentifier] NOT NULL,
+	[GUID_DISCIPLINE] [uniqueidentifier] NOT NULL,
+	[DISCIPLINE_NUM] [decimal](18, 2) NOT NULL,
+	[NAME] [nvarchar](50) NOT NULL,
+	[TITLE] [nvarchar](1000) NULL,
+	[CREATED] [datetime] NOT NULL,
+	[CREATEDBY] [uniqueidentifier] NOT NULL,
+	[UPDATED] [datetime] NULL,
+	[UPDATEDBY] [uniqueidentifier] NULL,
+	[DELETED] [datetime] NULL,
+	[DELETEDBY] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_WORKPACK] PRIMARY KEY CLUSTERED 
+(
+	[GUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[AREA] ADD  CONSTRAINT [DF_AREA_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[BASELINE] ADD  CONSTRAINT [DF_BASELINE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] ADD  CONSTRAINT [DF_BASELINE_ITEM_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] ADD  CONSTRAINT [DF_BASELINE_ITEM_DISCIPLINE_NUM]  DEFAULT ((1)) FOR [DISCIPLINE_NUM]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] ADD  CONSTRAINT [DF_BASELINE_ITEM_BY_DURATION]  DEFAULT ((0)) FOR [BY_DURATION]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] ADD  DEFAULT ((0)) FOR [OFFICE]
+GO
+ALTER TABLE [dbo].[DataPoint] ADD  CONSTRAINT [DF_DataPoint_Type]  DEFAULT ((0)) FOR [Type]
+GO
+ALTER TABLE [dbo].[DataPoint] ADD  CONSTRAINT [DF_DataPoint_IsPlanned]  DEFAULT ((1)) FOR [IsPlanned]
+GO
+ALTER TABLE [dbo].[DataPoint] ADD  CONSTRAINT [DF_DataPoint_IsLate]  DEFAULT ((0)) FOR [IsLate]
+GO
+ALTER TABLE [dbo].[DataPoint] ADD  CONSTRAINT [DF_DataPoint_IsCurrent]  DEFAULT ((0)) FOR [IsCurrent]
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS] ADD  CONSTRAINT [DF_DELIVERABLES_STATUS_FOR_DELIVERABLE]  DEFAULT ((1)) FOR [FOR_DELIVERABLE]
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS] ADD  CONSTRAINT [DF_DELIVERABLES_STATUS_FOR_TASK]  DEFAULT ((1)) FOR [FOR_TASK]
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS] ADD  CONSTRAINT [DF_DELIVERABLES_STATUS_FOR_NCR]  DEFAULT ((1)) FOR [FOR_NCR]
+GO
+ALTER TABLE [dbo].[DEPARTMENT] ADD  CONSTRAINT [DF_DEPARTMENT_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[DEPARTMENT] ADD  CONSTRAINT [DF_DEPARTMENT_ISDESIGNCOMMODITY]  DEFAULT ((0)) FOR [ISDESIGNCOMMODITY]
+GO
+ALTER TABLE [dbo].[DISCIPLINE] ADD  CONSTRAINT [DF_DISCIPLINE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[DOCTYPE] ADD  CONSTRAINT [DF_DOCTYPE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[DOCTYPE] ADD  CONSTRAINT [DF_DOCTYPE_IS_AREA_SIGNIFICANT]  DEFAULT ((0)) FOR [IS_AREA_SIGNIFICANT]
+GO
+ALTER TABLE [dbo].[DOCTYPE] ADD  CONSTRAINT [DF_DOCTYPE_CREATEDBY]  DEFAULT (newsequentialid()) FOR [CREATEDBY]
+GO
+ALTER TABLE [dbo].[DOCTYPE] ADD  DEFAULT ((0)) FOR [IS_INDIRECT_ONLY]
+GO
+ALTER TABLE [dbo].[ESTIMATE] ADD  CONSTRAINT [DF_ESTIMATION_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[ESTIMATE] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_CONTINGENCY]  DEFAULT ((1)) FOR [CONTINGENCY]
+GO
+ALTER TABLE [dbo].[ESTIMATE] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_ISBUDGET]  DEFAULT ((0)) FOR [ISBUDGET]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATION_ITEM_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_ITEM_DISCIPLINE_NUM]  DEFAULT ((1)) FOR [DISCIPLINE_NUM]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATE_ITEM_BY_DURATION]  DEFAULT ((0)) FOR [BY_DURATION]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_ITEM_ESTIMATED_QUANTITY]  DEFAULT ((0)) FOR [ESTIMATE_QUANTITY]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATE_ITEM_BUDGETED_QUANTITY]  DEFAULT ((0)) FOR [BUDGET_QUANTITY]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_ITEM_DC_QUANTITY]  DEFAULT ((0)) FOR [DC_QUANTITY]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATION_DIRECT_ITEM_TRACK_TYPE]  DEFAULT ((0)) FOR [PROGRESS_TYPE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATE_ITEM_ESTIMATE_RATE]  DEFAULT ((0)) FOR [ESTIMATE_INSTALL_RATE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] ADD  CONSTRAINT [DF_ESTIMATE_ITEM_BUDGET_RATE]  DEFAULT ((0)) FOR [BUDGET_INSTALL_RATE]
+GO
+ALTER TABLE [dbo].[HOLIDAY] ADD  CONSTRAINT [DF_HOLIDAY_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[INDIRECT_TYPE] ADD  CONSTRAINT [DF_INDIRECT_TYPE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA] ADD  CONSTRAINT [DF_MINUTE_AGENDA_PRIORITY]  DEFAULT ((0)) FOR [PRIORITY]
+GO
+ALTER TABLE [dbo].[P6_ASSIGNMENT] ADD  CONSTRAINT [DF_P6_ASSIGNMENT_TYPE]  DEFAULT ((0)) FOR [TYPE]
+GO
+ALTER TABLE [dbo].[PHASE] ADD  CONSTRAINT [DF_PHASE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[PROGRESS] ADD  CONSTRAINT [DF_PROGRESS_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[PROGRESS] ADD  CONSTRAINT [DF_PROGRESS_TYPE]  DEFAULT ((0)) FOR [TYPE]
+GO
+ALTER TABLE [dbo].[PROGRESS_ITEM] ADD  CONSTRAINT [DF_PROGRESS_ITEM_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_DOC_KICKOFF]  DEFAULT ((0)) FOR [DOC_KICKOFF]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_DOC_SIDREPORT]  DEFAULT ((0)) FOR [DOC_SIDREPORT]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_DOC_CLOSEOUT]  DEFAULT ((0)) FOR [DOC_CLOSEOUT]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_MEETING_DROP_OFF]  DEFAULT ((2)) FOR [MEETING_DROP_OFF]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  CONSTRAINT [DF_PROJECT_P6SUBJOBASSIGN]  DEFAULT ((0)) FOR [USE_WORKPACKS]
+GO
+ALTER TABLE [dbo].[PROJECT] ADD  DEFAULT ((0)) FOR [OFFICE]
+GO
+ALTER TABLE [dbo].[PROJECT_REPORT] ADD  CONSTRAINT [DF_PROJECT_REPORT_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA] ADD  CONSTRAINT [DF_RA_STUDY_DATA_DONE]  DEFAULT ((0)) FOR [DONE]
+GO
+ALTER TABLE [dbo].[RATE] ADD  CONSTRAINT [DF_RATE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[RATE] ADD  CONSTRAINT [DF__RATE__CHARGE_TYP__1FEEE767]  DEFAULT ((0)) FOR [CHARGE_TYPE]
+GO
+ALTER TABLE [dbo].[RATE] ADD  CONSTRAINT [DF__RATE__PHASE_TYPE__269BE4F6]  DEFAULT ((0)) FOR [PHASE_TYPE]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_DWG_ACTIONED]  DEFAULT ((0)) FOR [DWG_ACTIONED]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_SCHEDULE_IMPACT_DI]  DEFAULT ((0)) FOR [SCHEDULE_IMPACT]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_COST_IMPACT_DI]  DEFAULT ((0)) FOR [COST_IMPACT]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_Table_1_IMPACTTYPE]  DEFAULT ((0)) FOR [IMPACT_TYPE]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_CHANGED_APPROVED]  DEFAULT ((0)) FOR [CHANGE_APPROVED]
+GO
+ALTER TABLE [dbo].[REGISTER] ADD  CONSTRAINT [DF_REGISTER_INTERDISC_CHECKED]  DEFAULT ((0)) FOR [INTERDISC_CHECKED]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] ADD  CONSTRAINT [DF_REGISTER_CHANGE_SCHEDULE_IMPACT]  DEFAULT ((0)) FOR [SCHEDULE_IMPACT]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] ADD  CONSTRAINT [DF_REGISTER_CHANGE_COST_IMPACT]  DEFAULT ((0)) FOR [COST_IMPACT]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] ADD  CONSTRAINT [DF_REGISTER_CHANGE_IMPACT_TYPE]  DEFAULT ((0)) FOR [IMPACT_TYPE]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] ADD  CONSTRAINT [DF_REGISTER_CHANGE_INTERDISC_CHECK_COMPLETE]  DEFAULT ((0)) FOR [INTERDISC_CHECK_COMPLETE]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] ADD  CONSTRAINT [DF_REGISTER_CHANGE_APPROVED]  DEFAULT ((0)) FOR [APPROVED]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] ADD  CONSTRAINT [DF_REGISTER_ISSUE_ACTIONED_ON_DWG]  DEFAULT ((0)) FOR [ACTIONED_ON_DWG]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] ADD  CONSTRAINT [DF_REGISTER_ISSUE_SCHEDULE_IMPACT]  DEFAULT ((0)) FOR [SCHEDULE_IMPACT]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] ADD  CONSTRAINT [DF_REGISTER_ISSUE_ISSUE_TYPE]  DEFAULT ((0)) FOR [ISSUE_TYPE]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] ADD  CONSTRAINT [DF_REGISTER_ISSUE_IMPORTANCE]  DEFAULT ((0)) FOR [IMPORTANCE]
+GO
+ALTER TABLE [dbo].[ROLE] ADD  CONSTRAINT [DF_ROLE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[ROLE] ADD  CONSTRAINT [DF_ROLE_ISMANAGER]  DEFAULT ((0)) FOR [ISMANAGER]
+GO
+ALTER TABLE [dbo].[ROLE] ADD  CONSTRAINT [DF_ROLE_ISEXPANDED]  DEFAULT ((1)) FOR [ISEXPANDED]
+GO
+ALTER TABLE [dbo].[ROLE] ADD  CONSTRAINT [DF_ROLE_SORTORDER]  DEFAULT ((0)) FOR [SORTORDER]
+GO
+ALTER TABLE [dbo].[ROLE_PERMISSION] ADD  CONSTRAINT [DF_ROLE_PERMISSION_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[SETTINGS_GLOBAL] ADD  CONSTRAINT [DF_SETTINGS_GLOBAL_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[STOCK_CODE] ADD  CONSTRAINT [DF_COMMODITY_CODE_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[SUBJOB] ADD  CONSTRAINT [DF_SUBJOB_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[SUBJOB_ASSIGNMENT] ADD  CONSTRAINT [DF_SUBJOB_ASSIGNMENT_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[SUBJOB_ASSIGNMENT] ADD  CONSTRAINT [DF_SUBJOB_ASSIGNMENT_ISMODIFIEDBASELINE]  DEFAULT ((0)) FOR [ISMODIFIEDBASELINE]
+GO
+ALTER TABLE [dbo].[UOM] ADD  CONSTRAINT [DF_UOM_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[USER] ADD  CONSTRAINT [DF_USER_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[VARIATION] ADD  CONSTRAINT [DF_VARIATION_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[VARIATION] ADD  CONSTRAINT [DF_VARIATION_PHASE]  DEFAULT ((0)) FOR [PHASE]
+GO
+ALTER TABLE [dbo].[VARIATION] ADD  CONSTRAINT [DF_VARIATION_TYPE]  DEFAULT ((0)) FOR [TYPE]
+GO
+ALTER TABLE [dbo].[VARIATION_ITEM] ADD  CONSTRAINT [DF_VARIATION_ITEM_GUID]  DEFAULT (newsequentialid()) FOR [GUID]
+GO
+ALTER TABLE [dbo].[WORKPACK] ADD  CONSTRAINT [DF_WORKPACK_NAME]  DEFAULT ('') FOR [NAME]
+GO
+ALTER TABLE [dbo].[AREA]  WITH NOCHECK ADD  CONSTRAINT [FK_AREA_AREA] FOREIGN KEY([GUID_PARENT])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[AREA] CHECK CONSTRAINT [FK_AREA_AREA]
+GO
+ALTER TABLE [dbo].[AREA]  WITH NOCHECK ADD  CONSTRAINT [FK_AREA_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[AREA] CHECK CONSTRAINT [FK_AREA_PROJECT]
+GO
+ALTER TABLE [dbo].[BASELINE]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE] CHECK CONSTRAINT [FK_BASELINE_PROJECT]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_AREA]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_AREA1] FOREIGN KEY([GUID_SUBAREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_AREA1]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_BASELINE] FOREIGN KEY([GUID_BASELINE])
+REFERENCES [dbo].[BASELINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_BASELINE]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_DELIVERABLES_STATUS] FOREIGN KEY([GUID_STATUS])
+REFERENCES [dbo].[DELIVERABLES_STATUS] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_DELIVERABLES_STATUS]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_DEPARTMENT] FOREIGN KEY([GUID_DEPARTMENT])
+REFERENCES [dbo].[DEPARTMENT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_DEPARTMENT]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_DOCTYPE] FOREIGN KEY([GUID_DOCTYPE])
+REFERENCES [dbo].[DOCTYPE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_DOCTYPE]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_PHASE] FOREIGN KEY([GUID_PHASE])
+REFERENCES [dbo].[PHASE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_PHASE]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_SUBJOB] FOREIGN KEY([GUID_SUBJOB])
+REFERENCES [dbo].[SUBJOB] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_SUBJOB]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_USER] FOREIGN KEY([GUID_USER])
+REFERENCES [dbo].[USER] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_USER]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_VARIATION] FOREIGN KEY([GUID_VARIATION])
+REFERENCES [dbo].[VARIATION] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_VARIATION]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_WORKPACK] FOREIGN KEY([GUID_WORKPACK])
+REFERENCES [dbo].[WORKPACK] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM] CHECK CONSTRAINT [FK_BASELINE_ITEM_WORKPACK]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM_WORK]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_WORK_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM_WORK] CHECK CONSTRAINT [FK_BASELINE_ITEM_WORK_PROJECT]
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM_WORK]  WITH NOCHECK ADD  CONSTRAINT [FK_BASELINE_ITEM_WORK_USER] FOREIGN KEY([GUID_USER])
+REFERENCES [dbo].[USER] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[BASELINE_ITEM_WORK] CHECK CONSTRAINT [FK_BASELINE_ITEM_WORK_USER]
+GO
+ALTER TABLE [dbo].[CLIENT_PROJECT]  WITH NOCHECK ADD  CONSTRAINT [FK_CLIENT_PROJECT_CLIENT] FOREIGN KEY([GUID_CLIENT])
+REFERENCES [dbo].[CLIENT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[CLIENT_PROJECT] CHECK CONSTRAINT [FK_CLIENT_PROJECT_CLIENT]
+GO
+ALTER TABLE [dbo].[CLIENT_PROJECT]  WITH NOCHECK ADD  CONSTRAINT [FK_CLIENT_PROJECT_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[CLIENT_PROJECT] CHECK CONSTRAINT [FK_CLIENT_PROJECT_PROJECT]
+GO
+ALTER TABLE [dbo].[COMMODITY_CODE]  WITH NOCHECK ADD  CONSTRAINT [FK_COMMODITY_CODE_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[COMMODITY_CODE] CHECK CONSTRAINT [FK_COMMODITY_CODE_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS]  WITH NOCHECK ADD  CONSTRAINT [FK_DELIVERABLES_STATUS_DOCTYPE] FOREIGN KEY([GUID_DOCTYPE])
+REFERENCES [dbo].[DOCTYPE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS] CHECK CONSTRAINT [FK_DELIVERABLES_STATUS_DOCTYPE]
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS]  WITH NOCHECK ADD  CONSTRAINT [FK_DELIVERABLES_STATUS_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[DELIVERABLES_STATUS] CHECK CONSTRAINT [FK_DELIVERABLES_STATUS_PROJECT]
+GO
+ALTER TABLE [dbo].[DOCTYPE]  WITH NOCHECK ADD  CONSTRAINT [FK_DOCTYPE_DEPARTMENT] FOREIGN KEY([GUID_DDEPARTMENT])
+REFERENCES [dbo].[DEPARTMENT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[DOCTYPE] CHECK CONSTRAINT [FK_DOCTYPE_DEPARTMENT]
+GO
+ALTER TABLE [dbo].[ESTIMATE]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_PROJECT]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH CHECK ADD  CONSTRAINT [FK_ESTIMATE_ITEM_DEPARTMENT] FOREIGN KEY([GUID_DEPARTMENT])
+REFERENCES [dbo].[DEPARTMENT] ([GUID])
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATE_ITEM_DEPARTMENT]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATE_ITEM_STOCK_CODE] FOREIGN KEY([GUID_BUDGET_STOCK_CODE])
+REFERENCES [dbo].[STOCK_CODE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATE_ITEM_STOCK_CODE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATE_ITEM_WORKPACK] FOREIGN KEY([GUID_WORKPACK])
+REFERENCES [dbo].[WORKPACK] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATE_ITEM_WORKPACK]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_AREA]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_AREA1] FOREIGN KEY([GUID_SUBAREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_AREA1]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_COMMODITY_CODE] FOREIGN KEY([GUID_COMMODITY_CODE])
+REFERENCES [dbo].[COMMODITY_CODE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_COMMODITY_CODE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_ESTIMATION_DIRECT] FOREIGN KEY([GUID_ESTIMATE])
+REFERENCES [dbo].[ESTIMATE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_ESTIMATION_DIRECT]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_PHASE] FOREIGN KEY([GUID_PHASE])
+REFERENCES [dbo].[PHASE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_PHASE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_STOCK_CODE] FOREIGN KEY([GUID_ESTIMATE_STOCK_CODE])
+REFERENCES [dbo].[STOCK_CODE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_STOCK_CODE]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_STOCK_GROUP] FOREIGN KEY([GUID_STOCK_GROUP])
+REFERENCES [dbo].[STOCK_GROUP] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_STOCK_GROUP]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_SUBJOB] FOREIGN KEY([GUID_SUBJOB])
+REFERENCES [dbo].[SUBJOB] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_SUBJOB]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_SUBJOB1] FOREIGN KEY([GUID_PSUBJOB])
+REFERENCES [dbo].[SUBJOB] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_SUBJOB1]
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_VARIATION] FOREIGN KEY([GUID_VARIATION])
+REFERENCES [dbo].[VARIATION] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ESTIMATE_ITEM] CHECK CONSTRAINT [FK_ESTIMATION_DIRECT_ITEM_VARIATION]
+GO
+ALTER TABLE [dbo].[HOLIDAY]  WITH NOCHECK ADD  CONSTRAINT [FK_HOLIDAY_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[HOLIDAY] CHECK CONSTRAINT [FK_HOLIDAY_PROJECT]
+GO
+ALTER TABLE [dbo].[MEETING]  WITH NOCHECK ADD  CONSTRAINT [FK_MEETING_MEETING_TYPE] FOREIGN KEY([GUID_MEETING_TYPE])
+REFERENCES [dbo].[MEETING_TYPE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MEETING] CHECK CONSTRAINT [FK_MEETING_MEETING_TYPE]
+GO
+ALTER TABLE [dbo].[MEETING]  WITH NOCHECK ADD  CONSTRAINT [FK_MEETING_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MEETING] CHECK CONSTRAINT [FK_MEETING_PROJECT]
+GO
+ALTER TABLE [dbo].[MEETING_TYPE]  WITH NOCHECK ADD  CONSTRAINT [FK_MEETING_TYPE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MEETING_TYPE] CHECK CONSTRAINT [FK_MEETING_TYPE_PROJECT]
+GO
+ALTER TABLE [dbo].[MEETING_USER]  WITH NOCHECK ADD  CONSTRAINT [FK_MEETING_USER_MEETING] FOREIGN KEY([GUID_MEETING])
+REFERENCES [dbo].[MEETING] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MEETING_USER] CHECK CONSTRAINT [FK_MEETING_USER_MEETING]
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_AGENDA_MEETING_ACTION] FOREIGN KEY([GUID_ACTION])
+REFERENCES [dbo].[MEETING_ACTION] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA] CHECK CONSTRAINT [FK_MINUTE_AGENDA_MEETING_ACTION]
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_AGENDA_MINUTE_AGENDA] FOREIGN KEY([GUID_PARENT])
+REFERENCES [dbo].[MINUTE_AGENDA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA] CHECK CONSTRAINT [FK_MINUTE_AGENDA_MINUTE_AGENDA]
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_AGENDA_MINUTE_TITLE] FOREIGN KEY([GUID_MINUTE_TITLE])
+REFERENCES [dbo].[MINUTE_TITLE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA] CHECK CONSTRAINT [FK_MINUTE_AGENDA_MINUTE_TITLE]
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_AGENDA_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_AGENDA] CHECK CONSTRAINT [FK_MINUTE_AGENDA_PROJECT]
+GO
+ALTER TABLE [dbo].[MINUTE_COMMENT]  WITH NOCHECK ADD  CONSTRAINT [FK_MEETING_COMMENT_MINUTE_AGENDA] FOREIGN KEY([GUID_AGENDA])
+REFERENCES [dbo].[MINUTE_AGENDA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_COMMENT] CHECK CONSTRAINT [FK_MEETING_COMMENT_MINUTE_AGENDA]
+GO
+ALTER TABLE [dbo].[MINUTE_TITLE]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_TITLE_MEETING_TYPE] FOREIGN KEY([GUID_MEETING_TYPE])
+REFERENCES [dbo].[MEETING_TYPE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_TITLE] CHECK CONSTRAINT [FK_MINUTE_TITLE_MEETING_TYPE]
+GO
+ALTER TABLE [dbo].[MINUTE_TITLE]  WITH NOCHECK ADD  CONSTRAINT [FK_MINUTE_TITLE_MINUTE_TITLE] FOREIGN KEY([GUID_PARENT])
+REFERENCES [dbo].[MINUTE_TITLE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[MINUTE_TITLE] CHECK CONSTRAINT [FK_MINUTE_TITLE_MINUTE_TITLE]
+GO
+ALTER TABLE [dbo].[P6_ASSIGNMENT]  WITH NOCHECK ADD  CONSTRAINT [FK_P6_ASSIGNMENT_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[P6_ASSIGNMENT] CHECK CONSTRAINT [FK_P6_ASSIGNMENT_PROJECT]
+GO
+ALTER TABLE [dbo].[PROGRESS]  WITH NOCHECK ADD  CONSTRAINT [FK_PROGRESS_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[PROGRESS] CHECK CONSTRAINT [FK_PROGRESS_PROJECT]
+GO
+ALTER TABLE [dbo].[PROGRESS_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_PROGRESS_ITEM_PROGRESS] FOREIGN KEY([GUID_PROGRESS])
+REFERENCES [dbo].[PROGRESS] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[PROGRESS_ITEM] CHECK CONSTRAINT [FK_PROGRESS_ITEM_PROGRESS]
+GO
+ALTER TABLE [dbo].[PROJECT]  WITH CHECK ADD  CONSTRAINT [FK_PROJECT_USER] FOREIGN KEY([GUID_MANAGEUSER])
+REFERENCES [dbo].[USER] ([GUID])
+GO
+ALTER TABLE [dbo].[PROJECT] CHECK CONSTRAINT [FK_PROJECT_USER]
+GO
+ALTER TABLE [dbo].[PROJECT_DISCIPLINE]  WITH NOCHECK ADD  CONSTRAINT [FK_PROJECT_DISCIPLINE_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[PROJECT_DISCIPLINE] CHECK CONSTRAINT [FK_PROJECT_DISCIPLINE_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[PROJECT_DISCIPLINE]  WITH NOCHECK ADD  CONSTRAINT [FK_PROJECT_DISCIPLINE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[PROJECT_DISCIPLINE] CHECK CONSTRAINT [FK_PROJECT_DISCIPLINE_PROJECT]
+GO
+ALTER TABLE [dbo].[PROJECT_REPORT]  WITH NOCHECK ADD  CONSTRAINT [FK_PROJECT_REPORT_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[PROJECT_REPORT] CHECK CONSTRAINT [FK_PROJECT_REPORT_PROJECT]
+GO
+ALTER TABLE [dbo].[RA_GUIDE_PROMPT]  WITH CHECK ADD  CONSTRAINT [FK_RA_GUIDE_PROMPT_RA_STUDY_TYPE] FOREIGN KEY([GUID_STUDY_TYPE])
+REFERENCES [dbo].[RA_STUDY_TYPE] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_GUIDE_PROMPT] CHECK CONSTRAINT [FK_RA_GUIDE_PROMPT_RA_STUDY_TYPE]
+GO
+ALTER TABLE [dbo].[RA_GUIDE_SUBPROMPT]  WITH CHECK ADD  CONSTRAINT [FK_RA_GUIDE_SUBPROMPT_RA_GUIDE_PROMPT] FOREIGN KEY([GUID_GUIDE_PROMPT])
+REFERENCES [dbo].[RA_GUIDE_PROMPT] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_GUIDE_SUBPROMPT] CHECK CONSTRAINT [FK_RA_GUIDE_SUBPROMPT_RA_GUIDE_PROMPT]
+GO
+ALTER TABLE [dbo].[RA_STUDY]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_FACILITATOR] FOREIGN KEY([GUID_FACILITATOR])
+REFERENCES [dbo].[USER] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY] CHECK CONSTRAINT [FK_RA_STUDY_FACILITATOR]
+GO
+ALTER TABLE [dbo].[RA_STUDY]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_MINUTESBY] FOREIGN KEY([GUID_MINUTESBY])
+REFERENCES [dbo].[USER] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY] CHECK CONSTRAINT [FK_RA_STUDY_MINUTESBY]
+GO
+ALTER TABLE [dbo].[RA_STUDY]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_RA_STUDY_TYPE] FOREIGN KEY([GUID_STUDY_TYPE])
+REFERENCES [dbo].[RA_STUDY_TYPE] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY] CHECK CONSTRAINT [FK_RA_STUDY_RA_STUDY_TYPE]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_DATA_RA_GUIDE_PROMPT] FOREIGN KEY([GUID_GUIDE_PROMPT])
+REFERENCES [dbo].[RA_GUIDE_PROMPT] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA] CHECK CONSTRAINT [FK_RA_STUDY_DATA_RA_GUIDE_PROMPT]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_DATA_RA_GUIDE_SUBPROMPT] FOREIGN KEY([GUID_GUIDE_SUBPROMPT])
+REFERENCES [dbo].[RA_GUIDE_SUBPROMPT] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA] CHECK CONSTRAINT [FK_RA_STUDY_DATA_RA_GUIDE_SUBPROMPT]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_DATA_RA_STUDY_NODE] FOREIGN KEY([GUID_NODE])
+REFERENCES [dbo].[RA_STUDY_NODE] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA] CHECK CONSTRAINT [FK_RA_STUDY_DATA_RA_STUDY_NODE]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_DATA_USER] FOREIGN KEY([GUID_ACTION_BY])
+REFERENCES [dbo].[USER] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_DATA] CHECK CONSTRAINT [FK_RA_STUDY_DATA_USER]
+GO
+ALTER TABLE [dbo].[RA_STUDY_DRAWING]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_DRAWING_RA_STUDY] FOREIGN KEY([GUID_STUDY])
+REFERENCES [dbo].[RA_STUDY] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_DRAWING] CHECK CONSTRAINT [FK_RA_STUDY_DRAWING_RA_STUDY]
+GO
+ALTER TABLE [dbo].[RA_STUDY_NODE]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_NODE_RA_STUDY] FOREIGN KEY([GUID_STUDY])
+REFERENCES [dbo].[RA_STUDY] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_NODE] CHECK CONSTRAINT [FK_RA_STUDY_NODE_RA_STUDY]
+GO
+ALTER TABLE [dbo].[RA_STUDY_NODE]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_NODE_RA_STUDY_DRAWING] FOREIGN KEY([GUID_DRAWING])
+REFERENCES [dbo].[RA_STUDY_DRAWING] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_NODE] CHECK CONSTRAINT [FK_RA_STUDY_NODE_RA_STUDY_DRAWING]
+GO
+ALTER TABLE [dbo].[RA_STUDY_TEAM]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_USER_RA_STUDY] FOREIGN KEY([GUID_STUDY])
+REFERENCES [dbo].[RA_STUDY] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_TEAM] CHECK CONSTRAINT [FK_RA_STUDY_USER_RA_STUDY]
+GO
+ALTER TABLE [dbo].[RA_STUDY_TEAM]  WITH CHECK ADD  CONSTRAINT [FK_RA_STUDY_USER_USER] FOREIGN KEY([GUID_USER])
+REFERENCES [dbo].[USER] ([GUID])
+GO
+ALTER TABLE [dbo].[RA_STUDY_TEAM] CHECK CONSTRAINT [FK_RA_STUDY_USER_USER]
+GO
+ALTER TABLE [dbo].[RATE]  WITH CHECK ADD  CONSTRAINT [FK_RATE_DEPARTMENT] FOREIGN KEY([GUID_DEPARTMENT])
+REFERENCES [dbo].[DEPARTMENT] ([GUID])
+GO
+ALTER TABLE [dbo].[RATE] CHECK CONSTRAINT [FK_RATE_DEPARTMENT]
+GO
+ALTER TABLE [dbo].[RATE]  WITH CHECK ADD  CONSTRAINT [FK_RATE_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+GO
+ALTER TABLE [dbo].[RATE] CHECK CONSTRAINT [FK_RATE_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[RATE]  WITH CHECK ADD  CONSTRAINT [FK_RATE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+GO
+ALTER TABLE [dbo].[RATE] CHECK CONSTRAINT [FK_RATE_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER]  WITH NOCHECK ADD  CONSTRAINT [FK_PROJECT_REGISTER] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER] CHECK CONSTRAINT [FK_PROJECT_REGISTER]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_CHANGE_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] CHECK CONSTRAINT [FK_REGISTER_CHANGE_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_CHANGE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_CHANGE] CHECK CONSTRAINT [FK_REGISTER_CHANGE_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER_HOLD]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_HOLD_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_HOLD] CHECK CONSTRAINT [FK_REGISTER_HOLD_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_HOLD]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_HOLD_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_HOLD] CHECK CONSTRAINT [FK_REGISTER_HOLD_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_ISSUE_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] CHECK CONSTRAINT [FK_REGISTER_ISSUE_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_ISSUE_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] CHECK CONSTRAINT [FK_REGISTER_ISSUE_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_ISSUE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] CHECK CONSTRAINT [FK_REGISTER_ISSUE_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_ISSUE_USER] FOREIGN KEY([GUID_RESPONSIBLE_PERSON])
+REFERENCES [dbo].[USER] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_ISSUE] CHECK CONSTRAINT [FK_REGISTER_ISSUE_USER]
+GO
+ALTER TABLE [dbo].[REGISTER_LL]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_LL_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_LL] CHECK CONSTRAINT [FK_REGISTER_LL_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_LL]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_LL_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_LL] CHECK CONSTRAINT [FK_REGISTER_LL_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[REGISTER_LL]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_LL_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_LL] CHECK CONSTRAINT [FK_REGISTER_LL_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER_NC]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_NC_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_NC] CHECK CONSTRAINT [FK_REGISTER_NC_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_NC]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_NC_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_NC] CHECK CONSTRAINT [FK_REGISTER_NC_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[REGISTER_NC]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_NC_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_NC] CHECK CONSTRAINT [FK_REGISTER_NC_PROJECT]
+GO
+ALTER TABLE [dbo].[REGISTER_RISK]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_RISK_AREA] FOREIGN KEY([GUID_AREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_RISK] CHECK CONSTRAINT [FK_REGISTER_RISK_AREA]
+GO
+ALTER TABLE [dbo].[REGISTER_RISK]  WITH NOCHECK ADD  CONSTRAINT [FK_REGISTER_RISK_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[REGISTER_RISK] CHECK CONSTRAINT [FK_REGISTER_RISK_PROJECT]
+GO
+ALTER TABLE [dbo].[ROLE_COMMODITY]  WITH NOCHECK ADD  CONSTRAINT [FK_ROLE_COMMODITY_DOCTYPE] FOREIGN KEY([GUID_COMMODITY])
+REFERENCES [dbo].[DOCTYPE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ROLE_COMMODITY] CHECK CONSTRAINT [FK_ROLE_COMMODITY_DOCTYPE]
+GO
+ALTER TABLE [dbo].[ROLE_COMMODITY]  WITH NOCHECK ADD  CONSTRAINT [FK_ROLE_COMMODITY_ROLE] FOREIGN KEY([GUID_ROLE])
+REFERENCES [dbo].[ROLE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ROLE_COMMODITY] CHECK CONSTRAINT [FK_ROLE_COMMODITY_ROLE]
+GO
+ALTER TABLE [dbo].[ROLE_PERMISSION]  WITH NOCHECK ADD  CONSTRAINT [FK_ROLE_PERMISSION_ROLE] FOREIGN KEY([GUID_ROLE])
+REFERENCES [dbo].[ROLE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[ROLE_PERMISSION] CHECK CONSTRAINT [FK_ROLE_PERMISSION_ROLE]
+GO
+ALTER TABLE [dbo].[STOCK_CODE]  WITH NOCHECK ADD  CONSTRAINT [FK_STOCK_CODE_COMMODITY_CODE] FOREIGN KEY([GUID_COMMODITY_CODE])
+REFERENCES [dbo].[COMMODITY_CODE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[STOCK_CODE] CHECK CONSTRAINT [FK_STOCK_CODE_COMMODITY_CODE]
+GO
+ALTER TABLE [dbo].[STOCK_CODE]  WITH NOCHECK ADD  CONSTRAINT [FK_STOCK_CODE_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[STOCK_CODE] CHECK CONSTRAINT [FK_STOCK_CODE_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[STOCK_CODE]  WITH NOCHECK ADD  CONSTRAINT [FK_STOCK_CODE_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[STOCK_CODE] CHECK CONSTRAINT [FK_STOCK_CODE_PROJECT]
+GO
+ALTER TABLE [dbo].[STOCK_GROUP]  WITH NOCHECK ADD  CONSTRAINT [FK_STOCK_GROUP_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[STOCK_GROUP] CHECK CONSTRAINT [FK_STOCK_GROUP_PROJECT]
+GO
+ALTER TABLE [dbo].[SUBJOB]  WITH NOCHECK ADD  CONSTRAINT [FK_SUBJOB_AREA] FOREIGN KEY([GUID_DAREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[SUBJOB] CHECK CONSTRAINT [FK_SUBJOB_AREA]
+GO
+ALTER TABLE [dbo].[SUBJOB]  WITH NOCHECK ADD  CONSTRAINT [FK_SUBJOB_AREA1] FOREIGN KEY([GUID_DSUBAREA])
+REFERENCES [dbo].[AREA] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[SUBJOB] CHECK CONSTRAINT [FK_SUBJOB_AREA1]
+GO
+ALTER TABLE [dbo].[SUBJOB]  WITH NOCHECK ADD  CONSTRAINT [FK_SUBJOB_PHASE] FOREIGN KEY([GUID_DPHASE])
+REFERENCES [dbo].[PHASE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[SUBJOB] CHECK CONSTRAINT [FK_SUBJOB_PHASE]
+GO
+ALTER TABLE [dbo].[SUBJOB]  WITH NOCHECK ADD  CONSTRAINT [FK_SUBJOB_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[SUBJOB] CHECK CONSTRAINT [FK_SUBJOB_PROJECT]
+GO
+ALTER TABLE [dbo].[SUBJOB_ASSIGNMENT]  WITH NOCHECK ADD  CONSTRAINT [FK_SUBJOB_ASSIGNMENT_SUBJOB] FOREIGN KEY([GUID_SUBJOB])
+REFERENCES [dbo].[SUBJOB] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[SUBJOB_ASSIGNMENT] CHECK CONSTRAINT [FK_SUBJOB_ASSIGNMENT_SUBJOB]
+GO
+ALTER TABLE [dbo].[USER]  WITH NOCHECK ADD  CONSTRAINT [FK_USER_DEPARTMENT] FOREIGN KEY([GUID_DEPARTMENT])
+REFERENCES [dbo].[DEPARTMENT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[USER] CHECK CONSTRAINT [FK_USER_DEPARTMENT]
+GO
+ALTER TABLE [dbo].[USER]  WITH NOCHECK ADD  CONSTRAINT [FK_USER_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[USER] CHECK CONSTRAINT [FK_USER_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[USER]  WITH NOCHECK ADD  CONSTRAINT [FK_USER_ROLE] FOREIGN KEY([GUID_ROLE])
+REFERENCES [dbo].[ROLE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[USER] CHECK CONSTRAINT [FK_USER_ROLE]
+GO
+ALTER TABLE [dbo].[VARIATION]  WITH NOCHECK ADD  CONSTRAINT [FK_VARIATION_PROJECT] FOREIGN KEY([GUID_PROJECT])
+REFERENCES [dbo].[PROJECT] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[VARIATION] CHECK CONSTRAINT [FK_VARIATION_PROJECT]
+GO
+ALTER TABLE [dbo].[VARIATION_ITEM]  WITH NOCHECK ADD  CONSTRAINT [FK_VARIATION_ITEM_VARIATION] FOREIGN KEY([GUID_VARIATION])
+REFERENCES [dbo].[VARIATION] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[VARIATION_ITEM] CHECK CONSTRAINT [FK_VARIATION_ITEM_VARIATION]
+GO
+ALTER TABLE [dbo].[WORKPACK]  WITH NOCHECK ADD  CONSTRAINT [FK_WORKPACK_DISCIPLINE] FOREIGN KEY([GUID_DISCIPLINE])
+REFERENCES [dbo].[DISCIPLINE] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[WORKPACK] CHECK CONSTRAINT [FK_WORKPACK_DISCIPLINE]
+GO
+ALTER TABLE [dbo].[WORKPACK]  WITH NOCHECK ADD  CONSTRAINT [FK_WORKPACK_SUBJOB] FOREIGN KEY([GUID_SUBJOB])
+REFERENCES [dbo].[SUBJOB] ([GUID])
+NOT FOR REPLICATION 
+GO
+ALTER TABLE [dbo].[WORKPACK] CHECK CONSTRAINT [FK_WORKPACK_SUBJOB]
+GO
