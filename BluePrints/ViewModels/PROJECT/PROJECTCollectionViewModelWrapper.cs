@@ -182,7 +182,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
-            return query => query.Take(1);
+            return query => query;
         }
 
         /// <summary>
@@ -254,10 +254,13 @@ namespace BluePrints.ViewModels
         private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {
             bool? isEntityNew = DataUtils.IsNewEntity<PROJECT>(projectionEntity);
+            DateTime? tenderStartDate = entity.TENDER_PROJECT_START;
+            DateTime? tenderEndDate = entity.TENDER_PROJECT_START == null ? (DateTime?)null : ((DateTime)entity.TENDER_PROJECT_START).AddDays(Convert.ToDouble((decimal)entity.TENDER_PROJECT_DURATION) * 7);
 
             //only way to determine whether current entity is new to avoid creating multiple 
             if (isEntityNew != null && ((bool)isEntityNew))
             {
+
                 BASELINE newBASELINE = new BASELINE();
                 newBASELINE.GUID_PROJECT = entity.GUID;
                 newBASELINE.NAME = entity.NUMBER + "_001";
@@ -329,11 +332,12 @@ namespace BluePrints.ViewModels
                     }
                 }
 
+
                 SUBJOB newSUBJOB = new SUBJOB();
                 newSUBJOB.GUID_PROJECT = entity.GUID;
                 newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
-                newSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                newSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                newSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                newSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                 newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                 newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
 
@@ -356,8 +360,8 @@ namespace BluePrints.ViewModels
                     SUBJOB defaultDesignSUBJOB = new SUBJOB();
                     defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
                     defaultDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-D1";
-                    defaultDesignSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                    defaultDesignSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                    defaultDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                    defaultDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                     defaultDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     defaultDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
@@ -448,12 +452,12 @@ namespace BluePrints.ViewModels
                     SUBJOB indirectDesignSUBJOB = new SUBJOB();
                     indirectDesignSUBJOB.GUID_PROJECT = entity.GUID;
                     indirectDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-I1";
-                    indirectDesignSUBJOB.STARTDATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
-                    indirectDesignSUBJOB.ENDDATE = ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1);
+                    indirectDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                    indirectDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                     indirectDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     indirectDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
-                    indirectDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    indirectDesignSUBJOB.GUID_DPHASE = defaultIndirectPhase.GUID;
                     if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                     {
                         indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
@@ -490,6 +494,30 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+            else if(shouldInvokeTenderSubjobDates && entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+            {
+                if(tenderStartDate != null && tenderEndDate != null)
+                {
+                    if (MessageBoxService.ShowMessage("Since project is in tender phase do you wish to change the start and finish dates of all subjobs in this project?\nStart date will be tender project start date and end date will be tender project start date plus duration", "Change Subjob Dates", MessageButton.YesNo) == MessageResult.Yes)
+                    {
+                        decimal duration = (decimal)entity.TENDER_PROJECT_DURATION;
+                        IEnumerable<SUBJOB> allSubJobs = SUBJOBCollectionViewModel.Entities.Where(x => x.GUID_PROJECT == entity.GUID);
+                        List<SUBJOB> saveSUBJOB = new List<SUBJOB>();
+                        foreach (SUBJOB subjob in allSubJobs)
+                        {
+                            subjob.STARTDATE = tenderStartDate;
+                            subjob.ENDDATE = tenderEndDate;
+                            subjob.REVIEWSTARTDATE = subjob.STARTDATE;
+                            subjob.REVIEWENDDATE = subjob.STARTDATE;
+                            saveSUBJOB.Add(subjob);
+                        }
+
+                        SUBJOBCollectionViewModel.BulkSave(saveSUBJOB);
+                    }
+                }
+            }
+
+            shouldInvokeTenderSubjobDates = false;
         }
         #endregion
 
@@ -511,6 +539,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        bool shouldInvokeTenderSubjobDates = false;
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
@@ -592,6 +621,13 @@ namespace BluePrints.ViewModels
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_CHANCE_OF_WIN), projection.TENDER_PROJECT_START, DateTime.Now, EntityMessageType.Changed);
                     projection.TENDER_PROJECT_START = DateTime.Now;
                 }
+
+                projection.Update();
+            }
+
+            if(field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START) || field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_DURATION))
+            {
+                shouldInvokeTenderSubjobDates = true;
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
@@ -962,6 +998,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<SUBJOB>();
+            }
+        }
 
         public CollectionViewModel<PROJECT_DISCIPLINE, PROJECT_DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_DISCIPLINECollectionViewModel
         {

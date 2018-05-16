@@ -103,6 +103,17 @@ namespace BluePrints.Data
             }
         }
 
+        //[NotMapped]
+        //public ProjectStatus ProjectStatus
+        //{
+        //    get { return STATUS; }
+        //    set
+        //    {
+        //        STATUS = value;
+        //        this.RaisePropertyChanged(x => x.IsTender);
+        //    }
+        //}
+
         [NotMapped]
         public bool IsTender
         {

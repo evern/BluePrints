@@ -33,11 +33,11 @@
                             <dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Number" FieldName="NUMBER" />
-                            <dxg:GridColumn Header="Title" FieldName="TITLE" />
-                            <dxg:GridColumn Header="Document Number" FieldName="DOC_NUMBER" HeaderToolTip="An identifier for the meeting minute. Must be unique" />
-                            <dxg:GridColumn Header="Venue" FieldName="VENUE" />
-                            <dxg:GridColumn Header="Meeting Type" FieldName="GUID_MEETING_TYPE" HeaderToolTip="Meeting type defines the meeting WBS. Type here to create new meeting type">
+                            <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                            <dxg:GridColumn FieldName="TITLE" Header="Title" />
+                            <dxg:GridColumn FieldName="DOC_NUMBER" Header="Document Number" HeaderToolTip="An identifier for the meeting minute. Must be unique" />
+                            <dxg:GridColumn FieldName="VENUE" Header="Venue" />
+                            <dxg:GridColumn FieldName="GUID_MEETING_TYPE" Header="Meeting Type" HeaderToolTip="Meeting type defines the meeting WBS. Type here to create new meeting type">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="NAME" ItemsSource="{Binding DataContext.MEETING_TYPECollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
@@ -47,24 +47,27 @@
                                         </dxe:ComboBoxEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MEETING_TYPECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Meeting Date" FieldName="MEETING_DATE" />
-                            <dxg:GridColumn Header="Meeting Start Time" FieldName="MEETING_START">
+                            <dxg:GridColumn FieldName="MEETING_DATE" Header="Meeting Date" />
+                            <dxg:GridColumn FieldName="MEETING_START" Header="Meeting Start Time">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings AllowDrop="False" Mask="HH:mm" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Meeting End Time" FieldName="MEETING_END">
+                            <dxg:GridColumn FieldName="MEETING_END" Header="Meeting End Time">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings AllowDrop="False" Mask="HH:mm" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Chaired By" FieldName="CHAIRED_BY">
+                            <dxg:GridColumn FieldName="CHAIRED_BY" Header="Chaired By">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="Full_Name" ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" ValueMember="Guid" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Attendees" FieldName="Attendees">
+                            <dxg:GridColumn FieldName="Attendees" Header="Attendees">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                         <dxe:ComboBoxEditSettings.StyleSettings>
@@ -73,7 +76,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Apologies" FieldName="Apologies">
+                            <dxg:GridColumn FieldName="Apologies" Header="Apologies">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                         <dxe:ComboBoxEditSettings.StyleSettings>
@@ -82,7 +85,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Distribution" FieldName="Distribution">
+                            <dxg:GridColumn FieldName="Distribution" Header="Distribution">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                         <dxe:ComboBoxEditSettings.StyleSettings>
@@ -91,7 +94,7 @@
                                     </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Sign-Off" FieldName="Signoff">
+                            <dxg:GridColumn FieldName="Signoff" Header="Sign-Off">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AllUserCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                         <dxe:ComboBoxEditSettings.StyleSettings>

@@ -332,6 +332,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
             {
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStudyType", dataCategoryId, "Study Types", "RA_STUDY_TYPECollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageSubPrompt", dataCategoryId, "Sub Prompts", "RA_GUIDE_SUBPROMPTCollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
             }
 
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView", null, null, null, false, false, @"Business Objects\BOCustomer_16x16.png"));

@@ -25,6 +25,9 @@ namespace BluePrints.Common.ViewModel.Utils
             ////provision for when subjob is manually assigned or using legacy subjob
             //if (entity.Subjob_Guid != null)
             //    return;
+            //when user wish to override default subjob
+            if (entity.Subjob_Guid != null)
+                return;
 
             IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
             Guid? existingOrNewPhaseGuid;
@@ -102,6 +105,10 @@ namespace BluePrints.Common.ViewModel.Utils
         {
             //provision for when workpack is manually assigned or using legacy workpack
             if (entity.Subjob_Guid == null || entity.Discipline_Guid == null)
+                return;
+
+            //when user wish to override default workpack
+            if (entity.Workpack_Guid != null)
                 return;
 
             WORKPACK existingWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_SUBJOB == entity.Subjob_Guid && x.GUID_DISCIPLINE == entity.Discipline_Guid && x.DISCIPLINE_NUM == entity.Discipline_Number);

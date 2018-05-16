@@ -33,5 +33,16 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        [NotMapped]
+        public Guid GUID_STUDY_TYPE
+        {
+            get
+            {
+                if (RA_GUIDE_PROMPT == null)
+                    return Guid.Empty;
+
+                return RA_GUIDE_PROMPT.RA_STUDY_TYPE.GUID;
+            }
+        }
     }
 }

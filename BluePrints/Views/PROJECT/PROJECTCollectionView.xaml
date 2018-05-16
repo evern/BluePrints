@@ -20,11 +20,14 @@
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Data">
-                                <dxb:BarButtonItem Content="Area" ToolTip="View all project areas" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
-                                <dxb:BarButtonItem Content="Rate" ToolTip="View all project rates" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
-                                <dxb:BarButtonItem Content="Baselines" ToolTip="View all revisions of project baseline" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
-                                <dxb:BarButtonItem Content="Estimates" ToolTip="View all revisions of project estimate" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
-                                <dxb:BarButtonItem Content="Progresses" ToolTip="View all revisions of project progress" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" Content="Area" Glyph="{dx:DXImage Image=Web_16x16.png}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" ToolTip="View all project areas" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" Content="Rate" Glyph="{dx:DXImage Image=Financial_16x16.png}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" ToolTip="View all project rates" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" Content="Baselines" Glyph="{dx:DXImage Image=Information_16x16.png}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" ToolTip="View all revisions of project baseline" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" Content="Estimates" Glyph="{dx:DXImage Image=Cube_16x16.png}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" ToolTip="View all revisions of project estimate" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" Content="Progresses" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="View all revisions of project progress" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Selected Row Action">
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditCommand, ElementName=userControl}" Content="Edit" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -40,29 +43,29 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPROJECT" dx:DXSerializer.StoreLayoutMode="All" MouseUp="GridControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True">
+                            <!--<dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True">
                                 <dxmvvm:EventToCommand.EventArgsConverter>
                                     <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
-                            </dxmvvm:EventToCommand>
+                            </dxmvvm:EventToCommand>-->
                             <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
-                                <dxg:GridColumn Header="Number" FieldName="NUMBER" />
-                                <dxg:GridColumn Header="Office" FieldName="OFFICE">
+                                <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                                <dxg:GridColumn FieldName="OFFICE" Header="Office">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Name" FieldName="NAME" />
-                                <dxg:GridColumn Header="Client" FieldName="CLIENT" />
-                                <dxg:GridColumn Header="Status" FieldName="STATUS" HeaderToolTip="Setting status as active/tender will allow project to be accessed through active/tender folder in the navigation menu. Other statuses will hide project navigation">
+                                <dxg:GridColumn FieldName="NAME" Header="Name" />
+                                <dxg:GridColumn FieldName="CLIENT" Header="Client" />
+                                <dxg:GridColumn FieldName="STATUS" Header="Status" HeaderToolTip="Setting status as active/tender will allow project to be accessed through active/tender folder in the navigation menu. Other statuses will hide project navigation">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectStatus}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Disciplines" FieldName="Disciplines">
+                                <dxg:GridColumn FieldName="Disciplines" Header="Disciplines">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="NAME" IncrementalFiltering="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                             <dxe:ComboBoxEditSettings.StyleSettings>
@@ -73,45 +76,45 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Category">
-                                <dxg:GridColumn Header="Contract Type" FieldName="CONTRACTTYPE">
+                                <dxg:GridColumn FieldName="CONTRACTTYPE" Header="Contract Type">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ContractType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Type" FieldName="TYPE">
+                                <dxg:GridColumn FieldName="TYPE" Header="Type">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Design Manager" FieldName="GUID_MANAGEUSER">
+                                <dxg:GridColumn FieldName="GUID_MANAGEUSER" Header="Design Manager">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Tender">
-                                <dxg:GridColumn Header="Chance of Win" FieldName="TENDER_CHANCE_OF_WIN" HeaderToolTip="For tendering use only. Chance of winning in %">
+                                <dxg:GridColumn FieldName="TENDER_CHANCE_OF_WIN" Header="Chance of Win" HeaderToolTip="For tendering use only. Chance of winning in %">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" Increment="0.1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Tender Due" FieldName="TENDER_DUE" HeaderToolTip="For tendering use only. Tender due date">
+                                <dxg:GridColumn FieldName="TENDER_DUE" Header="Tender Due" HeaderToolTip="For tendering use only. Tender due date">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:DateEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsTender}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Project Start" FieldName="TENDER_PROJECT_START" HeaderToolTip="For tendering use only. Tender project start date">
+                                <dxg:GridColumn FieldName="TENDER_PROJECT_START" Header="Project Start" HeaderToolTip="For tendering use only. Tender project start date">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:DateEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsTender}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Project Duration" FieldName="TENDER_PROJECT_DURATION" HeaderToolTip="For tendering use only. Tender project duration in weeks">
+                                <dxg:GridColumn FieldName="TENDER_PROJECT_DURATION" Header="Project Duration" HeaderToolTip="For tendering use only. Tender project duration in weeks">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" DisplayTextConverter="{StaticResource WeeksToTextConverter}" Increment="1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -120,56 +123,56 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Settings">
-                                <dxg:GridColumn Header="Currency Conversion" FieldName="CURRENCYCONVERSION" HeaderToolTip="Rates in S-Curve will be adjusted based on conversion rate">
+                                <dxg:GridColumn FieldName="CURRENCYCONVERSION" Header="Currency Conversion" HeaderToolTip="Rates in S-Curve will be adjusted based on conversion rate">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings x:Name="PART_Editor" Increment="0.01" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0.1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Review %" FieldName="REVIEWPERCENTAGE">
+                                <dxg:GridColumn FieldName="REVIEWPERCENTAGE" Header="Review %">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Review Period" FieldName="REVIEWPERIOD" HeaderToolTip="Review period will affect dates for new subjob creation">
+                                <dxg:GridColumn FieldName="REVIEWPERIOD" Header="Review Period" HeaderToolTip="Review period will affect dates for new subjob creation">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="{Binding EditValue, ConverterParameter=Day, Converter={StaticResource QuantityExpressionConverter}, RelativeSource={RelativeSource Self}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="0" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Use Workpacks" FieldName="USE_WORKPACKS" HeaderToolTip="Signifies whether mapping should be done by workpack instead of deliverables">
+                                <dxg:GridColumn FieldName="USE_WORKPACKS" Header="Use Workpacks" HeaderToolTip="Signifies whether mapping should be done by workpack instead of deliverables">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Audit">
-                                <dxg:GridColumn Header="Design Kick-Off Held" FieldName="DOC_KICKOFF">
+                                <dxg:GridColumn FieldName="DOC_KICKOFF" Header="Design Kick-Off Held">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Design Kick-Off Attachment" FieldName="DOC_KICKOFF_PATH">
+                                <dxg:GridColumn FieldName="DOC_KICKOFF_PATH" Header="Design Kick-Off Attachment">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="SID Report Complete" FieldName="DOC_SIDREPORT">
+                                <dxg:GridColumn FieldName="DOC_SIDREPORT" Header="SID Report Complete">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="SID Report Attachment" FieldName="DOC_SIDREPORT_PATH">
+                                <dxg:GridColumn FieldName="DOC_SIDREPORT_PATH" Header="SID Report Attachment">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Project Close-Out Complete" FieldName="DOC_CLOSEOUT">
+                                <dxg:GridColumn FieldName="DOC_CLOSEOUT" Header="Project Close-Out Complete">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectDocumentStatus}}" NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Project Close-Out Attachment" FieldName="DOC_CLOSEOUT_PATH">
+                                <dxg:GridColumn FieldName="DOC_CLOSEOUT_PATH" Header="Project Close-Out Attachment">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -189,11 +192,12 @@
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                     <dxb:BarItemSeparator />
-                                    <dxb:BarButtonItem Content="Area" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" Glyph="{dx:DXImage Image=Web_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Rate" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" Glyph="{dx:DXImage Image=Financial_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Baselines" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" Glyph="{dx:DXImage Image=Information_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Estimates" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" Glyph="{dx:DXImage Image=Cube_16x16.png}" />
-                                    <dxb:BarButtonItem Content="Progresses" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditCommand, ElementName=userControl}" Content="Edit" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" Content="Area" Glyph="{dx:DXImage Image=Web_16x16.png}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" Content="Rate" Glyph="{dx:DXImage Image=Financial_16x16.png}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" Content="Baselines" Glyph="{dx:DXImage Image=Information_16x16.png}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" Content="Estimates" Glyph="{dx:DXImage Image=Cube_16x16.png}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" Content="Progresses" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>

@@ -65,7 +65,7 @@
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableViewPrompt" AllowColumnMoving="False" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
+                                <dxg:TableView x:Name="tableViewPrompt" AllowColumnMoving="False" AutoWidth="True" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                         <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
