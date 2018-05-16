@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Take(1);
+            return query => query;
         }
 
         /// <summary>
@@ -278,8 +278,8 @@ namespace BluePrints.ViewModels
                 PROGRESS newDesignPROGRESS = new PROGRESS();
                 newDesignPROGRESS.GUID_PROJECT = entity.GUID;
                 newDesignPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
-                newDesignPROGRESS.PROGRESS_START = DateTime.Now;
-                newDesignPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday);
+                newDesignPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
+                newDesignPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newDesignPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
                 newDesignPROGRESS.INTERVAL_COUNT = 1;
                 newDesignPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
                 newDesignPROGRESS.STATUS = ProgressStatus.Live;
@@ -289,8 +289,8 @@ namespace BluePrints.ViewModels
                 PROGRESS newConstructionPROGRESS = new PROGRESS();
                 newConstructionPROGRESS.GUID_PROJECT = entity.GUID;
                 newConstructionPROGRESS.NAME = entity.NUMBER + "DAILY_001";
-                newConstructionPROGRESS.PROGRESS_START = DateTime.Now;
-                newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+                newConstructionPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
+                newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
                 newConstructionPROGRESS.INTERVAL_COUNT = 1;
                 newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
                 newConstructionPROGRESS.STATUS = ProgressStatus.Live;
@@ -498,7 +498,7 @@ namespace BluePrints.ViewModels
             {
                 if(tenderStartDate != null && tenderEndDate != null)
                 {
-                    if (MessageBoxService.ShowMessage("Since project is in tender phase do you wish to change the start and finish dates of all subjobs in this project?\nStart date will be tender project start date and end date will be tender project start date plus duration", "Change Subjob Dates", MessageButton.YesNo) == MessageResult.Yes)
+                    if (MessageBoxService.ShowMessage("Since project is in tender phase do you wish to change the start and finish dates of all SUBJOBS and PROGRESS in this project?\n\nStart date will be tender project start date\n\nEnd date will be tender project start date plus duration", "Change Subjob Dates", MessageButton.YesNo) == MessageResult.Yes)
                     {
                         decimal duration = (decimal)entity.TENDER_PROJECT_DURATION;
                         IEnumerable<SUBJOB> allSubJobs = SUBJOBCollectionViewModel.Entities.Where(x => x.GUID_PROJECT == entity.GUID);
@@ -513,6 +513,17 @@ namespace BluePrints.ViewModels
                         }
 
                         SUBJOBCollectionViewModel.BulkSave(saveSUBJOB);
+
+                        IEnumerable<PROGRESS> allProgresses = PROGRESSCollectionViewModel.Entities.Where(x => x.GUID_PROJECT == entity.GUID);
+                        List<PROGRESS> savePROGRESS = new List<PROGRESS>();
+                        foreach(PROGRESS progress in allProgresses)
+                        {
+                            progress.PROGRESS_START = (DateTime)tenderStartDate;
+                            progress.DATA_DATE = CommonMethods.StartOfWeek(progress.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+                            savePROGRESS.Add(progress);
+                        }
+
+                        PROGRESSCollectionViewModel.BulkSave(savePROGRESS);
                     }
                 }
             }
@@ -1006,6 +1017,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<SUBJOB>();
+            }
+        }
+
+        public CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
             }
         }
 
