@@ -636,10 +636,19 @@ namespace BluePrints.ViewModels
                 projection.Update();
             }
 
-            if(field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START) || field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_DURATION))
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_DUE))
+            {
+                DateTime? oldValue = projection.TENDER_PROJECT_START;
+                projection.TENDER_PROJECT_START = (DateTime?)new_value;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START), oldValue, new_value, EntityMessageType.Changed);
+                shouldInvokeTenderSubjobDates = true;
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START) || field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_DURATION))
             {
                 shouldInvokeTenderSubjobDates = true;
             }
+
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
@@ -672,14 +681,14 @@ namespace BluePrints.ViewModels
                     return "Tender due date cannot be after project start date";
                 }
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))
-            {
-                DateTime? tenderProjectStart = (DateTime?)new_value;
-                if (tenderProjectStart < projection.TENDER_DUE)
-                {
-                    return "Tender project start date cannot be before tender due date";
-                }
-            }
+            //else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))
+            //{
+            //    DateTime? tenderProjectStart = (DateTime?)new_value;
+            //    if (tenderProjectStart < projection.TENDER_DUE)
+            //    {
+            //        return "Tender project start date cannot be before tender due date";
+            //    }
+            //}
 
             if (isError)
                 return missingPathErrorString;

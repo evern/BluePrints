@@ -255,7 +255,12 @@ namespace BluePrints.ViewModels
         private void assign_baseline(BASELINE entity)
         {
             if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+            {
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+                return;
+            }
+            else if (entity == null)
+                return;
 
             loadBASELINE = entity;
             if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)

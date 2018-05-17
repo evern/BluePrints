@@ -79,7 +79,7 @@ namespace BluePrints.Common.ViewModel
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             first_loaded_dispatchTimer = new DispatcherTimer();
-            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 5);
             first_loaded_dispatchTimer.Tick += first_loaded_dispatchTimer_Tick;
         }
         
@@ -340,6 +340,7 @@ namespace BluePrints.Common.ViewModel
         public string LineSeriesCurrentDisplayName { get; set; }
         public string LineSeriesBudgetLateDisplayName { get; set; }
         public string LineSeriesRemainingDisplayName { get; set; }
+        public string LineSeriesRemainingActualDisplayName { get; set; }
         public string LineSeriesEarnedDisplayName { get; set; }
         public string LineSeriesBurnedDisplayName { get; set; }
         public string LineSeriesActualDisplayName { get; set; }
@@ -395,6 +396,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.LineSeriesCurrentDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesBudgetLateDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesRemainingDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesRemainingActualDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesEarnedDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesBurnedDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesActualDisplayName);
@@ -453,6 +455,7 @@ namespace BluePrints.Common.ViewModel
         string LineSeriesCurrentDisplayName { get; set; }
         string LineSeriesBudgetLateDisplayName { get; set; }
         string LineSeriesRemainingDisplayName { get; set; }
+        string LineSeriesRemainingActualDisplayName { get; set; }
         string LineSeriesEarnedDisplayName { get; set; }
         string LineSeriesBurnedDisplayName { get; set; }
         string LineSeriesActualDisplayName { get; set; }
@@ -573,6 +576,7 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesCurrentDisplayName = "Current %";
                 stats_switch.LineSeriesBudgetLateDisplayName = "Budgeted Late %";
                 stats_switch.LineSeriesRemainingDisplayName = "Remaining %";
+                stats_switch.LineSeriesRemainingActualDisplayName = "Remaining Actual %";
                 stats_switch.LineSeriesEarnedDisplayName = "Earned %";
                 stats_switch.LineSeriesBurnedDisplayName = "Burned %";
                 stats_switch.LineSeriesActualDisplayName = "Actual %";
@@ -587,6 +591,7 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesCurrentDisplayName = isCost ? "Current Costs" : "Current Units";
                 stats_switch.LineSeriesBudgetLateDisplayName = isCost ? "Budgeted Late Costs" : "Budgeted Late Units";
                 stats_switch.LineSeriesRemainingDisplayName = isCost ? "Remaining Costs" : "Remaining Units";
+                stats_switch.LineSeriesRemainingActualDisplayName = "Remaining Actual Costs";
                 stats_switch.LineSeriesEarnedDisplayName = isCost ? "Earned Costs" : "Earned Units";
                 stats_switch.LineSeriesBurnedDisplayName = isCost ? "Burned Costs" : "Burned Units";
                 stats_switch.LineSeriesActualDisplayName = isCost ? "Actual Costs" : "Actual Units";

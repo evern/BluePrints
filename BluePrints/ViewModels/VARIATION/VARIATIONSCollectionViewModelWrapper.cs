@@ -1,5 +1,6 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Document;
@@ -566,7 +567,23 @@ namespace BluePrints.ViewModels
                 return;
 
             string liveBaselineRevision = LiveBASELINE.Revision;
-            string lastBaselineRevision = ((char)(liveBaselineRevision.Last() - 1)).ToString();
+
+            string lastBaselineRevision = string.Empty;
+            string valueToFill = liveBaselineRevision;
+            int numericFieldLength = 0;
+            int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
+            if (numericIndex == null)
+                lastBaselineRevision = ((char)(liveBaselineRevision.Last() - 1)).ToString();
+            else
+            {
+                string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
+                long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
+                if(valueToFillNumberOnly == 1)
+                    lastBaselineRevision = ((char)(valueToFillStringOnly.Last())).ToString();
+                else
+                    lastBaselineRevision = valueToFillStringOnly + (valueToFillNumberOnly - 1).ToString();
+            }
+
             VARIATIONProjection lastVariation = MainViewModel.Entities.FirstOrDefault(x => getBaselineRevision(x.Entity.GUID_BASELINE) == liveBaselineRevision);
             if(lastVariation == null)
             {
@@ -640,7 +657,21 @@ namespace BluePrints.ViewModels
 
             DataUtils.ShallowCopy(newBASELINE, liveBASELINE);
             newBASELINE.EntityKey = Guid.Empty;
-            newBASELINE.Revision = ((char)(liveBASELINE.Revision.Last() + 1)).ToString();
+
+            string valueToFill = liveBASELINE.Revision;
+            int numericFieldLength = 0;
+            int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
+            if(numericIndex == null)
+            {
+                newBASELINE.Revision = liveBASELINE.Revision.Last().ToString() + 1.ToString();
+            }
+            else
+            {
+                string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
+                long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
+                newBASELINE.Revision = valueToFillStringOnly + (valueToFillNumberOnly + 1).ToString();
+            }
+
             //not saving new baseline as live yet because editBASELINE_ITEMS still depends on the current live baseline for copying BASELINE_ITEMS
             newBASELINE.Baseline_Status = BaselineStatus.Live;
             collectionViewModel.Save(newBASELINE);

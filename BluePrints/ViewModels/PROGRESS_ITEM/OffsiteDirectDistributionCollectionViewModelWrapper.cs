@@ -21,6 +21,7 @@ using BluePrints.Reports;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Core.ConditionalFormatting;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
@@ -585,6 +586,19 @@ namespace BluePrints.ViewModels
 
                 DataRowView dataRowView = dataPointsTable.DefaultView[rowIndex];
                 selectedDataRow = dataRowView;
+            }
+        }
+
+        ObservableCollection<DataRowView> selectedDataRows { get; set; }
+        public ObservableCollection<DataRowView> SelectedDataRows
+        {
+            get
+            {
+                return selectedDataRows;
+            }
+            set
+            {
+                selectedDataRows = value;
             }
         }
 

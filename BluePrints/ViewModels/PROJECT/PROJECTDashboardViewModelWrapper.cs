@@ -206,6 +206,7 @@ namespace BluePrints.ViewModels
 
         private void RefreshSummary()
         {
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService?.RefreshSummary()));
         }
 

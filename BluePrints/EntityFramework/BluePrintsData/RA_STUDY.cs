@@ -21,6 +21,7 @@
 
         public Guid GUID_PROJECT { get; set; }
 
+        [Required]
         public Guid GUID_STUDY_TYPE { get; set; }
 
         [Required]

@@ -350,7 +350,7 @@ namespace BluePrints.Common.Base
             if (entity.ShouldSaveVariation)
                 save_variation(entity);
 
-            return false;
+            return true;
         }
 
         /// <summary>
