@@ -20,13 +20,13 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false)
+        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false, bool forceIgnore = false)
         {
             ////provision for when subjob is manually assigned or using legacy subjob
             //if (entity.Subjob_Guid != null)
             //    return;
             //when user wish to override default subjob
-            if (entity.Subjob_Guid != null)
+            if (forceIgnore || entity.Subjob_Guid != null)
                 return;
 
             IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
@@ -101,10 +101,10 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate workpack name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignWorkpack(IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection)
+        public static void OnBeforeSavedGenerateAndAssignWorkpack(IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, bool forceIgnore = false)
         {
             //provision for when workpack is manually assigned or using legacy workpack
-            if (entity.Subjob_Guid == null || entity.Discipline_Guid == null)
+            if (forceIgnore || (entity.Subjob_Guid == null || entity.Discipline_Guid == null))
                 return;
 
             //when user wish to override default workpack

@@ -538,9 +538,8 @@ namespace BluePrints.ViewModels
 
             //if(entity.IsInternalNumberEditable)
             //    entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
-            
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
             return true;
         }
@@ -835,8 +834,21 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_SUBJOB)) && new_value == null)
+            {
+                allowSubJobDeletion = true;
+            }
+
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_WORKPACK)) && new_value == null)
+            {
+                allowWorkpackDeletion = true;
+            }
+
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
+
+        bool allowSubJobDeletion = false;
+        bool allowWorkpackDeletion = false;
         #endregion
 
         #region View Commands
@@ -1242,6 +1254,13 @@ namespace BluePrints.ViewModels
             MainViewModel.isBackgroundEdit = false;
             UnpauseUndoRedo();
             BackgroundRefresh();
+        }
+
+        protected override void onAfterRefresh()
+        {
+            allowSubJobDeletion = false;
+            allowWorkpackDeletion = false;
+            base.onAfterRefresh();
         }
 
         private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity)
