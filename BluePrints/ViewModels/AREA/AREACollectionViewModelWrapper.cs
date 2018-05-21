@@ -212,6 +212,11 @@ namespace BluePrints.ViewModels
             base.OnClose(e);
         }
 
+        public override string UnifiedRowValidation(AREAMasterDetailProjection projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(AREAMasterDetailProjection projection, string field_name, object new_value)
         {
             return string.Empty;

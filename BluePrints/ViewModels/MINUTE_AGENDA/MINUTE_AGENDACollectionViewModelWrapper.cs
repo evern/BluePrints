@@ -531,6 +531,11 @@ namespace BluePrints.ViewModels
             return x.Entity.RAISE_DATE;
         }
 
+        public override string UnifiedRowValidation(MINUTE_AGENDAMasterDetailProjection projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(MINUTE_AGENDAMasterDetailProjection projection, string field_name, object new_value)
         {
             return string.Empty;

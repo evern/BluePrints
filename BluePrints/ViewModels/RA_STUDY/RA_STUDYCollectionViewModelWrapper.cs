@@ -161,6 +161,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Navigation
+        public override string UnifiedRowValidation(RA_STUDY projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(RA_STUDY projection, string field_name, object new_value)
         {
             return string.Empty;

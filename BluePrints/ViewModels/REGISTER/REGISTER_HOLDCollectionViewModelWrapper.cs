@@ -98,6 +98,11 @@ namespace BluePrints.ViewModels
             return base.onBeforeEntitySavedIsContinue(projection);
         }
 
+        public override string UnifiedRowValidation(REGISTER_HOLD projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(REGISTER_HOLD projection, string field_name, object new_value)
         {
             if (field_name == BindableBase.GetPropertyName(() => new REGISTER_HOLD().DATE_CLOSED))

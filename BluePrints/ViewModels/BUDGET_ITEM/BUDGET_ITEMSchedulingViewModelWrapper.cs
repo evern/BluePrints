@@ -139,6 +139,11 @@ namespace BluePrints.ViewModels
             return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, true, P6_ASSIGNMENTS);
         }
 
+        public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value)
         {
             return string.Empty;

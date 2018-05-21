@@ -18,6 +18,10 @@
                             <dxr:RibbonPageGroup Caption="Grid">
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                             </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Reporting">
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Report" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="View Report" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -66,7 +70,8 @@
                                 </dxb:ToolBarControl>
                                 <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlRegisters" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="GUID_NODE" Header="Number">
+                                        <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                                        <dxg:GridColumn FieldName="GUID_NODE" Header="Node">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings DisplayMember="NUMBER" ItemsSource="{Binding DataContext.RA_STUDY_NODECollection, ElementName=userControl}" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>

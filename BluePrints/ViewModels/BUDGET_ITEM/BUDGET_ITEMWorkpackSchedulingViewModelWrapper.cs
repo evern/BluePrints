@@ -349,6 +349,11 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
+
+        public override string UnifiedRowValidation(WORKPACKProjection projection)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region For Variation Usage

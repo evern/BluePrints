@@ -81,21 +81,19 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
-            MainViewModel.AdditionalValidateRowCallBack = AdditionalValidateRowCallBack;
             MainViewModel.IsContinueSaveCallBack = IsContinueSaveCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private void AdditionalValidateRowCallBack(GridRowValidationEventArgs e)
+        public override string UnifiedRowValidation(DELIVERABLES_STATUS projection)
         {
-            DELIVERABLES_STATUS validateEntity = (DELIVERABLES_STATUS)e.Row;
-            if(validateEntity.AUTO_PERCENTAGE > validateEntity.MAX_PERCENTAGE)
+            if(projection.AUTO_PERCENTAGE > projection.MAX_PERCENTAGE)
             {
-                e.IsValid = false;
-                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                e.ErrorContent = "Auto assign percentage cannot be more than max percentage";
+                return "Auto assign percentage cannot be more than max percentage";
             }
+
+            return string.Empty;
         }
 
         private bool IsContinueSaveCallBack(DELIVERABLES_STATUS entity, bool isNewEntity)

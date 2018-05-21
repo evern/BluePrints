@@ -188,7 +188,8 @@ namespace BluePrints.Common
         Progress_Report,
         Baseline_Report,
         Meeting_Minute,
-        Project_Report
+        Project_Report,
+        Risk_Assessment
     }
 
     public enum P6TASKTYPE

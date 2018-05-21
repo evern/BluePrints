@@ -117,6 +117,11 @@ namespace BluePrints.ViewModels
             return base.onBeforeEntitySavedIsContinue(projection);
         }
 
+        public override string UnifiedRowValidation(MEETING projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(MEETING projection, string field_name, object new_value)
         {
             if (field_name == BindableBase.GetPropertyName(() => new MEETING().MEETING_START))

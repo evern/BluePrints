@@ -13,7 +13,8 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Study Type">
+                        <dxr:RibbonPage Caption="Guide Sub Prompt">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -26,11 +27,29 @@
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="GUID_STUDY_TYPE" Header="Study Type">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="STUDY_TYPE" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessStudyNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxe:ComboBoxEdit>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STUDY_TYPE" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="GUID_GUIDE_PROMPT" Header="Guide Word">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="GUIDE_PROMPT" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessGuidePromptNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxe:ComboBoxEdit>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_PROMPT" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
@@ -46,13 +65,9 @@
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>

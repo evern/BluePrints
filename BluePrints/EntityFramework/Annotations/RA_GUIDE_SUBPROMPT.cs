@@ -34,15 +34,6 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid GUID_STUDY_TYPE
-        {
-            get
-            {
-                if (RA_GUIDE_PROMPT == null)
-                    return Guid.Empty;
-
-                return RA_GUIDE_PROMPT.RA_STUDY_TYPE.GUID;
-            }
-        }
+        public Guid GUID_STUDY_TYPE { get; set; }
     }
 }

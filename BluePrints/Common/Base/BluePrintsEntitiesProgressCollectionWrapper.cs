@@ -245,6 +245,11 @@ namespace BluePrints.Common.Base
 
             return string.Empty;
         }
+
+        public override string UnifiedRowValidation(TMainProjectionEntity projection)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region Stats Calculation

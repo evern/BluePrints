@@ -66,6 +66,12 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        public override string UnifiedRowValidation(UOM projection)
+        {
+            return string.Empty;
+        }
+
+
         public override string UnifiedValueValidation(UOM projection, string field_name, object new_value)
         {
             return string.Empty;

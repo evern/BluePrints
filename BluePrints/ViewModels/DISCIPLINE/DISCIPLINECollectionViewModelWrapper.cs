@@ -70,6 +70,11 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
+
+        public override string UnifiedRowValidation(DISCIPLINE projection)
+        {
+            return string.Empty;
+        }
         #endregion
 
         #region View Properties

@@ -474,6 +474,11 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        public override string UnifiedRowValidation(PROJECT_Dashboard projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value)
         {
             string missingPathErrorString = "Path not selected";

@@ -11,6 +11,8 @@
         [Key]
         public Guid GUID { get; set; }
 
+        public int NUMBER { get; set; }
+
         public Guid GUID_NODE { get; set; }
 
         public Guid? GUID_GUIDE_PROMPT { get; set; }

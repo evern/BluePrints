@@ -810,6 +810,11 @@ namespace BluePrints.ViewModels
             return false;
         }
 
+        public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value)
         {
             string fieldName = DataUtils.FormatColumnFieldname(field_name);

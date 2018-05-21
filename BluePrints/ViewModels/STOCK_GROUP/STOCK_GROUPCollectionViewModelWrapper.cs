@@ -116,6 +116,12 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public override string UnifiedRowValidation(STOCK_GROUPProjection projection)
+        {
+            return string.Empty;
+        }
+
+
         public override string UnifiedValueValidation(STOCK_GROUPProjection projection, string field_name, object new_value)
         {
             return string.Empty;

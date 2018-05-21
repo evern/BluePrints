@@ -118,6 +118,11 @@ namespace BluePrints.ViewModels
             return BindableBase.GetPropertyName(() => new MINUTE_TITLE().SORTORDER);
         }
 
+        public override string UnifiedRowValidation(MINUTE_TITLE projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(MINUTE_TITLE projection, string field_name, object new_value)
         {
             return string.Empty;

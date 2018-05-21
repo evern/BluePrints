@@ -208,6 +208,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        public override string UnifiedRowValidation(BASELINE_ITEMProgress projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object new_value)
         {
             //budget hours field is disabled but just in case
@@ -763,6 +768,7 @@ namespace BluePrints.ViewModels
         {
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
         }
+
         #endregion
 
         #region For Variation Usage

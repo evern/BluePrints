@@ -299,6 +299,11 @@ namespace BluePrints.Common.Base
             projectionEntity.Variation_Action = existingProjectionEntity.Variation_Action;
         }
 
+        public override string UnifiedRowValidation(TMainVariationEntity projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(TMainVariationEntity entity, string field_name, object newValue)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);

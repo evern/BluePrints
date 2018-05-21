@@ -22,6 +22,7 @@ using BaseModel.Data.Helpers;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using System.Collections.ObjectModel;
+using DevExpress.Xpf.Editors;
 
 namespace BluePrints.ViewModels
 {
@@ -73,21 +74,110 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<RA_GUIDE_SUBPROMPT>, IQueryable<RA_GUIDE_SUBPROMPT>> specifyMainViewModelProjection()
         {
-            return query => query;
+            return query => guideSubPromptProjection(query);
+        }
+
+        private IQueryable<RA_GUIDE_SUBPROMPT> guideSubPromptProjection(IRepositoryQuery<RA_GUIDE_SUBPROMPT> guideSubPrompt)
+        {
+            List<RA_GUIDE_SUBPROMPT> guideSubPromptCollection = guideSubPrompt.ToList();
+
+            foreach (RA_GUIDE_SUBPROMPT subPrompt in guideSubPromptCollection)
+            {
+                RA_GUIDE_PROMPT guidePrompt = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUID == subPrompt.GUID_GUIDE_PROMPT);
+                if(guidePrompt != null)
+                {
+                    subPrompt.GUID_STUDY_TYPE = guidePrompt.GUID_STUDY_TYPE;
+                }
+            }
+
+            return guideSubPromptCollection.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_GUIDE_SUBPROMPT> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
             MainViewModel.ManualPasteAction = ManualPasteAction;
             MainViewModel.SetParentViewModel(this);
             RA_GUIDE_PROMPTViewModel.SetParentViewModel(this);
             RA_STUDY_TYPEViewModel.SetParentViewModel(this);
+            
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
+            //if (changedType == typeof(RA_GUIDE_PROMPT))
+            //    RA_GUIDE_PROMPTViewModel.Refresh();
+
+            //if (changedType == typeof(RA_STUDY_TYPE))
+            //    RA_STUDY_TYPEViewModel.Refresh();
+
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
+        public void ProcessStudyNewValue(ProcessNewValueEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                RA_STUDY_TYPE study_type = RA_STUDY_TYPECollection.FirstOrDefault(x => x.STUDY_TYPE == e.DisplayText);
+                if(study_type == null)
+                {
+                    RA_STUDY_TYPE new_study_type = new RA_STUDY_TYPE();
+                    new_study_type.STUDY_TYPE = e.DisplayText;
+                    RA_STUDY_TYPEViewModel.Save(new_study_type);
+                }
+            }
+        }
+
+        public void ProcessGuidePromptNewValue(ProcessNewValueEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                RA_GUIDE_PROMPT guide_prompt = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == e.DisplayText);
+
+                if (guide_prompt == null && DisplaySelectedEntity != null && DisplaySelectedEntity.GUID_STUDY_TYPE != null)
+                {
+                    RA_GUIDE_PROMPT new_guide_prompt = new RA_GUIDE_PROMPT();
+                    new_guide_prompt.GUID_STUDY_TYPE = DisplaySelectedEntity.GUID_STUDY_TYPE;
+                    new_guide_prompt.GUIDE_PROMPT = e.DisplayText;
+                    RA_GUIDE_PROMPTViewModel.Save(new_guide_prompt);
+                }
+            }
+        }
+
+        public bool onBeforeEntitySaved(RA_GUIDE_SUBPROMPT subPrompt)
+        {
+            if (subPrompt.GUID_STUDY_TYPE != null)
+            {
+                RA_GUIDE_PROMPT guide_prompt_by_guid = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUID == subPrompt.GUID_GUIDE_PROMPT);
+                if(guide_prompt_by_guid != null)
+                {
+                    RA_GUIDE_PROMPT guide_prompt_by_verification = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == guide_prompt_by_guid.GUIDE_PROMPT && x.GUID_STUDY_TYPE == subPrompt.GUID_STUDY_TYPE);
+                    if (guide_prompt_by_verification == null)
+                    {
+                        RA_GUIDE_PROMPT new_guide_prompt = new RA_GUIDE_PROMPT();
+                        new_guide_prompt.GUID_STUDY_TYPE = subPrompt.GUID_STUDY_TYPE;
+                        new_guide_prompt.GUIDE_PROMPT = guide_prompt_by_guid.GUIDE_PROMPT;
+                        RA_GUIDE_PROMPTViewModel.Save(new_guide_prompt);
+                        subPrompt.GUID_GUIDE_PROMPT = new_guide_prompt.GUID;
+                    }
+                    else if (guide_prompt_by_verification != null)
+                        subPrompt.GUID_GUIDE_PROMPT = guide_prompt_by_verification.GUID;
+                }
+
+            }
+
+            return true;
+        }
+
+        public override string UnifiedRowValidation(RA_GUIDE_SUBPROMPT projection)
+        {
+            if (projection.GUID_GUIDE_PROMPT == Guid.Empty || projection.GUID_STUDY_TYPE == Guid.Empty)
+            {
+                return projection.GUID_STUDY_TYPE == Guid.Empty ? "Study type is empty" : "Guide prompt is empty";
+            }
+
+            return string.Empty;
         }
 
         public override string UnifiedValueValidation(RA_GUIDE_SUBPROMPT projection, string field_name, object new_value)
@@ -100,15 +190,48 @@ namespace BluePrints.ViewModels
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
-
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, RA_GUIDE_SUBPROMPT pasteEntity)
         {
-            KeyValuePair<ColumnBase, string> study_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new RA_GUIDE_SUBPROMPT().GUID_STUDY_TYPE)));
-            //KeyValuePair<ColumnBase, string> study_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new RA_GUIDE_SUBPROMPT().GUID_STUDY_TYPE)));
+            KeyValuePair<ColumnBase, string> study_type_paste_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new RA_GUIDE_SUBPROMPT().GUID_STUDY_TYPE)));
+            if(study_type_paste_data.Key != null)
+            {
+                RA_STUDY_TYPE study_type = RA_STUDY_TYPECollection.FirstOrDefault(x => x.STUDY_TYPE == study_type_paste_data.Value);
+                if (study_type == null)
+                {
+                    RA_STUDY_TYPE new_study_type = new RA_STUDY_TYPE();
+                    new_study_type.STUDY_TYPE = study_type_paste_data.Value;
+                    RA_STUDY_TYPEViewModel.Save(new_study_type);
+                    pasteEntity.GUID_STUDY_TYPE = new_study_type.GUID;
+                }
+                else
+                    pasteEntity.GUID_STUDY_TYPE = study_type.GUID;
+            }
 
-            string s = study_data.ToString();
+            if (pasteEntity.GUID_STUDY_TYPE != null)
+            {
+                KeyValuePair<ColumnBase, string> guide_prompt_paste_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new RA_GUIDE_SUBPROMPT().GUID_GUIDE_PROMPT)));
+                if (guide_prompt_paste_data.Key != null)
+                {
+                    RA_GUIDE_PROMPT guide_prompt = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == guide_prompt_paste_data.Value && x.GUID_STUDY_TYPE == pasteEntity.GUID_STUDY_TYPE);
+                    if (guide_prompt == null)
+                    {
+                        RA_GUIDE_PROMPT new_guide_prompt = new RA_GUIDE_PROMPT();
+                        new_guide_prompt.GUID_STUDY_TYPE = pasteEntity.GUID_STUDY_TYPE;
+                        new_guide_prompt.GUIDE_PROMPT = guide_prompt_paste_data.Value;
+                        RA_GUIDE_PROMPTViewModel.Save(new_guide_prompt);
+                        pasteEntity.GUID_GUIDE_PROMPT = new_guide_prompt.GUID;
+                    }
+                    else
+                        pasteEntity.GUID_GUIDE_PROMPT = guide_prompt.GUID;
+                }
+            }
+            else
+                return false;
 
-            return true;
+            if (pasteEntity.GUIDE_SUBPROMPT != null)
+                return true;
+            else
+                return false;
         }
         #endregion
 

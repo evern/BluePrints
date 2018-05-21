@@ -78,6 +78,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public override string UnifiedRowValidation(PHASE projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(PHASE projection, string field_name, object new_value)
         {
             return string.Empty;

@@ -153,6 +153,11 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkDelete(removeStockCodes);
         }
 
+        public override string UnifiedRowValidation(STOCK_CODE projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(STOCK_CODE projection, string field_name, object new_value)
         {
             return string.Empty;

@@ -616,6 +616,12 @@ namespace BluePrints.ViewModels
             Refresh();
         }
 
+        public override string UnifiedRowValidation(VARIATIONProjection projection)
+        {
+            return string.Empty;
+        }
+
+
         public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value)
         {
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.APPROVED))

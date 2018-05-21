@@ -91,6 +91,13 @@ namespace BluePrints.ViewModels
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMVariationFilterTree(this, entities);
         }
 
+        public override string UnifiedRowValidation(BASELINE_ITEMVariation projection)
+        {
+            return string.Empty;
+        }
+
+
+
         public override string UnifiedValueValidation(BASELINE_ITEMVariation projection, string field_name, object newValue)
         {
             //budgeted hours field is disabled but just in case

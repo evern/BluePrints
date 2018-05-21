@@ -149,6 +149,12 @@ namespace BluePrints.ViewModels
             return collection;
         }
 
+
+        public override string UnifiedRowValidation(SUBJOB_Dashboard projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(SUBJOB_Dashboard projection, string field_name, object new_value)
         {
             return string.Empty;

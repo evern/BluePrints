@@ -52,6 +52,8 @@
 
         public virtual RA_STUDY_TYPE RA_STUDY_TYPE { get; set; }
 
+        public virtual PROJECT PROJECT { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_TEAM> RA_STUDY_TEAM { get; set; }
 

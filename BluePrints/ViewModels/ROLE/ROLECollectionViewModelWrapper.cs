@@ -302,6 +302,12 @@ namespace BluePrints.ViewModels
             //DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
         }
 
+        public override string UnifiedRowValidation(ROLEProjection projection)
+        {
+            return string.Empty;
+        }
+
+
         public override string UnifiedValueValidation(ROLEProjection projection, string field_name, object new_value)
         {
             return string.Empty;

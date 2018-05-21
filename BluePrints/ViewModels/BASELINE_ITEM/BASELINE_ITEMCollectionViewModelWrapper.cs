@@ -686,6 +686,11 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override string UnifiedRowValidation(BASELINE_ITEMProgress projection)
+        {
+            return string.Empty;
+        }
+
         public Action<BASELINE_ITEMProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
         public void AddUndo(BASELINE_ITEMProgress changedEntity, string propertyName, object oldValue, object newValue, EntityMessageType messageType)
         {
@@ -1862,6 +1867,7 @@ namespace BluePrints.ViewModels
         {
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
         }
+
         #endregion
 
         #region For Variation Usage

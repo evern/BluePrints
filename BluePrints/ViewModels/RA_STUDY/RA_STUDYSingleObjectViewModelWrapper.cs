@@ -23,6 +23,10 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using System.Collections.ObjectModel;
 using DevExpress.Xpf.Editors;
+using BluePrints.Common.Reports;
+using System.IO;
+using DevExpress.Xpf.Printing;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -76,6 +80,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(BluePrintsUnitOfWorkFactory, x => x.RA_STUDY_NODES, RA_STUDY_NODEProjectionFunc);
             loaderCollection.AddLoaderDescription(BluePrintsUnitOfWorkFactory, x => x.RA_STUDY_DATAS, RA_STUDY_DATAProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(BluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -87,6 +92,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<RA_STUDY>, IQueryable<RA_STUDY>> specifyMainViewModelProjection()
         {
             return query => query;
+        }
+
+        private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == EditingEntity.GUID_PROJECT && x.REPORT_TYPE == ReportType.Risk_Assessment.ToString());
         }
 
         private Func<IRepositoryQuery<RA_STUDY_TEAM>, IQueryable<RA_STUDY_TEAM>> RA_STUDY_TEAMProjectionFunc()
@@ -123,6 +133,7 @@ namespace BluePrints.ViewModels
             RA_STUDY_DRAWINGViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeDrawingEntitySaved;
             RA_STUDY_NODEViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeNodeEntitySaved;
             RA_STUDY_DATAViewModel.UnifiedValueChangingCallback = studyDataUnifiedCellValueChanging;
+            RA_STUDY_DATAViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeDataEntitySaved;
             MainViewModel.SetParentViewModel(this);
             RA_STUDY_TEAMViewModel.SetParentViewModel(this);
             RA_STUDY_DRAWINGViewModel.SetParentViewModel(this);
@@ -191,6 +202,18 @@ namespace BluePrints.ViewModels
         public bool OnBeforeNodeEntitySaved(RA_STUDY_NODE entity)
         {
             entity.GUID_STUDY = EditingEntity.GUID;
+            return true;
+        }
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool OnBeforeDataEntitySaved(RA_STUDY_DATA entity)
+        {
+            if (RA_STUDY_DATACollection == null)
+                return false;
+
+            entity.NUMBER = RA_STUDY_DATACollection.Where(x => x.GUID != Guid.Empty).Count() + 1;
             return true;
         }
 
@@ -282,6 +305,15 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<RA_STUDY_DATA> RA_STUDY_DATACollection
+        {
+            get
+            {
+                var collection = GetEntities<RA_STUDY_DATA>();
+                return collection;
+            }
+        }
+
         public IEnumerable<RA_STUDY_TEAM> RA_STUDY_TEAMCollection
         {
             get
@@ -329,10 +361,72 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Navigation
+        public override string UnifiedRowValidation(RA_STUDY projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(RA_STUDY projection, string field_name, object new_value)
         {
             return string.Empty;
         }
         #endregion
+
+
+        #region Reporting
+        public bool CanEditReport()
+        {
+            if (MainViewModel == null || DisplayEntities == null)
+                return false;
+
+            return true;
+        }
+
+        public bool CanViewReport()
+        {
+            if (MainViewModel == null || DisplayEntities == null)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(EditingEntity.PROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Risk_Assessment);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        XtraReportStudyData risk_assessmentReport;
+        public void ViewReport()
+        {
+            risk_assessmentReport = new XtraReportStudyData();
+            PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    risk_assessmentReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            risk_assessmentReport.AssignProperties(EditingEntity, RA_STUDY_DATACollection, RA_STUDY_DRAWINGCollection, RA_STUDY_NODECollection, RA_STUDY_TEAMCollection);
+            DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = risk_assessmentReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            risk_assessmentReport.RequestParameters = false;
+            risk_assessmentReport.CreateDocument(true);
+            previewWindow.Show();
+        }
+        #endregion
+
     }
 }

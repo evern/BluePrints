@@ -466,6 +466,11 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
+        public override string UnifiedRowValidation(SUBJOBProjection projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(SUBJOBProjection projection, string field_name, object new_value)
         {
             return string.Empty;

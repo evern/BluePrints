@@ -223,6 +223,11 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override string UnifiedRowValidation(RA_STUDY_TYPEProjection projection)
+        {
+            return string.Empty;
+        }
+
         public CollectionViewModel<RA_GUIDE_PROMPT, RA_GUIDE_PROMPT, Guid, IBluePrintsEntitiesUnitOfWork> RA_GUIDE_PROMPTViewModel
         {
             get

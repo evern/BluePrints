@@ -124,6 +124,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public override string UnifiedRowValidation(HOLIDAY projection)
+        {
+            return string.Empty;
+        }
+
         public override string UnifiedValueValidation(HOLIDAY projection, string field_name, object new_value)
         {
             return string.Empty;
