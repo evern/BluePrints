@@ -331,7 +331,7 @@ namespace BluePrints.ViewModels
             string newValueString = Clipboard.GetText().ToString().Replace("%", "");
             if(newValueString.Contains("\r\n"))
             {
-                MessageBoxService.ShowMessage("Grid doesn't support pasting multiple cells, sorry for the inconvenience");
+                MessageBoxService.ShowMessage("Grid doesn't support pasting from multiple cells, sorry for the inconvenience");
                 return;
             }
 

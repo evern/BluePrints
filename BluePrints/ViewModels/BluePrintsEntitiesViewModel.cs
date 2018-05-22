@@ -521,6 +521,7 @@ namespace BluePrints.ViewModels
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Native Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Native Permission", false, false, @"Business Objects\BOUser_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheet Entry", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Timesheet Entry", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
