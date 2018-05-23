@@ -242,6 +242,113 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool CanCommitToExo()
+        {
+            return DataPointsTable != null && DataPointsTable.Rows.Count > 0;
+        }
+
+        public void CommitToExo()
+        {
+            foreach(DataRow row in DataPointsTable.Rows)
+            {
+                if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
+                {
+                    int resourceSeqNo = (int)row[columnResourceSeqNo];
+                    int subJobNo = (int)row[columnJobNo];
+                    int costGroupNo = (int)row[columnCostGroup];
+                    int costTypeNo = (int)row[columnCostType];
+
+                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
+                    if(findAuthorisation != null)
+                    {
+                        foreach(DataColumn dataColumn in DataPointsTable.Columns)
+                        {
+                            DateTime bookDate = DateTime.Now;
+                            if(DateTime.TryParse(dataColumn.ColumnName, out bookDate))
+                            {
+                                TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
+                                decimal bookTime = (decimal)row[dataColumn];
+                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == findAuthorisation.StockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
+                                if (timesheet != null)
+                                {
+                                    AdjustTimeSheetHours(timesheet, timesheetDate, bookTime);
+                                }
+                                else
+                                {
+                                    JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
+                                    newTimeSheet.STAFFNO = resourceSeqNo;
+                                    newTimeSheet.JOBNO = subJobNo;
+                                    newTimeSheet.TITLE = findAuthorisation.SubJobCode + " : " + findAuthorisation.SubJobTitle;
+                                    newTimeSheet.STOCKCODE = findAuthorisation.StockCode;
+                                    newTimeSheet.DESCRIPTION = findAuthorisation.StockCodeDescription;
+                                    newTimeSheet.UNITPRICE = 0;
+                                    newTimeSheet.WEEK_START_DATE = timesheetDate.WeekStartDate;
+                                    AdjustTimeSheetHours(newTimeSheet, timesheetDate, bookTime);
+                                    newTimeSheet.IS_OVERTIME = "N";
+                                    newTimeSheet.DAY1_POSTED = "N";
+                                    newTimeSheet.DAY2_POSTED = "N";
+                                    newTimeSheet.DAY3_POSTED = "N";
+                                    newTimeSheet.DAY4_POSTED = "N";
+                                    newTimeSheet.DAY5_POSTED = "N";
+                                    newTimeSheet.DAY6_POSTED = "N";
+                                    newTimeSheet.DAY7_POSTED = "N";
+                                    newTimeSheet.RATE_SEQNO = 0;
+                                    newTimeSheet.RATE_FACTOR = 1;
+                                    newTimeSheet.COST_GROUP = costGroupNo;
+                                    newTimeSheet.COST_TYPE = costTypeNo;
+                                    newTimeSheet.LABOUR_ALLOWANCE = 0;
+                                    newTimeSheet.HAS_ALLOWANCE = "N";
+                                    newTimeSheet.X_DECLINED = false;
+                                    newTimeSheet.X_APPROVAL_MANAGER = -1;
+                                    newTimeSheet.X_SUBMITTED = false;
+                                    primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
+                                }
+                            }
+                        }
+
+                        primeroUnitOfWork.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        public TimesheetDate GetTimesheetDate(DateTime bookDate)
+        {
+            DateTime startOfWeek = bookDate.StartOfWeek(DayOfWeek.Monday);
+            int DayNum = (bookDate - startOfWeek).Days + 1;
+
+            return new TimesheetDate() { WeekStartDate = startOfWeek, DayNumber = DayNum };
+        }
+
+        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, decimal bookTime)
+        {
+            Double dblTime = Convert.ToDouble(bookTime);
+            switch (bookDate.DayNumber)
+            {
+                case 1:
+                    timesheet.DAY1 = dblTime;
+                    break;
+                case 2:
+                    timesheet.DAY2 = dblTime;
+                    break;
+                case 3:
+                    timesheet.DAY3 = dblTime;
+                    break;
+                case 4:
+                    timesheet.DAY4 = dblTime;
+                    break;
+                case 5:
+                    timesheet.DAY5 = dblTime;
+                    break;
+                case 6:
+                    timesheet.DAY6 = dblTime;
+                    break;
+                case 7:
+                    timesheet.DAY7 = dblTime;
+                    break;
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -295,6 +402,7 @@ namespace BluePrints.ViewModels
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
         {
+            EntitiesUndoRedoManager.PauseActionId();
             var selected_cells = gridTableView.GetSelectedCells();
             if (selected_cells.Count == 0)
                 return;
@@ -321,63 +429,57 @@ namespace BluePrints.ViewModels
                     DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
                     DataRow editing_row = editing_row_view.Row;
                     DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.VisibleIndex];
-                    if (!basePasteData(editing_row, editing_column, selected_cell.Column, string.Empty))
+                    if (!basePasteData(editing_row, editing_column, selected_cell.Column, string.Empty, false))
                         continue;
 
                     validateUserAuth(editing_row);
                 }
             }
-            //if copied only a row
-            else if (grouped_results.All(x => x.Count == 1) && (grouped_results.Count == 1 || (selected_cells_groupby_columns.Count() == grouped_results.Count)))
-            {
-                int column_offset = 0;
-                foreach (var selected_column in selected_cells_groupby_columns)
-                {
-                    int validated_column_offset = column_offset > (grouped_results.Count - 1) ? grouped_results.Count - 1 : column_offset;
-                    var paste_value = grouped_results[validated_column_offset];
-                    column_offset += 1;
-                    //since we've already verified that each column group only has a row
-                    string paste_data = paste_value.First();
-                    List<GridColumn> visible_columns = gridTableView.VisibleColumns.ToList();
-
-                    foreach (var selected_cell in selected_column.Cells)
-                    {
-                        //int column_visible_index = selected_cell.Column.VisibleIndex;
-                        int row_handle = selected_cell.RowHandle;
-                        //GridColumn current_column = visible_columns[column_visible_index];
-                        GridColumn current_column = selected_cell.Column;
-                        DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
-                        DataRow editing_row = editing_row_view.Row;
-                        DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.VisibleIndex];
-                        if (!basePasteData(editing_row, editing_column, selected_cell.Column, paste_data))
-                            continue;
-
-                        validateUserAuth(editing_row);
-                    }
-                }
-            }
             else
             {
                 GridCell first_selected_cell = selected_cells.First();
-                int first_row_handle = first_selected_cell.RowHandle;
+                GridCell last_selected_cell = selected_cells.Last();
+
+                int first_row_handle = selected_cells.Min(x => x.RowHandle);
+                int last_row_handle = selected_cells.Max(x => x.RowHandle);
                 int first_row_visible_index = gridControl.GetRowVisibleIndexByHandle(first_row_handle);
+                int last_row_visible_index = gridControl.GetRowVisibleIndexByHandle(last_row_handle);
+                int numberOfSelectedRows = (last_row_visible_index - first_row_visible_index) + 1;
+                int numberOfCopiedRows = grouped_results.First().Count;
 
                 List<GridColumn> visible_columns = gridTableView.VisibleColumns.ToList();
+                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
+                int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex;
+
+                int numberOfSelectedColumns = (last_column_visible_index - first_column_visible_index) + 1;
+                int numberOfCopiedColumns = grouped_results.Count;
+
                 //commented out because not accurate during banded view
                 //int first_column_visible_index = first_selected_cell.Column.VisibleIndex;
-                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
 
-                for (int i = 0; i < grouped_results.Count; i++)
+                int rowOffsetSelection = numberOfSelectedRows > numberOfCopiedRows ? numberOfSelectedRows : numberOfCopiedRows;
+                int columnOffsetSelection = numberOfSelectedColumns > numberOfCopiedColumns ? numberOfSelectedColumns : numberOfCopiedColumns;
+
+                int pasteValueRowOffset = 0;
+                for (int rowOffset = 0; rowOffset < rowOffsetSelection; rowOffset++)
                 {
-                    GridColumn current_column = visible_columns[first_column_visible_index + i];
-                    string column_name = current_column.FieldName;
-                    int row_visible_index_offset = 0;
-
-                    foreach (string rowValue in grouped_results[i])
+                    int pasteValueColumnOffset = 0;
+                    for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset++)
                     {
-                        int current_row_visible_index = first_row_visible_index + row_visible_index_offset;
+                        if (first_column_visible_index + columnOffset >= visible_columns.Count)
+                            continue;
+
+                        GridColumn current_column = visible_columns[first_column_visible_index + columnOffset];
+                        string columnValue = grouped_results[pasteValueColumnOffset][pasteValueRowOffset];
+
+                        int current_row_visible_index = first_row_visible_index + rowOffset;
                         int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
-                        DataRowView editing_row_view = (DataRowView)gridControl.GetRow(current_row_handle);
+
+                        object rowObject = gridControl.GetRow(current_row_handle);
+                        if (rowObject == null)
+                            continue;
+
+                        DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
                         DataColumn editing_column = editing_row.Table.Columns[current_column.VisibleIndex];
                         if (editing_row == null)
@@ -386,18 +488,27 @@ namespace BluePrints.ViewModels
                             break;
                         }
 
-                        row_visible_index_offset += 1;
-                        if (!basePasteData(editing_row, editing_column, current_column, rowValue))
-                            continue;
-
                         validateUserAuth(editing_row);
+                        pasteValueColumnOffset += 1;
+                        if (pasteValueColumnOffset >= grouped_results.Count)
+                            pasteValueColumnOffset = 0;
+
+                        if (!basePasteData(editing_row, editing_column, current_column, columnValue, false))
+                            continue;
                     }
+
+                    pasteValueRowOffset += 1;
+                    if (pasteValueRowOffset >= grouped_results[pasteValueColumnOffset].Count)
+                        pasteValueRowOffset = 0;
                 }
             }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
         }
 
         private void pasteRowData(TableView gridTableView, string[] RowData)
         {
+            EntitiesUndoRedoManager.PauseActionId();
             foreach (var Row in RowData)
             {
                 DataRow newRow = DataPointsTable.NewRow();
@@ -409,16 +520,18 @@ namespace BluePrints.ViewModels
 
                     string pasteData = ColumnStrings[i];
                     ColumnBase copyColumn = gridTableView.VisibleColumns[i];
-                    if (!basePasteData(newRow, newRow.Table.Columns[i], copyColumn, pasteData))
+                    if (!basePasteData(newRow, newRow.Table.Columns[i], copyColumn, pasteData, true))
                         continue;
                 }
 
                 validateUserAuth(newRow);
                 DataPointsTable.Rows.Add(newRow);
+                EntitiesUndoRedoManager.AddUndo(newRow, null, null, null, EntityMessageType.Added);
             }
+            EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, DataColumn dataColumn, ColumnBase copyColumn, string pasteData)
+        private bool basePasteData(DataRow newRow, DataColumn dataColumn, ColumnBase copyColumn, string pasteData, bool isNewRow)
         {
             if (copyColumn.FieldType == typeof(int))
             {
@@ -447,9 +560,19 @@ namespace BluePrints.ViewModels
                     }
 
                     if (int_value != null)
+                    {
+                        if(!isNewRow)
+                            EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], int_value, EntityMessageType.Changed);
+
                         newRow[dataColumn] = int_value;
+                        newRow.SetColumnError(dataColumn, string.Empty);
+                    }
                     else
                     {
+                        if(!isNewRow)
+                            EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], DBNull.Value, EntityMessageType.Changed);
+
+                        newRow[dataColumn] = DBNull.Value;
                         newRow.SetColumnError(dataColumn, "Value not found");
                         return false;
                     }
@@ -462,10 +585,17 @@ namespace BluePrints.ViewModels
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
                 {
+                    if (!isNewRow)
+                        EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], decimal_value, EntityMessageType.Changed);
+
                     newRow[dataColumn] = decimal_value;
                 }
                 else
                 {
+                    if (!isNewRow)
+                        EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], DBNull.Value, EntityMessageType.Changed);
+
+                    newRow[dataColumn] = DBNull.Value;
                     newRow.SetColumnError(dataColumn, "Invalid value");
                     return false;
                 }
@@ -476,12 +606,28 @@ namespace BluePrints.ViewModels
 
         public bool CanBulkDelete()
         {
-            return GridControlService.GetSelectedRows().Count > 0;
+            return GridControlService.GetSelectedRowHandles().Count() > 0;
         }
 
         public void BulkDelete()
         {
-            GridControlService.RemoveSelectedRows();
+            int[] selectedRowHandles = GridControlService.GetSelectedRowHandles();
+            EntitiesUndoRedoManager.PauseActionId();
+            foreach (int selectedRowHandle in selectedRowHandles.OrderByDescending(x => x))
+            {
+                int listIndex = GridControlService.GetListIndexByRowHandle(selectedRowHandle);
+                DataRow deleteRow = DataPointsTable.Rows[listIndex];
+
+                foreach(DataColumn column in DataPointsTable.Columns)
+                {
+                    EntitiesUndoRedoManager.AddUndo(deleteRow, column.ColumnName, deleteRow[column], deleteRow[column], EntityMessageType.Changed);
+                }
+                EntitiesUndoRedoManager.AddUndo(deleteRow, null, null, null, EntityMessageType.Deleted);
+
+                DataPointsTable.Rows.Remove(deleteRow);
+            }
+            EntitiesUndoRedoManager.UnpauseActionId();
+            //GridControlService.RemoveSelectedRows(GridControlService.GetSelectedRowHandles());
         }
 
         public void ValidateCell(GridCellValidationEventArgs e)
@@ -492,6 +638,7 @@ namespace BluePrints.ViewModels
             if (e.Value != null)
                 dataRowView.Row.SetColumnError(dataColumn, string.Empty);
 
+            EntitiesUndoRedoManager.AddUndo(dataRowView.Row, e.Column.FieldName, dataRowView.Row[dataColumn], e.Value, EntityMessageType.Changed);
             //value is not set yet at this stage
             dataRowView.Row[dataColumn] = e.Value;
 
@@ -503,7 +650,142 @@ namespace BluePrints.ViewModels
         {
             DataRowView dataRowView = (DataRowView)e.Row;
             DataRow validateRow = dataRowView.Row;
+
+            if(dataRowView.Row.RowState == DataRowState.Detached)
+                EntitiesUndoRedoManager.AddUndo(dataRowView.Row, null, null, null, EntityMessageType.Added);
+
             validateUserAuth(validateRow);
+        }
+
+        public bool CanUndo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanUndo();
+        }
+
+        public bool CanRedo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanRedo();
+        }
+
+        public void Undo()
+        {
+            EntitiesUndoRedoManager.Undo();
+        }
+
+        public void Redo()
+        {
+            EntitiesUndoRedoManager.Redo();
+        }
+
+        /// <summary>
+        /// Manages all undo and redo operation
+        /// </summary>
+        private EntitiesUndoRedoManager<DataRow> entitiesundoredomanager { get; set; }
+
+        public EntitiesUndoRedoManager<DataRow> EntitiesUndoRedoManager
+        {
+            get
+            {
+                if (entitiesundoredomanager == null)
+                    entitiesundoredomanager = new EntitiesUndoRedoManager<DataRow>(BulkPropertyUndo, BulkPropertyRedo);
+
+                return entitiesundoredomanager;
+            }
+        }
+
+        bool isBackgroundEdit = false;
+        /// <summary>
+        /// Function to redo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            isBackgroundEdit = true;
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkDeleteProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Deleted);
+
+            //use ignore refresh here because it'll be refreshed in basebulksave
+
+            EntitiesUndoRedoManager.PauseActionId();
+            foreach (var bulkDeleteProperty in bulkDeleteProperties)
+            {
+                if(!entityProperties.Any(x => x.ActionId == bulkDeleteProperty.ActionId && x.MessageType == EntityMessageType.Changed))
+                {
+                    foreach (DataColumn column in DataPointsTable.Columns)
+                    {
+                        EntitiesUndoRedoManager.AddRedo(bulkDeleteProperty.ChangedEntity, column.ColumnName, bulkDeleteProperty.ChangedEntity[column], bulkDeleteProperty.ChangedEntity[column], EntityMessageType.Changed);
+                    }
+                }
+
+                DataPointsTable.Rows.Remove(bulkDeleteProperty.ChangedEntity);
+                //bulkDeleteProperty.ChangedEntity.Delete();
+            }
+            EntitiesUndoRedoManager.UnpauseActionId();
+
+            foreach (var bulkAddProperty in bulkAddProperties)
+            {
+                DataPointsTable.Rows.Add(bulkAddProperty.ChangedEntity);
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.NewValue;
+                //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue);
+            }
+
+            isBackgroundEdit = false;
+        }
+
+        /// <summary>
+        /// Function to undo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            isBackgroundEdit = true;
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkDeleteProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Deleted);
+
+            //use ignore refresh here because it'll be refreshed in basebulksave
+
+            EntitiesUndoRedoManager.PauseActionId();
+            foreach (var bulkDeleteProperty in bulkDeleteProperties)
+            {
+                if (!entityProperties.Any(x => x.ActionId == bulkDeleteProperty.ActionId && x.MessageType == EntityMessageType.Changed))
+                {
+                    foreach (DataColumn column in DataPointsTable.Columns)
+                    {
+                        EntitiesUndoRedoManager.AddRedo(bulkDeleteProperty.ChangedEntity, column.ColumnName, bulkDeleteProperty.ChangedEntity[column], bulkDeleteProperty.ChangedEntity[column], EntityMessageType.Changed);
+                    }
+                }
+
+                DataPointsTable.Rows.Remove(bulkDeleteProperty.ChangedEntity);
+            }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
+
+            foreach (var bulkAddProperty in bulkAddProperties)
+            {
+                DataPointsTable.Rows.Add(bulkAddProperty.ChangedEntity);
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.OldValue;
+                //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue);
+            }
+
+            isBackgroundEdit = false;
         }
 
         private void validateUserAuth(DataRow validateRow)
