@@ -31,7 +31,9 @@
                                 <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" ToolTip="Change selection to cells instead of row" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.CommitToExoCommand, ElementName=userControl}" Content="Commit to Exo" Glyph="{dx:DXImage Image=FinishMerge_16x16.png}" LargeGlyph="{dx:DXImage Image=FinishMerge_32x32.png}" ToolTip="Commit current table data to exo timesheet." />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ReadFromExoCommand, ElementName=userControl}" Content="Read from Exo" Glyph="{dx:DXImage Image=DoublePrev_16x16.png}" LargeGlyph="{dx:DXImage Image=DoublePrev_32x32.png}" ToolTip="Read valid job line hours from exo and remove invalid job lines." />
+                                <dxb:BarButtonItem Command="{Binding DataContext.CommitToExoCommand, ElementName=userControl}" Content="Commit to Exo" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Commit current table data to exo timesheet." />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ShowValidJobLinesCommand, ElementName=userControl}" Content="Show Valid Jobs" Glyph="{dx:DXImage Image=RowIndex_16x16.png}" LargeGlyph="{dx:DXImage Image=RowIndex_32x32.png}" ToolTip="Clear current table entries and populate with valid job lines." />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
@@ -87,7 +89,7 @@
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowTotalSummary="True">
+                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />

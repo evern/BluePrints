@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
         string columnJobNo = "JobNo";
         string columnCostGroup = "CostGroup";
         string columnCostType = "CostType";
+
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         protected override void resolveParameters(object parameter)
@@ -242,6 +243,138 @@ namespace BluePrints.ViewModels
             }
         }
 
+
+        public void ShowValidJobLines()
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to show all valid job lines?\n\nThis will clear current table entries", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
+                return;
+
+            DataPointsTable.Clear();
+            IEnumerable<ExoTimeAuthorisation> populateAuthorisations = exoAuthorisations.OrderBy(x => x.ResourceName).ThenBy(x => x.SubJobCode).ThenBy(x => x.DisciplineCode).ThenBy(x => x.CommodityCode);
+            foreach(ExoTimeAuthorisation populateAuthorisation in populateAuthorisations)
+            {
+                DataRow newRow = DataPointsTable.NewRow();
+                newRow[columnResourceSeqNo] = populateAuthorisation.ResourceSeqNo;
+                newRow[columnJobNo] = populateAuthorisation.SubJobNo;
+                newRow[columnCostGroup] = populateAuthorisation.DisciplineId;
+                newRow[columnCostType] = populateAuthorisation.CommodityId;
+                DataPointsTable.Rows.Add(newRow);
+            }
+
+            GridControlService.RefreshData();
+        }
+
+        public bool CanReadFromExo()
+        {
+            return dataPointsTable != null;
+        }
+
+        public void ReadFromExo()
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to read hours from exo?\n\nThis will clear the table and replace hours with hours from exo", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
+                return;
+
+            EntitiesUndoRedoManager.Clear();
+            DataPointsTable.Clear();
+
+            var result = exoAuthorisations.GroupBy(x => x.SubJobNo)
+                   .Select(grp => grp.First())
+                   .ToList();
+
+            List<int> jobNumbers = result.Select(x => x.SubJobNo).ToList();
+            List<TimesheetDate> weekStartDates = new List<TimesheetDate>();
+
+            List<string> dateColumnNames = new List<string>();
+            foreach (DataColumn dataColumn in DataPointsTable.Columns)
+            {
+                DateTime bookDate = DateTime.Now;
+                if (DateTime.TryParse(dataColumn.ColumnName, out bookDate))
+                {
+                    TimesheetDate timeSheetDate = GetTimesheetDate(bookDate);
+                    if (!weekStartDates.Any(x => x.WeekStartDate == timeSheetDate.WeekStartDate))
+                        weekStartDates.Add(timeSheetDate);
+
+                    dateColumnNames.Add(dataColumn.ColumnName);
+                }
+            }
+
+            List<DataRow> newRows = new List<DataRow>();
+            LoadingScreenManager.ShowLoadingScreen(jobNumbers.Count);
+            foreach (int jobNumber in jobNumbers)
+            {
+                List<JOB_TIMESHEETS> timeSheetAllDates = new List<JOB_TIMESHEETS>();
+                foreach(TimesheetDate weekStartDate in weekStartDates)
+                {
+                    IQueryable<JOB_TIMESHEETS> timeSheets = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == weekStartDate.WeekStartDate && x.JOBNO == jobNumber);
+                    timeSheetAllDates.AddRange(timeSheets.ToList());
+                }
+
+                if(timeSheetAllDates.Count > 0)
+                {
+                    foreach (JOB_TIMESHEETS timeSheet in timeSheetAllDates)
+                    {
+                        int findCostGroup;
+                        if (timeSheet.COST_GROUP == null)
+                            continue;
+                        else
+                            findCostGroup = (int)timeSheet.COST_GROUP;
+
+                        int findCostType;
+                        if (timeSheet.COST_TYPE == null)
+                            continue;
+                        else
+                            findCostType = (int)timeSheet.COST_TYPE;
+
+                        DataRow newRow = newRows.FirstOrDefault(x => (int)x[columnJobNo] == timeSheet.JOBNO && (int)x[columnResourceSeqNo] == timeSheet.STAFFNO && (int)x[columnCostGroup] == findCostGroup && (int)x[columnCostType] == findCostType);
+                        if(newRow == null)
+                        {
+                            newRow = DataPointsTable.NewRow();
+                            newRow[columnResourceSeqNo] = timeSheet.STAFFNO;
+                            newRow[columnJobNo] = timeSheet.JOBNO;
+                            if (timeSheet.COST_GROUP == null)
+                                newRow[columnCostGroup] = DBNull.Value;
+                            else
+                                newRow[columnCostGroup] = (int)timeSheet.COST_GROUP;
+
+                            if (timeSheet.COST_TYPE == null)
+                                newRow[columnCostType] = DBNull.Value;
+                            else
+                                newRow[columnCostType] = (int)timeSheet.COST_TYPE;
+
+                            newRows.Add(newRow);
+                        }
+
+                        foreach (string dateColumnName in dateColumnNames)
+                        {
+                            DateTime bookDate = DateTime.Parse(dateColumnName);
+                            TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
+
+                            if (timeSheet.WEEK_START_DATE != timesheetDate.WeekStartDate)
+                                continue;
+
+                            double? exoHours = GetTimeSheetHours(timeSheet, timesheetDate);
+                            if (exoHours == null)
+                                newRow[dateColumnName] = DBNull.Value;
+                            else
+                            {
+                                decimal exoHoursDecimal = Convert.ToDecimal((double)exoHours);
+                                newRow[dateColumnName] = exoHoursDecimal;
+                            }
+                        }
+                    }
+                }
+
+                LoadingScreenManager.Progress();
+            }
+
+            foreach (DataRow newRow in newRows)
+            {
+                DataPointsTable.Rows.Add(newRow);
+            }
+            GridControlService.RefreshData();
+            MessageBoxService.ShowMessage("Data retrieved from exo");
+        }
+
         public bool CanCommitToExo()
         {
             return DataPointsTable != null && DataPointsTable.Rows.Count > 0;
@@ -249,7 +382,13 @@ namespace BluePrints.ViewModels
 
         public void CommitToExo()
         {
-            foreach(DataRow row in DataPointsTable.Rows)
+            if (MessageBoxService.ShowMessage("Are you sure you want to commit current table to exo?", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
+                return;
+
+            int committedRow = 0;
+            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+
+            foreach (DataRow row in DataPointsTable.Rows)
             {
                 if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
                 {
@@ -261,17 +400,22 @@ namespace BluePrints.ViewModels
                     ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
                     if(findAuthorisation != null)
                     {
-                        foreach(DataColumn dataColumn in DataPointsTable.Columns)
+                        committedRow += 1;
+                        foreach (DataColumn dataColumn in DataPointsTable.Columns)
                         {
                             DateTime bookDate = DateTime.Now;
                             if(DateTime.TryParse(dataColumn.ColumnName, out bookDate))
                             {
                                 TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
+                                if (row[dataColumn] == DBNull.Value)
+                                    continue;
+
                                 decimal bookTime = (decimal)row[dataColumn];
                                 JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == findAuthorisation.StockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
                                 if (timesheet != null)
                                 {
                                     AdjustTimeSheetHours(timesheet, timesheetDate, bookTime);
+                                    primeroUnitOfWork.SaveChanges();
                                 }
                                 else
                                 {
@@ -302,14 +446,17 @@ namespace BluePrints.ViewModels
                                     newTimeSheet.X_APPROVAL_MANAGER = -1;
                                     newTimeSheet.X_SUBMITTED = false;
                                     primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
+                                    primeroUnitOfWork.SaveChanges();
                                 }
                             }
                         }
-
-                        primeroUnitOfWork.SaveChanges();
                     }
                 }
+
+                LoadingScreenManager.Progress();
             }
+
+            MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
         }
 
         public TimesheetDate GetTimesheetDate(DateTime bookDate)
@@ -346,6 +493,29 @@ namespace BluePrints.ViewModels
                 case 7:
                     timesheet.DAY7 = dblTime;
                     break;
+            }
+        }
+
+        private double? GetTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate)
+        {
+            switch (bookDate.DayNumber)
+            {
+                case 1:
+                    return timesheet.DAY1;
+                case 2:
+                    return timesheet.DAY2;
+                case 3:
+                    return timesheet.DAY3;
+                case 4:
+                    return timesheet.DAY4;
+                case 5:
+                    return timesheet.DAY5;
+                case 6:
+                    return timesheet.DAY6;
+                case 7:
+                    return timesheet.DAY7;
+                default:
+                    return null;
             }
         }
 
@@ -429,9 +599,7 @@ namespace BluePrints.ViewModels
                     DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
                     DataRow editing_row = editing_row_view.Row;
                     DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.VisibleIndex];
-                    if (!basePasteData(editing_row, editing_column, selected_cell.Column, string.Empty, false))
-                        continue;
-
+                    basePasteData(editing_row, editing_column, selected_cell.Column, string.Empty, false);
                     validateUserAuth(editing_row);
                 }
             }
@@ -487,14 +655,13 @@ namespace BluePrints.ViewModels
                             MessageBoxService.ShowMessage("Please remove all line break from paste data or double click into cell to paste your data with line breaks");
                             break;
                         }
-
-                        validateUserAuth(editing_row);
+                        
                         pasteValueColumnOffset += 1;
                         if (pasteValueColumnOffset >= grouped_results.Count)
                             pasteValueColumnOffset = 0;
 
-                        if (!basePasteData(editing_row, editing_column, current_column, columnValue, false))
-                            continue;
+                        basePasteData(editing_row, editing_column, current_column, columnValue, false);
+                        validateUserAuth(editing_row);
                     }
 
                     pasteValueRowOffset += 1;
@@ -520,8 +687,7 @@ namespace BluePrints.ViewModels
 
                     string pasteData = ColumnStrings[i];
                     ColumnBase copyColumn = gridTableView.VisibleColumns[i];
-                    if (!basePasteData(newRow, newRow.Table.Columns[i], copyColumn, pasteData, true))
-                        continue;
+                    basePasteData(newRow, newRow.Table.Columns[i], copyColumn, pasteData, true);
                 }
 
                 validateUserAuth(newRow);
