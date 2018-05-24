@@ -72,6 +72,11 @@ namespace BluePrints.Common.Reports
                 currentREPORT = new XtraReportDashboard();
                 reportDesigner1.OpenReport(currentREPORT);
             }
+            else if (currentReportType == ReportType.Risk_Assessment)
+            {
+                currentREPORT = new XtraReportStudyData();
+                reportDesigner1.OpenReport(currentREPORT);
+            }
         }
 
         private void SaveReport()
