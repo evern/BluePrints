@@ -57,10 +57,10 @@
                         <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Sub Prompt" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
-                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.GroupSummary>
-                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
