@@ -254,6 +254,12 @@ namespace BluePrints.Common
         Cancel
     }
 
+    public enum TimesheetDateDialogAction
+    {
+        Ok,
+        UseWeekStart
+    }
+
     public enum ExoBurnedFilterType
     {
         [Display(Name = "All")]
@@ -602,7 +608,24 @@ namespace BluePrints.Common
         public readonly P6_ASSIGNMENT deliverable_assignment;
         public readonly ICanAssignP6 deliverableProjection;
 
-        public TASK P6_TASK { get; set; }
+        TASK p6_task;
+        public TASK P6_TASK
+        {
+            get { return p6_task; }
+            set
+            {
+                if (value == null)
+                    return;
+
+                if (value.act_end_date != null)
+                    value.early_end_date = null;
+
+                if (value.act_start_date != null)
+                    value.early_start_date = null;
+
+                p6_task = value;
+            }
+        }
 
         public string INTERNAL_NUM
         {

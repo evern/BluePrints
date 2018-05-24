@@ -352,13 +352,18 @@ namespace BluePrints.ViewModels
                             if (timeSheet.WEEK_START_DATE != timesheetDate.WeekStartDate)
                                 continue;
 
-                            double? exoHours = GetTimeSheetHours(timeSheet, timesheetDate);
+                            bool isReadOnly = false;
+                            double? exoHours = GetTimeSheetHours(timeSheet, timesheetDate, out isReadOnly);
                             if (exoHours == null)
                                 newRow[dateColumnName] = DBNull.Value;
                             else
                             {
                                 decimal exoHoursDecimal = Convert.ToDecimal((double)exoHours);
                                 newRow[dateColumnName] = exoHoursDecimal;
+                                if (isReadOnly)
+                                    newRow.SetColumnError(dateColumnName, "Already posted");
+                                else
+                                    newRow.SetColumnError(dateColumnName, string.Empty);
                             }
                         }
                     }
@@ -411,10 +416,16 @@ namespace BluePrints.ViewModels
                                     continue;
 
                                 decimal bookTime = (decimal)row[dataColumn];
+                                bool isReadOnly = false;
                                 JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == findAuthorisation.StockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
                                 if (timesheet != null)
                                 {
-                                    AdjustTimeSheetHours(timesheet, timesheetDate, bookTime);
+                                    AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
+                                    if (isReadOnly)
+                                        row.SetColumnError(dataColumn, "Already posted");
+                                    else
+                                        row.SetColumnError(dataColumn, string.Empty);
+
                                     primeroUnitOfWork.SaveChanges();
                                 }
                                 else
@@ -427,7 +438,7 @@ namespace BluePrints.ViewModels
                                     newTimeSheet.DESCRIPTION = findAuthorisation.StockCodeDescription;
                                     newTimeSheet.UNITPRICE = 0;
                                     newTimeSheet.WEEK_START_DATE = timesheetDate.WeekStartDate;
-                                    AdjustTimeSheetHours(newTimeSheet, timesheetDate, bookTime);
+                                    AdjustTimeSheetHours(newTimeSheet, timesheetDate, bookTime, out isReadOnly);
                                     newTimeSheet.IS_OVERTIME = "N";
                                     newTimeSheet.DAY1_POSTED = "N";
                                     newTimeSheet.DAY2_POSTED = "N";
@@ -467,54 +478,114 @@ namespace BluePrints.ViewModels
             return new TimesheetDate() { WeekStartDate = startOfWeek, DayNumber = DayNum };
         }
 
-        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, decimal bookTime)
+        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, decimal bookTime, out bool isReadOnly)
         {
             Double dblTime = Convert.ToDouble(bookTime);
             switch (bookDate.DayNumber)
             {
                 case 1:
+                    if (timesheet.DAY1_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY1 = dblTime;
                     break;
                 case 2:
+                    if (timesheet.DAY2_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY2 = dblTime;
                     break;
                 case 3:
+                    if (timesheet.DAY3_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY3 = dblTime;
                     break;
                 case 4:
+                    if (timesheet.DAY4_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY4 = dblTime;
                     break;
                 case 5:
+                    if (timesheet.DAY5_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY5 = dblTime;
                     break;
                 case 6:
+                    if (timesheet.DAY6_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY6 = dblTime;
                     break;
                 case 7:
+                    if (timesheet.DAY7_POSTED == "Y")
+                    {
+                        isReadOnly = true;
+                        break;
+                    }
+
+                    isReadOnly = false;
                     timesheet.DAY7 = dblTime;
+                    break;
+                default:
+                    isReadOnly = false;
                     break;
             }
         }
 
-        private double? GetTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate)
+        private double? GetTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, out bool isReadOnly)
         {
             switch (bookDate.DayNumber)
             {
                 case 1:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY1;
                 case 2:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY2;
                 case 3:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY3;
                 case 4:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY4;
                 case 5:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY5;
                 case 6:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY6;
                 case 7:
+                    isReadOnly = timesheet.DAY1_POSTED == "Y" ? true : false;
                     return timesheet.DAY7;
                 default:
+                    isReadOnly = false;
                     return null;
             }
         }
@@ -535,11 +606,34 @@ namespace BluePrints.ViewModels
 
         public void GetDateRange()
         {
+            UICommand okCommand = new UICommand()
+            {
+                Id = TimesheetDateDialogAction.Ok,
+                Caption = "Ok",
+                IsCancel = true,
+                IsDefault = false,
+            };
+
+            UICommand currentCommand = new UICommand()
+            {
+                Id = TimesheetDateDialogAction.UseWeekStart,
+                Caption = "Use previous week start",
+                IsCancel = true,
+                IsDefault = false,
+            };
+
             var dateFromToViewModel = DateFromToDialogViewModel.Create();
-            if (DateFromToDialogService.ShowDialog(MessageButton.OKCancel, "Select Date Range to Query", "DateFromTo", dateFromToViewModel) == MessageResult.OK)
+            UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Select Date Range to Query", "DateFromTo", dateFromToViewModel);
+
+            if(result == okCommand)
             {
                 DateFrom = dateFromToViewModel.DateFrom;
                 DateTo = dateFromToViewModel.DateTo.AddDays(-1);
+            }
+            else
+            {
+                DateFrom = DateTime.Now.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
+                DateTo = DateFrom.AddDays(5);
             }
         }
 

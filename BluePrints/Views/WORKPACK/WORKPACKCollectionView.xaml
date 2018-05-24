@@ -16,7 +16,7 @@
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarButtonItem Content="Generate" ToolTip="Generate workpack for all deliverables. Also remove unused workpacks" Command="{Binding DataContext.GenerateWORKPACKSCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Bookmark_32x32.png}" Glyph="{dx:DXImage Image=Bookmark_16x16.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.GenerateWORKPACKSCommand, ElementName=userControl}" Content="Generate" Glyph="{dx:DXImage Image=Bookmark_16x16.png}" LargeGlyph="{dx:DXImage Image=Bookmark_32x32.png}" ToolTip="Generate workpack for all deliverables. Also remove unused workpacks" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -32,24 +32,24 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlWORKPACK" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Subjob" FieldName="Entity.GUID_SUBJOB">
+                            <dxg:GridColumn FieldName="Entity.GUID_SUBJOB" Header="Subjob">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline" FieldName="Entity.GUID_DISCIPLINE">
+                            <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Number" FieldName="Entity.DISCIPLINE_NUM">
+                            <dxg:GridColumn FieldName="Entity.DISCIPLINE_NUM" Header="Number">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Name" FieldName="Entity.NAME" ReadOnly="True" MinWidth="150" />
-                            <dxg:GridColumn Header="Title" FieldName="Entity.TITLE" />
-                            <dxg:GridColumn Header="Total Units" FieldName="Total_Units" ReadOnly="True">
+                            <dxg:GridColumn MinWidth="150" FieldName="Entity.NAME" Header="Name" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.TITLE" Header="Title" />
+                            <dxg:GridColumn FieldName="Total_Units" Header="Total Units" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                 </dxg:GridColumn.EditSettings>
@@ -59,23 +59,23 @@
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding P6_Assignment_Projection}">
                                 <dxg:GridControl x:Name="gridControlChild">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn Header="Code" FieldName="P6_TASK.task_code" HeaderToolTip="P6 Activity Name" ReadOnly="True">
+                                        <dxg:GridColumn FieldName="P6_TASK.task_code" Header="Code" HeaderToolTip="P6 Activity Name" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="Name" FieldName="P6_TASK.task_name" HeaderToolTip="P6 Activity Name" ReadOnly="True">
+                                        <dxg:GridColumn FieldName="P6_TASK.task_name" Header="Name" HeaderToolTip="P6 Activity Name" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="Target Start Date" FieldName="P6_TASK.target_start_date" HeaderToolTip="Target start date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Target End Date" FieldName="P6_TASK.target_end_date" HeaderToolTip="Target end date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Actual Start Date" FieldName="P6_TASK.act_start_date" HeaderToolTip="Actual start date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Actual End Date" FieldName="P6_TASK.act_end_date" HeaderToolTip="Actual end date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Forecast Start Date" FieldName="P6_TASK.early_start_date" HeaderToolTip="Forecast early start date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Forecast End Date" FieldName="P6_TASK.early_end_date" HeaderToolTip="Forecast early end date" ReadOnly="True" />
-                                        <dxg:GridColumn Header="Assigned Units" FieldName="UNITS" HeaderToolTip="Total units assigned to this activity" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.target_start_date" Header="Target Start Date" HeaderToolTip="Target start date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.target_end_date" Header="Target End Date" HeaderToolTip="Target end date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.act_start_date" Header="Actual Start Date" HeaderToolTip="Actual start date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.act_end_date" Header="Actual End Date" HeaderToolTip="Actual end date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.early_start_date" Header="Forecast Start Date" HeaderToolTip="Forecast early start date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="P6_TASK.early_end_date" Header="Forecast End Date" HeaderToolTip="Forecast early end date" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="UNITS" Header="Assigned Units" HeaderToolTip="Total units assigned to this activity" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView1" AllowEditing="False" NewItemRowPosition="None" Style="{StaticResource DefaultDetailTableViewTemplate}" />
@@ -84,11 +84,11 @@
                             </dxg:DataControlDetailDescriptor>
                         </dxg:GridControl.DetailDescriptor>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem FieldName="Total_Units" DisplayFormat="Total: {0}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="Total: {0}" FieldName="Total_Units" SummaryType="Sum" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem FieldName="Total_Units" DisplayFormat="Total: {0}" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="Total: {0}" FieldName="Total_Units" SummaryType="Sum" />
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>

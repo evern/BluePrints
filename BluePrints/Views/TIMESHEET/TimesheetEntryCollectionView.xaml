@@ -36,7 +36,6 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.ShowValidJobLinesCommand, ElementName=userControl}" Content="Show Valid Jobs" Glyph="{dx:DXImage Image=RowIndex_16x16.png}" LargeGlyph="{dx:DXImage Image=RowIndex_32x32.png}" ToolTip="Clear current table entries and populate with valid job lines." />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
