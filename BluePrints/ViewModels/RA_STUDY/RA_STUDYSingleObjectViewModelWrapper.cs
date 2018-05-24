@@ -63,7 +63,9 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            EditingEntity = ((EntitiesParameter<RA_STUDY>)parameter).GetEntity();
+            //need to get from database for navigational meta
+            Guid queryGuid = ((EntitiesParameter<RA_STUDY>)parameter).GetEntity().GUID;
+            EditingEntity = BluePrintsUnitOfWorkFactory.CreateUnitOfWork().RA_STUDIES.FirstOrDefault(x => x.GUID == queryGuid);
             //var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             //loadPROJECT = PROJECTParameter.GetEntity();
         }
@@ -139,6 +141,10 @@ namespace BluePrints.ViewModels
             RA_STUDY_DRAWINGViewModel.SetParentViewModel(this);
             RA_STUDY_NODEViewModel.SetParentViewModel(this);
             RA_STUDY_DATAViewModel.SetParentViewModel(this);
+
+            if(showReport)
+                mainThreadDispatcher.BeginInvoke(new Action(() => previewReport()));
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -401,9 +407,18 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        bool showReport = false;
         XtraReportStudyData risk_assessmentReport;
         public void ViewReport()
         {
+            showReport = true;
+            //to make sure all navigational properties are loaded
+            FullRefresh();
+        }
+
+        private void previewReport()
+        {
+            showReport = false;
             risk_assessmentReport = new XtraReportStudyData();
             PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
             if (dbProjectReport != null)
@@ -417,7 +432,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            risk_assessmentReport.AssignProperties(EditingEntity, RA_STUDY_DATACollection, RA_STUDY_DRAWINGCollection, RA_STUDY_NODECollection, RA_STUDY_TEAMCollection);
+            risk_assessmentReport.AssignProperties(EditingEntity, RA_STUDY_DATACollection, RA_STUDY_DRAWINGCollection, RA_STUDY_NODECollection, RA_STUDY_TEAMCollection, USERCollection, EditingEntity.PROJECT);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = risk_assessmentReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
