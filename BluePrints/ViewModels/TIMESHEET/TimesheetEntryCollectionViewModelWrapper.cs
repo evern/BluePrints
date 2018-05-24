@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
         string columnJobNo = "JobNo";
         string columnCostGroup = "CostGroup";
         string columnCostType = "CostType";
+        string valueNotFoundError = "Value not found";
 
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
@@ -374,8 +375,10 @@ namespace BluePrints.ViewModels
 
             foreach (DataRow newRow in newRows)
             {
+                validateUserAuth(newRow);
                 DataPointsTable.Rows.Add(newRow);
             }
+
             GridControlService.RefreshData();
             MessageBoxService.ShowMessage("Data retrieved from exo");
         }
@@ -833,7 +836,7 @@ namespace BluePrints.ViewModels
                             EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], DBNull.Value, EntityMessageType.Changed);
 
                         newRow[dataColumn] = DBNull.Value;
-                        newRow.SetColumnError(dataColumn, "Value not found");
+                        newRow.SetColumnError(dataColumn, valueNotFoundError);
                         return false;
                     }
                 }
@@ -997,6 +1000,12 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
                 entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.NewValue;
+                if (entityProperty.NewValue != DBNull.Value)
+                    entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, string.Empty);
+                else
+                    entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
+
+                validateUserAuth(entityProperty.ChangedEntity);
                 //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue);
             }
 
@@ -1041,6 +1050,12 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
                 entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.OldValue;
+                if (entityProperty.OldValue != DBNull.Value)
+                    entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, string.Empty);
+                else
+                    entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
+
+                validateUserAuth(entityProperty.ChangedEntity);
                 //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue);
             }
 
