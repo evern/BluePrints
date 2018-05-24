@@ -856,7 +856,6 @@ namespace BluePrints.ViewModels
                         EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], DBNull.Value, EntityMessageType.Changed);
 
                     newRow[dataColumn] = DBNull.Value;
-                    newRow.SetColumnError(dataColumn, "Invalid value");
                     return false;
                 }
             }
