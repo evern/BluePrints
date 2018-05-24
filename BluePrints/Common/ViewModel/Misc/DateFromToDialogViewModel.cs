@@ -15,7 +15,7 @@ namespace BaseModel.ViewModel.Dialogs
         protected DateFromToDialogViewModel()
         {
             DateFrom = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
-            DateTo = DateTime.Now.AddDays(6).Date;
+            DateTo = DateFrom.AddDays(6).Date;
         }
     }
 }
