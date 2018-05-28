@@ -43,14 +43,15 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-
+        private ChargeType loadChargeType;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
+            loadPROJECT = PROJECTParameter.GetFirstEntity();
+            loadChargeType = (ChargeType)PROJECTParameter.GetSecondEntity();
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -86,7 +87,7 @@ namespace BluePrints.ViewModels
 
         private IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
-            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).ToList();
+            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType).ToList();
             rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
 
             return rateCollection.AsQueryable();
@@ -107,6 +108,8 @@ namespace BluePrints.ViewModels
         public bool OnBeforeEntitySaved(RATE entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.CHARGE_TYPE = loadChargeType;
+
             return true;
         }
 

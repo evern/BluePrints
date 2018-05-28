@@ -455,7 +455,10 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates", false, false, @"Number Formats\Currency2_16x16.png"));
+            {
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesDirect" + keyString, projectKey, childTitlePrefix + "Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT,object>(entity, ChargeType.Direct), null, "Rates [Direct]", false, false, @"Spreadsheet\FunctionsFinancial_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesIndirect" + keyString, projectKey, childTitlePrefix + "Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.Indirect), null, "Rates [Indirect]", false, false, @"Spreadsheet\FunctionsDateAndTime_16x16.png"));
+            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
@@ -469,8 +472,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Direct]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Direct), null, "Deliverables [Direct]", false, false, @"Business Objects\BOEmployee_16x16.png"));
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]", false, false, @"Business Objects\BOCustomer_16x16.png"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Both), null, "Deliverables", false, false, @"Spreadsheet\NameManager_16x16.png"));
+                //design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]", false, false, @"Business Objects\BOCustomer_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEstimation))

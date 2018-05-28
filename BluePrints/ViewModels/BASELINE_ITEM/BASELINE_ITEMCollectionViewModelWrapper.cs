@@ -385,12 +385,12 @@ namespace BluePrints.ViewModels
             if (BaseEntityQueryCallBack != null)
                 return BaseEntityQueryCallBack(query);
 
-            if(viewType == DeliverablesViewType.Direct)
-                return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Direct);
-            else if(viewType == DeliverablesViewType.Indirect)
-                return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Indirect);
-            else
-                return query.Where(x => x.GUID_BASELINE == load_context_guid);
+            //if(viewType == DeliverablesViewType.Direct)
+            //    return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Direct);
+            //else if(viewType == DeliverablesViewType.Indirect)
+            //    return query.Where(x => x.GUID_BASELINE == load_context_guid && x.PHASE != null && x.PHASE.CHARGE_TYPE == ChargeType.Indirect);
+            //else
+            return query.Where(x => x.GUID_BASELINE == load_context_guid);
         }
 
         public Action<IEnumerable<BASELINE_ITEMProgress>> OnReportablesLoadedCallBack { get; set; }
