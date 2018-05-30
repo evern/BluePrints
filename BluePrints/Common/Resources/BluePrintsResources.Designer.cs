@@ -313,6 +313,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Health check completed without any issues.
+        /// </summary>
+        internal static string Notify_HealthCheck_OK {
+            get {
+                return ResourceManager.GetString("Notify_HealthCheck_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to P6 units populated.
         /// </summary>
         internal static string Notify_P6_Assignment_Write_Complete {

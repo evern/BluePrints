@@ -240,4 +240,7 @@
   <data name="Value_Any" xml:space="preserve">
     <value>Any</value>
   </data>
+  <data name="Notify_HealthCheck_OK" xml:space="preserve">
+    <value>Health check completed without any issues</value>
+  </data>
 </root>

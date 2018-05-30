@@ -250,6 +250,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private void assign_baseline(BASELINE entity)
@@ -376,7 +382,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, null, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -1537,6 +1543,14 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<BASELINE_ITEM_WORK>();
                 return collection;
+            }
+        }
+
+        public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
+        {
+            get
+            {
+                return GetEntities<P6_ASSIGNMENT>();
             }
         }
 

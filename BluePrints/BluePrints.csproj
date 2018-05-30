@@ -531,6 +531,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
@@ -779,6 +780,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTIssueView.xaml.cs">
+      <DependentUpon>PROJECTIssueView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
@@ -1628,6 +1632,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTIssueView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

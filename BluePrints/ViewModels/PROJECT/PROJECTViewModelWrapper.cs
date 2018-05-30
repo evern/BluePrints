@@ -27,6 +27,8 @@ using System.Windows.Threading;
 using BluePrints.Reports;
 using System.IO;
 using BluePrints.Common.Reports;
+using BaseModel.ViewModel.Dialogs;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.ViewModels
 {
@@ -53,6 +55,11 @@ namespace BluePrints.ViewModels
         {
         }
 
+        protected IDialogService ActivityDetailDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("ProjectIssueDialog"); }
+        }
+
         #region Database Operation
         private PROJECT loadPROJECT;
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
@@ -63,11 +70,13 @@ namespace BluePrints.ViewModels
         private DispatcherTimer selectAllDispatcher;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private Action<object> navigateCore;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter =
-                (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
+                (DualEntitiesParameter<PROJECT, Action<object>>) parameter;
+            loadPROJECT = PROJECTParameter.GetFirstEntity();
+            navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
 
             selectAllDispatcher = new DispatcherTimer();
@@ -265,6 +274,149 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ExcelExportData);
             LoadingScreenManager.CloseLoadingScreen();
             base.ExportToExcel();
+        }
+
+        public bool CanProjectHealthCheck()
+        {
+            return CanExportToExcel();
+        }
+
+        public void ProjectHealthCheck()
+        {
+            bool moreThanOneDesignLiveProgress = false;
+            bool noDesignLiveProgress = false;
+            bool moreThanOneLiveBaseline = false;
+            bool noLiveBaseline = false;
+            IEnumerable<BASELINE> liveBASELINES = loadPROJECT.BASELINE.Where(x => x.STATUS == BaselineStatus.Live);
+            BASELINE liveBASELINE = liveBASELINES.FirstOrDefault();
+
+            if (liveBASELINES.Count() > 1)
+                moreThanOneLiveBaseline = true;
+            else if (liveBASELINES.Count() == 0)
+                noLiveBaseline = true;
+
+            IEnumerable<PROGRESS> livePROGRESS = loadPROJECT.PROGRESS.Where(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
+            PROGRESS livePRO = livePROGRESS.FirstOrDefault();
+            if (livePROGRESS.Count() > 1)
+                moreThanOneDesignLiveProgress = true;
+            else if (livePROGRESS.Count() == 0)
+                noDesignLiveProgress = true;
+
+            List<ProjectIssue> projectIssues = new List<ProjectIssue>();
+            if(loadPROJECT.BASELINE.Count == 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Project have no live baseline"), Resolve = "Please create a live baseline" });
+            else
+            {
+                if (moreThanOneLiveBaseline)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Project have more than one live baseline"), Resolve = "Please set only a single baseline to live" });
+                else if (noLiveBaseline)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Project have no live baseline"), Resolve = "Please set set baseline to live" });
+            }
+
+            if(loadPROJECT.PROGRESS.Count == 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Project have no live Progress"), Resolve = "Please create a live design progress" });
+            else
+            {
+                if (moreThanOneDesignLiveProgress)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Project have more than one live Progress"), Resolve = "Please set only a single design progress to live" });
+                else if (noDesignLiveProgress)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Project have no live Progress"), Resolve = "Please set a design progress to live" });
+            }
+
+            if(livePRO != null && liveBASELINE != null)
+            {
+                if(livePRO.P6PROGRESS_NAME == string.Empty && liveBASELINE.P6BASELINE_NAME != string.Empty)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Live progress is not assigned with P6 schedule"), Resolve = "Please set a p6 schedule on live design progress" });
+                else if (livePRO.P6PROGRESS_NAME != string.Empty && liveBASELINE.P6BASELINE_NAME == string.Empty)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Live Baseline is not assigned with P6 schedule"), Resolve = "Please set a p6 schedule on live Baseline" });
+            }
+
+            if (projectIssues.Count > 0)
+                showHealthCheckDialog(projectIssues);
+            else
+            {
+                BASELINE_ITEMCollectionViewModelWrapper deliverablesWrapper = BASELINE_ITEMCollectionViewModelWrapper.Create();
+                deliverablesWrapper.OnReportablesLoadedCallBack = OnDeliverablesLoadedCallBack;
+                TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+                deliverablesWrapper.OnParameterChanged(collectionViewParameter);
+            }
+        }
+
+        private void OnDeliverablesLoadedCallBack(IEnumerable<BASELINE_ITEMProgress> entities)
+        {
+            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            List<ProjectIssue> projectIssues = new List<ProjectIssue>();
+            BASELINE liveBASELINE = loadPROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+            PROGRESS livePROGRESS = loadPROJECT.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
+
+            bool useP6 = false;
+            if (liveBASELINE.P6BASELINE_NAME != string.Empty)
+                useP6 = true;
+
+            int noAreaCount = 0;
+            int noRateCount = 0;
+            int noDepartment = 0;
+            int noSubjob = 0;
+            int noWorkpack = 0;
+            int noAssignment = 0;
+
+            foreach(BASELINE_ITEMProgress entity in entities)
+            {
+                if (entity.Budget_ItemRate == 0)
+                    noRateCount += 1;
+
+                if (entity.Area_Guid == null)
+                    noAreaCount += 1;
+
+                if (entity.Department_Code == string.Empty)
+                    noDepartment += 1;
+
+                if (entity.Subjob_Guid == null)
+                    noSubjob += 1;
+
+                if (entity.Workpack_Guid == null)
+                    noWorkpack += 1;
+
+                if (useP6 && entity.Assigned_Percentage == 0)
+                    noAssignment += 1;
+            }
+
+            if(livePROGRESS.REPORT_DATE != null)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Progress", Description = "Report date is assigned to progress", Resolve = "Earned and burned data in S-Curve is limited to report date, please remove it if to view updated data" });
+
+            if (noAreaCount > 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Deliverables", Description = string.Format("{0} deliverable(s) doesn't have area assigned", noAreaCount), Resolve = "Please assign area to deliverable(s)" });
+
+            if (noRateCount > 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Deliverables", Description = string.Format("{0} deliverable(s) doesn't have rate", noRateCount), Resolve = "Please add a rate corresponding to deliverable(s) department, discipline and commodity" });
+
+            if (noDepartment > 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Deliverables", Description = string.Format("{0} deliverable(s) doesn't have department", noDepartment), Resolve = "Please assign department to deliverable(s)" });
+
+            if (noSubjob > 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Deliverables", Description = string.Format("{0} deliverable(s) doesn't have subjob", noSubjob), Resolve = "Please assign subjob to deliverable(s)" });
+
+            if (noWorkpack > 0)
+                projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Deliverables", Description = string.Format("{0} deliverable(s) doesn't have workpack", noWorkpack), Resolve = "Please assign workpack to deliverable(s)" });
+
+            if (noAssignment > 0)
+            {
+                if(loadPROJECT.USE_WORKPACKS)
+                    projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Baseline", Description = string.Format("{0} deliverable(s) doesn't have P6 assignment", noAssignment), Resolve = "Please complete workpack(s) to p6 assignment(s)" });
+                else
+                    projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Baseline", Description = string.Format("{0} deliverable(s) doesn't have P6 assignment", noAssignment), Resolve = "Please complete deliverable(s) to p6 assignment(s)" });
+            }
+
+            if (projectIssues.Count > 0)
+                showHealthCheckDialog(projectIssues);
+            else
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(BluePrintsResources.Notify_HealthCheck_OK)));
+        }
+
+        private void showHealthCheckDialog(IEnumerable<ProjectIssue> projectIssues)
+        {
+            DialogCollectionViewModel<ProjectIssue> projectIssueViewModel = DialogCollectionViewModel<ProjectIssue>.Create(projectIssues);
+            mainThreadDispatcher.BeginInvoke(new Action(() => ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Project Health Check", "PROJECTIssueView", projectIssueViewModel)));
         }
 
         public List<Dashboard_Export_Data_Point> ExcelExportData => DisplayEntities == null ? null : DisplayEntities.Count == 0 ? null : DisplayEntities.First().Export_Data;

@@ -440,7 +440,7 @@ namespace BluePrints.ViewModels
             projectModuleContextMenuItems.Add(projectBaselineMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
-            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new EntitiesParameter<PROJECT>(entity), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
             projectStatusDescription.ChildModules.Add(projectModuleDescription);
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription("Category_Design" + keyString, null, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");

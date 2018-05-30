@@ -594,6 +594,15 @@ namespace BluePrints.Common
         }
     }
 
+    public class ProjectIssue
+    {
+        public string Severity { get; set; }
+        public string Type { get; set; } 
+        public string Description { get; set; }
+        public string Resolve { get; set; }
+        public int IconIndex { get; set; }
+    }
+
     /// <summary>
     /// Used for retrieving units and displaying missing assignments
     /// </summary>
