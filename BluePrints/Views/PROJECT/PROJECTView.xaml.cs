@@ -15,7 +15,6 @@ namespace BluePrints.Views
         public PROJECTView()
         {
             InitializeComponent();
-
             //HwndSource source = (HwndSource)HwndSource.FromVisual(this);
             //HwndTarget target = source?.CompositionTarget;
             //if (target != null)

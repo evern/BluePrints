@@ -103,6 +103,13 @@ namespace BluePrints.Common.ViewModel
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
             }
+
+            executeFirstLoadedActions();
+        }
+
+        protected virtual void executeFirstLoadedActions()
+        {
+
         }
 
         private void dispatchTimer_Tick(object sender, EventArgs e)

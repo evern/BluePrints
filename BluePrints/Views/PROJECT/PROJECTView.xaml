@@ -28,6 +28,9 @@
             </dx:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <Grid Style="{StaticResource DashboardView.RootContainer}">
+            <dxmvvm:Interaction.Behaviors>
+                <services:ChartControlService x:Name="DefaultChartControlService" ChartControl="{Binding ElementName=ChartControl}" />
+            </dxmvvm:Interaction.Behaviors>
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>
                     <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
@@ -217,7 +220,7 @@
                         </dxlc:LayoutGroup>
                         <dx:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
                             <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Vertical" View="Group">
-                                <dxc:ChartControl x:Name="chartSCurve" Grid.Row="2" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" AutoLayout="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                                <dxc:ChartControl x:Name="ChartControl" Grid.Row="2" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" AnimationMode="OnLoad" AutoLayout="False" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
                                     <dxc:XYDiagram2D SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                         <dxc:XYDiagram2D.AxisX>
                                             <dxc:AxisX2D>

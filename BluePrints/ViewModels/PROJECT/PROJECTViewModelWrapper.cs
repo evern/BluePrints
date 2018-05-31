@@ -29,6 +29,8 @@ using System.IO;
 using BluePrints.Common.Reports;
 using BaseModel.ViewModel.Dialogs;
 using BluePrints.Common.Resources;
+using BaseModel.ViewModel.Services;
+using DevExpress.Mvvm.DataAnnotations;
 
 namespace BluePrints.ViewModels
 {
@@ -59,6 +61,9 @@ namespace BluePrints.ViewModels
         {
             get { return this.GetRequiredService<IDialogService>("ProjectIssueDialog"); }
         }
+
+        [ServiceProperty(Key = "DefaultChartControlService")]
+        public virtual IChartControlService ChartControlService { get { return null; } }
 
         #region Database Operation
         private PROJECT loadPROJECT;
@@ -423,6 +428,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        bool isExecutedFirstLoadedAction = false;
+        protected override void executeFirstLoadedActions()
+        {
+            ChartControlService.Animate();
+            base.executeFirstLoadedActions();
+        }
 
         public Action Redraw;
 
@@ -674,6 +685,11 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsAllSelected);
             this.RaisePropertyChanged(x => x.IsAllDesignSelected);
             this.RaisePropertyChanged(x => x.IsAllConstructSelected);
+
+            if (isExecutedFirstLoadedAction)
+                ChartControlService.Animate();
+            else
+                isExecutedFirstLoadedAction = true;
         }
 
         public bool IsAllSelected
