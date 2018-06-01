@@ -31,6 +31,7 @@ using BaseModel.ViewModel.Dialogs;
 using BluePrints.Common.Resources;
 using BaseModel.ViewModel.Services;
 using DevExpress.Mvvm.DataAnnotations;
+using BluePrints.P6EntitiesDataModel;
 
 namespace BluePrints.ViewModels
 {
@@ -75,6 +76,7 @@ namespace BluePrints.ViewModels
         private DispatcherTimer selectAllDispatcher;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected override void resolveParameters(object parameter)
         {
@@ -87,6 +89,8 @@ namespace BluePrints.ViewModels
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
+
+            HealthCheckIconName = "Apply";
         }
 
         public override void OnLoaded()
@@ -283,10 +287,17 @@ namespace BluePrints.ViewModels
 
         public bool CanProjectHealthCheck()
         {
-            return CanExportToExcel();
+            return CanExportToExcel() && HealthCheckIconName == "Warning";
         }
 
+        bool isHealthCheckClicked = false;
         public void ProjectHealthCheck()
+        {
+            isHealthCheckClicked = true;
+            doHealthCheck();
+        }
+
+        private void doHealthCheck()
         {
             bool moreThanOneDesignLiveProgress = false;
             bool noDesignLiveProgress = false;
@@ -308,7 +319,7 @@ namespace BluePrints.ViewModels
                 noDesignLiveProgress = true;
 
             List<ProjectIssue> projectIssues = new List<ProjectIssue>();
-            if(loadPROJECT.BASELINE.Count == 0)
+            if (loadPROJECT.BASELINE.Count == 0)
                 projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Project have no live baseline"), Resolve = "Please create a live baseline" });
             else
             {
@@ -318,7 +329,7 @@ namespace BluePrints.ViewModels
                     projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Project have no live baseline"), Resolve = "Please set set baseline to live" });
             }
 
-            if(loadPROJECT.PROGRESS.Count == 0)
+            if (loadPROJECT.PROGRESS.Count == 0)
                 projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Project have no live Progress"), Resolve = "Please create a live design progress" });
             else
             {
@@ -328,12 +339,29 @@ namespace BluePrints.ViewModels
                     projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Project have no live Progress"), Resolve = "Please set a design progress to live" });
             }
 
-            if(livePRO != null && liveBASELINE != null)
+            if (livePRO != null && liveBASELINE != null)
             {
-                if(livePRO.P6PROGRESS_NAME == string.Empty && liveBASELINE.P6BASELINE_NAME != string.Empty)
+                if (livePRO.P6PROGRESS_NAME == string.Empty && liveBASELINE.P6BASELINE_NAME != string.Empty)
                     projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("Live progress is not assigned with P6 schedule"), Resolve = "Please set a p6 schedule on live design progress" });
                 else if (livePRO.P6PROGRESS_NAME != string.Empty && liveBASELINE.P6BASELINE_NAME == string.Empty)
                     projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("Live Baseline is not assigned with P6 schedule"), Resolve = "Please set a p6 schedule on live Baseline" });
+
+                IP6EntitiesUnitOfWork p6uow = p6UnitOfWorkFactory.CreateUnitOfWork();
+                if (livePRO.P6PROGRESS_NAME != string.Empty)
+                {
+                    P6Data.PROJWBS p6WBS = p6uow.PROJWBS.FirstOrDefault(x => x.wbs_short_name == livePRO.P6PROGRESS_NAME);
+                    if (p6WBS == null)
+                        projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("P6 progress schedule not found"), Resolve = "Please set a new p6 schedule on live design progress" });
+                    else if (p6WBS.PROJECT.last_recalc_date == null || (p6WBS.PROJECT.last_recalc_date != null && ((DateTime)p6WBS.PROJECT.last_recalc_date).Date != livePRO.DATA_DATE))
+                        projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("P6 progress schedule data date don't match"), Resolve = "Please open up p6 schedule and process F9 on " + livePRO.DATA_DATE.ToString("G") });
+                }
+
+                if (liveBASELINE.P6BASELINE_NAME != string.Empty)
+                {
+                    P6Data.PROJWBS p6WBS = p6uow.PROJWBS.FirstOrDefault(x => x.wbs_short_name == liveBASELINE.P6BASELINE_NAME);
+                    if (p6WBS == null)
+                        projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Baseline", Description = string.Format("P6 baseline schedule not found"), Resolve = "Please set a new p6 schedule on live baseline" });
+                }
             }
 
             if (projectIssues.Count > 0)
@@ -412,18 +440,40 @@ namespace BluePrints.ViewModels
                     projectIssues.Add(new ProjectIssue() { Severity = "Warning", Type = "Baseline", Description = string.Format("{0} deliverable(s) doesn't have P6 assignment", noAssignment), Resolve = "Please complete deliverable(s) to p6 assignment(s)" });
             }
 
-            if (projectIssues.Count > 0)
-                showHealthCheckDialog(projectIssues);
-            else
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(BluePrintsResources.Notify_HealthCheck_OK)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => showHealthCheckDialog(projectIssues)));
         }
 
         private void showHealthCheckDialog(IEnumerable<ProjectIssue> projectIssues)
         {
-            DialogCollectionViewModel<ProjectIssue> projectIssueViewModel = DialogCollectionViewModel<ProjectIssue>.Create(projectIssues);
-            mainThreadDispatcher.BeginInvoke(new Action(() => ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Project Health Check", "PROJECTIssueView", projectIssueViewModel)));
+            if(projectIssues.Count() == 0)
+            {
+                if (isHealthCheckClicked)
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage(BluePrintsResources.Notify_HealthCheck_OK)));
+
+                Animate = false;
+                HealthCheckIconName = "Apply";
+            }
+            else
+            {
+                if (isHealthCheckClicked)
+                {
+                    DialogCollectionViewModel<ProjectIssue> projectIssueViewModel = DialogCollectionViewModel<ProjectIssue>.Create(projectIssues);
+                    mainThreadDispatcher.BeginInvoke(new Action(() => ActivityDetailDialogService.ShowDialog(MessageButton.OK, "Project Health Check", "PROJECTIssueView", projectIssueViewModel)));
+                }
+
+                Animate = true;
+                HealthCheckIconName = "Warning";
+                Animate = true;
+            }
+
+            isHealthCheckClicked = false;
+            this.RaisePropertyChanged(x => x.Animate);
+            this.RaisePropertyChanged(x => x.HealthCheckIconName);
         }
 
+
+        public bool Animate { get; set; }
+        public string HealthCheckIconName { get; set; }
         public List<Dashboard_Export_Data_Point> ExcelExportData => DisplayEntities == null ? null : DisplayEntities.Count == 0 ? null : DisplayEntities.First().Export_Data;
         #endregion
 
@@ -431,6 +481,7 @@ namespace BluePrints.ViewModels
         bool isExecutedFirstLoadedAction = false;
         protected override void executeFirstLoadedActions()
         {
+            doHealthCheck();
             ChartControlService.Animate();
             base.executeFirstLoadedActions();
         }
