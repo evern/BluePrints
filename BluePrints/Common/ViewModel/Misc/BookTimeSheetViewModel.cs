@@ -62,7 +62,7 @@ namespace BaseModel.ViewModel.Dialogs
                     return new List<PrimeroSubJob>();
 
                 List<PrimeroSubJob> returnSubJobs = pSubJobCollection.Where(x => x.ResourceSeqNo == selectedResource.SeqNo).ToList();
-                if (returnSubJobs.Count == 1)
+                if (selectedSubJob == null && returnSubJobs.Count == 1)
                     Selected_SubJob = returnSubJobs.First();
 
                 return returnSubJobs;
@@ -102,7 +102,7 @@ namespace BaseModel.ViewModel.Dialogs
                     return new List<PrimeroDiscipline>();
 
                 List<PrimeroDiscipline> returnDisciplines = pDisciplineCollection.Where(x => x.SubjobId == selectedSubJob.Id && x.ResourceSeqNo == selectedResource.SeqNo).ToList();
-                if (returnDisciplines.Count == 1)
+                if (selectedDiscipline == null && returnDisciplines.Count == 1)
                     Selected_Discipline = returnDisciplines.First();
 
                 return returnDisciplines;
@@ -155,7 +155,7 @@ namespace BaseModel.ViewModel.Dialogs
 
                 IEnumerable<PrimeroCommodity> commodities = pCommodityCollection.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.ResourceSeqNo == selectedResource.SeqNo);
                 List<string> distinctCommodities = commodities.Select(x => x.Code).Distinct().ToList();
-                if (distinctCommodities.Count() == 1)
+                if (selectedCommodityCode == null && distinctCommodities.Count() == 1)
                     Selected_CommodityCode = distinctCommodities.First();
 
                 return distinctCommodities;
@@ -182,7 +182,7 @@ namespace BaseModel.ViewModel.Dialogs
                     return new List<PrimeroCommodity>();
 
                 List<PrimeroCommodity> authorised_commodities = pCommodityCollection.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.Code == Selected_CommodityCode && x.ResourceSeqNo == Selected_Resource.SeqNo).ToList();
-                if(authorised_commodities.Count() == 1)
+                if(selectedCommodity == null && authorised_commodities.Count() == 1)
                     Selected_Commodity = authorised_commodities.First();
 
                 return authorised_commodities;
