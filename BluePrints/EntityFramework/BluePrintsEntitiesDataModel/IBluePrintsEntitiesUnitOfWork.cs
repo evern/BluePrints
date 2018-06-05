@@ -38,7 +38,27 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
-        
+
+        /// <summary>
+        /// The DAYWORK entities repository.
+        /// </summary>
+        IRepository<DAYWORK, Guid> DAYWORKS { get; }
+
+        /// <summary>
+        /// The DAYWORK_EQUIPMENT entities repository.
+        /// </summary>
+        IRepository<DAYWORK_EQUIPMENT, Guid> DAYWORK_EQUIPMENTS { get; }
+
+        /// <summary>
+        /// The DAYWORK_LABOUR entities repository.
+        /// </summary>
+        IRepository<DAYWORK_LABOUR, Guid> DAYWORK_LABOURS { get; }
+
+        /// <summary>
+        /// The DAYWORK_STAFF_ROLE entities repository.
+        /// </summary>
+        IRepository<DAYWORK_STAFF_ROLE, Guid> DAYWORK_STAFF_ROLES { get; }
+
         /// <summary>
         /// The DataPoint entities repository.
         /// </summary>

@@ -50,6 +50,26 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DEPARTMENT>(), (DEPARTMENT x) => x.GUID); }
         }
 
+        IRepository<DAYWORK, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORKS
+        {
+            get { return GetRepository(x => x.Set<DAYWORK>(), (DAYWORK x) => x.GUID); }
+        }
+
+        IRepository<DAYWORK_EQUIPMENT, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORK_EQUIPMENTS
+        {
+            get { return GetRepository(x => x.Set<DAYWORK_EQUIPMENT>(), (DAYWORK_EQUIPMENT x) => x.GUID); }
+        }
+
+        IRepository<DAYWORK_LABOUR, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORK_LABOURS
+        {
+            get { return GetRepository(x => x.Set<DAYWORK_LABOUR>(), (DAYWORK_LABOUR x) => x.GUID); }
+        }
+
+        IRepository<DAYWORK_STAFF_ROLE, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORK_STAFF_ROLES
+        {
+            get { return GetRepository(x => x.Set<DAYWORK_STAFF_ROLE>(), (DAYWORK_STAFF_ROLE x) => x.GUID); }
+        }
+
         IRepository<DELIVERABLES_STATUS, Guid> IBluePrintsEntitiesUnitOfWork.DELIVERABLES_STATUSES
         {
             get { return GetRepository(x => x.Set<DELIVERABLES_STATUS>(), (DELIVERABLES_STATUS x) => x.GUID); }

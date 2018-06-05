@@ -18,6 +18,10 @@ namespace BluePrints.Data
         public virtual DbSet<CLIENT> CLIENT { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
         public virtual DbSet<DataPoint> DataPoint { get; set; }
+        public virtual DbSet<DAYWORK> DAYWORK { get; set; }
+        public virtual DbSet<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENT { get; set; }
+        public virtual DbSet<DAYWORK_LABOUR> DAYWORK_LABOUR { get; set; }
+        public virtual DbSet<DAYWORK_STAFF_ROLE> DAYWORK_STAFF_ROLE { get; set; }
         public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
@@ -375,6 +379,30 @@ namespace BluePrints.Data
             modelBuilder.Entity<PROJECT>()
                 .Property(e => e.REVIEWPERIOD)
                 .HasPrecision(2, 0);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_EQUIPMENT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_LABOUR)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_STAFF_ROLE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.AREA)
