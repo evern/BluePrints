@@ -524,7 +524,7 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-            else if(shouldInvokeTenderSubjobDates && entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+            else if(shouldInvokeTenderSubjobDates && (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted))
             {
                 if(tenderStartDate != null && tenderEndDate != null)
                 {

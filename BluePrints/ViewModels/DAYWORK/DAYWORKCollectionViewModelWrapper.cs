@@ -1,4 +1,5 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
@@ -106,6 +107,38 @@ namespace BluePrints.ViewModels
             get { return "DAYWORKCollectionViewModelWrapper"; }
         }
 
+        public CollectionViewModel<DAYWORK_LABOUR, DAYWORK_LABOUR, Guid, IBluePrintsEntitiesUnitOfWork> DAYWORK_LABOURSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DAYWORK_LABOUR, DAYWORK_LABOUR, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DAYWORK_LABOUR>();
+            }
+        }
+
+        public CollectionViewModel<DAYWORK_EQUIPMENT, DAYWORK_EQUIPMENT, Guid, IBluePrintsEntitiesUnitOfWork> DAYWORK_EQUIPMENTSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DAYWORK_EQUIPMENT, DAYWORK_EQUIPMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DAYWORK_EQUIPMENT>();
+            }
+        }
+
+        public CollectionViewModel<DAYWORK_STAFF_ROLE, DAYWORK_STAFF_ROLE, Guid, IBluePrintsEntitiesUnitOfWork> DAYWORK_STAFF_ROLESCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DAYWORK_STAFF_ROLE, DAYWORK_STAFF_ROLE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DAYWORK_STAFF_ROLE>();
+            }
+        }
         #endregion
     }
 }
