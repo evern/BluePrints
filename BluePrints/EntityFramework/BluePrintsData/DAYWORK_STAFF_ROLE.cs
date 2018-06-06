@@ -13,7 +13,7 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
-        public int DAYWORK_STAFF_ID { get; set; }
+        public int RESOURCE_ID { get; set; }
 
         [Required]
         [StringLength(150)]

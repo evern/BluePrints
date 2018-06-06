@@ -15,7 +15,7 @@ namespace BluePrints.Data
 
         public DateTime WORKDATE { get; set; }
 
-        public int DAYWORK_STAFF_ID { get; set; }
+        public int RESOURCE_ID { get; set; }
 
         [StringLength(150)]
         public string TRADE { get; set; }
