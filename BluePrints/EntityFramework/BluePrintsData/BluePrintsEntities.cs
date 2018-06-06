@@ -20,6 +20,7 @@ namespace BluePrints.Data
         public virtual DbSet<DataPoint> DataPoint { get; set; }
         public virtual DbSet<DAYWORK> DAYWORK { get; set; }
         public virtual DbSet<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENT { get; set; }
+        public virtual DbSet<DAYWORK_MATERIAL> DAYWORK_MATERIAL { get; set; }
         public virtual DbSet<DAYWORK_LABOUR> DAYWORK_LABOUR { get; set; }
         public virtual DbSet<DAYWORK_STAFF_ROLE> DAYWORK_STAFF_ROLE { get; set; }
         public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
@@ -388,6 +389,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.DAYWORK_EQUIPMENT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_MATERIAL)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

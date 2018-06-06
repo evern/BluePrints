@@ -50,6 +50,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DAYWORK_EQUIPMENT, Guid> DAYWORK_EQUIPMENTS { get; }
 
         /// <summary>
+        /// The DAYWORK_MATERIAL entities repository.
+        /// </summary>
+        IRepository<DAYWORK_MATERIAL, Guid> DAYWORK_MATERIALS { get; }
+
+        /// <summary>
         /// The DAYWORK_LABOUR entities repository.
         /// </summary>
         IRepository<DAYWORK_LABOUR, Guid> DAYWORK_LABOURS { get; }

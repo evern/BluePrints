@@ -19,6 +19,8 @@ namespace BluePrints.Data
         [StringLength(150)]
         public string PROJECT_ROLE { get; set; }
 
+        public decimal RATE { get; set; }
+
         public bool IS_DEFAULT { get; set; }
 
         public DateTime CREATED { get; set; }

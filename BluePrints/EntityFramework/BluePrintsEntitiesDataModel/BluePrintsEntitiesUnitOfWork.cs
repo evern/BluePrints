@@ -60,6 +60,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DAYWORK_EQUIPMENT>(), (DAYWORK_EQUIPMENT x) => x.GUID); }
         }
 
+        IRepository<DAYWORK_MATERIAL, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORK_MATERIALS
+        {
+            get { return GetRepository(x => x.Set<DAYWORK_MATERIAL>(), (DAYWORK_MATERIAL x) => x.GUID); }
+        }
+
         IRepository<DAYWORK_LABOUR, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORK_LABOURS
         {
             get { return GetRepository(x => x.Set<DAYWORK_LABOUR>(), (DAYWORK_LABOUR x) => x.GUID); }

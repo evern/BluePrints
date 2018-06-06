@@ -83,6 +83,9 @@ namespace BluePrints.Data
         public virtual ICollection<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DAYWORK_MATERIAL> DAYWORK_MATERIAL { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK_LABOUR> DAYWORK_LABOUR { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

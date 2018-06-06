@@ -6,7 +6,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class DAYWORK_EQUIPMENT
+    public partial class DAYWORK_MATERIAL
     {
         [Key]
         public Guid GUID { get; set; }

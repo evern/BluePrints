@@ -584,6 +584,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK_MATERIAL.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_STAFF_ROLE.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_LABOUR.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_EQUIPMENT.cs" />
@@ -623,6 +624,7 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK_MATERIAL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK_EQUIPMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK_LABOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK_STAFF_ROLE.cs" />

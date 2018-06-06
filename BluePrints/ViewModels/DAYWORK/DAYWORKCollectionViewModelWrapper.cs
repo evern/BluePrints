@@ -1,12 +1,17 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -38,20 +43,25 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         public PROJECT loadPROJECT { get; set; }
         protected override void resolveParameters(object parameter)
         {
-            loadPROJECT = (PROJECT)parameter;
+            var param = (EntitiesParameter<PROJECT>)parameter;
+            loadPROJECT = param.GetEntity();
+            DataDate = DateTime.Now.Date;
         }
 
         protected override void initializeEntitiesLoadersDescription()
         {
+            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+
+            loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_LABOURS, DAYWORK_LABOURProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_EQUIPMENTS, DAYWORK_EQUIPMENTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_MATERIALS, DAYWORK_MATERIALProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_STAFF_ROLES, DAYWORK_STAFF_ROLEProjectionFunc);
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
         }
 
         private Func<IRepositoryQuery<DAYWORK_LABOUR>, IQueryable<DAYWORK_LABOUR>> DAYWORK_LABOURProjectionFunc()
@@ -60,6 +70,11 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<DAYWORK_EQUIPMENT>, IQueryable<DAYWORK_EQUIPMENT>> DAYWORK_EQUIPMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<DAYWORK_MATERIAL>, IQueryable<DAYWORK_MATERIAL>> DAYWORK_MATERIALProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -82,6 +97,10 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DAYWORK> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeWorkSaved;
+            DAYWORK_LABOURSCollectionViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeLabourSaved;
+            DAYWORK_EQUIPMENTSCollectionViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEquipmentSaved;
+            DAYWORK_MATERIALSCollectionViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeMaterialSaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -95,9 +114,78 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
+
+        private bool onBeforeWorkSaved(DAYWORK entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.WORKDATE = DataDate;
+            return true;
+        }
+
+        private bool onBeforeLabourSaved(DAYWORK_LABOUR entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.WORKDATE = DataDate;
+            return true;
+        }
+
+        private bool onBeforeEquipmentSaved(DAYWORK_EQUIPMENT entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.WORKDATE = DataDate;
+            return true;
+        }
+
+
+        private bool onBeforeMaterialSaved(DAYWORK_MATERIAL entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            entity.WORKDATE = DataDate;
+            return true;
+        }
         #endregion
 
         #region View Properties
+
+        public DateTime DataDate { get; set; }
+        public string DataDateStr => DataDate.ToString("dd-MMM-yy");
+
+        public bool CanDateBackward()
+        {
+            if (MainViewModel == null || MainViewModel.IsLoading)
+                return false;
+
+            return false;
+        }
+
+        public bool CanDateForward()
+        {
+            if (MainViewModel == null || MainViewModel.IsLoading)
+                return false;
+
+            return true;
+        }
+
+        public void DateForward()
+        {
+            DateChange(DateNavigationType.Forward);
+        }
+
+        public void DateBackward()
+        {
+            DateChange(DateNavigationType.Backward);
+        }
+
+        bool isBusy = false;
+        protected void DateChange(DateNavigationType navigationType)
+        {
+            if (isBusy)
+                return;
+
+            double multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
+            DataDate = DataDate.AddDays(multiplier);
+            this.RaisePropertyChanged(x => x.DataDateStr);
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -105,6 +193,104 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "DAYWORKCollectionViewModelWrapper"; }
+        }
+
+        ObservableCollection<DAYWORK_LABOUR> daywork_labours;
+        public ObservableCollection<DAYWORK_LABOUR> DAYWORK_LABOURS
+        {
+            get
+            {
+                if (DAYWORK_LABOURCollection == null)
+                    return null;
+
+                if (daywork_labours == null)
+                {
+                    daywork_labours = new ObservableCollection<DAYWORK_LABOUR>();
+                    foreach (DAYWORK_LABOUR daywork_labour in DAYWORK_LABOURCollection)
+                        daywork_labours.Add(daywork_labour);
+                }
+
+                return daywork_labours;
+            }
+        }
+
+        ObservableCollection<DAYWORK_EQUIPMENT> daywork_equipments;
+        public ObservableCollection<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENTS
+        {
+            get
+            {
+                if (DAYWORK_MATERIALCollection == null)
+                    return null;
+
+                if (daywork_equipments == null)
+                {
+                    daywork_equipments = new ObservableCollection<DAYWORK_EQUIPMENT>();
+                    foreach (DAYWORK_EQUIPMENT dayworkEquipment in DAYWORK_EQUIPMENTCollection)
+                        daywork_equipments.Add(dayworkEquipment);
+                }
+
+                return daywork_equipments;
+            }
+        }
+
+
+        ObservableCollection<DAYWORK_MATERIAL> daywork_materials;
+        public ObservableCollection<DAYWORK_MATERIAL> DAYWORK_MATERIALS
+        {
+            get
+            {
+                if (DAYWORK_MATERIALCollection == null)
+                    return null;
+
+                if (daywork_materials == null)
+                {
+                    daywork_materials = new ObservableCollection<DAYWORK_MATERIAL>();
+                    foreach (DAYWORK_MATERIAL dayworkMaterial in DAYWORK_MATERIALCollection)
+                    {
+                        daywork_materials.Add(dayworkMaterial);
+                    }
+                }
+
+                return daywork_materials;
+            }
+        }
+
+        public IEnumerable<JOBCOST_RESOURCE> JOBCOST_RESOURCECollection
+        {
+            get
+            {
+                var collection = GetEntities<JOBCOST_RESOURCE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.RESOURCENAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DAYWORK_LABOUR> DAYWORK_LABOURCollection
+        {
+            get
+            {
+                var collection = GetEntities<DAYWORK_LABOUR>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DAYWORK_EQUIPMENT>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<DAYWORK_MATERIAL> DAYWORK_MATERIALCollection
+        {
+            get
+            {
+                var collection = GetEntities<DAYWORK_MATERIAL>();
+                return collection;
+            }
         }
 
         public CollectionViewModel<DAYWORK_LABOUR, DAYWORK_LABOUR, Guid, IBluePrintsEntitiesUnitOfWork> DAYWORK_LABOURSCollectionViewModel
@@ -126,6 +312,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<DAYWORK_EQUIPMENT, DAYWORK_EQUIPMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DAYWORK_EQUIPMENT>();
+            }
+        }
+
+        public CollectionViewModel<DAYWORK_MATERIAL, DAYWORK_MATERIAL, Guid, IBluePrintsEntitiesUnitOfWork> DAYWORK_MATERIALSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DAYWORK_MATERIAL, DAYWORK_MATERIAL, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DAYWORK_MATERIAL>();
             }
         }
 
