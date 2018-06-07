@@ -144,6 +144,9 @@ namespace BluePrints.ViewModels
             DAYWORK_MATERIALSCollectionViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeMaterialSaved;
             DAYWORK_MATERIALSCollectionViewModel.UnifiedValueChangingCallback = materialUnifiedCellValueChanging;
 
+            DAYWORK_LABOURSCollectionViewModel.SetParentViewModel(this);
+            DAYWORK_EQUIPMENTSCollectionViewModel.SetParentViewModel(this);
+            DAYWORK_MATERIALSCollectionViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
