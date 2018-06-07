@@ -688,13 +688,55 @@ namespace BluePrints.ViewModels
                 if (!entity.IsInternalNumberEditable)
                     return "Cannot change internal number because deliverables has already been progressed";
             }
+            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_PHASE))
+            {
+                if(newValue != null)
+                {
+                    if (!isDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue))
+                    {
+                        return "Selected document type is reserved for indirect only";
+                    }
+                }
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            {
+                if (newValue != null)
+                {
+                    if (!isDocTypePhaseValid((Guid)newValue, entity.Entity.Entity.GUID_PHASE))
+                    {
+                        return "Selected document type is reserved for indirect only";
+                    }
+                }
+            }
 
             return string.Empty;
         }
 
         public override string UnifiedRowValidation(BASELINE_ITEMProgress projection)
         {
+            if(!isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Entity.Entity.GUID_PHASE))
+                return "Selected document type is reserved for indirect only";
+
             return string.Empty;
+        }
+
+        private bool isDocTypePhaseValid(Guid? doctypeGuid, Guid? phaseGuid)
+        {
+            if (doctypeGuid != null && phaseGuid != null)
+            {
+                PHASE phase = PHASECollection.FirstOrDefault(x => x.GUID == phaseGuid);
+                if (phase != null)
+                {
+                    DOCTYPE doctype = DOCTYPECollection.FirstOrDefault(x => x.GUID == doctypeGuid);
+                    if (doctype != null)
+                    {
+                        if (doctype.IS_INDIRECT_ONLY && phase.CHARGE_TYPE == ChargeType.Direct)
+                            return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public Action<BASELINE_ITEMProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
@@ -781,18 +823,28 @@ namespace BluePrints.ViewModels
             }
 
             //only new row will change department according to doc type selection
-            if (isNew && field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
-                if (chosenDOCTYPE != null)
+                if(isNew)
                 {
-                    if (chosenDOCTYPE.GUID_DDEPARTMENT != null)
-                        projection.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
+                    if (chosenDOCTYPE != null)
+                    {
+                        if (chosenDOCTYPE.GUID_DDEPARTMENT != null)
+                            projection.Entity.Entity.GUID_DEPARTMENT = chosenDOCTYPE.DEPARTMENT.GUID;
 
-                    //Baseline and Department is required immediately for deliverables status selection
-                    projection.Entity.Entity.BASELINE = loadBASELINE;
-                    projection.Entity.Entity.DOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
-                    projection.Update();
+                        //Baseline and Department is required immediately for deliverables status selection
+                        projection.Entity.Entity.BASELINE = loadBASELINE;
+                        projection.Entity.Entity.DOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                        projection.Update();
+                    }
+                }
+
+                if (chosenDOCTYPE.IS_INDIRECT_ONLY)
+                {
+                    PHASE indirectPhase = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Indirect);
+                    if (indirectPhase != null)
+                        projection.Entity.Entity.GUID_PHASE = indirectPhase.GUID;
                 }
             }
             //only new row will change area and subarea according to subjob selection

@@ -3,12 +3,11 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class DAYWORKCollectionView : UserControl
+    public partial class DAYWORK_STAFF_ROLECollectionView : UserControl
     {
-        public DAYWORKCollectionView()
+        public DAYWORK_STAFF_ROLECollectionView()
         {
             InitializeComponent();
         }
-
     }
 }

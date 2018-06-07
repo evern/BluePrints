@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="BluePrints.Views.DAYWORK_STAFF_ROLECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DAYWORK_STAFF_ROLECollectionViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="DAYWORK_STAFF_ROLE">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:LayoutSerializationService />
+                    </dxmvvm:Interaction.Behaviors>
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDAYWORK_STAFF_ROLE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="RESOURCE_ID" Header="Name" HeaderToolTip="Resource name.">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="PROJECT_ROLE" Header="Trade" HeaderToolTip="Resource trade." />
+                            <dxg:GridColumn FieldName="RATE" Header="Rate" HeaderToolTip="Resource rate for this trade.">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IS_DEFAULT" Header="Default" HeaderToolTip="Check this to autopopulate this role and rate for new entries in dayworks.">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <!--<dxg:GridColumn Header="Design Commodity" FieldName="ISDESIGNCOMMODITY">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>-->
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                        </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>
