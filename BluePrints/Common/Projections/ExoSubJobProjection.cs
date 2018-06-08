@@ -508,7 +508,7 @@ namespace BluePrints.Common.Projections
                     foreach (ExoTimeAuthorisation exoLine in exoLines)
                     {
                         USER findUSER = userCollection.FirstOrDefault(x => x.EXO_STAFF_ID == exoLine.ResourceStaffId);
-                        if(findUSER != null)
+                        if(findUSER != null && findUSER.ROLE != null)
                         {
                             ExoSubJobAuth newAuth = new ExoSubJobAuth();
                             newAuth.User = findUSER;
