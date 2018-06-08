@@ -589,6 +589,7 @@
     <Compile Include="EntityFramework\Annotations\DAYWORK_LABOUR.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_EQUIPMENT.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_NODE.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_DRAWING.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_DATA.cs" />
@@ -623,6 +624,7 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK_MATERIAL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK_EQUIPMENT.cs" />

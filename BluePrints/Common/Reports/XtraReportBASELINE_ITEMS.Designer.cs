@@ -43,14 +43,14 @@
             this.xrlblDataType = new DevExpress.XtraReports.UI.XRLabel();
             this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
             this.xrLabel6 = new DevExpress.XtraReports.UI.XRLabel();
-            this.projectName = new DevExpress.XtraReports.Parameters.Parameter();
             this.xrPictureBox2 = new DevExpress.XtraReports.UI.XRPictureBox();
             this.xrLabel13 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel14 = new DevExpress.XtraReports.UI.XRLabel();
-            this.date1 = new DevExpress.XtraReports.Parameters.Parameter();
             this.xrLabel12 = new DevExpress.XtraReports.UI.XRLabel();
-            this.title1 = new DevExpress.XtraReports.Parameters.Parameter();
             this.xrPictureBox1 = new DevExpress.XtraReports.UI.XRPictureBox();
+            this.projectName = new DevExpress.XtraReports.Parameters.Parameter();
+            this.date1 = new DevExpress.XtraReports.Parameters.Parameter();
+            this.title1 = new DevExpress.XtraReports.Parameters.Parameter();
             this.BottomMargin = new DevExpress.XtraReports.UI.BottomMarginBand();
             this.xrlblCosts = new DevExpress.XtraReports.UI.XRLabel();
             this.xrlblNumber = new DevExpress.XtraReports.UI.XRLabel();
@@ -124,7 +124,7 @@
             this.xrlblDataCosts.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataCosts.CanGrow = false;
             this.xrlblDataCosts.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Budget_Costs]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Total_Costs]")});
             this.xrlblDataCosts.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataCosts.LocationFloat = new DevExpress.Utils.PointFloat(905.0632F, 0F);
             this.xrlblDataCosts.Name = "xrlblDataCosts";
@@ -171,7 +171,7 @@
             this.xrlblDataHours.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataHours.CanGrow = false;
             this.xrlblDataHours.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.BUDGET_HOURS]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity].[Total_Units]")});
             this.xrlblDataHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataHours.LocationFloat = new DevExpress.Utils.PointFloat(805.0632F, 0F);
             this.xrlblDataHours.Name = "xrlblDataHours";
@@ -257,11 +257,6 @@
             this.xrLabel6.Text = "xrLabel6";
             this.xrLabel6.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
-            // projectName
-            // 
-            this.projectName.Description = "Project Name";
-            this.projectName.Name = "projectName";
-            // 
             // xrPictureBox2
             // 
             this.xrPictureBox2.LocationFloat = new DevExpress.Utils.PointFloat(825.4584F, 10.00001F);
@@ -299,13 +294,6 @@
             this.xrLabel14.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
             this.xrLabel14.TextFormatString = "{0:dd-MMM-yy}";
             // 
-            // date1
-            // 
-            this.date1.Description = "Date";
-            this.date1.Name = "date1";
-            this.date1.Type = typeof(System.DateTime);
-            this.date1.Visible = false;
-            // 
             // xrLabel12
             // 
             this.xrLabel12.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
@@ -319,11 +307,6 @@
             this.xrLabel12.StylePriority.UseTextAlignment = false;
             this.xrLabel12.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
-            // title1
-            // 
-            this.title1.Description = "Title";
-            this.title1.Name = "title1";
-            // 
             // xrPictureBox1
             // 
             this.xrPictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("xrPictureBox1.Image")));
@@ -331,6 +314,23 @@
             this.xrPictureBox1.Name = "xrPictureBox1";
             this.xrPictureBox1.SizeF = new System.Drawing.SizeF(286.4583F, 56.33334F);
             this.xrPictureBox1.Sizing = DevExpress.XtraPrinting.ImageSizeMode.StretchImage;
+            // 
+            // projectName
+            // 
+            this.projectName.Description = "Project Name";
+            this.projectName.Name = "projectName";
+            // 
+            // date1
+            // 
+            this.date1.Description = "Date";
+            this.date1.Name = "date1";
+            this.date1.Type = typeof(System.DateTime);
+            this.date1.Visible = false;
+            // 
+            // title1
+            // 
+            this.title1.Description = "Title";
+            this.title1.Name = "title1";
             // 
             // BottomMargin
             // 
@@ -589,7 +589,7 @@
             this.xrlblTotalCosts.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblTotalCosts.CanGrow = false;
             this.xrlblTotalCosts.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Budget_COSTS])")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Total_Costs])")});
             this.xrlblTotalCosts.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblTotalCosts.LocationFloat = new DevExpress.Utils.PointFloat(905.0632F, 0F);
             this.xrlblTotalCosts.Name = "xrlblTotalCosts";
@@ -611,7 +611,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblTotalHours.CanGrow = false;
             this.xrlblTotalHours.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Entity.BUDGET_HOURS])")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Entity].[Total_Units])")});
             this.xrlblTotalHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblTotalHours.LocationFloat = new DevExpress.Utils.PointFloat(804.0634F, 0F);
             this.xrlblTotalHours.Name = "xrlblTotalHours";

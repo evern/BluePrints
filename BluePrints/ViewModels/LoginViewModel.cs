@@ -61,9 +61,9 @@ namespace BluePrints.ViewModels
             if (UserName != string.Empty)
                 isUsernameLoadedFromXML = true;
 
-//#if DEBUG
-//            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
-//#endif
+#if DEBUG
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)

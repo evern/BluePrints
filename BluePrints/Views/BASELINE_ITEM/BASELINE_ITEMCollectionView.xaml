@@ -160,9 +160,9 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>-->
-                        <dxg:GridColumn FieldName="Entity.AssignUserObject" Header="Resources">
+                        <dxg:GridColumn FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="Full_Name" IncrementalFiltering="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                     <dxe:ComboBoxEditSettings.StyleSettings>
                                         <dxe:CheckedComboBoxStyleSettings />
                                     </dxe:ComboBoxEditSettings.StyleSettings>
@@ -274,6 +274,7 @@
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.GUID_ORIGINAL" FilterPopupMode="CheckedList" Header="Key" HeaderToolTip="Key to match progress. Can be used to trace original record from previous baseline revisions" ReadOnly="True" Visible="False" />
+                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.Holds" FilterPopupMode="CheckedList" Header="Holds" HeaderToolTip="Holds on deliverable" ReadOnly="True" Visible="True" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />

@@ -115,5 +115,8 @@ namespace BluePrints.Data
         public virtual SUBJOB SUBJOB { get; set; }
 
         public virtual WORKPACK WORKPACK { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_HOLD_REF> REGISTER_HOLD_REF { get; set; }
     }
 }

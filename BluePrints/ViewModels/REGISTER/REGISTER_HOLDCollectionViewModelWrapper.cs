@@ -1,5 +1,6 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -56,9 +57,11 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD_REF);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -71,6 +74,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD);
@@ -79,11 +87,20 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_HOLD>, IQueryable<REGISTER_HOLD>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
+            return query => registerHoldProjection(query);
+        }
+
+        private IQueryable<REGISTER_HOLD> registerHoldProjection(IRepositoryQuery<REGISTER_HOLD> query)
+        {
+            List<REGISTER_HOLD> registerHoldCollection = query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER).ToList();
+            registerHoldCollection.ForEach(x => x.SetDeliverables(BASELINE_ITEMCollection, REGISTER_HOLD_REFCollection));
+
+            return registerHoldCollection.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_HOLD> entities)
         {
+            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -120,6 +137,47 @@ namespace BluePrints.ViewModels
             }
 
             return string.Empty;
+        }
+
+        public void OnEntitiesSavedCallBack(REGISTER_HOLD projectionEntity, REGISTER_HOLD entity, bool isNewEntity)
+        {
+            save_register_ref(projectionEntity);
+        }
+
+        private void save_register_ref(REGISTER_HOLD entity)
+        {
+            List<REGISTER_HOLD_REF> remove_register_hold_ref = new List<REGISTER_HOLD_REF>();
+
+            if (entity.AssignDeliverables != null)
+            {
+                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.EntityKey))
+                {
+                    if (!entity.AssignDeliverables.Any(x => x.GUID_ORIGINAL == assignment.GUID_BASELINE_ITEM))
+                        remove_register_hold_ref.Add(assignment);
+                }
+
+                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
+                List<REGISTER_HOLD_REF> add_register_holds = new List<REGISTER_HOLD_REF>();
+                foreach (BASELINE_ITEM deliverable in entity.AssignDeliverables)
+                {
+                    if (!REGISTER_HOLD_REFCollection.Any(x => x.GUID_BASELINE_ITEM == deliverable.GUID_ORIGINAL && x.GUID_HOLD == entity.EntityKey))
+                    {
+                        add_register_holds.Add(new REGISTER_HOLD_REF() { GUID_BASELINE_ITEM = deliverable.GUID_ORIGINAL, GUID_HOLD = entity.EntityKey });
+                    }
+
+                }
+
+                REGISTER_HOLD_REFCollectionViewModel.BulkSave(add_register_holds);
+            }
+            else
+            {
+                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.EntityKey))
+                {
+                    remove_register_hold_ref.Add(assignment);
+                }
+
+                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
+            }
         }
         #endregion
 
@@ -163,6 +221,18 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Register_Hold.xlsx";
         }
 
+
+        public CollectionViewModel<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_HOLD_REFCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_HOLD_REF>();
+            }
+        }
+
         public IEnumerable<AREA> AREACollection
         {
             get
@@ -170,6 +240,26 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<AREA>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<BASELINE_ITEM> BASELINE_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<BASELINE_ITEM>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection
+        {
+            get
+            {
+                var collection = GetEntities<REGISTER_HOLD_REF>();
                 return collection;
             }
         }

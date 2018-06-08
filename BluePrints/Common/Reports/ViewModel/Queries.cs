@@ -115,7 +115,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null )
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -131,6 +131,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 foreach(BASELINE_ITEMProjection baseline_item in baseline_item_projection)
                 {
+                    if(REGISTER_HOLD_REFCollection != null)
+                        baseline_item.Entity.SetHolds(REGISTER_HOLD_REFCollection);
+
                     baseline_item.AssignUserObject = USERCollection.Where(user => BASELINE_ITEM_WORKCollection.Any(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey && work.GUID_USER == user.GUID)).ToList();
                     List<USER> current_deliverable_users = new List<USER>();
                     IEnumerable<BASELINE_ITEM_WORK> current_deliverable_assignments = BASELINE_ITEM_WORKCollection.Where(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey);

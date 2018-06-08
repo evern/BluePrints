@@ -368,5 +368,23 @@ namespace BluePrints.Data
 
         [NotMapped]
         public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
+
+        [NotMapped]
+        public string Holds { get; set; }
+
+        public void SetHolds(IEnumerable<REGISTER_HOLD_REF> holds)
+        {
+            List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.OriginalEntityKey).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
+            if (deliverable_holds.Count == 0)
+                return;
+
+            string holdStr = string.Empty;
+            foreach (string hold in deliverable_holds)
+            {
+                holdStr += hold + ", ";
+            }
+
+            Holds = holdStr.Substring(0, holdStr.Length - 2);
+        }
     }
 }

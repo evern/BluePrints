@@ -190,6 +190,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<REGISTER_HOLD, Guid> REGISTER_HOLD { get; }
 
         /// <summary>
+        /// The REGISTER_HOLD_REF entities repository.
+        /// </summary>
+        IRepository<REGISTER_HOLD_REF, Guid> REGISTER_HOLD_REF { get; }
+
+        /// <summary>
         /// The REGISTER_ISSUE entities repository.
         /// </summary>
         IRepository<REGISTER_ISSUE, Guid> REGISTER_ISSUE { get; }

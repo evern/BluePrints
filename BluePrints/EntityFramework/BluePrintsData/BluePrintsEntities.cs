@@ -53,6 +53,7 @@ namespace BluePrints.Data
         public virtual DbSet<REGISTER> REGISTER { get; set; }
         public virtual DbSet<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }
         public virtual DbSet<REGISTER_HOLD> REGISTER_HOLD { get; set; }
+        public virtual DbSet<REGISTER_HOLD_REF> REGISTER_HOLD_REF { get; set; }
         public virtual DbSet<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
         public virtual DbSet<REGISTER_LL> REGISTER_LL { get; set; }
         public virtual DbSet<REGISTER_NC> REGISTER_NC { get; set; }
@@ -159,6 +160,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<BASELINE_ITEM>()
                 .Property(e => e.P6_ASSIGNMENT_STARTUNIT)
                 .HasPrecision(18, 0);
+
+            modelBuilder.Entity<BASELINE_ITEM>()
+                .HasMany(e => e.REGISTER_HOLD_REF)
+                .WithRequired(e => e.BASELINE_ITEM)
+                .HasForeignKey(e => e.GUID_BASELINE_ITEM)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<BASELINE_ITEM_WORK>()
                 .Property(e => e.WEIGHTING)
@@ -628,6 +635,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<REGISTER>()
                 .Property(e => e.UNIQUE_H_NUM)
                 .IsFixedLength();
+
+            modelBuilder.Entity<REGISTER_HOLD>()
+                .HasMany(e => e.REGISTER_HOLD_REF)
+                .WithRequired(e => e.REGISTER_HOLD)
+                .HasForeignKey(e => e.GUID_HOLD)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ROLE>()
                 .HasMany(e => e.ROLE_COMMODITY)
