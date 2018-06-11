@@ -160,15 +160,15 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>-->
-                        <dxg:GridColumn FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
+                        <!--<dxg:GridColumn FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" Tag="CopyPasteSkip" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                     <dxe:ComboBoxEditSettings.StyleSettings>
                                         <dxe:CheckedComboBoxStyleSettings />
                                     </dxe:ComboBoxEditSettings.StyleSettings>
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
+                        </dxg:GridColumn>-->
                         <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:CheckEditSettings />
