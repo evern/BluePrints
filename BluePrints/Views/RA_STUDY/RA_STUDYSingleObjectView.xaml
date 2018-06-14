@@ -167,7 +167,7 @@
                                     </dxg:GridControl.View>
                                 </custom:GridControlEx>
                             </Grid>
-                            <Grid dxlc:LayoutControl.TabHeader="Drawing" DataContext="{Binding DataContext.RA_STUDY_DRAWINGViewModel, ElementName=userControl}">
+                            <!--<Grid dxlc:LayoutControl.TabHeader="Drawing" DataContext="{Binding DataContext.RA_STUDY_DRAWINGViewModel, ElementName=userControl}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="30" />
                                     <RowDefinition Height="*" />
@@ -210,7 +210,7 @@
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </custom:GridControlEx>
-                            </Grid>
+                            </Grid>-->
                             <Grid dxlc:LayoutControl.TabHeader="Node" DataContext="{Binding DataContext.RA_STUDY_NODEViewModel, ElementName=userControl}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="30" />
@@ -228,7 +228,7 @@
                                         <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
                                         <dxg:GridColumn FieldName="GUID_DRAWING" Header="Drawing">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings DisplayMember="NUMBER" ItemsSource="{Binding DataContext.RA_STUDY_DRAWINGCollection, ElementName=userControl}" ValueMember="GUID" />
+                                                <dxe:ComboBoxEditSettings DisplayMember="Deliverable_Name" ItemsSource="{Binding DataContext.DeliverablesCollection, ElementName=userControl}" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>

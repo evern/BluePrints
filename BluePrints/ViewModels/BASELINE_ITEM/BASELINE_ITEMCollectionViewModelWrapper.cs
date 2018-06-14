@@ -473,6 +473,7 @@ namespace BluePrints.ViewModels
                 BASELINE_ITEM_WORKCollectionViewModel.BaseBulkDelete(remove_baseline_item_work);
             }
         }
+
         //public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
         //{
         //    if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
@@ -894,7 +895,8 @@ namespace BluePrints.ViewModels
                     //commit the latest value for internal number generation
                     DataUtils.SetNestedValue(fieldName, projection, new_value);
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
-                    string newValue = generateInternalNumber(projection);
+                    string errorMessage = string.Empty;
+                    string newValue = generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
 
                     PauseUndoRedo();
@@ -1226,9 +1228,17 @@ namespace BluePrints.ViewModels
                 var entitySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
                 if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
                 {
-                    string internalNumber = generateInternalNumber(entity);
-                    setNestedValueWithUndo(entity, fieldName, internalNumber, internalNumberUndoInfos);
-                    entitiesToSave.Add(entity);
+                    string errorMessage = string.Empty;
+                    string internalNumber = generateInternalNumber(entity, out errorMessage);
+                    if(errorMessage != string.Empty)
+                    {
+                        MessageBoxService.ShowMessage(errorMessage);
+                    }
+                    else
+                    {
+                        setNestedValueWithUndo(entity, fieldName, internalNumber, internalNumberUndoInfos);
+                        entitiesToSave.Add(entity);
+                    }
                 }
                 else if (fieldName == areaFieldName || fieldName == subAreaFieldName)
                 {
@@ -1332,13 +1342,25 @@ namespace BluePrints.ViewModels
             base.onAfterRefresh();
         }
 
-        private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity)
+        private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity, out string errorMessage)
         {
             AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA));
             DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
             DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
-            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
-                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
+
+            errorMessage = string.Empty;
+            if (currentItemAREA == null)
+                errorMessage += "Area, ";
+
+            if (currentItemDISCIPLINE == null)
+                errorMessage += "Discipline, ";
+
+            if (currentItemDOCTYPE == null)
+                errorMessage += "Document Type, ";
+
+            errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
+
+            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
 
             return internalNum;
         }

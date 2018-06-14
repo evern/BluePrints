@@ -47,7 +47,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-        private DEPARTMENT defaultConstructionDEPARTMENT;
 
         protected override PhaseType phase_type => PhaseType.Construct;
 
@@ -59,7 +58,6 @@ namespace BluePrints.ViewModels
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, assign_default_construction_department);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, assign_estimation);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
@@ -67,14 +65,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
 
             base.initializeEntitiesLoadersDescription();
-        }
-
-        private void assign_default_construction_department(DEPARTMENT entity)
-        {
-            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Construction department not found, please add " + BluePrintsResources.Default_Construction_Department.ToString() + " in department view")));
-
-            defaultConstructionDEPARTMENT = entity;
         }
 
         private void assign_estimation(ESTIMATE entity)
@@ -106,11 +96,6 @@ namespace BluePrints.ViewModels
             return query => query.Include(x => x.PROJECT);
         }
 
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME == BluePrintsResources.Default_Construction_Department);
-        }
-
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct);
@@ -123,7 +108,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.GUID_DEPARTMENT == defaultConstructionDEPARTMENT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE_TYPE == PhaseType.Construct);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()

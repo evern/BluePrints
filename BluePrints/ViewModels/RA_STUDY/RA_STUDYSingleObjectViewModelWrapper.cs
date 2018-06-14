@@ -27,6 +27,7 @@ using BluePrints.Common.Reports;
 using System.IO;
 using DevExpress.Xpf.Printing;
 using System.Windows;
+using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.ViewModels
 {
@@ -64,9 +65,16 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             //need to get from database for navigational meta
-            Guid queryGuid = ((EntitiesParameter<RA_STUDY>)parameter).GetEntity().GUID;
+            DualEntitiesParameter<RA_STUDY, PROJECT> dualEntitiesParameter = (DualEntitiesParameter<RA_STUDY, PROJECT>)parameter;
+            Guid queryGuid = dualEntitiesParameter.GetFirstEntity().GUID;
+            PROJECT loadPROJECT = dualEntitiesParameter.GetSecondEntity();
+
             EditingEntity = BluePrintsUnitOfWorkFactory.CreateUnitOfWork().RA_STUDIES.FirstOrDefault(x => x.GUID == queryGuid);
-            //var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
+
+            TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter;
+            collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
+            baselineItemCollectionViewModelWrapper.OnParameterChanged(collectionViewParameter);
+            baselineItemCollectionViewModelWrapper.OnEntitiesLoadedCallBack = AssignDeliverables;
             //loadPROJECT = PROJECTParameter.GetEntity();
         }
 
@@ -169,7 +177,28 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        public void AssignDeliverables(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
+        {
+            DeliverablesCollection = deliverables.OrderBy(x => x.Deliverable_Name);
+            this.RaisePropertyChanged(x => x.DeliverablesCollection);
+        }
 
+        BASELINE_ITEMCollectionViewModelWrapper baseline_itemCollectionViewModelWrapper;
+        private BASELINE_ITEMCollectionViewModelWrapper baselineItemCollectionViewModelWrapper
+        {
+            get
+            {
+                if (baseline_itemCollectionViewModelWrapper == null)
+                {
+                    baseline_itemCollectionViewModelWrapper = BASELINE_ITEMCollectionViewModelWrapper.Create();
+                    baseline_itemCollectionViewModelWrapper.SetParentViewModel(this);
+                }
+
+                return baseline_itemCollectionViewModelWrapper;
+            }
+        }
+
+        public IEnumerable<BASELINE_ITEMProgress> DeliverablesCollection { get; set; }
         #endregion
 
         #region View Properties

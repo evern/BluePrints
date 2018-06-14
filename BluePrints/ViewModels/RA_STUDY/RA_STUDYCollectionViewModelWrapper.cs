@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new EntitiesParameter<RA_STUDY>(DisplaySelectedEntity), "RA_STUDYSingleObjectView", "[" + DisplaySelectedEntity.NAME + "] Risk Assessment");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<RA_STUDY, PROJECT>(DisplaySelectedEntity, loadPROJECT), "RA_STUDYSingleObjectView", "[" + DisplaySelectedEntity.NAME + "] Risk Assessment");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion
