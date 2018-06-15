@@ -1358,7 +1358,8 @@ namespace BluePrints.ViewModels
             if (currentItemDOCTYPE == null)
                 errorMessage += "Document Type, ";
 
-            errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
+            if(errorMessage.Length > 2)
+                errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
 
             var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
 

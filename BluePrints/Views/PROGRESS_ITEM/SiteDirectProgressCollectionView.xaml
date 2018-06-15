@@ -136,7 +136,7 @@
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Total_Units" Header="Total Installed Hours" HeaderToolTip="Total earned installation hours to date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="ProgressItem.Total_Install_Hours" Header="Total Installed Hours" HeaderToolTip="Total earned installation hours to date" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -260,7 +260,7 @@
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Total_Units}" Header="Total Installed Hours" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Total_Install_Hours}" Header="Total Installed Hours" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

@@ -460,7 +460,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal Total_Install_Hours => Total_Units;
+        public decimal Total_Install_Hours => AbsoluteTotalInstalledQuantity / QuantityPerUnit;
 
         public decimal Total_Estimate_Cost => Estimate_Install_Cost + Estimate_Freight_Cost + Estimate_Supply_Cost;
 
