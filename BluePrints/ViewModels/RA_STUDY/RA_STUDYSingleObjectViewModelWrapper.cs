@@ -141,9 +141,10 @@ namespace BluePrints.ViewModels
         {
             RA_STUDY_TEAMViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeTeamEntitySaved;
             RA_STUDY_DRAWINGViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeDrawingEntitySaved;
+            RA_STUDY_DRAWINGViewModel.UnifiedValueChangingCallback = studyDrawingUnifiedCellValueChanging;
             RA_STUDY_NODEViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeNodeEntitySaved;
             RA_STUDY_DATAViewModel.UnifiedValueChangingCallback = studyDataUnifiedCellValueChanging;
-            RA_STUDY_DATAViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeDataEntitySaved;
+            RA_STUDY_DATAViewModel.UnifiedValidateRow = validateStudyData;
             MainViewModel.SetParentViewModel(this);
             RA_STUDY_TEAMViewModel.SetParentViewModel(this);
             RA_STUDY_DRAWINGViewModel.SetParentViewModel(this);
@@ -158,11 +159,19 @@ namespace BluePrints.ViewModels
 
         private void studyDataUnifiedCellValueChanging(string field_name, object old_value, object new_value, RA_STUDY_DATA projection, bool isNew)
         {
+            if(isNew)
+            {
+                projection.NUMBER = RA_STUDY_DATACollection.Count();
+                projection.Update();
+            }
+
             if (field_name == BindableBase.GetPropertyName(() => new RA_STUDY_DATA().GUID_GUIDE_PROMPT))
             {
                 //rate is not instantiated with commodity codes to be selected, hence initialization begins here
                 if (isNew && new_value != null)
                 {
+                    //during cell value changing the value isn't committed yet to the property
+                    projection.GUID_GUIDE_PROMPT = (Guid)new_value;
                     projection.SetGuideSubPrompts(RA_GUIDE_SUBPROMPTCollection);
                 }
 
@@ -173,6 +182,30 @@ namespace BluePrints.ViewModels
                 RA_STUDY_DATAViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RA_STUDY_DATA().GuideSubPromptId), oldValue, newValue, EntityMessageType.Changed);
                 projection.Update();
             }
+        }
+
+        private void studyDrawingUnifiedCellValueChanging(string field_name, object old_value, object new_value, RA_STUDY_DRAWING projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new RA_STUDY_DRAWING().NUMBER))
+            {
+                //rate is not instantiated with commodity codes to be selected, hence initialization begins here
+                if (isNew && new_value != null)
+                {
+                    if(DeliverablesCollection != null && new_value != null && new_value.ToString() != string.Empty)
+                    {
+                        BASELINE_ITEMProgress findDeliverable = DeliverablesCollection.FirstOrDefault(x => x.Deliverable_Name == new_value.ToString());
+                        projection.DESCRIPTION = findDeliverable.Entity.Entity.PRIMARY_TITLE;
+                    }
+                }
+            }
+        }
+
+        private string validateStudyData(RA_STUDY_DATA projection)
+        {
+            if (projection.GUID_NODE == Guid.Empty)
+                return "Please assign node";
+
+            return string.Empty;
         }
         #endregion
 
@@ -237,18 +270,6 @@ namespace BluePrints.ViewModels
         public bool OnBeforeNodeEntitySaved(RA_STUDY_NODE entity)
         {
             entity.GUID_STUDY = EditingEntity.GUID;
-            return true;
-        }
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeDataEntitySaved(RA_STUDY_DATA entity)
-        {
-            if (RA_STUDY_DATACollection == null)
-                return false;
-
-            entity.NUMBER = RA_STUDY_DATACollection.Where(x => x.GUID != Guid.Empty).Count() + 1;
             return true;
         }
 

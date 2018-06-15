@@ -57,74 +57,6 @@
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutGroup x:Name="Tabs" MinHeight="250" dxlc:LayoutControl.AllowVerticalSizing="True" View="Tabs">
-                            <Grid dxlc:LayoutControl.TabHeader="Register" DataContext="{Binding DataContext.RA_STUDY_DATAViewModel, ElementName=userControl}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <dxb:ToolBarControl Grid.Row="0">
-                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding BulkDeleteCommand}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
-                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
-                                </dxb:ToolBarControl>
-                                <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlRegisters" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
-                                    <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="NUMBER" Header="Number" />
-                                        <dxg:GridColumn FieldName="GUID_NODE" Header="Node">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings DisplayMember="NUMBER" ItemsSource="{Binding DataContext.RA_STUDY_NODECollection, ElementName=userControl}" ValueMember="GUID" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="GUID_GUIDE_PROMPT" Header="Guide Prompt">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings DisplayMember="GUIDE_PROMPT" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValueMember="GUID" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="GuideSubPromptId" Header="Sub Prompt">
-                                            <dxg:GridColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="GUIDE_SUBPROMPT" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.GuideSubPrompts}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                                </DataTemplate>
-                                            </dxg:GridColumn.CellTemplate>
-                                            <!--  For Filtering  -->
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_SUBPROMPT" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_GUIDE_SUBPROMPTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="GUID_ACTION_BY" Header="Action By">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings DisplayMember="Full_Name" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="TITLE" Header="Title" />
-                                        <dxg:GridColumn FieldName="POSSIBLE_CAUSES" Header="Possible Causes" />
-                                        <dxg:GridColumn FieldName="CONSEQUENCES" Header="Consequences" />
-                                        <dxg:GridColumn FieldName="SAFEGUARDS" Header="Safeguards" />
-                                        <dxg:GridColumn FieldName="RECOMMENDATIONS" Header="Recommendations" />
-                                        <dxg:GridColumn FieldName="DONE" Header="Done" />
-                                    </dxg:GridControl.Columns>
-                                    <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                                    </dxg:GridControl.TotalSummary>
-                                    <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                                    </dxg:GridControl.GroupSummary>
-                                    <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" AllowColumnMoving="False" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
-                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                                <dxb:BarItemLinkSeparator />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                                <dxb:BarItemLinkSeparator />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
-                                            </dxg:TableView.RowCellMenuCustomizations>
-                                        </dxg:TableView>
-                                    </dxg:GridControl.View>
-                                </custom:GridControlEx>
-                            </Grid>
                             <Grid dxlc:LayoutControl.TabHeader="Team" DataContext="{Binding DataContext.RA_STUDY_TEAMViewModel, ElementName=userControl}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="30" />
@@ -167,7 +99,7 @@
                                     </dxg:GridControl.View>
                                 </custom:GridControlEx>
                             </Grid>
-                            <!--<Grid dxlc:LayoutControl.TabHeader="Drawing" DataContext="{Binding DataContext.RA_STUDY_DRAWINGViewModel, ElementName=userControl}">
+                            <Grid dxlc:LayoutControl.TabHeader="Drawing" DataContext="{Binding DataContext.RA_STUDY_DRAWINGViewModel, ElementName=userControl}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="30" />
                                     <RowDefinition Height="*" />
@@ -180,7 +112,11 @@
                                 </dxb:ToolBarControl>
                                 <custom:GridControlEx x:Name="GridControlDrawings" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlDrawings" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                                        <dxg:GridColumn FieldName="NUMBER" Header="Number">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings DisplayMember="Deliverable_Name" ItemsSource="{Binding DataContext.DeliverablesCollection, ElementName=userControl}" ValueMember="Deliverable_Name" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
                                         <dxg:GridColumn FieldName="REVISION" Header="Revision" />
                                         <dxg:GridColumn FieldName="REVISION_DESCRIPTION" Header="Revision Description" />
@@ -210,7 +146,7 @@
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </custom:GridControlEx>
-                            </Grid>-->
+                            </Grid>
                             <Grid dxlc:LayoutControl.TabHeader="Node" DataContext="{Binding DataContext.RA_STUDY_NODEViewModel, ElementName=userControl}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="30" />
@@ -228,7 +164,7 @@
                                         <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
                                         <dxg:GridColumn FieldName="GUID_DRAWING" Header="Drawing">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings DisplayMember="Deliverable_Name" ItemsSource="{Binding DataContext.DeliverablesCollection, ElementName=userControl}" ValueMember="GUID" />
+                                                <dxe:ComboBoxEditSettings DisplayMember="NUMBER" ItemsSource="{Binding DataContext.RA_STUDY_DRAWINGCollection, ElementName=userControl}" ValueMember="GUID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
@@ -240,6 +176,74 @@
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableViewNodes" AllowColumnMoving="False" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
+                                            <dxg:TableView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                                <dxb:BarItemLinkSeparator />
+                                                <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                <dxb:BarItemLinkSeparator />
+                                                <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                            </dxg:TableView.RowCellMenuCustomizations>
+                                        </dxg:TableView>
+                                    </dxg:GridControl.View>
+                                </custom:GridControlEx>
+                            </Grid>
+                            <Grid dxlc:LayoutControl.TabHeader="Register" DataContext="{Binding DataContext.RA_STUDY_DATAViewModel, ElementName=userControl}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <dxb:ToolBarControl Grid.Row="0">
+                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding BulkDeleteCommand}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                    <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                </dxb:ToolBarControl>
+                                <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlRegisters" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="GUID_NODE" Header="Node">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings DisplayMember="NUMBER" ItemsSource="{Binding DataContext.RA_STUDY_NODECollection, ElementName=userControl}" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="GUID_GUIDE_PROMPT" Header="Guide Prompt">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings DisplayMember="GUIDE_PROMPT" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="GuideSubPromptId" Header="Sub Prompt">
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="GUIDE_SUBPROMPT" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.GuideSubPrompts}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                            <!--  For Filtering  -->
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_SUBPROMPT" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_GUIDE_SUBPROMPTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="GUID_ACTION_BY" Header="Action By">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings DisplayMember="Full_Name" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="TITLE" Header="Title" />
+                                        <dxg:GridColumn FieldName="POSSIBLE_CAUSES" Header="Possible Causes" />
+                                        <dxg:GridColumn FieldName="CONSEQUENCES" Header="Consequences" />
+                                        <dxg:GridColumn FieldName="SAFEGUARDS" Header="Safeguards" />
+                                        <dxg:GridColumn FieldName="RECOMMENDATIONS" Header="Recommendations" />
+                                        <dxg:GridColumn FieldName="DONE" Header="Done" />
+                                        <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.TotalSummary>
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                    </dxg:GridControl.TotalSummary>
+                                    <dxg:GridControl.GroupSummary>
+                                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    </dxg:GridControl.GroupSummary>
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView x:Name="tableView" AllowColumnMoving="False" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                                 <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
