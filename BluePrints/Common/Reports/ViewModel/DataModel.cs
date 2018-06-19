@@ -77,7 +77,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Trackable_Total_Quantity => trackable_reportables.Sum(x => x.Total_Quantity);
 
-        public decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.TotalInstalledQuantity);
+        public override decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
+
+        public override decimal AbsoluteTotalInstalledQuantity => Reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
 
         public override decimal MaxCurrentQuantity
         {
@@ -91,7 +93,21 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override decimal Remaining_Hours_To_Completion => Reportables.Sum(x => x.Remaining_Hours_To_Completion);
 
-        public override decimal QuantityPerUnit => Reportables.Sum(x => x.QuantityPerUnit);
+        public override decimal QuantityPerUnit
+        {
+            get
+            {
+                decimal totalUnits = Reportables.Sum(x => x.Total_Units);
+                if (totalUnits == 0)
+                    return 0;
+
+                decimal totalQuantity = Reportables.Sum(x => x.Total_Quantity);
+                if (totalQuantity == 0)
+                    return 0;
+
+                return totalQuantity / totalUnits;
+            }
+        }
 
         public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
 
@@ -425,15 +441,19 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (PROGRESS_ITEM_BeforeDataDate.Count() == 0 || QuantityPerUnit == 0)
                     return 0;
 
-                return PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
+                decimal earnedUnits = PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
+
+                return earnedUnits;
             }
         }
 
-        public decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
+        public virtual decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
 
         public decimal MinEstimateQuantity => (AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity) < 0 ? 0 : AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity;
 
         public decimal TotalInstalledQuantity => PastInstalledQuantity + FutureInstalledQuantity;
+
+        public virtual decimal Trackable_Installed_Quantity => this.Progress_Type == EstimateProgressType.Trackable ? TotalInstalledQuantity : 0;
 
         public decimal FutureInstalledQuantity
         {

@@ -17,7 +17,6 @@ namespace BluePrints.Data
         public BASELINE_ITEM()
         {
             DISCIPLINE_NUM = 1;
-            OFFICE = 0;
         }
 
         [NotMapped]

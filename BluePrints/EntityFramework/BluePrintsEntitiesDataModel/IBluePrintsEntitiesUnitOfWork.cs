@@ -100,6 +100,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<HOLIDAY, Guid> HOLIDAYS { get; }
 
         /// <summary>
+        /// The OFFICE entities repository.
+        /// </summary>
+        IRepository<OFFICE, Guid> OFFICES { get; }
+
+        /// <summary>
         /// The PHASE entities repository.
         /// </summary>
         IRepository<PHASE, Guid> PHASES { get; }

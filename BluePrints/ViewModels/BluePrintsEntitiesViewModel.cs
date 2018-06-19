@@ -289,6 +289,9 @@ namespace BluePrints.ViewModels
 
             bluePrintsEntitiesModuleDescriptions.Add(dataCategoryDescription);
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageOffice))
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Offices", dataCategoryId, "Offices", "OFFICECollectionView", null, null, null, false, false, @"Maps\GeoPointMap_16x16.png"));
+
             if (LoginCredentials.hasPermission(PermissionResources.ManageDepartment))
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Departments", dataCategoryId, "Departments", "DEPARTMENTCollectionView", null, null, null, false, false, @"Business Objects\BOPosition_16x16.png"));
 

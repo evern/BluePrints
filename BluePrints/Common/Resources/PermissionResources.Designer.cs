@@ -160,6 +160,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage office.
+        /// </summary>
+        internal static string ManageOffice {
+            get {
+                return ResourceManager.GetString("ManageOffice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage phase.
         /// </summary>
         internal static string ManagePhase {

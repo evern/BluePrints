@@ -112,6 +112,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
         decimal TotalInstalledQuantity { get; }
+        decimal Trackable_Installed_Quantity { get; }
         decimal AbsoluteTotalInstalledQuantity { get; }
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }

@@ -39,10 +39,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_USER { get; set; }
 
+        public Guid? GUID_OFFICE { get; set; }
+
         [Required]
         public int DISCIPLINE_NUM { get; set; }
-
-        public Office OFFICE { get; set; }
 
         [StringLength(200)]
         public string INTERNAL_NUM { get; set; }
@@ -115,6 +115,8 @@ namespace BluePrints.Data
         public virtual SUBJOB SUBJOB { get; set; }
 
         public virtual WORKPACK WORKPACK { get; set; }
+
+        public virtual OFFICE OFFICE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_HOLD_REF> REGISTER_HOLD_REF { get; set; }

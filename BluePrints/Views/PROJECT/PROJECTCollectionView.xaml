@@ -53,9 +53,9 @@
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
                                 <dxg:GridColumn FieldName="NUMBER" Header="Number" />
-                                <dxg:GridColumn FieldName="OFFICE" Header="Office">
+                                <dxg:GridColumn FieldName="GUID_OFFICE" Header="Office">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="NAME" Header="Name" />

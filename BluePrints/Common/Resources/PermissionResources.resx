@@ -195,4 +195,7 @@
   <data name="ManageStudyType" xml:space="preserve">
     <value>Allow user to manage study types</value>
   </data>
+  <data name="ManageOffice" xml:space="preserve">
+    <value>Allow user to manage office</value>
+  </data>
 </root>

@@ -233,9 +233,9 @@
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="CanBook" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Time can be booked in exo" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.OFFICE" FilterPopupMode="CheckedList" Header="Office">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_OFFICE" Header="Office">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name">

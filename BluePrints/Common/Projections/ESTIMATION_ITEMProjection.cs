@@ -319,8 +319,11 @@ namespace BluePrints.Common.Projections
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
+
+            List<ESTIMATE_ITEM> estimate_items = ESTIMATE_ITEMS.ToList();
+
             List<ESTIMATE_ITEMProjection> estimation_direct_item_rates =
-            ESTIMATE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(ESTIMATE_ITEMS,
+            ESTIMATE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(estimate_items.AsQueryable(),
                                                                                             RATES,
                                                                                             STOCK_CODES,
                                                                                             STOCK_GROUPS).ToList();
@@ -361,19 +364,53 @@ namespace BluePrints.Common.Projections
             IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Construct);
             IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
 
-            return
-                ESTIMATE_ITEMS.OrderBy(x => x.CREATED).ToArray()
-                    .Select(
-                        estimate_item =>
-                            new ESTIMATE_ITEMProjection()
-                            {
-                                Entity = estimate_item,
-                                ESTIMATE_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE),
-                                BUDGET_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE),
-                                RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null)),
-                                FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null)),
-                                StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
-                            }).AsQueryable();
+            List<ESTIMATE_ITEMProjection> estimate_items = new List<ESTIMATE_ITEMProjection>();
+            LoadingScreenManager.ShowLoadingScreen(ESTIMATE_ITEMS.Count());
+            foreach(ESTIMATE_ITEM estimate_item in ESTIMATE_ITEMS)
+            {
+                ESTIMATE_ITEMProjection newEstimateItem = new ESTIMATE_ITEMProjection();
+                newEstimateItem.Entity = estimate_item;
+                if (STOCK_CODES != null)
+                {
+                    if(estimate_item.STOCK_CODE1 != null)
+                        newEstimateItem.ESTIMATE_STOCK_CODE = estimate_item.STOCK_CODE1;
+                    else
+                        newEstimateItem.ESTIMATE_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE);
+
+                    if (estimate_item.STOCK_CODE != null)
+                        newEstimateItem.BUDGET_STOCK_CODE = estimate_item.STOCK_CODE;
+                    else
+                        newEstimateItem.BUDGET_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE);
+
+                    //use entity framework navigational model to speed up process
+                    //newEstimateItem.ESTIMATE_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE);
+                    //newEstimateItem.BUDGET_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE);
+                    //newEstimateItem.StockCodeCollection = STOCK_CODES;
+                }
+
+                //use entity framework navigational model to speed up process
+                //newEstimateItem.RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null));
+                //newEstimateItem.FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null));
+
+                estimate_items.Add(newEstimateItem);
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            return estimate_items.AsQueryable();
+            //return
+            //    ESTIMATE_ITEMS.ToList()
+            //        .Select(
+            //            estimate_item =>
+            //                new ESTIMATE_ITEMProjection()
+            //                {
+            //                    Entity = estimate_item,
+            //                    ESTIMATE_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE),
+            //                    BUDGET_STOCK_CODE = STOCK_CODES == null ? null : STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE),
+            //                    RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null)),
+            //                    FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null)),
+            //                    StockCodeCollection = STOCK_CODES == null ? null : STOCK_CODES
+            //                }).AsQueryable();
         }
     }
 }

@@ -395,6 +395,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal AbsoluteTotalInstalledQuantity => Reportable.AbsoluteTotalInstalledQuantity;
 
+        public decimal Trackable_Installed_Quantity => Reportable.Trackable_Installed_Quantity;
+
         public decimal Baseline_Percentage => Reportable.Baseline_Percentage;
 
         public decimal SchedulePercentage => Reportable.SchedulePercentage;

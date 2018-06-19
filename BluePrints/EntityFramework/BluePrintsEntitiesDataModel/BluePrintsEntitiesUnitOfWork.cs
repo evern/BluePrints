@@ -110,6 +110,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<HOLIDAY>(), (HOLIDAY x) => x.GUID); }
         }
 
+        IRepository<OFFICE, Guid> IBluePrintsEntitiesUnitOfWork.OFFICES
+        {
+            get { return GetRepository(x => x.Set<OFFICE>(), (OFFICE x) => x.GUID); }
+        }
+
         IRepository<PHASE, Guid> IBluePrintsEntitiesUnitOfWork.PHASES
         {
             get { return GetRepository(x => x.Set<PHASE>(), (PHASE x) => x.GUID); }

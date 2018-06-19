@@ -219,6 +219,8 @@ namespace BluePrints.ViewModels
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
             List<ESTIMATE_ITEMProgress> estimateItemsToSave = new List<ESTIMATE_ITEMProgress>();
+            LoadingScreenManager.ShowLoadingScreen(projections.Count());
+
             foreach (ESTIMATE_ITEMProgress projection in projections)
             {
                 projection.Entity.Entity.BUDGET_QUANTITY = projection.Entity.Entity.ESTIMATE_QUANTITY;
@@ -239,8 +241,11 @@ namespace BluePrints.ViewModels
                 }
 
                 estimateItemsToSave.Add(projection);
+
+                LoadingScreenManager.Progress();
             }
 
+            LoadingScreenManager.CloseLoadingScreen();
             estimate_itemViewModelWrapper.BulkSave(estimateItemsToSave);
             estimate_itemViewModelWrapper.CleanUpEntitiesLoader();
 
@@ -269,8 +274,8 @@ namespace BluePrints.ViewModels
 
                         if (oldStatus == BaselineStatus.Working && newStatus == BaselineStatus.Live)
                             return "Please use approve button to move estimate from working to live";
-                        else if (oldStatus == BaselineStatus.Live)
-                            return "Cannot change status once it is live";
+                        //else if (oldStatus == BaselineStatus.Live)
+                        //    return "Cannot change status once it is live";
                     }
                 }
             }

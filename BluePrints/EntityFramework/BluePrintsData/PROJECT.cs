@@ -29,9 +29,9 @@ namespace BluePrints.Data
 
         public ProjectType TYPE { get; set; }
 
-        public Office OFFICE { get; set; }
-
         public Guid? GUID_MANAGEUSER { get; set; }
+
+        public Guid? GUID_OFFICE { get; set; }
 
         public decimal CURRENCYCONVERSION { get; set; }
 
@@ -134,6 +134,8 @@ namespace BluePrints.Data
         public virtual ICollection<REGISTER> REGISTER { get; set; }
 
         public virtual USER USER { get; set; }
+
+        public virtual OFFICE OFFICE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT_REPORT> PROJECT_REPORT { get; set; }

@@ -131,27 +131,32 @@
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="ProgressItem.Trackable_Installed_Quantity" Header="Total Trackable Installed Qty" HeaderToolTip="Total trackable only installed quantity to date" IsEnabled="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.AbsoluteTotalInstalledQuantity" Header="Total Installed Qty" HeaderToolTip="Total Installed quantity to date" IsEnabled="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Total_Install_Hours" Header="Total Installed Hours" HeaderToolTip="Total earned installation hours to date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="ProgressItem.Earned_Units_ToDate" Header="Total Installed Hours" HeaderToolTip="Total earned installation hours to date" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Total_Install_Cost" Header="Total Installed Costs" HeaderToolTip="Total earned installation costs to date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="ProgressItem.Earned_Install_Costs_OnDataDate" Header="Total Installed Costs" HeaderToolTip="Total earned installation costs to date" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Total_Supply_Cost" Header="Total Supplied Costs" HeaderToolTip="Total earned supply costs to date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="ProgressItem.Earned_Supply_Costs_OnDataDate" Header="Total Supplied Costs" HeaderToolTip="Total earned supply costs to date" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Total_Cost" Header="Total Costs" HeaderToolTip="Total costs to date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="ProgressItem.Earned_Total_Costs_OnDataDate" Header="Total Costs" HeaderToolTip="Total costs to date" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -213,6 +218,11 @@
                                                     <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
+                                            <dxg:GridColumn Binding="{Binding IsByDuration}" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" ReadOnly="True">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:CheckEditSettings />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                             <dxg:GridColumn Binding="{Binding Trackable_Total_Quantity}" Header="Total Trackable Qty" HeaderToolTip="Only estimate items marked as trackable will be summed up here" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -251,6 +261,11 @@
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Totals">
                                             <dxg:GridColumn Binding="{Binding Schedule_Estimated_Quantity}" Header="Planned Qty" HeaderToolTip="Planned quantity to date as per schedule" IsEnabled="False" ReadOnly="True">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Binding="{Binding Trackable_Installed_Quantity}" Header="Total Trackable Installed Qty" HeaderToolTip="Total trackable only installed quantity to date" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

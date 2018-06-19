@@ -252,6 +252,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD_REF);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
@@ -1755,6 +1756,20 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<DOCTYPE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                var collection = GetEntities<OFFICE>();
+                if (collection != null)
+                {
+                    collection = collection.OrderBy(x => x.NAME);
+                }
+
                 return collection;
             }
         }

@@ -27,9 +27,9 @@
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarButtonItem Content="Import" Command="{Binding DataContext.ImportCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" Glyph="{dx:DXImage Image=Download_16x16.png}" />
-                                <dxb:BarButtonItem Content="Update Users" Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" Glyph="{dx:DXImage Image=BODetails_16x16.png}" />
-                                <dxb:BarButtonItem Content="Update Exo Names" Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" Glyph="{dx:DXImage Image=Merge_16x16.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ImportCommand, ElementName=userControl}" Content="Import" Glyph="{dx:DXImage Image=Download_16x16.png}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" Content="Update Users" Glyph="{dx:DXImage Image=BODetails_16x16.png}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" Content="Update Exo Names" Glyph="{dx:DXImage Image=Merge_16x16.png}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -45,37 +45,37 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Login Name" FieldName="NAME" HeaderToolTip="Name used to login into system" />
-                            <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
-                            <dxg:GridColumn Header="Last Name" FieldName="LAST_NAME" />
-                            <dxg:GridColumn Header="Department" FieldName="GUID_DEPARTMENT">
+                            <dxg:GridColumn FieldName="NAME" Header="Login Name" HeaderToolTip="Name used to login into system" />
+                            <dxg:GridColumn FieldName="FIRST_NAME" Header="First Name" />
+                            <dxg:GridColumn FieldName="LAST_NAME" Header="Last Name" />
+                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE">
+                            <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Title" FieldName="TITLE" />
-                            <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" />
-                            <dxg:GridColumn Header="Role" FieldName="GUID_ROLE" HeaderToolTip="Role assigned will determine authorisation level within system. View role from navigation menu to view role authorisation">
+                            <dxg:GridColumn FieldName="TITLE" Header="Title" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="GUID_ROLE" Header="Role" HeaderToolTip="Role assigned will determine authorisation level within system. View role from navigation menu to view role authorisation">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.RestrictedROLECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Exo Name" FieldName="EXO_STAFF_ID" HeaderToolTip="User name in Exo">
+                            <dxg:GridColumn FieldName="EXO_STAFF_ID" Header="Exo Name" HeaderToolTip="User name in Exo">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.PrimeroSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Office" FieldName="OFFICE">
+                            <dxg:GridColumn FieldName="GUID_OFFICE" Header="Office">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Utilisation" FieldName="UTILIZATION" HeaderToolTip="For reporting use only">
+                            <dxg:GridColumn FieldName="UTILIZATION" Header="Utilisation" HeaderToolTip="For reporting use only">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.01" Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" />
                                 </dxg:GridColumn.EditSettings>

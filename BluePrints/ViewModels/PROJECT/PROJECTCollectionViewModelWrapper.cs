@@ -88,6 +88,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -712,6 +713,13 @@ namespace BluePrints.ViewModels
                     return "Tender due date cannot be after project start date";
                 }
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().NUMBER))
+            {
+                if(DisplayEntities.Any(x => x.NUMBER != null && x.NUMBER.ToUpper() == new_value.ToString().ToUpper()))
+                {
+                    return "Project number already exists";
+                }
+            }
             //else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))
             //{
             //    DateTime? tenderProjectStart = (DateTime?)new_value;
@@ -1016,6 +1024,19 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                var collection = GetEntities<OFFICE>();
+                if (collection != null)
+                {
+                    collection = collection.OrderBy(x => x.NAME);
+                }
+
+                return collection;
+            }
+        }
 
         DISCIPLINE allDiscipline = new DISCIPLINE() { GUID = Guid.NewGuid(), NAME = "All" };
         public IEnumerable<DISCIPLINE> DISCIPLINECollection

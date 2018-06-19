@@ -343,6 +343,21 @@ namespace BluePrints.Data
                 .WithOptional(e => e.MINUTE_TITLE2)
                 .HasForeignKey(e => e.GUID_PARENT);
 
+            modelBuilder.Entity<OFFICE>()
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithOptional(e => e.OFFICE)
+                .HasForeignKey(e => e.GUID_OFFICE);
+
+            modelBuilder.Entity<OFFICE>()
+                .HasMany(e => e.PROJECT)
+                .WithOptional(e => e.OFFICE)
+                .HasForeignKey(e => e.GUID_OFFICE);
+
+            modelBuilder.Entity<OFFICE>()
+                .HasMany(e => e.USER)
+                .WithOptional(e => e.OFFICE)
+                .HasForeignKey(e => e.GUID_OFFICE);
+
             modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.LOW_VALUE)
                 .HasPrecision(10, 2);
@@ -389,36 +404,6 @@ namespace BluePrints.Data
                 .HasPrecision(2, 0);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.DAYWORK)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.DAYWORK_EQUIPMENT)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.DAYWORK_MATERIAL)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.DAYWORK_LABOUR)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.DAYWORK_STAFF_ROLE)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.AREA)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -438,6 +423,36 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.CLIENT_PROJECT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_EQUIPMENT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_LABOUR)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_MATERIAL)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DAYWORK_STAFF_ROLE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -507,6 +522,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.RA_STUDY)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.RATE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -564,12 +585,6 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.RA_STUDY)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.VARIATION)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -592,6 +607,18 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_GUIDE_SUBPROMPT);
 
             modelBuilder.Entity<RA_STUDY>()
+                .HasMany(e => e.RA_STUDY_DRAWING)
+                .WithRequired(e => e.RA_STUDY)
+                .HasForeignKey(e => e.GUID_STUDY)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY>()
+                .HasMany(e => e.RA_STUDY_NODE)
+                .WithRequired(e => e.RA_STUDY)
+                .HasForeignKey(e => e.GUID_STUDY)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RA_STUDY>()
                 .HasMany(e => e.RA_STUDY_TEAM)
                 .WithRequired(e => e.RA_STUDY)
                 .HasForeignKey(e => e.GUID_STUDY)
@@ -612,18 +639,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.RA_GUIDE_PROMPT)
                 .WithRequired(e => e.RA_STUDY_TYPE)
                 .HasForeignKey(e => e.GUID_STUDY_TYPE)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<RA_STUDY>()
-                .HasMany(e => e.RA_STUDY_DRAWING)
-                .WithRequired(e => e.RA_STUDY)
-                .HasForeignKey(e => e.GUID_STUDY)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<RA_STUDY>()
-                .HasMany(e => e.RA_STUDY_NODE)
-                .WithRequired(e => e.RA_STUDY)
-                .HasForeignKey(e => e.GUID_STUDY)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<RA_STUDY_TYPE>()

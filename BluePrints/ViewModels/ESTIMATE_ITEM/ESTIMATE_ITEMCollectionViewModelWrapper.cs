@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -381,7 +382,52 @@ namespace BluePrints.ViewModels
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
-            KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid)));
+            string searchStockCodeFieldName;
+            if (IsBudget)
+                searchStockCodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Budget_StockCodeGuid);
+            else
+                searchStockCodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid);
+
+            KeyValuePair<ColumnBase, string> stock_code_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(searchStockCodeFieldName));
+
+            KeyValuePair<ColumnBase, string> area_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_AREA");
+            KeyValuePair<ColumnBase, string> subarea_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.SubAreaGuid");
+
+            if(area_data.Key != null && subarea_data.Key != null)
+            {
+                if(area_data.Value != string.Empty)
+                {
+                    AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM == area_data.Value);
+                    if (findAREA == null)
+                    {
+                        AREA newAREA = new AREA();
+                        newAREA.GUID_PROJECT = loadPROJECT.GUID;
+                        newAREA.INTERNAL_NUM = area_data.Value;
+                        newAREA.TITLE = "Generated";
+                        AREACollectionViewModel.Save(newAREA);
+                        findAREA = newAREA;
+                    }
+                    else
+                        pasteEntity.Entity.Entity.GUID_AREA = findAREA.GUID;
+
+                    if (subarea_data.Value != string.Empty)
+                    {
+                        AREA findSUBAREA = AREACollection.FirstOrDefault(x => x.GUID_PARENT == findAREA.GUID && x.INTERNAL_NUM == subarea_data.Value);
+                        if (findSUBAREA == null)
+                        {
+                            AREA newSUBAREA = new AREA();
+                            newSUBAREA.GUID_PROJECT = loadPROJECT.GUID;
+                            newSUBAREA.GUID_PARENT = findAREA.GUID;
+                            newSUBAREA.INTERNAL_NUM = subarea_data.Value;
+                            newSUBAREA.TITLE = "Generated";
+                            AREACollectionViewModel.Save(newSUBAREA);
+                            findSUBAREA = newSUBAREA;
+                        }
+                        else
+                            pasteEntity.Entity.Entity.GUID_SUBAREA = findSUBAREA.GUID;
+                    }
+                }
+            }
 
             if (stock_code_data.Key != null)
             {
@@ -1130,6 +1176,56 @@ namespace BluePrints.ViewModels
 
         public void AutoPopulate(object button)
         {
+            MainViewModel.isBackgroundEdit = true;
+            PauseUndoRedo();
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            if (info.Column == null)
+                return;
+
+            List<ESTIMATE_ITEMProgress> entitiesToSave = new List<ESTIMATE_ITEMProgress>();
+            if(info.Column.FieldName == "Entity.Entity.GUID_COMMODITY_CODE")
+            {
+                foreach(var entity in SelectedEntities)
+                {
+                    STOCK_CODE stockCode = null;
+                    if (IsBudget)
+                    {
+                        if (entity.Entity.BUDGET_STOCK_CODE != null)
+                            stockCode = entity.Entity.BUDGET_STOCK_CODE;
+                    }
+                    else
+                    {
+                        if (entity.Entity.ESTIMATE_STOCK_CODE != null)
+                            stockCode = entity.Entity.ESTIMATE_STOCK_CODE;
+                    }
+
+                    if(stockCode != null)
+                    {
+                        COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == stockCode.CODE);
+                        if (findCOMMODITY_CODE != null)
+                            entity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
+                        else
+                        {
+                            COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
+                            newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
+                            if (entity.Discipline_Guid != null)
+                                newCOMMODITY_CODE.GUID_DISCIPLINE = entity.Discipline_Guid;
+                            newCOMMODITY_CODE.CODE = stockCode.CODE;
+                            newCOMMODITY_CODE.DESCRIPTION = "Auto Populate";
+                            newCOMMODITY_CODE.UOM = entity.Entity.BUDGET_STOCK_CODE.UOM;
+                            COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
+                            entity.Entity.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
+                            entitiesToSave.Add(entity);
+                        }
+                    }
+                }
+            }
+
+
+            MainViewModel.BulkSave(entitiesToSave);
+            MainViewModel.isBackgroundEdit = false;
+            UnpauseUndoRedo();
+            BackgroundRefresh();
         }
 
         public bool CanFindReplace(object button)
@@ -1341,6 +1437,28 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
                 return collection;
+            }
+        }
+
+        public CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork> AREACollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<AREA>();
+            }
+        }
+
+        public CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork> COMMODITY_CODECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY_CODE>();
             }
         }
 

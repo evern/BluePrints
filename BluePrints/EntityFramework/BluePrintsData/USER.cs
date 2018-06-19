@@ -75,7 +75,7 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public Office OFFICE { get; set; }
+        public Guid? GUID_OFFICE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT> PROJECT { get; set; }
@@ -106,5 +106,7 @@ namespace BluePrints.Data
         public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }
 
         public virtual ROLE ROLE { get; set; }
+
+        public virtual OFFICE OFFICE { get; set; }
     }
 }
