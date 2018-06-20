@@ -122,11 +122,17 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.REVISION);
+        }
+
+        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
+        {
+            return query => query.Include(x => x.PROJECT);
         }
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
@@ -194,7 +200,7 @@ namespace BluePrints.ViewModels
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -1137,6 +1143,15 @@ namespace BluePrints.ViewModels
                 }
 
                 return "N/A";
+            }
+        }
+
+        public IEnumerable<STOCK_CODE> STOCK_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_CODE>();
+                return collection;
             }
         }
 

@@ -113,7 +113,28 @@ namespace BluePrints.Common.Base
 
         private Func<IRepositoryQuery<TASK>, IQueryable<TASK>> P6TASKProjectionFunc()
         {
-            return query => query.Where(x => x.proj_id == loadP6PROJECT.proj_id).Where(x => x.TASKACTV.Count > 0).Where(x => x.delete_date == null).Where(x => x.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == phase_type.ToString().ToUpper()));
+            return query => taskProjection(query);
+        }
+
+        private IQueryable<TASK> taskProjection(IRepositoryQuery<TASK> query)
+        {
+            List<TASK> taskCollection = query.Where(x => x.proj_id == loadP6PROJECT.proj_id).ToList();
+            List<TASK> returnTaskCollection = new List<TASK>();
+            LoadingScreenManager.ShowLoadingScreen(taskCollection.Count);
+            foreach (TASK task in taskCollection)
+            {
+                if (task.delete_date != null)
+                    continue;
+
+                if (task.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.actv_code_name.ToUpper() == phase_type.ToString().ToUpper()))
+                    returnTaskCollection.Add(task);
+
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+
+            return returnTaskCollection.AsQueryable();
         }
 
         private Func<IRepositoryQuery<TASKPRED>, IQueryable<TASKPRED>> P6TASKPREDProjectionFunc()

@@ -86,7 +86,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true && x.IsLate == false).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == false && x.IsLate == false).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,

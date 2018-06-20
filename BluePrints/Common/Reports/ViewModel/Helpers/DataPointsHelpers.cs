@@ -336,7 +336,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (CumulativeDataPointCollection != null)
                 for (var i = 0; i < CumulativeDataPointCollection.Count; i++)
                 {
-                    if (plotStartDate != null && CumulativeDataPointCollection[i].ProgressDate <= plotStartDate)
+                    if (plotStartDate != null && CumulativeDataPointCollection[i].ProgressDate < plotStartDate)
                         continue;
 
                     if (i == 0)

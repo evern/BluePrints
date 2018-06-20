@@ -1069,9 +1069,6 @@ namespace BluePrints.Common.Base
 
                 bool isNullProgress = false;
 
-                string s = string.Empty;
-                if (current_progress_deliverable.Deliverable_Name == "12104-01-LAY-GE-001")
-                    s = string.Empty;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
                 if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
                     isNullProgress = true;

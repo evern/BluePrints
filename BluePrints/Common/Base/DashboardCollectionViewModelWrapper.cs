@@ -155,7 +155,13 @@ namespace BluePrints.Common.ViewModel
                 }
             }
             else
+            {
+                if (SummaryEntity == null)
+                    return;
+
                 SummaryEntity.Stats = null;
+            }
+
 
             IsChartLoading = false;
             this.RaisePropertyChanged(x => x.SummaryEntity);

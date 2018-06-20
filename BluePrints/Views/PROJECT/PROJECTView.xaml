@@ -105,7 +105,6 @@
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Type" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Department_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Data_Date" ReadOnly="True" />

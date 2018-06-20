@@ -412,7 +412,7 @@ namespace BluePrints.ViewModels
 
                     if (subarea_data.Value != string.Empty)
                     {
-                        AREA findSUBAREA = AREACollection.FirstOrDefault(x => x.GUID_PARENT == findAREA.GUID && x.INTERNAL_NUM == subarea_data.Value);
+                        AREA findSUBAREA = SUBAREACollection.FirstOrDefault(x => x.GUID_PARENT == findAREA.GUID && x.INTERNAL_NUM == subarea_data.Value);
                         if (findSUBAREA == null)
                         {
                             AREA newSUBAREA = new AREA();
@@ -475,11 +475,11 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.UOM)));
-                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.NAME)));
-                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.TYPE)));
-                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.SPEC)));
-                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.ESTIMATE_STOCK_CODE.DESCRIPTION)));
+                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.UOM"));
+                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.NAME"));
+                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.TYPE"));
+                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.SPEC"));
+                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.DESCRIPTION"));
                             editing_stock_code.CODE = stock_code_data.Value;
                             editing_stock_code.UOM = uom_data.Value;
                             editing_stock_code.NAME = name_data.Value;

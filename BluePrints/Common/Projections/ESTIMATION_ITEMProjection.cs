@@ -155,11 +155,13 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
-        public string Deliverable_Name => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
+        //public string Deliverable_Name => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
+        public string Deliverable_Name => Entity.Deliverable_Name;
 
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
-        public string Commodity_Code => Entity.STOCK_GROUP == null ? string.Empty : Entity.STOCK_GROUP.CODE;
+        //public string Commodity_Code => Entity.STOCK_GROUP == null ? string.Empty : Entity.STOCK_GROUP.CODE;
+        public string Commodity_Code => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
 
         public Guid? Subjob_Guid => Entity.GUID_SUBJOB;
 
@@ -336,6 +338,8 @@ namespace BluePrints.Common.Projections
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
             List<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATE_ITEMProgress>();
+            //LoadingScreenManager.ShowLoadingScreen(estimation_direct_item_rates.Count);
+            //LoadingScreenManager.SetMessage("Building budget stats");
             foreach (ESTIMATE_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
                 ESTIMATE_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATE_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments);
@@ -352,7 +356,10 @@ namespace BluePrints.Common.Projections
                     newEstimation_Direct_itemProgress.BuildStats();
 
                 estimation_direct_item_progresses.Add(newEstimation_Direct_itemProgress);
+                LoadingScreenManager.Progress();
             }
+
+            //LoadingScreenManager.CloseLoadingScreen();
 
             return estimation_direct_item_progresses.AsQueryable();
         }
@@ -365,7 +372,6 @@ namespace BluePrints.Common.Projections
             IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
 
             List<ESTIMATE_ITEMProjection> estimate_items = new List<ESTIMATE_ITEMProjection>();
-            LoadingScreenManager.ShowLoadingScreen(ESTIMATE_ITEMS.Count());
             foreach(ESTIMATE_ITEM estimate_item in ESTIMATE_ITEMS)
             {
                 ESTIMATE_ITEMProjection newEstimateItem = new ESTIMATE_ITEMProjection();
@@ -374,12 +380,12 @@ namespace BluePrints.Common.Projections
                 {
                     if(estimate_item.STOCK_CODE1 != null)
                         newEstimateItem.ESTIMATE_STOCK_CODE = estimate_item.STOCK_CODE1;
-                    else
+                    else if (estimate_item.GUID_ESTIMATE_STOCK_CODE != null)
                         newEstimateItem.ESTIMATE_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_ESTIMATE_STOCK_CODE);
 
                     if (estimate_item.STOCK_CODE != null)
                         newEstimateItem.BUDGET_STOCK_CODE = estimate_item.STOCK_CODE;
-                    else
+                    else if(estimate_item.GUID_BUDGET_STOCK_CODE != null)
                         newEstimateItem.BUDGET_STOCK_CODE = STOCK_CODES.FirstOrDefault(stockcode => stockcode.GUID == estimate_item.GUID_BUDGET_STOCK_CODE);
 
                     //use entity framework navigational model to speed up process
@@ -390,13 +396,11 @@ namespace BluePrints.Common.Projections
 
                 //use entity framework navigational model to speed up process
                 //newEstimateItem.RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null));
-                //newEstimateItem.FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null));
+                newEstimateItem.FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null));
 
                 estimate_items.Add(newEstimateItem);
-                LoadingScreenManager.Progress();
             }
 
-            LoadingScreenManager.CloseLoadingScreen();
             return estimate_items.AsQueryable();
             //return
             //    ESTIMATE_ITEMS.ToList()

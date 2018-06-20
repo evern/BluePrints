@@ -17,7 +17,7 @@
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarButtonItem Content="Trim Unused Stock Code" ToolTip="Bulk remove stock code that are unused in estimate" Command="{Binding DataContext.Trim_UnusedCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Trash_32x32.png}" Glyph="{dx:DXImage Image=Trash_16x16.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.Trim_UnusedCommand, ElementName=userControl}" Content="Trim Unused Stock Code" Glyph="{dx:DXImage Image=Trash_16x16.png}" LargeGlyph="{dx:DXImage Image=Trash_32x32.png}" ToolTip="Bulk remove stock code that are unused in estimate" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -33,37 +33,33 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Generate From" FieldName="STOCK_CODE_TYPE" HeaderToolTip="Indicate where stock code is generated from">
+                            <dxg:GridColumn FieldName="STOCK_CODE_TYPE" Header="Generate From" HeaderToolTip="Indicate where stock code is generated from">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StockCodeType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Commodity Code" FieldName="GUID_COMMODITY_CODE" HeaderToolTip="Default commodity code that will be assigned in estimate" DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Default commodity code that will be assigned in estimate">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Code" FieldName="CODE" />
-                            <dxg:GridColumn Header="Name" FieldName="NAME" />
-                            <dxg:GridColumn Header="Type" FieldName="TYPE" />
-                            <dxg:GridColumn Header="Specification" FieldName="SPEC" />
-                            <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" />
-                            <dxg:GridColumn Header="UOM" FieldName="UOM" HeaderToolTip="Unit of measure">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="UOM1" IsTextEditable="True" ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" ValueMember="UOM1" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Supply Rate" FieldName="RATE_SUPPLY" HeaderToolTip="Supply rate per quantity">
+                            <dxg:GridColumn FieldName="CODE" Header="Code" />
+                            <dxg:GridColumn FieldName="NAME" Header="Name" />
+                            <dxg:GridColumn FieldName="TYPE" Header="Type" />
+                            <dxg:GridColumn FieldName="SPEC" Header="Specification" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="UOM" Header="UOM" HeaderToolTip="Unit of measure" />
+                            <dxg:GridColumn FieldName="RATE_SUPPLY" Header="Supply Rate" HeaderToolTip="Supply rate per quantity">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Installation Hours" FieldName="HOURS_INSTALL" HeaderToolTip="Installation hours per quantity">
+                            <dxg:GridColumn FieldName="HOURS_INSTALL" Header="Installation Hours" HeaderToolTip="Installation hours per quantity">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
