@@ -407,8 +407,8 @@ namespace BluePrints.ViewModels
                         AREACollectionViewModel.Save(newAREA);
                         findAREA = newAREA;
                     }
-                    else
-                        pasteEntity.Entity.Entity.GUID_AREA = findAREA.GUID;
+
+                    pasteEntity.Entity.Entity.GUID_AREA = findAREA.GUID;
 
                     if (subarea_data.Value != string.Empty)
                     {
@@ -423,8 +423,8 @@ namespace BluePrints.ViewModels
                             AREACollectionViewModel.Save(newSUBAREA);
                             findSUBAREA = newSUBAREA;
                         }
-                        else
-                            pasteEntity.Entity.Entity.GUID_SUBAREA = findSUBAREA.GUID;
+
+                        pasteEntity.Entity.Entity.GUID_SUBAREA = findSUBAREA.GUID;
                     }
                 }
             }

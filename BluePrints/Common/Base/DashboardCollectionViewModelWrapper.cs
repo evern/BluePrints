@@ -79,7 +79,7 @@ namespace BluePrints.Common.ViewModel
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             first_loaded_dispatchTimer = new DispatcherTimer();
-            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 5);
+            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 3);
             first_loaded_dispatchTimer.Tick += first_loaded_dispatchTimer_Tick;
         }
         

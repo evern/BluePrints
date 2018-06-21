@@ -129,8 +129,8 @@ namespace BluePrints.Data
         {
             get
             {
-                if (IsByDuration)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
+                //if (IsByDuration)
+                //    return BluePrintsConstants.DurationBasedTotalUnits;
 
                 if (STOCK_CODE == null)
                     return 0;
