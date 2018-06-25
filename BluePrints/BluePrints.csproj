@@ -584,6 +584,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_MATERIAL.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_STAFF_ROLE.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_LABOUR.cs" />
@@ -611,6 +612,8 @@
     <Compile Include="EntityFramework\Annotations\CLIENT.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\HOLIDAY.cs" />
+    <Compile Include="EntityFramework\Annotations\ROSTER_STAFF.cs" />
+    <Compile Include="EntityFramework\Annotations\ROSTER_STAFF_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_ISSUE.cs" />
@@ -625,6 +628,7 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\BluePrintsData\OFFICE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
@@ -657,6 +661,8 @@
     <Compile Include="EntityFramework\BluePrintsData\HOLIDAY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_TEAM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE_COMMODITY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ROSTER_STAFF.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ROSTER_STAFF_STATUS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />
@@ -738,6 +744,7 @@
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ROSTER\RosterCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -825,6 +832,9 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ROSTER\RosterCollectionView.xaml.cs">
+      <DependentUpon>RosterCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1695,6 +1705,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ROSTER\RosterCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

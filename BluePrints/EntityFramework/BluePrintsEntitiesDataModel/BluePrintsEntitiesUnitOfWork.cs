@@ -35,6 +35,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<BASELINE>(), (BASELINE x) => x.GUID); }
         }
 
+        IRepository<CONSTRUCTION_CONFIG, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_CONFIGS
+        {
+            get { return GetRepository(x => x.Set<CONSTRUCTION_CONFIG>(), (CONSTRUCTION_CONFIG x) => x.GUID); }
+        }
+
         IRepository<STOCK_GROUP, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_GROUPS
         {
             get { return GetRepository(x => x.Set<STOCK_GROUP>(), (STOCK_GROUP x) => x.GUID); }
@@ -163,6 +168,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<REGISTER_LL, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_LL
         {
             get { return GetRepository(x => x.Set<REGISTER_LL>(), (REGISTER_LL x) => x.GUID); }
+        }
+
+        IRepository<ROSTER_STAFF, Guid> IBluePrintsEntitiesUnitOfWork.ROSTER_STAFFS
+        {
+            get { return GetRepository(x => x.Set<ROSTER_STAFF>(), (ROSTER_STAFF x) => x.GUID); }
+        }
+
+        IRepository<ROSTER_STAFF_STATUS, Guid> IBluePrintsEntitiesUnitOfWork.ROSTER_STAFF_STATUSES
+        {
+            get { return GetRepository(x => x.Set<ROSTER_STAFF_STATUS>(), (ROSTER_STAFF_STATUS x) => x.GUID); }
         }
 
         IRepository<REGISTER_NC, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_NC

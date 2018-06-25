@@ -17,6 +17,7 @@ namespace BluePrints.Data
         public virtual DbSet<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
         public virtual DbSet<CLIENT> CLIENT { get; set; }
         public virtual DbSet<COMMODITY_CODE> COMMODITY_CODE { get; set; }
+        public virtual DbSet<CONSTRUCTION_CONFIG> CONSTRUCTION_CONFIG { get; set; }
         public virtual DbSet<DataPoint> DataPoint { get; set; }
         public virtual DbSet<DAYWORK> DAYWORK { get; set; }
         public virtual DbSet<DAYWORK_EQUIPMENT> DAYWORK_EQUIPMENT { get; set; }
@@ -61,6 +62,8 @@ namespace BluePrints.Data
         public virtual DbSet<ROLE> ROLE { get; set; }
         public virtual DbSet<ROLE_PERMISSION> ROLE_PERMISSION { get; set; }
         public virtual DbSet<ROLE_COMMODITY> ROLE_COMMODITY { get; set; }
+        public virtual DbSet<ROSTER_STAFF> ROSTER_STAFF { get; set; }
+        public virtual DbSet<ROSTER_STAFF_STATUS> ROSTER_STAFF_STATUS { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
         public virtual DbSet<STOCK_CODE> STOCK_CODE { get; set; }
         public virtual DbSet<STOCK_GROUP> STOCK_GROUP { get; set; }

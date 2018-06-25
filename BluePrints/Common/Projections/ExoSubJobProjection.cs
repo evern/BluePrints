@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DevExpress.Mvvm.POCO;
 using System.Collections.ObjectModel;
+using BaseModel.Data.Helpers;
 
 namespace BluePrints.Common.Projections
 {

@@ -30,6 +30,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<BASELINE, Guid> BASELINES { get; }
 
         /// <summary>
+        /// The CONSTRUCTION_CONFIG entities repository.
+        /// </summary>
+        IRepository<CONSTRUCTION_CONFIG, Guid> CONSTRUCTION_CONFIGS { get; }
+
+        /// <summary>
         /// The STOCK_GROUP entities repository.
         /// </summary>
         IRepository<STOCK_GROUP, Guid> STOCK_GROUPS { get; }
@@ -233,6 +238,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The ROLE entities repository.
         /// </summary>
         IRepository<ROLE, Guid> ROLES { get; }
+
+        /// <summary>
+        /// The ROSTER_STAFF entities repository.
+        /// </summary>
+        IRepository<ROSTER_STAFF, Guid> ROSTER_STAFFS { get; }
+
+        /// <summary>
+        /// The ROSTER_STAFF_STATUS entities repository.
+        /// </summary>
+        IRepository<ROSTER_STAFF_STATUS, Guid> ROSTER_STAFF_STATUSES { get; }
 
         /// <summary>
         /// The SETTINGS_GLOBALS entities repository.

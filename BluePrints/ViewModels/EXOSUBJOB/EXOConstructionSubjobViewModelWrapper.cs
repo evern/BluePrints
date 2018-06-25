@@ -80,6 +80,7 @@ namespace BluePrints.ViewModels
             base.CleanUpEntitiesLoader();
 
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -189,12 +190,14 @@ namespace BluePrints.ViewModels
                 if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
                     return null;
 
+                List<ExoSubJobAuth> orderedAuthUsers = new List<ExoSubJobAuth>();
                 foreach (STAFF staff in exoSTAFFS)
                 {
-                    IEnumerable<ExoSubJobAuth> findUsers = DisplaySelectedEntities.SelectMany(x => x.AuthUsers);
                     ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
+                    USER newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+                    if (newUser == null)
+                        newUser = new USER();
 
-                    USER newUser = new USER();
                     newUser.NAME = staff.NAME;
                     newUser.EXO_STAFF_ID = staff.STAFFNO;
                     displayUserAuth.User = newUser;
@@ -207,10 +210,11 @@ namespace BluePrints.ViewModels
                         displayUserAuth.IsAssigned = false;
 
                     displayUserAuth.ShouldAssign = false;
-                    permissions.Add(displayUserAuth);
+                    orderedAuthUsers.Add(displayUserAuth);
                 }
 
-                return permissions.OrderBy(x => x.User.Full_Name);
+                permissions.AddRange(orderedAuthUsers.OrderBy(x => x.User.Full_Name));
+                return permissions;
             }
         }
 
@@ -365,6 +369,17 @@ namespace BluePrints.ViewModels
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
                 return "EXOConstructionSubjobViewModelWrapper";
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 

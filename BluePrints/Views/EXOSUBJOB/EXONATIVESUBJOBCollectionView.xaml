@@ -14,8 +14,8 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="EXO Permission">
                             <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
-                                <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
-                                <dxb:BarButtonItem Content="Upload Pasted to Exo" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from pasted data" Command="{Binding DataContext.CommitUnbookableToExoCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.CommitUnbookableToExoCommand, ElementName=userControl}" Content="Upload Pasted to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from pasted data" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -30,10 +30,10 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="550" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="Subjob" FieldName="SubJob.Code" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                <dxg:GridColumn Header="Cost Group" FieldName="Discipline.Code" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn Header="Cost Type" FieldName="Commodity.Code" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn Header="Bookable" FieldName="IsLineExistsInExo" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="SubJob.Code" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Discipline.Code" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Commodity.Code" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
@@ -47,10 +47,10 @@
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Content="Copy With Headers" ToolTip="Copy selected rows along with header" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" Name="contextMenuCopyWithHeader" />
-                                        <dxb:BarButtonItem Content="Copy" ToolTip="Ctrl + C" Command="{Binding KeyboardCopyCommand}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" Glyph="{dx:DXImage Image=Copy_16x16.png}" />
-                                        <dxb:BarButtonItem Content="Remove" ToolTip="Remove only unbookable row" Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                        <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                        <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                        <dxb:BarButtonItem Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Remove" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Remove only unbookable row" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
@@ -60,8 +60,12 @@
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
                             <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="User" FieldName="User.NAME" MinWidth="150" AllowEditing="False" FilterPopupMode="CheckedList" />
-                                    <dxg:GridColumn FieldName="IsAssigned" HeaderToolTip="Indicate whether user have permission to book the selected time in exo" FilterPopupMode="CheckedList">
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
