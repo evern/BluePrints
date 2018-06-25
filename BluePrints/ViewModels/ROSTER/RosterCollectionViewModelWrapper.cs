@@ -63,8 +63,6 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         List<string> defaultColumnFieldNames = new List<string>();
-        List<string> hiddenColumnFieldNames = new List<string>();
-        List<string> systemColumnFieldNames = new List<string>();
         private Data.PROJECT loadPROJECT;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -90,11 +88,6 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnFirstName);
             defaultColumnFieldNames.Add(columnLastName);
             defaultColumnFieldNames.Add(columnTitle);
-
-            systemColumnFieldNames.Add(columnStaffNo);
-            systemColumnFieldNames.Add(columnFirstName);
-            systemColumnFieldNames.Add(columnLastName);
-            systemColumnFieldNames.Add(columnTitle);
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -107,6 +100,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
         }
 
@@ -176,11 +170,6 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName) || systemColumnFieldNames.Any(x => x == e.Column.FieldName))
-                {
-                    e.Column.Visible = false;
-                }
-
                 e.Column.Fixed = FixedStyle.Left;
             }
         }
@@ -226,9 +215,9 @@ namespace BluePrints.ViewModels
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
 
                     dataPointsTable.Columns.Add(columnStaffNo, typeof(int));
-                    dataPointsTable.Columns.Add(columnFirstName, typeof(int));
-                    dataPointsTable.Columns.Add(columnLastName, typeof(int));
-                    dataPointsTable.Columns.Add(columnTitle, typeof(int));
+                    dataPointsTable.Columns.Add(columnFirstName, typeof(string));
+                    dataPointsTable.Columns.Add(columnLastName, typeof(string));
+                    dataPointsTable.Columns.Add(columnTitle, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -245,27 +234,6 @@ namespace BluePrints.ViewModels
             {
                 dataPointsTable = value;
             }
-        }
-
-
-        public void ShowValidJobLines()
-        {
-            if (MessageBoxService.ShowMessage("Are you sure you want to show all valid job lines?\n\nThis will clear current table entries", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
-                return;
-
-            DataPointsTable.Clear();
-            IEnumerable<ExoTimeAuthorisation> populateAuthorisations = exoAuthorisations.OrderBy(x => x.ResourceName).ThenBy(x => x.SubJobCode).ThenBy(x => x.DisciplineCode).ThenBy(x => x.CommodityCode);
-            foreach(ExoTimeAuthorisation populateAuthorisation in populateAuthorisations)
-            {
-                DataRow newRow = DataPointsTable.NewRow();
-                newRow[columnStaffNo] = populateAuthorisation.ResourceSeqNo;
-                newRow[columnFirstName] = populateAuthorisation.SubJobNo;
-                newRow[columnLastName] = populateAuthorisation.DisciplineId;
-                newRow[columnTitle] = populateAuthorisation.CommodityId;
-                DataPointsTable.Rows.Add(newRow);
-            }
-
-            GridControlService.RefreshData();
         }
 
         public bool CanReadFromExo()
@@ -386,183 +354,12 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage("Data retrieved from exo");
         }
 
-        public bool CanCommitToExo()
-        {
-            return DataPointsTable != null && DataPointsTable.Rows.Count > 0;
-        }
-
-        public void CommitToExo()
-        {
-            if (MessageBoxService.ShowMessage("Are you sure you want to commit current table to exo?", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
-                return;
-
-            int committedRow = 0;
-            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-
-            foreach (DataRow row in DataPointsTable.Rows)
-            {
-                if (row[columnStaffNo].ToString() != string.Empty && row[columnFirstName].ToString() != string.Empty && row[columnLastName].ToString() != string.Empty && row[columnTitle].ToString() != string.Empty)
-                {
-                    int resourceSeqNo = (int)row[columnStaffNo];
-                    int subJobNo = (int)row[columnFirstName];
-                    int costGroupNo = (int)row[columnLastName];
-                    int costTypeNo = (int)row[columnTitle];
-
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
-                    if(findAuthorisation != null)
-                    {
-                        committedRow += 1;
-                        foreach (DataColumn dataColumn in DataPointsTable.Columns)
-                        {
-                            DateTime bookDate = DateTime.Now;
-                            if(DateTime.TryParse(dataColumn.ColumnName, out bookDate))
-                            {
-                                TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
-                                if (row[dataColumn] == DBNull.Value)
-                                    continue;
-
-                                decimal bookTime = (decimal)row[dataColumn];
-                                bool isReadOnly = false;
-                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == findAuthorisation.StockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
-                                if (timesheet != null)
-                                {
-                                    AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
-                                    if (isReadOnly)
-                                        row.SetColumnError(dataColumn, "Already posted");
-                                    else
-                                        row.SetColumnError(dataColumn, string.Empty);
-
-                                    primeroUnitOfWork.SaveChanges();
-                                }
-                                else
-                                {
-                                    JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
-                                    newTimeSheet.STAFFNO = resourceSeqNo;
-                                    newTimeSheet.JOBNO = subJobNo;
-                                    newTimeSheet.TITLE = findAuthorisation.SubJobCode + " : " + findAuthorisation.SubJobTitle;
-                                    newTimeSheet.STOCKCODE = findAuthorisation.StockCode;
-                                    newTimeSheet.DESCRIPTION = findAuthorisation.StockCodeDescription;
-                                    newTimeSheet.UNITPRICE = 0;
-                                    newTimeSheet.WEEK_START_DATE = timesheetDate.WeekStartDate;
-                                    AdjustTimeSheetHours(newTimeSheet, timesheetDate, bookTime, out isReadOnly);
-                                    newTimeSheet.IS_OVERTIME = "N";
-                                    newTimeSheet.DAY1_POSTED = "N";
-                                    newTimeSheet.DAY2_POSTED = "N";
-                                    newTimeSheet.DAY3_POSTED = "N";
-                                    newTimeSheet.DAY4_POSTED = "N";
-                                    newTimeSheet.DAY5_POSTED = "N";
-                                    newTimeSheet.DAY6_POSTED = "N";
-                                    newTimeSheet.DAY7_POSTED = "N";
-                                    newTimeSheet.RATE_SEQNO = 0;
-                                    newTimeSheet.RATE_FACTOR = 1;
-                                    newTimeSheet.COST_GROUP = costGroupNo;
-                                    newTimeSheet.COST_TYPE = costTypeNo;
-                                    newTimeSheet.LABOUR_ALLOWANCE = 0;
-                                    newTimeSheet.HAS_ALLOWANCE = "N";
-                                    newTimeSheet.X_DECLINED = false;
-                                    newTimeSheet.X_APPROVAL_MANAGER = -1;
-                                    newTimeSheet.X_SUBMITTED = false;
-                                    primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
-                                    primeroUnitOfWork.SaveChanges();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                LoadingScreenManager.Progress();
-            }
-
-            MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
-        }
-
         public TimesheetDate GetTimesheetDate(DateTime bookDate)
         {
             DateTime startOfWeek = bookDate.StartOfWeek(DayOfWeek.Monday);
             int DayNum = (bookDate - startOfWeek).Days + 1;
 
             return new TimesheetDate() { WeekStartDate = startOfWeek, DayNumber = DayNum };
-        }
-
-        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, decimal bookTime, out bool isReadOnly)
-        {
-            Double dblTime = Convert.ToDouble(bookTime);
-            switch (bookDate.DayNumber)
-            {
-                case 1:
-                    if (timesheet.DAY1_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY1 = dblTime;
-                    break;
-                case 2:
-                    if (timesheet.DAY2_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY2 = dblTime;
-                    break;
-                case 3:
-                    if (timesheet.DAY3_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY3 = dblTime;
-                    break;
-                case 4:
-                    if (timesheet.DAY4_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY4 = dblTime;
-                    break;
-                case 5:
-                    if (timesheet.DAY5_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY5 = dblTime;
-                    break;
-                case 6:
-                    if (timesheet.DAY6_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY6 = dblTime;
-                    break;
-                case 7:
-                    if (timesheet.DAY7_POSTED == "Y")
-                    {
-                        isReadOnly = true;
-                        break;
-                    }
-
-                    isReadOnly = false;
-                    timesheet.DAY7 = dblTime;
-                    break;
-                default:
-                    isReadOnly = false;
-                    break;
-            }
         }
 
         private double? GetTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, out bool isReadOnly)
@@ -602,7 +399,7 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "TimesheetEntryViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "RosterCollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private DevExpress.Mvvm.IDialogService DateFromToDialogService
@@ -1131,6 +928,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTGROUPS>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STAFF> STAFFCollection
+        {
+            get
+            {
+                var collection = GetEntities<STAFF>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }

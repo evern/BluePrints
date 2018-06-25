@@ -64,26 +64,16 @@
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Resource_SeqNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Resource">
+                                <dxg:GridColumn FieldName="EXO_STAFFNO" FilterPopupMode="CheckedList" Fixed="Left" Header="Staff">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.STAFFCollection, ElementName=userControl}" ValueMember="STAFFNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="JobNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Job">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CostGroup" FilterPopupMode="CheckedList" Fixed="Left" Header="Discipline">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CostType" FilterPopupMode="CheckedList" Fixed="Left" Header="Commodity">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="FIRST_NAME" FilterPopupMode="CheckedList" Fixed="Left" Header="First Name" />
+                                <dxg:GridColumn FieldName="LAST_NAME" FilterPopupMode="CheckedList" Fixed="Left" Header="Last Name" />
+                                <dxg:GridColumn FieldName="TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Title" />
+                                <dxg:GridColumn FieldName="DEPARTMENT_NAME" FilterPopupMode="CheckedList" Fixed="Left" Header="Department Name" />
+                                <dxg:GridColumn FieldName="EMPLOYEE_TYPE" FilterPopupMode="CheckedList" Fixed="Left" Header="Employee Type" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />

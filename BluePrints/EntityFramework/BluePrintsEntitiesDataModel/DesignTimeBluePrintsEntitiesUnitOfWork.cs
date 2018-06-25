@@ -37,6 +37,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((BASELINE x) => x.GUID); }
         }
 
+        IRepository<CONSTRUCTION_CONFIG, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_CONFIGS
+        {
+            get { return GetRepository((CONSTRUCTION_CONFIG x) => x.GUID); }
+        }
+
         IRepository<STOCK_GROUP, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_GROUPS
         {
             get { return GetRepository((STOCK_GROUP x) => x.GUID); }
@@ -240,6 +245,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<ROLE_PERMISSION, Guid> IBluePrintsEntitiesUnitOfWork.ROLE_PERMISSIONS
         {
             get { return GetRepository((ROLE_PERMISSION x) => x.GUID); }
+        }
+
+        IRepository<ROSTER_STAFF, Guid> IBluePrintsEntitiesUnitOfWork.ROSTER_STAFFS
+        {
+            get { return GetRepository((ROSTER_STAFF x) => x.GUID); }
+        }
+
+        IRepository<ROSTER_STAFF_STATUS, Guid> IBluePrintsEntitiesUnitOfWork.ROSTER_STAFF_STATUSES
+        {
+            get { return GetRepository((ROSTER_STAFF_STATUS x) => x.GUID); }
         }
 
         IRepository<ROLE, Guid> IBluePrintsEntitiesUnitOfWork.ROLES
