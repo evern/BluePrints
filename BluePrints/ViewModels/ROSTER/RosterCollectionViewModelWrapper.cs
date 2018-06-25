@@ -200,6 +200,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        //test merge branch
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
