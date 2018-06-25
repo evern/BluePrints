@@ -309,6 +309,13 @@ namespace BluePrints.ViewModels
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
         {
+            if(e.RowHandle < 0)
+            {
+                e.Handled = true;
+                base.CellValueChanging(e);
+                return;
+            }
+
             ExoSubJobAuth editingSubJobAuth = (ExoSubJobAuth)e.Row;
             //don't need to validate fieldname since only this field is changeable in role permission grid control
 
