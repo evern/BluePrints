@@ -49,7 +49,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class RosterCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
+        <ROSTER_STAFF, ROSTER_STAFF, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -67,6 +67,8 @@ namespace BluePrints.ViewModels
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+        public List<string> predefinedStatusName = new List<string>();
         string columnStaffNo = "EXO_STAFFNO";
         string columnFirstName = "FIRST_NAME";
         string columnLastName = "LAST_NAME";
@@ -88,9 +90,17 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnFirstName);
             defaultColumnFieldNames.Add(columnLastName);
             defaultColumnFieldNames.Add(columnTitle);
+            defaultColumnFieldNames.Add(columnDepartmentName);
+            defaultColumnFieldNames.Add(columnEmployeeType);
+
+            predefinedStatusName.Add("DIA");
+            predefinedStatusName.Add("FIA");
+            predefinedStatusName.Add("DOP");
+            predefinedStatusName.Add("FOP");
+            predefinedStatusName.Add("PER");
+            predefinedStatusName.Add("R&R");
         }
 
-        public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
         protected override void initializeEntitiesLoadersDescription()
         {
             MainViewModel = null;
@@ -113,16 +123,16 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false);
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ROSTER_STAFFS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<ROSTER_STAFF>, IQueryable<ROSTER_STAFF>> specifyMainViewModelProjection()
         {
-            return query => new List<BASELINE_ITEM>().AsQueryable();
+            return query => new List<ROSTER_STAFF>().AsQueryable();
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEM> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ROSTER_STAFF> entities)
         {
             MainViewModel.SetParentViewModel(this);
             MainViewModel.IsPasteCellLevel = false;
@@ -157,16 +167,13 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
+        public void GenerateJobCodeColumns(AutoGeneratingColumnEventArgs e)
         {
             if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
-                SpinEditSettings spinEdit = new SpinEditSettings();
-                spinEdit.MaskType = MaskType.Numeric;
-                spinEdit.Mask = "n";
-                spinEdit.MaskUseAsDisplayFormat = true;
-                spinEdit.MinValue = 0;
-                e.Column.EditSettings = spinEdit;
+                ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
+                comboBoxEdit.ItemsSource = SUBJOBCODECollection;
+                e.Column.EditSettings = comboBoxEdit;
             }
             else
             {
@@ -200,7 +207,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        //test merge branch
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
@@ -219,11 +225,13 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnFirstName, typeof(string));
                     dataPointsTable.Columns.Add(columnLastName, typeof(string));
                     dataPointsTable.Columns.Add(columnTitle, typeof(string));
+                    dataPointsTable.Columns.Add(columnDepartmentName, typeof(string));
+                    dataPointsTable.Columns.Add(columnEmployeeType, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(string));
                     }
 
                     TableViewService.ScrollToLast();
@@ -890,12 +898,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string UnifiedValueValidation(BASELINE_ITEM projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(ROSTER_STAFF projection, string field_name, object new_value)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(BASELINE_ITEM projection)
+        public override string UnifiedRowValidation(ROSTER_STAFF projection)
         {
             return string.Empty;
         }
@@ -954,5 +962,36 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public List<string> subJobCodeCollection;
+        public IEnumerable<string> SUBJOBCODECollection
+        {
+            get
+            {
+                if (exoAuthorisations == null)
+                    return null;
+
+                if (exoAuthorisations.Count == 0)
+                    return new List<string>();
+
+                if(subJobCodeCollection == null)
+                {
+                    subJobCodeCollection = new List<string>();
+                    subJobCodeCollection.AddRange(predefinedStatusName);
+                    subJobCodeCollection.AddRange(exoAuthorisations.Select(x => x.SubJobCode + "-" + x.DisciplineCode + "-" + x.CommodityCode).Distinct().ToList());
+                }
+
+                return subJobCodeCollection;
+            }
+        }
     }
+}
+
+public class RosterCellData
+{
+    public string Code { get; set; }
+    public int SubJobNo { get; set; }
+    public int CostGroupNo { get; set; }
+    public int CostTypeNo { get; set; }
+    public string Comments { get; set; }
 }

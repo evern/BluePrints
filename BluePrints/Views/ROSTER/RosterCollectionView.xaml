@@ -61,7 +61,7 @@
                     <dxlc:LayoutGroup>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
                             <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.GenerateJobCodeColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="EXO_STAFFNO" FilterPopupMode="CheckedList" Fixed="Left" Header="Staff">
