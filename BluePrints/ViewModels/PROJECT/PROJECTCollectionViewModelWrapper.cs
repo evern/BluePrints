@@ -50,9 +50,10 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private Action<object> navigateCoreCommand;
         protected override void resolveParameters(object parameter)
         {
+            navigateCoreCommand = ((EntitiesParameter<Action<object>>)parameter).GetEntity();
         }
 
         public override void OnLoaded()
@@ -1017,7 +1018,7 @@ namespace BluePrints.ViewModels
                 return;
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), 
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity), 
+                new DualEntitiesParameter<PROJECT, Action<object>>(DisplaySelectedEntity, navigateCoreCommand), 
                 "PROJECTView", 
                 "[" + DisplaySelectedEntity.NUMBER + "]");
 
