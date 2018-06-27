@@ -38,6 +38,7 @@ namespace BluePrints.Data
             REGISTER_LL = new HashSet<REGISTER_LL>();
             REGISTER_NC = new HashSet<REGISTER_NC>();
             REGISTER_RISK = new HashSet<REGISTER_RISK>();
+            ROSTER_STAFF = new HashSet<ROSTER_STAFF>();
             VARIATION = new HashSet<VARIATION>();
             SUBJOB = new HashSet<SUBJOB>();
             P6_ASSIGNMENT = new HashSet<P6_ASSIGNMENT>();

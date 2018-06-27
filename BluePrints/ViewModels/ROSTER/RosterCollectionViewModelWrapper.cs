@@ -111,12 +111,18 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ROSTER_STAFF_STATUSES, ROSTER_STAFF_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
         {
             return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
+        }
+
+        private Func<IRepositoryQuery<ROSTER_STAFF_STATUS>, IQueryable<ROSTER_STAFF_STATUS>> ROSTER_STAFF_STATUSProjectionFunc()
+        {
+            return query => query.Where(x => x.ROSTER_STAFF.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
@@ -129,7 +135,13 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<ROSTER_STAFF>, IQueryable<ROSTER_STAFF>> specifyMainViewModelProjection()
         {
-            return query => new List<ROSTER_STAFF>().AsQueryable();
+            return query => rosterStaffProjection(query);
+        }
+
+        private IQueryable<ROSTER_STAFF> rosterStaffProjection(IRepositoryQuery<ROSTER_STAFF> query)
+        {
+            IQueryable<ROSTER_STAFF> projectRosterStaff = query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return projectRosterStaff;
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ROSTER_STAFF> entities)
@@ -231,9 +243,10 @@ namespace BluePrints.ViewModels
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(string));
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(RosterCellData));
                     }
 
+                    populateDataTable();
                     TableViewService.ScrollToLast();
                 }
 
@@ -245,122 +258,140 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool CanReadFromExo()
+        private void populateDataTable()
         {
-            return dataPointsTable != null;
+            IEnumerable<DataColumn> dateColumnNames = getDataPointsTableDateColumns();
+            foreach(var entity in DisplayEntities)
+            {
+                DataRow newRow = DataPointsTable.NewRow();
+                newRow[columnStaffNo] = entity.EXO_STAFFNO;
+                newRow[columnFirstName] = entity.FIRST_NAME;
+                newRow[columnLastName] = entity.LAST_NAME;
+                newRow[columnTitle] = entity.TITLE;
+                newRow[columnDepartmentName] = entity.DEPARTMENT_NAME;
+                newRow[columnEmployeeType] = entity.EMPLOYEE_TYPE;
+
+                IEnumerable<ROSTER_STAFF_STATUS> currentStaffRosterStatus = ROSTER_STAFF_STATUSCollection.Where(x => x.GUID_ROSTER_STAFF == entity.GUID);
+                foreach(var staffRosterStatus in currentStaffRosterStatus)
+                {
+                    DataColumn findDataColumn = dateColumnNames.FirstOrDefault(x => x.ColumnName == staffRosterStatus.STATUS_DATE.ToString("G"));
+                    if(findDataColumn != null)
+                    {
+                        newRow[findDataColumn] = new RosterCellData() { Code = staffRosterStatus.STATUS_NAME, SubJobNo = staffRosterStatus.JOBNO, CostGroupNo = staffRosterStatus.COSTGROUPNO, CostTypeNo = staffRosterStatus.COSTTYPENO, Comments = staffRosterStatus.COMMENTS };
+                    }
+                }
+
+                DataPointsTable.Rows.Add(newRow);
+            }
         }
 
-        public void ReadFromExo()
+        private IEnumerable<DataColumn> getDataPointsTableDateColumns()
         {
-            if (MessageBoxService.ShowMessage("Are you sure you want to read hours from exo?\n\nThis will clear the table and replace hours with hours from exo", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
-                return;
-
-            EntitiesUndoRedoManager.Clear();
-            DataPointsTable.Clear();
-
-            var result = exoAuthorisations.GroupBy(x => x.SubJobNo)
-                   .Select(grp => grp.First())
-                   .ToList();
-
-            List<int> jobNumbers = result.Select(x => x.SubJobNo).ToList();
-            List<TimesheetDate> weekStartDates = new List<TimesheetDate>();
-
-            List<string> dateColumnNames = new List<string>();
+            List<DataColumn> dataColumns = new List<DataColumn>();
             foreach (DataColumn dataColumn in DataPointsTable.Columns)
             {
                 DateTime bookDate = DateTime.Now;
                 if (DateTime.TryParse(dataColumn.ColumnName, out bookDate))
                 {
-                    TimesheetDate timeSheetDate = GetTimesheetDate(bookDate);
-                    if (!weekStartDates.Any(x => x.WeekStartDate == timeSheetDate.WeekStartDate))
-                        weekStartDates.Add(timeSheetDate);
-
-                    dateColumnNames.Add(dataColumn.ColumnName);
+                    dataColumns.Add(dataColumn);
                 }
             }
 
-            List<DataRow> newRows = new List<DataRow>();
-            LoadingScreenManager.ShowLoadingScreen(jobNumbers.Count);
-            foreach (int jobNumber in jobNumbers)
+            return dataColumns;
+        }
+
+        //public void CellValueChangeDatabaseUpdate(CellValueChangedEventArgs e)
+        //{
+        //    if (e.RowHandle == GridControl.AutoFilterRowHandle)
+        //        return;
+
+        //    DataRowView dataRowView = (DataRowView)e.Row;
+        //    BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
+
+        //    if (e.Column.FieldName.ToUpper().Contains("ENTITY"))
+        //    {
+        //        //entity.Entity.Entity.PRIMARY_TITLE = e.Value.ToString();
+        //        ///MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, columnPrimaryTitle, e.OldValue, e.Value, EntityMessageType.Changed);
+        //        MainViewModel.Save(entity);
+        //    }
+        //    else
+        //    {
+        //        updatePercentage(entity, e.Column.FieldName, e.OldValue, e.Value);
+        //    }
+
+        //    e.Handled = true;
+        //}
+
+        public virtual void NewRowAddUndoAndSave(RowEventArgs e)
+        {
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
             {
-                List<JOB_TIMESHEETS> timeSheetAllDates = new List<JOB_TIMESHEETS>();
-                foreach(TimesheetDate weekStartDate in weekStartDates)
+                DataRowView dataRowView = (DataRowView)e.Row;
+                ROSTER_STAFF rosterStaff = transposeDataTableStaff(dataRowView, true);
+                if(rosterStaff != null)
+                    MainViewModel.Save(rosterStaff);
+            }
+        }
+
+        public void ExistingRowAddUndoAndSave(CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
+            {
+                DataRowView dataRowView = (DataRowView)e.Row;
+                if(defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
                 {
-                    IQueryable<JOB_TIMESHEETS> timeSheets = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == weekStartDate.WeekStartDate && x.JOBNO == jobNumber);
-                    timeSheetAllDates.AddRange(timeSheets.ToList());
+                    ROSTER_STAFF rosterStaff = transposeDataTableStaff(dataRowView, false);
+                    if (rosterStaff != null)
+                        MainViewModel.Save(rosterStaff);
                 }
-
-                if(timeSheetAllDates.Count > 0)
+                else
                 {
-                    foreach (JOB_TIMESHEETS timeSheet in timeSheetAllDates)
+                    DateTime editDateTime;
+                    DateTime.TryParse(e.Column.FieldName, out editDateTime);
+                    if(editDateTime != null)
                     {
-                        int findCostGroup;
-                        if (timeSheet.COST_GROUP == null)
-                            continue;
-                        else
-                            findCostGroup = (int)timeSheet.COST_GROUP;
-
-                        int findCostType;
-                        if (timeSheet.COST_TYPE == null)
-                            continue;
-                        else
-                            findCostType = (int)timeSheet.COST_TYPE;
-
-                        DataRow newRow = newRows.FirstOrDefault(x => (int)x[columnFirstName] == timeSheet.JOBNO && (int)x[columnStaffNo] == timeSheet.STAFFNO && (int)x[columnLastName] == findCostGroup && (int)x[columnTitle] == findCostType);
-                        if(newRow == null)
-                        {
-                            newRow = DataPointsTable.NewRow();
-                            newRow[columnStaffNo] = timeSheet.STAFFNO;
-                            newRow[columnFirstName] = timeSheet.JOBNO;
-                            if (timeSheet.COST_GROUP == null)
-                                newRow[columnLastName] = DBNull.Value;
-                            else
-                                newRow[columnLastName] = (int)timeSheet.COST_GROUP;
-
-                            if (timeSheet.COST_TYPE == null)
-                                newRow[columnTitle] = DBNull.Value;
-                            else
-                                newRow[columnTitle] = (int)timeSheet.COST_TYPE;
-
-                            newRows.Add(newRow);
-                        }
-
-                        foreach (string dateColumnName in dateColumnNames)
-                        {
-                            DateTime bookDate = DateTime.Parse(dateColumnName);
-                            TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
-
-                            if (timeSheet.WEEK_START_DATE != timesheetDate.WeekStartDate)
-                                continue;
-
-                            bool isReadOnly = false;
-                            double? exoHours = GetTimeSheetHours(timeSheet, timesheetDate, out isReadOnly);
-                            if (exoHours == null)
-                                newRow[dateColumnName] = DBNull.Value;
-                            else
-                            {
-                                decimal exoHoursDecimal = Convert.ToDecimal((double)exoHours);
-                                newRow[dateColumnName] = exoHoursDecimal;
-                                if (isReadOnly)
-                                    newRow.SetColumnError(dateColumnName, "Already posted");
-                                else
-                                    newRow.SetColumnError(dateColumnName, string.Empty);
-                            }
-                        }
+                        
                     }
                 }
-
-                LoadingScreenManager.Progress();
             }
+        }
 
-            foreach (DataRow newRow in newRows)
+        private ROSTER_STAFF transposeDataTableStaff(DataRowView dataRowView, bool isNewRow)
+        {
+            if (dataRowView.Row[columnStaffNo] == null)
+                return null;
+
+            ROSTER_STAFF findSTAFF = null;
+            int staffNo = (int)dataRowView.Row[columnStaffNo];
+            if (!isNewRow)
             {
-                validateUserAuth(newRow);
-                DataPointsTable.Rows.Add(newRow);
+                findSTAFF = DisplayEntities.FirstOrDefault(x => x.EXO_STAFFNO == staffNo);
+                if (findSTAFF == null)
+                    return null;
             }
 
-            GridControlService.RefreshData();
-            MessageBoxService.ShowMessage("Data retrieved from exo");
+
+            ROSTER_STAFF newStaff = new ROSTER_STAFF();
+            newStaff.EXO_STAFFNO = staffNo;
+            newStaff.GUID_PROJECT = loadPROJECT.GUID;
+            newStaff.FIRST_NAME = dataRowView.Row[columnFirstName].ToString();
+            newStaff.LAST_NAME = dataRowView.Row[columnLastName].ToString();
+            newStaff.TITLE = dataRowView.Row[columnTitle].ToString();
+            newStaff.DEPARTMENT_NAME = dataRowView.Row[columnDepartmentName].ToString();
+
+            return newStaff;
+        }
+
+        public void DatatableCellValueChanging(CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            if (!e.Handled)
+            {
+                //UnifiedCellValueChanging(e.Column.FieldName, e.OldValue, e.Value, (TMainProjectionEntity)e.Row, e.RowHandle == DataControlBase.NewItemRowHandle);
+                //will be unpaused in existingrow or newrow save
+            }
         }
 
         public TimesheetDate GetTimesheetDate(DateTime bookDate)
@@ -963,8 +994,17 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public List<string> subJobCodeCollection;
-        public IEnumerable<string> SUBJOBCODECollection
+        public IEnumerable<ROSTER_STAFF_STATUS> ROSTER_STAFF_STATUSCollection
+        {
+            get
+            {
+                var collection = GetEntities<ROSTER_STAFF_STATUS>();
+                return collection;
+            }
+        }
+
+        public List<RosterCellData> subJobCodeCollection;
+        public IEnumerable<RosterCellData> SUBJOBCODECollection
         {
             get
             {
@@ -972,13 +1012,13 @@ namespace BluePrints.ViewModels
                     return null;
 
                 if (exoAuthorisations.Count == 0)
-                    return new List<string>();
+                    return new List<RosterCellData>();
 
                 if(subJobCodeCollection == null)
                 {
-                    subJobCodeCollection = new List<string>();
-                    subJobCodeCollection.AddRange(predefinedStatusName);
-                    subJobCodeCollection.AddRange(exoAuthorisations.Select(x => x.SubJobCode + "-" + x.DisciplineCode + "-" + x.CommodityCode).Distinct().ToList());
+                    subJobCodeCollection = new List<RosterCellData>();
+                    subJobCodeCollection.AddRange(predefinedStatusName.Select(x => new RosterCellData() { Code = x }).ToList());
+                    subJobCodeCollection.AddRange(exoAuthorisations.Select(x => new RosterCellData() { Code = x.SubJobCode + "-" + x.DisciplineCode + "-" + x.CommodityCode, SubJobNo = x.SubJobNo, CostGroupNo = x.DisciplineId, CostTypeNo = x.CommodityId }).Distinct().ToList());
                 }
 
                 return subJobCodeCollection;
@@ -990,8 +1030,13 @@ namespace BluePrints.ViewModels
 public class RosterCellData
 {
     public string Code { get; set; }
-    public int SubJobNo { get; set; }
-    public int CostGroupNo { get; set; }
-    public int CostTypeNo { get; set; }
+    public int? SubJobNo { get; set; }
+    public int? CostGroupNo { get; set; }
+    public int? CostTypeNo { get; set; }
     public string Comments { get; set; }
+
+    public override string ToString()
+    {
+        return Code;
+    }
 }

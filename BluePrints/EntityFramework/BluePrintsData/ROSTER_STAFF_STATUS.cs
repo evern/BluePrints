@@ -13,6 +13,8 @@
 
         public Guid GUID_ROSTER_STAFF { get; set; }
 
+        public DateTime STATUS_DATE { get; set; }
+
         [Required]
         [StringLength(50)]
         public string STATUS_NAME { get; set; }
@@ -37,5 +39,7 @@
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        public virtual ROSTER_STAFF ROSTER_STAFF { get; set; }
     }
 }

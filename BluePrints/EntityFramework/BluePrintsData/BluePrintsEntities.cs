@@ -650,6 +650,18 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_STUDY_TYPE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.ROSTER_STAFF)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ROSTER_STAFF>()
+                .HasMany(e => e.ROSTER_STAFF_STATUS)
+                .WithRequired(e => e.ROSTER_STAFF)
+                .HasForeignKey(e => e.GUID_ROSTER_STAFF)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<REGISTER>()
                 .Property(e => e.UNIQUE_H_NUM)
                 .IsFixedLength();

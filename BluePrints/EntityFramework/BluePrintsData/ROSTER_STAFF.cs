@@ -11,6 +11,8 @@
         [Key]
         public Guid GUID { get; set; }
 
+        public Guid GUID_PROJECT { get; set; }
+
         public int? EXO_STAFFNO { get; set; }
 
         [Required]
@@ -41,5 +43,10 @@
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ROSTER_STAFF_STATUS> ROSTER_STAFF_STATUS { get; set; }
     }
 }

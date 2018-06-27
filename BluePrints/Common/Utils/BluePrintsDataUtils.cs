@@ -52,6 +52,10 @@ namespace BluePrints.Common.ViewModel.Utils
                     newSUBJOB.GUID_PROJECT = loadPROJECT.GUID;
                     newSUBJOB.GUID_DAREA = entity.Area_Guid;
                     newSUBJOB.GUID_DSUBAREA = entity.SubArea_Guid == null ? defaultSubArea != null ? defaultSubArea.GUID : (Guid?)null : entity.SubArea_Guid;
+                    AREA findAREA = AREACollection.FirstOrDefault(x => x.GUID == newSUBJOB.GUID_DAREA);
+                    if (findAREA != null)
+                        newSUBJOB.INTERNAL_NAME2 = findAREA.TITLE;
+
                     newSUBJOB.GUID_DPHASE = existingOrNewPhaseGuid;
                     newSUBJOB.INTERNAL_NAME1 = internalNumber;
                     newSUBJOB.STARTDATE = DateTime.Now;
