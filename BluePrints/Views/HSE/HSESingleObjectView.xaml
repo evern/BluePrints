@@ -66,12 +66,12 @@
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup GroupBoxStyle="{StaticResource groupBoxStyle}" Orientation="Horizontal" View="GroupBox">
                                         <dxlc:LayoutItem Label="Lost Time Injuries">
-                                            <dxe:TextEdit HorizontalAlignment="Right" EditValue="{Binding INJURIES_REC_LTI}" IsReadOnly="True" Tag="GUID_PROJECT" />
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_LTI}" Increment="1" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Style="{StaticResource SingleObjectView.ControlContainer}" Tag="Entity.INJURIES_REC_LTI" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Target" />
                                         <dxlc:LayoutItem Label="Criteria" />
                                         <dxlc:LayoutItem>
-                                            <dxe:TextEdit EditValue="{Binding GUID_PROJECT}" IsReadOnly="True" Tag="GUID_PROJECT" />
+                                            <dxe:TextEdit EditValue="{Binding Entity.GUID_PROJECT}" IsReadOnly="True" Tag="GUID_PROJECT" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                 </ExtraLayout:ExtraLayoutControl>

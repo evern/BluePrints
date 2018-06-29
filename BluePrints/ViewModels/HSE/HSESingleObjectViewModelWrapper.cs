@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
@@ -9,6 +10,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Editors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +53,7 @@ namespace BluePrints.ViewModels
             isCompletelyLoaded = false;
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            DataDate =  new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1); ;
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -66,7 +69,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<HSE>, IQueryable<HSEProjection>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).Select(x => new HSEProjection() { Entity = x });
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).ToList().Select(x => new HSEProjection() { Entity = x }).AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HSEProjection> entities)
@@ -76,14 +79,14 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
-            EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.Entity.HSE_DATE == DataDate);
+            EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.Entity.HSE_DATE == DataDate && x.Entity.GUID_PROJECT == loadPROJECT.GUID);
             if (EditingEntity == null)
             {
                 HSEProjection newDAYWORK = new HSEProjection();
+                newDAYWORK.GUID = Guid.Empty;
                 newDAYWORK.Entity.HSE_DATE = DataDate;
                 newDAYWORK.Entity.GUID_PROJECT = loadPROJECT.GUID;
                 MainViewModel.Save(newDAYWORK);
@@ -106,6 +109,19 @@ namespace BluePrints.ViewModels
             get { return "HSESingleObjectViewModelWrapper"; }
         }
 
+        #endregion
+
+        #region View Events
+        public void EditValueChanged(EditValueChangedEventArgs e)
+        {
+            if (MainViewModel == null || EditingEntity == null)
+                return;
+
+            string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
+            DataUtils.TrySetNestedValue(fieldName, EditingEntity, e.NewValue);
+
+            MainViewModel.Save(EditingEntity);
+        }
         #endregion
 
         #region Collection Call Backs

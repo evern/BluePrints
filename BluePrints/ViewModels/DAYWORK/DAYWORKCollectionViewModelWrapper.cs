@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
-            EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.WORKDATE == DataDate);
+            EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.WORKDATE == DataDate && x.GUID_PROJECT == loadPROJECT.GUID);
             if (EditingEntity == null)
             {
                 DAYWORK newDAYWORK = new DAYWORK();
