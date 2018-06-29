@@ -8,7 +8,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class CONSTRUCTION_CONFIG : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class HSE : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
@@ -29,19 +29,6 @@
         {
             get { return CREATED; }
             set { CREATED = value; }
-        }
-
-        //used for collection mapping which allows null values
-        [NotMapped]
-        public Guid? MappingEntityKey
-        {
-            get
-            {
-                if (EntityKey == Guid.Empty)
-                    return null;
-
-                return EntityKey;
-            }
         }
     }
 }

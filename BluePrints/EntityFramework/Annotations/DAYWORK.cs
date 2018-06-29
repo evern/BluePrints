@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
@@ -9,7 +10,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class DAYWORK : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class DAYWORK : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

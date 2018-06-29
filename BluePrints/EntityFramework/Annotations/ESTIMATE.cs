@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using BluePrints.Common;
 using DevExpress.Mvvm;
 using BluePrints.Common.Base;
+using BaseModel.DataModel;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
+    public partial class ESTIMATE : EntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ESTIMATE()

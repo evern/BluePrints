@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class DELIVERABLES_STATUS : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class DELIVERABLES_STATUS : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DELIVERABLES_STATUS()

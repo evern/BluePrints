@@ -9,10 +9,11 @@ using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
 using BluePrints.Common.Base;
 using BluePrints.Common;
+using BaseModel.DataModel;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public partial class ESTIMATE_ITEM : EntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEM()
         {

@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
@@ -7,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PROGRESS_ITEM : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class PROGRESS_ITEM : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

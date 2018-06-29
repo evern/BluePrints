@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="BluePrints.Views.HSESingleObjectView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="800" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:HSESingleObjectViewModelWrapper}" mc:Ignorable="d">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DialogService x:Name="DateFromToDialogService">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+    </dxmvvm:Interaction.Behaviors>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style x:Key="groupBoxStyle" TargetType="{x:Type dxlc:GroupBox}">
+                <Setter Property="TitleVisibility" Value="Collapsed" />
+            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Holiday">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Data Date">
+                                <dxb:BarButtonItem Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
+                                <!--<dxb:BarStaticItem Content="Data Date" />-->
+                                <dxb:BarEditItem EditValue="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:DateEditSettings Mask="MMM yyyy" MaskUseAsDisplayFormat="True" />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
+                                <dxb:BarButtonItem Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
+                                    <dxb:BarButtonItem.GlyphTemplate>
+                                        <DataTemplate>
+                                            <Image RenderTransformOrigin="0.5,0.5" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}">
+                                                <Image.RenderTransform>
+                                                    <ScaleTransform ScaleX="-1" />
+                                                </Image.RenderTransform>
+                                            </Image>
+                                        </DataTemplate>
+                                    </dxb:BarButtonItem.GlyphTemplate>
+                                </dxb:BarButtonItem>
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <Grid DataContext="{Binding DataContext.EditingEntity, ElementName=userControl}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:LayoutSerializationService />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxlc:LayoutGroup Orientation="Vertical">
+                        <ExtraLayout:ExtraLayoutControl Padding="0" Orientation="Horizontal" View="Group">
+                            <ExtraLayout:ExtraLayoutGroup LayoutItemSize="3*">
+                                <ExtraLayout:ExtraLayoutControl Padding="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup GroupBoxStyle="{StaticResource groupBoxStyle}" Orientation="Horizontal" View="GroupBox">
+                                        <dxlc:LayoutItem Label="1. RECORDABLE INJURIES" />
+                                        <dxlc:LayoutItem Label="Target" />
+                                        <dxlc:LayoutItem Label="Criteria" />
+                                        <dxlc:LayoutItem Label="Comment" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup GroupBoxStyle="{StaticResource groupBoxStyle}" Orientation="Horizontal" View="GroupBox">
+                                        <dxlc:LayoutItem Label="Lost Time Injuries">
+                                            <dxe:TextEdit HorizontalAlignment="Right" EditValue="{Binding INJURIES_REC_LTI}" IsReadOnly="True" Tag="GUID_PROJECT" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Target" />
+                                        <dxlc:LayoutItem Label="Criteria" />
+                                        <dxlc:LayoutItem>
+                                            <dxe:TextEdit EditValue="{Binding GUID_PROJECT}" IsReadOnly="True" Tag="GUID_PROJECT" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                            </ExtraLayout:ExtraLayoutGroup>
+                            <ExtraLayout:ExtraLayoutGroup LayoutItemSize="1*" />
+                        </ExtraLayout:ExtraLayoutControl>
+                    </dxlc:LayoutGroup>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

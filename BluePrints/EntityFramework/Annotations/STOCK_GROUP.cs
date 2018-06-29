@@ -11,9 +11,10 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using BluePrints.Common.Base;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("CODE")]
-    public partial class STOCK_GROUP : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class STOCK_GROUP : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

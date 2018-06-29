@@ -1,13 +1,14 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class OFFICE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class OFFICE : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

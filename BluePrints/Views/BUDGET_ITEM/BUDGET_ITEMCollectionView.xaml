@@ -219,11 +219,11 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock Code Details">
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.NAME" FilterPopupMode="CheckedList" Header="Name" HeaderToolTip="For information only. Current selected stock code name" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.TYPE" FilterPopupMode="CheckedList" Header="Type" HeaderToolTip="For information only. Current selected stock code type" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.SPEC" FilterPopupMode="CheckedList" Header="Specification" HeaderToolTip="For information only. Current selected stock code specification" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" HeaderToolTip="For information only. Current selected stock code additional description" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.NAME" FilterPopupMode="CheckedList" Header="Name" HeaderToolTip="For information only. Current selected stock code name" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.TYPE" FilterPopupMode="CheckedList" Header="Type" HeaderToolTip="For information only. Current selected stock code type" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.SPEC" FilterPopupMode="CheckedList" Header="Specification" HeaderToolTip="For information only. Current selected stock code specification" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" HeaderToolTip="For information only. Current selected stock code additional description" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Reporting">
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" HeaderToolTip="Automatically assigned field" ReadOnly="True" VisibleIndex="0">

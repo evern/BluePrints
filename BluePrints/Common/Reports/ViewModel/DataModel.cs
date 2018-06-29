@@ -451,7 +451,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinEstimateQuantity => (AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity) < 0 ? 0 : AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity;
 
-        public decimal TotalInstalledQuantity => PastInstalledQuantity + FutureInstalledQuantity;
+        public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity;
 
         public virtual decimal Trackable_Installed_Quantity => this.Progress_Type == EstimateProgressType.Trackable ? TotalInstalledQuantity : 0;
 

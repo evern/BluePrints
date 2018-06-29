@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
@@ -11,7 +12,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class BASELINE_ITEM_WORK : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class BASELINE_ITEM_WORK : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         public BASELINE_ITEM_WORK()
         {

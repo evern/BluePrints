@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
@@ -12,7 +13,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : BluePrintsEntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IEntityNumber
+    public partial class BASELINE_ITEM : EntityBase, IGuidEntityKey, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IEntityNumber
     {
         public BASELINE_ITEM()
         {

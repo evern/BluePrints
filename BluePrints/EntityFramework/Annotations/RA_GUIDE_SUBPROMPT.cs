@@ -8,9 +8,10 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("GUIDE_SUBPROMPT, GUID_GUIDE_PROMPT")]
-    public partial class RA_GUIDE_SUBPROMPT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RA_GUIDE_SUBPROMPT : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

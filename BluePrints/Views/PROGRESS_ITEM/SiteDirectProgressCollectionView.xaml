@@ -228,7 +228,7 @@
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding UOM}" Header="UOM" HeaderToolTip="Unit of measure" IsEnabled="False" ReadOnly="True" />
+                                            <dxg:GridColumn Binding="{Binding Budget_UOM}" Header="UOM" HeaderToolTip="Unit of measure" IsEnabled="False" ReadOnly="True" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Period">
                                             <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="Installed Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
@@ -238,7 +238,7 @@
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Earned_Units_OnDataDate}" Header="Earned Hours" HeaderToolTip="Earned installation hours for this period" IsEnabled="False">
+                                            <dxg:GridColumn Binding="{Binding Earned_Units_ToDate}" Header="Earned Hours" HeaderToolTip="Earned installation hours for this period" IsEnabled="False">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
@@ -259,7 +259,7 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Header="Totals">
+                                        <dxg:GridControlBand Header="Totals To Date">
                                             <dxg:GridColumn Binding="{Binding Schedule_Estimated_Quantity}" Header="Planned Qty" HeaderToolTip="Planned quantity to date as per schedule" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -275,22 +275,22 @@
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Total_Install_Hours}" Header="Total Installed Hours" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Earned_Units_ToDate}" Header="Total Installed Hours" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Total_Install_Cost}" Header="Total Installed Costs" HeaderToolTip="Total earned installation costs to date" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Earned_Install_Costs_OnDataDate}" Header="Total Installed Costs" HeaderToolTip="Total earned installation costs to date" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Total_Supply_Cost}" Header="Total Supplied Costs" HeaderToolTip="Total earned supply costs to date" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Earned_Supply_Costs_OnDataDate}" Header="Total Supplied Costs" HeaderToolTip="Total earned supply costs to date" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Total_Cost}" FieldName="ProgressItem.Total_Cost" Header="Total Costs" HeaderToolTip="Total costs to date" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Earned_Total_Costs_OnDataDate}" Header="Total Costs" HeaderToolTip="Total costs to date" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

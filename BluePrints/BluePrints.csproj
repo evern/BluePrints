@@ -407,7 +407,6 @@
     <Compile Include="Common\Base\BluePrintsEntitiesAutoNumberCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesMasterDetailCollectionsWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
-    <Compile Include="Common\Base\BluePrintsEntityBase.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\DragDrop\CustomChildSelector.cs" />
     <Compile Include="Common\DragDrop\CustomDragDropManagers.cs" />
@@ -448,6 +447,7 @@
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
+    <Compile Include="Common\Projections\HSEProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
@@ -590,6 +590,7 @@
     <Compile Include="EntityFramework\Annotations\DAYWORK_LABOUR.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_EQUIPMENT.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE.cs" />
     <Compile Include="EntityFramework\Annotations\OFFICE.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_NODE.cs" />
@@ -629,6 +630,7 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\OFFICE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
@@ -732,6 +734,7 @@
     <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_ACTION\MEETING_ACTIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_TYPE\MEETING_TYPECollectionViewModelWrapper.cs" />
@@ -793,6 +796,9 @@
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HSE\HSESingleObjectView.xaml.cs">
+      <DependentUpon>HSESingleObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MEETING\MEETINGCollectionView.xaml.cs">
       <DependentUpon>MEETINGCollectionView.xaml</DependentUpon>
@@ -1653,6 +1659,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HSE\HSESingleObjectView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

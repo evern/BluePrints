@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
@@ -8,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("INTERNAL_NUM")]
-    public partial class PHASE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class PHASE : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -683,9 +683,9 @@ namespace BluePrints.ViewModels
                         IsDefault = false,
                     };
 
-                    string message = String.Format("Current stock code with\nSupply Rate: {0:#} Install Hours: {1:#}\n" +
-                        "Is changed to\nSupply Rate: {2:#} Install Hours: {3:#}\n" +
-                        "Do you wish to add new or update?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL);
+                    string message = String.Format("Current stock code with\nSupply Rate: {0:#.##} Install Hours: {1:#.##} UOM: {2}\n\n" +
+                        "Is changed to\nSupply Rate: {3:#.##} Install Hours: {4:#.##} UOM: {5}\n\n" +
+                        "Do you wish to add new or update?\n\n", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, projectStockCode.UOM, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL, editingSTOCK_CODE.UOM);
 
                     BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
                     UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
@@ -1112,11 +1112,11 @@ namespace BluePrints.ViewModels
             if (projectStock_Code != null)
                 isExists = true;
 
-            if (isExists && projectStock_Code.CODE == stock_code.CODE && projectStock_Code.RATE_SUPPLY == stock_code.RATE_SUPPLY && projectStock_Code.HOURS_INSTALL == stock_code.HOURS_INSTALL)
+            if (isExists && projectStock_Code.CODE == stock_code.CODE && projectStock_Code.RATE_SUPPLY == stock_code.RATE_SUPPLY && projectStock_Code.HOURS_INSTALL == stock_code.HOURS_INSTALL && projectStock_Code.UOM == stock_code.UOM)
                 return projectStock_CodeStatus.Exists;
 
             //look for other project stock group with same meta
-            STOCK_CODE sameMetaStockCode = ProjectSTOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code.CODE && x.RATE_SUPPLY == stock_code.RATE_SUPPLY && x.HOURS_INSTALL == stock_code.HOURS_INSTALL);
+            STOCK_CODE sameMetaStockCode = ProjectSTOCK_CODECollection.FirstOrDefault(x => x.CODE == stock_code.CODE && x.RATE_SUPPLY == stock_code.RATE_SUPPLY && x.HOURS_INSTALL == stock_code.HOURS_INSTALL && x.UOM == stock_code.UOM);
             if (isExists && sameMetaStockCode == null)
                 return projectStock_CodeStatus.ExistsWithDifferentRateHours;
 
