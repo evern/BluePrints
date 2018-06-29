@@ -301,6 +301,20 @@ namespace BluePrints.ViewModels
             return false;
         }
 
+        /// <summary>
+        /// Remembers an entity property old value for undoing
+        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
+        /// </summary>
+        public void ExistingChildRowAddUndoAndSave(CellValueChangedEventArgs e)
+        {
+            var projection = (DisplayQuantityReportable)e.Row;
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
+            {
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.Reportable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                PROGRESS_ITEMSCollectionViewModel.BulkSave(newPRORESS_ITEMS);
+            }
+        }
+
         private void save_progress(ReportablesDisplay entity)
         {
             if (entity.ProgressItem.ShouldSaveProgress)

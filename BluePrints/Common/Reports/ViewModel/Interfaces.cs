@@ -109,6 +109,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal QuantityPerUnit { get; }
         decimal UnitsPerQuantity { get; }
         decimal PastInstalledQuantity { get; }
+        decimal FutureInstalledQuantity { get; }
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
         decimal TotalInstalledQuantity { get; }

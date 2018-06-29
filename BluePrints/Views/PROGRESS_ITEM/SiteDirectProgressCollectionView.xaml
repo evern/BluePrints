@@ -100,7 +100,7 @@
                                 <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodInstalledQuantity" Header="Intalled Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.ProgressItem.MaxCurrentQuantity}" MinValue="0" />
+                                            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.ProgressItem.MaxCurrentQuantity}" MinValue="0" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
@@ -231,10 +231,10 @@
                                             <dxg:GridColumn Binding="{Binding Budget_UOM}" Header="UOM" HeaderToolTip="Unit of measure" IsEnabled="False" ReadOnly="True" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Period">
-                                            <dxg:GridColumn Binding="{Binding CurrentPeriodInstalledQuantity}" Header="Installed Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
+                                            <dxg:GridColumn FieldName="CurrentPeriodInstalledQuantity" Header="Installed Qty" HeaderToolTip="Installed quantity for this period">
                                                 <dxg:GridColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxCurrentQuantity}" MinValue="0" />
+                                                        <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxCurrentQuantity}" MinValue="0" />
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
@@ -315,7 +315,11 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False" />
+                                        <dxg:TableView x:Name="tableView1" RowStyle="{StaticResource WBSBackgroundStyle}" ShowColumnHeaders="False">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ExistingChildRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxg:DataControlDetailDescriptor>

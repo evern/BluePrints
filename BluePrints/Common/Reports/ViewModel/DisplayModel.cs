@@ -342,6 +342,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal PastInstalledQuantity => Reportable.PastInstalledQuantity;
 
+        public decimal FutureInstalledQuantity => Reportable.FutureInstalledQuantity;
+
         public DateTime ReportingDataDate => Reportable.ReportingDataDate;
 
         public List<PROGRESS_ITEM> PROGRESS_ITEMS => Reportable.PROGRESS_ITEMS;

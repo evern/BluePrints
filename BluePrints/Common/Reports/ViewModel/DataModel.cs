@@ -81,13 +81,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override decimal AbsoluteTotalInstalledQuantity => Reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
 
-        public override decimal MaxCurrentQuantity
-        {
-            get
-            {
-                return Trackable_Total_Quantity - Trackable_Installed_Quantity;
-            }
-        }
+        public override decimal MaxCurrentQuantity => trackable_reportables.Sum(x => x.MaxCurrentQuantity);
 
         public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
 
@@ -466,7 +460,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public virtual decimal MaxCurrentQuantity => Total_Quantity - TotalInstalledQuantity;
+        public virtual decimal MaxCurrentQuantity => Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity;
 
         public EstimateProgressType Progress_Type
         {
