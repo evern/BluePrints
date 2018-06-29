@@ -30,13 +30,9 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_GROUP" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Code" FieldName="Entity.CODE" />
-                            <dxg:GridColumn Header="Description" FieldName="Entity.DESCRIPTION" />
-                            <dxg:GridColumn Header="UOM" FieldName="Entity.UOM" HeaderToolTip="Unit of measure. Estimate item must be grouped into a common unit of measure">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="UOM1" IsTextEditable="True" ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" ValueMember="UOM1" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.CODE" Header="Code" />
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure. Estimate item must be grouped into a common unit of measure" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

@@ -30,6 +30,7 @@ namespace BluePrints.Data
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual DbSet<HSE> HSE { get; set; }
         public virtual DbSet<HOLIDAY> HOLIDAY { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
@@ -473,6 +474,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.HOLIDAY)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.HSE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

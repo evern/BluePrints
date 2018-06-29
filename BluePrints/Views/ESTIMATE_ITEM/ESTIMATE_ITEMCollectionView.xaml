@@ -173,7 +173,7 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.IsByDuration" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Progress Specifications">
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_STOCK_GROUP" FilterPopupMode="CheckedList" Header="Stock Group" HeaderToolTip="Grouping specification so that progress can be done on a single group instead of per stock item">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_STOCK_GROUP" FilterPopupMode="CheckedList" Header="Stock Group" HeaderToolTip="Grouping specification so that progress can be done on a single group instead of per stock item, specific to area, subarea and assigned group">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -222,9 +222,9 @@
                                         <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.ESTIMATE_STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" ReadOnly="True" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock Code Details">
-                                <dxg:GridColumn FieldName="Entity.ESTIMATE_STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.ESTIMATE_STOCK_CODE.NAME" FilterPopupMode="CheckedList" Header="Name" HeaderToolTip="For information only. Current selected stock code name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.ESTIMATE_STOCK_CODE.TYPE" FilterPopupMode="CheckedList" Header="Type" HeaderToolTip="For information only. Current selected stock code type" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.ESTIMATE_STOCK_CODE.SPEC" FilterPopupMode="CheckedList" Header="Specification" HeaderToolTip="For information only. Current selected stock code specification" ReadOnly="True" />

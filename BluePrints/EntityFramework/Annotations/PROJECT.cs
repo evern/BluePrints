@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using Common;
@@ -11,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class PROJECT : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()
@@ -24,6 +25,7 @@ namespace BluePrints.Data
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATE = new HashSet<ESTIMATE>();
             HOLIDAY = new HashSet<HOLIDAY>();
+            HSE = new HashSet<HSE>();
             MEETING = new HashSet<MEETING>();
             MEETING_TYPE = new HashSet<MEETING_TYPE>();
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();

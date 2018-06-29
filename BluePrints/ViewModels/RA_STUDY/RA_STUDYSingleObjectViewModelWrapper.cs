@@ -238,7 +238,7 @@ namespace BluePrints.ViewModels
         {
             if (MainViewModel == null || EditingEntity == null)
                 return;
-            
+
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
             DataUtils.TrySetNestedValue(fieldName, EditingEntity, e.NewValue);
 

@@ -1,13 +1,14 @@
 ﻿namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class ROSTER_STAFF : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class ROSTER_STAFF : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
@@ -10,7 +11,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class MEETING : BluePrintsEntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
+    public partial class MEETING : EntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MEETING()

@@ -1,6 +1,7 @@
 namespace BluePrints.Data
 {
     using BaseModel.Attributes;
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
@@ -11,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NAME")]
-    public partial class MEETING_TYPE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class MEETING_TYPE : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

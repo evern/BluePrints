@@ -10,8 +10,9 @@ namespace BluePrints.Data
     using System.Collections.ObjectModel;
     using BluePrints.Common.Projections;
     using System.Linq;
+    using BaseModel.DataModel;
 
-    public partial class MINUTE_TITLE : BluePrintsEntityBase, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
+    public partial class MINUTE_TITLE : EntityBase, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_TITLE()

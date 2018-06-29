@@ -8,9 +8,10 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using DevExpress.Mvvm;
     using BluePrints.Common.Base;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1")]
-    public partial class SUBJOB : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class SUBJOB : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SUBJOB()

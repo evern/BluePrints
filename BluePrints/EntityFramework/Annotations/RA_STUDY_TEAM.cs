@@ -8,8 +8,9 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
+    using BaseModel.DataModel;
 
-    public partial class RA_STUDY_TEAM : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RA_STUDY_TEAM : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

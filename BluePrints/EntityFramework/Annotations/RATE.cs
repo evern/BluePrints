@@ -10,9 +10,10 @@ namespace BluePrints.Data
     using System.Linq;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY")]
-    public partial class RATE : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RATE : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -8,9 +8,10 @@ namespace BluePrints.Data
     using System.Linq;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_HOLD : BluePrintsEntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
+    public partial class REGISTER_HOLD : EntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

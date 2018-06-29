@@ -8,9 +8,10 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using DevExpress.Mvvm;
     using BluePrints.Common.Base;
+    using BaseModel.DataModel;
 
     [ConstraintAttributes("NAME")]
-    public partial class WORKPACK : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class WORKPACK : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()

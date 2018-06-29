@@ -9,10 +9,11 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using BluePrints.Common.Projections;
+using BaseModel.DataModel;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ReportablesDisplay : BluePrintsEntityBase, IGuidEntityKey, IReportable
+    public class ReportablesDisplay : EntityBase, IGuidEntityKey, IReportable
     {
         public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
         public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
@@ -254,7 +255,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class DisplayQuantityReportable : BluePrintsEntityBase, IReportable_Quantity, IEstimateItem
+    public class DisplayQuantityReportable : EntityBase, IReportable_Quantity, IEstimateItem
     {
         public IReportable_Quantity Reportable { get; }
         public int ColorIndex { get; private set; }

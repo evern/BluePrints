@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using BluePrints.P6Data;
@@ -7,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class P6_ASSIGNMENT : BluePrintsEntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class P6_ASSIGNMENT : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey
