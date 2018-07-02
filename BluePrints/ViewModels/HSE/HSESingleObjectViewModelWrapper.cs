@@ -14,6 +14,8 @@ using DevExpress.Xpf.Editors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -112,6 +114,15 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Events
+        public void EditControlPreviewMouseDown(MouseButtonEventArgs e)
+        {
+            BaseEdit sp = e.Source as BaseEdit;
+            mainThreadDispatcher.BeginInvoke((Action)(() =>
+            {
+                sp.SelectAll();
+            }), DispatcherPriority.Background);
+        }
+
         public void EditValueChanged(EditValueChangedEventArgs e)
         {
             if (MainViewModel == null || EditingEntity == null)

@@ -20,6 +20,12 @@ namespace BluePrints.Common
         }
     }
 
+    public enum HSE_NonApplicableCriteria
+    {
+        Applicable = 0,
+        NonApplicable = 1
+    }
+
     public enum BellCurveShape
     {
         [Display(Name = "FrontLoaded2")] FrontLoaded1 = 0,
