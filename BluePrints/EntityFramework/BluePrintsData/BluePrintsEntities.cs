@@ -792,6 +792,11 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
+                .HasMany(e => e.HSE)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_SITE_MGMT_USER);
+
+            modelBuilder.Entity<USER>()
                 .HasMany(e => e.REGISTER_ISSUE)
                 .WithOptional(e => e.USER)
                 .HasForeignKey(e => e.GUID_RESPONSIBLE_PERSON);

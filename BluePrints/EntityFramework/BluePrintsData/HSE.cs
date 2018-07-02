@@ -36,11 +36,15 @@
 
         public decimal QTY_WATER { get; set; }
 
+        public Guid? GUID_SITE_MGMT_USER { get; set; }
+
         [StringLength(2500)]
         public string HSE_ADVISOR_COMMENT { get; set; }
 
         [StringLength(2500)]
         public string SITE_MGMT_COMMENT { get; set; }
+
+        public DateTime? SITE_MGMT_COMMENT_DATE { get; set; }
 
         public decimal INJURIES_REC_LTI { get; set; }
 
@@ -222,5 +226,7 @@
         public Guid? DELETEDBY { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        public virtual USER USER { get; set; }
     }
 }

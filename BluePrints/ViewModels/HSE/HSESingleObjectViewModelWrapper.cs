@@ -61,6 +61,7 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -111,6 +112,16 @@ namespace BluePrints.ViewModels
             get { return "HSESingleObjectViewModelWrapper"; }
         }
 
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
         #endregion
 
         #region View Events

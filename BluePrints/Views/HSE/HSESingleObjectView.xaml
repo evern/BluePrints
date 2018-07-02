@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.HSESingleObjectView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:misc="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="4000" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:HSESingleObjectViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.HSESingleObjectView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:misc="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="4000" d:DesignWidth="1880" DataContext="{dxmvvm:ViewModelSource viewmodel:HSESingleObjectViewModelWrapper}" mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
         <dx:DialogService x:Name="DateFromToDialogService">
             <dx:DialogService.DialogStyle>
@@ -42,18 +42,21 @@
                 <Setter Property="ElementSpace" Value="8" />
             </Style>
             <Style x:Key="layoutFirstColumnStyle" TargetType="{x:Type dxlc:LayoutItem}">
-                <Setter Property="Margin" Value="5, 5, 5, 7" />
+                <Setter Property="Margin" Value="0" />
                 <Setter Property="Width" Value="350" />
             </Style>
             <Style x:Key="layoutSecondColumnStyle" TargetType="{x:Type dxlc:LayoutItem}">
-                <Setter Property="Margin" Value="5, 5, 0, 7" />
+                <Setter Property="Margin" Value="0" />
             </Style>
             <Style x:Key="layoutThirdColumnStyle" TargetType="{x:Type dxlc:LayoutItem}">
-                <Setter Property="Margin" Value="5, 5, 0, 7" />
+                <Setter Property="Margin" Value="0" />
             </Style>
             <Style x:Key="layoutFourthColumnStyle" TargetType="{x:Type dxlc:LayoutItem}">
-                <Setter Property="Margin" Value="1, 5, -5, 5" />
+                <Setter Property="Margin" Value="0" />
                 <Setter Property="Width" Value="350" />
+            </Style>
+            <Style x:Key="layoutSideColumnStyle" TargetType="{x:Type dxlc:LayoutItem}">
+                <Setter Property="Margin" Value="0" />
             </Style>
             <Style x:Key="layoutSeparatorStyle" TargetType="{x:Type dxlc:LayerSeparator}">
                 <Setter Property="Width" Value="1" />
@@ -129,8 +132,8 @@
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
                     <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
-                        <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" ItemSpace="0" LayoutItemSize="3*">
-                            <ExtraLayout:ExtraLayoutControl Margin="-7,-5,-5,0" Padding="0" ItemSpace="0" Orientation="Vertical" View="Group">
+                        <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="3*" Orientation="Vertical">
+                            <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" ItemSpace="0" Orientation="Vertical" View="Group">
                                 <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
                                     <dxlc:LayoutItem FontWeight="Bold" Label="1. RECORDABLE INJURIES" Style="{StaticResource layoutFirstColumnStyle}" />
                                     <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
@@ -589,9 +592,121 @@
                                         <dxe:TextEdit EditValue="{Binding Entity.TRAIN_VOC_COMMENT}" Tag="Entity.TRAIN_VOC_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
                                     </dxlc:LayoutItem>
                                 </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Padding="0" Style="{StaticResource layoutSideColumnStyle}">
+                                        <Label />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="10. PROJECT / SITE MANAGER COMMENT" />
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem>
+                                        <dxe:TextEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT}" Tag="Entity.SITE_MGMT_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                            <ExtraLayout:ExtraLayoutControl Padding="0">
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Width="350" Label="Name">
+                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.GUID_SITE_MGMT_USER}" Tag="Entity.GUID_SITE_MGMT_USER" AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" Style="{StaticResource SingleObjectView.ControlContainer}" ValueMember="GUID" />
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem Width="200" HorizontalAlignment="Right" Label="Date">
+                                        <dxe:DateEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT_DATE}" Tag="Entity.SITE_MGMT_COMMENT_DATE" NullValueButtonPlacement="EditBox" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
                             </ExtraLayout:ExtraLayoutControl>
                         </ExtraLayout:ExtraLayoutGroup>
-                        <ExtraLayout:ExtraLayoutGroup Margin="-7,-5,-5,0" Padding="0" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical" View="Group" />
+                        <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical">
+                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="6. AVERAGE No. OF EMPLOYEES ON SITE" />
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Primero" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_STAFF}" Tag="Entity.QTY_STAFF" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Management" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_MGMT}" Tag="Entity.QTY_MGMT" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="HSE Advisor" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_HSE}" Tag="Entity.QTY_HSE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Contractor" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_CONTRACTOR}" Tag="Entity.QTY_CONTRACTOR" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total" Style="{StaticResource layoutSideColumnStyle}">
+                                        <Label HorizontalAlignment="Right" Content="{Binding Total_Employees}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="7. Number of Working Days on Site" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_DAYSONSITE}" Tag="Entity.QTY_DAYSONSITE" FontWeight="Normal" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="8. Working Hours a Day" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_HRSADAY}" Tag="Entity.QTY_HRSADAY" FontWeight="Normal" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total Man Hours" Style="{StaticResource layoutSideColumnStyle}">
+                                        <Label HorizontalAlignment="Right" Content="{Binding Total_ManHours}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem FontWeight="Bold" Style="{StaticResource layoutSideColumnStyle}">
+                                        <Label Content="9. ENVIRONMENTAL DATA" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Diesel Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_DIESEL}" Tag="Entity.QTY_DIESEL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Petrol Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_PETROL}" Tag="Entity.QTY_PETROL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Mains Grid Electrical Use (kWh)" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_ELECTRIC}" Tag="Entity.QTY_ELECTRIC" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Label="Water Consumption" Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_WATER}" Tag="Entity.QTY_WATER" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Height="67" Background="AliceBlue" FontWeight="Bold" Style="{StaticResource layoutSideColumnStyle}">
+                                        <TextBlock Background="Transparent" Text="9. HSE ADVISOR COMMENT Use the space below to record any additional information or detail eg; Details of 'Other' Training, VOC's Safety Initiatives, Awards, Achievements or Milestones. NOTE: All Injuries and Incidents must be recorded on Page 2 of this form." TextAlignment="Center" TextWrapping="WrapWithOverflow" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <dxlc:LayoutItem Style="{StaticResource layoutSideColumnStyle}">
+                                        <dxe:TextEdit EditValue="{Binding Entity.HSE_ADVISOR_COMMENT}" Tag="Entity.HSE_ADVISOR_COMMENT" VerticalContentAlignment="Top" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                    </dxlc:LayoutItem>
+                                </ExtraLayout:ExtraLayoutGroup>
+                            </ExtraLayout:ExtraLayoutControl>
+                        </ExtraLayout:ExtraLayoutGroup>
                     </ExtraLayout:ExtraLayoutControl>
                 </Grid>
             </DockPanel>

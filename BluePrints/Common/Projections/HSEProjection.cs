@@ -22,6 +22,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal Total_ManHours
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Total_Employees * Entity.QTY_DAYSONSITE * Entity.QTY_HRSADAY;
+            }
+        }
+
         public decimal Total_Recordable_Injuries
         {
             get

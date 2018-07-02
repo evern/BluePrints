@@ -20,6 +20,7 @@ namespace BluePrints.Data
             RA_STUDY_DATA = new HashSet<RA_STUDY_DATA>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
             PROJECT = new HashSet<PROJECT>();
+            HSE = new HashSet<HSE>();
         }
 
         [Key]
@@ -89,6 +90,9 @@ namespace BluePrints.Data
         public virtual DEPARTMENT DEPARTMENT1 { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HSE> HSE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY> RA_STUDY { get; set; }
