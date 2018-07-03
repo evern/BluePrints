@@ -9,6 +9,13 @@
     [Table("HSE")]
     public partial class HSE
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public HSE()
+        {
+            HSE_INCIDENT = new HashSet<HSE_INCIDENT>();
+            HSE_INJURY = new HashSet<HSE_INJURY>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
@@ -36,7 +43,7 @@
 
         public decimal QTY_WATER { get; set; }
 
-        public Guid? GUID_SITE_MGMT_USER { get; set; }
+        public int? SITE_MGMT_STAFFNO { get; set; }
 
         [StringLength(2500)]
         public string HSE_ADVISOR_COMMENT { get; set; }
@@ -225,8 +232,12 @@
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HSE_INCIDENT> HSE_INCIDENT { get; set; }
 
-        public virtual USER USER { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<HSE_INJURY> HSE_INJURY { get; set; }
+
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

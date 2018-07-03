@@ -31,6 +31,8 @@ namespace BluePrints.Data
         public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
         public virtual DbSet<HSE> HSE { get; set; }
+        public virtual DbSet<HSE_INCIDENT> HSE_INCIDENT { get; set; }
+        public virtual DbSet<HSE_INJURY> HSE_INJURY { get; set; }
         public virtual DbSet<HOLIDAY> HOLIDAY { get; set; }
         public virtual DbSet<MEETING> MEETING { get; set; }
         public virtual DbSet<MEETING_USER> MEETING_USER { get; set; }
@@ -308,6 +310,18 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.ESTIMATE)
                 .HasForeignKey(e => e.GUID_ESTIMATE);
+
+            modelBuilder.Entity<HSE>()
+                .HasMany(e => e.HSE_INCIDENT)
+                .WithRequired(e => e.HSE)
+                .HasForeignKey(e => e.GUID_HSE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<HSE>()
+                .HasMany(e => e.HSE_INJURY)
+                .WithRequired(e => e.HSE)
+                .HasForeignKey(e => e.GUID_HSE)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<MEETING>()
                 .HasMany(e => e.MEETING_USER)
@@ -790,11 +804,6 @@ namespace BluePrints.Data
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<USER>()
-                .HasMany(e => e.HSE)
-                .WithOptional(e => e.USER)
-                .HasForeignKey(e => e.GUID_SITE_MGMT_USER);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.REGISTER_ISSUE)

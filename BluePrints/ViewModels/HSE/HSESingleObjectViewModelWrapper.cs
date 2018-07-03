@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -8,6 +9,8 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
@@ -47,6 +50,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         public PROJECT loadPROJECT { get; set; }
         public HSEProjection EditingEntity { get; set; }
         private bool isCompletelyLoaded { get; set; }
@@ -61,7 +65,9 @@ namespace BluePrints.ViewModels
         protected override void initializeEntitiesLoadersDescription()
         {
             loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.HSE_INJURIES, hseInjuriesProjection);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.HSE_INCIDENTS, hseIncidentsProjection);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -75,8 +81,20 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).ToList().Select(x => new HSEProjection() { Entity = x }).AsQueryable();
         }
 
+        private Func<IRepositoryQuery<HSE_INJURY>, IQueryable<HSE_INJURY>> hseInjuriesProjection()
+        {
+            return query => EditingEntity == null ? query.Where(x => x.GUID_HSE == Guid.Empty) : query.Where(x => x.GUID_HSE == EditingEntity.GUID);
+        }
+
+        private Func<IRepositoryQuery<HSE_INCIDENT>, IQueryable<HSE_INCIDENT>> hseIncidentsProjection()
+        {
+            return query => EditingEntity == null ? query.Where(x => x.GUID_HSE == Guid.Empty) : query.Where(x => x.GUID_HSE == EditingEntity.GUID);
+        }
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HSEProjection> entities)
         {
+            HSE_INCIDENTViewModel.OnBeforeEntitySavedIsContinueCallBack = HSE_INCIDENTOnBeforeEntitySaved;
+            HSE_INJURYViewModel.OnBeforeEntitySavedIsContinueCallBack = HSE_INJURYOnBeforeEntitySaved;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -85,6 +103,7 @@ namespace BluePrints.ViewModels
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
+
             EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.Entity.HSE_DATE == DataDate && x.Entity.GUID_PROJECT == loadPROJECT.GUID);
             if (EditingEntity == null)
             {
@@ -99,6 +118,8 @@ namespace BluePrints.ViewModels
             EditingEntity.Update();
             this.RaisePropertyChanged(x => x.EditingEntity);
 
+            HSE_INCIDENTViewModel.Refresh();
+            HSE_INJURYViewModel.Refresh();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
         #endregion
@@ -112,14 +133,41 @@ namespace BluePrints.ViewModels
             get { return "HSESingleObjectViewModelWrapper"; }
         }
 
-        public IEnumerable<USER> USERCollection
+        public IEnumerable<STAFF> STAFFCollection
         {
             get
             {
-                var collection = GetEntities<USER>();
+                var collection = GetEntities<STAFF>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+
+        public CollectionViewModel<HSE_INCIDENT, HSE_INCIDENT, Guid, IBluePrintsEntitiesUnitOfWork> HSE_INCIDENTViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<HSE_INCIDENT, HSE_INCIDENT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<HSE_INCIDENT>();
+            }
+        }
+
+        public CollectionViewModel<HSE_INJURY, HSE_INJURY, Guid, IBluePrintsEntitiesUnitOfWork> HSE_INJURYViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<HSE_INJURY, HSE_INJURY, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<HSE_INJURY>();
             }
         }
         #endregion
@@ -154,6 +202,24 @@ namespace BluePrints.ViewModels
         public bool OnBeforeEntitySaved(HSEProjection projection)
         {
             projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
+            return true;
+        }
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool HSE_INCIDENTOnBeforeEntitySaved(HSE_INCIDENT projection)
+        {
+            projection.GUID_HSE = EditingEntity.GUID;
+            return true;
+        }
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public bool HSE_INJURYOnBeforeEntitySaved(HSE_INJURY projection)
+        {
+            projection.GUID_HSE = EditingEntity.GUID;
             return true;
         }
 

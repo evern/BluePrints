@@ -2,9 +2,11 @@
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace BluePrints.Common.Projections
 {
@@ -19,6 +21,17 @@ namespace BluePrints.Common.Projections
                     return 0;
 
                 return Entity.QTY_STAFF + Entity.QTY_MGMT + Entity.QTY_HSE + Entity.QTY_CONTRACTOR;
+            }
+        }
+
+        public decimal Incident_Target
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Total_Recordable_Injuries == 0 ? 0 : Total_Incidents * 0.1m;
             }
         }
 
@@ -69,7 +82,7 @@ namespace BluePrints.Common.Projections
         #region Criteria
         const string attendanceTarget = ">= 90% Attendance";
         const string notApplicableTarget = "Not Applicable";
-        public string PrestartAttendanceTarget
+        public string KPI_PRESTART_Target
         {
             get
             {
@@ -80,7 +93,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string ToolboxAttendanceTarget
+        public string KPI_TOOLBOX_Target
         {
             get
             {
@@ -91,7 +104,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string HSEAttendanceTarget
+        public string KPI_HSE_COMMITTEE_Target
         {
             get
             {
@@ -102,29 +115,51 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string HAZOBTarget
+        public decimal KPI_HAZOB_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(Total_ManHours / 100, 0);
+            }
+        }
+
+        public string KPI_HAZOB_Target
         {
             get
             {
                 if (Entity == null)
                     return string.Empty;
 
-                return Entity.KPI_HAZOB_CRITERIA == 0 ? ">= 1/100 Manhours" : notApplicableTarget;
+                return Entity.KPI_HAZOB_CRITERIA == 0 ? KPI_HAZOB_TargetNumber.ToString() : notApplicableTarget;
             }
         }
 
-        public string SWOTarget
+        public decimal KPI_SWO_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round((Entity.QTY_MGMT + Entity.QTY_HSE) * Entity.QTY_DAYSONSITE, 0);
+            }
+        }
+
+        public string KPI_SWO_Target
         {
             get
             {
                 if (Entity == null)
                     return string.Empty;
 
-                return Entity.KPI_SWO_CRITERIA == 0 ? ">= 1 per Day for each Mgr/HSE Advisor" : notApplicableTarget;
+                return Entity.KPI_SWO_CRITERIA == 0 ? KPI_SWO_TargetNumber.ToString() : notApplicableTarget;
             }
         }
 
-        public string DrillTarget
+        public string KPI_DRILL_Target
         {
             get
             {
@@ -135,7 +170,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string SixMonthlyInspectionPerformanceTarget
+        public string KPI_INSPECTION_Target
         {
             get
             {
@@ -146,19 +181,40 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string WorkplaceInspectionFrequencyTarget
+        public decimal KPI_INSPECTION_FREQ_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(((Entity.QTY_MGMT * Entity.QTY_DAYSONSITE) / 6.5m) + (Entity.QTY_HSE * Entity.QTY_DAYSONSITE), 0);
+            }
+        }
+
+        public string KPI_INSPECTION_FREQ_Target
         {
             get
             {
                 if (Entity == null)
                     return string.Empty;
 
-                decimal frequencyTarget = ((Entity.QTY_MGMT * Entity.QTY_DAYSONSITE) / 6.5m) + (Entity.QTY_HSE * Entity.QTY_DAYSONSITE);
-                return Entity.KPI_INSPECTION_FREQ_CRITERIA == 0 ? frequencyTarget.ToString() : notApplicableTarget;
+                return Entity.KPI_INSPECTION_FREQ_CRITERIA == 0 ? KPI_INSPECTION_FREQ_TargetNumber.ToString() : notApplicableTarget;
             }
         }
 
-        public string CorrectiveActionsTarget
+        public decimal KPI_CORRECTIVE_ACT_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI + Entity.INCIDENT_DAM + Entity.INCIDENT_ENV + Entity.INCIDENT_FIRE + Entity.INCIDENT_MAJOR_ENV + Entity.INCIDENT_HSE_BREACH + Entity.INCIDENT_NOTICE + Entity.KPI_HAZOB, 0);
+            }
+        }
+        
+        public string KPI_CORRECTIVE_ACT_Target
         {
             get
             {
@@ -169,29 +225,51 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string CorrectiveActionsClosedTarget
+        public decimal KPI_CORRECTIVE_ACT_CLOSED_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(Entity.KPI_CORRECTIVE_ACT * 0.85m, 0);
+            }
+        }
+
+        public string KPI_CORRECTIVE_ACT_CLOSED_Target
         {
             get
             {
                 if (Entity == null)
                     return string.Empty;
 
-                return Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 0 ? ">= 85% per Month" : notApplicableTarget;
+                return Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 0 ? KPI_CORRECTIVE_ACT_CLOSED_TargetNumber.ToString() : notApplicableTarget;
             }
         }
 
-        public string HSEInspectionWithClientTarget
+        public decimal KPI_WEEKLY_HSE_TargetNumber
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(Entity.QTY_DAYSONSITE / 6.5m, 0);
+            }
+        }
+
+        public string KPI_WEEKLY_HSE_Target
         {
             get
             {
                 if (Entity == null)
                     return string.Empty;
 
-                return Entity.KPI_WEEKLY_HSE_CRITERIA == 0 ? ">= 1/Week" : notApplicableTarget;
+                return Entity.KPI_WEEKLY_HSE_CRITERIA == 0 ? KPI_WEEKLY_HSE_TargetNumber.ToString() : notApplicableTarget;
             }
         }
 
-        public string RiskRegisterReviewTarget
+        public string KPI_RISK_REGISTER_Target
         {
             get
             {
@@ -202,7 +280,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string TrainingTarget
+        public string TRAIN_COMPLIANCE_Target
         {
             get
             {
@@ -212,6 +290,60 @@ namespace BluePrints.Common.Projections
                 return Entity.TRAIN_COMPLIANCE_CRITERIA == 0 ? ">= 1/Month (or >= 1/Project)" : notApplicableTarget;
             }
         }
+        #endregion
+
+
+        #region Conditional Formatting
+        public bool INJURIES_REC_LTI_Format => Entity == null ? false : Entity.INJURIES_REC_LTI == 0 ? true : false;
+        public bool INJURIES_REC_RWI_Format => Entity == null ? false : Entity.INJURIES_REC_RWI == 0 ? true : false;
+        public bool INJURIES_REC_MTI_Format => Entity == null ? false : Entity.INJURIES_REC_MTI == 0 ? true : false;
+        public bool Total_Recordable_Injuries_Format => Entity == null ? false : Total_Recordable_Injuries == 0 ? true : false;
+        
+        public bool INCIDENT_DAM_Format => Entity == null ? false : Entity.INCIDENT_DAM <= Incident_Target ? true : false;
+        public bool INCIDENT_ENV_Format => Entity == null ? false : Entity.INCIDENT_ENV <= Incident_Target ? true : false;
+        public bool INCIDENT_FIRE_Format => Entity == null ? false : Entity.INCIDENT_FIRE == 0 ? true : false;
+        public bool MAJOR_ENV_Format => Entity == null ? false : Entity.INCIDENT_MAJOR_ENV == 0 ? true : false;
+        public bool INCIDENT_NOTICE_Format => Entity == null ? false : Entity.INCIDENT_NOTICE == 0 ? true : false;
+        public bool KPI_PRESTART_Format => Entity == null ? false : Entity.KPI_PRESTART_CRITERIA == 1 ? true : Entity.KPI_PRESTART >= 0.9m ? true : false;
+        public bool KPI_TOOLBOX_Format => Entity == null ? false : Entity.KPI_TOOLBOX_CRITERIA == 1 ? true : Entity.KPI_TOOLBOX >= 0.9m ? true : false;
+        public bool KPI_HSE_COMMITTEE_Format => Entity == null ? false : Entity.KPI_HSE_COMMITTEE_CRITERIA == 1 ? true : Entity.KPI_HSE_COMMITTEE >= 0.9m ? true : false;
+        public bool KPI_HAZOB_Format => Entity == null ? false : Entity.KPI_HAZOB_CRITERIA == 1 ? true : Entity.KPI_HAZOB >= KPI_HAZOB_TargetNumber ? true : false;
+        public bool KPI_SWO_Format => Entity == null ? false : Entity.KPI_SWO_CRITERIA == 1 ? true : Entity.KPI_SWO >= KPI_SWO_TargetNumber ? true : false;
+        public bool KPI_DRILL_Format => Entity == null ? false : Entity.KPI_DRILL_CRITERIA == 1 ? true : Entity.KPI_DRILL >= 1 ? true : false;
+        public bool KPI_INSPECTION_Format => Entity == null ? false : Entity.KPI_INSPECTION_CRITERIA == 1 ? true : Entity.KPI_INSPECTION >= 0.85m ? true : false;
+        public bool KPI_INSPECTION_FREQ_Format => Entity == null ? false : Entity.KPI_INSPECTION_FREQ_CRITERIA == 1 ? true : Entity.KPI_INSPECTION >= KPI_INSPECTION_FREQ_TargetNumber ? true : false;
+        public bool KPI_CORRECTIVE_ACT_Format => Entity == null ? false : Entity.KPI_CORRECTIVE_ACT_CRITERIA == 1 ? true : Entity.KPI_CORRECTIVE_ACT >= KPI_CORRECTIVE_ACT_TargetNumber ? true : false;
+        public bool KPI_CORRECTIVE_ACT_CLOSED_Format => Entity == null ? false : Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 1 ? true : Entity.KPI_CORRECTIVE_ACT_CLOSED >= KPI_CORRECTIVE_ACT_CLOSED_TargetNumber ? true : false;
+        public bool KPI_WEEKLY_HSE_Format => Entity == null ? false : Entity.KPI_WEEKLY_HSE_CRITERIA == 1 ? true : Entity.KPI_WEEKLY_HSE >= KPI_WEEKLY_HSE_TargetNumber ? true : false;
+        public bool KPI_RISK_REGISTER_Format => Entity == null ? false : Entity.KPI_RISK_REGISTER_CRITERIA == 1 ? true : Entity.KPI_RISK_REGISTER >= 1 ? true : false;
+        public bool TRAIN_COMPLIANCE_Format => Entity == null ? false : Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? true : Entity.TRAIN_COMPLIANCE >= 1 ? true : false;
+        public bool TRAIN_VOC_Format => Entity == null ? false : Entity.TRAIN_VOC == 1 ? true : false;
+
+
+        public SolidColorBrush INJURIES_REC_LTI_Background => INJURIES_REC_LTI_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INJURIES_REC_RWI_Background => INJURIES_REC_RWI_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INJURIES_REC_MTI_Background => INJURIES_REC_MTI_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush Total_Recordable_Injuries_Background => Total_Recordable_Injuries_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INCIDENT_DAM_Background => INCIDENT_DAM_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INCIDENT_ENV_Background => INCIDENT_ENV_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INCIDENT_FIRE_Background => INCIDENT_FIRE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush MAJOR_ENV_Background => MAJOR_ENV_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush INCIDENT_NOTICE_Background => INCIDENT_NOTICE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_PRESTART_Background => KPI_PRESTART_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_TOOLBOX_Background => KPI_TOOLBOX_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_HSE_COMMITTEE_Background => KPI_HSE_COMMITTEE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_HAZOB_Background => KPI_HAZOB_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_SWO_Background => KPI_SWO_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_DRILL_Background => KPI_DRILL_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_INSPECTION_Background => KPI_INSPECTION_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_INSPECTION_FREQ_Background => KPI_INSPECTION_FREQ_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_CORRECTIVE_ACT_Background => KPI_CORRECTIVE_ACT_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_CORRECTIVE_ACT_CLOSED_Background => KPI_CORRECTIVE_ACT_CLOSED_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_WEEKLY_HSE_Background => KPI_WEEKLY_HSE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush KPI_RISK_REGISTER_Background => KPI_RISK_REGISTER_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush TRAIN_COMPLIANCE_Background => TRAIN_COMPLIANCE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush TRAIN_VOC_Background => TRAIN_VOC_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+
         #endregion
     }
 }

@@ -122,6 +122,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((HSE x) => x.GUID); }
         }
 
+        IRepository<HSE_INCIDENT, Guid> IBluePrintsEntitiesUnitOfWork.HSE_INCIDENTS
+        {
+            get { return GetRepository((HSE_INCIDENT x) => x.GUID); }
+        }
+
+        IRepository<HSE_INJURY, Guid> IBluePrintsEntitiesUnitOfWork.HSE_INJURIES
+        {
+            get { return GetRepository((HSE_INJURY x) => x.GUID); }
+        }
+
         IRepository<OFFICE, Guid> IBluePrintsEntitiesUnitOfWork.OFFICES
         {
             get { return GetRepository((OFFICE x) => x.GUID); }

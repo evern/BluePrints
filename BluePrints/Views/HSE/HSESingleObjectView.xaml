@@ -84,13 +84,13 @@
                         <DataTemplate>
                             <ItemsControl>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.EditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditControlPreviewMouseDownCommand, ElementName=userControl}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                             </ItemsControl>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
                 <Setter Property="TextWrapping" Value="Wrap" />
-                <Setter Property="AcceptsTab" Value="False" />
+                <Setter Property="AcceptsReturn" Value="True" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -123,592 +123,895 @@
                                         </DataTemplate>
                                     </dxb:BarButtonItem.GlyphTemplate>
                                 </dxb:BarButtonItem>
+                                <dxb:BarItemSeparator />
+                                <dxb:BarStaticItem Content="Select Month" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.DataDate, ElementName=userControl}">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxg:LookUpEditSettings AutoPopulateColumns="False" DataContext="{Binding DataContext.MainViewModel, ElementName=userControl}" DisplayMember="Entity.HSE_DATE" IsTextEditable="true" ItemsSource="{Binding Entities}" Mask="MMM yyyy" MaskUseAsDisplayFormat="True" ValueMember="Entity.HSE_DATE">
+                                            <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="30" />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <dxb:ToolBarControl Grid.Row="0">
+                                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding BulkDeleteCommand}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                                        </dxb:ToolBarControl>
+                                                        <dxg:GridControl x:Name="PART_GridControl" Grid.Row="1" SelectionMode="Row" ShowBorder="False" Style="{StaticResource AssociateGridControlTemplate}">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn Width="150" FieldName="Entity.HSE_DATE" Header="Date" ReadOnly="True">
+                                                                    <dxg:GridColumn.EditSettings>
+                                                                        <dxe:DateEditSettings Mask="MMM yyyy" MaskUseAsDisplayFormat="True" />
+                                                                    </dxg:GridColumn.EditSettings>
+                                                                </dxg:GridColumn>
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" Style="{StaticResource AssociateTableViewTemplate}">
+                                                                    <dxg:TableView.RowCellMenuCustomizations>
+                                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                                        <dxb:BarItemLinkSeparator />
+                                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                                                    </dxg:TableView.RowCellMenuCustomizations>
+                                                                </dxg:TableView>
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEditSettings.PopupContentTemplate>
+                                        </dxg:LookUpEditSettings>
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <Grid DataContext="{Binding DataContext.EditingEntity, ElementName=userControl}">
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
-                        <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="3*" Orientation="Vertical">
-                            <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="1. RECORDABLE INJURIES" Style="{StaticResource layoutFirstColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Lost Time Injuries (LTI)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_LTI}" Tag="Entity.INJURIES_REC_LTI" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_LTI_COMMENT}" Tag="Entity.INJURIES_REC_LTI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Restricted Work Injuries (RWI)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_RWI}" Tag="Entity.INJURIES_REC_RWI" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_RWI_COMMENT}" Tag="Entity.INJURIES_REC_RWI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Medical Treatment Injuries (MTI)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_MTI}" Tag="Entity.INJURIES_REC_MTI" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_MTI_COMMENT}" Tag="Entity.INJURIES_REC_MTI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total Recordable Injuries (TRI)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <Label Content="{Binding Total_Recordable_Injuries}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding Total_Recordable_Injuries_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Less Than 10 Per Million Manhours" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_TOTAL_COMMENT}" Tag="Entity.INJURIES_REC_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="2. OTHER INJURIES" Style="{StaticResource layoutFirstColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="First Aid (or no-treatment required) Injuries (FAI)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_OTH_FAI}" Tag="Entity.INJURIES_OTH_FAI" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_OTH_FAI_COMMENT}" Tag="Entity.INJURIES_OTH_FAI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Non-Work Related Injuries or Illness (NWR)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_OTH_NWR}" Tag="Entity.INJURIES_OTH_NWR" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INJURIES_OTH_NWR_COMMENT}" Tag="Entity.INJURIES_OTH_NWR_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="3. NON INJURY INCIDENTS" Style="{StaticResource layoutFirstColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Property, Plant, Equipment Damage (DAM)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_DAM}" Tag="Entity.INCIDENT_DAM" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Less Than 10% of Incidents" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_DAM_COMMENT}" Tag="Entity.INCIDENT_DAM_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Environmental Spill, Damage (ENV)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_ENV}" Tag="Entity.INCIDENT_ENV" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Less Than 10% of Incidents" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_ENV_COMMENT}" Tag="Entity.INCIDENT_ENV_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Major Fire (FIRE)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_FIRE}" Tag="Entity.INCIDENT_FIRE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_FIRE_COMMENT}" Tag="Entity.INCIDENT_FIRE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Major Environmental Incident" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_MAJOR_ENV}" Tag="Entity.INCIDENT_MAJOR_ENV" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_MAJOR_ENV_COMMENT}" Tag="Entity.INCIDENT_MAJOR_ENV_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="HSE Breaches" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_HSE_BREACH}" Tag="Entity.INCIDENT_HSE_BREACH" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_HSE_BREACH_COMMENT}" Tag="Entity.INCIDENT_HSE_BREACH_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="(Prohibition) Notices issued by authorities" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_NOTICE}" Tag="Entity.INCIDENT_NOTICE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_NOTICE_COMMENT}" Tag="Entity.INCIDENT_NOTICE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total Incidents" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <Label Content="{Binding Total_Incidents}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_TOTAL_COMMENT}" Tag="Entity.INCIDENT_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="4. HSE KPI's" Style="{StaticResource layoutFirstColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Near Miss (NM)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <Grid>
-                                            <dxe:FlyoutControl IsOpen="{Binding ElementName=spinMTI, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinMTI}" StaysOpen="False">
-                                                <TextBlock Text="For every incident (except NWR) there must be 5 NM recorded. They should be raised through HAZOB forms." />
-                                            </dxe:FlyoutControl>
-                                            <dxe:SpinEdit Name="spinMTI" EditValue="{Binding Entity.KPI_NM}" Tag="Entity.KPI_NM" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                        </Grid>
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_NM_COMMENT}" Tag="Entity.KPI_NM_COMMENT" AcceptsTab="False" NullText="All near misses to be reported on monthly HSE report" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Daily Pre-Start Meetings" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <Grid>
-                                            <dxe:FlyoutControl IsOpen="{Binding ElementName=spinPRESTART, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinPRESTART}" StaysOpen="False">
-                                                <TextBlock Text="Total attendance %. If all employees attend then 100% attendance recorded. If 9/10 then 90%." />
-                                            </dxe:FlyoutControl>
-                                            <dxe:SpinEdit Name="spinPRESTART" EditValue="{Binding Entity.KPI_PRESTART}" Tag="Entity.KPI_PRESTART" Increment="0.1" Mask="p0" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                        </Grid>
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding PrestartAttendanceTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_PRESTART_CRITERIA}" Tag="Entity.KPI_PRESTART_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_PRESTART_COMMENT}" Tag="Entity.KPI_PRESTART_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Weekly Toolbox Meetings" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_TOOLBOX}" Tag="Entity.KPI_TOOLBOX" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding ToolboxAttendanceTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_TOOLBOX_CRITERIA}" Tag="Entity.KPI_TOOLBOX_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_TOOLBOX_COMMENT}" Tag="Entity.KPI_TOOLBOX_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="HSE Committee Meetings (if &gt;100 personnel)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_HSE_COMMITTEE}" Tag="Entity.KPI_HSE_COMMITTEE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding HSEAttendanceTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_HSE_COMMITTEE_CRITERIA}" Tag="Entity.KPI_HSE_COMMITTEE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_HSE_COMMITTEE_COMMENT}" Tag="Entity.KPI_HSE_COMMITTEE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Hazard Observations (HAZOB)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_HAZOB}" Tag="Entity.KPI_HAZOB" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding HAZOBTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_HAZOB_CRITERIA}" Tag="Entity.KPI_HAZOB_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_HAZOB_COMMENT}" Tag="Entity.KPI_HAZOB_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Safe Work Observations (SWO)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_SWO}" Tag="Entity.KPI_SWO" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding SWOTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_SWO_CRITERIA}" Tag="Entity.KPI_SWO_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_SWO_COMMENT}" Tag="Entity.KPI_SWO_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Take 5 (or job start card)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_TAKE5}" Tag="Entity.KPI_TAKE5" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_TAKE5_COMMENT}" Tag="Entity.KPI_TAKE5_COMMENT" NullText="Reported via Safe Work Observations" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Emergency Response Drills" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_DRILL}" Tag="Entity.KPI_DRILL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding DrillTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_DRILL_CRITERIA}" Tag="Entity.KPI_DRILL_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_DRILL_COMMENT}" Tag="Entity.KPI_DRILL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Six Monthly Workplace Inspection Performance" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_INSPECTION}" Tag="Entity.KPI_INSPECTION" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding SixMonthlyInspectionPerformanceTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_INSPECTION_CRITERIA}" Tag="Entity.KPI_INSPECTION_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_INSPECTION_COMMENT}" Tag="Entity.KPI_INSPECTION_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Workplace Inspection Frequency (per site)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_INSPECTION_FREQ}" Tag="Entity.KPI_INSPECTION_FREQ" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding WorkplaceInspectionFrequencyTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_INSPECTION_FREQ_CRITERIA}" Tag="Entity.KPI_INSPECTION_FREQ_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_INSPECTION_FREQ_COMMENT}" Tag="Entity.KPI_INSPECTION_FREQ_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Corrective actions recorded" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT}" Tag="Entity.KPI_CORRECTIVE_ACT" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding CorrectiveActionsTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CRITERIA}" Tag="Entity.KPI_CORRECTIVE_ACT_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_COMMENT}" Tag="Entity.KPI_CORRECTIVE_ACT_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Corrective actions closed out" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding CorrectiveActionsClosedTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED_COMMENT}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Weekly site HSE Inspection with client" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_WEEKLY_HSE}" Tag="Entity.KPI_WEEKLY_HSE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding HSEInspectionWithClientTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_WEEKLY_HSE_CRITERIA}" Tag="Entity.KPI_WEEKLY_HSE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_WEEKLY_HSE_COMMENT}" Tag="Entity.KPI_WEEKLY_HSE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Weekly site HSE Inspection with client" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.KPI_RISK_REGISTER}" Tag="Entity.KPI_RISK_REGISTER" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding RiskRegisterReviewTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_RISK_REGISTER_CRITERIA}" Tag="Entity.KPI_RISK_REGISTER_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.KPI_RISK_REGISTER_COMMENT}" Tag="Entity.KPI_RISK_REGISTER_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="5. HSE TRAINING" Style="{StaticResource layoutFirstColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Compliance with training matrix" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.TRAIN_COMPLIANCE}" Tag="Entity.TRAIN_COMPLIANCE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="{Binding TrainingTarget}" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.TRAIN_COMPLIANCE_CRITERIA}" Tag="Entity.TRAIN_COMPLIANCE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.TRAIN_COMPLIANCE_COMMENT}" Tag="Entity.TRAIN_COMPLIANCE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Employee Verification of Competency (VOC's)" Style="{StaticResource layoutFirstColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.TRAIN_VOC}" Tag="Entity.TRAIN_VOC" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="100%" Style="{StaticResource layoutSecondColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Label="100%" Style="{StaticResource layoutThirdColumnStyle}" />
-                                    <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                    <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.TRAIN_VOC_COMMENT}" Tag="Entity.TRAIN_VOC_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Padding="0" Style="{StaticResource layoutSideColumnStyle}">
-                                        <Label />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="10. PROJECT / SITE MANAGER COMMENT" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem>
-                                        <dxe:TextEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT}" Tag="Entity.SITE_MGMT_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                            <ExtraLayout:ExtraLayoutControl Padding="0">
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Width="350" Label="Name">
-                                        <dxe:ComboBoxEdit EditValue="{Binding Entity.GUID_SITE_MGMT_USER}" Tag="Entity.GUID_SITE_MGMT_USER" AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" Style="{StaticResource SingleObjectView.ControlContainer}" ValueMember="GUID" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Width="200" HorizontalAlignment="Right" Label="Date">
-                                        <dxe:DateEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT_DATE}" Tag="Entity.SITE_MGMT_COMMENT_DATE" NullValueButtonPlacement="EditBox" Style="{StaticResource SingleObjectView.ControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                        </ExtraLayout:ExtraLayoutGroup>
-                        <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical">
-                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="6. AVERAGE No. OF EMPLOYEES ON SITE" />
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Primero" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_STAFF}" Tag="Entity.QTY_STAFF" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Management" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_MGMT}" Tag="Entity.QTY_MGMT" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="HSE Advisor" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_HSE}" Tag="Entity.QTY_HSE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Contractor" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_CONTRACTOR}" Tag="Entity.QTY_CONTRACTOR" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total" Style="{StaticResource layoutSideColumnStyle}">
-                                        <Label HorizontalAlignment="Right" Content="{Binding Total_Employees}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="7. Number of Working Days on Site" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_DAYSONSITE}" Tag="Entity.QTY_DAYSONSITE" FontWeight="Normal" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="8. Working Hours a Day" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_HRSADAY}" Tag="Entity.QTY_HRSADAY" FontWeight="Normal" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Label="Total Man Hours" Style="{StaticResource layoutSideColumnStyle}">
-                                        <Label HorizontalAlignment="Right" Content="{Binding Total_ManHours}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem FontWeight="Bold" Style="{StaticResource layoutSideColumnStyle}">
-                                        <Label Content="9. ENVIRONMENTAL DATA" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Diesel Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_DIESEL}" Tag="Entity.QTY_DIESEL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Petrol Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_PETROL}" Tag="Entity.QTY_PETROL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Mains Grid Electrical Use (kWh)" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_ELECTRIC}" Tag="Entity.QTY_ELECTRIC" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Label="Water Consumption" Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:SpinEdit EditValue="{Binding Entity.QTY_WATER}" Tag="Entity.QTY_WATER" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                            <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
-                                <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Height="67" Background="AliceBlue" FontWeight="Bold" Style="{StaticResource layoutSideColumnStyle}">
-                                        <TextBlock Background="Transparent" Text="9. HSE ADVISOR COMMENT Use the space below to record any additional information or detail eg; Details of 'Other' Training, VOC's Safety Initiatives, Awards, Achievements or Milestones. NOTE: All Injuries and Incidents must be recorded on Page 2 of this form." TextAlignment="Center" TextWrapping="WrapWithOverflow" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                                <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                    <dxlc:LayoutItem Style="{StaticResource layoutSideColumnStyle}">
-                                        <dxe:TextEdit EditValue="{Binding Entity.HSE_ADVISOR_COMMENT}" Tag="Entity.HSE_ADVISOR_COMMENT" VerticalContentAlignment="Top" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                    </dxlc:LayoutItem>
-                                </ExtraLayout:ExtraLayoutGroup>
-                            </ExtraLayout:ExtraLayoutControl>
-                        </ExtraLayout:ExtraLayoutGroup>
-                    </ExtraLayout:ExtraLayoutControl>
-                </Grid>
+                <dx:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
+                    <Grid DataContext="{Binding DataContext.EditingEntity, ElementName=userControl}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:LayoutSerializationService />
+                        </dxmvvm:Interaction.Behaviors>
+                        <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
+                            <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="3*" Orientation="Vertical">
+                                <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="1. RECORDABLE INJURIES" Style="{StaticResource layoutFirstColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Lost Time Injuries (LTI)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_LTI}" Tag="Entity.INJURIES_REC_LTI" Background="{Binding INJURIES_REC_LTI_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_LTI_COMMENT}" Tag="Entity.INJURIES_REC_LTI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Restricted Work Injuries (RWI)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_RWI}" Tag="Entity.INJURIES_REC_RWI" Background="{Binding INJURIES_REC_RWI_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_RWI_COMMENT}" Tag="Entity.INJURIES_REC_RWI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Medical Treatment Injuries (MTI)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_REC_MTI}" Tag="Entity.INJURIES_REC_MTI" Background="{Binding INJURIES_REC_MTI_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="= Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_MTI_COMMENT}" Tag="Entity.INJURIES_REC_MTI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Recordable Injuries (TRI)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding Total_Recordable_Injuries_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Target, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Less Than 10 Per Million Manhours" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_TOTAL_COMMENT}" Tag="Entity.INJURIES_REC_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="2. OTHER INJURIES" Style="{StaticResource layoutFirstColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="First Aid (or no-treatment required) Injuries (FAI)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_OTH_FAI}" Tag="Entity.INJURIES_OTH_FAI" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_OTH_FAI_COMMENT}" Tag="Entity.INJURIES_OTH_FAI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Non-Work Related Injuries or Illness (NWR)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INJURIES_OTH_NWR}" Tag="Entity.INJURIES_OTH_NWR" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_OTH_NWR_COMMENT}" Tag="Entity.INJURIES_OTH_NWR_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="3. NON INJURY INCIDENTS" Style="{StaticResource layoutFirstColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Property, Plant, Equipment Damage (DAM)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_DAM}" Tag="Entity.INCIDENT_DAM" Background="{Binding INCIDENT_DAM_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Incident_Target, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Less Than 10% of Incidents" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_DAM_COMMENT}" Tag="Entity.INCIDENT_DAM_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Environmental Spill, Damage (ENV)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_ENV}" Tag="Entity.INCIDENT_ENV" Background="{Binding INCIDENT_ENV_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Incident_Target, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Less Than 10% of Incidents" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_ENV_COMMENT}" Tag="Entity.INCIDENT_ENV_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Major Fire (FIRE)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_FIRE}" Tag="Entity.INCIDENT_FIRE" Background="{Binding INCIDENT_FIRE_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_FIRE_COMMENT}" Tag="Entity.INCIDENT_FIRE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Major Environmental Incident" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_MAJOR_ENV}" Tag="Entity.INCIDENT_MAJOR_ENV" Background="{Binding MAJOR_ENV_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_MAJOR_ENV_COMMENT}" Tag="Entity.INCIDENT_MAJOR_ENV_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="HSE Breaches" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_HSE_BREACH}" Tag="Entity.INCIDENT_HSE_BREACH" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_HSE_BREACH_COMMENT}" Tag="Entity.INCIDENT_HSE_BREACH_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="(Prohibition) Notices issued by authorities" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.INCIDENT_NOTICE}" Tag="Entity.INCIDENT_NOTICE" Background="{Binding INCIDENT_NOTICE_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="0" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="Zero" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_NOTICE_COMMENT}" Tag="Entity.INCIDENT_NOTICE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Incidents" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Total_Incidents, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.INCIDENT_TOTAL_COMMENT}" Tag="Entity.INCIDENT_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="4. HSE KPI's" Style="{StaticResource layoutFirstColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Near Miss (NM)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinMTI, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinMTI}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="For every incident (except NWR) there must be 5 NM recorded. They should be raised through HAZOB forms." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinMTI" EditValue="{Binding Entity.KPI_NM}" Tag="Entity.KPI_NM" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_NM_COMMENT}" Tag="Entity.KPI_NM_COMMENT" AcceptsTab="False" NullText="All near misses to be reported on monthly HSE report" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Daily Pre-Start Meetings" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinPRESTART, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinPRESTART}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Total attendance %. If all employees attend then 100% attendance recorded. If 9/10 then 90%." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinPRESTART" EditValue="{Binding Entity.KPI_PRESTART}" Tag="Entity.KPI_PRESTART" Background="{Binding KPI_PRESTART_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_PRESTART_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_PRESTART_CRITERIA}" Tag="Entity.KPI_PRESTART_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_PRESTART_COMMENT}" Tag="Entity.KPI_PRESTART_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Weekly Toolbox Meetings" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinWTM, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinWTM}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Total attendance %. If all employees attend then 100% attendance recorded. If 9/10 then 90%." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinWTM" EditValue="{Binding Entity.KPI_TOOLBOX}" Tag="Entity.KPI_TOOLBOX" Background="{Binding KPI_TOOLBOX_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_TOOLBOX_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_TOOLBOX_CRITERIA}" Tag="Entity.KPI_TOOLBOX_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_TOOLBOX_COMMENT}" Tag="Entity.KPI_TOOLBOX_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="HSE Committee Meetings (if &gt;100 personnel)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinHSE_COMMITTEE, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinHSE_COMMITTEE}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Total attendance %. If all employees attend then 100% attendance recorded. If 9/10 then 90%." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinHSE_COMMITTEE" EditValue="{Binding Entity.KPI_HSE_COMMITTEE}" Tag="Entity.KPI_HSE_COMMITTEE" Background="{Binding KPI_HSE_COMMITTEE_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_HSE_COMMITTEE_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_HSE_COMMITTEE_CRITERIA}" Tag="Entity.KPI_HSE_COMMITTEE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_HSE_COMMITTEE_COMMENT}" Tag="Entity.KPI_HSE_COMMITTEE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Hazard Observations (HAZOB)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_HAZOB, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_HAZOB}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="1 Hazob per man per week. If Hazob identifies near miss then it is recorded as near miss and Hazob." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_HAZOB" EditValue="{Binding Entity.KPI_HAZOB}" Tag="Entity.KPI_HAZOB" Background="{Binding KPI_HAZOB_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_HAZOB_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_HAZOB_CRITERIA}" Tag="Entity.KPI_HAZOB_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_HAZOB_COMMENT}" Tag="Entity.KPI_HAZOB_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Safe Work Observations (SWO)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_SWO, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_SWO}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Includes Manager, supervisor and HSE advisor. All must conduct a SWO each per week." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_SWO" EditValue="{Binding Entity.KPI_SWO}" Tag="Entity.KPI_SWO" Background="{Binding KPI_SWO_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_SWO_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_SWO_CRITERIA}" Tag="Entity.KPI_SWO_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_SWO_COMMENT}" Tag="Entity.KPI_SWO_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Take 5 (or job start card)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_TAKE5, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_TAKE5}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="All employees to complete 3 JSC or equivalent (Take 5, 5x5) each day immediately before undertaking a task." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_TAKE5" EditValue="{Binding Entity.KPI_TAKE5}" Tag="Entity.KPI_TAKE5" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="-" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_TAKE5_COMMENT}" Tag="Entity.KPI_TAKE5_COMMENT" NullText="Reported via Safe Work Observations" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Emergency Response Drills" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_DRILL, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_DRILL}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Include all emergency drills conducted or participated in while on site including client ER drills." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_DRILL" EditValue="{Binding Entity.KPI_DRILL}" Tag="Entity.KPI_DRILL" Background="{Binding KPI_DRILL_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_DRILL_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_DRILL_CRITERIA}" Tag="Entity.KPI_DRILL_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_DRILL_COMMENT}" Tag="Entity.KPI_DRILL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Six Monthly Workplace Inspection Performance" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_INSPECTION, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_INSPECTION}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="To be conducted by HSE Coordinator/Advisor. Score to be &gt;85%." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_INSPECTION" EditValue="{Binding Entity.KPI_INSPECTION}" Tag="Entity.KPI_INSPECTION" Background="{Binding KPI_INSPECTION_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_INSPECTION_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_INSPECTION_CRITERIA}" Tag="Entity.KPI_INSPECTION_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_INSPECTION_COMMENT}" Tag="Entity.KPI_INSPECTION_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Workplace Inspection Frequency (per site)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_INSPECTION_FREQ, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_INSPECTION_FREQ}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Mgr to conduct 1 site inspection according to register per week. HSE advisor to conduct 1 site inspection per day." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_INSPECTION_FREQ" EditValue="{Binding Entity.KPI_INSPECTION_FREQ}" Tag="Entity.KPI_INSPECTION_FREQ" Background="{Binding KPI_INSPECTION_FREQ_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding KPI_INSPECTION_FREQ_Target, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_INSPECTION_FREQ_CRITERIA}" Tag="Entity.KPI_INSPECTION_FREQ_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_INSPECTION_FREQ_COMMENT}" Tag="Entity.KPI_INSPECTION_FREQ_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Corrective actions recorded" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_CORRECTIVE_ACT, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_CORRECTIVE_ACT}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="All incidents (except NWR) and HAZOB's  must be entered into the Corrective Actions Register." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_CORRECTIVE_ACT" EditValue="{Binding Entity.KPI_CORRECTIVE_ACT}" Tag="Entity.KPI_CORRECTIVE_ACT" Background="{Binding KPI_CORRECTIVE_ACT_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_CORRECTIVE_ACT_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CRITERIA}" Tag="Entity.KPI_CORRECTIVE_ACT_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_COMMENT}" Tag="Entity.KPI_CORRECTIVE_ACT_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Corrective actions closed out" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_CORRECTIVE_ACT_CLOSED, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_CORRECTIVE_ACT_CLOSED}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Aim to Close out &gt;85% of recorded corrective actions every month." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_CORRECTIVE_ACT_CLOSED" EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED" Background="{Binding KPI_CORRECTIVE_ACT_CLOSED_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_CORRECTIVE_ACT_CLOSED_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED_COMMENT}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Weekly site HSE Inspection with client" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_WEEKLY_HSE, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_WEEKLY_HSE}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Site specific. Record if you conduct site inspection with Client." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_WEEKLY_HSE" EditValue="{Binding Entity.KPI_WEEKLY_HSE}" Tag="Entity.KPI_WEEKLY_HSE" Background="{Binding KPI_WEEKLY_HSE_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_WEEKLY_HSE_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_WEEKLY_HSE_CRITERIA}" Tag="Entity.KPI_WEEKLY_HSE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_WEEKLY_HSE_COMMENT}" Tag="Entity.KPI_WEEKLY_HSE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Risk Register Review" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinKPI_RISK_REGISTER, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinKPI_RISK_REGISTER}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Site MGR/HSE Advisor to review Project Risk Register Monthly." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinKPI_RISK_REGISTER" EditValue="{Binding Entity.KPI_RISK_REGISTER}" Tag="Entity.KPI_RISK_REGISTER" Background="{Binding KPI_RISK_REGISTER_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding KPI_RISK_REGISTER_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.KPI_RISK_REGISTER_CRITERIA}" Tag="Entity.KPI_RISK_REGISTER_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.KPI_RISK_REGISTER_COMMENT}" Tag="Entity.KPI_RISK_REGISTER_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="5. HSE TRAINING" Style="{StaticResource layoutFirstColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Target" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Criteria" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Comment" Style="{StaticResource layoutFourthColumnStyle}" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Compliance with training matrix" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinTRAIN_COMPLIANCE, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinTRAIN_COMPLIANCE}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="Training Matrix to be reviewed monthly by Mgr/HSE for license/ticket expiry and training gaps." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinTRAIN_COMPLIANCE" EditValue="{Binding Entity.TRAIN_COMPLIANCE}" Tag="Entity.TRAIN_COMPLIANCE" Background="{Binding TRAIN_COMPLIANCE_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="{Binding TRAIN_COMPLIANCE_Target}" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutThirdColumnStyle}">
+                                            <dxe:ComboBoxEdit EditValue="{Binding Entity.TRAIN_COMPLIANCE_CRITERIA}" Tag="Entity.TRAIN_COMPLIANCE_CRITERIA" ItemsSource="{dxe:EnumItemsSource EnumType=common:HSE_NonApplicableCriteria, UseNumericEnumValue=True}" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.TRAIN_COMPLIANCE_COMMENT}" Tag="Entity.TRAIN_COMPLIANCE_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Employee Verification of Competency (VOC's)" Style="{StaticResource layoutFirstColumnStyle}">
+                                            <Grid>
+                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=spinTRAIN_VOC, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinTRAIN_VOC}" StaysOpen="False">
+                                                    <dxe:FlyoutControl.Settings>
+                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                    </dxe:FlyoutControl.Settings>
+                                                    <TextBlock Text="All new and existing employees must be VOC'd prior to mobilising to site and updated annually." />
+                                                </dxe:FlyoutControl>
+                                                <dxe:SpinEdit Name="spinTRAIN_VOC" EditValue="{Binding Entity.TRAIN_VOC}" Tag="Entity.TRAIN_COMPLIANCE" Background="{Binding TRAIN_VOC_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            </Grid>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="100%" Style="{StaticResource layoutSecondColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Label="100%" Style="{StaticResource layoutThirdColumnStyle}" />
+                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
+                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.TRAIN_VOC_COMMENT}" Tag="Entity.TRAIN_VOC_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Padding="0" Style="{StaticResource layoutSideColumnStyle}">
+                                            <Label />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="10. PROJECT / SITE MANAGER COMMENT" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem>
+                                            <dxe:TextEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT}" Tag="Entity.SITE_MGMT_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0">
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Width="350" Label="Name">
+                                            <dxg:LookUpEdit EditValue="{Binding Entity.SITE_MGMT_STAFFNO}" Tag="Entity.SITE_MGMT_STAFFNO" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IncrementalSearch="True" IsTextEditable="true" ItemsSource="{Binding DataContext.STAFFCollection, ElementName=userControl}" Style="{StaticResource SingleObjectView.ControlContainer}" ValueMember="STAFFNO">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Width="200" HorizontalAlignment="Right" Label="Date">
+                                            <dxe:DateEdit EditValue="{Binding Entity.SITE_MGMT_COMMENT_DATE}" Tag="Entity.SITE_MGMT_COMMENT_DATE" NullValueButtonPlacement="EditBox" Style="{StaticResource SingleObjectView.ControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0" Orientation="Vertical">
+                                    <ExtraLayout:ExtraLayoutGroup DataContext="{Binding DataContext.HSE_INCIDENTViewModel, ElementName=userControl}" Orientation="Vertical" Style="{StaticResource layoutControlLine}">
+                                        <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                            <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="11. INCIDENT SUMMARY" />
+                                        </ExtraLayout:ExtraLayoutGroup>
+                                        <dxb:ToolBarControl>
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding BulkDeleteCommand}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                        </dxb:ToolBarControl>
+                                        <custom:GridControlEx x:Name="GridControl" Height="300" dx:DXSerializer.SerializationID="GridControlIncident" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
+                                            <dxg:GridControl.Columns>
+                                                <dxg:GridColumn FieldName="DATE" Header="Date" />
+                                                <dxg:GridColumn FieldName="NUMBER" Header="Number" />
+                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description">
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="CLASSIFICATION" Header="Classification">
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
+                                                </dxg:GridColumn>
+                                            </dxg:GridControl.Columns>
+                                            <dxg:GridControl.TotalSummary>
+                                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                            </dxg:GridControl.TotalSummary>
+                                            <dxg:GridControl.GroupSummary>
+                                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                            </dxg:GridControl.GroupSummary>
+                                            <dxg:GridControl.View>
+                                                <dxg:TableView x:Name="tableView" AutoWidth="True" ShowGroupPanel="False" Style="{StaticResource AssociateTableViewTemplate}">
+                                                    <dxg:TableView.RowCellMenuCustomizations>
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                                        <dxb:BarItemLinkSeparator />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                        <dxb:BarItemLinkSeparator />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                                    </dxg:TableView.RowCellMenuCustomizations>
+                                                </dxg:TableView>
+                                            </dxg:GridControl.View>
+                                        </custom:GridControlEx>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup DataContext="{Binding DataContext.HSE_INJURYViewModel, ElementName=userControl}" Orientation="Vertical" Style="{StaticResource layoutControlLine}">
+                                        <ExtraLayout:ExtraLayoutGroup Background="LightGray" Style="{StaticResource layoutControlLine}">
+                                            <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="12. INJURY MANAGEMENT - Complete details for all personnel on work restriction / medical treatment as at date of report" />
+                                        </ExtraLayout:ExtraLayoutGroup>
+                                        <dxb:ToolBarControl>
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding BulkDeleteCommand}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+                                            <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
+                                        </dxb:ToolBarControl>
+                                        <custom:GridControlEx x:Name="GridControl1" Height="300" dx:DXSerializer.SerializationID="GridControlInjury" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
+                                            <dxg:GridControl.Columns>
+                                                <dxg:GridColumn FieldName="STAFFNO" Header="Name">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="true" ItemsSource="{Binding DataContext.STAFFCollection, ElementName=userControl}" ValueMember="STAFFNO">
+                                                            <dxg:LookUpEditSettings.StyleSettings>
+                                                                <dxg:SearchLookUpEditStyleSettings />
+                                                            </dxg:LookUpEditSettings.StyleSettings>
+                                                            <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                                <ControlTemplate TargetType="ContentControl">
+                                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                                        <dxg:GridControl.Columns>
+                                                                            <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                                        </dxg:GridControl.Columns>
+                                                                        <dxg:GridControl.View>
+                                                                            <dxg:TableView ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                                        </dxg:GridControl.View>
+                                                                    </dxg:GridControl>
+                                                                </ControlTemplate>
+                                                            </dxg:LookUpEditSettings.PopupContentTemplate>
+                                                        </dxg:LookUpEditSettings>
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="DOI" Header="D.O.I" />
+                                                <dxg:GridColumn FieldName="DETAILS" Header="Restrictions or treatment details">
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="NEXT_REVIEW" Header="Next Review" />
+                                            </dxg:GridControl.Columns>
+                                            <dxg:GridControl.TotalSummary>
+                                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                            </dxg:GridControl.TotalSummary>
+                                            <dxg:GridControl.GroupSummary>
+                                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                            </dxg:GridControl.GroupSummary>
+                                            <dxg:GridControl.View>
+                                                <dxg:TableView x:Name="tableView1" AutoWidth="True" ShowGroupPanel="False" Style="{StaticResource AssociateTableViewTemplate}">
+                                                    <dxg:TableView.RowCellMenuCustomizations>
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                                        <dxb:BarItemLinkSeparator />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                        <dxb:BarItemLinkSeparator />
+                                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                                    </dxg:TableView.RowCellMenuCustomizations>
+                                                </dxg:TableView>
+                                            </dxg:GridControl.View>
+                                        </custom:GridControlEx>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                            </ExtraLayout:ExtraLayoutGroup>
+                            <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical">
+                                <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="6. AVERAGE No. OF EMPLOYEES ON SITE" />
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Primero" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_STAFF}" Tag="Entity.QTY_STAFF" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Management" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_MGMT}" Tag="Entity.QTY_MGMT" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="HSE Advisor" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_HSE}" Tag="Entity.QTY_HSE" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Contractor" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_CONTRACTOR}" Tag="Entity.QTY_CONTRACTOR" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Padding="0" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Padding="0" FontWeight="Bold" Foreground="Black" Label="Total">
+                                            <dxe:SpinEdit EditValue="{Binding Total_Employees, Mode=OneWay}" Margin="0,-6,0,0" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="7. Number of Working Days on Site" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_DAYSONSITE}" Tag="Entity.QTY_DAYSONSITE" FontWeight="Normal" MaxValue="31" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="8. Working Hours a Day" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_HRSADAY}" Tag="Entity.QTY_HRSADAY" FontWeight="Normal" MaxValue="24" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Man Hours" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Total_ManHours, Mode=OneWay}" Margin="0,-6,0,0" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Style="{StaticResource layoutSideColumnStyle}">
+                                            <Label Content="9. ENVIRONMENTAL DATA" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Diesel Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_DIESEL}" Tag="Entity.QTY_DIESEL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Petrol Consumption (litres)" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_PETROL}" Tag="Entity.QTY_PETROL" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Mains Grid Electrical Use (kWh)" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_ELECTRIC}" Tag="Entity.QTY_ELECTRIC" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Water Consumption" Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_WATER}" Tag="Entity.QTY_WATER" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Height="67" Background="AliceBlue" FontWeight="Bold" Foreground="Black" Style="{StaticResource layoutSideColumnStyle}">
+                                            <TextBlock Background="Transparent" Text="9. HSE ADVISOR COMMENT Use the space below to record any additional information or detail eg; Details of 'Other' Training, VOC's Safety Initiatives, Awards, Achievements or Milestones. NOTE: All Injuries and Incidents must be recorded on Page 2 of this form." TextAlignment="Center" TextWrapping="WrapWithOverflow" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Style="{StaticResource layoutSideColumnStyle}">
+                                            <dxe:TextEdit EditValue="{Binding Entity.HSE_ADVISOR_COMMENT}" Tag="Entity.HSE_ADVISOR_COMMENT" Margin="0,-3,0,-3" Padding="0" VerticalContentAlignment="Top" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                            </ExtraLayout:ExtraLayoutGroup>
+                        </ExtraLayout:ExtraLayoutControl>
+                    </Grid>
+                </dx:LoadingDecorator>
             </DockPanel>
         </Grid>
     </Grid>

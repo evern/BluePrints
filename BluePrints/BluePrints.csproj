@@ -591,6 +591,8 @@
     <Compile Include="EntityFramework\Annotations\DAYWORK_EQUIPMENT.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK.cs" />
     <Compile Include="EntityFramework\Annotations\HSE.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE_INCIDENT.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE_INJURY.cs" />
     <Compile Include="EntityFramework\Annotations\OFFICE.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_NODE.cs" />
@@ -631,6 +633,8 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE_INCIDENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE_INJURY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\OFFICE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
