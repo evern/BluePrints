@@ -36,13 +36,12 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxpg:PivotGridControl Name="pivotGridControl1" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}">
+                    <dxpg:PivotGridControl Name="pivotGridControl1" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
                         <dxpg:PivotGridControl.Fields>
                             <dxpg:PivotGridField Area="RowArea" FieldName="Group" GroupIndex="0" />
                             <dxpg:PivotGridField Area="RowArea" FieldName="StatsName" GroupIndex="1" />
                             <dxpg:PivotGridField Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonth" />
                             <dxpg:PivotGridField Area="DataArea" CellFormat="c0" FieldName="StatsValue" />
-                            <dxpg:PivotGridField Area="DataArea" CellFormat="c0" FieldName="StatsMask" />
                         </dxpg:PivotGridControl.Fields>
                         <dxpg:PivotGridControl.FieldCellTemplateSelector>
                             <local:CellTemplateSelector />

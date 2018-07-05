@@ -75,7 +75,7 @@ namespace BluePrints.Common.Projections
             Total_Recordable_Injuries.StatsTargetMask = hseProjection.Total_Recordable_Injuries_Target.ToString("N0");
             Total_Recordable_Injuries.StatsCriteria = "< 10 Per Million Manhours";
             Total_Recordable_Injuries.StatsFormat = hseProjection.Total_Recordable_Injuries_Format;
-            Total_Recordable_Injuries.StatsMask = Total_Recordable_Injuries.StatsValue.ToString("N0");
+            Total_Recordable_Injuries.StatsMask = "N0";
             Stats.Add(Total_Recordable_Injuries);
 
             HSEReportProjection INJURIES_OTH_FAI = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group2 };
@@ -93,7 +93,7 @@ namespace BluePrints.Common.Projections
             INJURIES_OTH_NWR.StatsTargetMask = 0.ToString("N0");
             INJURIES_OTH_NWR.StatsCriteria = "";
             INJURIES_OTH_NWR.StatsFormat = true;
-            INJURIES_OTH_FAI.StatsMask = INJURIES_OTH_NWR.StatsValue.ToString("N0");
+            INJURIES_OTH_FAI.StatsMask = "N0";
             Stats.Add(INJURIES_OTH_NWR);
 
             HSEReportProjection INCIDENT_DAM = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
@@ -111,7 +111,7 @@ namespace BluePrints.Common.Projections
             INCIDENT_ENV.StatsTargetMask = hseProjection.Incident_Target.ToString("P0");
             INCIDENT_ENV.StatsCriteria = "< 10% of Incidents";
             INCIDENT_ENV.StatsFormat = hseProjection.INCIDENT_ENV_Format;
-            INCIDENT_ENV.StatsMask = "P0";
+            INCIDENT_ENV.StatsMask = "N0";
             Stats.Add(INCIDENT_ENV);
 
             HSEReportProjection INCIDENT_FIRE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
@@ -305,7 +305,7 @@ namespace BluePrints.Common.Projections
 
             HSEReportProjection Total_ManHours = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group6 };
             Total_ManHours.StatsName = "Total Man Hours";
-            Total_ManHours.StatsValue = hseProjection.Entity.TRAIN_VOC;
+            Total_ManHours.StatsValue = hseProjection.Total_ManHours;
             Total_ManHours.StatsTargetMask = 0.ToString("N0");
             Total_ManHours.StatsCriteria = "";
             Total_ManHours.StatsFormat = true;
