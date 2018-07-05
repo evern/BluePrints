@@ -278,11 +278,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.Clear();
             DataPointsTable.Clear();
 
-            var result = exoAuthorisations.GroupBy(x => x.SubJobNo)
-                   .Select(grp => grp.First())
-                   .ToList();
-
-            List<int> jobNumbers = result.Select(x => x.SubJobNo).ToList();
+            IEnumerable<JOBCOST_HDR> subJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
             List<TimesheetDate> weekStartDates = new List<TimesheetDate>();
 
             List<string> dateColumnNames = new List<string>();
@@ -300,13 +296,13 @@ namespace BluePrints.ViewModels
             }
 
             List<DataRow> newRows = new List<DataRow>();
-            LoadingScreenManager.ShowLoadingScreen(jobNumbers.Count);
-            foreach (int jobNumber in jobNumbers)
+            LoadingScreenManager.ShowLoadingScreen(subJobs.Count());
+            foreach (JOBCOST_HDR subjob in subJobs)
             {
                 List<JOB_TIMESHEETS> timeSheetAllDates = new List<JOB_TIMESHEETS>();
                 foreach(TimesheetDate weekStartDate in weekStartDates)
                 {
-                    IQueryable<JOB_TIMESHEETS> timeSheets = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == weekStartDate.WeekStartDate && x.JOBNO == jobNumber);
+                    IQueryable<JOB_TIMESHEETS> timeSheets = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == weekStartDate.WeekStartDate && x.JOBNO == subjob.JOBNO);
                     timeSheetAllDates.AddRange(timeSheets.ToList());
                 }
 

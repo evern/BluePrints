@@ -297,7 +297,7 @@ namespace BluePrints.Common.Projections
         public bool INJURIES_REC_LTI_Format => Entity == null ? false : Entity.INJURIES_REC_LTI == 0 ? true : false;
         public bool INJURIES_REC_RWI_Format => Entity == null ? false : Entity.INJURIES_REC_RWI == 0 ? true : false;
         public bool INJURIES_REC_MTI_Format => Entity == null ? false : Entity.INJURIES_REC_MTI == 0 ? true : false;
-        public bool Total_Recordable_Injuries_Format => Entity == null ? false : Total_Recordable_Injuries == 0 ? true : false;
+        public bool Total_Recordable_Injuries_Format => Entity == null ? false : Total_Recordable_Injuries <= Total_Recordable_Injuries_Target ? true : false;
         
         public bool INCIDENT_DAM_Format => Entity == null ? false : Entity.INCIDENT_DAM <= Incident_Target ? true : false;
         public bool INCIDENT_ENV_Format => Entity == null ? false : Entity.INCIDENT_ENV <= Incident_Target ? true : false;

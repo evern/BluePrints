@@ -447,6 +447,7 @@
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
+    <Compile Include="Common\Projections\HSEReportProjection.cs" />
     <Compile Include="Common\Projections\HSEProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
@@ -738,6 +739,7 @@
     <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_ACTION\MEETING_ACTIONCollectionViewModelWrapper.cs" />
@@ -800,6 +802,9 @@
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HSE\HSECollectionView.xaml.cs">
+      <DependentUpon>HSECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HSE\HSESingleObjectView.xaml.cs">
       <DependentUpon>HSESingleObjectView.xaml</DependentUpon>
@@ -1663,6 +1668,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HSE\HSECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

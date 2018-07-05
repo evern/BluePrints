@@ -237,7 +237,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static int? findExistingOrAddSubJob(string jobCode, JOBCOST_HDR masterJob, string projectNumber)
+        public static int? findExistingOrAddSubJob(string jobCode, JOBCOST_HDR masterJob, string projectNumber, string subjobTitle = "")
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(pUnitOfWork, projectNumber, jobCode);
@@ -260,8 +260,8 @@ namespace BluePrints.Common.Projections
                     newExoSubJob.JOBCODE = jobCode;
                     newExoSubJob.ACCNO = masterJob.ACCNO;
                     newExoSubJob.CUSTORDNO = string.Empty;
-                    newExoSubJob.STATUS = "C";
-                    newExoSubJob.TITLE = string.Empty;
+                    newExoSubJob.STATUS = masterJob.STATUS;
+                    newExoSubJob.TITLE = subjobTitle;
                     newExoSubJob.CATEGORY = masterJob.CATEGORY;
                     newExoSubJob.JOBTYPE = masterJob.JOBTYPE;
                     newExoSubJob.STAFFNO = masterJob.STAFFNO;
@@ -538,6 +538,20 @@ namespace BluePrints.Common.Projections
                 return null;
 
             return subJobs.First();
+        }
+
+        public static IEnumerable<JOBCOST_HDR> GetProjectSubJobs(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                          join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                          on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                          where MAINJOB.JOBCODE == projectNumber
+                          select SUBJOB;
+
+            if (subJobs.Count() == 0)
+                return null;
+
+            return subJobs;
         }
 
         public static JOB_RESOURCE_ALLOCATION GetResourceAllocation(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, ExoSubJobAuth existingAuth, int jobNo)

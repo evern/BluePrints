@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -260,6 +261,11 @@ namespace BluePrints.ViewModels
             return DisplayEntities.Any(x => x.SubJob.Id == null);
         }
 
+        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
+        }
+
         public void CommitUnbookableToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -272,7 +278,14 @@ namespace BluePrints.ViewModels
             JOBCOST_LINES masterLine = ExoQueries.GetProjectLineByCode(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (ExoSubJobProjection projection in DisplayEntities.Where(x => !x.IsLineExistsInExo))
             {
-                int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER);
+                string title = string.Empty;
+                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJob.Code + " Title:");
+                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                {
+                    title = bulkEditStringsViewModel.EditValue;
+                }
+
+                int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
                 if (subJobId != null)
                 {
                     projection.SubJob.Id = subJobId;

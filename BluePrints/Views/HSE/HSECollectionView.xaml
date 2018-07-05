@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="BluePrints.Views.HSECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:HSECollectionViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Department">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:LayoutSerializationService />
+                    </dxmvvm:Interaction.Behaviors>
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlHSE" dx:DXSerializer.StoreLayoutMode="All" CustomGroupDisplayText="GridControl_CustomGroupDisplayText" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Resources>
+                            <DataTemplate x:Key="summaryTemplate">
+                                <dxe:SpinEdit EditValue="{Binding Mode=OneWay}" Mask="p0" MaskUseAsDisplayFormat="True" />
+                            </DataTemplate>
+                        </dxg:GridControl.Resources>
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="Project.NUMBER" Header="Project" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="HSEDate" Header="Date" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings Mask="MMM yyyy" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Group" Header="Group" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="StatsName" Header="Name" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="StatsMask" Header="Company" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="StatsTargetMask" Header="Target" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="StatsCriteria" Header="Criteria" ReadOnly="True" />
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" FieldName="StatsMask" SummaryType="Custom" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" FieldName="StatsMask" SummaryType="Custom" />
+                        </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

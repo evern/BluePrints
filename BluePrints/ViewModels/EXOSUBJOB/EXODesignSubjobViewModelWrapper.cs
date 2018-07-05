@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -376,6 +377,11 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage(addedCount + " user permission added");
         }
 
+        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
+        }
+
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -398,6 +404,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+
             int updatedLineCount = 0;
             foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
             {
@@ -414,7 +421,14 @@ namespace BluePrints.ViewModels
                 {
                     if (selectedLine.SubJob.Id == null)
                     {
-                        int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJob.Code, masterJob, loadPROJECT.NUMBER);
+                        string title = string.Empty;
+                        var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, selectedLine.SubJob.Code + " Title:");
+                        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                        {
+                            title = bulkEditStringsViewModel.EditValue;
+                        }
+
+                        int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
                         if (subJobId != null)
                         {
                             selectedLine.SubJob.Id = subJobId;
