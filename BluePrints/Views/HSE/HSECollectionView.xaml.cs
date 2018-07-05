@@ -1,6 +1,8 @@
 ﻿using BaseModel.Misc;
 using BluePrints.Common.Projections;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.PivotGrid;
+using DevExpress.Xpf.PivotGrid.Internal;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,37 +13,30 @@ namespace BluePrints.Views
         public HSECollectionView()
         {
             InitializeComponent();
-            sortModeList_SelectionChanged();
         }
+    }
 
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterAttached("IsSelected", typeof(bool), typeof(HSECollectionView), new PropertyMetadata(false));
-        public static void SetIsSelected(DependencyObject element, bool value)
+    public class CellTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            element.SetValue(IsSelectedProperty, value);
-        }
-        public static int GetIsSelected(DependencyObject element)
-        {
-            return (int)element.GetValue(IsSelectedProperty);
-        }
+            CellsAreaItem cell = (CellsAreaItem)item;
 
-        private void sortModeList_SelectionChanged()
-        {
-            GridControl.GroupSummarySortInfo.Clear();
-            for (int i = 0; i < GridControl.GroupSummary.Count; i++)
+            // Applies the Default template to the Row Grand Total cells.
+            if (cell.ColumnValue == null)
+                return ((FrameworkElement)container).FindResource("NormalCellTemplate") as DataTemplate;
+
+            PivotGridControl pivotGridControl = (PivotGridControl)cell.Field.Parent;
+            PivotDrillDownDataSource pivotDrillDownDataSource = pivotGridControl.CreateDrillDownDataSource(cell.ColumnIndex, cell.RowIndex);
+            PivotDrillDownDataRow pivotDrillDownDataRow = pivotDrillDownDataSource[0];
+            string switchValue = pivotDrillDownDataRow["StatsMask"] == null ? "N0" : pivotDrillDownDataRow["StatsMask"].ToString();
+
+            if(switchValue == "P0")
             {
-                DevExpress.Xpf.Grid.GridSummaryItem item = GridControl.GroupSummary[i];
-                SetIsSelected(item, true);
-                GridControl.GroupSummarySortInfo.Add(new GridGroupSummarySortInfo(item, "StatsValue", System.ComponentModel.ListSortDirection.Ascending));
+                return ((FrameworkElement)container).FindResource("PercentageCellTemplate") as DataTemplate;
             }
-        }
-
-        private void GridControl_CustomGroupDisplayText(object sender, CustomGroupDisplayTextEventArgs e)
-        {
-            //HSEReportProjection rowData = (HSEReportProjection)e.Row;
-            //if(e.Column.FieldName == "StatsName" && rowData.StatsName == "Daily Pre-Start Meetings")
-            //{
-            //    e.DisplayText = ((int)e.Value).ToString("P0");
-            //}
+            else
+                return ((FrameworkElement)container).FindResource("NormalCellTemplate") as DataTemplate;
         }
     }
 }
