@@ -394,13 +394,13 @@ namespace BluePrints.ViewModels
 
             if(masterJob == null)
             {
-                MessageBoxService.ShowMessage("Project number doesn't exists in exo");
+                MessageBoxService.ShowMessage("Project number doesn't exists in exo, please contact Michelle Wilson or Ryan McFarlane to add job");
                 return;
             }
 
             if(masterLine == null)
             {
-                MessageBoxService.ShowMessage("Project line is not setup in exo");
+                MessageBoxService.ShowMessage("Project line is not setup in exo, please contact Michelle Wilson or Ryan McFarlane to add job line");
                 return;
             }
 

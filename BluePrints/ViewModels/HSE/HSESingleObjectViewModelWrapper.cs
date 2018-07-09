@@ -102,8 +102,6 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            isCompletelyLoaded = true;
-
             EditingEntity = MainViewModel.Entities.FirstOrDefault(x => x.Entity.HSE_DATE == DataDate && x.Entity.GUID_PROJECT == loadPROJECT.GUID);
             if (EditingEntity == null)
             {
@@ -120,6 +118,8 @@ namespace BluePrints.ViewModels
 
             HSE_INCIDENTViewModel.Refresh();
             HSE_INJURYViewModel.Refresh();
+            isCompletelyLoaded = true;
+
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
         #endregion
@@ -184,6 +184,9 @@ namespace BluePrints.ViewModels
 
         public void EditValueChanged(EditValueChangedEventArgs e)
         {
+            if (!isCompletelyLoaded)
+                return;
+
             if (MainViewModel == null || EditingEntity == null)
                 return;
 
@@ -191,6 +194,7 @@ namespace BluePrints.ViewModels
             DataUtils.TrySetNestedValue(fieldName, EditingEntity, e.NewValue);
 
             MainViewModel.Save(EditingEntity);
+            EditingEntity.Update();
         }
         #endregion
 

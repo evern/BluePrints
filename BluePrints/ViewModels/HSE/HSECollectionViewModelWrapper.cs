@@ -1,11 +1,14 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Data;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -67,6 +70,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HSEReportProjection> entities)
         {
+            MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -83,7 +87,26 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        
+        [ServiceProperty(Key = "PivotGridControlService")]
+        public virtual IPivotGridControlService PivotGridControlService { get { return null; } }
+
+
+        protected override string ExportExcelFilename()
+        {
+            return "hse_stats_export.xlsx";
+        }
+
+        public override void ExportToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                PivotGridControlService.ExportToExcel(ResultPath + "\\" + ExportExcelFilename());
+            }
+        }
+
+
         decimal runningCompany;
         public void CustomSummary(CustomSummaryEventArgs e)
         {

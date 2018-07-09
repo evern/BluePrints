@@ -1,6 +1,44 @@
-﻿<UserControl x:Class="BluePrints.Views.HSECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxpg="http://schemas.devexpress.com/winfx/2008/xaml/pivotgrid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:HSECollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.HSECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxet="http://schemas.devexpress.com/winfx/2008/xaml/editors/themekeys" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxpg="http://schemas.devexpress.com/winfx/2008/xaml/pivotgrid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:HSECollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <local:MyConv1 x:Key="backConv" />
+            <local:MyConv2 x:Key="foreConv" />
+            <ControlTemplate x:Key="{dxet:ProgressBarEditThemeKey ResourceKey=PanelBackgroundHorizontalTemplate}" TargetType="{x:Type ContentControl}">
+                <Border Margin="1" CornerRadius="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource backConv}}" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </ControlTemplate>
+            <ControlTemplate x:Key="{dxet:ProgressBarEditThemeKey ResourceKey=PanelLeftSideHorizontalTemplate}" TargetType="{x:Type ContentControl}">
+                <Border Margin="1" CornerRadius="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource foreConv}}" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </ControlTemplate>
+            <ControlTemplate x:Key="{dxet:ProgressBarEditStyleThemeKey ResourceKey=PanelTemplateHorizontal, IsThemeIndependent=true}" TargetType="{x:Type dxe:RangeEditBasePanel}">
+                <Grid>
+                    <Grid x:Name="root">
+                        <Grid.Resources>
+                            <dxe:GridLengthConverter x:Key="GridLengthConverter" />
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="leftColumn" Width="{Binding Path=(dxe:RangeEditBaseInfo.LayoutInfo).LeftSidePosition, Converter={StaticResource GridLengthConverter}}" />
+                            <ColumnDefinition x:Name="rightColumn" Width="{Binding Path=(dxe:RangeEditBaseInfo.LayoutInfo).RightSidePosition, Converter={StaticResource GridLengthConverter}}" />
+                        </Grid.ColumnDefinitions>
+                        <ContentControl x:Name="back" Grid.ColumnSpan="2" Style="{DynamicResource {dxet:ProgressBarEditThemeKey ResourceKey=PanelBackgroundHorizontalStyle}}" />
+                        <ContentControl x:Name="left" Grid.Column="0" Style="{DynamicResource {dxet:ProgressBarEditThemeKey ResourceKey=PanelLeftSideHorizontalStyle}}" />
+                        <ContentControl x:Name="right" Grid.Column="1" Style="{DynamicResource {dxet:ProgressBarEditThemeKey ResourceKey=PanelRightSideHorizontalStyle}}" />
+                        <ContentControl x:Name="foreground" Grid.ColumnSpan="2" Style="{DynamicResource {dxet:ProgressBarEditThemeKey ResourceKey=PanelForegroundStyle}}" />
+                    </Grid>
+                    <ContentControl x:Name="PART_InnerContent" Grid.ColumnSpan="2" Content="{Binding Path=(dxe:BaseEdit.OwnerEdit).DisplayText}" ContentTemplate="{Binding Path=(dxe:BaseEdit.OwnerEdit).ContentTemplate}" Style="{DynamicResource {dxet:ProgressBarEditThemeKey ResourceKey=ContentStyle}}" />
+                </Grid>
+            </ControlTemplate>
             <DataTemplate x:Key="NormalCellTemplate">
                 <dxe:SpinEdit EditValue="{Binding Path=Value, Mode=OneWay}" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" />
             </DataTemplate>
@@ -8,7 +46,7 @@
                 <ProgressBar Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="Red" Minimum="0" />
             </DataTemplate>
             <DataTemplate x:Key="PercentageCellTemplate">
-                <dxe:SpinEdit EditValue="{Binding Path=Value, Mode=OneWay}" EditMode="InplaceInactive" IsReadOnly="True" Mask="p0" MaskUseAsDisplayFormat="True" />
+                <dxe:ProgressBarEdit EditValue="{Binding Path=Value, Mode=OneWay}" ContentDisplayMode="Value" DisplayFormatString="{}{0}%" EditMode="InplaceInactive" Foreground="#FFFCF5F5" IsReadOnly="True" Maximum="1" Minimum="0" />
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -17,13 +55,18 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <services:PivotGridControlService x:Name="PivotGridControlService" PivotGridControl="{Binding ElementName=pivotGridControl1}" />
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Department">
-                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        <dxr:RibbonPage Caption="HSE Report">
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -36,12 +79,16 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxpg:PivotGridControl Name="pivotGridControl1" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
+                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
+                        <dxpg:PivotGridControl.FormatConditions>
+                            <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
+                        </dxpg:PivotGridControl.FormatConditions>
                         <dxpg:PivotGridControl.Fields>
-                            <dxpg:PivotGridField Area="RowArea" FieldName="Group" GroupIndex="0" />
-                            <dxpg:PivotGridField Area="RowArea" FieldName="StatsName" GroupIndex="1" />
-                            <dxpg:PivotGridField Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonth" />
-                            <dxpg:PivotGridField Area="DataArea" CellFormat="c0" FieldName="StatsValue" />
+                            <dxpg:PivotGridField Area="RowArea" Caption="Group" FieldName="Group" GroupIndex="0" />
+                            <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="1" />
+                            <dxpg:PivotGridField Name="fieldHSEDate" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonth" />
+                            <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n0" FieldName="StatsValue" SummaryType="Custom" />
+                            <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n0" FieldName="StatsTarget" SummaryType="Custom" />
                         </dxpg:PivotGridControl.Fields>
                         <dxpg:PivotGridControl.FieldCellTemplateSelector>
                             <local:CellTemplateSelector />
