@@ -16,8 +16,7 @@
         [Required]
         public int STAFFNO { get; set; }
 
-        [StringLength(1000)]
-        public string DOI { get; set; }
+        public DateTime DOI { get; set; }
 
         [StringLength(1000)]
         public string DETAILS { get; set; }

@@ -10,6 +10,11 @@
 
     public partial class HSE_INJURY : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
+        public HSE_INJURY()
+        {
+            DOI = DateTime.Now;
+        }
+
         [NotMapped]
         public Guid EntityKey
         {

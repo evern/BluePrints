@@ -750,7 +750,7 @@
                                                     </dxe:FlyoutControl.Settings>
                                                     <TextBlock Text="All new and existing employees must be VOC'd prior to mobilising to site and updated annually." />
                                                 </dxe:FlyoutControl>
-                                                <dxe:SpinEdit Name="spinTRAIN_VOC" EditValue="{Binding Entity.TRAIN_VOC}" Tag="Entity.TRAIN_COMPLIANCE" Background="{Binding TRAIN_VOC_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                                <dxe:SpinEdit Name="spinTRAIN_VOC" EditValue="{Binding Entity.TRAIN_VOC}" Tag="Entity.TRAIN_VOC" Background="{Binding TRAIN_VOC_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                             </Grid>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />

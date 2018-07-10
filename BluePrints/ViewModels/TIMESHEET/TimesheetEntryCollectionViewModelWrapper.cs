@@ -279,6 +279,12 @@ namespace BluePrints.ViewModels
             DataPointsTable.Clear();
 
             IEnumerable<JOBCOST_HDR> subJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if(subJobs == null)
+            {
+                MessageBoxService.ShowMessage("There are no subjobs for this project", "Confirmation", MessageButton.OK);
+                return;
+            }
+
             List<TimesheetDate> weekStartDates = new List<TimesheetDate>();
 
             List<string> dateColumnNames = new List<string>();
@@ -402,13 +408,46 @@ namespace BluePrints.ViewModels
                     int costTypeNo = (int)row[columnCostType];
 
                     ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
-                    if(findAuthorisation != null)
+
+                    string subJobCode = string.Empty;
+                    string subJobTitle = string.Empty;
+                    string stockCode = string.Empty;
+                    string stockCodeDescription = string.Empty;
+                    if (findAuthorisation != null)
+                    {
+                        subJobCode = findAuthorisation.SubJobCode;
+                        subJobTitle = findAuthorisation.SubJobTitle;
+                        stockCode = findAuthorisation.StockCode;
+                        stockCodeDescription = findAuthorisation.StockCodeDescription;
+                    }
+                    else
+                    {
+                        JOBCOST_HDR subJob = primeroUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == subJobNo);
+                        if(subJob != null)
+                        {
+                            subJobCode = subJob.JOBCODE;
+                            subJobTitle = subJob.TITLE;
+                        }
+
+                        JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.SEQNO == resourceSeqNo);
+                        if(resource != null)
+                        {
+                            STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == resource.DEFAULT_STOCKCODE);
+                            if(stockItem != null)
+                            {
+                                stockCode = stockItem.STOCKCODE;
+                                stockCodeDescription = stockItem.DESCRIPTION;
+                            }
+                        }
+                    }
+                    
+                    if(subJobCode != string.Empty && subJobTitle != string.Empty && stockCode != string.Empty && stockCodeDescription != string.Empty)
                     {
                         committedRow += 1;
                         foreach (DataColumn dataColumn in DataPointsTable.Columns)
                         {
                             DateTime bookDate = DateTime.Now;
-                            if(DateTime.TryParse(dataColumn.ColumnName, out bookDate))
+                            if (DateTime.TryParse(dataColumn.ColumnName, out bookDate))
                             {
                                 TimesheetDate timesheetDate = GetTimesheetDate(bookDate);
                                 if (row[dataColumn] == DBNull.Value)
@@ -416,7 +455,7 @@ namespace BluePrints.ViewModels
 
                                 decimal bookTime = (decimal)row[dataColumn];
                                 bool isReadOnly = false;
-                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == findAuthorisation.StockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
+                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
                                 if (timesheet != null)
                                 {
                                     AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
@@ -432,9 +471,9 @@ namespace BluePrints.ViewModels
                                     JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
                                     newTimeSheet.STAFFNO = resourceSeqNo;
                                     newTimeSheet.JOBNO = subJobNo;
-                                    newTimeSheet.TITLE = findAuthorisation.SubJobCode + " : " + findAuthorisation.SubJobTitle;
-                                    newTimeSheet.STOCKCODE = findAuthorisation.StockCode;
-                                    newTimeSheet.DESCRIPTION = findAuthorisation.StockCodeDescription;
+                                    newTimeSheet.TITLE = subJobCode + " : " + subJobTitle.Substring(0, subJobTitle.Length < 40 ? subJobTitle.Length : 40);
+                                    newTimeSheet.STOCKCODE = stockCode;
+                                    newTimeSheet.DESCRIPTION = stockCodeDescription;
                                     newTimeSheet.UNITPRICE = 0;
                                     newTimeSheet.WEEK_START_DATE = timesheetDate.WeekStartDate;
                                     AdjustTimeSheetHours(newTimeSheet, timesheetDate, bookTime, out isReadOnly);

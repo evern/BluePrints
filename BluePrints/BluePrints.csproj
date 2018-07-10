@@ -549,6 +549,7 @@
     <Compile Include="Common\ViewModel\Converters\HoursToTextConverter.cs" />
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
+    <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DateFromToDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\MapDeliverablesClientNumberDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
@@ -559,6 +560,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\YearSelect.xaml.cs">
+      <DependentUpon>YearSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\DateFromTo.xaml.cs">
       <DependentUpon>DateFromTo.xaml</DependentUpon>
@@ -1581,6 +1585,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\YearSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

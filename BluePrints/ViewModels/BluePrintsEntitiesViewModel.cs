@@ -126,6 +126,7 @@ namespace BluePrints.ViewModels
             if (entities.Any(x => x.STATUS == ProjectStatus.Tender))
                 projectCategoryHeader.ChildModules.Add(projectWIPTenderCategoryDescription);
 
+            projectCategoryHeader.ChildModules.Add(companyHSECategoryDescription);
             newModules.AddRange(CreateDataModules());
             var projects =
             entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.TenderSubmitted || x.STATUS == ProjectStatus.Tender)
@@ -229,6 +230,7 @@ namespace BluePrints.ViewModels
         const string activeCategoryId = "Category_Active";
         const string tenderSubmittedCategoryId = "Category_Tender_Submitted";
         const string tenderWIPCategoryId = "Category_Tender_WIP";
+        const string companyHSECategoryId = "HSE_Company";
         const string myProjectCategoryId = "Category_MyProject";
         const string myTenderCategoryId = "Category_MyTender";
         const string stockGroupCategoryId = "Category_StockGroup";
@@ -240,6 +242,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription;
         BluePrintsEntitiesModuleDescription projectSubmittedTenderCategoryDescription;
         BluePrintsEntitiesModuleDescription projectWIPTenderCategoryDescription;
+        BluePrintsEntitiesModuleDescription companyHSECategoryDescription;
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
 
@@ -252,6 +255,7 @@ namespace BluePrints.ViewModels
             projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active", null, null, null, null, true, false, @"Function Library\Financial_16x16.png");
             projectSubmittedTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderSubmittedCategoryId, projectCategoryId, "Submitted Tender", null, null, null, null, false, false, @"Function Library\Statistical_16x16.png");
             projectWIPTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderWIPCategoryId, projectCategoryId, "WIP Tender", null, null, null, null, false, false, @"Function Library\Compatibility_16x16.png");
+            companyHSECategoryDescription = new BluePrintsEntitiesModuleDescription(companyHSECategoryId, projectCategoryId, "Company HSE Report", "HSECollectionView", null, null, "HSE Report", false, false, @"Support\Issue_16x16.png");
             dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false, true, @"Navigation\DocumentMap_16x16.png");
             stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false, @"Business Objects\BOOrder_16x16.png");
         }

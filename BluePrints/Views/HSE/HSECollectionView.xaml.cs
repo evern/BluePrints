@@ -46,6 +46,11 @@ namespace BluePrints.Views
                 }
             }
         }
+
+        private void pivotGridControl1_CustomFieldValueCells(object sender, PivotCustomFieldValueCellsEventArgs e)
+        {
+            e.SetGrandTotalLocation(true, DevExpress.XtraPivotGrid.Data.GrandTotalLocation.Near);
+        }
     }
 
     public class MyConv1 : IValueConverter

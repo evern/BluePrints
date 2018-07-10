@@ -328,30 +328,42 @@ namespace BluePrints.Common.Projections
             else
             {
                 int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
-                if (resourceNo != null)
-                {
-                    JOB_RESOURCE_ALLOCATION newAllocation = new JOB_RESOURCE_ALLOCATION();
-                    newAllocation.RESOURCE_SEQNO = (int)resourceNo;
-                    newAllocation.JOBNO = jobNo;
-
-                    int year = DateTime.Now.Year;
-                    DateTime firstDay = new DateTime(year, 1, 1);
-                    DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                    DateTime lastDay = new DateTime(2099, 1, 1);
-
-                    newAllocation.START_DATE = firstDay;
-                    newAllocation.END_DATE = lastDay;
-                    newAllocation.START_TIME = startTime;
-                    newAllocation.END_TIME = startTime;
-                    newAllocation.TOTAL_HOURS = 999999;
-                    newAllocation.APPOINTMENT_SCHEDULED = "N";
-                    pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
-                    pUnitOfWork.SaveChanges();
-                    return true;
-                }
-                else
+                if (resourceNo == null)
                     return false;
+
+                return addResourceAllocation(pUnitOfWork, resourceNo, jobNo);
             }
+        }
+
+        public static bool addResourceAllocation(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? resourceNo, int jobNo)
+        {
+            if (resourceNo == null)
+                return false;
+
+            if (resourceNo != null)
+            {
+                JOB_RESOURCE_ALLOCATION newAllocation = new JOB_RESOURCE_ALLOCATION();
+                newAllocation.RESOURCE_SEQNO = (int)resourceNo;
+                newAllocation.JOBNO = jobNo;
+
+                int year = DateTime.Now.Year;
+                DateTime firstDay = new DateTime(year, 1, 1);
+                DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                DateTime lastDay = new DateTime(2099, 1, 1);
+
+                newAllocation.START_DATE = firstDay;
+                newAllocation.END_DATE = lastDay;
+                newAllocation.START_TIME = startTime;
+                newAllocation.END_TIME = startTime;
+                newAllocation.TOTAL_HOURS = 999999;
+                newAllocation.APPOINTMENT_SCHEDULED = "N";
+                pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
+                pUnitOfWork.SaveChanges();
+                
+                return true;
+            }
+            else
+                return false;
         }
 
         public static void deleteResourceAllocation(ExoSubJobAuth existingPermission, int jobNo)
@@ -572,6 +584,18 @@ namespace BluePrints.Common.Projections
                 return null;
 
             return resourceAllocation.First();
+        }
+
+        public static void SetResourceAllocation(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int resourceId, int jobNo)
+        {
+            JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.STAFFNO == resourceId);
+            if(resource != null)
+            {
+                JOB_RESOURCE_ALLOCATION newRESOURCE_ALLOCATION = new JOB_RESOURCE_ALLOCATION();
+                newRESOURCE_ALLOCATION.JOBNO = jobNo;
+                newRESOURCE_ALLOCATION.RESOURCE_SEQNO = resource.SEQNO;
+                
+            }
         }
 
         public static int? GetStaffResourceNo(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffId)

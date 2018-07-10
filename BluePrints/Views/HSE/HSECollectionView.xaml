@@ -1,4 +1,13 @@
-﻿<UserControl x:Class="BluePrints.Views.HSECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxet="http://schemas.devexpress.com/winfx/2008/xaml/editors/themekeys" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxpg="http://schemas.devexpress.com/winfx/2008/xaml/pivotgrid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:HSECollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.HSECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxet="http://schemas.devexpress.com/winfx/2008/xaml/editors/themekeys" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxpg="http://schemas.devexpress.com/winfx/2008/xaml/pivotgrid" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:HSECollectionViewModelWrapper}" mc:Ignorable="d">
+    <dxmvvm:Interaction.Behaviors>
+        <dxc:DialogService x:Name="DateFromToDialogService">
+            <dxc:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                </Style>
+            </dxc:DialogService.DialogStyle>
+        </dxc:DialogService>
+    </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <ResourceDictionary>
             <local:MyConv1 x:Key="backConv" />
@@ -79,14 +88,15 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
+                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells">
                         <dxpg:PivotGridControl.FormatConditions>
                             <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
                         </dxpg:PivotGridControl.FormatConditions>
                         <dxpg:PivotGridControl.Fields>
                             <dxpg:PivotGridField Area="RowArea" Caption="Group" FieldName="Group" GroupIndex="0" />
-                            <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="1" />
-                            <dxpg:PivotGridField Name="fieldHSEDate" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonth" />
+                            <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="2" />
+                            <dxpg:PivotGridField Area="ColumnArea" Caption="Project" FieldName="Project.NUMBER" />
+                            <dxpg:PivotGridField Name="fieldHSEDate" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
                             <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n0" FieldName="StatsValue" SummaryType="Custom" />
                             <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n0" FieldName="StatsTarget" SummaryType="Custom" />
                         </dxpg:PivotGridControl.Fields>

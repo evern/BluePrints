@@ -83,7 +83,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<HSE_INJURY>, IQueryable<HSE_INJURY>> hseInjuriesProjection()
         {
-            return query => EditingEntity == null ? query.Where(x => x.GUID_HSE == Guid.Empty) : query.Where(x => x.GUID_HSE == EditingEntity.GUID);
+            return query => query.Where(x => x.GUID_HSE == Guid.Empty);
         }
 
         private Func<IRepositoryQuery<HSE_INCIDENT>, IQueryable<HSE_INCIDENT>> hseIncidentsProjection()

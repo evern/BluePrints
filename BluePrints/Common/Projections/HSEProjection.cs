@@ -311,7 +311,7 @@ namespace BluePrints.Common.Projections
         public bool KPI_SWO_Format => Entity == null ? false : Entity.KPI_SWO_CRITERIA == 1 ? true : Entity.KPI_SWO >= KPI_SWO_TargetNumber ? true : false;
         public bool KPI_DRILL_Format => Entity == null ? false : Entity.KPI_DRILL_CRITERIA == 1 ? true : Entity.KPI_DRILL >= 1 ? true : false;
         public bool KPI_INSPECTION_Format => Entity == null ? false : Entity.KPI_INSPECTION_CRITERIA == 1 ? true : Entity.KPI_INSPECTION >= 0.85m ? true : false;
-        public bool KPI_INSPECTION_FREQ_Format => Entity == null ? false : Entity.KPI_INSPECTION_FREQ_CRITERIA == 1 ? true : Entity.KPI_INSPECTION >= KPI_INSPECTION_FREQ_TargetNumber ? true : false;
+        public bool KPI_INSPECTION_FREQ_Format => Entity == null ? false : Entity.KPI_INSPECTION_FREQ_CRITERIA == 1 ? true : Entity.KPI_INSPECTION_FREQ >= KPI_INSPECTION_FREQ_TargetNumber ? true : false;
         public bool KPI_CORRECTIVE_ACT_Format => Entity == null ? false : Entity.KPI_CORRECTIVE_ACT_CRITERIA == 1 ? true : Entity.KPI_CORRECTIVE_ACT >= KPI_CORRECTIVE_ACT_TargetNumber ? true : false;
         public bool KPI_CORRECTIVE_ACT_CLOSED_Format => Entity == null ? false : Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 1 ? true : Entity.KPI_CORRECTIVE_ACT_CLOSED >= KPI_CORRECTIVE_ACT_CLOSED_TargetNumber ? true : false;
         public bool KPI_WEEKLY_HSE_Format => Entity == null ? false : Entity.KPI_WEEKLY_HSE_CRITERIA == 1 ? true : Entity.KPI_WEEKLY_HSE >= KPI_WEEKLY_HSE_TargetNumber ? true : false;
