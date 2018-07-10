@@ -649,7 +649,7 @@
                                                     </dxe:FlyoutControl.Settings>
                                                     <TextBlock Text="Aim to Close out &gt;85% of recorded corrective actions every month." />
                                                 </dxe:FlyoutControl>
-                                                <dxe:SpinEdit Name="spinKPI_CORRECTIVE_ACT_CLOSED" EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED" Background="{Binding KPI_CORRECTIVE_ACT_CLOSED_Background}" Foreground="Black" Increment="0.1" Mask="n0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                                <dxe:SpinEdit Name="spinKPI_CORRECTIVE_ACT_CLOSED" EditValue="{Binding Entity.KPI_CORRECTIVE_ACT_CLOSED}" Tag="Entity.KPI_CORRECTIVE_ACT_CLOSED" Background="{Binding KPI_CORRECTIVE_ACT_CLOSED_Background}" Foreground="Black" Increment="1" Mask="n0" MaskUseAsDisplayFormat="True" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                             </Grid>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
