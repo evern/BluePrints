@@ -48,7 +48,8 @@ namespace BluePrints.Common.Projections
         public bool IsSubJobExistsInExo => SubJob != null && SubJob.Id != null;
         public bool IsDisciplineExistsInExo => Discipline != null && Discipline.Id != null;
         public bool IsCommodityExistsInExo => Commodity != null && Commodity.Id != null;
-        public bool IsLineExistsInExo => LineId != null;
+        //public bool IsLineExistsInExo => LineId != null;
+        public bool IsLineExistsInExo => SubJob.Id != null;
 
         //used to trick view model
         public Guid EntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -235,6 +236,12 @@ namespace BluePrints.Common.Projections
                 pUnitOfWork.SaveChanges();
                 return newCOSTGROUP.SEQNO;
             }
+        }
+
+        public static void updateSubJobTitle(string projectNumber, string jobCode)
+        {
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(pUnitOfWork, projectNumber, jobCode);
         }
 
         public static int? findExistingOrAddSubJob(string jobCode, JOBCOST_HDR masterJob, string projectNumber, string subjobTitle = "")
@@ -471,6 +478,10 @@ namespace BluePrints.Common.Projections
                 }
                 else
                 {
+                    JOBCOST_HDR findSubJob = GetProjectSubJob(primeroUnitOfWork, PROJECT.NUMBER, groupedDeliverable.SubJob.INTERNAL_NAME1);
+                    if (findSubJob != null)
+                        newSubJob.Id = findSubJob.JOBNO;
+
                     newSubJob.Code = groupedDeliverable.SubJob.INTERNAL_NAME1;
                     if(exoAuthorisations.Count > 0)
                         newSubJob.MasterId = exoAuthorisations.First().MasterJobNo;

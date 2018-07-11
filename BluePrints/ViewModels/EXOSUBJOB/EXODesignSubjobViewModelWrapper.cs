@@ -382,6 +382,22 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
         }
 
+        public void EditTitle()
+        {
+            foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
+            {
+                JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, selectedLine.SubJob.Code);
+                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(existingSubJobs.TITLE, selectedLine.SubJob.Code + " Title:");
+                string title = string.Empty;
+                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                {
+                    title = bulkEditStringsViewModel.EditValue;
+                    existingSubJobs.TITLE = title;
+                    primeroUnitOfWork.SaveChanges();
+                }
+            }
+        }
+
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -480,6 +496,9 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+
+            // Need to perform full refresh for job lines with the same subjob to get registered as pushed
+            FullRefresh();
         }
 
         /// <summary>
