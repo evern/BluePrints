@@ -397,7 +397,7 @@ namespace BluePrints.ViewModels
 
             int committedRow = 0;
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-
+            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetAllExoLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (DataRow row in DataPointsTable.Rows)
             {
                 if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
@@ -407,20 +407,21 @@ namespace BluePrints.ViewModels
                     int costGroupNo = (int)row[columnCostGroup];
                     int costTypeNo = (int)row[columnCostType];
 
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
-
+                    ExoTimeAuthorisation findUserAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
+                    ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
                     string stockCode = string.Empty;
                     string stockCodeDescription = string.Empty;
-                    if (findAuthorisation != null)
+                    if (findUserAuthorisation != null)
                     {
-                        subJobCode = findAuthorisation.SubJobCode;
-                        subJobTitle = findAuthorisation.SubJobTitle;
-                        stockCode = findAuthorisation.StockCode;
-                        stockCodeDescription = findAuthorisation.StockCodeDescription;
+                        subJobCode = findUserAuthorisation.SubJobCode;
+                        subJobTitle = findUserAuthorisation.SubJobTitle;
+                        stockCode = findUserAuthorisation.StockCode;
+                        stockCodeDescription = findUserAuthorisation.StockCodeDescription;
                     }
-                    else
+                    //the line must exists for hours to be committed
+                    else if(findExoLine != null)
                     {
                         JOBCOST_HDR subJob = primeroUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == subJobNo);
                         if(subJob != null)
@@ -1107,11 +1108,11 @@ namespace BluePrints.ViewModels
                 else
                     validateRow.SetColumnError(0, string.Empty);
 
-                findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnJobNo] && x.DisciplineId == (int)validateRow[columnCostGroup] && x.CommodityId == (int)validateRow[columnCostType]);
-                if (findAuthorisation == null)
-                    validateRow.SetColumnError(0, "User is not authorised to book");
-                else
-                    validateRow.SetColumnError(0, string.Empty);
+                //findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnJobNo] && x.DisciplineId == (int)validateRow[columnCostGroup] && x.CommodityId == (int)validateRow[columnCostType]);
+                //if (findAuthorisation == null)
+                //    validateRow.SetColumnError(0, "User is not authorised to book");
+                //else
+                //    validateRow.SetColumnError(0, string.Empty);
             }
 
             if (validateRow[columnJobNo].ToString() != string.Empty && validateRow[columnCostGroup].ToString() != string.Empty && validateRow[columnCostType].ToString() != string.Empty)

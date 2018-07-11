@@ -524,12 +524,12 @@ namespace BluePrints.Common.Projections
                 newSubJobProjection.Discipline = newDiscipline;
                 newSubJobProjection.Commodity = newCommodity;
 
-                IEnumerable<ExoTimeAuthorisation> exoLines = exoAuthorisations.Where(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
+                IEnumerable<ExoTimeAuthorisation> exoUserAuths = exoAuthorisations.Where(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
-                if (exoLines.Count() > 0)
+                if (exoUserAuths.Count() > 0)
                 {
-                    newSubJobProjection.LineId = exoLines.First().LineSeqNo;
-                    foreach (ExoTimeAuthorisation exoLine in exoLines)
+                    newSubJobProjection.LineId = exoUserAuths.First().LineSeqNo;
+                    foreach (ExoTimeAuthorisation exoLine in exoUserAuths)
                     {
                         USER findUSER = userCollection.FirstOrDefault(x => x.EXO_STAFF_ID == exoLine.ResourceStaffId);
                         if(findUSER != null && findUSER.ROLE != null)
