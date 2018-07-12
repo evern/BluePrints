@@ -68,7 +68,7 @@
                         <DataTemplate>
                             <ItemsControl>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.EditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditControlPreviewMouseDownCommand, ElementName=userControl}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                <!--<dxmvvm:EventToCommand Command="{Binding DataContext.EditControlPreviewMouseDownCommand, ElementName=userControl}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />-->
                             </ItemsControl>
                         </DataTemplate>
                     </Setter.Value>
@@ -825,11 +825,9 @@
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
                                                 <dxg:GridColumn FieldName="CLASSIFICATION" Header="Classification">
-                                                    <dxg:GridColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                                        </DataTemplate>
-                                                    </dxg:GridColumn.CellTemplate>
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:IncidentClassification}}" NullValueButtonPlacement="Popup" />
+                                                    </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.TotalSummary>

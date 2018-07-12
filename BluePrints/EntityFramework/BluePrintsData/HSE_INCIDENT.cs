@@ -1,5 +1,6 @@
 ﻿namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -22,8 +23,7 @@
         [StringLength(50)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(10)]
-        public string CLASSIFICATION { get; set; }
+        public IncidentClassification? CLASSIFICATION { get; set; }
 
         public DateTime CREATED { get; set; }
 

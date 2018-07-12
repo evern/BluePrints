@@ -555,6 +555,34 @@ namespace BluePrints.Common
         Indirect = 0
     }
 
+    public enum IncidentClassification
+    {
+        [Display(Name = "Lost Time Injury")]
+        LTI = 0,
+        [Display(Name = "Restricted Work Injury")]
+        RWI = 1,
+        [Display(Name = "Medical Treatment Injury")]
+        MTI = 2,
+        [Display(Name = "First Aid (or no-treatment required) Injury")]
+        FAI = 3,
+        [Display(Name = "Non-Work Related Injury or Illness")]
+        NWR = 4,
+        [Display(Name = "Motor Vehicle Accident")]
+        MVA = 5,
+        [Display(Name = "Property, Plant, Equipment Damage")]
+        DAM = 6,
+        [Display(Name = "Security, Theft, Public Disturbance")]
+        SEC = 7,
+        [Display(Name = "Environmental Spill, Damage")]
+        ENV = 8,
+        [Display(Name = "Fire")]
+        FIRE = 9,
+        [Display(Name = "Near Miss")]
+        NM = 10,
+        [Display(Name = "Other")]
+        OTH = 11
+    }
+
     public class ReportingEnum
     {
         /// <summary>

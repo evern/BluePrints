@@ -10,6 +10,11 @@
 
     public partial class HSE_INCIDENT : EntityBase, IGuidEntityKey, IHaveCreatedDate
     {
+        public HSE_INCIDENT()
+        {
+            DATE = DateTime.Now;
+        }
+
         [NotMapped]
         public Guid EntityKey
         {
