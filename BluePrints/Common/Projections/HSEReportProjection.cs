@@ -33,17 +33,20 @@ namespace BluePrints.Common.Projections
         INJURIES_OTH_FAI,
         INJURIES_OTH_NWR,
         Total_Recordable_Injuries,
+        Total_Recordable_Injuries_Freq,
+        All_Injuries,
         INCIDENT_DAM,
         INCIDENT_ENV,
-        INCIDENT_FIRE,
-        INCIDENT_MAJOR_ENV,
+        INCIDENT_PDT,
+        INCIDENT_BAC,
         INCIDENT_HSE_BREACH,
         INCIDENT_NOTICE,
         Total_Incidents,
         KPI_NM,
         KPI_PRESTART,
         KPI_TOOLBOX,
-        KPI_HSE_COMMITTEE,
+        KPI_SUPERVISOR_PRIMER,
+        KPI_HSE_PRIMER,
         KPI_HAZOB,
         KPI_SWO,
         KPI_TAKE5,
@@ -52,7 +55,7 @@ namespace BluePrints.Common.Projections
         KPI_INSPECTION_FREQ,
         KPI_CORRECTIVE_ACT,
         KPI_CORRECTIVE_ACT_CLOSED,
-        KPI_WEEKLY_HSE,
+        KPI_HSE_RECOGNITION,
         KPI_RISK_REGISTER,
         TRAIN_COMPLIANCE,
         TRAIN_VOC,
@@ -117,6 +120,16 @@ namespace BluePrints.Common.Projections
             Total_Recordable_Injuries.StatsType = HSEStatsType.Total_Recordable_Injuries;
             Stats.Add(Total_Recordable_Injuries);
 
+            HSEReportProjection Total_Recordable_Injuries_Freq = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group1 };
+            Total_Recordable_Injuries_Freq.StatsName = "1.5 Total Recordable Injury Frequency Rate (TRIFR)";
+            Total_Recordable_Injuries_Freq.StatsValue = hseProjection.Total_Recordable_Injuries_Freq;
+            Total_Recordable_Injuries_Freq.StatsTarget = hseProjection.Total_Recordable_Injuries_Freq_Target;
+            Total_Recordable_Injuries_Freq.StatsCriteria = "< 10 Per Million Manhours";
+            Total_Recordable_Injuries_Freq.StatsFormat = hseProjection.Total_Recordable_Injuries_Freq_Format;
+            Total_Recordable_Injuries_Freq.StatsMask = "N0";
+            Total_Recordable_Injuries_Freq.StatsType = HSEStatsType.Total_Recordable_Injuries_Freq;
+            Stats.Add(Total_Recordable_Injuries_Freq);
+
             HSEReportProjection INJURIES_OTH_FAI = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group2 };
             INJURIES_OTH_FAI.StatsName = "2.1 First Aid (or no-treatment required) Injuries (FAI)";
             INJURIES_OTH_FAI.StatsValue = hseProjection.Entity.INJURIES_OTH_FAI;
@@ -127,8 +140,18 @@ namespace BluePrints.Common.Projections
             INJURIES_OTH_FAI.StatsType = HSEStatsType.INJURIES_OTH_FAI;
             Stats.Add(INJURIES_OTH_FAI);
 
+            HSEReportProjection All_Injuries = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group2 };
+            All_Injuries.StatsName = "2.2 All Injury Frequency Rate";
+            All_Injuries.StatsValue = hseProjection.All_Injuries;
+            All_Injuries.StatsTarget = hseProjection.All_Injuries_Target;
+            All_Injuries.StatsCriteria = "< 10 Per Million Manhours";
+            All_Injuries.StatsFormat = hseProjection.All_Injuries_Format;
+            All_Injuries.StatsMask = "N0";
+            All_Injuries.StatsType = HSEStatsType.All_Injuries;
+            Stats.Add(All_Injuries);
+
             HSEReportProjection INJURIES_OTH_NWR = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group2 };
-            INJURIES_OTH_NWR.StatsName = "2.2 Non-Work Related Injuries or Illness (NWR)";
+            INJURIES_OTH_NWR.StatsName = "2.3 Non-Work Related Injuries or Illness (NWR)";
             INJURIES_OTH_NWR.StatsValue = hseProjection.Entity.INJURIES_OTH_NWR;
             INJURIES_OTH_NWR.StatsTarget = 0;
             INJURIES_OTH_NWR.StatsCriteria = "";
@@ -157,31 +180,31 @@ namespace BluePrints.Common.Projections
             INCIDENT_ENV.StatsType = HSEStatsType.INCIDENT_ENV;
             Stats.Add(INCIDENT_ENV);
 
-            HSEReportProjection INCIDENT_FIRE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
-            INCIDENT_FIRE.StatsName = "3.3 Major Fire (FIRE)";
-            INCIDENT_FIRE.StatsValue = hseProjection.Entity.INCIDENT_FIRE;
-            INCIDENT_FIRE.StatsTarget = 0;
-            INCIDENT_FIRE.StatsCriteria = "= Zero";
-            INCIDENT_FIRE.StatsFormat = hseProjection.INCIDENT_ENV_Format;
-            INCIDENT_FIRE.StatsMask = "N0";
-            INCIDENT_FIRE.StatsType = HSEStatsType.INCIDENT_FIRE;
-            Stats.Add(INCIDENT_FIRE);
+            HSEReportProjection INCIDENT_PDT = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
+            INCIDENT_PDT.StatsName = "3.3 Positive Drug Test";
+            INCIDENT_PDT.StatsValue = hseProjection.Entity.INCIDENT_PDT;
+            INCIDENT_PDT.StatsTarget = hseProjection.Incident_Target;
+            INCIDENT_PDT.StatsCriteria = "< 10% of Incidents";
+            INCIDENT_PDT.StatsFormat = hseProjection.INCIDENT_PDT_Format;
+            INCIDENT_PDT.StatsMask = "N0";
+            INCIDENT_PDT.StatsType = HSEStatsType.INCIDENT_PDT;
+            Stats.Add(INCIDENT_PDT);
 
-            HSEReportProjection INCIDENT_MAJOR_ENV = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
-            INCIDENT_MAJOR_ENV.StatsName = "3.4 Major Environmental Incident";
-            INCIDENT_MAJOR_ENV.StatsValue = hseProjection.Entity.INCIDENT_MAJOR_ENV;
-            INCIDENT_MAJOR_ENV.StatsTarget = 0;
-            INCIDENT_MAJOR_ENV.StatsCriteria = "= Zero";
-            INCIDENT_MAJOR_ENV.StatsFormat = hseProjection.MAJOR_ENV_Format;
-            INCIDENT_MAJOR_ENV.StatsMask = "N0";
-            INCIDENT_MAJOR_ENV.StatsType = HSEStatsType.INCIDENT_MAJOR_ENV;
-            Stats.Add(INCIDENT_MAJOR_ENV);
+            HSEReportProjection INCIDENT_BAC = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
+            INCIDENT_BAC.StatsName = "3.4 Positive BAC Test";
+            INCIDENT_BAC.StatsValue = hseProjection.Entity.INCIDENT_BAC;
+            INCIDENT_BAC.StatsTarget = hseProjection.Incident_Target;
+            INCIDENT_BAC.StatsCriteria = "< 10% of Incidents";
+            INCIDENT_BAC.StatsFormat = hseProjection.INCIDENT_BAC_Format;
+            INCIDENT_BAC.StatsMask = "N0";
+            INCIDENT_BAC.StatsType = HSEStatsType.INCIDENT_BAC;
+            Stats.Add(INCIDENT_BAC);
 
             HSEReportProjection INCIDENT_HSE_BREACH = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group3 };
             INCIDENT_HSE_BREACH.StatsName = "3.5 HSE Breaches";
             INCIDENT_HSE_BREACH.StatsValue = hseProjection.Entity.INCIDENT_HSE_BREACH;
-            INCIDENT_HSE_BREACH.StatsTarget = 0;
-            INCIDENT_HSE_BREACH.StatsCriteria = "";
+            INCIDENT_HSE_BREACH.StatsTarget = hseProjection.Incident_Target;
+            INCIDENT_HSE_BREACH.StatsCriteria = "< 10% of Incidents";
             INCIDENT_HSE_BREACH.StatsFormat = true;
             INCIDENT_HSE_BREACH.StatsMask = "N0";
             INCIDENT_HSE_BREACH.StatsType = HSEStatsType.INCIDENT_HSE_BREACH;
@@ -220,32 +243,22 @@ namespace BluePrints.Common.Projections
             HSEReportProjection KPI_PRESTART = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
             KPI_PRESTART.StatsName = "4.02 Daily Pre-Start Meetings";
             KPI_PRESTART.StatsValue = hseProjection.Entity.KPI_PRESTART;
-            KPI_PRESTART.StatsTarget = hseProjection.Entity.KPI_PRESTART_CRITERIA == 1 ? 0 : 0.9m;
-            KPI_PRESTART.StatsCriteria = hseProjection.Entity.KPI_PRESTART_CRITERIA == 1 ? "Not Applicable" : ">= 90% Attendance";
+            KPI_PRESTART.StatsTarget = hseProjection.Entity.KPI_PRESTART_CRITERIA == 1 ? 0 : hseProjection.KPI_PRESTART_TargetNumber;
+            KPI_PRESTART.StatsCriteria = hseProjection.Entity.KPI_PRESTART_CRITERIA == 1 ? "Not Applicable" : "1 per day";
             KPI_PRESTART.StatsFormat = hseProjection.KPI_PRESTART_Format;
-            KPI_PRESTART.StatsMask = "P0";
+            KPI_PRESTART.StatsMask = "N0";
             KPI_PRESTART.StatsType = HSEStatsType.KPI_PRESTART;
             Stats.Add(KPI_PRESTART);
 
             HSEReportProjection KPI_TOOLBOX = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
             KPI_TOOLBOX.StatsName = "4.03 Weekly Toolbox Meetings";
             KPI_TOOLBOX.StatsValue = hseProjection.Entity.KPI_TOOLBOX;
-            KPI_TOOLBOX.StatsTarget = hseProjection.Entity.KPI_TOOLBOX_CRITERIA == 1 ? 0 : 0.9m;
-            KPI_TOOLBOX.StatsCriteria = hseProjection.Entity.KPI_TOOLBOX_CRITERIA == 1 ? "Not Applicable" : ">= 90% Attendance";
+            KPI_TOOLBOX.StatsTarget = hseProjection.Entity.KPI_TOOLBOX_CRITERIA == 1 ? 0 : hseProjection.KPI_TOOLBOX_TargetNumber;
+            KPI_TOOLBOX.StatsCriteria = hseProjection.Entity.KPI_TOOLBOX_CRITERIA == 1 ? "Not Applicable" : "1 per day";
             KPI_TOOLBOX.StatsFormat = hseProjection.KPI_TOOLBOX_Format;
-            KPI_TOOLBOX.StatsMask = "P0";
+            KPI_TOOLBOX.StatsMask = "N0";
             KPI_TOOLBOX.StatsType = HSEStatsType.KPI_TOOLBOX;
             Stats.Add(KPI_TOOLBOX);
-
-            HSEReportProjection KPI_HSE_COMMITTEE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_HSE_COMMITTEE.StatsName = "4.04 HSE Committee Meetings (if >100 personnel)";
-            KPI_HSE_COMMITTEE.StatsValue = hseProjection.Entity.KPI_HSE_COMMITTEE;
-            KPI_HSE_COMMITTEE.StatsTarget = hseProjection.Entity.KPI_HSE_COMMITTEE_CRITERIA == 1 ? 0 : 0.9m;
-            KPI_HSE_COMMITTEE.StatsCriteria = hseProjection.Entity.KPI_HSE_COMMITTEE_CRITERIA == 1 ? "Not Applicable" : ">= 90% Attendance";
-            KPI_HSE_COMMITTEE.StatsFormat = hseProjection.KPI_HSE_COMMITTEE_Format;
-            KPI_HSE_COMMITTEE.StatsMask = "P0";
-            KPI_HSE_COMMITTEE.StatsType = HSEStatsType.KPI_HSE_COMMITTEE;
-            Stats.Add(KPI_HSE_COMMITTEE);
 
             HSEReportProjection KPI_HAZOB = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
             KPI_HAZOB.StatsName = "4.05 Hazard Observations (HAZOB)";
@@ -288,7 +301,7 @@ namespace BluePrints.Common.Projections
             Stats.Add(KPI_DRILL);
 
             HSEReportProjection KPI_INSPECTION = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_INSPECTION.StatsName = "4.09 Six Monthly Workplace Inspection Performance";
+            KPI_INSPECTION.StatsName = "4.09 6 monthly Site Audit";
             KPI_INSPECTION.StatsValue = hseProjection.Entity.KPI_INSPECTION;
             KPI_INSPECTION.StatsTarget = hseProjection.Entity.KPI_INSPECTION_CRITERIA == 1 ? 0 : 0.85m;
             KPI_INSPECTION.StatsCriteria = hseProjection.Entity.KPI_INSPECTION_CRITERIA == 1 ? "Not Applicable" : ">= 85%";
@@ -297,28 +310,38 @@ namespace BluePrints.Common.Projections
             KPI_INSPECTION.StatsType = HSEStatsType.KPI_INSPECTION;
             Stats.Add(KPI_INSPECTION);
 
-            HSEReportProjection KPI_INSPECTION_FREQ = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_INSPECTION_FREQ.StatsName = "4.10 Workplace Inspection Frequency (per site)";
-            KPI_INSPECTION_FREQ.StatsValue = hseProjection.Entity.KPI_INSPECTION_FREQ;
-            KPI_INSPECTION_FREQ.StatsTarget = hseProjection.Entity.KPI_INSPECTION_FREQ_CRITERIA == 1 ? 0 : hseProjection.KPI_INSPECTION_FREQ_TargetNumber;
-            KPI_INSPECTION_FREQ.StatsCriteria = hseProjection.Entity.KPI_INSPECTION_FREQ_CRITERIA == 1 ? "Not Applicable" : ">= HSE Advisor:1/Day|Mgrs:1/Wk";
-            KPI_INSPECTION_FREQ.StatsFormat = hseProjection.KPI_INSPECTION_FREQ_Format;
-            KPI_INSPECTION_FREQ.StatsMask = "N0";
-            KPI_INSPECTION_FREQ.StatsType = HSEStatsType.KPI_INSPECTION_FREQ;
-            Stats.Add(KPI_INSPECTION_FREQ);
+            HSEReportProjection KPI_SUPERVISOR_PRIMER = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
+            KPI_SUPERVISOR_PRIMER.StatsName = "4.10 Supervisor Primer Checklist";
+            KPI_SUPERVISOR_PRIMER.StatsValue = hseProjection.Entity.KPI_SUPERVISOR_PRIMER;
+            KPI_SUPERVISOR_PRIMER.StatsTarget = hseProjection.Entity.KPI_SUPERVISOR_PRIMER_CRITERIA == 1 ? 0 : hseProjection.KPI_SUPERVISOR_PRIMER_TargetNumber;
+            KPI_SUPERVISOR_PRIMER.StatsCriteria = hseProjection.Entity.KPI_SUPERVISOR_PRIMER_CRITERIA == 1 ? "Not Applicable" : ">= 1/Day for all site Sups";
+            KPI_SUPERVISOR_PRIMER.StatsFormat = hseProjection.KPI_SUPERVISOR_PRIMER_Format;
+            KPI_SUPERVISOR_PRIMER.StatsMask = "N0";
+            KPI_SUPERVISOR_PRIMER.StatsType = HSEStatsType.KPI_SUPERVISOR_PRIMER;
+            Stats.Add(KPI_SUPERVISOR_PRIMER);
+
+            HSEReportProjection KPI_HSE_PRIMER = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
+            KPI_HSE_PRIMER.StatsName = "4.11 HSE Primer Checklist";
+            KPI_HSE_PRIMER.StatsValue = hseProjection.Entity.KPI_HSE_PRIMER;
+            KPI_HSE_PRIMER.StatsTarget = hseProjection.Entity.KPI_HSE_PRIMER_CRITERIA == 1 ? 0 : hseProjection.KPI_HSE_PRIMER_TargetNumber;
+            KPI_HSE_PRIMER.StatsCriteria = hseProjection.Entity.KPI_HSE_PRIMER_CRITERIA == 1 ? "Not Applicable" : ">= 1/Day for all site HSE";
+            KPI_HSE_PRIMER.StatsFormat = hseProjection.KPI_HSE_PRIMER_Format;
+            KPI_HSE_PRIMER.StatsMask = "N0";
+            KPI_HSE_PRIMER.StatsType = HSEStatsType.KPI_HSE_PRIMER;
+            Stats.Add(KPI_HSE_PRIMER);
 
             HSEReportProjection KPI_CORRECTIVE_ACT = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_CORRECTIVE_ACT.StatsName = "4.11 Corrective actions recorded";
+            KPI_CORRECTIVE_ACT.StatsName = "4.12 Corrective actions recorded";
             KPI_CORRECTIVE_ACT.StatsValue = hseProjection.Entity.KPI_CORRECTIVE_ACT;
             KPI_CORRECTIVE_ACT.StatsTarget = hseProjection.Entity.KPI_CORRECTIVE_ACT_CRITERIA == 1 ? 0 : hseProjection.KPI_CORRECTIVE_ACT_TargetNumber;
             KPI_CORRECTIVE_ACT.StatsCriteria = hseProjection.Entity.KPI_CORRECTIVE_ACT_CRITERIA == 1 ? "Not Applicable" : ">= 1 per HAZOB or Incident";
-            KPI_CORRECTIVE_ACT.StatsFormat = hseProjection.KPI_INSPECTION_FREQ_Format;
+            KPI_CORRECTIVE_ACT.StatsFormat = hseProjection.KPI_CORRECTIVE_ACT_Format;
             KPI_CORRECTIVE_ACT.StatsMask = "N0";
             KPI_CORRECTIVE_ACT.StatsType = HSEStatsType.KPI_CORRECTIVE_ACT;
             Stats.Add(KPI_CORRECTIVE_ACT);
 
             HSEReportProjection KPI_CORRECTIVE_ACT_CLOSED = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_CORRECTIVE_ACT_CLOSED.StatsName = "4.12 Corrective actions closed out";
+            KPI_CORRECTIVE_ACT_CLOSED.StatsName = "4.13 Corrective actions closed out";
             KPI_CORRECTIVE_ACT_CLOSED.StatsValue = hseProjection.Entity.KPI_CORRECTIVE_ACT_CLOSED;
             KPI_CORRECTIVE_ACT_CLOSED.StatsTarget = hseProjection.Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 1 ? 0 : hseProjection.KPI_CORRECTIVE_ACT_CLOSED_TargetNumber;
             KPI_CORRECTIVE_ACT_CLOSED.StatsCriteria = hseProjection.Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 1 ? "Not Applicable" : ">= 85% per Month";
@@ -327,18 +350,18 @@ namespace BluePrints.Common.Projections
             KPI_CORRECTIVE_ACT_CLOSED.StatsType = HSEStatsType.KPI_CORRECTIVE_ACT_CLOSED;
             Stats.Add(KPI_CORRECTIVE_ACT_CLOSED);
 
-            HSEReportProjection KPI_WEEKLY_HSE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_WEEKLY_HSE.StatsName = "4.13 Weekly site HSE Inspection with client";
-            KPI_WEEKLY_HSE.StatsValue = hseProjection.Entity.KPI_WEEKLY_HSE;
-            KPI_WEEKLY_HSE.StatsTarget = hseProjection.Entity.KPI_WEEKLY_HSE_CRITERIA == 1 ? 0 : hseProjection.KPI_WEEKLY_HSE_TargetNumber;
-            KPI_WEEKLY_HSE.StatsCriteria = hseProjection.Entity.KPI_WEEKLY_HSE_CRITERIA == 1 ? "Not Applicable" : ">= 1/Week";
-            KPI_WEEKLY_HSE.StatsFormat = hseProjection.KPI_CORRECTIVE_ACT_CLOSED_Format;
-            KPI_WEEKLY_HSE.StatsMask = "N0";
-            KPI_WEEKLY_HSE.StatsType = HSEStatsType.KPI_WEEKLY_HSE;
-            Stats.Add(KPI_WEEKLY_HSE);
+            HSEReportProjection KPI_HSE_RECOGNITION = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
+            KPI_HSE_RECOGNITION.StatsName = "4.14 Weekly site HSE Inspection with client";
+            KPI_HSE_RECOGNITION.StatsValue = hseProjection.Entity.KPI_HSE_RECOGNITION;
+            KPI_HSE_RECOGNITION.StatsTarget = hseProjection.Entity.KPI_HSE_RECOGNITION_CRITERIA == 1 ? 0 : hseProjection.KPI_HSE_RECOGNITION_TargetNumber;
+            KPI_HSE_RECOGNITION.StatsCriteria = hseProjection.Entity.KPI_HSE_RECOGNITION_CRITERIA == 1 ? "Not Applicable" : ">= 1/Month";
+            KPI_HSE_RECOGNITION.StatsFormat = hseProjection.KPI_CORRECTIVE_ACT_CLOSED_Format;
+            KPI_HSE_RECOGNITION.StatsMask = "N0";
+            KPI_HSE_RECOGNITION.StatsType = HSEStatsType.KPI_HSE_RECOGNITION;
+            Stats.Add(KPI_HSE_RECOGNITION);
 
             HSEReportProjection KPI_RISK_REGISTER = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            KPI_RISK_REGISTER.StatsName = "4.14 Risk register review";
+            KPI_RISK_REGISTER.StatsName = "4.15 Risk register review";
             KPI_RISK_REGISTER.StatsValue = hseProjection.Entity.KPI_RISK_REGISTER;
             KPI_RISK_REGISTER.StatsTarget = hseProjection.Entity.KPI_RISK_REGISTER_CRITERIA == 1 ? 0 : 1;
             KPI_RISK_REGISTER.StatsCriteria = hseProjection.Entity.KPI_RISK_REGISTER_CRITERIA == 1 ? "Not Applicable" : ">= 1/Month";
@@ -346,26 +369,6 @@ namespace BluePrints.Common.Projections
             KPI_RISK_REGISTER.StatsMask = "N0";
             KPI_RISK_REGISTER.StatsType = HSEStatsType.KPI_RISK_REGISTER;
             Stats.Add(KPI_RISK_REGISTER);
-
-            HSEReportProjection TRAIN_COMPLIANCE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group5 };
-            TRAIN_COMPLIANCE.StatsName = "5.1 Compliance with training matrix";
-            TRAIN_COMPLIANCE.StatsValue = hseProjection.Entity.TRAIN_COMPLIANCE;
-            TRAIN_COMPLIANCE.StatsTarget = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? 0 : 1;
-            TRAIN_COMPLIANCE.StatsCriteria = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? "Not Applicable" : ">= 1/Month (or >= 1/Project)";
-            TRAIN_COMPLIANCE.StatsFormat = hseProjection.TRAIN_COMPLIANCE_Format;
-            TRAIN_COMPLIANCE.StatsMask = "N0";
-            TRAIN_COMPLIANCE.StatsType = HSEStatsType.TRAIN_COMPLIANCE;
-            Stats.Add(TRAIN_COMPLIANCE);
-
-            HSEReportProjection TRAIN_VOC = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group5 };
-            TRAIN_VOC.StatsName = "5.2 Employee Verification of Competency (VOC's)";
-            TRAIN_VOC.StatsValue = hseProjection.Entity.TRAIN_VOC;
-            TRAIN_VOC.StatsTarget = 1;
-            TRAIN_VOC.StatsCriteria = "= 100%";
-            TRAIN_VOC.StatsFormat = hseProjection.TRAIN_VOC_Format;
-            TRAIN_VOC.StatsMask = "P0";
-            TRAIN_VOC.StatsType = HSEStatsType.TRAIN_VOC;
-            Stats.Add(TRAIN_VOC);
 
             HSEReportProjection Total_ManHours = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group6 };
             Total_ManHours.StatsName = "5.3 Total Man Hours";

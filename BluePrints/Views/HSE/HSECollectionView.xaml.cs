@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Windows.Media;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using BaseModel.View;
 
 namespace BluePrints.Views
 {
@@ -29,8 +30,6 @@ namespace BluePrints.Views
         {
             if (e.DataField != fieldStatsValue && e.DataField != fieldStatsTarget) return;
 
-            //if(e.ColumnFieldValue != null)
-            //    Debug.Print(e.ColumnFieldValue.ToString());
 
             if (e.RowFieldValue != null)
             {
@@ -40,7 +39,55 @@ namespace BluePrints.Views
                 if(rowData != null)
                 {
                     if (rowData.StatsMask == "P0")
-                        e.CustomValue = e.SummaryValue.Average;
+                    {
+                        if(e.FieldName == fieldStatsValue.FieldName)
+                        {
+                            int percentMoreThanZeroCount = 0;
+                            decimal percentMoreThanZeroValue = 0;
+                            // Get the record set corresponding to the current cell.
+                            PivotDrillDownDataSource ds = e.CreateDrillDownDataSource();
+                            for (int i = 0; i < ds.RowCount; i++)
+                            {
+                                PivotDrillDownDataRow row = ds[i];
+                                // Get the order's total sum.
+                                decimal targetSum = (decimal)row[fieldStatsTarget];
+                                decimal valueSum = (decimal)row[fieldStatsValue];
+                                if (targetSum > 0)
+                                {
+                                    percentMoreThanZeroCount++;
+                                    percentMoreThanZeroValue += valueSum;
+                                }
+                            }
+
+                            if (percentMoreThanZeroCount == 0)
+                                e.CustomValue = 0;
+                            else
+                                e.CustomValue = percentMoreThanZeroValue / percentMoreThanZeroCount;
+                        }
+                        else
+                        {
+                            int percentMoreThanZeroCount = 0;
+                            decimal percentMoreThanZeroTarget = 0;
+                            // Get the record set corresponding to the current cell.
+                            PivotDrillDownDataSource ds = e.CreateDrillDownDataSource();
+                            for (int i = 0; i < ds.RowCount; i++)
+                            {
+                                PivotDrillDownDataRow row = ds[i];
+                                // Get the order's total sum.
+                                decimal targetSum = (decimal)row[fieldStatsTarget];
+                                if (targetSum > 0)
+                                {
+                                    percentMoreThanZeroCount++;
+                                    percentMoreThanZeroTarget += targetSum;
+                                }
+                            }
+
+                            if (percentMoreThanZeroCount == 0)
+                                e.CustomValue = 0;
+                            else
+                                e.CustomValue = percentMoreThanZeroTarget / percentMoreThanZeroCount;
+                        }
+                    }
                     else
                         e.CustomValue = e.SummaryValue.Summary;
                 }
@@ -62,9 +109,9 @@ namespace BluePrints.Views
             if (control == null) return Colors.White;
 
             System.Windows.Media.Color returnColor;
-            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_FIRE" || control.Name == "INCIDENT_MAJOR_ENV" || control.Name == "INCIDENT_NOTICE")
+            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
                 returnColor = (control.Value == 0) ? Colors.LightGreen : Colors.LightSalmon;
-            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_ENV")
+            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT")
                 returnColor = control.Value < control.Maximum ? Colors.LightGreen : Colors.LightSalmon;
             else
                 returnColor = control.Value >= control.Maximum ? Colors.LightGreen : Colors.LightSalmon;
@@ -87,9 +134,9 @@ namespace BluePrints.Views
             if (control == null) return Colors.White;
 
             System.Windows.Media.Color returnColor;
-            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_FIRE" || control.Name == "INCIDENT_MAJOR_ENV" || control.Name == "INCIDENT_NOTICE")
+            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
                 returnColor = (control.Value == 0) ? Colors.Green : Colors.Salmon;
-            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_ENV")
+            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT")
                 returnColor = control.Value < control.Maximum ? Colors.Green : Colors.Salmon;
             else
                 returnColor = control.Value >= control.Maximum ? Colors.Green : Colors.Salmon;
@@ -112,6 +159,7 @@ namespace BluePrints.Views
                 return createSpinEdit(false);
             PivotGridControl pivotGridControl = (PivotGridControl)cell.Field.Parent;
             PivotDrillDownDataSource pivotDrillDownDataSource = pivotGridControl.CreateDrillDownDataSource(cell.ColumnIndex, cell.RowIndex);
+
             PivotDrillDownDataRow pivotDrillDownDataRow = pivotDrillDownDataSource[0];
             string statsMask = pivotDrillDownDataRow["StatsMask"].ToString();
             HSEStatsType statsType = (HSEStatsType)pivotDrillDownDataRow["StatsType"];
@@ -126,7 +174,7 @@ namespace BluePrints.Views
             }
             else
             {
-                if (statsType == HSEStatsType.INJURIES_REC_LTI || statsType == HSEStatsType.INJURIES_REC_RWI || statsType == HSEStatsType.INJURIES_REC_MTI || statsType == HSEStatsType.INCIDENT_FIRE || statsType == HSEStatsType.INCIDENT_MAJOR_ENV || statsType == HSEStatsType.INCIDENT_NOTICE)
+                if (statsType == HSEStatsType.INJURIES_REC_LTI || statsType == HSEStatsType.INJURIES_REC_RWI || statsType == HSEStatsType.INJURIES_REC_MTI || statsType == HSEStatsType.INCIDENT_PDT || statsType == HSEStatsType.INCIDENT_PDT || statsType == HSEStatsType.INCIDENT_NOTICE)
                     return createProgressBarMaximumEdit(statsType.ToString(), false);
                 else if(statsType == HSEStatsType.KPI_NM || statsType == HSEStatsType.KPI_TAKE5)
                     return createSpinEdit(false);
@@ -135,13 +183,13 @@ namespace BluePrints.Views
                     //grand total column
                     if(cell.IsTotalAppearance)
                     {
-                        object test = pivotGridControl.GetCellValue(cell.ColumnIndex + 1, cell.RowIndex);
-                        decimal target = 0;
-                        decimal.TryParse(test == null ? "" : test.ToString(), out target);
+                        object grandTotalTargetObj = pivotGridControl.GetCellValue(cell.ColumnIndex + 1, cell.RowIndex);
+                        decimal grandTotalTargetValue = 0;
+                        decimal.TryParse(grandTotalTargetObj == null ? "" : grandTotalTargetObj.ToString(), out grandTotalTargetValue);
                         if (statsMask == "P0")
-                            return createProgressBarEdit(statsType.ToString(), 0, target, true);
+                            return createProgressBarEdit(statsType.ToString(), 0, grandTotalTargetValue, true);
                         else
-                            return createProgressBarEdit(statsType.ToString(), 0, target, false);
+                            return createProgressBarEdit(statsType.ToString(), 0, grandTotalTargetValue, false);
                     }
                     else
                     {

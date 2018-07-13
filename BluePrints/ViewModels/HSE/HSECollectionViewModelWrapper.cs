@@ -125,12 +125,13 @@ namespace BluePrints.ViewModels
             };
 
             var yearSelectViewModel = YearSelectViewModel.Create();
+            yearSelectViewModel.YearSelect = DateTime.Now.Month < 7 ? DateTime.Now : DateTime.Now.AddYears(1);
             UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Year Select", "YearSelect", yearSelectViewModel);
 
             if (result == okCommand)
                 yearSelect = yearSelectViewModel.YearSelect;
             else
-                yearSelect = DateTime.Now;
+                yearSelect = DateTime.Now.Month < 7 ? DateTime.Now : DateTime.Now.AddYears(1);
         }
 
         [ServiceProperty(Key = "PivotGridControlService")]
@@ -149,31 +150,6 @@ namespace BluePrints.ViewModels
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
                 PivotGridControlService.ExportToExcel(ResultPath + "\\" + ExportExcelFilename());
-            }
-        }
-
-
-        decimal runningCompany;
-        public void CustomSummary(CustomSummaryEventArgs e)
-        {
-            if (e.SummaryProcess == CustomSummaryProcess.Start)
-            {
-                runningCompany = 0;
-            }
-            if (e.SummaryProcess == CustomSummaryProcess.Calculate)
-            {
-                GridSummaryItem gridSummaryItem = e.Item as GridSummaryItem;
-                if (gridSummaryItem != null)
-                {
-                    string fieldName = gridSummaryItem.FieldName;
-                    HSEReportProjection row = (HSEReportProjection)e.Row;
-                    if (fieldName == "StatsMask")
-                        runningCompany += row.StatsValue;
-
-                    e.TotalValue = runningCompany;
-                }
-                else
-                    e.TotalValue = 0;
             }
         }
 

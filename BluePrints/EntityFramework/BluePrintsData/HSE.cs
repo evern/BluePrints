@@ -43,10 +43,10 @@
 
         public decimal QTY_WATER { get; set; }
 
-        public int? SITE_MGMT_STAFFNO { get; set; }
-
         [StringLength(2500)]
         public string HSE_ADVISOR_COMMENT { get; set; }
+
+        public int? SITE_MGMT_STAFFNO { get; set; }
 
         [StringLength(2500)]
         public string SITE_MGMT_COMMENT { get; set; }
@@ -71,6 +71,12 @@
         [StringLength(500)]
         public string INJURIES_REC_TOTAL_COMMENT { get; set; }
 
+        [StringLength(500)]
+        public string INJURIES_REC_FREQ_COMMENT { get; set; }
+
+        [StringLength(500)]
+        public string INJURIES_REC_ALL_COMMENT { get; set; }
+
         public decimal INJURIES_OTH_FAI { get; set; }
 
         [StringLength(500)]
@@ -81,25 +87,25 @@
         [StringLength(500)]
         public string INJURIES_OTH_NWR_COMMENT { get; set; }
 
-        public decimal INCIDENT_DAM { get; set; }
-
-        [StringLength(500)]
-        public string INCIDENT_DAM_COMMENT { get; set; }
-
         public decimal INCIDENT_ENV { get; set; }
 
         [StringLength(500)]
         public string INCIDENT_ENV_COMMENT { get; set; }
 
-        public decimal INCIDENT_FIRE { get; set; }
+        public decimal INCIDENT_DAM { get; set; }
 
         [StringLength(500)]
-        public string INCIDENT_FIRE_COMMENT { get; set; }
+        public string INCIDENT_DAM_COMMENT { get; set; }
 
-        public decimal INCIDENT_MAJOR_ENV { get; set; }
+        public decimal INCIDENT_PDT { get; set; }
 
         [StringLength(500)]
-        public string INCIDENT_MAJOR_ENV_COMMENT { get; set; }
+        public string INCIDENT_PDT_COMMENT { get; set; }
+
+        public decimal INCIDENT_BAC { get; set; }
+
+        [StringLength(500)]
+        public string INCIDENT_BAC_COMMENT { get; set; }
 
         public decimal INCIDENT_HSE_BREACH { get; set; }
 
@@ -132,13 +138,6 @@
 
         [StringLength(500)]
         public string KPI_TOOLBOX_COMMENT { get; set; }
-
-        public decimal KPI_HSE_COMMITTEE { get; set; }
-
-        public int KPI_HSE_COMMITTEE_CRITERIA { get; set; }
-
-        [StringLength(500)]
-        public string KPI_HSE_COMMITTEE_COMMENT { get; set; }
 
         public decimal KPI_HAZOB { get; set; }
 
@@ -173,12 +172,19 @@
         [StringLength(500)]
         public string KPI_INSPECTION_COMMENT { get; set; }
 
-        public decimal KPI_INSPECTION_FREQ { get; set; }
+        public decimal KPI_SUPERVISOR_PRIMER { get; set; }
 
-        public int KPI_INSPECTION_FREQ_CRITERIA { get; set; }
+        public int KPI_SUPERVISOR_PRIMER_CRITERIA { get; set; }
 
         [StringLength(500)]
-        public string KPI_INSPECTION_FREQ_COMMENT { get; set; }
+        public string KPI_SUPERVISOR_PRIMER_COMMENT { get; set; }
+
+        public decimal KPI_HSE_PRIMER { get; set; }
+
+        public int KPI_HSE_PRIMER_CRITERIA { get; set; }
+
+        [StringLength(500)]
+        public string KPI_HSE_PRIMER_COMMENT { get; set; }
 
         public decimal KPI_CORRECTIVE_ACT { get; set; }
 
@@ -194,12 +200,12 @@
         [StringLength(500)]
         public string KPI_CORRECTIVE_ACT_CLOSED_COMMENT { get; set; }
 
-        public decimal KPI_WEEKLY_HSE { get; set; }
+        public decimal KPI_HSE_RECOGNITION { get; set; }
 
-        public int KPI_WEEKLY_HSE_CRITERIA { get; set; }
+        public int KPI_HSE_RECOGNITION_CRITERIA { get; set; }
 
         [StringLength(500)]
-        public string KPI_WEEKLY_HSE_COMMENT { get; set; }
+        public string KPI_HSE_RECOGNITION_COMMENT { get; set; }
 
         public decimal KPI_RISK_REGISTER { get; set; }
 
@@ -207,18 +213,6 @@
 
         [StringLength(500)]
         public string KPI_RISK_REGISTER_COMMENT { get; set; }
-
-        public decimal TRAIN_COMPLIANCE { get; set; }
-
-        public int TRAIN_COMPLIANCE_CRITERIA { get; set; }
-
-        [StringLength(500)]
-        public string TRAIN_COMPLIANCE_COMMENT { get; set; }
-
-        public decimal TRAIN_VOC { get; set; }
-
-        [StringLength(500)]
-        public string TRAIN_VOC_COMMENT { get; set; }
 
         public DateTime CREATED { get; set; }
 

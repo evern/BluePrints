@@ -63,7 +63,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Style="{StaticResource CollectionView.RootContainer}">
+    <Grid>
         <dxmvvm:Interaction.Behaviors>
             <services:PivotGridControlService x:Name="PivotGridControlService" PivotGridControl="{Binding ElementName=pivotGridControl1}" />
         </dxmvvm:Interaction.Behaviors>
@@ -88,7 +88,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells">
+                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowFilterHeaders="False" ShowLoadingPanel="{Binding IsLoading}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
                         <dxpg:PivotGridControl.FormatConditions>
                             <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
                         </dxpg:PivotGridControl.FormatConditions>
