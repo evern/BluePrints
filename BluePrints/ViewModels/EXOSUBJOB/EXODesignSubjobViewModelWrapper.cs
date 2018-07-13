@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace BluePrints.ViewModels
 {
@@ -382,11 +383,27 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
         }
 
+        public void KeyboardCopy()
+        {
+            SendKeys.SendWait("^c");
+        }
+
+        public void KeyboardPaste()
+        {
+            SendKeys.SendWait("^v");
+        }
+
         public void EditTitle()
         {
             foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
             {
                 JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, selectedLine.SubJob.Code);
+                if(existingSubJobs == null)
+                {
+                    MessageBoxService.ShowMessage(selectedLine.SubJob.Code + " doesn't exists in exo yet, please upload to exo before clicking edit title");
+                    continue;
+                }
+
                 var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(existingSubJobs.TITLE, selectedLine.SubJob.Code + " Title:");
                 string title = string.Empty;
                 if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)

@@ -63,21 +63,20 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         List<string> defaultColumnFieldNames = new List<string>();
+        List<string> hiddenColumnFieldNames = new List<string>();
         private Data.PROJECT loadPROJECT;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
-        public List<string> predefinedStatusName = new List<string>();
+        string columnGuid = "GUID";
         string columnStaffNo = "EXO_STAFFNO";
-        string columnFirstName = "FIRST_NAME";
-        string columnLastName = "LAST_NAME";
+        string columnTrade = "TRADE";
         string columnTitle = "TITLE";
-        string columnDepartmentName = "DEPARTMENT_NAME";
-        string columnEmployeeType = "EMPLOYEE_TYPE";
+        string columnPhone = "PHONE";
+        string columnEmail = "EMAIL";
 
         string valueNotFoundError = "Value not found";
-
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         protected override void resolveParameters(object parameter)
@@ -87,18 +86,11 @@ namespace BluePrints.ViewModels
             GetDateRange();
 
             defaultColumnFieldNames.Add(columnStaffNo);
-            defaultColumnFieldNames.Add(columnFirstName);
-            defaultColumnFieldNames.Add(columnLastName);
+            defaultColumnFieldNames.Add(columnTrade);
+            defaultColumnFieldNames.Add(columnPhone);
             defaultColumnFieldNames.Add(columnTitle);
-            defaultColumnFieldNames.Add(columnDepartmentName);
-            defaultColumnFieldNames.Add(columnEmployeeType);
 
-            predefinedStatusName.Add("DIA");
-            predefinedStatusName.Add("FIA");
-            predefinedStatusName.Add("DOP");
-            predefinedStatusName.Add("FOP");
-            predefinedStatusName.Add("PER");
-            predefinedStatusName.Add("R&R");
+            hiddenColumnFieldNames.Add(columnGuid);
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -151,6 +143,10 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #region Collection Call Backs
+        private void onAfterEntitySaved(ROSTER_STAFF entity, ROSTER_STAFF projection, bool isNewEntity)
+        {
+            
+        }
 
         public override void FullRefresh()
         {
@@ -181,14 +177,19 @@ namespace BluePrints.ViewModels
 
         public void GenerateJobCodeColumns(AutoGeneratingColumnEventArgs e)
         {
-            if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
+            if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName) && !hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
                 ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
-                comboBoxEdit.ItemsSource = SUBJOBCODECollection;
+                EnumItemsSource enumItemsSource = new EnumItemsSource();
+                enumItemsSource.EnumType = typeof(RosterStatus);
+                comboBoxEdit.ItemsSource = enumItemsSource;
                 e.Column.EditSettings = comboBoxEdit;
             }
             else
             {
+                if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
+                    e.Column.Visible = false;
+
                 e.Column.Fixed = FixedStyle.Left;
             }
         }
@@ -233,17 +234,16 @@ namespace BluePrints.ViewModels
                     TimeSpan interval = new TimeSpan(1, 0, 0, 0);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
 
+                    dataPointsTable.Columns.Add(columnGuid, typeof(Guid));
                     dataPointsTable.Columns.Add(columnStaffNo, typeof(int));
-                    dataPointsTable.Columns.Add(columnFirstName, typeof(string));
-                    dataPointsTable.Columns.Add(columnLastName, typeof(string));
+                    dataPointsTable.Columns.Add(columnTrade, typeof(string));
+                    dataPointsTable.Columns.Add(columnPhone, typeof(string));
                     dataPointsTable.Columns.Add(columnTitle, typeof(string));
-                    dataPointsTable.Columns.Add(columnDepartmentName, typeof(string));
-                    dataPointsTable.Columns.Add(columnEmployeeType, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(RosterCellData));
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(RosterStatus));
                     }
 
                     populateDataTable();
@@ -264,20 +264,19 @@ namespace BluePrints.ViewModels
             foreach(var entity in DisplayEntities)
             {
                 DataRow newRow = DataPointsTable.NewRow();
+                newRow[columnGuid] = entity.GUID;
                 newRow[columnStaffNo] = entity.EXO_STAFFNO;
-                newRow[columnFirstName] = entity.FIRST_NAME;
-                newRow[columnLastName] = entity.LAST_NAME;
+                newRow[columnTrade] = entity.TRADE;
+                newRow[columnPhone] = entity.PHONE;
                 newRow[columnTitle] = entity.TITLE;
-                newRow[columnDepartmentName] = entity.DEPARTMENT_NAME;
-                newRow[columnEmployeeType] = entity.EMPLOYEE_TYPE;
 
                 IEnumerable<ROSTER_STAFF_STATUS> currentStaffRosterStatus = ROSTER_STAFF_STATUSCollection.Where(x => x.GUID_ROSTER_STAFF == entity.GUID);
                 foreach(var staffRosterStatus in currentStaffRosterStatus)
                 {
-                    DataColumn findDataColumn = dateColumnNames.FirstOrDefault(x => x.ColumnName == staffRosterStatus.STATUS_DATE.ToString("G"));
+                    DataColumn findDataColumn = dateColumnNames.FirstOrDefault(x => x.ColumnName == staffRosterStatus.STATUS_DATE.ToShortDateString());
                     if(findDataColumn != null)
                     {
-                        newRow[findDataColumn] = new RosterCellData() { Code = staffRosterStatus.STATUS_NAME, SubJobNo = staffRosterStatus.JOBNO, CostGroupNo = staffRosterStatus.COSTGROUPNO, CostTypeNo = staffRosterStatus.COSTTYPENO, Comments = staffRosterStatus.COMMENTS };
+                        newRow[findDataColumn] = staffRosterStatus.STATUS_NO;
                     }
                 }
 
@@ -300,28 +299,6 @@ namespace BluePrints.ViewModels
             return dataColumns;
         }
 
-        //public void CellValueChangeDatabaseUpdate(CellValueChangedEventArgs e)
-        //{
-        //    if (e.RowHandle == GridControl.AutoFilterRowHandle)
-        //        return;
-
-        //    DataRowView dataRowView = (DataRowView)e.Row;
-        //    BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
-
-        //    if (e.Column.FieldName.ToUpper().Contains("ENTITY"))
-        //    {
-        //        //entity.Entity.Entity.PRIMARY_TITLE = e.Value.ToString();
-        //        ///MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, columnPrimaryTitle, e.OldValue, e.Value, EntityMessageType.Changed);
-        //        MainViewModel.Save(entity);
-        //    }
-        //    else
-        //    {
-        //        updatePercentage(entity, e.Column.FieldName, e.OldValue, e.Value);
-        //    }
-
-        //    e.Handled = true;
-        //}
-
         public virtual void NewRowAddUndoAndSave(RowEventArgs e)
         {
             if (e.RowHandle == DataControlBase.NewItemRowHandle)
@@ -329,7 +306,10 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 ROSTER_STAFF rosterStaff = transposeDataTableStaff(dataRowView, true);
                 if(rosterStaff != null)
+                {
                     MainViewModel.Save(rosterStaff);
+                    dataRowView[columnGuid] = rosterStaff.GUID;
+                }
             }
         }
 
@@ -338,11 +318,18 @@ namespace BluePrints.ViewModels
             if (e.RowHandle != DataControlBase.NewItemRowHandle)
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
+                if (dataRowView.Row[columnGuid] == null)
+                    return;
+
+                Guid rowGuid = (Guid)dataRowView.Row[columnGuid];
+                ROSTER_STAFF findStaff = DisplayEntities.FirstOrDefault(x => x.GUID == rowGuid);
+                if (findStaff == null)
+                    return;
+
                 if(defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
                 {
-                    ROSTER_STAFF rosterStaff = transposeDataTableStaff(dataRowView, false);
-                    if (rosterStaff != null)
-                        MainViewModel.Save(rosterStaff);
+                    findStaff.GetType().GetProperty(e.Column.FieldName).SetValue(findStaff, e.Value);
+                    MainViewModel.Save(findStaff);
                 }
                 else
                 {
@@ -350,10 +337,30 @@ namespace BluePrints.ViewModels
                     DateTime.TryParse(e.Column.FieldName, out editDateTime);
                     if(editDateTime != null)
                     {
-                        
+                        RosterStatus selectedStatus;
+                        if(Enum.TryParse(e.Value.ToString(), out selectedStatus))
+                            addOrEditRosterStatus(findStaff.GUID, editDateTime, selectedStatus);
                     }
                 }
             }
+        }
+
+        private void addOrEditRosterStatus(Guid rosterStaffGuid, DateTime statusDate, RosterStatus statusInfo)
+        {
+            ROSTER_STAFF_STATUS rosterStaffStatus = ROSTER_STAFF_STATUSCollection.FirstOrDefault(x => x.GUID_ROSTER_STAFF == rosterStaffGuid && x.STATUS_DATE == statusDate);
+            if (rosterStaffStatus == null)
+            {
+                rosterStaffStatus = new ROSTER_STAFF_STATUS();
+                rosterStaffStatus.GUID_ROSTER_STAFF = rosterStaffGuid;
+                rosterStaffStatus.STATUS_NO = statusInfo;
+                rosterStaffStatus.STATUS_DATE = statusDate;
+            }
+            else
+            {
+                rosterStaffStatus.STATUS_NO = statusInfo;
+            }
+
+            ROSTER_STAFF_STATUSCollectionViewModel.Save(rosterStaffStatus);
         }
 
         private ROSTER_STAFF transposeDataTableStaff(DataRowView dataRowView, bool isNewRow)
@@ -361,23 +368,13 @@ namespace BluePrints.ViewModels
             if (dataRowView.Row[columnStaffNo] == null)
                 return null;
 
-            ROSTER_STAFF findSTAFF = null;
-            int staffNo = (int)dataRowView.Row[columnStaffNo];
-            if (!isNewRow)
-            {
-                findSTAFF = DisplayEntities.FirstOrDefault(x => x.EXO_STAFFNO == staffNo);
-                if (findSTAFF == null)
-                    return null;
-            }
-
-
             ROSTER_STAFF newStaff = new ROSTER_STAFF();
-            newStaff.EXO_STAFFNO = staffNo;
+            newStaff.EXO_STAFFNO = (int)dataRowView.Row[columnStaffNo];
             newStaff.GUID_PROJECT = loadPROJECT.GUID;
-            newStaff.FIRST_NAME = dataRowView.Row[columnFirstName].ToString();
-            newStaff.LAST_NAME = dataRowView.Row[columnLastName].ToString();
+            newStaff.TRADE = dataRowView.Row[columnTrade].ToString();
+            newStaff.PHONE = dataRowView.Row[columnPhone].ToString();
             newStaff.TITLE = dataRowView.Row[columnTitle].ToString();
-            newStaff.DEPARTMENT_NAME = dataRowView.Row[columnDepartmentName].ToString();
+            newStaff.EMAIL = dataRowView.Row[columnEmail].ToString();
 
             return newStaff;
         }
@@ -507,6 +504,7 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
+        static int constCurrentGridColumnOffset = 1;
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
         {
             EntitiesUndoRedoManager.PauseActionId();
@@ -553,8 +551,8 @@ namespace BluePrints.ViewModels
                 int numberOfCopiedRows = grouped_results.First().Count;
 
                 List<GridColumn> visible_columns = gridTableView.VisibleColumns.ToList();
-                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
-                int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex;
+                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex - constCurrentGridColumnOffset;
+                int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex - constCurrentGridColumnOffset;
 
                 int numberOfSelectedColumns = (last_column_visible_index - first_column_visible_index) + 1;
                 int numberOfCopiedColumns = grouped_results.Count;
@@ -586,7 +584,7 @@ namespace BluePrints.ViewModels
 
                         DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
-                        DataColumn editing_column = editing_row.Table.Columns[current_column.VisibleIndex];
+                        DataColumn editing_column = editing_row.Table.Columns[current_column.VisibleIndex - constCurrentGridColumnOffset];
                         if (editing_row == null)
                         {
                             MessageBoxService.ShowMessage("Please remove all line break from paste data or double click into cell to paste your data with line breaks");
@@ -636,7 +634,27 @@ namespace BluePrints.ViewModels
 
         private bool basePasteData(DataRow newRow, DataColumn dataColumn, ColumnBase copyColumn, string pasteData, bool isNewRow)
         {
-            if (copyColumn.FieldType == typeof(int))
+            if (copyColumn.FieldType == typeof(RosterStatus))
+            {
+                RosterStatus selectedStatus;
+                if (Enum.TryParse(pasteData, out selectedStatus))
+                {
+                    if (!isNewRow)
+                        EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], selectedStatus, EntityMessageType.Changed);
+
+                    newRow[dataColumn] = selectedStatus;
+                }
+                else
+                    return false;
+            }
+            else if(copyColumn.FieldType == typeof(string))
+            {
+                if (!isNewRow)
+                    EntitiesUndoRedoManager.AddUndo(newRow, dataColumn.ColumnName, newRow[dataColumn], pasteData, EntityMessageType.Changed);
+
+                newRow[dataColumn] = pasteData;
+            }
+            else if (copyColumn.FieldType == typeof(int))
             {
                 ComboBoxEditSettings editSettings = copyColumn.ActualEditSettings as ComboBoxEditSettings;
                 if (editSettings != null)
@@ -756,6 +774,12 @@ namespace BluePrints.ViewModels
             if(dataRowView.Row.RowState == DataRowState.Detached)
                 EntitiesUndoRedoManager.AddUndo(dataRowView.Row, null, null, null, EntityMessageType.Added);
 
+            if (DisplayEntities.Any(x => x.EXO_STAFFNO == (int)dataRowView[columnStaffNo]))
+            {
+                e.IsValid = false;
+                e.ErrorContent = "User already exists";
+            }
+
             validateUserAuth(validateRow);
         }
 
@@ -815,7 +839,6 @@ namespace BluePrints.ViewModels
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkDeleteProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Deleted);
 
             //use ignore refresh here because it'll be refreshed in basebulksave
-
             EntitiesUndoRedoManager.PauseActionId();
             foreach (var bulkDeleteProperty in bulkDeleteProperties)
             {
@@ -826,6 +849,7 @@ namespace BluePrints.ViewModels
                         EntitiesUndoRedoManager.AddRedo(bulkDeleteProperty.ChangedEntity, column.ColumnName, bulkDeleteProperty.ChangedEntity[column], bulkDeleteProperty.ChangedEntity[column], EntityMessageType.Changed);
                     }
                 }
+
 
                 DataPointsTable.Rows.Remove(bulkDeleteProperty.ChangedEntity);
                 //bulkDeleteProperty.ChangedEntity.Delete();
@@ -904,29 +928,7 @@ namespace BluePrints.ViewModels
 
         private void validateUserAuth(DataRow validateRow)
         {
-            if (validateRow[columnStaffNo].ToString() != string.Empty && validateRow[columnFirstName].ToString() != string.Empty && validateRow[columnLastName].ToString() != string.Empty && validateRow[columnTitle].ToString() != string.Empty)
-            {
-                ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == (int)validateRow[columnStaffNo]).FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnFirstName] && x.DisciplineId == (int)validateRow[columnLastName] && x.CommodityId == (int)validateRow[columnTitle]);
-                if (findAuthorisation == null)
-                    validateRow.SetColumnError(0, "User is not authorised to book");
-                else
-                    validateRow.SetColumnError(0, string.Empty);
 
-                findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnFirstName] && x.DisciplineId == (int)validateRow[columnLastName] && x.CommodityId == (int)validateRow[columnTitle]);
-                if (findAuthorisation == null)
-                    validateRow.SetColumnError(0, "User is not authorised to book");
-                else
-                    validateRow.SetColumnError(0, string.Empty);
-            }
-
-            if (validateRow[columnFirstName].ToString() != string.Empty && validateRow[columnLastName].ToString() != string.Empty && validateRow[columnTitle].ToString() != string.Empty)
-            {
-                ExoTimeAuthorisation findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnFirstName] && x.DisciplineId == (int)validateRow[columnLastName] && x.CommodityId == (int)validateRow[columnTitle]);
-                if (findAuthorisation == null)
-                    validateRow.SetColumnError(1, "Current job line doesn't exists");
-                else
-                    validateRow.SetColumnError(1, string.Empty);
-            }
         }
 
         public override string UnifiedValueValidation(ROSTER_STAFF projection, string field_name, object new_value)
@@ -1003,40 +1005,15 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public List<RosterCellData> subJobCodeCollection;
-        public IEnumerable<RosterCellData> SUBJOBCODECollection
+        public CollectionViewModel<ROSTER_STAFF_STATUS, ROSTER_STAFF_STATUS, Guid, IBluePrintsEntitiesUnitOfWork> ROSTER_STAFF_STATUSCollectionViewModel
         {
             get
             {
-                if (exoAuthorisations == null)
+                if (MainViewModel == null)
                     return null;
 
-                if (exoAuthorisations.Count == 0)
-                    return new List<RosterCellData>();
-
-                if(subJobCodeCollection == null)
-                {
-                    subJobCodeCollection = new List<RosterCellData>();
-                    subJobCodeCollection.AddRange(predefinedStatusName.Select(x => new RosterCellData() { Code = x }).ToList());
-                    subJobCodeCollection.AddRange(exoAuthorisations.Select(x => new RosterCellData() { Code = x.SubJobCode + "-" + x.DisciplineCode + "-" + x.CommodityCode, SubJobNo = x.SubJobNo, CostGroupNo = x.DisciplineId, CostTypeNo = x.CommodityId }).Distinct().ToList());
-                }
-
-                return subJobCodeCollection;
+                return (CollectionViewModel<ROSTER_STAFF_STATUS, ROSTER_STAFF_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ROSTER_STAFF_STATUS>();
             }
         }
-    }
-}
-
-public class RosterCellData
-{
-    public string Code { get; set; }
-    public int? SubJobNo { get; set; }
-    public int? CostGroupNo { get; set; }
-    public int? CostTypeNo { get; set; }
-    public string Comments { get; set; }
-
-    public override string ToString()
-    {
-        return Code;
     }
 }

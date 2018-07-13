@@ -20,6 +20,16 @@ namespace BluePrints.Common
         }
     }
 
+    public enum RosterStatus
+    {
+        [Display(Name = "Drive in AM")] DIA = 0,
+        [Display(Name = "Fly in AM ")] FIA = 1,
+        [Display(Name = "Drive out PM")] DOP = 2,
+        [Display(Name = "Fly out PM")] FOP = 3,
+        [Display(Name = "Perth")] Perth = 4,
+        [Display(Name = "R&R")] RnR = 5
+    }
+
     public enum HSE_NonApplicableCriteria
     {
         Applicable = 0,

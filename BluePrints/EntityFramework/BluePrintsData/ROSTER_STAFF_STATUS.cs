@@ -1,5 +1,6 @@
 ﻿namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -15,15 +16,7 @@
 
         public DateTime STATUS_DATE { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string STATUS_NAME { get; set; }
-
-        public int? JOBNO { get; set; }
-
-        public int? COSTGROUPNO { get; set; }
-
-        public int? COSTTYPENO { get; set; }
+        public RosterStatus STATUS_NO { get; set; }
 
         [StringLength(1000)]
         public string COMMENTS { get; set; }

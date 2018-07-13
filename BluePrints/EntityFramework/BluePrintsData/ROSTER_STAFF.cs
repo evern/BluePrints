@@ -15,22 +15,17 @@
 
         public int? EXO_STAFFNO { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string FIRST_NAME { get; set; }
+        [StringLength(100)]
+        public string TRADE { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string LAST_NAME { get; set; }
+        [StringLength(100)]
+        public string PHONE { get; set; }
 
         [StringLength(100)]
         public string TITLE { get; set; }
 
         [StringLength(100)]
-        public string DEPARTMENT_NAME { get; set; }
-
-        [StringLength(100)]
-        public string EMPLOYEE_TYPE { get; set; }
+        public string EMAIL { get; set; }
 
         public DateTime CREATED { get; set; }
 

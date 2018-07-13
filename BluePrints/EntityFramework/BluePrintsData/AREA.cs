@@ -35,7 +35,7 @@ namespace BluePrints.Data
         public Guid? GUID_PARENT { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(3)]
         public string INTERNAL_NUM { get; set; }
 
         [StringLength(100)]
