@@ -179,11 +179,11 @@ namespace BluePrints.ViewModels
         {
             if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName) && !hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
-                ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
-                EnumItemsSource enumItemsSource = new EnumItemsSource();
-                enumItemsSource.EnumType = typeof(RosterStatus);
-                comboBoxEdit.ItemsSource = enumItemsSource;
-                e.Column.EditSettings = comboBoxEdit;
+                //ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
+                //EnumItemsSource enumItemsSource = new EnumItemsSource();
+                //enumItemsSource.EnumType = typeof(RosterStatus);
+                //comboBoxEdit.ItemsSource = enumItemsSource;
+                //e.Column.EditSettings = comboBoxEdit;
             }
             else
             {
@@ -1015,5 +1015,11 @@ namespace BluePrints.ViewModels
                 return (CollectionViewModel<ROSTER_STAFF_STATUS, ROSTER_STAFF_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ROSTER_STAFF_STATUS>();
             }
         }
+    }
+
+    public class RosterStatusItem
+    {
+        public RosterStatus Status { get; set; }
+        public string Comments { get; set; }
     }
 }

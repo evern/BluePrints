@@ -72,10 +72,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity == null)
+                if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return Entity.INJURIES_REC_LTI + Entity.INJURIES_REC_MTI + Entity.INJURIES_REC_RWI;
+                return Total_Recordable_Injuries;
             }
         }
 
@@ -109,7 +109,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return ((Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI + Entity.INJURIES_OTH_NWR) * 100000) / Total_ManHours; 
+                return ((Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI) * 1000000) / Total_ManHours; 
             }
         }
 

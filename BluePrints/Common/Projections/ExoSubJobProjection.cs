@@ -380,7 +380,9 @@ namespace BluePrints.Common.Projections
 
             if (resourceAllocation != null)
             {
-                pUnitOfWork.JOB_RESOURCE_ALLOCATION.Remove(resourceAllocation);
+                resourceAllocation.END_DATE = DateTime.Now.AddDays(-7);
+                //Cannot delete resources anymore from horizon changes
+                //pUnitOfWork.JOB_RESOURCE_ALLOCATION.Remove(resourceAllocation);
                 pUnitOfWork.SaveChanges();
             }
         }
@@ -588,7 +590,7 @@ namespace BluePrints.Common.Projections
                                      on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
-                                     where STAFF.STAFFNO == staffId && JOB_RESOURCE_ALLOCATION.JOBNO == jobNo
+                                     where STAFF.STAFFNO == staffId && JOB_RESOURCE_ALLOCATION.JOBNO == jobNo && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
                                      select JOB_RESOURCE_ALLOCATION;
 
             if (resourceAllocation.Count() == 0)

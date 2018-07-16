@@ -30,10 +30,9 @@ namespace BluePrints.Views
         {
             if (e.DataField != fieldStatsValue && e.DataField != fieldStatsTarget) return;
 
-
+            PivotGridControl pivotGridControl = (PivotGridControl)sender;
             if (e.RowFieldValue != null)
             {
-                PivotGridControl pivotGridControl = (PivotGridControl)sender;
                 IEnumerable<HSEReportProjection> dataSource = (IEnumerable<HSEReportProjection>)pivotGridControl.DataSource;
                 HSEReportProjection rowData = dataSource.FirstOrDefault(x => x.StatsName == e.RowFieldValue.ToString());
                 if(rowData != null)
@@ -49,7 +48,7 @@ namespace BluePrints.Views
                             for (int i = 0; i < ds.RowCount; i++)
                             {
                                 PivotDrillDownDataRow row = ds[i];
-                                // Get the order's total sum.
+                                // Get the total sum.
                                 decimal targetSum = (decimal)row[fieldStatsTarget];
                                 decimal valueSum = (decimal)row[fieldStatsValue];
                                 if (targetSum > 0)
@@ -73,7 +72,7 @@ namespace BluePrints.Views
                             for (int i = 0; i < ds.RowCount; i++)
                             {
                                 PivotDrillDownDataRow row = ds[i];
-                                // Get the order's total sum.
+                                // Get the total sum.
                                 decimal targetSum = (decimal)row[fieldStatsTarget];
                                 if (targetSum > 0)
                                 {
@@ -89,7 +88,36 @@ namespace BluePrints.Views
                         }
                     }
                     else
-                        e.CustomValue = e.SummaryValue.Summary;
+                    {
+                        if (rowData.StatsType== HSEStatsType.Total_Recordable_Injuries_Freq || rowData.StatsType == HSEStatsType.All_Injuries)
+                        {
+                            if (e.FieldName == fieldStatsValue.FieldName)
+                            {
+                                IEnumerable<HSEReportProjection> manHourRowDatas = dataSource.Where(x => x.StatsType == HSEStatsType.Total_ManHours);
+                                decimal totalManHours = manHourRowDatas.Sum(x => x.StatsValue);
+                                if (totalManHours > 0)
+                                {
+                                    decimal injurySum = 0;
+                                    // Get the record set corresponding to the current cell.
+                                    PivotDrillDownDataSource ds = e.CreateDrillDownDataSource();
+                                    for (int i = 0; i < ds.RowCount; i++)
+                                    {
+                                        PivotDrillDownDataRow row = ds[i];
+                                        decimal valueSum = (decimal)row[fieldStatsValue];
+                                        injurySum += valueSum;
+                                    }
+
+                                    e.CustomValue = (injurySum * 1000000) / totalManHours;
+                                }
+                                else
+                                    e.CustomValue = 0;
+                            }
+                            else
+                                e.CustomValue = 5.5m;
+                        }
+                        else
+                            e.CustomValue = e.SummaryValue.Summary;
+                    }
                 }
             }
         }
@@ -111,7 +139,7 @@ namespace BluePrints.Views
             System.Windows.Media.Color returnColor;
             if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
                 returnColor = (control.Value == 0) ? Colors.LightGreen : Colors.LightSalmon;
-            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT")
+            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT" || control.Name == "All_Injuries" || control.Name == "Total_Recordable_Injuries_Freq")
                 returnColor = control.Value < control.Maximum ? Colors.LightGreen : Colors.LightSalmon;
             else
                 returnColor = control.Value >= control.Maximum ? Colors.LightGreen : Colors.LightSalmon;
@@ -136,7 +164,7 @@ namespace BluePrints.Views
             System.Windows.Media.Color returnColor;
             if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
                 returnColor = (control.Value == 0) ? Colors.Green : Colors.Salmon;
-            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT")
+            else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT" || control.Name == "All_Injuries" || control.Name == "Total_Recordable_Injuries_Freq")
                 returnColor = control.Value < control.Maximum ? Colors.Green : Colors.Salmon;
             else
                 returnColor = control.Value >= control.Maximum ? Colors.Green : Colors.Salmon;
@@ -167,7 +195,9 @@ namespace BluePrints.Views
 
             if (cell.ColumnValueDisplayText.ToString() == "Target")
             {
-                if (statsMask == "P0")
+                if (statsType == HSEStatsType.Total_Recordable_Injuries_Freq || statsType == HSEStatsType.All_Injuries)
+                    return createSpinEdit(false, "n2");
+                else if (statsMask == "P0")
                     return createSpinEdit(true);
                 else
                     return createSpinEdit(false);
@@ -180,8 +210,9 @@ namespace BluePrints.Views
                     return createSpinEdit(false);
                 else
                 {
-                    //grand total column
-                    if(cell.IsTotalAppearance)
+                    if (statsType == HSEStatsType.Total_Recordable_Injuries_Freq || statsType == HSEStatsType.All_Injuries)
+                        return createProgressBarEdit(statsType.ToString(), 0, 5.5m, false, "n2");
+                    else if (cell.IsTotalAppearance)
                     {
                         object grandTotalTargetObj = pivotGridControl.GetCellValue(cell.ColumnIndex + 1, cell.RowIndex);
                         decimal grandTotalTargetValue = 0;
@@ -221,17 +252,24 @@ namespace BluePrints.Views
             return newDataTemplate;
         }
 
-        public DataTemplate createProgressBarEdit(string controlName, decimal minValue, decimal maxValue, bool isPercentage)
+        public DataTemplate createProgressBarEdit(string controlName, decimal minValue, decimal maxValue, bool isPercentage, string explicitDisplayFormat = "")
         {
             var progressBarEdit = new FrameworkElementFactory(typeof(ProgressBarEdit));
             progressBarEdit.SetValue(ProgressBarEdit.NameProperty, controlName);
             progressBarEdit.SetBinding(SpinEdit.EditValueProperty, new Binding("Value") { Mode = BindingMode.OneWay });
             progressBarEdit.SetValue(ProgressBarEdit.MaximumProperty, Convert.ToDouble(maxValue));
             progressBarEdit.SetValue(ProgressBarEdit.MinimumProperty, Convert.ToDouble(minValue));
-            if(isPercentage)
-                progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "p0");
+
+            if(explicitDisplayFormat != string.Empty)
+                progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, explicitDisplayFormat);
             else
-                progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "n0");
+            {
+                if (isPercentage)
+                    progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "p0");
+                else
+                    progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "n0");
+            }
+
             progressBarEdit.SetValue(ProgressBarEdit.ContentDisplayModeProperty, ContentDisplayMode.Value);
             progressBarEdit.SetValue(ProgressBarEdit.EditModeProperty, EditMode.InplaceInactive);
             progressBarEdit.SetValue(ProgressBarEdit.ForegroundProperty, new SolidColorBrush(Colors.Black));
@@ -240,14 +278,21 @@ namespace BluePrints.Views
             return newDataTemplate;
         }
 
-        public DataTemplate createSpinEdit(bool isPercentage)
+        public DataTemplate createSpinEdit(bool isPercentage, string explicitDisplayFormat = "")
         {
             var spinEdit = new FrameworkElementFactory(typeof(SpinEdit));
             spinEdit.SetBinding(SpinEdit.EditValueProperty, new Binding("Value") { Mode = BindingMode.OneWay });
-            if (isPercentage)
-                spinEdit.SetValue(SpinEdit.MaskProperty, "p0");
+
+            if(explicitDisplayFormat != string.Empty)
+                spinEdit.SetValue(SpinEdit.MaskProperty, explicitDisplayFormat);
             else
-                spinEdit.SetValue(SpinEdit.MaskProperty, "n0");
+            {
+                if (isPercentage)
+                    spinEdit.SetValue(SpinEdit.MaskProperty, "p0");
+                else
+                    spinEdit.SetValue(SpinEdit.MaskProperty, "n0");
+            }
+
             spinEdit.SetValue(SpinEdit.MaskUseAsDisplayFormatProperty, true);
             spinEdit.SetValue(SpinEdit.EditModeProperty, EditMode.InplaceInactive);
             spinEdit.SetValue(SpinEdit.ShowEditorButtonsProperty, false);

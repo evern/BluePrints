@@ -241,7 +241,7 @@
                                             <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_TOTAL_COMMENT}" Tag="Entity.INJURIES_REC_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
-                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}" Visibility="Hidden">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Recordable Injury Frequency Rate (TRIFR)" Style="{StaticResource layoutFirstColumnStyle}">
                                             <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Freq, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding Total_Recordable_Injuries_Freq_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
                                         </dxlc:LayoutItem>
@@ -278,7 +278,7 @@
                                             <dxe:TextEdit EditValue="{Binding Entity.INJURIES_OTH_FAI_COMMENT}" Tag="Entity.INJURIES_OTH_FAI_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
-                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
+                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}" Visibility="Hidden">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="All Injury Frequency Rate" Style="{StaticResource layoutFirstColumnStyle}">
                                             <dxe:SpinEdit EditValue="{Binding All_Injuries, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding All_Injuries_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
                                         </dxlc:LayoutItem>

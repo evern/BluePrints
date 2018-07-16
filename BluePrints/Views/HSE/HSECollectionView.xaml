@@ -97,8 +97,8 @@
                             <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="2" />
                             <dxpg:PivotGridField Area="ColumnArea" Caption="Project" FieldName="Project.NUMBER" />
                             <dxpg:PivotGridField Name="fieldHSEDate" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
-                            <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n0" FieldName="StatsValue" SummaryType="Custom" />
-                            <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n0" FieldName="StatsTarget" SummaryType="Custom" />
+                            <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n2" FieldName="StatsValue" SummaryType="Custom" />
+                            <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n2" FieldName="StatsTarget" SummaryType="Custom" />
                         </dxpg:PivotGridControl.Fields>
                         <dxpg:PivotGridControl.FieldCellTemplateSelector>
                             <local:CellTemplateSelector />
