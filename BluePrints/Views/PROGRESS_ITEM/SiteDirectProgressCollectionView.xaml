@@ -71,8 +71,10 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.Deliverable_Name" Header="Stock Code" IsEnabled="False" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Description" Header="Name" IsEnabled="False" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Name" Header="Name" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Comments" Header="Comments" IsEnabled="False" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Description" Header="Description" IsEnabled="False" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="SeqNo" Header="SeqNo" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="ProgressItem.Total_Quantity" Header="Total Qty" HeaderToolTip="Estimated quantity + variation quantity" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -203,6 +205,8 @@
                                             <dxg:GridColumn Binding="{Binding Deliverable_Name}" Header="Stock Code" IsEnabled="False" ReadOnly="True" />
                                             <dxg:GridColumn Binding="{Binding ReadOnlyEstimate.Entity.Entity.NAME}" Header="Name" IsEnabled="False" ReadOnly="True" />
                                             <dxg:GridColumn Binding="{Binding ReadOnlyEstimate.Entity.Entity.COMMENTS}" Header="Comments" IsEnabled="False" ReadOnly="True" />
+                                            <dxg:GridColumn Binding="{Binding ReadOnlyEstimate.Entity.Entity.DESCRIPTION}" Header="Description" IsEnabled="False" ReadOnly="True" />
+                                            <dxg:GridColumn Binding="{Binding ReadOnlyEstimate.Entity.Entity.SEQNO}" Header="Seq No" IsEnabled="False" ReadOnly="True" />
                                             <dxg:GridColumn Binding="{Binding Total_Quantity}" Header="Total Qty" HeaderToolTip="Estimated quantity + variation quantity" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

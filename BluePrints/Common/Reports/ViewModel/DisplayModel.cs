@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public string Description
+        public string Name
         {
             get
             {
@@ -62,6 +62,30 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
                 if (estimate != null)
                     return estimate.ReadOnlyEstimate.Entity.Entity.COMMENTS;
+                else
+                    return string.Empty;
+            }
+        }
+        
+        public string Description
+        {
+            get
+            {
+                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                if (estimate != null)
+                    return estimate.ReadOnlyEstimate.Entity.Entity.DESCRIPTION;
+                else
+                    return string.Empty;
+            }
+        }
+
+        public string SeqNo
+        {
+            get
+            {
+                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                if (estimate != null)
+                    return estimate.ReadOnlyEstimate.Entity.Entity.SEQNO;
                 else
                     return string.Empty;
             }

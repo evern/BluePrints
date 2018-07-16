@@ -263,7 +263,10 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.NAME" Header="Name" ReadOnly="True" />
+                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.DESCRIPTION" Header="Description" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.COMMENTS" Header="Comments" ReadOnly="True" />
+                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.SEQNO" Header="Seq No" ReadOnly="True" />
+                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.P6ACTIVITYMAP" Header="P6 Map" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Total_Quantity" Header="Total Quantity" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

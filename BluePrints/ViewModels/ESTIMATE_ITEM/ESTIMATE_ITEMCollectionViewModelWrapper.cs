@@ -294,6 +294,10 @@ namespace BluePrints.ViewModels
             MainViewModel.CanFillDownCallBack = this.CanFillDown;
             MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
             MainViewModel.SetParentViewModel(this);
+            STOCK_CODECollectionViewModel.SetParentViewModel(this);
+            AREACollectionViewModel.SetParentViewModel(this);
+            SUBJOBSCollectionViewModel.SetParentViewModel(this);
+            WORKPACKSCollectionViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => showViewReadOnlyMessage()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
 

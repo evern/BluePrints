@@ -53,6 +53,15 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string COMMENTS { get; set; }
 
+        [StringLength(1000)]
+        public string DESCRIPTION { get; set; }
+
+        [StringLength(100)]
+        public string P6ACTIVITYMAP { get; set; }
+
+        [StringLength(100)]
+        public string SEQNO { get; set; }
+
         public decimal? BUDGET_TRUCK_PERCENTAGE { get; set; }
 
         public decimal? ESTIMATE_TRUCK_PERCENTAGE { get; set; }

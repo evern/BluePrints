@@ -11,6 +11,7 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
+            <dxc:DXMessageBoxService />
             <dxc:DialogService x:Name="StockCodeDialogService">
                 <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
@@ -109,7 +110,10 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.NAME" FilterPopupMode="CheckedList" Header="Name" />
+                                <dxg:GridColumn FieldName="Entity.Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
                                 <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" />
+                                <dxg:GridColumn FieldName="Entity.Entity.SEQNO" FilterPopupMode="CheckedList" Header="Seq No" />
+                                <dxg:GridColumn FieldName="Entity.Entity.P6ACTIVITYMAP" FilterPopupMode="CheckedList" Header="P6 Code" />
                                 <dxg:GridColumn FieldName="Entity.Entity.ESTIMATE_QUANTITY" FilterPopupMode="CheckedList" Header="Quantity">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -246,7 +250,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" ReadOnly="False" Tag="True;True;Autofill from workpack, discipline and discipline number" Visible="true">
+                                <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" ReadOnly="False" Visible="true">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -320,7 +324,7 @@
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
-                                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" Content="Count" EditValue="2">
+                                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
                                             <dxb:BarEditItem.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
                                                     <dxe:SpinEditSettings.Buttons>
@@ -335,7 +339,7 @@
                                         </dxb:BarEditItem>
                                     </dxb:BarSubItem>
                                     <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
-                                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" Content="Count" EditValue="2">
+                                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
                                             <dxb:BarEditItem.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
                                                     <dxe:SpinEditSettings.Buttons>
