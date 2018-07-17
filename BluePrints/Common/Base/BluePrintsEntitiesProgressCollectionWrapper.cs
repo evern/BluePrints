@@ -1297,10 +1297,10 @@ namespace BluePrints.Common.Base
                     {
                         actual_context_task.target_work_qty += p6_assignment.UNITS;
                         actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                    }
 
-                    TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
-                    DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
+                        TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+                        DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
+                    }
                 }
             }
             #endregion
