@@ -48,8 +48,8 @@ namespace BluePrints.Common.Projections
         public bool IsSubJobExistsInExo => SubJob != null && SubJob.Id != null;
         public bool IsDisciplineExistsInExo => Discipline != null && Discipline.Id != null;
         public bool IsCommodityExistsInExo => Commodity != null && Commodity.Id != null;
-        //public bool IsLineExistsInExo => LineId != null;
-        public bool IsLineExistsInExo => SubJob.Id != null;
+        public bool IsLineExistsInExo => LineId != null;
+        //public bool IsLineExistsInExo => SubJob.Id != null;
 
         //used to trick view model
         public Guid EntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -424,7 +424,7 @@ namespace BluePrints.Common.Projections
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 if (exoLines.Count() > 0)
                 {
-                    newSubJobProjection.LineId = exoLines.First().LineSeqNo;
+                    newSubJobProjection.LineId = exoLine.LineSeqNo;
                     foreach (ExoTimeAuthorisation exoAuth in exoAuths)
                     {
                         STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
@@ -461,6 +461,7 @@ namespace BluePrints.Common.Projections
             var groupedDeliverables = baseline_item_progresses.GroupBy(x => new { SubJob = x.Entity.Entity.SUBJOB, DisciplineCode = x.Discipline_Code, DisciplineName = x.Entity.Entity.Discipline_Name, Commodity = x.Entity.Entity.DOCTYPE })
                                       .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.DisciplineName, group.Key.Commodity });
 
+            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach(var groupedDeliverable in groupedDeliverables)
@@ -526,21 +527,25 @@ namespace BluePrints.Common.Projections
                 newSubJobProjection.Discipline = newDiscipline;
                 newSubJobProjection.Commodity = newCommodity;
 
-                IEnumerable<ExoTimeAuthorisation> exoUserAuths = exoAuthorisations.Where(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
-                if (exoUserAuths.Count() > 0)
+                ExoTimeAuthorisation exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
+                if(exoLine != null)
                 {
-                    newSubJobProjection.LineId = exoUserAuths.First().LineSeqNo;
-                    foreach (ExoTimeAuthorisation exoLine in exoUserAuths)
+                    newSubJobProjection.LineId = exoLine.LineSeqNo;
+                    IEnumerable<ExoTimeAuthorisation> exoUserAuths = exoAuthorisations.Where(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
+                    if (exoUserAuths.Count() > 0)
                     {
-                        USER findUSER = userCollection.FirstOrDefault(x => x.EXO_STAFF_ID == exoLine.ResourceStaffId);
-                        if(findUSER != null && findUSER.ROLE != null)
+                        foreach (ExoTimeAuthorisation exoUserAuth in exoUserAuths)
                         {
-                            ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                            newAuth.User = findUSER;
-                            newAuth.ShouldAssign = findUSER.ROLE.ROLE_COMMODITY.Any(x => x.DOCTYPE.CODE == exoLine.CommodityCode);
-                            newAuth.IsAssigned = true;
-                            newSubJobProjection.AuthUsers.Add(newAuth);
+                            USER findUSER = userCollection.FirstOrDefault(x => x.EXO_STAFF_ID == exoUserAuth.ResourceStaffId);
+                            if (findUSER != null && findUSER.ROLE != null)
+                            {
+                                ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                                newAuth.User = findUSER;
+                                newAuth.ShouldAssign = findUSER.ROLE.ROLE_COMMODITY.Any(x => x.DOCTYPE.CODE == exoUserAuth.CommodityCode);
+                                newAuth.IsAssigned = true;
+                                newSubJobProjection.AuthUsers.Add(newAuth);
+                            }
                         }
                     }
                 }

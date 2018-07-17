@@ -508,14 +508,10 @@ namespace BluePrints.ViewModels
                         refreshPermissions();
                         updatedLineCount += 1;
                     }
-
                 }
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-
-            // Need to perform full refresh for job lines with the same subjob to get registered as pushed
-            FullRefresh();
         }
 
         /// <summary>
