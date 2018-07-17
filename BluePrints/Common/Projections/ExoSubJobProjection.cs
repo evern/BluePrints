@@ -708,21 +708,9 @@ namespace BluePrints.Common.Projections
         public static JOBCOST_LINES GetProjectLineByCode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
-                                 join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
-                                 on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
-                                 join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
-                                 on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
-                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 join JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
-                                 on JOBCOST_LINES.JOBNO equals JOB_RESOURCE_ALLOCATION.JOBNO
-                                 join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                                 on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
-                                 join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
-                                 on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == projectNumber
+                                 on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
                                  select JOBCOST_LINES;
 
 

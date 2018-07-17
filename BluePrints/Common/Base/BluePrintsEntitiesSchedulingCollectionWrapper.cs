@@ -981,10 +981,10 @@ namespace BluePrints.Common.Base
                         {
                             actual_context_task.target_work_qty += p6_assignment.UNITS;
                             actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                            foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
-                            {
-                                ExistingTaskResource.Add(task_resource);
-                            }
+                            //foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                            //{
+                            //    ExistingTaskResource.Add(task_resource);
+                            //}
                         }
                         else
                         {
@@ -1015,10 +1015,10 @@ namespace BluePrints.Common.Base
                             {
                                 actual_context_task.target_work_qty += p6_assignment.UNITS;
                                 actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                                foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
-                                {
-                                    ExistingTaskResource.Add(task_resource);
-                                }
+                                //foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
+                                //{
+                                //    ExistingTaskResource.Add(task_resource);
+                                //}
                             }
                             else
                             {
@@ -1033,11 +1033,15 @@ namespace BluePrints.Common.Base
                 LoadingScreenManager.CloseLoadingScreen();
             }
 
-            foreach (var TaskRsrc in ExistingTaskResource)
-            {
-                IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
-            }
+            //LoadingScreenManager.ShowLoadingScreen(ExistingTaskResource.Count);
+            //LoadingScreenManager.SetMessage("Removing resources");
+            //foreach (var TaskRsrc in ExistingTaskResource)
+            //{
+            //    IP6EntitiesUnitOfWork.TASKRSRC.Remove(TaskRsrc);
+            //    LoadingScreenManager.Progress();
+            //}
 
+            //LoadingScreenManager.CloseLoadingScreen();
             ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
             if (missing_activities.Count > 0)
             {
