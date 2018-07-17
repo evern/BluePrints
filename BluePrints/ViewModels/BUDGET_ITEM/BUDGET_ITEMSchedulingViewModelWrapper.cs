@@ -154,6 +154,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        //Auto assign P6 activity by activity ID
         public void AutoAssignActName()
         {
             if (MessageBoxService.ShowMessage("This will reset all assignment and attempt to auto assign deliverables to activity\n\nDo you wish to continue?", "Warning", MessageButton.YesNo) == MessageResult.No)
@@ -167,8 +168,6 @@ namespace BluePrints.ViewModels
                 displayEntity.P6_Assignments.Clear();
             }
 
-            LoadingScreenManager.ShowLoadingScreen(TASK_Source.Count());
-            LoadingScreenManager.SetMessage("Auto assigning");
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
@@ -187,28 +186,31 @@ namespace BluePrints.ViewModels
                 else
                     estimateItemsBySubArea = estimateItemsByCommodity.Where(x => x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == subAreaNumber);
 
+                decimal lowValue = 0.01m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {
                     if (estimateItem.Assigned_Percentage == 1)
                         continue;
 
-                    estimateItem.P6_Assignments.Add(new P6_ASSIGNMENT()
-                    {
-                        GUID = Guid.Empty,
-                        GUID_PROJECT = loadPROJECT.GUID,
-                        HIGH_VALUE = 1,
-                        LOW_VALUE = 0.01m,
-                        P6_ACTIVITYID = task.task_code,
-                        GUID_ORIGINAL = estimateItem.OriginalEntityKey,
-                        TYPE = phase_type,
-                        ISMODIFIEDBASELINE = false
-                    });
-                }
+                    //decimal assignmentValue = (1m / estimateItemsBySubArea.Count());
+                    //decimal highValue = (lowValue - 0.01m) + assignmentValue;
+                    decimal highValue = 1;
 
-                LoadingScreenManager.Progress();
+                    P6_ASSIGNMENT newP6_ASSIGNMENT = new P6_ASSIGNMENT();
+                    newP6_ASSIGNMENT.GUID = Guid.Empty;
+                    newP6_ASSIGNMENT.GUID_PROJECT = loadPROJECT.GUID;
+                    newP6_ASSIGNMENT.HIGH_VALUE = highValue;
+                    newP6_ASSIGNMENT.LOW_VALUE = lowValue;
+                    newP6_ASSIGNMENT.P6_ACTIVITYID = task.task_code;
+                    newP6_ASSIGNMENT.GUID_ORIGINAL = estimateItem.OriginalEntityKey;
+                    newP6_ASSIGNMENT.TYPE = phase_type;
+                    newP6_ASSIGNMENT.ISMODIFIEDBASELINE = false;
+
+                    estimateItem.P6_Assignments.Add(newP6_ASSIGNMENT);
+                    //lowValue += assignmentValue;
+                }
             }
 
-            LoadingScreenManager.CloseLoadingScreen();
             IEnumerable<P6_ASSIGNMENT> save_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
             foreach (P6_ASSIGNMENT save_assignment in save_assignments)
             {
@@ -220,56 +222,56 @@ namespace BluePrints.ViewModels
         }
 
 
-        public void AutoAssignmentActCode()
-        {
-            foreach(var task in TASK_Source)
-            {
-                IEnumerable<TASKACTV> task_activities = task.TASKACTV.AsEnumerable();
-                TASKACTV areaAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP AREA");
-                TASKACTV subareaAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP SUBAREA");
-                TASKACTV disciplineAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP DISCIPLINE");
-                TASKACTV commodityCodeAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP COMMODITY");
+        //public void AutoAssignmentActCode()
+        //{
+        //    foreach(var task in TASK_Source)
+        //    {
+        //        IEnumerable<TASKACTV> task_activities = task.TASKACTV.AsEnumerable();
+        //        TASKACTV areaAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP AREA");
+        //        TASKACTV subareaAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP SUBAREA");
+        //        TASKACTV disciplineAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP DISCIPLINE");
+        //        TASKACTV commodityCodeAct = task_activities.FirstOrDefault(x => x.ACTVTYPE != null && x.ACTVTYPE.actv_code_type.ToUpper() == "BP COMMODITY");
 
-                if (areaAct != null && disciplineAct != null && commodityCodeAct != null)
-                {
-                    IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnDiscipline = DisplayEntities.Where(x => x.Discipline_Code == disciplineAct.ACTVCODE.short_name);
-                    IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnArea = relatedItemsOnDiscipline.Where(x => x.Entity.Entity.AREA != null && x.Entity.Entity.AREA.INTERNAL_NUM == areaAct.ACTVCODE.short_name);
-                    IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnCommodity = relatedItemsOnArea.Where(x => x.Commodity_Code == commodityCodeAct.ACTVCODE.short_name);
-                    IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnSubArea;
+        //        if (areaAct != null && disciplineAct != null && commodityCodeAct != null)
+        //        {
+        //            IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnDiscipline = DisplayEntities.Where(x => x.Discipline_Code == disciplineAct.ACTVCODE.short_name);
+        //            IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnArea = relatedItemsOnDiscipline.Where(x => x.Entity.Entity.AREA != null && x.Entity.Entity.AREA.INTERNAL_NUM == areaAct.ACTVCODE.short_name);
+        //            IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnCommodity = relatedItemsOnArea.Where(x => x.Commodity_Code == commodityCodeAct.ACTVCODE.short_name);
+        //            IEnumerable<ESTIMATE_ITEMProgress> relatedItemsOnSubArea;
 
-                    if (subareaAct == null || subareaAct.ACTVCODE.short_name == "00")
-                        relatedItemsOnSubArea = relatedItemsOnCommodity.Where(x => x.SubArea_Guid == null || (x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == "00"));
-                    else
-                        relatedItemsOnSubArea = relatedItemsOnCommodity.Where(x => x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == subareaAct.ACTVCODE.short_name);
+        //            if (subareaAct == null || subareaAct.ACTVCODE.short_name == "00")
+        //                relatedItemsOnSubArea = relatedItemsOnCommodity.Where(x => x.SubArea_Guid == null || (x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == "00"));
+        //            else
+        //                relatedItemsOnSubArea = relatedItemsOnCommodity.Where(x => x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == subareaAct.ACTVCODE.short_name);
 
-                    foreach(var relatedItem in relatedItemsOnSubArea)
-                    {
-                        if (relatedItem.Assigned_Percentage == 1)
-                            continue;
+        //            foreach(var relatedItem in relatedItemsOnSubArea)
+        //            {
+        //                if (relatedItem.Assigned_Percentage == 1)
+        //                    continue;
 
-                        relatedItem.P6_Assignments.Add(new P6_ASSIGNMENT()
-                        {
-                            GUID = Guid.Empty,
-                            GUID_PROJECT = loadPROJECT.GUID,
-                            HIGH_VALUE = 1,
-                            LOW_VALUE = 0.01m,
-                            P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
-                            GUID_ORIGINAL = relatedItem.OriginalEntityKey,
-                            TYPE = phase_type,
-                            ISMODIFIEDBASELINE = false
-                        });
-                    }
-                }
-            }
+        //                relatedItem.P6_Assignments.Add(new P6_ASSIGNMENT()
+        //                {
+        //                    GUID = Guid.Empty,
+        //                    GUID_PROJECT = loadPROJECT.GUID,
+        //                    HIGH_VALUE = 1,
+        //                    LOW_VALUE = 0.01m,
+        //                    P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
+        //                    GUID_ORIGINAL = relatedItem.OriginalEntityKey,
+        //                    TYPE = phase_type,
+        //                    ISMODIFIEDBASELINE = false
+        //                });
+        //            }
+        //        }
+        //    }
 
-            IEnumerable<P6_ASSIGNMENT> save_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
-            foreach (P6_ASSIGNMENT save_assignment in save_assignments)
-            {
-                P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
-            }
+        //    IEnumerable<P6_ASSIGNMENT> save_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
+        //    foreach (P6_ASSIGNMENT save_assignment in save_assignments)
+        //    {
+        //        P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
+        //    }
 
-            P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
-        }
+        //    P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
+        //}
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

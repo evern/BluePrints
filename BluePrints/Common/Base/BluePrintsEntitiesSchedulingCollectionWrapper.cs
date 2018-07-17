@@ -966,6 +966,7 @@ namespace BluePrints.Common.Base
 
             if (mappingMode == BaselineMappingMode.Default)
             {
+                LoadingScreenManager.ShowLoadingScreen(Deliverables_Source.Count());
                 foreach (ICanAssignP6 deliverable in Deliverables_Source)
                 {
                     IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
@@ -990,11 +991,16 @@ namespace BluePrints.Common.Base
                             missing_activities.Add(p6_assignment);
                         }
                     }
+
+                    LoadingScreenManager.Progress();
                 }
+
+                LoadingScreenManager.CloseLoadingScreen();
             }
             else
             {
-                foreach(WORKPACKProjection workpack in Deliverables_Source)
+                LoadingScreenManager.ShowLoadingScreen(Deliverables_Source.Count());
+                foreach (WORKPACKProjection workpack in Deliverables_Source)
                 {
                     IEnumerable<P6_ASSIGNMENT> deliverable_assignments = workpack.P6_Assignments;
                     foreach(ICanAssignP6 deliverable in workpack.Deliverables)
@@ -1020,7 +1026,11 @@ namespace BluePrints.Common.Base
                             }
                         }
                     }
+
+                    LoadingScreenManager.Progress();
                 }
+
+                LoadingScreenManager.CloseLoadingScreen();
             }
 
             foreach (var TaskRsrc in ExistingTaskResource)
