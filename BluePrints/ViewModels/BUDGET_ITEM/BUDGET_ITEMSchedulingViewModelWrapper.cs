@@ -129,6 +129,19 @@ namespace BluePrints.ViewModels
             return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS);
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            MainViewModel.AlwaysSkipMessage = true;
+            P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = true;
+            P6_ASSIGNMENTSCollectionViewModel.AfterBulkOperationRefreshCallBack = onAfterBulkOperationRefresh;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void onAfterBulkOperationRefresh()
+        {
+
+        }
+
         public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
         {
             return string.Empty;
@@ -143,6 +156,19 @@ namespace BluePrints.ViewModels
         #region View Properties
         public void AutoAssignActName()
         {
+            if (MessageBoxService.ShowMessage("This will reset all assignment and attempt to auto assign deliverables to activity\n\nDo you wish to continue?", "Warning", MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            IEnumerable<P6_ASSIGNMENT> delete_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments);
+            P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(delete_assignments);
+
+            foreach(ESTIMATE_ITEMProgress displayEntity in DisplayEntities)
+            {
+                displayEntity.P6_Assignments.Clear();
+            }
+
+            LoadingScreenManager.ShowLoadingScreen(TASK_Source.Count());
+            LoadingScreenManager.SetMessage("Auto assigning");
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
@@ -178,8 +204,11 @@ namespace BluePrints.ViewModels
                         ISMODIFIEDBASELINE = false
                     });
                 }
+
+                LoadingScreenManager.Progress();
             }
 
+            LoadingScreenManager.CloseLoadingScreen();
             IEnumerable<P6_ASSIGNMENT> save_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
             foreach (P6_ASSIGNMENT save_assignment in save_assignments)
             {
