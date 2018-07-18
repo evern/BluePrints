@@ -769,6 +769,16 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
+        public static List<string> GetVariationCodes(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
+                                 select new { VariationCode = JOBCOST_LINES.X_VARIATION_CODE };
+
+            return availableLines.Select(x => x.VariationCode).OrderBy(x => x).Distinct().ToList();
+        }
 
         public static List<ExoTimeAuthorisation> GetAllExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {

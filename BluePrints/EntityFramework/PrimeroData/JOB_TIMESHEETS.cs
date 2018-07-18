@@ -112,7 +112,7 @@ namespace BluePrints.PrimeroData
 
         public bool? X_SUBMITTED { get; set; }
 
-        [StringLength(10)]
+        [StringLength(50)]
         public string X_VARIATIONCODE { get; set; }
     }
 }
