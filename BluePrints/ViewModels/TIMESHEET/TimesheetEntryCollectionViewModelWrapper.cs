@@ -74,6 +74,7 @@ namespace BluePrints.ViewModels
         string columnCostGroup = "CostGroup";
         string columnCostType = "CostType";
         string columnVariationCode = "VariationCode";
+        string columnNarrative = "Narrative";
         string valueNotFoundError = "Value not found";
 
         public DateTime DateFrom { get; set; }
@@ -91,12 +92,14 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnCostGroup);
             defaultColumnFieldNames.Add(columnCostType);
             defaultColumnFieldNames.Add(columnVariationCode);
+            defaultColumnFieldNames.Add(columnNarrative);
 
             systemColumnFieldNames.Add(columnResourceSeqNo);
             systemColumnFieldNames.Add(columnJobNo);
             systemColumnFieldNames.Add(columnCostGroup);
             systemColumnFieldNames.Add(columnCostType);
             systemColumnFieldNames.Add(columnVariationCode);
+            systemColumnFieldNames.Add(columnNarrative);
 
             VariationCodes = new ObservableCollection<string>(ExoQueries.GetVariationCodes(primeroUnitOfWork, loadPROJECT.NUMBER));
         }
@@ -234,6 +237,7 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnCostGroup, typeof(int));
                     dataPointsTable.Columns.Add(columnCostType, typeof(int));
                     dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
+                    dataPointsTable.Columns.Add(columnNarrative, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -337,13 +341,16 @@ namespace BluePrints.ViewModels
                             findCostType = (int)timeSheet.COST_TYPE;
 
                         string findVariationCode = timeSheet.X_VARIATIONCODE;
-                        DataRow newRow = newRows.FirstOrDefault(x => (int)x[columnJobNo] == timeSheet.JOBNO && (int)x[columnResourceSeqNo] == timeSheet.STAFFNO && (int)x[columnCostGroup] == findCostGroup && (int)x[columnCostType] == findCostType && x[columnVariationCode].ToString() == findVariationCode);
+                        string findNarrative = timeSheet.X_NARRATIVE;
+
+                        DataRow newRow = newRows.FirstOrDefault(x => (int)x[columnJobNo] == timeSheet.JOBNO && (int)x[columnResourceSeqNo] == timeSheet.STAFFNO && (int)x[columnCostGroup] == findCostGroup && (int)x[columnCostType] == findCostType && x[columnVariationCode].ToString() == findVariationCode && x[columnNarrative].ToString() == findNarrative);
                         if(newRow == null)
                         {
                             newRow = DataPointsTable.NewRow();
                             newRow[columnResourceSeqNo] = timeSheet.STAFFNO;
                             newRow[columnJobNo] = timeSheet.JOBNO;
                             newRow[columnVariationCode] = timeSheet.X_VARIATIONCODE;
+                            newRow[columnNarrative] = timeSheet.X_NARRATIVE;
 
                             if (timeSheet.COST_GROUP == null)
                                 newRow[columnCostGroup] = DBNull.Value;
@@ -421,6 +428,8 @@ namespace BluePrints.ViewModels
                     if (variationCode.Length > 50)
                         variationCode = variationCode.Substring(0, 50);
 
+                    string narrative = row[columnNarrative].ToString();
+
                     ExoTimeAuthorisation findUserAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
                     ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
                     string subJobCode = string.Empty;
@@ -470,7 +479,7 @@ namespace BluePrints.ViewModels
 
                                 decimal bookTime = (decimal)row[dataColumn];
                                 bool isReadOnly = false;
-                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
+                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.X_VARIATIONCODE == variationCode && x.X_NARRATIVE == narrative && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
                                 if (timesheet != null)
                                 {
                                     AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
@@ -510,6 +519,7 @@ namespace BluePrints.ViewModels
                                     newTimeSheet.X_APPROVAL_MANAGER = -1;
                                     newTimeSheet.X_SUBMITTED = false;
                                     newTimeSheet.X_VARIATIONCODE = variationCode;
+                                    newTimeSheet.X_NARRATIVE = narrative;
                                     primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
                                     primeroUnitOfWork.SaveChanges();
                                 }
@@ -912,6 +922,10 @@ namespace BluePrints.ViewModels
                     newRow[dataColumn] = DBNull.Value;
                     return false;
                 }
+            }
+            else if(copyColumn.FieldType == typeof(string))
+            {
+                newRow[dataColumn] = pasteData;
             }
 
             return true;

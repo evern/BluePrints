@@ -89,6 +89,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodes, ElementName=userControl}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />

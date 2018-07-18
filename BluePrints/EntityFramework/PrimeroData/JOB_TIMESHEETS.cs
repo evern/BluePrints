@@ -114,5 +114,8 @@ namespace BluePrints.PrimeroData
 
         [StringLength(50)]
         public string X_VARIATIONCODE { get; set; }
+
+        [StringLength(255)]
+        public string X_NARRATIVE { get; set; }
     }
 }
