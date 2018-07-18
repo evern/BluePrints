@@ -255,7 +255,7 @@ namespace BluePrints.ViewModels
             projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(activeCategoryId, projectCategoryId, "Active", null, null, null, null, true, false, @"Function Library\Financial_16x16.png");
             projectSubmittedTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderSubmittedCategoryId, projectCategoryId, "Submitted Tender", null, null, null, null, false, false, @"Function Library\Statistical_16x16.png");
             projectWIPTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(tenderWIPCategoryId, projectCategoryId, "WIP Tender", null, null, null, null, false, false, @"Function Library\Compatibility_16x16.png");
-            companyHSECategoryDescription = new BluePrintsEntitiesModuleDescription(companyHSECategoryId, projectCategoryId, "Company HSE Report", "HSECollectionView", null, null, "HSE Report", false, false, @"Support\Issue_16x16.png");
+            companyHSECategoryDescription = new BluePrintsEntitiesModuleDescription(companyHSECategoryId, projectCategoryId, "Company HSE Report", "HSECollectionView", null, null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png");
             dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false, true, @"Navigation\DocumentMap_16x16.png");
             stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false, @"Business Objects\BOOrder_16x16.png");
         }
@@ -558,9 +558,9 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
             }
 
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Find\Find_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectKey, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Support\Issue_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "HSE Report", false, false, @"Support\Issue_16x16.png"));
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"));
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectKey, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"));
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"));
         }
 
     }
