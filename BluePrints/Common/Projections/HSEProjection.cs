@@ -98,7 +98,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Entity.INJURIES_REC_LTI + Entity.INJURIES_REC_MTI + Entity.INJURIES_REC_RWI;
+                return Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI;
             }
         }
 

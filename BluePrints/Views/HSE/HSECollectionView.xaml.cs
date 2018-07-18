@@ -128,7 +128,7 @@ namespace BluePrints.Views
         }
     }
 
-    public class MyConv1 : IValueConverter
+    public class ProgressBarBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -137,7 +137,8 @@ namespace BluePrints.Views
             if (control == null) return Colors.White;
 
             System.Windows.Media.Color returnColor;
-            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
+            // control name is set in NameProperty
+            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_BAC" || control.Name == "INCIDENT_ENV" || control.Name == "INCIDENT_NOTICE" || control.Name == "INCIDENT_HSE_BREACH" || control.Name == "Total_Incidents")
                 returnColor = (control.Value == 0) ? Colors.LightGreen : Colors.LightSalmon;
             else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT" || control.Name == "All_Injuries" || control.Name == "Total_Recordable_Injuries_Freq")
                 returnColor = control.Value < control.Maximum ? Colors.LightGreen : Colors.LightSalmon;
@@ -153,7 +154,7 @@ namespace BluePrints.Views
         }
     }
 
-    public class MyConv2 : IValueConverter
+    public class ProgressBarForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -162,7 +163,8 @@ namespace BluePrints.Views
             if (control == null) return Colors.White;
 
             System.Windows.Media.Color returnColor;
-            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_NOTICE")
+            // control name is set in NameProperty
+            if (control.Name == "INJURIES_REC_LTI" || control.Name == "INJURIES_REC_RWI" || control.Name == "INJURIES_REC_MTI" || control.Name == "INCIDENT_PDT" || control.Name == "INCIDENT_BAC" || control.Name == "INCIDENT_ENV" || control.Name == "INCIDENT_NOTICE" || control.Name == "INCIDENT_HSE_BREACH" || control.Name == "Total_Incidents")
                 returnColor = (control.Value == 0) ? Colors.Green : Colors.Salmon;
             else if (control.Name == "Total_Recordable_Injuries" || control.Name == "INCIDENT_DAM" || control.Name == "INCIDENT_PDT" || control.Name == "All_Injuries" || control.Name == "Total_Recordable_Injuries_Freq")
                 returnColor = control.Value < control.Maximum ? Colors.Green : Colors.Salmon;

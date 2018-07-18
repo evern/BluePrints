@@ -10,13 +10,13 @@
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <ResourceDictionary>
-            <local:MyConv1 x:Key="backConv" />
-            <local:MyConv2 x:Key="foreConv" />
+            <local:ProgressBarBackgroundConverter x:Key="progressBarBackgroundConverter" />
+            <local:ProgressBarForegroundConverter x:Key="progressBarForegroundConverter" />
             <ControlTemplate x:Key="{dxet:ProgressBarEditThemeKey ResourceKey=PanelBackgroundHorizontalTemplate}" TargetType="{x:Type ContentControl}">
                 <Border Margin="1" CornerRadius="2">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource backConv}}" />
+                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource progressBarBackgroundConverter}}" />
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
@@ -25,7 +25,7 @@
                 <Border Margin="1" CornerRadius="2">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource foreConv}}" />
+                            <GradientStop Color="{Binding Path=(dxe:BaseEdit.OwnerEdit), Converter={StaticResource progressBarForegroundConverter}}" />
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
