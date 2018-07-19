@@ -79,6 +79,8 @@ namespace BluePrints.ViewModels
         string valueNotFoundError = "Value not found";
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
+
+        private List<RosterStatusItem> rosterStatusSource;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
@@ -91,6 +93,8 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnTitle);
 
             hiddenColumnFieldNames.Add(columnGuid);
+
+            rosterStatusSource = Enum.GetValues(typeof(RosterStatus)).Cast<RosterStatus>().Select(x => new RosterStatusItem() { Status = x }).ToList();
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -179,11 +183,10 @@ namespace BluePrints.ViewModels
         {
             if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName) && !hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
-                //ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
-                //EnumItemsSource enumItemsSource = new EnumItemsSource();
-                //enumItemsSource.EnumType = typeof(RosterStatus);
-                //comboBoxEdit.ItemsSource = enumItemsSource;
-                //e.Column.EditSettings = comboBoxEdit;
+                ComboBoxEditSettings comboBoxEdit = new ComboBoxEditSettings();
+                comboBoxEdit.ItemsSource = rosterStatusSource;
+                comboBoxEdit.DisplayMember = "Status";
+                e.Column.EditSettings = comboBoxEdit;
             }
             else
             {
@@ -239,11 +242,12 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnTrade, typeof(string));
                     dataPointsTable.Columns.Add(columnPhone, typeof(string));
                     dataPointsTable.Columns.Add(columnTitle, typeof(string));
+                    dataPointsTable.Columns.Add(columnEmail, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(RosterStatus));
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(RosterStatusItem));
                     }
 
                     populateDataTable();
@@ -269,6 +273,7 @@ namespace BluePrints.ViewModels
                 newRow[columnTrade] = entity.TRADE;
                 newRow[columnPhone] = entity.PHONE;
                 newRow[columnTitle] = entity.TITLE;
+                newRow[columnEmail] = entity.EMAIL;
 
                 IEnumerable<ROSTER_STAFF_STATUS> currentStaffRosterStatus = ROSTER_STAFF_STATUSCollection.Where(x => x.GUID_ROSTER_STAFF == entity.GUID);
                 foreach(var staffRosterStatus in currentStaffRosterStatus)
@@ -276,7 +281,8 @@ namespace BluePrints.ViewModels
                     DataColumn findDataColumn = dateColumnNames.FirstOrDefault(x => x.ColumnName == staffRosterStatus.STATUS_DATE.ToShortDateString());
                     if(findDataColumn != null)
                     {
-                        newRow[findDataColumn] = staffRosterStatus.STATUS_NO;
+                        RosterStatusItem rosterStatusItem = rosterStatusSource.FirstOrDefault(x => x.Status == staffRosterStatus.STATUS_NO);
+                        newRow[findDataColumn] = rosterStatusItem;
                     }
                 }
 
@@ -337,9 +343,8 @@ namespace BluePrints.ViewModels
                     DateTime.TryParse(e.Column.FieldName, out editDateTime);
                     if(editDateTime != null)
                     {
-                        RosterStatus selectedStatus;
-                        if(Enum.TryParse(e.Value.ToString(), out selectedStatus))
-                            addOrEditRosterStatus(findStaff.GUID, editDateTime, selectedStatus);
+                        RosterStatusItem valueStatus = (RosterStatusItem)e.Value;
+                        addOrEditRosterStatus(findStaff.GUID, editDateTime, valueStatus.Status);
                     }
                 }
             }
@@ -634,7 +639,7 @@ namespace BluePrints.ViewModels
 
         private bool basePasteData(DataRow newRow, DataColumn dataColumn, ColumnBase copyColumn, string pasteData, bool isNewRow)
         {
-            if (copyColumn.FieldType == typeof(RosterStatus))
+            if (copyColumn.FieldType == typeof(RosterStatusItem))
             {
                 RosterStatus selectedStatus;
                 if (Enum.TryParse(pasteData, out selectedStatus))

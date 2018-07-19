@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.RosterCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:RosterCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.RosterCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:RosterCollectionViewModelWrapper}" mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
         <dxc:DialogService x:Name="DateFromToDialogService">
             <dxc:DialogService.DialogStyle>
@@ -10,8 +10,8 @@
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <ResourceDictionary>
-            <DataTemplate x:Key="DateCellTemplate">
-                <dxe:ComboBoxEdit EditValue="{Binding Path=Value, Mode=OneWay}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RosterStatus}}" />
+            <DataTemplate x:Key="ColumnTemplate">
+                <dxe:ComboBoxEdit EditValue="{Binding Path=Value}" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RosterStatus}}" />
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -63,6 +63,9 @@
                 <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                     <dxlc:LayoutGroup>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
+                            <!--<dxg:GridControl.ColumnGeneratorTemplateSelector>
+                                <view:ColumnTemplateSelector />
+                            </dxg:GridControl.ColumnGeneratorTemplateSelector>-->
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.GenerateJobCodeColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
