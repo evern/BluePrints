@@ -57,6 +57,7 @@ namespace BluePrints.Common.Base
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected bool is_single_project_mode = true;
         protected bool is_load_p6_task = false;
+        protected bool isCompletelyLoaded = false;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
@@ -206,6 +207,12 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            isCompletelyLoaded = true;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
         protected abstract bool have_group_entity { get; }
         /// <summary>
@@ -335,16 +342,33 @@ namespace BluePrints.Common.Base
             FullRefresh();
         }
 
-        public string DataDate
+        public DateTime DataDate
         {
-            get
+            get => loadPROGRESS == null ? DateTime.Now : loadPROGRESS.DATA_DATE;
+            set
             {
-                if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
-                    return string.Empty;
-
-                return loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+                if (isCompletelyLoaded)
+                {
+                    loadPROGRESS.DATA_DATE = value;
+                    PROGRESSCollectionViewModel.Save(loadPROGRESS);
+                    this.RaisePropertyChanged(x => x.DataDate);
+                    FullRefresh();
+                }
             }
         }
+
+        public string DataDateStr => DataDate.ToString("dd-MMM-yy");
+
+        //public string DataDate
+        //{
+        //    get
+        //    {
+        //        if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
+        //            return string.Empty;
+
+        //        return loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy");
+        //    }
+        //}
 
         public bool CanDateBackward()
         {

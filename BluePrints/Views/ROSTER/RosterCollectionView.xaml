@@ -88,6 +88,9 @@
                             <dxg:GridControl.TotalSummary />
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True">
+                                    <!--<dxg:TableView.CellTemplateSelector>
+                                        <view:RosterCellTemplateSelector />
+                                    </dxg:TableView.CellTemplateSelector>-->
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.NewRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="RowUpdated" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.ExistingRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
@@ -99,10 +102,10 @@
                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete selected rows" />
+                                        <!--<dxb:BarButtonItem Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete selected rows" />
                                         <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                         <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />-->
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>

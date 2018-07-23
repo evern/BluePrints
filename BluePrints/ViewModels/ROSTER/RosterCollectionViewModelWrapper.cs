@@ -81,6 +81,7 @@ namespace BluePrints.ViewModels
         public DateTime DateTo { get; set; }
 
         private List<RosterStatusItem> rosterStatusSource;
+        private List<RosterStatusItem> fullRosterStatusSource;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
@@ -94,6 +95,7 @@ namespace BluePrints.ViewModels
 
             hiddenColumnFieldNames.Add(columnGuid);
 
+            fullRosterStatusSource = new List<RosterStatusItem>();
             rosterStatusSource = Enum.GetValues(typeof(RosterStatus)).Cast<RosterStatus>().Select(x => new RosterStatusItem() { Status = x }).ToList();
         }
 
@@ -146,6 +148,7 @@ namespace BluePrints.ViewModels
             MainViewModel.IsPasteCellLevel = false;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+
         #region Collection Call Backs
         private void onAfterEntitySaved(ROSTER_STAFF entity, ROSTER_STAFF projection, bool isNewEntity)
         {
@@ -779,7 +782,7 @@ namespace BluePrints.ViewModels
             if(dataRowView.Row.RowState == DataRowState.Detached)
                 EntitiesUndoRedoManager.AddUndo(dataRowView.Row, null, null, null, EntityMessageType.Added);
 
-            if (DisplayEntities.Any(x => x.EXO_STAFFNO == (int)dataRowView[columnStaffNo]))
+            if (DisplayEntities.Count(x => x.EXO_STAFFNO == (int)dataRowView[columnStaffNo]) > 1)
             {
                 e.IsValid = false;
                 e.ErrorContent = "User already exists";
@@ -1024,6 +1027,7 @@ namespace BluePrints.ViewModels
 
     public class RosterStatusItem
     {
+        public Guid RosterStaffGuid { get; set; }
         public RosterStatus Status { get; set; }
         public string Comments { get; set; }
     }

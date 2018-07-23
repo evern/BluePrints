@@ -13,7 +13,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
             decimal hours = (decimal)value;
             if (hours > 0)
-                return hours.ToString("#.#") + " hour(s)";
+                return hours.ToString("0.0") + " hour(s)";
             else
                 return "0 hour";
         }

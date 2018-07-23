@@ -16,11 +16,16 @@ namespace BluePrints.Views
         }
     }
 
-    public class ColumnTemplateSelector : DataTemplateSelector
+    public class RosterCellTemplateSelector : DataTemplateSelector
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            return (DataTemplate)((Control)container).FindResource("ColumnTemplate");
+            EditGridCellData cellData = item as EditGridCellData;
+            if (cellData != null)
+            {
+            }
+
+            return ((FrameworkElement)container).FindResource("ColumnTemplate") as DataTemplate;
         }
     }
 }

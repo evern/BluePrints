@@ -225,7 +225,6 @@ namespace BluePrints.ViewModels
 
             IEnumerable<ReportablesDisplay> deliverables = MainViewModel.Entities;
             List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
-            
             foreach (var deliverable in deliverables.Where(x => x.Charge == ChargeType.Indirect || x.IsByDuration))
             {
                 if(deliverable.Stats.Budgeted.CumulativeDataPoints != null)

@@ -321,14 +321,8 @@ namespace BluePrints.Common.Projections
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
-
             List<ESTIMATE_ITEM> estimate_items = ESTIMATE_ITEMS.ToList();
-
-            List<ESTIMATE_ITEMProjection> estimation_direct_item_rates =
-            ESTIMATE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(estimate_items.AsQueryable(),
-                                                                                            RATES,
-                                                                                            STOCK_CODES,
-                                                                                            STOCK_GROUPS).ToList();
+            List<ESTIMATE_ITEMProjection> estimation_direct_item_rates = IDeliverable_Rates_Transformation(estimate_items.AsQueryable(), RATES, STOCK_CODES, STOCK_GROUPS).ToList();
 
             List<VariationAdjustment> projectVariationAdjustments;
             //VARIATIONS are only necessary if front-end requires percentages

@@ -266,7 +266,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (Total_Units == 0)
-                    return 0;
+                    return 1;
 
                 decimal default_max_percentage = ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
 
@@ -751,7 +751,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else if (Total_Units > 0)
                 return Earned_Units_ToDate / Total_Units;
             else
-                return 0;
+                return 1;
         }
 
         public decimal SchedulePercentage
@@ -787,9 +787,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinPercentage => Total_Units == 0 ? 0 : (Earned_Units_BeforeDataDate / Total_Units);
+        public decimal MinPercentage => Total_Units == 0 ? 1 : (Earned_Units_BeforeDataDate / Total_Units);
 
-        public virtual decimal MaxPercentage => Total_Units == 0 ? 0 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+        public virtual decimal MaxPercentage => Total_Units == 0 ? 1 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
 
         private decimal? earned_units_beforedatadate;
         public decimal Earned_Units_BeforeDataDate

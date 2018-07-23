@@ -499,8 +499,8 @@ namespace BluePrints.ViewModels
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
+                //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
+                //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution))
@@ -558,7 +558,7 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
             }
 
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"));
+            //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"));
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectKey, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"));
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"));
         }

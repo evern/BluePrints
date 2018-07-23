@@ -20,7 +20,11 @@
                             <dxr:RibbonPageGroup Caption="Data Date">
                                 <dxb:BarButtonItem Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
                                 <!--<dxb:BarStaticItem Content="Data Date" />-->
-                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:DateEditSettings />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
                                 <dxb:BarButtonItem Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
                                     <dxb:BarButtonItem.GlyphTemplate>
                                         <DataTemplate>
@@ -33,6 +37,24 @@
                                     </dxb:BarButtonItem.GlyphTemplate>
                                 </dxb:BarButtonItem>
                             </dxr:RibbonPageGroup>
+                            <!--<dxr:RibbonPageGroup Caption="Data Date">
+                                <dxb:BarButtonItem Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
+                            -->
+                            <!--<dxb:BarStaticItem Content="Data Date" />-->
+                            <!--
+                                <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" ToolTip="Data date" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.DateForwardCommand, ElementName=userControl}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
+                                    <dxb:BarButtonItem.GlyphTemplate>
+                                        <DataTemplate>
+                                            <Image RenderTransformOrigin="0.5,0.5" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}">
+                                                <Image.RenderTransform>
+                                                    <ScaleTransform ScaleX="-1" />
+                                                </Image.RenderTransform>
+                                            </Image>
+                                        </DataTemplate>
+                                    </dxb:BarButtonItem.GlyphTemplate>
+                                </dxb:BarButtonItem>
+                            </dxr:RibbonPageGroup>-->
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <!--<dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}" Glyph="{dx:DXImage Image=Replace_16x16.png}" />-->
                                 <dxb:BarButtonItem Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}" Content="Update % by Gates" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Bulk update all deliverables progress by it's gate. Deliverables without gates will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." />
