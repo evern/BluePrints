@@ -293,6 +293,7 @@ namespace BluePrints.ViewModels
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
             MainViewModel.CanFillDownCallBack = this.CanFillDown;
             MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
+            MainViewModel.UseRegularSplitting = true;
             MainViewModel.SetParentViewModel(this);
             STOCK_CODECollectionViewModel.SetParentViewModel(this);
             AREACollectionViewModel.SetParentViewModel(this);
@@ -507,11 +508,16 @@ namespace BluePrints.ViewModels
 
                             if(editing_stock_code.NAME != string.Empty)
                             {
-                                pasteEntity.Entity.Budget_StockCodeGuid = createNewSTOCK_CODE(editing_stock_code);
                                 if (IsBudget)
+                                {
+                                    pasteEntity.Entity.Budget_StockCodeGuid = createNewSTOCK_CODE(editing_stock_code);
                                     pasteEntity.Entity.Entity.GUID_BUDGET_STOCK_CODE = pasteEntity.Entity.Budget_StockCodeGuid;
+                                }
                                 else
+                                {
+                                    pasteEntity.Entity.Estimate_StockCodeGuid = createNewSTOCK_CODE(editing_stock_code);
                                     pasteEntity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = pasteEntity.Entity.Estimate_StockCodeGuid;
+                                }
                             }
                         }
                     }

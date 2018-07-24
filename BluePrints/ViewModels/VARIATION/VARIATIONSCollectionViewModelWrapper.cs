@@ -118,7 +118,8 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
-
+            VARIATION_ITEMSViewModel.SetParentViewModel(this);
+            MainViewModel.SetParentViewModel(this);
             variationSummaryBackgroundWorker.RunWorkerAsync(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }

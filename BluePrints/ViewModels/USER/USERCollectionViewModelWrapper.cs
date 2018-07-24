@@ -13,6 +13,9 @@ using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO.Ports;
+using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace BluePrints.ViewModels
 {
@@ -45,8 +48,157 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        //timer to scan serial port
+        private DispatcherTimer serialPortScanTimer;
+        private DispatcherTimer serialPortWriteTimer;
+        public string SelectedCOMPort { get; set; }
+        public string ConnectButtonContent { get; set; }
+        public List<string> AvailablePorts { get; set; }
+        private SerialPort serialPort1;
         protected override void resolveParameters(object parameter)
         {
+            serialPortScanTimer = new DispatcherTimer();
+            serialPortScanTimer.Interval = new TimeSpan(0, 0, 1);
+            serialPortScanTimer.Tick += SerialPortScanTimer_Tick;
+
+            serialPortWriteTimer = new DispatcherTimer();
+            serialPortWriteTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+            serialPortWriteTimer.Tick += SerialPortWriteTimer_Tick;
+
+
+            serialPort1 = new SerialPort();
+            serialPort1.DataReceived += SerialPort1_DataReceived;
+
+            AvailablePorts = GetAllPorts();
+            SelectedCOMPort = AvailablePorts.FirstOrDefault();
+            connectToSerialPort();
+
+            serialPortScanTimer.Start();
+        }
+
+        private void SerialPortWriteTimer_Tick(object sender, EventArgs e)
+        {
+            if (SelectedCOMPort == null || SelectedCOMPort == string.Empty)
+                return;
+
+            if (DisplaySelectedEntity == null || DisplaySelectedEntity.EXO_STAFF_ID == null)
+                return;
+
+            string incoming = string.Empty;
+            try
+            {
+                incoming = serialPort1.ReadExisting();
+                if (incoming == null)
+                    return;
+                else if (incoming.Contains("Input name, ending with #"))
+                {
+
+                    serialPort1.WriteLine(DisplaySelectedEntity.EXO_STAFF_ID.ToString() + "#");
+                    MessageBoxService.ShowMessage("Write success");
+                }
+                //else if (incoming.Contains(DisplaySelectedEntity.EXO_STAFF_ID.ToString()))
+            }
+            catch
+            {
+                MessageBoxService.ShowMessage("Error: Serial Port read timed out.");
+            }
+        }
+
+        private void SerialPortScanTimer_Tick(object sender, EventArgs e)
+        {
+            AvailablePorts = GetAllPorts();
+            SelectedCOMPort = AvailablePorts.FirstOrDefault();
+            this.RaisePropertyChanged(x => x.SelectedCOMPort);
+        }
+
+        public void PortConnect()
+        {
+            if(ConnectButtonContent == "Disconnect")
+            {
+                serialPort1.Close();
+                serialPortWriteTimer.Stop();
+                ConnectButtonContent = "Connect";
+                this.RaisePropertyChanged(x => x.ConnectButtonContent);
+            }
+            else
+            {
+                connectToSerialPort();
+                this.RaisePropertyChanged(x => x.ConnectButtonContent);
+            }
+        }
+
+        private void connectToSerialPort()
+        {
+            if (SelectedCOMPort != null && SelectedCOMPort != string.Empty)
+            {
+                serialPort1.Close();
+                serialPort1.PortName = SelectedCOMPort;
+                serialPort1.BaudRate = 9600;
+                serialPort1.DataBits = 8;
+                serialPort1.Parity = Parity.None;
+                serialPort1.StopBits = StopBits.One;
+                serialPort1.Handshake = Handshake.None;
+                serialPort1.Encoding = System.Text.Encoding.Default;
+                serialPort1.ReadTimeout = 10000;
+                serialPortWriteTimer.Stop();
+                try
+                {
+
+                    serialPort1.Open();
+                }
+                catch
+                {
+                    return;
+                }
+
+                ConnectButtonContent = "Disconnect";
+            }
+            else if(!IsLoading)
+                MessageBoxService.ShowMessage("Please select a port");
+        }
+
+        private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (DisplaySelectedEntity == null || DisplaySelectedEntity.EXO_STAFF_ID == null)
+                return;
+
+            string incoming = string.Empty;
+            try
+            {
+                incoming = serialPort1.ReadExisting();
+                if (incoming == null)
+                    return;
+                else if (incoming.Contains("#"))
+                {
+                    serialPort1.WriteLine(DisplaySelectedEntity.EXO_STAFF_ID.ToString() + "#");
+                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.ShowLoadingScreen(1)));
+                    //mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write success")));
+                }
+                else if (incoming.Contains("?"))
+                {
+                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.CloseLoadingScreen()));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write Failed, please try again")));
+                }
+                else if (incoming.Contains("@"))
+                {
+                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.CloseLoadingScreen()));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write success")));
+                }
+            }
+            catch
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Error: Serial Port read timed out.")));
+            }
+        }
+
+        public List<string> GetAllPorts()
+        {
+            List<String> allPorts = new List<String>();
+            foreach (String portName in System.IO.Ports.SerialPort.GetPortNames())
+            {
+                allPorts.Add(portName);
+            }
+            return allPorts;
         }
 
         protected override void initializeEntitiesLoadersDescription()
@@ -310,6 +462,16 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(USER projection, string field_name, object new_value)
         {
             return string.Empty;
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            if(serialPort1 != null)
+                serialPort1.Close();
+
+            serialPortScanTimer.Stop();
+            serialPortWriteTimer.Stop();
+            base.OnClose(e);
         }
         #endregion
     }

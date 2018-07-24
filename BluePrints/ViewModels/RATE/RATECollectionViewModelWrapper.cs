@@ -194,7 +194,7 @@ namespace BluePrints.ViewModels
                 if (COMMODITY_CODECollection != null)
                     combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Procurement, Code = x.CODE, Key = x.GUID }));
 
-                return combinedCommodityCodes;
+                return combinedCommodityCodes.OrderBy(x => x.Code);
             }
         }
 
