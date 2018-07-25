@@ -276,7 +276,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            JOBCOST_LINES masterLine = ExoQueries.GetProjectLineByCode(primeroUnitOfWork, loadPROJECT.NUMBER);
+            JOBCOST_LINES copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (ExoSubJobProjection projection in DisplayEntities.Where(x => !x.IsLineExistsInExo))
             {
                 string title = string.Empty;
@@ -300,7 +300,7 @@ namespace BluePrints.ViewModels
                     if (commodityId != null)
                     {
                         projection.Commodity.Id = commodityId;
-                        projection.LineId = ExoMethods.findExistingOrAddLine(projection, masterLine, loadPROJECT.NUMBER);
+                        projection.LineId = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
                         projection.Update();
                     }
                 }

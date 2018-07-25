@@ -446,7 +446,7 @@ namespace BluePrints.ViewModels
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
-            JOBCOST_LINES masterLine = ExoQueries.GetProjectLineByCode(primeroUnitOfWork, loadPROJECT.NUMBER);
+            JOBCOST_LINES existingLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
             if(masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >=5 )
             {
                 MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact Michelle Wilson or Ryan McFarlane to enable this feature");
@@ -459,7 +459,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if(masterLine == null)
+            if(existingLine == null)
             {
                 MessageBoxService.ShowMessage("Project line is not setup in exo, please contact Michelle Wilson or Ryan McFarlane to add job line");
                 return;
@@ -519,7 +519,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
-                    selectedLine.LineId = ExoMethods.findExistingOrAddLine(selectedLine, masterLine, loadPROJECT.NUMBER);
+                    selectedLine.LineId = ExoMethods.findExistingOrAddLine(selectedLine, existingLine, loadPROJECT.NUMBER);
                     selectedLine.Update();
 
                     if(selectedLine.LineId != null)

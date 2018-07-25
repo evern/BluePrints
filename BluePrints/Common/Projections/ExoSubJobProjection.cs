@@ -101,7 +101,7 @@ namespace BluePrints.Common.Projections
 
     public static class ExoMethods
     {
-        public static int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES masterLine, string projectNumber)
+        public static int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             if (exoLine.SubJob.Id == null || exoLine.Discipline.Id == null || exoLine.Commodity.Id == null)
@@ -115,29 +115,29 @@ namespace BluePrints.Common.Projections
                 else if (maxJOBCOSTLINEID != null)
                 {
                     JOBCOST_LINES newLINE = new JOBCOST_LINES();
-                    newLINE.QUOTE_QTY = masterLine.QUOTE_QTY;
+                    newLINE.QUOTE_QTY = copyLine.QUOTE_QTY;
                     newLINE.QUOTE_UNITPR = 0;
                     newLINE.ACTUAL_UNITCOST = 0;
                     newLINE.TRANSDATE = DateTime.Now.Date;
-                    newLINE.EXCHRATE = masterLine.EXCHRATE;
+                    newLINE.EXCHRATE = copyLine.EXCHRATE;
                     newLINE.DISCOUNT = 0;
                     newLINE.UNITPRICE_INCTAX = 0;
                     newLINE.JOBNO = (int)exoLine.SubJob.Id;
                     newLINE.STOCKCODE = exoLine.Commodity.Code.ToUpper();
                     newLINE.DESCRIPTION = exoLine.Commodity.Name;
-                    newLINE.SHOW_ON_INVOICE = masterLine.SHOW_ON_INVOICE;
+                    newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
                     newLINE.COST_CENTRE = exoLine.Commodity.Id;
                     newLINE.COST_CENTRE2 = exoLine.Discipline.Id;
                     newLINE.NARRATIVE = "N";
                     newLINE.LINE_STATUS = "Q";
-                    newLINE.TAXNO = masterLine.TAXNO;
+                    newLINE.TAXNO = copyLine.TAXNO;
                     newLINE.BRANCHNO = 0;
                     newLINE.SUBCODE = 0;
                     newLINE.ANALYSIS = 0;
                     newLINE.CURRENCYNO = 0;
                     newLINE.ALINENO = 100;
                     newLINE.GLCODE = 0;
-                    newLINE.MASTER_JOBNO = masterLine.JOBNO;
+                    newLINE.MASTER_JOBNO = copyLine.MASTER_JOBNO;
                     newLINE.COPY_FROM_QUOTE = "N";
                     newLINE.DIM_LENGTH = 1;
                     newLINE.DIM_WIDTH = 1;
@@ -163,7 +163,7 @@ namespace BluePrints.Common.Projections
                     newLINE.OPTION_NO = 0;
                     newLINE.X_LABOUR_ALLOWANCE = 0;
                     newLINE.SPREADVALUE = "Y";
-                    newLINE.TAXRATE = masterLine.TAXRATE;
+                    newLINE.TAXRATE = copyLine.TAXRATE;
                     newLINE.LINETOTAL_TAX = 0;
                     newLINE.LINETOTAL_INCTAX = 0;
                     newLINE.LINE_TAX = 0;
@@ -705,12 +705,12 @@ namespace BluePrints.Common.Projections
             return availableLines.First();
         }
 
-        public static JOBCOST_LINES GetProjectLineByCode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        public static JOBCOST_LINES GetAnyProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber
+                                 where MAINJOB.JOBCODE.Contains(projectNumber)
                                  select JOBCOST_LINES;
 
 
