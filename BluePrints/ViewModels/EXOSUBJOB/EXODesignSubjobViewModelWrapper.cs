@@ -439,6 +439,7 @@ namespace BluePrints.ViewModels
 
 
             int updatedLineCount = 0;
+            List<string> addedLines = new List<string>();
             foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
             {
                 ChargeType? subjobPhaseType = selectedLine.SubJob == null ? null : selectedLine.SubJob.ChargeType;
@@ -450,7 +451,7 @@ namespace BluePrints.ViewModels
                     continue;
                 }
 
-                if(!selectedLine.IsLineExistsInExo)
+                if(!selectedLine.IsLineExistsInExo && !addedLines.Any(x => x == selectedLine.SubJob.Code))
                 {
                     if (selectedLine.SubJob.Id == null)
                     {
@@ -464,6 +465,7 @@ namespace BluePrints.ViewModels
                         int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
                         if (subJobId != null)
                         {
+                            addedLines.Add(selectedLine.SubJob.Code);
                             selectedLine.SubJob.Id = subJobId;
                         }
                     }
