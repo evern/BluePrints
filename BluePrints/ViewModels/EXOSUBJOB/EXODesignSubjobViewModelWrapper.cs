@@ -179,6 +179,32 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void updateSubjobTitles()
+        {
+            if (MainViewModel == null || DisplayEntities.Count == 0)
+                return;
+
+            IEnumerable<JOBCOST_HDR> existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
+            foreach (ExoSubJobProjection entity in DisplayEntities)
+            {
+                if (entity.SubJob == null)
+                    return;
+
+                JOBCOST_HDR existingSubJob = existingSubJobs.FirstOrDefault(x => x.JOBCODE == entity.SubJob.Code);
+                if (existingSubJob != null)
+                {
+                    entity.SubJob.Title = existingSubJob.TITLE;
+                    entity.Update();
+                }
+            }
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            updateSubjobTitles();
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         protected override void OnSelectedEntitiesChanged()
         {
             refreshPermissions();
@@ -413,6 +439,8 @@ namespace BluePrints.ViewModels
                     primeroUnitOfWork.SaveChanges();
                 }
             }
+
+            updateSubjobTitles();
         }
 
         public void UploadToExo()
@@ -514,6 +542,7 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+            updateSubjobTitles();
         }
 
         /// <summary>
