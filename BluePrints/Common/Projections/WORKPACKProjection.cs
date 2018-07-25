@@ -93,6 +93,10 @@ namespace BluePrints.Common.Projections
 
         public Guid DeliverableKey => Entity.EntityKey;
 
+        public decimal Budget_Quantity => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Budget_Quantity);
+
+        public decimal Total_Quantity => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Quantity);
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

@@ -67,6 +67,10 @@ namespace BluePrints.Common.Projections
 
         public bool IsByDuration { get; set; }
 
+        public decimal Budget_Quantity => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Quantity);
+
+        public decimal Total_Quantity => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Quantity);
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

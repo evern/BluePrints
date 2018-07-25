@@ -81,7 +81,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectNumber = projectNumber;
         }
 
-        public void BuildBudgetedOnly(decimal weightingPortion = 1)
+        public void BuildBudgetedOnly(decimal weightingPortion = 1, decimal unitsPerQty = 1)
         {
             SetBudgetDataPoints(weightingPortion);
             SetCurrentDataPoints(weightingPortion);
@@ -118,11 +118,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                             List<StoredProcedure_PlannedDataPoint> currentGroupLateDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
-                                reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                reportable.Stats.BudgetedLate.SetPlannedData(plannedLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                IReportable_Quantity quantityReportable = reportable as IReportable_Quantity;
+                                IEnumerable<StoredProcedure_PlannedDataPoint> currentReportablePlannedDataPoints = plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey);
+
+                                double qtyPerUnit = 1;
+                                if (quantityReportable != null)
+                                    qtyPerUnit = quantityReportable.Total_Units == 0 ? 0 : Convert.ToDouble(quantityReportable.Total_Quantity / quantityReportable.Total_Units);
+
+                                foreach (StoredProcedure_PlannedDataPoint dataPoint in currentReportablePlannedDataPoints)
+                                {
+                                    dataPoint.PeriodPlannedQuantity = dataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                }
+
+                                reportable.Stats.Budgeted.SetPlannedData(currentReportablePlannedDataPoints);
+                                reportable.Stats.BudgetedLate.SetPlannedData(currentReportablePlannedDataPoints);
                                 reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                currentGroupLateDeliverableDataPoints.AddRange(plannedLateDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                currentGroupDeliverableDataPoints.AddRange(currentReportablePlannedDataPoints);
+                                currentGroupLateDeliverableDataPoints.AddRange(currentReportablePlannedDataPoints);
                             }
 
                             reportable_Group.Stats.Budgeted.SetPlannedData(currentGroupDeliverableDataPoints);
@@ -132,13 +144,22 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            reportablesDisplay.Stats.Budgeted.SetPlannedData(plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
-                            reportablesDisplay.Stats.BudgetedLate.SetPlannedData(plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
+                            IEnumerable<StoredProcedure_PlannedDataPoint> currentReportablePlannedDataPoints = plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey);
+                            double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 :Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
+
+                            foreach (StoredProcedure_PlannedDataPoint dataPoint in currentReportablePlannedDataPoints)
+                            {
+                                dataPoint.PeriodPlannedQuantity = dataPoint.PeriodPlannedUnits * qtyPerUnit;
+                            }
+
+                            reportablesDisplay.Stats.Budgeted.SetPlannedData(currentReportablePlannedDataPoints);
+                            reportablesDisplay.Stats.BudgetedLate.SetPlannedData(currentReportablePlannedDataPoints);
                             reportablesDisplay.Update();
                         }
                     }
                     else
                     {
+                        double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 : Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
                         List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
                         foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                         {
@@ -150,6 +171,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                     DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
                                     weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
                                     weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                    weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
                                     weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
                                 }
                             }
@@ -157,6 +179,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
                                 weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
                             }
                         }
@@ -174,6 +197,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                     DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
                                     weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
                                     weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                    weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
                                     weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
                                 }
                             }
@@ -181,12 +205,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
-                                weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                                weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                weightedPlannedDataPoints.Add(weightedPlannedLateDataPoint);
                             }
                         }
 
                         reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
-
                         reportableObject.Update();
                     }
 
@@ -283,7 +307,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             foreach (IReportable progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
             {
-                partialStatsBuilder.BuildEarnedDataPoints(progressItemStat);
+                decimal qtyPerUnit = progressItemStat.Total_Units == 0 ? 0 : progressItemStat.Total_Quantity / progressItemStat.Total_Units;
+                partialStatsBuilder.BuildEarnedDataPoints(progressItemStat, qtyPerUnit);
                 LoadingScreenManager.Progress();
             }
         }
@@ -441,7 +466,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public override void SetEarnedDataPoints(decimal weightingPortion = 1)
         {
-            PartialStatsBuilder.BuildEarnedDataPoints(progressItem);
+            decimal qtyPerUnit = progressItem.Total_Units == 0 ? 0 : progressItem.Total_Quantity / progressItem.Total_Units;
+            PartialStatsBuilder.BuildEarnedDataPoints(progressItem, qtyPerUnit);
             LoadingScreenManager.Progress();
         }
 

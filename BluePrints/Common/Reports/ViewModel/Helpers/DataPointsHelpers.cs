@@ -17,7 +17,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// </summary>
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
-            decimal budgetedCosts, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid,
+            decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
             IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
@@ -37,6 +37,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 BudgetedCosts = budgetedCosts,
                 Units = 0,
                 Costs = 0,
+                Quantity = 0,
                 ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days)
             });
 
@@ -93,6 +94,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
                         Units = cumulativeUnits,
                         Costs = cumulativeCosts,
+                        Quantity = cumulativeUnits * qtyPerUnit,
                         ProgressDate = scanDate
                     });
 
@@ -237,7 +239,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                     individualPeriodCumulativeUnits += progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Units);
                     individualPeriodCumulativeCosts += progressItemScanDateDataPoints.Sum(dataPoint => dataPoint.Costs);
 
-
                     summaryDataPoints.Add(new DataPoint()
                     {
                         BudgetedUnits = totalBudgetedUnits + cumulativeAdjustmentUnits,
@@ -308,6 +309,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             BudgetedCosts = CumulativeProgressOnDataDate.BudgetedCosts,
                             Units = CumulativeProgressOnDataDate.Units - CumulativeProgressOnDataDatePrevious.Units,
                             Costs = CumulativeProgressOnDataDate.Costs - CumulativeProgressOnDataDatePrevious.Costs,
+                            Quantity = CumulativeProgressOnDataDate.Quantity - CumulativeProgressOnDataDatePrevious.Quantity,
                             ProgressDate = CumulativeProgressOnDataDate.ProgressDate
                         };
                     }
@@ -326,7 +328,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Convert cumulative summary collection to period summary for bar histogram construction
         /// </summary>
         public static ObservableCollection<DataPoint> ConvertCumulativeToPeriodDataPoint(
-            ObservableCollection<DataPoint> CumulativeDataPointCollection, DateTime? plotStartDate = null)
+            ObservableCollection<DataPoint> CumulativeDataPointCollection, decimal qtyPerUnit, DateTime? plotStartDate = null)
         {
             decimal periodUnits = 0;
             decimal periodCosts = 0;
@@ -362,6 +364,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         BudgetedUnits = CumulativeDataPointCollection[i].BudgetedUnits,
                         Costs = periodCosts,
                         Units = periodUnits,
+                        Quantity = periodUnits * qtyPerUnit,
                         //Costs = periodCosts < 0 ? 0 : periodCosts,
                         //Units = periodUnits < 0 ? 0 : periodUnits,
                         ProgressDate = CumulativeDataPointCollection[i].ProgressDate
@@ -383,6 +386,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     BudgetedCosts = 0,
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
+                    Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedQuantity),
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
                     IsFromP6 = deliverablesDataPoint.IsFromP6, 
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)

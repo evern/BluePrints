@@ -14,7 +14,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         IEnumerable<IReportable_Quantity> Reportables { get; }
         decimal Trackable_Total_Quantity { get; }
-        decimal Trackable_Installed_Quantity { get; }
         decimal Trackable_QuantityPerUnit { get; }
         decimal Trackable_Total_Units { get; }
     }
@@ -236,6 +235,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Budget_Units { get; }
         decimal Total_Units { get; }
         decimal Variation_Units { get; }
+        decimal Budget_Quantity { get; }
+        decimal Total_Quantity { get; }
     }
 
     public interface IHaveQuantity
@@ -247,9 +248,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Estimate_Stock_Code_Supply_Rate { get; }
         decimal Budget_Stock_Code_Supply_Rate { get; }
         decimal Estimate_Quantity { get; }
-        decimal Budget_Quantity { get; }
         decimal Variation_Quantity { get; }
-        decimal Total_Quantity { get; }
         decimal Estimate_Install_Hours { get; }
         decimal Budget_Install_Hours { get; }
         decimal Variation_Install_Hours { get; }

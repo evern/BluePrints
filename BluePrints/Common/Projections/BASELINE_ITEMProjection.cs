@@ -147,6 +147,10 @@ namespace BluePrints.Common.Projections
         }
 
         public IEnumerable<User_Weight> AssignedUsers => UserWeights;
+
+        public decimal Budget_Quantity => Budget_Units;
+
+        public decimal Total_Quantity => Total_Units;
     }
 
     public class User_Weight

@@ -222,5 +222,11 @@ namespace BluePrints.Data
 
         [NotMapped]
         public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
+
+        [NotMapped]
+        public decimal Budget_Quantity => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY;
+
+        [NotMapped]
+        public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
     }
 }

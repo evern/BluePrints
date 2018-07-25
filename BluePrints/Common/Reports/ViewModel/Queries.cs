@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     foreach (User_Weight userWeight in baseline_item.AssignedUsers)
                     {
                         BASELINE_ITEMProgress user_baseline_item = new BASELINE_ITEMProgress(project, live_progress, baseline_item.Entity, new List<VariationAdjustment>(), false);
-                        user_baseline_item.Stats = new ProgressStats(baseline_item.Stats.ReportingDataDate, baseline_item.Stats.ReportingInterval, baseline_item.Stats.FirstAlignedDataDate, baseline_item.Stats.BudgetedUnits * userWeight.AggregateWeight, baseline_item.Stats.TotalUnits * userWeight.AggregateWeight, baseline_item.Stats.BudgetedCosts * userWeight.AggregateWeight, baseline_item.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
+                        user_baseline_item.Stats = new ProgressStats(baseline_item.Stats.ReportingDataDate, baseline_item.Stats.ReportingInterval, baseline_item.Stats.FirstAlignedDataDate, baseline_item.Stats.BudgetedUnits * userWeight.AggregateWeight, baseline_item.Stats.TotalUnits * userWeight.AggregateWeight, baseline_item.Stats.BudgetedQty * userWeight.AggregateWeight, baseline_item.Stats.TotalQty * userWeight.AggregateWeight, baseline_item.Stats.BudgetedCosts * userWeight.AggregateWeight, baseline_item.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
                         DataUtils.ShallowCopy(user_baseline_item, baseline_item);
                         user_baseline_item.Entity = baseline_item.Entity;
                         user_baseline_item.User_Name = userWeight.UserName;

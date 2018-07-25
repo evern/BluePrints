@@ -210,7 +210,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DateTime? TaskAssignmentStartDate { get; set; }
         public decimal EarnedUnitsAccountedFor { get; set; }
 
-        
+        public decimal Budget_Quantity => ((IReportable)ProgressItem).Budget_Quantity;
+
+        public decimal Total_Quantity => ((IReportable)ProgressItem).Total_Quantity;
 
         public override void Update()
         {

@@ -498,6 +498,9 @@ namespace BluePrints.ViewModels
         /// <param name="projectionEntity">Entities to approve.</param>
         public bool CanApprove()
         {
+            if (isApproving)
+                return false;
+
             if (MainViewModel == null || DisplaySelectedEntity == null)
                 return false;
 
@@ -513,6 +516,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        bool isApproving;
         /// <summary>
         /// Approves an entity.
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
@@ -534,14 +538,17 @@ namespace BluePrints.ViewModels
                 else if(phaseType == PhaseType.Construct && LiveESTIMATE == null)
                     errorMessage = "Live estimate not found";
             }
-
-
+            
             if (errorMessage != string.Empty)
             {
                 MessageBoxService.ShowMessage(errorMessage);
                 return;
             }
 
+            if(MessageBoxService.ShowMessage("Are you sure you want to approve variation " + DisplaySelectedEntity.Entity.NAME + "?", "Approve", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            isApproving = true;
             if(phaseType == PhaseType.Design)
                 CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
             else if(phaseType == PhaseType.Construct)
@@ -763,6 +770,8 @@ namespace BluePrints.ViewModels
             }
 
             unitOfWork.SaveChanges();
+
+            isApproving = false;
             //Full refresh is required to pick up summary
             FullRefresh();
         }

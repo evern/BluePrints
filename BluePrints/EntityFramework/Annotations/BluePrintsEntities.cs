@@ -187,6 +187,7 @@ namespace BluePrints.Data
             public Guid Original_Guid { get; set; }
             public DateTime UniversalPeriodStartDate { get; set; }
             public DateTime UniversalPeriodEndDate { get; set; }
+            public double PeriodPlannedQuantity { get; set; }
             public double PeriodPlannedUnits { get; set; }
             public double PeriodPlannedPrice { get; set; }
             public bool IsFromP6 { get; set; }

@@ -123,6 +123,14 @@
                 <dxc:Marker2DSlideFromTopCenterAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
+        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Green" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="Budgeted Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}">
+            <dxc:LineSeries2D.SeriesAnimation>
+                <dxc:Line2DUnwindAnimation />
+            </dxc:LineSeries2D.SeriesAnimation>
+            <dxc:LineSeries2D.PointAnimation>
+                <dxc:Marker2DSlideFromTopCenterAnimation />
+            </dxc:LineSeries2D.PointAnimation>
+        </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Green" DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesEarnedDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
                 <dxc:Line2DUnwindAnimation />

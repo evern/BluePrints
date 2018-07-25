@@ -372,6 +372,10 @@ namespace BluePrints.Data
         [NotMapped]
         public string Holds { get; set; }
 
+        public decimal Budget_Quantity => Budget_Units;
+
+        public decimal Total_Quantity => Total_Units;
+
         public void SetHolds(IEnumerable<REGISTER_HOLD_REF> holds)
         {
             List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.OriginalEntityKey).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
