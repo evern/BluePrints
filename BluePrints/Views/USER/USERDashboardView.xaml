@@ -80,34 +80,34 @@
                                         <dxg:GridColumn Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" ReadOnly="True" IsEnabled="False" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Cumulative">
-                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % to date" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
+                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Cumulative_Current_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % to date" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" HeaderToolTip="Schedule planned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted_ToDate, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" HeaderToolTip="Schedule planned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned_ToDate, ElementName=userControl}" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Period">
-                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Period_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
+                                        <dxg:GridColumn Header="Earned %" FieldName="{Binding DataContext.Period_Current_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Earned % for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" HeaderToolTip="Planned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Budgeted_ToDate, ElementName=userControl}" FieldName="{Binding DataContext.Period_Planned_Units, ElementName=userControl}" HeaderToolTip="Planned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned, ElementName=userControl}" FieldName="{Binding DataContext.Period_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
+                                        <dxg:GridColumn Header="{Binding DataContext.Header_Earned_ToDate, ElementName=userControl}" FieldName="{Binding DataContext.Period_Earned_Units, ElementName=userControl}" HeaderToolTip="Earned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

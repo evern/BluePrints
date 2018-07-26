@@ -112,6 +112,43 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal ProgressRatio { get; set; }
         #endregion
 
+        #region Metrics
+        public decimal CumulativeEarned_Units => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Units;
+        public decimal PeriodEarned_Units => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Units;
+        public decimal CumulativeBurned_Units => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Units;
+        public decimal PeriodBurned_Units => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Units;
+        public decimal CumulativeEarned_Quantity => (Earned == null || Earned.CurrentPeriodCumulativeDataPoint == null) ? 0 : Earned.CurrentPeriodCumulativeDataPoint.Quantity;
+
+        public decimal CumulativeEarned_Costs => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Costs;
+        public decimal PeriodEarned_Costs => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Costs;
+        public decimal CumulativeBurned_Costs => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Costs;
+        public decimal PeriodBurned_Costs => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Costs;
+        public decimal PeriodEarned_Quantity => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Quantity;
+
+
+        public decimal CumulativeEarnedVsBurned_Units => CumulativeEarned_Units - CumulativeBurned_Units;
+        public decimal CumulativeEarnedVsBurned_Costs => CumulativeEarned_Costs - CumulativeBurned_Costs;
+
+        public decimal PeriodEarnedVsBurned_Units => PeriodEarned_Units - PeriodBurned_Units;
+        public decimal PeriodEarnedVsBurned_Costs => PeriodEarned_Costs - PeriodBurned_Costs;
+
+        public decimal CumulativePerformanceRatio_Units => CumulativeBurned_Units == 0 ? 1 : CumulativeEarned_Units / CumulativeBurned_Units;
+        public decimal CumulativePerformanceRatio_Costs => CumulativeBurned_Costs == 0 ? 1 : CumulativeEarned_Costs / CumulativeBurned_Costs;
+
+        public decimal PeriodPerformanceRatio_Units => PeriodBurned_Units == 0 ? 1 : PeriodEarned_Units / PeriodBurned_Units;
+        public decimal PeriodPerformanceRatio_Costs => PeriodBurned_Costs == 0 ? 1 : PeriodEarned_Costs / PeriodBurned_Costs;
+
+        public decimal Remaining_Quantity => TotalQty - CumulativeEarned_Quantity;
+        public decimal Remaining_Units => TotalUnits - CumulativeEarned_Units;
+        public decimal Remaining_Costs => TotalCosts - CumulativeEarned_Costs;
+
+        public decimal AdjustedRemaining_Units => PeriodPerformanceRatio_Units * Remaining_Units;
+        public decimal AdjustedRemaining_Costs => PeriodPerformanceRatio_Costs * Remaining_Costs;
+
+        public decimal AdjustedDifference_Units => Remaining_Units - AdjustedRemaining_Units;
+        public decimal AdjustedDifference_Costs => Remaining_Costs - AdjustedRemaining_Costs;
+        #endregion
+
         /// <summary>
         /// Initializes a standard summary from a collection of deliverable projection with progress
         /// </summary>

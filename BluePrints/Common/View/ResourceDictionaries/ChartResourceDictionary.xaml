@@ -47,22 +47,22 @@
         <Setter Property="CheckableInLegend" Value="True" />
     </Style>
     <collections:ArrayList x:Key="dashboardXYChartSeries">
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="OrangeRed" DataSource="{Binding SummaryEntity.Stats.BudgetedLate.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_BudgetedLate, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="OrangeRed" DataSource="{Binding SummaryEntity.Stats.BudgetedLate.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_BudgetedLate_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="DarkOrange" DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Current, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="DarkOrange" DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Current_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
@@ -73,12 +73,12 @@
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <!--<dxc:BarSideBySideSeries2D Brush="Red" DataSource="{Binding SummaryEntity.Stats.RemainingActual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_RemainingActual, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />-->
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Burned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Burned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="#FFFFA200" DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Actual, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="#FFFFA200" DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Actual_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
@@ -123,7 +123,7 @@
                 <dxc:Marker2DSlideFromTopCenterAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
-        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Green" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="Budgeted Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}">
+        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LimeGreen" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="Budgeted Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
                 <dxc:Line2DUnwindAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
@@ -158,7 +158,7 @@
     </collections:ArrayList>
     <collections:ArrayList x:Key="userDashboardXYChartSeries">
         <dxc:BarSideBySideSeries2D Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
-        <dxc:BarSideBySideSeries2D Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
+        <dxc:BarSideBySideSeries2D Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
         <dxc:BarSideBySideSeries2D Brush="DarkCyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
         <dxc:LineSeries2D Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" DisplayName="Budgeted %" Style="{StaticResource DefaultLineSeries2DTemplate}" />
         <dxc:LineSeries2D Brush="DarkCyan" DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" DisplayName="Remaining %" Style="{StaticResource DefaultLineSeries2DTemplate}" />

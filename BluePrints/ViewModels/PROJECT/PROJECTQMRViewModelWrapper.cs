@@ -273,12 +273,12 @@ namespace BluePrints.ViewModels
             selectAllDispatcher.Start();
         }
 
-        public bool CanExportToExcel()
+        public bool CanExportRawToExcel()
         {
             return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Subjob_Dashboards != null;
         }
 
-        public override void ExportToExcel()
+        public void ExportRawToExcel()
         {
             if (hierarchicalDashboard == null)
                 return;
@@ -293,7 +293,7 @@ namespace BluePrints.ViewModels
 
         public bool CanProjectHealthCheck()
         {
-            return CanExportToExcel() && HealthCheckIconName == "Warning";
+            return CanExportRawToExcel() && HealthCheckIconName == "Warning";
         }
 
         bool isHealthCheckClicked = false;
