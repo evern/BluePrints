@@ -30,10 +30,11 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="550" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="650" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="SubJob.Code" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                <dxg:GridColumn Width="150" FieldName="SubJob.Title" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline.Code" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity.Code" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />

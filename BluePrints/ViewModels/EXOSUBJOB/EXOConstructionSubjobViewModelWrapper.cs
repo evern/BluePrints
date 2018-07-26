@@ -172,6 +172,32 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void updateSubjobTitles()
+        {
+            if (MainViewModel == null || DisplayEntities.Count == 0)
+                return;
+
+            IEnumerable<JOBCOST_HDR> existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
+            foreach (ExoSubJobProjection entity in DisplayEntities)
+            {
+                if (entity.SubJob == null)
+                    return;
+
+                JOBCOST_HDR existingSubJob = existingSubJobs.FirstOrDefault(x => x.JOBCODE == entity.SubJob.Code);
+                if (existingSubJob != null)
+                {
+                    entity.SubJob.Title = existingSubJob.TITLE;
+                    entity.Update();
+                }
+            }
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            updateSubjobTitles();
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         protected override void OnSelectedEntitiesChanged()
         {
             refreshPermissions();
@@ -277,19 +303,25 @@ namespace BluePrints.ViewModels
             }
 
             JOBCOST_LINES copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
+            int updatedLineCount = 0;
+            List<string> addedLines = new List<string>();
             foreach (ExoSubJobProjection projection in DisplayEntities.Where(x => !x.IsLineExistsInExo))
             {
-                string title = string.Empty;
-                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJob.Code + " Title:");
-                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                if(!addedLines.Any(x => x == projection.SubJob.Code))
                 {
-                    title = bulkEditStringsViewModel.EditValue;
-                }
+                    string title = string.Empty;
+                    var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJob.Code + " Title:");
+                    if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                    {
+                        title = bulkEditStringsViewModel.EditValue;
+                    }
 
-                int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
-                if (subJobId != null)
-                {
-                    projection.SubJob.Id = subJobId;
+                    int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
+                    if (subJobId != null)
+                    {
+                        projection.SubJob.Id = subJobId;
+                        addedLines.Add(projection.SubJob.Code);
+                    }
                 }
 
                 int? disciplineId = ExoMethods.findExistingOrAddDiscipline(projection.Discipline.Code);
@@ -304,7 +336,12 @@ namespace BluePrints.ViewModels
                         projection.Update();
                     }
                 }
+
+                updatedLineCount += 1;
             }
+
+            MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+            updateSubjobTitles();
         }
 
         public void RemoveSelected()
@@ -411,6 +448,8 @@ namespace BluePrints.ViewModels
                     primeroUnitOfWork.SaveChanges();
                 }
             }
+
+            updateSubjobTitles();
         }
 
         /// <summary>
