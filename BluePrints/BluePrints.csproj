@@ -489,6 +489,12 @@
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.Designer.cs">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportDashboardLookahead.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportDashboardLookahead.Designer.cs">
+      <DependentUpon>XtraReportDashboardLookahead.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Reports\XtraReportDashboard_NoBurn.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1981,6 +1987,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportBASELINE_ITEMS.resx">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportDashboardLookahead.resx">
+      <DependentUpon>XtraReportDashboardLookahead.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportDashboard_NoBurn.resx">

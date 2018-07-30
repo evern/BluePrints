@@ -9,9 +9,9 @@ using System.IO;
 
 namespace BluePrints.Reports
 {
-    public partial class XtraReportDashboard : XtraReport
+    public partial class XtraReportDashboardLookahead : XtraReport
     {
-        public XtraReportDashboard()
+        public XtraReportDashboardLookahead()
         {
             InitializeComponent();
             ParametersRequestSubmit += rptProgressItem_ParametersRequestSubmit;
@@ -58,7 +58,26 @@ namespace BluePrints.Reports
                 AssignProperties(ReportData, dataDate, projectTitle);
             }
 
-            bool isCost = replaceTo == "Costs";
+            string strReplaceFrom;
+            string strReplaceTo;
+            bool isCost;
+            //string formatString;
+            if (replaceTo == "Costs")
+            {
+                strReplaceFrom = "Units";
+                strReplaceTo = "Costs";
+                isCost = true;
+                //formatString = "{0:c}";
+            }
+            else
+            {
+                strReplaceFrom = "Costs";
+                strReplaceTo = "Units";
+                isCost = false;
+                //formatString = "{0:n1}";
+            }
+
+
 
             string strBudgetReplaceFrom;
             string strBudgetReplaceTo;
@@ -79,29 +98,26 @@ namespace BluePrints.Reports
 
             string percentageFormatString = "{0:0.00%}";
 
-            //for quantity summary use units
-            string percentReplaceTo = isCost ? "Costs" : "Units";
+            //replaceDataMember(xrDataSummaryCumulativeEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryCumulativePlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryCumulativePlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryCumulativeBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
-            replaceDataMember(xrDataSummaryCumulativeEarnedPercent, percentReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryCumulativePlannedPercent, percentReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryPeriodPlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryCumulativeBurnedPercent, percentReplaceTo, percentageFormatString);
-
-            replaceDataMember(xrDataSummaryPeriodEarnedPercent, percentReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryPeriodPlannedPercent, percentReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryPeriodPlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryPeriodBurnedPercent, percentReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryPeriodEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryPeriodPlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryPeriodPlannedPercent, strBudgetReplaceFrom, strBudgetReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryPeriodBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
             xrChart1.Series["Planned"].ValueDataMembersSerializable = replaceChartDataMember(xrChart1.Series["Planned"].ValueDataMembersSerializable, isCost, showAbsolutes);
             xrChart1.Series["Earned"].ValueDataMembersSerializable = replaceChartDataMember(xrChart1.Series["Earned"].ValueDataMembersSerializable, isCost, showAbsolutes);
-            xrChart1.Series["Earned Tender"].ValueDataMembersSerializable = replaceChartDataMember(xrChart1.Series["Earned Tender"].ValueDataMembersSerializable, isCost, showAbsolutes);
             xrChart1.Series["Burned"].ValueDataMembersSerializable = replaceChartDataMember(xrChart1.Series["Burned"].ValueDataMembersSerializable, isCost, showAbsolutes);
             xrChart1.Series["Remaining"].ValueDataMembersSerializable = replaceChartDataMember(xrChart1.Series["Remaining"].ValueDataMembersSerializable, isCost, showAbsolutes);
 
-            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = replaceDataMember(xrChart1.Series["Period Planned"].ValueDataMembersSerializable, replaceTo);
-            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = replaceDataMember(xrChart1.Series["Period Earned"].ValueDataMembersSerializable, replaceTo);
-            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = replaceDataMember(xrChart1.Series["Period Burned"].ValueDataMembersSerializable, replaceTo);
-            xrChart1.Series["Period Remaining"].ValueDataMembersSerializable = replaceDataMember(xrChart1.Series["Period Remaining"].ValueDataMembersSerializable, replaceTo);
+            xrChart1.Series["Period Planned"].ValueDataMembersSerializable = xrChart1.Series["Period Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            //xrChart1.Series["Period Late Planned"].ValueDataMembersSerializable = xrChart1.Series["Period Late Planned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Earned"].ValueDataMembersSerializable = xrChart1.Series["Period Earned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Burned"].ValueDataMembersSerializable = xrChart1.Series["Period Burned"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
+            xrChart1.Series["Period Remaining"].ValueDataMembersSerializable = xrChart1.Series["Period Remaining"].ValueDataMembersSerializable.Replace(strReplaceFrom, strReplaceTo);
 
             XYDiagram xyDiagram = xrChart1.Diagram as XYDiagram;
             if (showAbsolutes)
@@ -116,28 +132,32 @@ namespace BluePrints.Reports
             }
 
             //conditional formatting
-            ItemCumulativeEarnedEfficiency_Good.Condition = replaceDataMember(ItemCumulativeEarnedEfficiency_Good.Condition, replaceTo);
-            ItemPeriodEarnedEfficiency_Good.Condition = replaceDataMember(ItemPeriodEarnedEfficiency_Good.Condition, replaceTo);
-            SummaryPeriodBurnedEfficiency_Good.Condition = replaceDataMember(SummaryPeriodBurnedEfficiency_Good.Condition, replaceTo);
-            SummaryCumulativeBurnedEfficiency_Good.Condition = replaceDataMember(SummaryCumulativeBurnedEfficiency_Good.Condition, replaceTo);
-            SummaryCumulativeEarnedEfficiency_Good.Condition = replaceDataMember(SummaryCumulativeEarnedEfficiency_Good.Condition, replaceTo);
-            SummaryPeriodEarnedEfficiency_Good.Condition = replaceDataMember(SummaryPeriodEarnedEfficiency_Good.Condition, replaceTo);
-            ItemCumulativeEarnedEfficiency_Bad.Condition = replaceDataMember(ItemCumulativeEarnedEfficiency_Bad.Condition, replaceTo);
-            ItemPeriodEarnedEfficiency_Bad.Condition = replaceDataMember(ItemPeriodEarnedEfficiency_Bad.Condition, replaceTo);
-            SummaryPeriodBurnedEfficiency_Bad.Condition = replaceDataMember(SummaryPeriodBurnedEfficiency_Bad.Condition, replaceTo);
-            SummaryCumulativeBurnedEfficiency_Bad.Condition = replaceDataMember(SummaryCumulativeBurnedEfficiency_Bad.Condition, replaceTo);
-            SummaryCumulativeEarnedEfficiency_Bad.Condition = replaceDataMember(SummaryCumulativeEarnedEfficiency_Bad.Condition, replaceTo);
-            SummaryPeriodEarnedEfficiency_Bad.Condition = replaceDataMember(SummaryPeriodEarnedEfficiency_Bad.Condition, replaceTo);
-        }
-
-        private string replaceDataMember(string propertyName, string replaceTo)
-        {
-            string replaceFrom = "Units";
-            propertyName = propertyName.Replace(replaceFrom, replaceTo);
-            replaceFrom = "Costs";
-            propertyName = propertyName.Replace(replaceFrom, replaceTo);
-
-            return propertyName;
+            ItemCumulativeEarnedEfficiency_Good.Condition =
+                ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemCumulativeEarnedEfficiency_Good.Condition =
+                ItemCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemPeriodEarnedEfficiency_Good.Condition =
+                ItemPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodBurnedEfficiency_Good.Condition =
+                SummaryPeriodBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeBurnedEfficiency_Good.Condition =
+                SummaryCumulativeBurnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeEarnedEfficiency_Good.Condition =
+                SummaryCumulativeEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodEarnedEfficiency_Good.Condition =
+                SummaryPeriodEarnedEfficiency_Good.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemCumulativeEarnedEfficiency_Bad.Condition =
+                ItemCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            ItemPeriodEarnedEfficiency_Bad.Condition =
+                ItemPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodBurnedEfficiency_Bad.Condition =
+                SummaryPeriodBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeBurnedEfficiency_Bad.Condition =
+                SummaryCumulativeBurnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryCumulativeEarnedEfficiency_Bad.Condition =
+                SummaryCumulativeEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
+            SummaryPeriodEarnedEfficiency_Bad.Condition =
+                SummaryPeriodEarnedEfficiency_Bad.Condition.Replace(strReplaceFrom, strReplaceTo);
         }
 
         private string replaceChartDataMember(string fullName, bool isCost, bool isAbsolute)
@@ -168,18 +188,6 @@ namespace BluePrints.Reports
             label.DataBindings.Clear();
             label.DataBindings.Add(new XRBinding("Text", objectDataSource1,
                 propertyName, formatString));
-        }
-
-        private void replaceDataMember(XRLabel label, string replaceTo, string formatString)
-        {
-            string propertyName = string.Empty;
-            propertyName = label.DataBindings[0].DataMember;
-            string replaceFrom = "Units";
-            propertyName = propertyName.Replace(replaceFrom, replaceTo);
-            replaceFrom = "Costs";
-            propertyName = propertyName.Replace(replaceFrom, replaceTo);
-            label.DataBindings.Clear();
-            label.DataBindings.Add(new XRBinding("Text", objectDataSource1, propertyName, formatString));
         }
 
         private SummaryStats ReportData { get; set; }

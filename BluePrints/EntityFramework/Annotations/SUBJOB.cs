@@ -25,6 +25,7 @@ namespace BluePrints.Data
             ENDDATE = DateTime.Now;
             REVIEWSTARTDATE = DateTime.Now;
             REVIEWENDDATE = DateTime.Now;
+            BELLCURVESHAPE = Common.BellCurveShape.Balanced;
         }
 
         [NotMapped]

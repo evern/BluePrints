@@ -18,6 +18,7 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.EditTitleCommand, ElementName=userControl}" Content="Edit title" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditName_32x32.png}" ToolTip="Edit exo subjob title" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.EditCostGroupTitleCommand, ElementName=userControl}" Content="Edit cost group title" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.CommitUnbookableToExoCommand, ElementName=userControl}" Content="Upload Pasted to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from pasted data" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
@@ -36,6 +37,7 @@
                                 <dxg:GridColumn FieldName="SubJob.Code" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
                                 <dxg:GridColumn Width="150" FieldName="SubJob.Title" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline.Code" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Discipline.Name" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity.Code" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                             </dxg:GridControl.Columns>
@@ -53,6 +55,7 @@
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.EditTitleCommand, ElementName=userControl}" Content="Edit title" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditName_32x32.png}" ToolTip="Edit exo subjob title" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.EditCostGroupTitleCommand, ElementName=userControl}" Content="Edit cost group title" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Remove" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Remove only unbookable row" />

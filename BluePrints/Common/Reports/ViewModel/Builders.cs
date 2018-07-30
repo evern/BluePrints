@@ -69,19 +69,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
-                //var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
-                //                      join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
-                //                      on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                //                      join JOBCOST_HDR1 in PrimeroUnitOfWork.JOBCOST_HDR
-                //                      on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                //                      join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
-                //                      on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
-                //                      join JOB_COSTGROUPS in PrimeroUnitOfWork.JOB_COSTGROUPS
-                //                      on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
-                //                      join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
-                //                      on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                //                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= CurrentDataDate
-                //                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                       join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
                                       on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
@@ -93,26 +80,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                                       on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                       join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
                                       on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                                      where JOBTRANS.SEQNO == 422528
+                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= CurrentDataDate
                                       select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC };
 
                 var exoSubjobs = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
-                                   where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
-                                   select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
+                                 where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
+                                 select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
 
                 var exoSubjobsList = exoSubjobs.ToList();
-
-                //double units = (double)jobTransactions.Where(x => x.QUANTITY != null).Sum(x => x.QUANTITY);
-                //string s = units.ToString();
-                //foreach (SUBJOB subjob in subjobs)
-                //{
-                //    var exoSubjob = exoSubjobsList.FirstOrDefault(x => x.JOBCODE == subjob.INTERNAL_NAME1);
-                //    if (exoSubjob == null)
-                //    {
-                //        projectSummaryStats.AddMissingExoSubjob(subjob);
-                //    }
-                //}
-
                 var jobTransactionsList = jobTransactions.ToList();
                 if (jobTransactionsList.Count == 0)
                     return;
@@ -121,9 +96,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 HashSet<string> missingSubJobs = new HashSet<string>();
                 foreach (var jobTransaction in jobTransactionsList)
                 {
-                    //if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
-                    //{
-                        if(!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010"))
+                    if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
+                    {
+                        if (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010"))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
@@ -131,7 +106,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
                             burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                            burnedDataPoint.Subjob_Name = "00000-000-00-D1";
+                            burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                             burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                             burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Role = jobTransaction.TITLE;
@@ -145,12 +120,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                             actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
                             actualDataPoints.Add(actualDataPoint);
                         }
-                    //}
-                    //else
-                    //    missingSubJobs.Add(jobTransaction.JOBCODE);
+                    }
+                    else
+                        missingSubJobs.Add(jobTransaction.JOBCODE);
                 }
 
-                foreach(string missingSubJob in missingSubJobs)
+                foreach (string missingSubJob in missingSubJobs)
                 {
                     SUBJOB newSUBJOB = new SUBJOB();
                     newSUBJOB.INTERNAL_NAME1 = missingSubJob;
@@ -167,7 +142,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Remaining.GetData().Where(x => x.IsRemaining), projectSummaryStats.Burned.GetData());
                 //LoadingScreenManager.Progress();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string s = e.ToString();
             }

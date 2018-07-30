@@ -34,18 +34,10 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
-                                <dxb:BarCheckItem x:Name="biCheckUnits" Content="Units"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}"
-                                                  IsChecked="True" />
-                                <dxb:BarCheckItem x:Name="biCheckCosts" Content="Costs"
-                                                  Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}"
-                                                  CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                                  Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}"
-                                                  IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" />
+                                <dxb:BarButtonItem x:Name="biCheckUnits" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Units" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" ToolTip="S-Curve shows by units" />
+                                <dxb:BarButtonItem x:Name="biCheckCosts" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Costs" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" ToolTip="S-Curve shows by costs" />
+                                <dxb:BarButtonItem x:Name="biCheckQty" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Qty" Glyph="{dx:DXImage Image=Number_16x16.png}" LargeGlyph="{dx:DXImage Image=Number_32x32.png}" ToolTip="S-Curve shows by quantity" />
+
                                 <!--<dxb:BarButtonItem Content="Refresh" Command="{Binding RefreshCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}"
                                                    Glyph="{dx:DXImage Image=Refresh_16x16.png}" />-->

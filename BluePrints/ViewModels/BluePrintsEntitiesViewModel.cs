@@ -456,6 +456,8 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(design_category_description);
             projectModuleDescription.ChildModules.Add(construct_category_description);
 
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectQMR" + keyString, projectKey, childTitlePrefix + "QMR", "PROJECTQMRView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "QMR", false, false, @"Chart\Column2_16x16.png"));
+
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageArea))
@@ -499,7 +501,6 @@ namespace BluePrints.ViewModels
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectQMR" + keyString, projectKey, childTitlePrefix + "QMR", "PROJECTQMRView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "QMR", false, false, @"Chart\Column2_16x16.png"));
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
             }

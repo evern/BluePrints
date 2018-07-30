@@ -176,7 +176,8 @@ namespace BluePrints.Common
     public enum DashboardViewType
     {
         Costs,
-        Units
+        Units, 
+        Quantity
     }
 
     public enum BaselineMappingSelectionType

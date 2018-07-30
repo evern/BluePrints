@@ -179,6 +179,12 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void updateViewTitles()
+        {
+            updateSubjobTitles();
+            updateCostGroupTitles();
+        }
+
         private void updateSubjobTitles()
         {
             if (MainViewModel == null || DisplayEntities.Count == 0)
@@ -199,9 +205,29 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void updateCostGroupTitles()
+        {
+            if (MainViewModel == null || DisplayEntities.Count == 0)
+                return;
+
+            IEnumerable<JOB_COSTGROUPS> costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
+            foreach (ExoSubJobProjection entity in DisplayEntities)
+            {
+                if (entity.Discipline == null)
+                    continue;
+
+                JOB_COSTGROUPS costGroup = costGroups.FirstOrDefault(x => x.SHORTCODE == entity.Discipline.Code);
+                if (costGroup != null)
+                {
+                    entity.Discipline.Name = costGroup.COSTDESC;
+                    entity.Update();
+                }
+            }
+        }
+
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            updateSubjobTitles();
+            updateViewTitles();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -443,6 +469,31 @@ namespace BluePrints.ViewModels
             updateSubjobTitles();
         }
 
+        public void EditCostGroupTitle()
+        {
+            IEnumerable<JOB_COSTGROUPS> costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
+            foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
+            {
+                JOB_COSTGROUPS costGroup = costGroups.FirstOrDefault(x => x.SHORTCODE == selectedLine.Discipline.Code);
+                if (costGroup == null)
+                {
+                    MessageBoxService.ShowMessage(selectedLine.Discipline.Code + " doesn't exists in exo yet, please upload to exo before clicking edit cost group title");
+                    continue;
+                }
+
+                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(costGroup.COSTDESC, selectedLine.Discipline.Code + " Title:");
+                string title = string.Empty;
+                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                {
+                    title = bulkEditStringsViewModel.EditValue;
+                    costGroup.COSTDESC = title;
+                    primeroUnitOfWork.SaveChanges();
+                }
+            }
+
+            updateCostGroupTitles();
+        }
+
         public void UploadToExo()
         {
             JOBCOST_HDR masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
@@ -500,7 +551,7 @@ namespace BluePrints.ViewModels
 
                     if (selectedLine.Discipline.Id == null)
                     {
-                        int? disciplineId = ExoMethods.findExistingOrAddDiscipline(selectedLine.Discipline.Code);
+                        int? disciplineId = ExoMethods.findExistingOrAddDiscipline(selectedLine.Discipline.Code, selectedLine.Discipline.Name);
                         if (disciplineId != null)
                         {
                             selectedLine.Discipline.Id = disciplineId;
@@ -519,7 +570,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
-                    selectedLine.LineId = ExoMethods.findExistingOrAddLine(selectedLine, existingLine, loadPROJECT.NUMBER);
+                    selectedLine.LineId = ExoMethods.findExistingLine(selectedLine, existingLine, loadPROJECT.NUMBER);
                     selectedLine.Update();
 
                     if(selectedLine.LineId != null)
@@ -542,7 +593,7 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-            updateSubjobTitles();
+            updateViewTitles();
         }
 
         /// <summary>

@@ -174,18 +174,20 @@ namespace BluePrints.ViewModels
                 if (activity_id.Length < 16)
                     continue;
 
-                string areaNumber = activity_id.Substring(6, 3);
-                string subAreaNumber = activity_id.Substring(10, 2);
-                string commodityCode = activity_id.Substring(13, 3);
+                //Map by actual area, subarea and commodity
+                //string areaNumber = activity_id.Substring(6, 3);
+                //string subAreaNumber = activity_id.Substring(10, 2);
+                //string commodityCode = activity_id.Substring(13, 3);
 
-                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsByArea = DisplayEntities.Where(x => x.Entity.Entity.AREA != null && x.Entity.Entity.AREA.INTERNAL_NUM == areaNumber);
-                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsByCommodity = estimateItemsByArea.Where(x => x.Commodity_Code == commodityCode);
-                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea;
-                if (subAreaNumber == "00")
-                    estimateItemsBySubArea = estimateItemsByCommodity.Where(x => x.SubArea_Guid == null || (x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == "00"));
-                else
-                    estimateItemsBySubArea = estimateItemsByCommodity.Where(x => x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == subAreaNumber);
+                //IEnumerable<ESTIMATE_ITEMProgress> estimateItemsByArea = DisplayEntities.Where(x => x.Entity.Entity.AREA != null && x.Entity.Entity.AREA.INTERNAL_NUM == areaNumber);
+                //IEnumerable<ESTIMATE_ITEMProgress> estimateItemsByCommodity = estimateItemsByArea.Where(x => x.Commodity_Code == commodityCode);
+                //IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea;
+                //if (subAreaNumber == "00")
+                //    estimateItemsBySubArea = estimateItemsByCommodity.Where(x => x.SubArea_Guid == null || (x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == "00"));
+                //else
+                //    estimateItemsBySubArea = estimateItemsByCommodity.Where(x => x.Entity.Entity.AREA1 != null && x.Entity.Entity.AREA1.INTERNAL_NUM == subAreaNumber);
 
+                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea = DisplayEntities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
                 decimal lowValue = 0.01m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {

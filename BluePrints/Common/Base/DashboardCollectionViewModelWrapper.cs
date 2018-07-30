@@ -99,7 +99,7 @@ namespace BluePrints.Common.ViewModel
 
             if (MainViewModel.Entities.Count > 0)
             {
-                this.SwitchBinding(false, null, GridControlService);
+                this.SwitchBinding(DashboardViewType.Units, null, GridControlService);
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
             }
@@ -180,26 +180,29 @@ namespace BluePrints.Common.ViewModel
 
         public Action<DashboardViewType> ChangeViewMemberFieldNames { get; set; }
 
+        protected bool switchChartOnly;
+        DashboardViewType viewType;
         public virtual void ChangeStatsType(object checkButton)
         {
-            var button = (BarCheckItem) checkButton;
-            var calculationType = button.Name.ToUpper().Contains("COSTS")
+            var button = (BarButtonItem) checkButton;
+            viewType = button.Name.ToUpper().Contains("COSTS")
                 ? DashboardViewType.Costs
-                : DashboardViewType.Units;
-            this.SwitchBinding(calculationType == DashboardViewType.Costs, null, GridControlService);
-            ChangeViewMemberFieldNames?.Invoke(calculationType);
+                : button.Name.ToUpper().Contains("QTY") ? DashboardViewType.Quantity : DashboardViewType.Units;
+            this.SwitchBinding(viewType, null, GridControlService, switchChartOnly);
+            ChangeViewMemberFieldNames?.Invoke(viewType);
 
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
             if (IHaveSummary != null)
-                IHaveSummary.RecalculateStats(calculationType == DashboardViewType.Costs);
+                IHaveSummary.RecalculateStats(viewType == DashboardViewType.Costs);
         }
 
         public virtual void ChangeStatsPercentageType(object checkButton)
         {
             var button = (BarCheckItem)checkButton;
             bool usePercentage = button.Name.ToUpper().Contains("PERCENT");
+
             //pass in cost as true by default but when percentage is used isCost will be determine by what is currently used
-            this.SwitchBinding(true, usePercentage, GridControlService);
+            this.SwitchBinding(viewType, usePercentage, GridControlService, switchChartOnly);
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -347,8 +350,10 @@ namespace BluePrints.Common.ViewModel
         public string Periodic_Burned_DisplayName { get; set; }
         public string Periodic_Actual_DisplayName { get; set; }
         public string Summary_Display_Format { get; set; }
-        public string Header_Remaining { get; set; }
-        public string Header_RemainingActual { get; set; }
+        public string Header_Remaining_ToDate { get; set; }
+        public string Header_RemainingActual_ToDate { get; set; }
+        public string Header_Remaining_Period { get; set; }
+        public string Header_RemainingActual_Period { get; set; }
         public string BarSeriesValueDataMember { get; set; }
         public string LineSeriesValueDataMember { get; set; }
         public string BarSeriesCrosshairPattern { get; set; }
@@ -361,18 +366,19 @@ namespace BluePrints.Common.ViewModel
         public string LineSeriesRemainingDisplayName { get; set; }
         public string LineSeriesRemainingActualDisplayName { get; set; }
         public string LineSeriesEarnedDisplayName { get; set; }
+        public string LineSeriesTenderEarnedDisplayName { get; set; }
         public string LineSeriesBurnedDisplayName { get; set; }
         public string LineSeriesActualDisplayName { get; set; }
         public string LineSeriesLabelPattern { get; set; }
         public string Total_Budgeted_Quantity { get; set; }
         public string Total_Current_Quantity { get; set; }
         public string Cumulative_Remaining_Quantity { get; set; }
-        public string CumulativeEarnedVsBurned_Units { get; set; }
-        public string PeriodEarnedVsBurned_Units { get; set; }
-        public string CumulativePerformanceRatio_Units { get; set; }
-        public string PeriodPerformanceRatio_Units { get; set; }
-        public string AdjustedRemaining_Units { get; set; }
-        public string AdjustedDifference_Units { get; set; }
+        public string CumulativeEarnedVsBurned { get; set; }
+        public string PeriodEarnedVsBurned { get; set; }
+        public string CumulativePerformanceRatio { get; set; }
+        public string PeriodPerformanceRatio { get; set; }
+        public string AdjustedRemaining { get; set; }
+        public string AdjustedDifference { get; set; }
         public string Header_RemainingQuantity { get; set; }
         public string Header_CumulativeEarnedVsBurned { get; set; }
         public string Header_CumulativePerformanceRatio { get; set; }
@@ -426,8 +432,8 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.Header_Earned_ToDate);
             this.RaisePropertyChanged(x => x.Header_Burned_ToDate);
             this.RaisePropertyChanged(x => x.Header_Actual_ToDate);
-            this.RaisePropertyChanged(x => x.Header_Remaining);
-            this.RaisePropertyChanged(x => x.Header_RemainingActual);
+            this.RaisePropertyChanged(x => x.Header_Remaining_ToDate);
+            this.RaisePropertyChanged(x => x.Header_RemainingActual_ToDate);
             this.RaisePropertyChanged(x => x.Cumulative_Planned_DisplayName);
             this.RaisePropertyChanged(x => x.Cumulative_Earned_DisplayName);
             this.RaisePropertyChanged(x => x.Cumulative_Burned_DisplayName);
@@ -451,6 +457,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.LineSeriesRemainingDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesRemainingActualDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesEarnedDisplayName);
+            this.RaisePropertyChanged(x => x.LineSeriesTenderEarnedDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesBurnedDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesActualDisplayName);
             this.RaisePropertyChanged(x => x.LineSeriesLabelPattern);
@@ -458,12 +465,12 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.Total_Budgeted_Quantity);
             this.RaisePropertyChanged(x => x.Total_Current_Quantity);
             this.RaisePropertyChanged(x => x.Cumulative_Remaining_Quantity);
-            this.RaisePropertyChanged(x => x.CumulativeEarnedVsBurned_Units);
-            this.RaisePropertyChanged(x => x.PeriodEarnedVsBurned_Units);
-            this.RaisePropertyChanged(x => x.CumulativePerformanceRatio_Units);
-            this.RaisePropertyChanged(x => x.PeriodPerformanceRatio_Units);
-            this.RaisePropertyChanged(x => x.AdjustedRemaining_Units);
-            this.RaisePropertyChanged(x => x.AdjustedDifference_Units);
+            this.RaisePropertyChanged(x => x.CumulativeEarnedVsBurned);
+            this.RaisePropertyChanged(x => x.PeriodEarnedVsBurned);
+            this.RaisePropertyChanged(x => x.CumulativePerformanceRatio);
+            this.RaisePropertyChanged(x => x.PeriodPerformanceRatio);
+            this.RaisePropertyChanged(x => x.AdjustedRemaining);
+            this.RaisePropertyChanged(x => x.AdjustedDifference);
 
             this.RaisePropertyChanged(x => x.Header_RemainingQuantity);
             this.RaisePropertyChanged(x => x.Header_CumulativeEarnedVsBurned);
@@ -493,6 +500,9 @@ namespace BluePrints.Common.ViewModel
 
             this.RaisePropertyChanged(x => x.Header_Cumulative_Earned_Quantity);
             this.RaisePropertyChanged(x => x.Header_Period_Earned_Quantity);
+
+            this.RaisePropertyChanged(x => x.Header_Remaining_Period);
+            this.RaisePropertyChanged(x => x.Header_RemainingActual_Period);
         }
         #endregion
     }
@@ -540,8 +550,10 @@ namespace BluePrints.Common.ViewModel
         string Header_Earned_Period { get; set; }
         string Header_Burned_Period { get; set; }
         string Header_Actual_Period { get; set; }
-        string Header_Remaining { get; set; }
-        string Header_RemainingActual { get; set; }
+        string Header_Remaining_ToDate { get; set; }
+        string Header_RemainingActual_ToDate { get; set; }
+        string Header_Remaining_Period { get; set; }
+        string Header_RemainingActual_Period { get; set; }
         string Header_RemainingQuantity { get; set; }
         string Header_CumulativeEarnedVsBurned { get; set; }
         string Header_CumulativePerformanceRatio { get; set; }
@@ -553,12 +565,12 @@ namespace BluePrints.Common.ViewModel
         string Header_Cumulative_Budgeted_Earned_Percentage { get; set; }
         string Header_Period_Current_Earned_Percentage { get; set; }
         string Header_Period_Budgeted_Earned_Percentage { get; set; }
-        string CumulativeEarnedVsBurned_Units { get; set; }
-        string PeriodEarnedVsBurned_Units { get; set; }
-        string CumulativePerformanceRatio_Units { get; set; }
-        string PeriodPerformanceRatio_Units { get; set; }
-        string AdjustedRemaining_Units { get; set; }
-        string AdjustedDifference_Units { get; set; }
+        string CumulativeEarnedVsBurned { get; set; }
+        string PeriodEarnedVsBurned { get; set; }
+        string CumulativePerformanceRatio { get; set; }
+        string PeriodPerformanceRatio { get; set; }
+        string AdjustedRemaining { get; set; }
+        string AdjustedDifference { get; set; }
         bool IsActualVisible { get; set; }
         string Cumulative_Planned_DisplayName { get; set; }
         string Cumulative_Current_DisplayName { get; set; }
@@ -583,6 +595,7 @@ namespace BluePrints.Common.ViewModel
         string LineSeriesRemainingDisplayName { get; set; }
         string LineSeriesRemainingActualDisplayName { get; set; }
         string LineSeriesEarnedDisplayName { get; set; }
+        string LineSeriesTenderEarnedDisplayName { get; set; }
         string LineSeriesBurnedDisplayName { get; set; }
         string LineSeriesActualDisplayName { get; set; }
         string LineSeriesLabelPattern { get; set; }
@@ -592,9 +605,16 @@ namespace BluePrints.Common.ViewModel
         void StatsUpdate();
     }
 
+    public enum StatsSwitchType
+    {
+        Units = 0,
+        Costs = 1,
+        Quantity = 2
+    }
+
     public static class ISupportStatsSwitchingExtension
     {
-        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, bool isCost, bool? isPercentage, IGridControlService gridControlService)
+        public static void SwitchBinding(this ISupportStatsSwitching stats_switch, DashboardViewType viewType, bool? isPercentage, IGridControlService gridControlService, bool switchChartOnly = false)
         {
             bool usePercentage;
             if(isPercentage == null)
@@ -604,154 +624,174 @@ namespace BluePrints.Common.ViewModel
 
             else
             {
-                isCost = stats_switch.Cumulative_Current_Earned_Percentage.ToUpper().Contains("COST");
                 usePercentage = (bool)isPercentage;
             }
 
-            stats_switch.IsActualVisible = isCost ? true : false;
-            stats_switch.Field_Mask = isCost ? "c" : "n";
-            stats_switch.Summary_Display_Format = isCost ? "{}{0:c}" : "{}{0:n}";
-            string stats_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
+            if(!switchChartOnly)
+            {
+                stats_switch.IsActualVisible = viewType == DashboardViewType.Costs ? true : false;
+                stats_switch.Field_Mask = viewType == DashboardViewType.Costs ? "c" : "n";
+                stats_switch.Summary_Display_Format = viewType == DashboardViewType.Costs ? "{}{0:c}" : "{}{0:n}";
+                string stats_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
 
-            string current_period_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
-            string current_period_current_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
+                string current_period_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
+                string current_period_current_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
 
-            string current_period_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodDataPoint) + ".";
+                string current_period_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodDataPoint) + ".";
 
-            string units_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Units);
-            string cost_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs);
-            string quantity_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Quantity);
+                string units_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Units);
+                string cost_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs);
+                string quantity_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.Quantity);
 
-            string units_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
-            string cost_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
+                string units_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
+                string cost_percentage_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
 
-            PROJECT_Dashboard dashboard = new PROJECT_Dashboard();
-            string planned_string = "Planned";
-            string planned_late_string = "Late Planned";
-            string budgeted_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Budgeted);
-            string budgeted_late_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).BudgetedLate);
-            string current_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Current);
-            string earned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Earned);
-            string tender_earned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).TenderEarned);
-            string burned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Burned);
-            string actual_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Actual);
-            string remaining_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
-            string remaining_actual_string = "Actual " + BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
+                PROJECT_Dashboard dashboard = new PROJECT_Dashboard();
+                string planned_string = "Planned";
+                string planned_late_string = "Late Planned";
+                string budgeted_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Budgeted);
+                string budgeted_late_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).BudgetedLate);
+                string current_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Current);
+                string earned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Earned);
+                string tender_earned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).TenderEarned);
+                string burned_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Burned);
+                string actual_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Actual);
+                string remaining_string = BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
+                string remaining_actual_string = "Actual " + BindableBase.GetPropertyName(() => ((SummaryStats)dashboard.Stats).Remaining);
 
-            string field_selection_string = isCost ? cost_string : units_string;
-            string field_percentage_selection_string = isCost ? cost_percentage_string : units_percentage_string;
+                string field_selection_string = viewType == DashboardViewType.Costs ? cost_string : viewType == DashboardViewType.Quantity ? quantity_string : units_string;
+                string field_percentage_selection_string = viewType == DashboardViewType.Costs ? cost_percentage_string : units_percentage_string;
 
-            string total_budgeted_convention = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
-            stats_switch.Total_Current = isCost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
-            stats_switch.Total_Budgeted = isCost ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedCosts)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedUnits));
-            stats_switch.Total_Budgeted_Quantity = String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalQty));
-            stats_switch.Total_Current_Quantity = String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedQty));
+                string total_budgeted_convention = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
+                stats_switch.Total_Current = viewType == DashboardViewType.Costs ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalCosts)) : viewType == DashboardViewType.Quantity ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalQty)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalUnits));
+                stats_switch.Total_Budgeted = viewType == DashboardViewType.Costs ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedCosts)) : viewType == DashboardViewType.Quantity ? String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedQty)) : String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedUnits));
+                stats_switch.Total_Budgeted_Quantity = String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.TotalQty));
+                stats_switch.Total_Current_Quantity = String.Format(total_budgeted_convention, BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.BudgetedQty));
 
-            stats_switch.Cumulative_Current_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
-            stats_switch.Cumulative_Budgeted_Earned_Percentage = String.Format(current_period_cumulative_string, tender_earned_string) + field_percentage_selection_string;
-            stats_switch.Cumulative_Planned_Units = String.Format(current_period_cumulative_string, budgeted_string) + field_selection_string;
-            stats_switch.Cumulative_PlannedLate_Units = String.Format(current_period_cumulative_string, budgeted_late_string) + field_selection_string;
-            stats_switch.Cumulative_Current_Units = String.Format(current_period_cumulative_string, current_string) + field_selection_string;
-            stats_switch.Cumulative_Earned_Units = String.Format(current_period_cumulative_string, earned_string) + field_selection_string;
-            stats_switch.Cumulative_Earned_Quantity = String.Format(current_period_cumulative_string, earned_string) + quantity_string;
-            stats_switch.Cumulative_Burned_Units = String.Format(current_period_cumulative_string, burned_string) + field_selection_string;
-            stats_switch.Cumulative_Actual_Units = String.Format(current_period_cumulative_string, actual_string) + field_selection_string;
-            stats_switch.Cumulative_Remaining_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Costs))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Units)));
-            stats_switch.Cumulative_Remaining_Quantity = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Quantity)));
-            stats_switch.CumulativeEarnedVsBurned_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativeEarnedVsBurned_Costs))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativeEarnedVsBurned_Units)));
-            stats_switch.CumulativePerformanceRatio_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativePerformanceRatio_Costs))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativePerformanceRatio_Units)));
-            stats_switch.AdjustedRemaining_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedRemaining_Costs))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedRemaining_Units)));
-            stats_switch.AdjustedDifference_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedDifference_Costs))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedDifference_Units)));
+                stats_switch.Cumulative_Current_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
+                stats_switch.Cumulative_Budgeted_Earned_Percentage = String.Format(current_period_cumulative_string, tender_earned_string) + field_percentage_selection_string;
+                stats_switch.Cumulative_Planned_Units = String.Format(current_period_cumulative_string, budgeted_string) + field_selection_string;
+                stats_switch.Cumulative_PlannedLate_Units = String.Format(current_period_cumulative_string, budgeted_late_string) + field_selection_string;
+                stats_switch.Cumulative_Current_Units = String.Format(current_period_cumulative_string, current_string) + field_selection_string;
+                stats_switch.Cumulative_Earned_Units = String.Format(current_period_cumulative_string, earned_string) + field_selection_string;
+                stats_switch.Cumulative_Earned_Quantity = String.Format(current_period_cumulative_string, earned_string) + quantity_string;
+                stats_switch.Cumulative_Burned_Units = String.Format(current_period_cumulative_string, burned_string) + field_selection_string;
+                stats_switch.Cumulative_Actual_Units = String.Format(current_period_cumulative_string, actual_string) + field_selection_string;
+                stats_switch.Cumulative_Remaining_Units = viewType == DashboardViewType.Costs ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Costs))) : viewType == DashboardViewType.Quantity ? String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Quantity))) : String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Units)));
+                stats_switch.Cumulative_Remaining_Quantity = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).Remaining_Quantity)));
+                stats_switch.CumulativeEarnedVsBurned = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativeEarnedVsBurned_Units))).Replace(units_string, field_selection_string);
+                stats_switch.CumulativePerformanceRatio = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).CumulativePerformanceRatio_Units))).Replace(units_string, field_selection_string);
+                stats_switch.AdjustedRemaining = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedRemaining_Units))).Replace(units_string, field_selection_string);
+                stats_switch.AdjustedDifference = String.Format(stats_string, BindableBase.GetPropertyName(() => (((SummaryStats)new PROJECT_Dashboard().Stats).AdjustedDifference_Units))).Replace(units_string, field_selection_string);
 
-            stats_switch.Period_Current_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
-            stats_switch.Period_Budgeted_Earned_Percentage = String.Format(current_period_string, tender_earned_string) + field_percentage_selection_string;
-            stats_switch.Period_Planned_Units = String.Format(current_period_string, budgeted_string) + field_selection_string;
-            stats_switch.Period_PlannedLate_Units = String.Format(current_period_string, budgeted_late_string) + field_selection_string;
-            stats_switch.Period_Current_Units = String.Format(current_period_string, current_string) + field_selection_string;
-            stats_switch.Period_Earned_Units = String.Format(current_period_string, earned_string) + field_selection_string;
-            stats_switch.Period_Earned_Quantity = String.Format(current_period_string, earned_string) + quantity_string;
-            stats_switch.Period_Burned_Units = String.Format(current_period_string, burned_string) + field_selection_string;
-            stats_switch.Period_Actual_Units = String.Format(current_period_string, actual_string) + field_selection_string;
-            stats_switch.PeriodEarnedVsBurned_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodEarnedVsBurned_Costs)) : String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodEarnedVsBurned_Units));
-            stats_switch.PeriodPerformanceRatio_Units = isCost ? String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodPerformanceRatio_Costs)) : String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodPerformanceRatio_Units));
+                stats_switch.Period_Current_Earned_Percentage = String.Format(current_period_string, earned_string) + field_percentage_selection_string;
+                stats_switch.Period_Budgeted_Earned_Percentage = String.Format(current_period_string, tender_earned_string) + field_percentage_selection_string;
+                stats_switch.Period_Planned_Units = String.Format(current_period_string, budgeted_string) + field_selection_string;
+                stats_switch.Period_PlannedLate_Units = String.Format(current_period_string, budgeted_late_string) + field_selection_string;
+                stats_switch.Period_Current_Units = String.Format(current_period_string, current_string) + field_selection_string;
+                stats_switch.Period_Earned_Units = String.Format(current_period_string, earned_string) + field_selection_string;
+                stats_switch.Period_Earned_Quantity = String.Format(current_period_string, earned_string) + quantity_string;
+                stats_switch.Period_Burned_Units = String.Format(current_period_string, burned_string) + field_selection_string;
+                stats_switch.Period_Actual_Units = String.Format(current_period_string, actual_string) + field_selection_string;
+                stats_switch.PeriodEarnedVsBurned = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodEarnedVsBurned_Units).Replace(units_string, field_selection_string));
+                stats_switch.PeriodPerformanceRatio = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodPerformanceRatio_Units).Replace(units_string, field_selection_string));
 
-            stats_switch.Header_Cumulative_Current_Earned_Percentage = string.Format("{0} Earned % To Date v Current", current_string);
-            stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = string.Format("{0} Earned % To Date v Baseline", planned_string);
-            stats_switch.Header_Period_Current_Earned_Percentage = string.Format("{0} Earned % This Period v Current", current_string);
-            stats_switch.Header_Period_Budgeted_Earned_Percentage = string.Format("{0} Earned % This Period v Baseline", planned_string);
+                stats_switch.Header_Cumulative_Current_Earned_Percentage = string.Format("{0} Earned % To Date v Current", current_string);
+                stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = string.Format("{0} Earned % To Date v Baseline", planned_string);
+                stats_switch.Header_Period_Current_Earned_Percentage = string.Format("{0} Earned % This Period v Current", current_string);
+                stats_switch.Header_Period_Budgeted_Earned_Percentage = string.Format("{0} Earned % This Period v Baseline", planned_string);
 
-            gridControlService.ClearSummary();
-            string summaryPercentageString = "{0:p2}";
-            string summaryDecimalString = "{0:0.00}";
-            if (isCost)
-                summaryDecimalString = "{0:c2}";
+                gridControlService.ClearSummary();
+                string summaryPercentageString = "{0:p2}";
+                string summaryDecimalString = "{0:0.00}";
+                if (viewType == DashboardViewType.Costs)
+                    summaryDecimalString = "{0:c2}";
 
-            gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
-            gridControlService.AddSummary(stats_switch.Total_Current, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Total_Budgeted, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Current_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
+                gridControlService.AddSummary(stats_switch.Total_Current, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Total_Budgeted, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Total_Budgeted_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Total_Current_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
 
-            gridControlService.AddSummary(stats_switch.Period_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
-            gridControlService.AddSummary(stats_switch.Period_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
-            gridControlService.AddSummary(stats_switch.Period_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Period_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Period_Current_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Period_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Period_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
-            gridControlService.AddSummary(stats_switch.Period_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.PeriodEarnedVsBurned, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.CumulativeEarnedVsBurned, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.PeriodPerformanceRatio, SummaryItemType.Custom, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.CumulativePerformanceRatio, SummaryItemType.Custom, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.AdjustedRemaining, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.AdjustedDifference, SummaryItemType.Sum, summaryDecimalString);
 
-            string header_convention = "{0} {1}";
-            string toDate_convention = "{0} {1} to date";
-            string period_convention = "{0} {1} this period";
-            string units_display_string = "Units";
-            string cost_display_string = "$";
-            string display_selection_string = isCost ? cost_display_string : units_display_string;
 
-            stats_switch.Header_Total_Current = String.Format(header_convention, "Total " + current_string, display_selection_string);
-            stats_switch.Header_Total_Budgeted = String.Format(header_convention, "Total " + planned_string, display_selection_string);
-            stats_switch.Header_Budgeted_ToDate = String.Format(toDate_convention, planned_string, display_selection_string);
-            stats_switch.Header_BudgetedLate_ToDate = String.Format(toDate_convention, planned_late_string, display_selection_string);
-            stats_switch.Header_Current_ToDate = String.Format(toDate_convention, current_string, display_selection_string);
-            stats_switch.Header_Earned_ToDate = String.Format(toDate_convention, earned_string, display_selection_string);
-            stats_switch.Header_Burned_ToDate = String.Format(toDate_convention, burned_string, display_selection_string);
-            stats_switch.Header_Actual_ToDate = String.Format(toDate_convention, actual_string, display_selection_string);
-            stats_switch.Header_Budgeted_Period = String.Format(period_convention, planned_string, display_selection_string);
-            stats_switch.Header_BudgetedLate_Period = String.Format(period_convention, planned_late_string, display_selection_string);
-            stats_switch.Header_Current_Period = String.Format(period_convention, current_string, display_selection_string);
-            stats_switch.Header_Earned_Period = String.Format(period_convention, earned_string, display_selection_string);
-            stats_switch.Header_Burned_Period = String.Format(period_convention, burned_string, display_selection_string);
-            stats_switch.Header_Actual_Period = String.Format(period_convention, actual_string, display_selection_string);
+                gridControlService.AddSummary(stats_switch.Cumulative_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Current_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Quantity, SummaryItemType.Sum, summaryDecimalString);
 
-            stats_switch.Header_Remaining = String.Format(header_convention, remaining_string, display_selection_string);
-            stats_switch.Header_RemainingActual = String.Format(header_convention, remaining_actual_string, display_selection_string);
+                gridControlService.AddSummary(stats_switch.Period_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Period_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Period_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_Current_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_Earned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
+                gridControlService.AddSummary(stats_switch.Period_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
 
-            stats_switch.Header_RemainingQuantity = String.Format(header_convention, remaining_string, quantity_string);
-            stats_switch.Header_CumulativeEarnedVsBurned = String.Format(header_convention, "To Date Actual vs Earn", display_selection_string);
-            stats_switch.Header_CumulativePerformanceRatio = String.Format(header_convention, "PF To Date", display_selection_string);
-            stats_switch.Header_AdjustedRemaining = String.Format("Direct {0} adjusted by PF to date", display_selection_string);
-            stats_switch.Header_AdjustedDifference = String.Format("Direct {0} PF Adjust. Vs M/Hrs to Go", display_selection_string);
-            stats_switch.Header_PeriodEarnedVsBurned = String.Format(header_convention, "This Period Actual vs Earn", display_selection_string);
-            stats_switch.Header_PeriodPerformanceRatio = String.Format(header_convention, "PF This Period", display_selection_string);
+                string header_convention = "{0} {1}";
+                string toDate_convention = "{0} {1} to date";
+                string period_convention = "{0} {1} this period";
+                string quantity_display_string = "Qty";
+                string units_display_string = "Units";
+                string cost_display_string = "$";
+                string display_selection_string = viewType == DashboardViewType.Costs ? cost_display_string : viewType == DashboardViewType.Quantity ? quantity_display_string : units_display_string;
 
-            stats_switch.Header_Total_Budgeted_Quantity = String.Format(header_convention, "Total " + current_string, display_selection_string);
-            stats_switch.Header_Total_Current_Quantity = String.Format(header_convention, "PF This Period", display_selection_string);
+                stats_switch.Header_Total_Current = String.Format(header_convention, "Total " + current_string, display_selection_string);
+                stats_switch.Header_Total_Budgeted = String.Format(header_convention, "Total " + planned_string, display_selection_string);
+                stats_switch.Header_Budgeted_ToDate = String.Format(toDate_convention, planned_string, display_selection_string);
+                stats_switch.Header_BudgetedLate_ToDate = String.Format(toDate_convention, planned_late_string, display_selection_string);
+                stats_switch.Header_Current_ToDate = String.Format(toDate_convention, current_string, display_selection_string);
+                stats_switch.Header_Earned_ToDate = String.Format(toDate_convention, earned_string, display_selection_string);
+                stats_switch.Header_Burned_ToDate = String.Format(toDate_convention, burned_string, display_selection_string);
+                stats_switch.Header_Actual_ToDate = String.Format(toDate_convention, actual_string, display_selection_string);
+                stats_switch.Header_Budgeted_Period = String.Format(period_convention, planned_string, display_selection_string);
+                stats_switch.Header_BudgetedLate_Period = String.Format(period_convention, planned_late_string, display_selection_string);
+                stats_switch.Header_Current_Period = String.Format(period_convention, current_string, display_selection_string);
+                stats_switch.Header_Earned_Period = String.Format(period_convention, earned_string, display_selection_string);
+                stats_switch.Header_Burned_Period = String.Format(period_convention, burned_string, display_selection_string);
+                stats_switch.Header_Actual_Period = String.Format(period_convention, actual_string, display_selection_string);
 
-            stats_switch.Header_Cumulative_Earned_Quantity = String.Format(toDate_convention, earned_string, quantity_string);
-            stats_switch.Header_Period_Earned_Quantity = String.Format(period_convention, earned_string, quantity_string);
+                stats_switch.Header_Remaining_ToDate = String.Format(toDate_convention, remaining_string, display_selection_string);
+                stats_switch.Header_RemainingActual_ToDate = String.Format(toDate_convention, remaining_actual_string, display_selection_string);
 
-            stats_switch.BarSeriesValueDataMember = isCost ? "Costs" : "Units";
+                stats_switch.Header_Remaining_Period = String.Format(period_convention, remaining_string, display_selection_string);
+                stats_switch.Header_RemainingActual_Period = String.Format(period_convention, remaining_actual_string, display_selection_string);
+
+                stats_switch.Header_RemainingQuantity = String.Format(header_convention, remaining_string, quantity_string);
+                stats_switch.Header_CumulativeEarnedVsBurned = String.Format(header_convention, "To Date Actual vs Earn", display_selection_string);
+                stats_switch.Header_CumulativePerformanceRatio = String.Format(header_convention, "PF To Date", display_selection_string);
+                stats_switch.Header_AdjustedRemaining = String.Format("Direct {0} adjusted by PF to date", display_selection_string);
+                stats_switch.Header_AdjustedDifference = String.Format("Direct {0} PF Adjust. Vs M/Hrs to Go", display_selection_string);
+                stats_switch.Header_PeriodEarnedVsBurned = String.Format(header_convention, "This Period Actual vs Earn", display_selection_string);
+                stats_switch.Header_PeriodPerformanceRatio = String.Format(header_convention, "PF This Period", display_selection_string);
+
+                stats_switch.Header_Total_Budgeted_Quantity = String.Format(header_convention, "Total " + current_string, display_selection_string);
+                stats_switch.Header_Total_Current_Quantity = String.Format(header_convention, "PF This Period", display_selection_string);
+
+                stats_switch.Header_Cumulative_Earned_Quantity = String.Format(toDate_convention, earned_string, quantity_string);
+                stats_switch.Header_Period_Earned_Quantity = String.Format(period_convention, earned_string, quantity_string);
+            }
+
+            stats_switch.BarSeriesValueDataMember = viewType == DashboardViewType.Costs ? "Costs" : viewType == DashboardViewType.Quantity ? "Quantity" : "Units";
             if(usePercentage)
             {
-                stats_switch.LineSeriesValueDataMember = isCost ? "CostsPercentage" : "UnitsPercentage";
-                stats_switch.AxisYSecondaryLabel = isCost ? "Costs % Complete" : "Units % Complete";
+                stats_switch.LineSeriesValueDataMember = viewType == DashboardViewType.Costs ? "CostsPercentage" : "UnitsPercentage";
+                stats_switch.AxisYSecondaryLabel = viewType == DashboardViewType.Costs ? "Costs % Complete" : viewType == DashboardViewType.Quantity ? "Quantity % Complete" : "Units % Complete";
                 stats_switch.AxisYSecondaryTextPattern = "{V:0%}";
                 stats_switch.LineSeriesBudgetDisplayName = "Budgeted %";
                 stats_switch.LineSeriesCurrentDisplayName = "Current %";
@@ -759,28 +799,30 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesRemainingDisplayName = "Remaining %";
                 stats_switch.LineSeriesRemainingActualDisplayName = "Remaining Actual %";
                 stats_switch.LineSeriesEarnedDisplayName = "Current Earned %";
+                stats_switch.LineSeriesTenderEarnedDisplayName = "Budgeted Earned %";
                 stats_switch.LineSeriesBurnedDisplayName = "Burned %";
                 stats_switch.LineSeriesActualDisplayName = "Actual %";
                 stats_switch.LineSeriesLabelPattern = "{S} - [{V:p2}]";
             }
             else
             {
-                stats_switch.LineSeriesValueDataMember = isCost ? "Costs" : "Units";
-                stats_switch.AxisYSecondaryLabel = isCost ? "Cumulative Costs" : "Cumulative Units";
-                stats_switch.AxisYSecondaryTextPattern = isCost? "{V:$0}" : "{V:0}";
-                stats_switch.LineSeriesBudgetDisplayName = isCost ? "Budgeted Costs" : "Budgeted Units";
-                stats_switch.LineSeriesCurrentDisplayName = isCost ? "Current Costs" : "Current Units";
-                stats_switch.LineSeriesBudgetLateDisplayName = isCost ? "Budgeted Late Costs" : "Budgeted Late Units";
-                stats_switch.LineSeriesRemainingDisplayName = isCost ? "Remaining Costs" : "Remaining Units";
+                stats_switch.LineSeriesValueDataMember = viewType == DashboardViewType.Costs ? "Costs" : viewType == DashboardViewType.Quantity ? "Quantity" : "Units";
+                stats_switch.AxisYSecondaryLabel = viewType == DashboardViewType.Costs ? "Cumulative Costs" : viewType == DashboardViewType.Quantity ? "Cumulative Qty" : "Cumulative Units";
+                stats_switch.AxisYSecondaryTextPattern = viewType == DashboardViewType.Costs ? "{V:$0}" : "{V:0}";
+                stats_switch.LineSeriesBudgetDisplayName = viewType == DashboardViewType.Costs ? "Budgeted Costs" : viewType == DashboardViewType.Quantity ? "Budgeted Qty" : "Budgeted Units";
+                stats_switch.LineSeriesCurrentDisplayName = viewType == DashboardViewType.Costs ? "Current Costs" : viewType == DashboardViewType.Quantity ? "Current Qty" : "Current Units";
+                stats_switch.LineSeriesBudgetLateDisplayName = viewType == DashboardViewType.Costs ? "Budgeted Late Costs" : viewType == DashboardViewType.Quantity ? "Budgeted Late Qty" : "Budgeted Late Units";
+                stats_switch.LineSeriesRemainingDisplayName = viewType == DashboardViewType.Costs ? "Remaining Costs" : viewType == DashboardViewType.Quantity ? "Remaining Qty" : "Remaining Units";
                 stats_switch.LineSeriesRemainingActualDisplayName = "Remaining Actual Costs";
-                stats_switch.LineSeriesEarnedDisplayName = isCost ? "Earned Costs" : "Earned Units";
-                stats_switch.LineSeriesBurnedDisplayName = isCost ? "Burned Costs" : "Burned Units";
-                stats_switch.LineSeriesActualDisplayName = isCost ? "Actual Costs" : "Actual Units";
+                stats_switch.LineSeriesEarnedDisplayName = viewType == DashboardViewType.Costs ? "Current Earned Costs" : viewType == DashboardViewType.Quantity ? "Current Earned Qty" : "Current Earned Units";
+                stats_switch.LineSeriesTenderEarnedDisplayName = viewType == DashboardViewType.Costs ? "Budgeted Earned Costs" : viewType == DashboardViewType.Quantity ? "Budgeted Earned Qty" : "Budgeted Earned Units";
+                stats_switch.LineSeriesBurnedDisplayName = viewType == DashboardViewType.Costs ? "Burned Costs" : viewType == DashboardViewType.Quantity ? "Burned Qty" : "Burned Units";
+                stats_switch.LineSeriesActualDisplayName = viewType == DashboardViewType.Costs ? "Actual Costs" : viewType == DashboardViewType.Quantity ? "Actual Qty" : "Actual Units";
                 stats_switch.LineSeriesLabelPattern = "{S} - [{V:n2}]";
             }
 
-            stats_switch.BarSeriesCrosshairPattern = isCost ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
-            stats_switch.AxisYPrimaryLabel = isCost ? "Costs" : "Units";
+            stats_switch.BarSeriesCrosshairPattern = viewType == DashboardViewType.Costs ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
+            stats_switch.AxisYPrimaryLabel = viewType == DashboardViewType.Costs ? "Costs" : viewType == DashboardViewType.Quantity ? "Quantity" :  "Units";
 
             stats_switch.StatsUpdate();
         }

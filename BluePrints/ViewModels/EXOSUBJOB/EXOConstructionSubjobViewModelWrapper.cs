@@ -172,6 +172,12 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private void updateViewTitles()
+        {
+            updateSubjobTitles();
+            updateCostGroupTitles();
+        }
+
         private void updateSubjobTitles()
         {
             if (MainViewModel == null || DisplayEntities.Count == 0)
@@ -181,7 +187,7 @@ namespace BluePrints.ViewModels
             foreach (ExoSubJobProjection entity in DisplayEntities)
             {
                 if (entity.SubJob == null)
-                    return;
+                    continue;
 
                 JOBCOST_HDR existingSubJob = existingSubJobs.FirstOrDefault(x => x.JOBCODE == entity.SubJob.Code);
                 if (existingSubJob != null)
@@ -192,9 +198,29 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void updateCostGroupTitles()
+        {
+            if (MainViewModel == null || DisplayEntities.Count == 0)
+                return;
+
+            IEnumerable<JOB_COSTGROUPS> costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
+            foreach(ExoSubJobProjection entity in DisplayEntities)
+            {
+                if (entity.Discipline == null)
+                    continue;
+
+                JOB_COSTGROUPS costGroup = costGroups.FirstOrDefault(x => x.SHORTCODE == entity.Discipline.Code);
+                if(costGroup != null)
+                {
+                    entity.Discipline.Name = costGroup.COSTDESC;
+                    entity.Update();
+                }
+            }
+        }
+
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            updateSubjobTitles();
+            updateViewTitles();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -257,10 +283,12 @@ namespace BluePrints.ViewModels
                 ExoSubJobProjection tempSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
                 tempSubJobProjection.SubJob = new PrimeroSubJob();
                 tempSubJobProjection.SubJob.Code = ColumnStrings[0];
+                tempSubJobProjection.SubJob.Title = ColumnStrings[1];
                 tempSubJobProjection.Discipline = new PrimeroDiscipline();
-                tempSubJobProjection.Discipline.Code = ColumnStrings[1];
+                tempSubJobProjection.Discipline.Code = ColumnStrings[2];
+                tempSubJobProjection.Discipline.Name = ColumnStrings[3];
                 tempSubJobProjection.Commodity = new PrimeroCommodity();
-                tempSubJobProjection.Commodity.Code = ColumnStrings[2];
+                tempSubJobProjection.Commodity.Code = ColumnStrings[4];
 
                 tempSubJobProjection.AuthUsers = new System.Collections.ObjectModel.ObservableCollection<ExoSubJobAuth>();
                 ExoSubJobProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJob.Code == tempSubJobProjection.SubJob.Code);
@@ -309,11 +337,14 @@ namespace BluePrints.ViewModels
             {
                 if(!addedLines.Any(x => x == projection.SubJob.Code))
                 {
-                    string title = string.Empty;
-                    var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJob.Code + " Title:");
-                    if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                    string title = projection.SubJob.Title;
+                    if(title == string.Empty)
                     {
-                        title = bulkEditStringsViewModel.EditValue;
+                        var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJob.Code + " Title:");
+                        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                        {
+                            title = bulkEditStringsViewModel.EditValue;
+                        }
                     }
 
                     int? subJobId = ExoMethods.findExistingOrAddSubJob(projection.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
@@ -324,7 +355,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                int? disciplineId = ExoMethods.findExistingOrAddDiscipline(projection.Discipline.Code);
+                int? disciplineId = ExoMethods.findExistingOrAddDiscipline(projection.Discipline.Code, projection.Discipline.Name);
                 if (disciplineId != null)
                 {
                     projection.Discipline.Id = disciplineId;
@@ -332,16 +363,17 @@ namespace BluePrints.ViewModels
                     if (commodityId != null)
                     {
                         projection.Commodity.Id = commodityId;
-                        projection.LineId = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
+                        projection.LineId = ExoMethods.findExistingLine(projection, copyLine, loadPROJECT.NUMBER);
+                        if(projection.LineId != null)
+                            updatedLineCount += 1;
+
                         projection.Update();
                     }
                 }
-
-                updatedLineCount += 1;
             }
 
             MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-            updateSubjobTitles();
+            updateViewTitles();
         }
 
         public void RemoveSelected()
@@ -449,7 +481,32 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            updateSubjobTitles();
+            updateViewTitles();
+        }
+
+        public void EditCostGroupTitle()
+        {
+            IEnumerable<JOB_COSTGROUPS> costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
+            foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
+            {
+                JOB_COSTGROUPS costGroup = costGroups.FirstOrDefault(x => x.SHORTCODE == selectedLine.Discipline.Code);
+                if (costGroup == null)
+                {
+                    MessageBoxService.ShowMessage(selectedLine.Discipline.Code + " doesn't exists in exo yet, please upload to exo before clicking edit cost group title");
+                    continue;
+                }
+
+                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(costGroup.COSTDESC, selectedLine.Discipline.Code + " Title:");
+                string title = string.Empty;
+                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                {
+                    title = bulkEditStringsViewModel.EditValue;
+                    costGroup.COSTDESC = title;
+                    primeroUnitOfWork.SaveChanges();
+                }
+            }
+
+            updateCostGroupTitles();
         }
 
         /// <summary>

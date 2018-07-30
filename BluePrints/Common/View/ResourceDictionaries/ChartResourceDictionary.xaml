@@ -67,7 +67,7 @@
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
-        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Cyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
+        <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Cyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
                 <dxc:Bar2DWidenAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
@@ -123,7 +123,7 @@
                 <dxc:Marker2DSlideFromTopCenterAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
-        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LimeGreen" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="Budgeted Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}">
+        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LimeGreen" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesTenderEarnedDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
                 <dxc:Line2DUnwindAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
@@ -157,9 +157,9 @@
         </dxc:LineSeries2D>
     </collections:ArrayList>
     <collections:ArrayList x:Key="userDashboardXYChartSeries">
-        <dxc:BarSideBySideSeries2D Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
+        <dxc:BarSideBySideSeries2D Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
         <dxc:BarSideBySideSeries2D Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
-        <dxc:BarSideBySideSeries2D Brush="DarkCyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
+        <dxc:BarSideBySideSeries2D Brush="DarkCyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" />
         <dxc:LineSeries2D Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" DisplayName="Budgeted %" Style="{StaticResource DefaultLineSeries2DTemplate}" />
         <dxc:LineSeries2D Brush="DarkCyan" DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" DisplayName="Remaining %" Style="{StaticResource DefaultLineSeries2DTemplate}" />
         <dxc:LineSeries2D Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" DisplayName="Earned %" Style="{StaticResource DefaultLineSeries2DTemplate}" />

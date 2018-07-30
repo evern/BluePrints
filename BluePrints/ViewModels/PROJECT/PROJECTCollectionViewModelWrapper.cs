@@ -358,6 +358,7 @@ namespace BluePrints.ViewModels
                 newSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                 newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                 newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                newSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
 
                 if(entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                 {
@@ -385,6 +386,7 @@ namespace BluePrints.ViewModels
                     defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     defaultDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
                     defaultDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                    defaultDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
                     if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                     {
                         defaultDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
@@ -485,6 +487,8 @@ namespace BluePrints.ViewModels
                     indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                     indirectDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
                     indirectDesignSUBJOB.GUID_DPHASE = defaultIndirectPhase.GUID;
+                    indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+
                     if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
                     {
                         indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;

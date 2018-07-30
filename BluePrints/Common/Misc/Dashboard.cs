@@ -433,37 +433,46 @@ namespace BluePrints.Common.Misc
                 {
                     foreach (DashboardTreeStructure discipline_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
                     {
-                        SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
-                        string areaCode = string.Empty;
+                        if(discipline_dashboard.Child_Dashboards.Count == 0)
+                        {
+                            SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
+                            string areaCode = string.Empty;
 
-                        if (subjob != null)
-                            areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
+                            if (subjob != null)
+                                areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
 
-                        //string s;
-                        //if (subjob_dashboard.Code == "15119-100-00-D1" && discipline_dashboard.Code == "PR01")
-                        //{
-                        //    s = string.Empty;
-                        //    SummaryStats summaryDiscipline = (SummaryStats)discipline_dashboard.Stats;
-                        //    if(summaryDiscipline.Burned != null && summaryDiscipline.Burned.DataPoints != null)
-                        //    {
-                        //        foreach(ViewModel.Reporting.DataPoint burn in summaryDiscipline.Burned.DataPoints)
-                        //        {
-                        //            Debug.Print(burn.ProgressDate.ToString() + "-" + burn.Units.ToString());
-                        //        }
-                        //    }
-                        //}
+                            DashboardFlatStructure disciplineLevelDashboard = new DashboardFlatStructure();
+                            disciplineLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                            disciplineLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
+                            disciplineLevelDashboard.AreaCode = areaCode;
+                            //disciplineLevelDashboard.DepartmentCode = string.Empty;
+                            disciplineLevelDashboard.DisciplineCode = discipline_dashboard.Code;
+                            disciplineLevelDashboard.Stats = discipline_dashboard.Stats;
 
+                            flatDashboards.Add(disciplineLevelDashboard);
+                        }
+                        else
+                        {
+                            foreach(DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                            {
+                                SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
+                                string areaCode = string.Empty;
 
-                        DashboardFlatStructure disciplineLevelDashboard = new DashboardFlatStructure();
-                        disciplineLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                        disciplineLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
-                        disciplineLevelDashboard.AreaCode = areaCode;
-                        //disciplineLevelDashboard.DepartmentCode = string.Empty;
-                        disciplineLevelDashboard.DisciplineCode = discipline_dashboard.Code;
-                        disciplineLevelDashboard.Stats = discipline_dashboard.Stats;
+                                if (subjob != null)
+                                    areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
 
+                                DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
+                                commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                                commodityLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
+                                commodityLevelDashboard.AreaCode = areaCode;
+                                //disciplineLevelDashboard.DepartmentCode = string.Empty;
+                                commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;
+                                commodityLevelDashboard.CommodityCode = commodity_dashboard.Code;
+                                commodityLevelDashboard.Stats = commodity_dashboard.Stats;
 
-                        flatDashboards.Add(disciplineLevelDashboard);
+                                flatDashboards.Add(commodityLevelDashboard);
+                            }
+                        }
                     }
 
                     //foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))

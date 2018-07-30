@@ -15,6 +15,13 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:OpenFileDialogService Title="Select Document" Multiselect="False" />
+        <dx:DialogService x:Name="DateFromToDialogService">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
     </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
@@ -39,7 +46,11 @@
                             <dxr:RibbonPage Caption="Project">
                                 <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                                 <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                                <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
+                                <dxr:RibbonPageGroup Caption="Data Date">
+                                    <dxb:BarButtonItem Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Chart" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Redesign the current report layout" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="Export Chart" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
+                                    <dxb:BarButtonItem Command="{Binding DataContext.ViewReportLookAheadCommand, ElementName=userControl}" Content="Export Chart Lookahead" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
+                                </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Data Date">
                                     <dxb:BarStaticItem Content="Design" />
                                     <dxb:BarStaticItem Content="{Binding DataContext.DesignDataDate, ElementName=userControl}" ToolTip="Design Data date" />
@@ -72,8 +83,9 @@
                                             </DataTemplate>
                                         </dxb:BarButtonItem.GlyphTemplate>
                                     </dxb:BarButtonItem>
-                                    <dxb:BarCheckItem x:Name="biCheckUnits" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Units" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" IsChecked="True" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" ToolTip="S-Curve shows by units" />
-                                    <dxb:BarCheckItem x:Name="biCheckCosts" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Costs" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" ToolTip="S-Curve shows by costs" />
+                                    <dxb:BarButtonItem x:Name="biCheckUnits" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Units" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" ToolTip="S-Curve shows by units" />
+                                    <dxb:BarButtonItem x:Name="biCheckCosts" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Costs" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" ToolTip="S-Curve shows by costs" />
+                                    <dxb:BarButtonItem x:Name="biCheckQty" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Qty" Glyph="{dx:DXImage Image=Number_16x16.png}" LargeGlyph="{dx:DXImage Image=Number_32x32.png}" ToolTip="S-Curve shows by quantity" />
                                     <dxb:BarCheckItem x:Name="biCheckPercent" Command="{Binding ChangeStatsPercentageTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Percentage" Glyph="{dx:DXImage Image=Percentage_16x16.png}" IsChecked="True" LargeGlyph="{dx:DXImageOffice2013 Image=Percentage_32x32.png}" ToolTip="S-Curve shows cumulative as percentage" />
                                     <dxb:BarCheckItem x:Name="biCheckCumulativeUC" Command="{Binding ChangeStatsPercentageTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Absolute" Glyph="{dx:DXImage Image=FormatNumberDecimal_16x16.png}" IsChecked="{Binding ElementName=biCheckPercent, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dx:DXImageOffice2013 Image=FormatNumberDecimal_32x32.png}" ToolTip="S-Curve shows cumulative absolutes only" />
                                     <dxb:BarButtonItem Command="{Binding Refresh_From_P6Command}" Content="Calculate Stats" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
@@ -130,6 +142,7 @@
                                         <dxg:GridColumn FieldName="AreaCode" Header="Area" />
                                         <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
                                         <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline" />
+                                        <dxg:GridColumn FieldName="CommodityCode" Header="Commodity" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Quantity">
                                         <dxg:GridColumn FieldName="{Binding DataContext.Total_Budgeted_Quantity, ElementName=userControl}" Header="{Binding DataContext.Header_Total_Budgeted_Quantity, ElementName=userControl}" HeaderToolTip="Budgeted Qty" VisibleIndex="10">
@@ -206,22 +219,22 @@
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.CumulativeEarnedVsBurned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_CumulativeEarnedVsBurned, ElementName=userControl}" HeaderToolTip="Burned to date vs earned" ReadOnly="True" VisibleIndex="50">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.CumulativeEarnedVsBurned, ElementName=userControl}" Header="{Binding DataContext.Header_CumulativeEarnedVsBurned, ElementName=userControl}" HeaderToolTip="Burned to date vs earned" ReadOnly="True" VisibleIndex="50">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.PeriodEarnedVsBurned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_PeriodEarnedVsBurned, ElementName=userControl}" HeaderToolTip="Burned this period vs earned" ReadOnly="True" VisibleIndex="60">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.PeriodEarnedVsBurned, ElementName=userControl}" Header="{Binding DataContext.Header_PeriodEarnedVsBurned, ElementName=userControl}" HeaderToolTip="Burned this period vs earned" ReadOnly="True" VisibleIndex="60">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.CumulativePerformanceRatio_Units, ElementName=userControl}" Header="{Binding DataContext.Header_CumulativePerformanceRatio, ElementName=userControl}" HeaderToolTip="Performance ratio to date" ReadOnly="True" VisibleIndex="70">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.CumulativePerformanceRatio, ElementName=userControl}" Header="{Binding DataContext.Header_CumulativePerformanceRatio, ElementName=userControl}" HeaderToolTip="Performance ratio to date" ReadOnly="True" VisibleIndex="70">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.PeriodPerformanceRatio_Units, ElementName=userControl}" Header="{Binding DataContext.Header_PeriodPerformanceRatio, ElementName=userControl}" HeaderToolTip="Performance ratio this period" ReadOnly="True" VisibleIndex="80">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.PeriodPerformanceRatio, ElementName=userControl}" Header="{Binding DataContext.Header_PeriodPerformanceRatio, ElementName=userControl}" HeaderToolTip="Performance ratio this period" ReadOnly="True" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
@@ -233,17 +246,17 @@
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Remaining_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Remaining, ElementName=userControl}" HeaderToolTip="Remaining" ReadOnly="True" VisibleIndex="20">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Remaining_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Remaining_ToDate, ElementName=userControl}" HeaderToolTip="Remaining" ReadOnly="True" VisibleIndex="20">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.AdjustedRemaining_Units, ElementName=userControl}" Header="{Binding DataContext.Header_AdjustedRemaining, ElementName=userControl}" HeaderToolTip="Remaining * PF" ReadOnly="True" VisibleIndex="30">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.AdjustedRemaining, ElementName=userControl}" Header="{Binding DataContext.Header_AdjustedRemaining, ElementName=userControl}" HeaderToolTip="Remaining * PF" ReadOnly="True" VisibleIndex="30">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.AdjustedDifference_Units, ElementName=userControl}" Header="{Binding DataContext.Header_AdjustedDifference, ElementName=userControl}" HeaderToolTip="Remaining - PF Remaining" ReadOnly="True" VisibleIndex="40">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.AdjustedDifference, ElementName=userControl}" Header="{Binding DataContext.Header_AdjustedDifference, ElementName=userControl}" HeaderToolTip="Remaining - PF Remaining" ReadOnly="True" VisibleIndex="40">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
