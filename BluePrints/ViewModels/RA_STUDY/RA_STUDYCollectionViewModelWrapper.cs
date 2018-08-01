@@ -78,7 +78,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<RA_STUDY>, IQueryable<RA_STUDY>> specifyMainViewModelProjection()
         {
-            return query => query;
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_STUDY> entities)
