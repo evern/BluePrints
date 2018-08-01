@@ -144,17 +144,45 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = convertedDataPoints;
         }
 
-        public void SetRemainingActualData(IEnumerable<DataPoint> remainingDataPoints, IEnumerable<DataPoint> burnedDataPoints)
+        public void SetRemainingActualData(IEnumerable<IReportable> groupedReportables, IEnumerable<DataPoint> burnedDataPoints)
         {
-            List<DataPoint> convertedDataPoints = remainingDataPoints.Where(x => x.IsRemaining).ToList();
+            //establish remaining data points
+            
+            List<DataPoint> remainingDataPoints = new List<DataPoint>();
+            foreach(IReportable reportable in groupedReportables)
+            {
+                if (reportable.Stats == null)
+                    continue;
+
+                if (reportable.Stats.Remaining == null)
+                    continue;
+
+                decimal productivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
+                if (productivity == 0)
+                    productivity = 1;
+
+                List<DataPoint> baselineRemainingDataPoints = reportable.Stats.Remaining.GetData().Where(x => x.IsRemaining).ToList();
+                foreach(DataPoint remainingDataPoint in baselineRemainingDataPoints.Where(x => !x.IsProductivityInflated))
+                {
+                    remainingDataPoint.Units = remainingDataPoint.Units / productivity;
+                    remainingDataPoint.Costs = remainingDataPoint.Costs / productivity;
+
+                    remainingDataPoint.IsProductivityInflated = true;
+                }
+
+
+                decimal totalRemaining = baselineRemainingDataPoints.Sum(x => x.Units);
+
+                remainingDataPoints.AddRange(baselineRemainingDataPoints);
+            }
 
             if (burnedDataPoints != null)
-                convertedDataPoints.AddRange(burnedDataPoints.ToList());
+                remainingDataPoints.AddRange(burnedDataPoints.ToList());
 
-            if (convertedDataPoints.All(x => x.IsFromP6))
+            if (remainingDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
 
-            this.rawDataPoints = convertedDataPoints;
+            this.rawDataPoints = remainingDataPoints;
         }
 
         public IEnumerable<ExoDataPoint> ExoDataPoints
@@ -391,7 +419,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid DeliverableGuid { get; set; }
         public bool IsFromP6 { get; set; }
         public bool IsRemaining { get; set; }
-
+        public bool IsProductivityInflated { get; set; }
         public bool DoNotPlot { get; set; }
 
         public decimal UnitsPercentage

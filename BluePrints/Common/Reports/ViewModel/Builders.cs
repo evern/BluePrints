@@ -139,7 +139,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 projectSummaryStats.Burned.SetData(burnedDataPoints);
                 projectSummaryStats.Actual.SetData(actualDataPoints);
-                projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Remaining.GetData().Where(x => x.IsRemaining), projectSummaryStats.Burned.GetData());
+                
+                projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
                 //LoadingScreenManager.Progress();
             }
             catch (Exception e)

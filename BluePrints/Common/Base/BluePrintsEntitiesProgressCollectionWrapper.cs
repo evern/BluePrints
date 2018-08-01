@@ -1236,14 +1236,16 @@ namespace BluePrints.Common.Base
                                 {
 
                                     //in the first progress current productivity will be null and if user doesn't override the productivity, we will have 0 productivity
-                                    decimal override_productivity;
-                                    if (reportable.Current_Productivity == 0 && reportable.Override_Productivity == 0)
-                                        override_productivity = 1;
-                                    else if (reportable.Override_Productivity != null)
-                                        override_productivity = (decimal)reportable.Override_Productivity;
-                                    else
-                                        override_productivity = reportable.Current_Productivity;
+                                    //decimal override_productivity;
+                                    //if (reportable.Current_Productivity == 0 && reportable.Override_Productivity == 0)
+                                    //    override_productivity = 1;
+                                    //else if (reportable.Override_Productivity != null)
+                                    //    override_productivity = (decimal)reportable.Override_Productivity;
+                                    //else
+                                    //    override_productivity = reportable.Current_Productivity;
 
+                                    //currently user isn't familiar with productivity calculation so set productivity to 1
+                                    decimal override_productivity = 1;
                                     decimal current_assignment_remaining_duration_per_productivity = current_assignment_remaining_duration / override_productivity;
                                     if (!processedP6Task.Any(x => x == P6TASK.task_code))
                                         P6TASK.remain_drtn_hr_cnt = current_assignment_remaining_duration_per_productivity;

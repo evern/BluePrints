@@ -763,6 +763,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal CurrentUnits
+        {
+            get
+            {
+                if (Stats == null || Stats.Current == null || Stats.Current.CurrentPeriodCumulativeDataPoint == null)
+                    return 0;
+
+                return Stats.Current.CurrentPeriodCumulativeDataPoint.Units;
+            }
+        }
+
         public decimal ScheduleCurrentPeriodPercentage
         {
             get
@@ -852,7 +863,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal Current_Productivity => SchedulePercentage == 0 ? 0 : Total_Earned_Percentage / SchedulePercentage;
+        public decimal Current_Productivity => CurrentUnits == 0 ? 1 : Earned_Units_ToDate / CurrentUnits;
 
         decimal? remaining_productivity { get; set; }
         public decimal? Remaining_Productivity

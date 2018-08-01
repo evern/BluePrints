@@ -436,13 +436,13 @@ namespace BluePrints.ViewModels
             }
 
             List<BluePrintsEntitiesModuleDescription> projectModuleContextMenuItems = new List<BluePrintsEntitiesModuleDescription>();
-            BluePrintsEntitiesModuleDescription projectRateMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates", false, false, @"Number Formats\Currency2_16x16.png");
+            //BluePrintsEntitiesModuleDescription projectRateMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates", false, false, @"Number Formats\Currency2_16x16.png");
             BluePrintsEntitiesModuleDescription projectAreaMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png");
             BluePrintsEntitiesModuleDescription projectBaselineMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectBaselines" + keyString, projectKey, childTitlePrefix + "Baseline Revisions", "BASELINECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Baseline Revisions", false, false, @"Support\Version_16x16.png");
             BluePrintsEntitiesModuleDescription projectProgressMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectProgress" + keyString, projectKey, childTitlePrefix + "Progress Revisions", "PROGRESSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Progress Revisions", false, false, @"Support\Version_16x16.png");
             BluePrintsEntitiesModuleDescription projectEstimateMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectEstimates" + keyString, projectKey, childTitlePrefix + "Estimate Revisions", "ESTIMATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Estimate Revisions", false, false, @"Support\Version_16x16.png");
 
-            projectModuleContextMenuItems.Add(projectRateMenuItem);
+            //projectModuleContextMenuItems.Add(projectRateMenuItem);
             projectModuleContextMenuItems.Add(projectAreaMenuItem);
             projectModuleContextMenuItems.Add(projectBaselineMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);

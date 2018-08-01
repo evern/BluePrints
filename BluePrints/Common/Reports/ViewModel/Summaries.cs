@@ -85,7 +85,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //Cannot uset setdata on remaining actual because there's no Func<DataPoint, bool> predicate to apply filter on data
             //grouped_summary_stats.RemainingActual.SetData(remaining_actual_data_points);
-            grouped_summary_stats.RemainingActual.SetRemainingActualData(grouped_summary_stats.Remaining.GetData(), grouped_summary_stats.Burned.GetData());
+            grouped_summary_stats.RemainingActual.SetRemainingActualData(grouped_summary_stats.Reportables, grouped_summary_stats.Burned.GetData());
             grouped_summary_stats.RecalculateStats(false);
 
             if (grouped_reportables.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
@@ -223,6 +223,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.Remaining.SetData(Reportables.SelectMany(x => x.Stats.Remaining.GetData()));
             //Remaining actual canno be summarize here because it contains elements from actuals
             //this.RemainingActual.SetData(Reportables.SelectMany(x => x.Stats.RemainingActual.GetData()));
+        }
+
+        public void GenerateActualRemainingSummary()
+        {
+
         }
 
         public void RecalculateStats(bool isCost = false)
