@@ -642,6 +642,9 @@ namespace BluePrints.ViewModels
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
 
+        bool neverAskAndEdit;
+        bool neverAskAndAdd;
+
         private void onBeforeSavedProjectStockCodeLogging(ESTIMATE_ITEMProgress entity)
         {
             STOCK_CODE editingSTOCK_CODE;
@@ -693,26 +696,42 @@ namespace BluePrints.ViewModels
                         IsDefault = false,
                     };
 
-                    string message = String.Format("Current stock code with\nSupply Rate: {0:#.##} Install Hours: {1:#.##} UOM: {2}\n\n" +
-                        "Is changed to\nSupply Rate: {3:#.##} Install Hours: {4:#.##} UOM: {5}\n\n" +
-                        "Do you wish to add new or update?\n\n", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, projectStockCode.UOM, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL, editingSTOCK_CODE.UOM);
-
-                    BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
-                    UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
-                    if (result == addCommand)
-                    {
-                        Guid newStockCodeGuid = createNewSTOCK_CODE(editingSTOCK_CODE);
-                        if (IsBudget)
-                            entity.Entity.Entity.GUID_BUDGET_STOCK_CODE = newStockCodeGuid;
-                        else
-                            entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = newStockCodeGuid;
-                    }
-                    else if (result == editCommand)
+                    if(neverAskAndEdit)
                         updateSTOCK_CODE(editingSTOCK_CODE);
+                    else if(neverAskAndAdd)
+                        createNewStockCode(entity, editingSTOCK_CODE);
+                    else
+                    {
+                        //string message = String.Format("Current stock code with\nSupply Rate: {0:#.##} Install Hours: {1:#.##} UOM: {2}\n\n" + "Is changed to\nSupply Rate: {3:#.##} Install Hours: {4:#.##} UOM: {5}\n\n" + "Do you wish to add new or update?\n\n", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, projectStockCode.UOM, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL, editingSTOCK_CODE.UOM);
+                        string message = String.Format("Supply rate, install hours or UOM changed\nDo you wish to edit stock or add as a new stock?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, projectStockCode.UOM, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL, editingSTOCK_CODE.UOM);
+
+                        BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
+                        viewModel.CheckboxVisibility = Visibility.Visible;
+                        UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
+                        if (result == addCommand)
+                        {
+                            createNewStockCode(entity, editingSTOCK_CODE);
+                            neverAskAndAdd = viewModel.IsChecked;
+                        }
+                        else if (result == editCommand)
+                        {
+                            updateSTOCK_CODE(editingSTOCK_CODE);
+                            neverAskAndEdit = viewModel.IsChecked;
+                        }
+                    }
                 }
                 else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
                     updateSTOCK_CODE(editingSTOCK_CODE);
             }
+        }
+
+        private void createNewStockCode(ESTIMATE_ITEMProgress entity, STOCK_CODE editingSTOCK_CODE)
+        {
+            Guid newStockCodeGuid = createNewSTOCK_CODE(editingSTOCK_CODE);
+            if (IsBudget)
+                entity.Entity.Entity.GUID_BUDGET_STOCK_CODE = newStockCodeGuid;
+            else
+                entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE = newStockCodeGuid;
         }
         #endregion
         #endregion
