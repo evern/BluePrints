@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class User_OffisteDirectProgressCollectionView : UserControl
+    public partial class User_OffsiteDirectProgressCollectionView : UserControl
     {
-        public User_OffisteDirectProgressCollectionView()
+        public User_OffsiteDirectProgressCollectionView()
         {
             InitializeComponent();
         }

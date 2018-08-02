@@ -275,7 +275,7 @@ namespace BluePrints.ViewModels
                 dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView", null, null, null, true, false, @"Chart\Chart_16x16.png"));
 
             dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", dashboardCategoryId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"));
-            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffisteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png"));
+            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png"));
 
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }

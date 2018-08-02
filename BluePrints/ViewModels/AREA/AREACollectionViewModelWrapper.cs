@@ -182,8 +182,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new AREAMasterDetailProjection().Entity) + "." +
-                                                           BindableBase.GetPropertyName(() => new AREA().GUID);
+        protected override string expand_key_field_name => BindableBase.GetPropertyName(() => new AREAMasterDetailProjection().Entity) + "." + BindableBase.GetPropertyName(() => new AREA().GUID);
         #endregion
 
         #region View Behavior
@@ -219,6 +218,12 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(AREAMasterDetailProjection projection, string field_name, object new_value)
         {
+            string internalNumberFieldName = BindableBase.GetPropertyName(() => new AREAMasterDetailProjection().Entity.INTERNAL_NUM);
+            if(field_name.Contains(internalNumberFieldName) && projection.Entity.GUID_PARENT != null)
+            {
+                return "Subarea number must only contain 2 characters";
+            }
+
             return string.Empty;
         }
 

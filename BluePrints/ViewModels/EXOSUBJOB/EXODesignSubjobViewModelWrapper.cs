@@ -516,6 +516,11 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            if (DisplaySelectedEntities.Any(x => x.SubJob != null && x.SubJob.Code.Length > 15))
+            {
+                MessageBoxService.ShowMessage("Some lines have subjobs that is more than 12 characters for job codes, hence operation cancelled");
+                return;
+            }
 
             int updatedLineCount = 0;
             List<string> addedLines = new List<string>();
@@ -562,7 +567,7 @@ namespace BluePrints.ViewModels
                     {
                         if(selectedLine.Discipline.Id != null)
                         {
-                            int? commodityId = ExoMethods.findExistingOrAddCommodity(selectedLine.Commodity.Code, selectedLine.Commodity.Name, (int)selectedLine.Discipline.Id);
+                            int? commodityId = ExoMethods.findExistingCommodity(selectedLine.Commodity.Code, selectedLine.Commodity.Name, (int)selectedLine.Discipline.Id);
                             if (commodityId != null)
                             {
                                 selectedLine.Commodity.Id = commodityId;
@@ -570,7 +575,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
-                    selectedLine.LineId = ExoMethods.findExistingLine(selectedLine, existingLine, loadPROJECT.NUMBER);
+                    selectedLine.LineId = ExoMethods.findExistingOrAddLine(selectedLine, existingLine, loadPROJECT.NUMBER);
                     selectedLine.Update();
 
                     if(selectedLine.LineId != null)

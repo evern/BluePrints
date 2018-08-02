@@ -34,27 +34,28 @@
                             <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" EventName="MasterRowCollapsed" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Internal Number" FieldName="Entity.INTERNAL_NUM" HeaderToolTip="An identifier for the area. Must be unique" />
-                            <dxg:GridColumn Header="Client Number" FieldName="Entity.CLIENT_NUM" HeaderToolTip="Identifier which the client recognizes" />
-                            <dxg:GridColumn Header="Title" FieldName="Entity.TITLE" HeaderToolTip="Description of the area" />
+                            <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" />
+                            <dxg:GridColumn FieldName="Entity.CLIENT_NUM" Header="Client Number" HeaderToolTip="Identifier which the client recognizes" />
+                            <dxg:GridColumn FieldName="Entity.TITLE" Header="Title" HeaderToolTip="Description of the area" />
+                            <dxg:GridColumn FieldName="Entity.GUID" Header="Key" Visible="False" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
                                 <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn Header="Internal Number" FieldName="Entity.INTERNAL_NUM" HeaderToolTip="An identifier for the area. Must be unique" />
-                                        <dxg:GridColumn Header="Client Number" FieldName="Entity.CLIENT_NUM" HeaderToolTip="Identifier which the client recognizes" />
-                                        <dxg:GridColumn Header="Title" FieldName="Entity.TITLE" HeaderToolTip="Description of the area" />
+                                        <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" />
+                                        <dxg:GridColumn FieldName="Entity.CLIENT_NUM" Header="Client Number" HeaderToolTip="Identifier which the client recognizes" />
+                                        <dxg:GridColumn FieldName="Entity.TITLE" Header="Title" HeaderToolTip="Description of the area" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Content="Copy With Headers" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                                <dxb:BarButtonItem Content="Bulk Edit" Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                <dxb:BarButtonItem Content="Fill Up" Command="{Binding DataContext.MainViewModel.FillUpCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                <dxb:BarButtonItem Content="Fill Down" Command="{Binding DataContext.MainViewModel.FillDownCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
-                                                <dxb:BarButtonItem Content="Delete Row" Command="{Binding DataContext.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                                <dxb:BarButtonItem Content="Refresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.MainViewModel.BulkColumnEditCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.MainViewModel.FillUpCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.MainViewModel.FillDownCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.MainViewModel.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>

@@ -105,7 +105,7 @@ namespace BluePrints.Common.Projections
 
     public static class ExoMethods
     {
-        public static int? findExistingLine(ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
+        public static int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             if (exoLine.SubJob.Id == null || exoLine.Discipline.Id == null || exoLine.Commodity.Id == null)
@@ -116,74 +116,74 @@ namespace BluePrints.Common.Projections
                 JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine);
                 if (line != null)
                     return line.SEQNO;
-                //else if (maxJOBCOSTLINEID != null)
-                //{
-                //    JOBCOST_LINES newLINE = new JOBCOST_LINES();
-                //    newLINE.QUOTE_QTY = copyLine.QUOTE_QTY;
-                //    newLINE.QUOTE_UNITPR = 0;
-                //    newLINE.ACTUAL_UNITCOST = 0;
-                //    newLINE.TRANSDATE = DateTime.Now.Date;
-                //    newLINE.EXCHRATE = copyLine.EXCHRATE;
-                //    newLINE.DISCOUNT = 0;
-                //    newLINE.UNITPRICE_INCTAX = 0;
-                //    newLINE.JOBNO = (int)exoLine.SubJob.Id;
-                //    newLINE.STOCKCODE = exoLine.Commodity.Code.ToUpper();
-                //    newLINE.DESCRIPTION = exoLine.Commodity.Name;
-                //    newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
-                //    newLINE.COST_CENTRE = exoLine.Commodity.Id;
-                //    newLINE.COST_CENTRE2 = exoLine.Discipline.Id;
-                //    newLINE.NARRATIVE = "N";
-                //    newLINE.LINE_STATUS = "Q";
-                //    newLINE.TAXNO = copyLine.TAXNO;
-                //    newLINE.BRANCHNO = 0;
-                //    newLINE.SUBCODE = 0;
-                //    newLINE.ANALYSIS = 0;
-                //    newLINE.CURRENCYNO = 0;
-                //    newLINE.ALINENO = 100;
-                //    newLINE.GLCODE = 0;
-                //    newLINE.MASTER_JOBNO = copyLine.MASTER_JOBNO;
-                //    newLINE.COPY_FROM_QUOTE = "N";
-                //    newLINE.DIM_LENGTH = 1;
-                //    newLINE.DIM_WIDTH = 1;
-                //    newLINE.DIM_DEPTH = 1;
-                //    newLINE.TOTAL_QUANTITY = 1;
-                //    newLINE.LINETYPE = 0;
-                //    newLINE.KITSEQNO = -1;
-                //    newLINE.KITCODE = string.Empty;
-                //    newLINE.PRICE_OVERRIDDEN = "N";
-                //    newLINE.LINKED_STOCKCODE = exoLine.Commodity.Code.ToUpper();
-                //    newLINE.LINKED_QTY = 1;
-                //    newLINE.HIDDEN_COST = 0;
-                //    newLINE.HIDDEN_SELL = 0;
-                //    newLINE.SUPPLIERNO = 0;
-                //    newLINE.FROMLOC = 1;
-                //    newLINE.LINETOTAL = 0;
-                //    newLINE.BOMTYPE = "N";
-                //    newLINE.SHOWLINE = "Y";
-                //    newLINE.BOMPRICING = "N";
-                //    newLINE.LINKEDSTATUS = "L";
-                //    newLINE.LISTPRICE = 0;
-                //    newLINE.NUNITPR = 0;
-                //    newLINE.OPTION_NO = 0;
-                //    newLINE.X_LABOUR_ALLOWANCE = 0;
-                //    newLINE.SPREADVALUE = "Y";
-                //    newLINE.TAXRATE = copyLine.TAXRATE;
-                //    newLINE.LINETOTAL_TAX = 0;
-                //    newLINE.LINETOTAL_INCTAX = 0;
-                //    newLINE.LINE_TAX = 0;
-                //    newLINE.HIDDEN_LINETOTAL = 0;
-                //    newLINE.SCHEDULE_SEQNO = 0;
-                //    newLINE.JOBCOSTLINEID = ((int)maxJOBCOSTLINEID) + 1;
-                //    newLINE.SNTYPE = 0;
-                //    newLINE.SNEXPDAYS = -2;
-                //    newLINE.OPPLINEID = -1;
-                //    newLINE.COST_LINENO = -1;
-                //    newLINE.X_VARIATION_CODE = string.Empty;
-                //    pUnitOfWork.JOBCOST_LINES.Add(newLINE);
-                //    pUnitOfWork.SaveChanges();
+                else if (maxJOBCOSTLINEID != null)
+                {
+                    JOBCOST_LINES newLINE = new JOBCOST_LINES();
+                    newLINE.QUOTE_QTY = copyLine.QUOTE_QTY;
+                    newLINE.QUOTE_UNITPR = 0;
+                    newLINE.ACTUAL_UNITCOST = 0;
+                    newLINE.TRANSDATE = DateTime.Now.Date;
+                    newLINE.EXCHRATE = copyLine.EXCHRATE;
+                    newLINE.DISCOUNT = 0;
+                    newLINE.UNITPRICE_INCTAX = 0;
+                    newLINE.JOBNO = (int)exoLine.SubJob.Id;
+                    newLINE.STOCKCODE = exoLine.Commodity.Code.ToUpper();
+                    newLINE.DESCRIPTION = exoLine.Commodity.Name;
+                    newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
+                    newLINE.COST_CENTRE = exoLine.Commodity.Id;
+                    newLINE.COST_CENTRE2 = exoLine.Discipline.Id;
+                    newLINE.NARRATIVE = "N";
+                    newLINE.LINE_STATUS = "Q";
+                    newLINE.TAXNO = copyLine.TAXNO;
+                    newLINE.BRANCHNO = 0;
+                    newLINE.SUBCODE = 0;
+                    newLINE.ANALYSIS = 0;
+                    newLINE.CURRENCYNO = 0;
+                    newLINE.ALINENO = 100;
+                    newLINE.GLCODE = 0;
+                    newLINE.MASTER_JOBNO = copyLine.MASTER_JOBNO;
+                    newLINE.COPY_FROM_QUOTE = "N";
+                    newLINE.DIM_LENGTH = 1;
+                    newLINE.DIM_WIDTH = 1;
+                    newLINE.DIM_DEPTH = 1;
+                    newLINE.TOTAL_QUANTITY = 1;
+                    newLINE.LINETYPE = 0;
+                    newLINE.KITSEQNO = -1;
+                    newLINE.KITCODE = string.Empty;
+                    newLINE.PRICE_OVERRIDDEN = "N";
+                    newLINE.LINKED_STOCKCODE = exoLine.Commodity.Code.ToUpper();
+                    newLINE.LINKED_QTY = 1;
+                    newLINE.HIDDEN_COST = 0;
+                    newLINE.HIDDEN_SELL = 0;
+                    newLINE.SUPPLIERNO = 0;
+                    newLINE.FROMLOC = 1;
+                    newLINE.LINETOTAL = 0;
+                    newLINE.BOMTYPE = "N";
+                    newLINE.SHOWLINE = "Y";
+                    newLINE.BOMPRICING = "N";
+                    newLINE.LINKEDSTATUS = "L";
+                    newLINE.LISTPRICE = 0;
+                    newLINE.NUNITPR = 0;
+                    newLINE.OPTION_NO = 0;
+                    newLINE.X_LABOUR_ALLOWANCE = 0;
+                    newLINE.SPREADVALUE = "Y";
+                    newLINE.TAXRATE = copyLine.TAXRATE;
+                    newLINE.LINETOTAL_TAX = 0;
+                    newLINE.LINETOTAL_INCTAX = 0;
+                    newLINE.LINE_TAX = 0;
+                    newLINE.HIDDEN_LINETOTAL = 0;
+                    newLINE.SCHEDULE_SEQNO = 0;
+                    newLINE.JOBCOSTLINEID = ((int)maxJOBCOSTLINEID) + 1;
+                    newLINE.SNTYPE = 0;
+                    newLINE.SNEXPDAYS = -2;
+                    newLINE.OPPLINEID = -1;
+                    newLINE.COST_LINENO = -1;
+                    newLINE.X_VARIATION_CODE = string.Empty;
+                    pUnitOfWork.JOBCOST_LINES.Add(newLINE);
+                    pUnitOfWork.SaveChanges();
 
-                //    return newLINE.SEQNO;
-                //}
+                    return newLINE.SEQNO;
+                }
                 else
                 {
                     return null;
@@ -191,32 +191,34 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static int? findExistingOrAddCommodity(string commodityCode, string commodityName, int defaultDisciplineId)
+        public static int? findExistingCommodity(string commodityCode, string commodityName, int defaultDisciplineId)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOB_COSTTYPES costTypes = ExoQueries.GetCommodity(pUnitOfWork, commodityCode);
 
             if (costTypes != null)
                 return costTypes.SEQNO;
+            //else
+            //{
+            //    JOB_COSTTYPES newCOSTTYPE = new JOB_COSTTYPES();
+            //    newCOSTTYPE.DEF_MARKUP = 0;
+            //    newCOSTTYPE.DEF_OVERHEAD = 0;
+            //    newCOSTTYPE.COSTDESC = commodityCode.ToUpper() + " - " + commodityName.ToUpper();
+            //    newCOSTTYPE.GLCODE = -1;
+            //    newCOSTTYPE.GLSUBCODE = 0;
+            //    newCOSTTYPE.SHOWONQUOTE = "F";
+            //    newCOSTTYPE.SHORTCODE = commodityCode.ToUpper();
+            //    newCOSTTYPE.DEF_COSTGROUP = defaultDisciplineId;
+            //    newCOSTTYPE.DEF_PURCH_GLCODE = -1;
+            //    newCOSTTYPE.DEF_PURCH_GLSUBCODE = 0;
+            //    newCOSTTYPE.CONSOLIDATE = "F";
+            //    newCOSTTYPE.COPY_FROM_QUOTE = "N";
+            //    pUnitOfWork.JOB_COSTTYPES.Add(newCOSTTYPE);
+            //    pUnitOfWork.SaveChanges();
+            //    return newCOSTTYPE.SEQNO;
+            //}
             else
-            {
-                JOB_COSTTYPES newCOSTTYPE = new JOB_COSTTYPES();
-                newCOSTTYPE.DEF_MARKUP = 0;
-                newCOSTTYPE.DEF_OVERHEAD = 0;
-                newCOSTTYPE.COSTDESC = commodityCode.ToUpper() + " - " + commodityName.ToUpper();
-                newCOSTTYPE.GLCODE = -1;
-                newCOSTTYPE.GLSUBCODE = 0;
-                newCOSTTYPE.SHOWONQUOTE = "F";
-                newCOSTTYPE.SHORTCODE = commodityCode.ToUpper();
-                newCOSTTYPE.DEF_COSTGROUP = defaultDisciplineId;
-                newCOSTTYPE.DEF_PURCH_GLCODE = -1;
-                newCOSTTYPE.DEF_PURCH_GLSUBCODE = 0;
-                newCOSTTYPE.CONSOLIDATE = "F";
-                newCOSTTYPE.COPY_FROM_QUOTE = "N";
-                pUnitOfWork.JOB_COSTTYPES.Add(newCOSTTYPE);
-                pUnitOfWork.SaveChanges();
-                return newCOSTTYPE.SEQNO;
-            }
+                return null;
         }
 
         public static int? findExistingOrAddDiscipline(string disciplineCode, string title)

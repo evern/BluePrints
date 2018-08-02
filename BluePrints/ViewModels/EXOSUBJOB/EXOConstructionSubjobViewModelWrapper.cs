@@ -330,10 +330,17 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            IEnumerable<ExoSubJobProjection> newLines = DisplayEntities.Where(x => !x.IsLineExistsInExo);
+            if(newLines.Any(x => x.SubJob != null && x.SubJob.Code.Length > 15))
+            {
+                MessageBoxService.ShowMessage("Some lines have subjobs that is more than 12 characters for job codes, hence operation cancelled");
+                return;
+            }
+
             JOBCOST_LINES copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
             int updatedLineCount = 0;
             List<string> addedLines = new List<string>();
-            foreach (ExoSubJobProjection projection in DisplayEntities.Where(x => !x.IsLineExistsInExo))
+            foreach (ExoSubJobProjection projection in newLines)
             {
                 if(!addedLines.Any(x => x == projection.SubJob.Code))
                 {
@@ -359,11 +366,11 @@ namespace BluePrints.ViewModels
                 if (disciplineId != null)
                 {
                     projection.Discipline.Id = disciplineId;
-                    int? commodityId = ExoMethods.findExistingOrAddCommodity(projection.Commodity.Code, string.Empty, (int)disciplineId);
+                    int? commodityId = ExoMethods.findExistingCommodity(projection.Commodity.Code, string.Empty, (int)disciplineId);
                     if (commodityId != null)
                     {
                         projection.Commodity.Id = commodityId;
-                        projection.LineId = ExoMethods.findExistingLine(projection, copyLine, loadPROJECT.NUMBER);
+                        projection.LineId = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
                         if(projection.LineId != null)
                             updatedLineCount += 1;
 
