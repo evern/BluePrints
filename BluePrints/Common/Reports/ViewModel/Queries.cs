@@ -55,13 +55,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true, bool useReportDate = false)
         {
             //IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
-            List<BASELINE_ITEM_WORK> current_user_works = BASELINE_ITEM_WORKSCollection.Where(x => x.GUID_USER == user.GUID).ToList();
+            //List<BASELINE_ITEM_WORK> current_user_works = BASELINE_ITEM_WORKSCollection.Where(x => x.GUID_USER == user.GUID).ToList();
 
             IQueryable<BASELINE_ITEM> live_baseline_items = query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
             List<BASELINE_ITEM> user_baseline_item = new List<BASELINE_ITEM>();
             foreach(BASELINE_ITEM live_baseline_item in live_baseline_items)
             {
-                if (current_user_works.Any(works => works.GUID_BASELINE_ITEM_ORIGINAL == live_baseline_item.OriginalEntityKey))
+                //if (current_user_works.Any(works => works.GUID_BASELINE_ITEM_ORIGINAL == live_baseline_item.OriginalEntityKey))
+                if(live_baseline_item.GUID_USER == user.GUID)
                     user_baseline_item.Add(live_baseline_item);
             }
 
