@@ -137,6 +137,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal WeeksOnSite
+        {
+            get
+            {
+                if (Entity == null)
+                    return 0;
+
+                return Math.Round(DaysOnSite / 6.5m);
+            }
+        }
+
         #region Criteria
         const string attendanceTarget = ">= 90% Attendance";
         const string notApplicableTarget = "Not Applicable";
@@ -151,7 +162,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal KPI_PRESTART_TargetNumber => DaysOnSite;
+        public decimal KPI_PRESTART_TargetNumber => WeeksOnSite;
 
         public string KPI_TOOLBOX_Target
         {
@@ -164,7 +175,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal KPI_TOOLBOX_TargetNumber => DaysOnSite;
+        public decimal KPI_TOOLBOX_TargetNumber => WeeksOnSite;
 
         public decimal KPI_HAZOB_TargetNumber
         {
@@ -173,7 +184,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Math.Round(Total_ManHours / 100, 0);
+                return Math.Round(Total_Employees * WeeksOnSite, 0);
             }
         }
 
@@ -195,7 +206,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Math.Round((Entity.QTY_MGMT + Entity.QTY_HSE) * Entity.QTY_DAYSONSITE, 0);
+                return Math.Round((Entity.QTY_MGMT + Entity.QTY_HSE) * WeeksOnSite, 0);
             }
         }
 
@@ -239,7 +250,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Math.Round((Entity.QTY_MGMT * Entity.QTY_DAYSONSITE) / 6.5m, 0);
+                return Math.Round(Entity.QTY_MGMT * Entity.QTY_DAYSONSITE, 0);
             }
         }
 
