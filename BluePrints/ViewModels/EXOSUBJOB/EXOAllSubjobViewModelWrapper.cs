@@ -117,6 +117,7 @@ namespace BluePrints.ViewModels
                 JOBCOST_HDR masterJob = slaveSubJobs.FirstOrDefault(x => x.JOBNO == (int)entity.SubJob.Id);
                 if(masterJob != null)
                 {
+                    JOBCOST_FLAGS masterFlag = primeroUnitOfWork.JOBCOST_FLAGS.FirstOrDefault(x => x.JOBNO == masterJob.JOBNO);
                     foreach (JOBCOST_HDR slaveSubJob in slaveSubJobs)
                     {
                         slaveSubJob.ACCNO = masterJob.ACCNO;
@@ -134,6 +135,34 @@ namespace BluePrints.ViewModels
                         slaveSubJob.DELADDR6 = masterJob.DELADDR6;
                         slaveSubJob.WIPLOC = masterJob.WIPLOC;
                         slaveSubJob.EXCHRATE = masterJob.EXCHRATE;
+                        slaveSubJob.ISACTIVE = masterJob.ISACTIVE;
+
+                        if(masterFlag != null)
+                        {
+                            JOBCOST_FLAGS slaveFlag = primeroUnitOfWork.JOBCOST_FLAGS.FirstOrDefault(x => x.JOBNO == slaveSubJob.JOBNO);
+                            if(slaveFlag != null)
+                            {
+                                slaveFlag.INVOICEREADY = masterFlag.INVOICEREADY;
+                                slaveFlag.ISACTIVE = masterFlag.ISACTIVE;
+                                slaveFlag.ISCOMPLETE = masterFlag.ISCOMPLETE;
+                                slaveFlag.ISARCHIVED = masterFlag.ISARCHIVED;
+                                slaveFlag.FLAG01 = masterFlag.FLAG01;
+                                slaveFlag.FLAG02 = masterFlag.FLAG02;
+                                slaveFlag.FLAG03 = masterFlag.FLAG03;
+                                slaveFlag.FLAG04 = masterFlag.FLAG04;
+                                slaveFlag.FLAG05 = masterFlag.FLAG05;
+                                slaveFlag.FLAG06 = masterFlag.FLAG06;
+                                slaveFlag.FLAG07 = masterFlag.FLAG07;
+                                slaveFlag.FLAG08 = masterFlag.FLAG08;
+                                slaveFlag.FLAG09 = masterFlag.FLAG09;
+                                slaveFlag.FLAG10 = masterFlag.FLAG10;
+                                slaveFlag.FLAG11 = masterFlag.FLAG11;
+                                slaveFlag.FLAG12 = masterFlag.FLAG12;
+                                slaveFlag.FLAG13 = masterFlag.FLAG13;
+                                slaveFlag.FLAG14 = masterFlag.FLAG14;
+                                slaveFlag.FLAG15 = masterFlag.FLAG15;
+                            }
+                        }
 
                         updatedLines += 1;
                     }
