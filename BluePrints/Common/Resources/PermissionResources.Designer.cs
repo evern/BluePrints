@@ -295,6 +295,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to standardize subjobs in exo.
+        /// </summary>
+        internal static string StandardizeSubJobs {
+            get {
+                return ResourceManager.GetString("StandardizeSubJobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to view dashboard.
         /// </summary>
         internal static string ViewDashboard {

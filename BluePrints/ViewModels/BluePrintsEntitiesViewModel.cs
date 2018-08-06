@@ -318,7 +318,9 @@ namespace BluePrints.ViewModels
             //    dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Gates", "DELIVERABLES_STATUSCollectionView"));
 
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"));
-            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "All Exo Subjobs", "EXOALLSUBJOBCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
+
+            if(LoginCredentials.hasPermission(PermissionResources.StandardizeSubJobs))
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "All Exo Subjobs", "EXOALLSUBJOBCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
