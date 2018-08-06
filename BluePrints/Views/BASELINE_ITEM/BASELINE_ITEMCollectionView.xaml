@@ -64,7 +64,7 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarStaticItem Content="Available Units" />
-                                <dxb:BarEditItem EditValue="{Binding DataContext.FreeUnits, ElementName=userControl, Mode=OneWay}" IsReadOnly="True">
+                                <dxb:BarEditItem EditValue="{Binding DataContext.FreeUnits, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Remaining units to be assigned when baseline is locked">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:TextEditSettings NullText="Unlimited" />
                                     </dxb:BarEditItem.EditSettings>
