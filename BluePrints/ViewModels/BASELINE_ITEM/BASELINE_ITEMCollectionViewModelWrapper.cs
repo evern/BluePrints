@@ -475,6 +475,19 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public decimal? FreeUnits
+        {
+            get
+            {
+                if (MainViewModel == null || DisplayEntities == null)
+                    return 0;
+
+                if (loadBASELINE.BUDGETED_UNITS == null || loadBASELINE.BUDGETED_UNITS == 0)
+                    return null;
+
+                return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Budget_Units);
+            }
+        }
         //public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
         //{
         //    if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
@@ -513,6 +526,12 @@ namespace BluePrints.ViewModels
             {
                 FullRefreshWithoutClearingUndoRedo();
                 return;
+            }
+            else if(changedType == typeof(BASELINE_ITEM))
+            {
+                this.RaisePropertyChanged(x => x.FreeUnits);
+                //Need to raise property change to stimulate converter to calculate maxValue for each deliverable
+                this.RaisePropertyChanged(x => x.DisplayEntities);
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
@@ -936,6 +955,7 @@ namespace BluePrints.ViewModels
             set
             {
                 LockUnlockBASELINE(value);
+                this.RaisePropertyChanged(x => x.FreeUnits);
             }
         }
 

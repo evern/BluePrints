@@ -63,6 +63,12 @@
                                 <dxb:BarCheckItem Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarStaticItem Content="Available Units" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.FreeUnits, ElementName=userControl, Mode=OneWay}" IsReadOnly="True">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:TextEditSettings NullText="Unlimited" />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
                                 <dxb:BarCheckItem Content="Lock Baseline" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total budget units, so that units assigned to all deliverables cannot exceed the current total units" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" Content="Import Client Numbers" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
                                 <dxb:BarCheckItem Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
