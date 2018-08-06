@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="BluePrints.Views.EXOALLSUBJOBCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXOAllSubjobViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="EXO Permission">
+                            <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarButtonItem Command="{Binding DataContext.StandardizeLinesCommand, ElementName=userControl}" Content="Standadize Subjobs" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="SubJob.Code" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                <dxg:GridColumn Width="150" FieldName="SubJob.Title" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="True" />
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView">
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarButtonItem Command="{Binding DataContext.StandardizeLinesCommand, ElementName=userControl}" Content="Standadize Subjobs" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutControl>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -747,6 +747,7 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORK_STAFF_ROLECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXOAllSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
@@ -805,6 +806,9 @@
     </Compile>
     <Compile Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml.cs">
       <DependentUpon>DAYWORK_STAFF_ROLECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml.cs">
+      <DependentUpon>EXOALLSUBJOBCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml.cs">
       <DependentUpon>EXONATIVESUBJOBCollectionView.xaml</DependentUpon>
@@ -1675,6 +1679,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -814,6 +814,25 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
+        public static List<ExoSubJobProjection> GetMasterExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            var availableLines = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 where SUBJOB.JOBNO == SUBJOB.MASTER_JOBNO
+                                 select new { SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE };
+
+            List<ExoSubJobProjection> exoTimes = availableLines.ToList().Select(x => new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Id = x.SUBJOBNO, Code = x.SUBJOBNAME, Title = x.SUBJOBTITLE } }).ToList();
+            return exoTimes;
+        }
+
+        public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)
+        {
+            var availableLines = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 where SUBJOB.MASTER_JOBNO == masterJobNo
+                                 select SUBJOB;
+
+            return availableLines;
+        }
+
         private static ExoTimeAuthorisation populateExoLine(dynamic dbTime)
         {
             ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();

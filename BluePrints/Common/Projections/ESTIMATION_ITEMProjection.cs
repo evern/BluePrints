@@ -364,7 +364,7 @@ namespace BluePrints.Common.Projections
         {
             IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Construct);
             IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
-
+            
             List<ESTIMATE_ITEMProjection> estimate_items = new List<ESTIMATE_ITEMProjection>();
             foreach(ESTIMATE_ITEM estimate_item in ESTIMATE_ITEMS)
             {
@@ -390,8 +390,7 @@ namespace BluePrints.Common.Projections
 
                 //use entity framework navigational model to speed up process
                 //newEstimateItem.RATE = INSTALL_RATES.FirstOrDefault(rate => (rate.PHASE_TYPE == estimate_item.Phase) && (rate.CHARGE_TYPE == estimate_item.PHASE.CHARGE_TYPE) && (rate.GUID_DISCIPLINE == estimate_item.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == estimate_item.GUID_COMMODITY_CODE || rate.GUID_COMMODITY == null));
-                newEstimateItem.FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == null) && (rate.GUID_DISCIPLINE == null) && (rate.GUID_COMMODITY == null));
-
+                newEstimateItem.FREIGHT_RATE = FREIGHT_RATES.FirstOrDefault(rate => (rate.GUID_DISCIPLINE == newEstimateItem.Entity.GUID_DISCIPLINE || rate.GUID_DISCIPLINE == null) && (rate.GUID_DEPARTMENT == newEstimateItem.Entity.GUID_DEPARTMENT || rate.GUID_DEPARTMENT == null));
                 estimate_items.Add(newEstimateItem);
             }
 

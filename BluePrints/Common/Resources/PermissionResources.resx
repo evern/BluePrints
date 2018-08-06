@@ -198,4 +198,7 @@
   <data name="ManageOffice" xml:space="preserve">
     <value>Allow user to manage office</value>
   </data>
+  <data name="StandardizeSubJobs" xml:space="preserve">
+    <value>Allow user to standardize subjobs in exo</value>
+  </data>
 </root>
