@@ -138,6 +138,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" IsEnabled="False" ReadOnly="True" />

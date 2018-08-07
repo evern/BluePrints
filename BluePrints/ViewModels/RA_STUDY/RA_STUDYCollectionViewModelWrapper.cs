@@ -61,9 +61,8 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<RA_STUDY_TYPE, RA_STUDY_TYPE, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.RA_STUDY_TYPES);
             loaderCollection.AddLoaderDescription<RA_GUIDE_PROMPT, RA_GUIDE_PROMPT, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.RA_GUIDE_PROMPTS);
             loaderCollection.AddLoaderDescription<RA_GUIDE_SUBPROMPT, RA_GUIDE_SUBPROMPT, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.RA_GUIDE_SUBPROMPTS);

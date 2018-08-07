@@ -51,17 +51,13 @@ namespace BluePrints.ViewModels
                 isQueryForLiveStatus = true;
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, x => assign_estimation_direct(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            base.initializeEntitiesLoadersDescription();
+            base.addEntitiesLoader();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()

@@ -65,12 +65,8 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType phase_type => PhaseType.Construct;
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, assign_budget);
@@ -85,7 +81,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
 
-            base.initializeEntitiesLoadersDescription();
+            base.addEntitiesLoader();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()

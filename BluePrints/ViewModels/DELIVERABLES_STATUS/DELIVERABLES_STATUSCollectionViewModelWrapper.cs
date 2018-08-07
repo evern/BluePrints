@@ -57,9 +57,8 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
         }

@@ -32,9 +32,9 @@ namespace BluePrints.ViewModels
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            base.initializeEntitiesLoadersDescription();
+            base.addEntitiesLoader();
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
         }
 

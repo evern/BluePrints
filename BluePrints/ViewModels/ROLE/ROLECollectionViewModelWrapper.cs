@@ -59,9 +59,8 @@ namespace BluePrints.ViewModels
         {
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<ROLE_PERMISSION, ROLE_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.ROLE_PERMISSIONS);
             loaderCollection.AddLoaderDescription<ROLE_COMMODITY, ROLE_COMMODITY, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.ROLE_COMMODITIES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(BluePrintsUnitOfWorkFactory, x => x.DOCTYPES);

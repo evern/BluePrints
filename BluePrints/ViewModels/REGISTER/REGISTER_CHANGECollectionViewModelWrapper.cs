@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-
+        int defaultNumericFieldLengthForRegisters;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -55,13 +55,11 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
         }
 
-        int defaultNumericFieldLengthForRegisters;
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
         }

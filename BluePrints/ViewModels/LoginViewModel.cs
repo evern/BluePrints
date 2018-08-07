@@ -209,15 +209,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public Action ShowControlCallBack;
-        public Action HideControlCallBack;
-        public Action<bool, string> ShowErrorCallBack;
-
-        public void ShowThisControl()
-        {
-            ShowControlCallBack?.Invoke();
-        }
-
         public void ShowError(bool isPasswordField, string errorMessage)
         {
             MessageBoxService.ShowMessage(errorMessage);

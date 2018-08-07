@@ -60,10 +60,8 @@ namespace BluePrints.ViewModels
             isCompletelyLoaded = false;
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_STAFF_ROLES, DAYWORK_STAFF_ROLEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_EQUIPMENTS, DAYWORK_EQUIPMENTProjectionFunc);

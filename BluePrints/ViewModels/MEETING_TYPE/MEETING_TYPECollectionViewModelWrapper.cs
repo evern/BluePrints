@@ -57,9 +57,8 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()

@@ -62,9 +62,8 @@ namespace BluePrints.ViewModels
             DataDate =  new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1); ;
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.HSE_INJURIES, hseInjuriesProjection);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.HSE_INCIDENTS, hseIncidentsProjection);

@@ -61,9 +61,8 @@ namespace BluePrints.ViewModels
             loadMEETING_TYPE = MEETING_TYPEParameter.GetEntity();
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()

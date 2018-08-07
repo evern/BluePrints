@@ -59,13 +59,8 @@ namespace BluePrints.ViewModels
 
         private BASELINE loadBASELINE;
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            MainViewModel = null;
-            base.CleanUpEntitiesLoader();
-
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
-
             //in user offsite direct view model wrapper baseline should not be loaded because query gets from navigational baseline
             if(is_single_project_mode)
             {
@@ -76,7 +71,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
 
-            base.initializeEntitiesLoadersDescription();
+            base.addEntitiesLoader();
         }
 
         private void assign_baseline(BASELINE baseline)

@@ -83,7 +83,7 @@ namespace BluePrints.Common.Base
                 isQueryForLiveStatus = true;
         }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             p6UOW = p6UnitOfWorkFactory.CreateUnitOfWork();

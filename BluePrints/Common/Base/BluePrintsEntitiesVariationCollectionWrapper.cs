@@ -133,9 +133,8 @@ namespace BluePrints.Common.Base
         protected Guid variation_guid { get { return loadVARIATION.GUID; } }
         protected Guid? variation_baseline_guid { get { return loadVARIATION.GUID_BASELINE; } }
 
-        protected override void initializeEntitiesLoadersDescription()
+        protected override void addEntitiesLoader()
         {
-            loaderCollection = new EntitiesLoaderDescriptionCollection(this);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, x => loadVARIATION = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
         }
