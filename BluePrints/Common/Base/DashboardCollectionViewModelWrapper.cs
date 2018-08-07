@@ -710,10 +710,16 @@ namespace BluePrints.Common.ViewModel
                 gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
                 gridControlService.AddSummary(stats_switch.Total_Current, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.Total_Budgeted, SummaryItemType.Sum, summaryDecimalString);
-                gridControlService.AddSummary(stats_switch.Total_Budgeted_Quantity, SummaryItemType.Sum, summaryDecimalString);
-                gridControlService.AddSummary(stats_switch.Total_Current_Quantity, SummaryItemType.Sum, summaryDecimalString);
-                gridControlService.AddSummary(stats_switch.Cumulative_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
-                gridControlService.AddSummary(stats_switch.Period_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
+
+                //Don't add quantity specific summary because other stats will be switched to quantity
+                if(viewType != DashboardViewType.Quantity)
+                {
+                    gridControlService.AddSummary(stats_switch.Total_Budgeted_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                    gridControlService.AddSummary(stats_switch.Total_Current_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                    gridControlService.AddSummary(stats_switch.Cumulative_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                    gridControlService.AddSummary(stats_switch.Period_Earned_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                    gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Quantity, SummaryItemType.Sum, summaryDecimalString);
+                }
 
                 gridControlService.AddSummary(stats_switch.PeriodEarnedVsBurned, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.CumulativeEarnedVsBurned, SummaryItemType.Sum, summaryDecimalString);
@@ -732,7 +738,6 @@ namespace BluePrints.Common.ViewModel
                 gridControlService.AddSummary(stats_switch.Cumulative_Burned_Units, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.Cumulative_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Units, SummaryItemType.Sum, summaryDecimalString);
-                gridControlService.AddSummary(stats_switch.Cumulative_Remaining_Quantity, SummaryItemType.Sum, summaryDecimalString);
 
                 gridControlService.AddSummary(stats_switch.Period_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
                 gridControlService.AddSummary(stats_switch.Period_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);

@@ -147,7 +147,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetRemainingActualData(IEnumerable<IReportable> groupedReportables, IEnumerable<DataPoint> burnedDataPoints)
         {
             //establish remaining data points
-            
+            DateTime? lastBurnedDate = burnedDataPoints.Count() == 0 ? (DateTime?)null : burnedDataPoints.Max(x => x.ProgressDate);
             List<DataPoint> remainingDataPoints = new List<DataPoint>();
             foreach(IReportable reportable in groupedReportables)
             {
@@ -162,7 +162,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                     productivity = 1;
 
                 List<DataPoint> baselineRemainingDataPoints = reportable.Stats.Remaining.GetData().Where(x => x.IsRemaining).ToList();
-                foreach(DataPoint remainingDataPoint in baselineRemainingDataPoints.Where(x => !x.IsProductivityInflated))
+                if (lastBurnedDate != null)
+                    baselineRemainingDataPoints = baselineRemainingDataPoints.Where(x => x.ProgressDate > lastBurnedDate).ToList();
+
+                foreach (DataPoint remainingDataPoint in baselineRemainingDataPoints.Where(x => !x.IsProductivityInflated))
                 {
                     remainingDataPoint.Units = remainingDataPoint.Units / productivity;
                     remainingDataPoint.Costs = remainingDataPoint.Costs / productivity;
