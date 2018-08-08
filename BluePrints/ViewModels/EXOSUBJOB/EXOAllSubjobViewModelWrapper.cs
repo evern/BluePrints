@@ -132,6 +132,7 @@ namespace BluePrints.ViewModels
                         slaveSubJob.WIPLOC = masterJob.WIPLOC;
                         slaveSubJob.EXCHRATE = masterJob.EXCHRATE;
                         slaveSubJob.ISACTIVE = masterJob.ISACTIVE;
+                        slaveSubJob.BRANCHNO = masterJob.BRANCHNO;
 
                         if(masterFlag != null)
                         {
