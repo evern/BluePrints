@@ -1,36 +1,16 @@
-﻿using BaseModel.Data.Helpers;
-using BaseModel.DataModel;
-using BaseModel.Helpers;
-using BaseModel.Misc;
-using BaseModel.ViewModel.Base;
-using BaseModel.ViewModel.Dialogs;
-using BaseModel.ViewModel.Loader;
+﻿using BaseModel.DataModel;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
-using BluePrints.Common.Reports;
-using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
-using BluePrints.P6Data;
-using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
-using BluePrints.Reports;
-using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Bars;
-using DevExpress.Xpf.Grid;
-using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Forms;
 
 namespace BluePrints.ViewModels
 {

@@ -1,4 +1,5 @@
-﻿using DevExpress.Mvvm;
+﻿using BaseModel.Data.Helpers;
+using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -165,18 +166,20 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (lastBurnedDate != null)
                     baselineRemainingDataPoints = baselineRemainingDataPoints.Where(x => x.ProgressDate > lastBurnedDate).ToList();
 
+                List<DataPoint> remainingAdjustDataPoints = new List<DataPoint>();
                 foreach (DataPoint remainingDataPoint in baselineRemainingDataPoints.Where(x => !x.IsProductivityInflated))
                 {
-                    remainingDataPoint.Units = remainingDataPoint.Units / productivity;
-                    remainingDataPoint.Costs = remainingDataPoint.Costs / productivity;
-
-                    remainingDataPoint.IsProductivityInflated = true;
+                    DataPoint remainingAdjustDataPoint = new DataPoint();
+                    DataUtils.ShallowCopy(remainingAdjustDataPoint, remainingDataPoint);
+                    remainingAdjustDataPoint.Units = remainingAdjustDataPoint.Units / productivity;
+                    remainingAdjustDataPoint.Costs = remainingAdjustDataPoint.Costs / productivity;
+                    remainingAdjustDataPoint.IsProductivityInflated = true;
+                    remainingAdjustDataPoints.Add(remainingAdjustDataPoint);
                 }
 
 
-                decimal totalRemaining = baselineRemainingDataPoints.Sum(x => x.Units);
-
-                remainingDataPoints.AddRange(baselineRemainingDataPoints);
+                decimal totalRemaining = remainingAdjustDataPoints.Sum(x => x.Units);
+                remainingDataPoints.AddRange(remainingAdjustDataPoints);
             }
 
             if (burnedDataPoints != null)
