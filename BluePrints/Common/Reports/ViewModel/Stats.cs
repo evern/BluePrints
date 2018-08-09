@@ -49,7 +49,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Used For Subjob Summary Stats
         /// </summary>
         /// <param name="summaryStats">Project Summary Stats</param>
-        public Stats(SummaryStats summaryStats)
+        public Stats(SummaryStats summaryStats, bool hideDataPointsBeforeDataDate = false)
         {
             this.reportingDataDate = summaryStats.ReportingDataDate;
             this.BudgetedUnits = summaryStats.BudgetedUnits;
@@ -63,6 +63,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Always use weekly
             //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
+            this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
         }
 
         public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool isDebug = false)
@@ -245,6 +246,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (dataPoints == null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
                 {
+                    string s;
+                    if (isDebug)
+                        s = string.Empty;
                     decimal qtyPerUnit = this.TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
                     DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate.AddDays(1) : (DateTime?)null;
                     dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, qtyPerUnit, plotStartdate);

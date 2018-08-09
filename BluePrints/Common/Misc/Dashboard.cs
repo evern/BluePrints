@@ -101,7 +101,8 @@ namespace BluePrints.Common.Misc
         Earned,
         Burned,
         Actual,
-        Remaining
+        Remaining,
+        RemainingActual
     }
 
     public static class DashboardHelpers
@@ -158,28 +159,6 @@ namespace BluePrints.Common.Misc
                     }
 
                     SummaryStats summaryDiscipline = (SummaryStats)discipline_dashboard.Stats;
-                    //string s;
-                    //if (discipline_dashboard.Parent_Dashboard.Code == "15119-000-00-D1" && discipline_dashboard.Code == "GE01")
-                    //    s = string.Empty;
-
-                    //List<Dashboard_Export_Data_Point> planned_data = buildExportDataByType2(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Budgeted.DataPoints, StatsType.Planned);
-                    //if (planned_data.Count > 0)
-                    //{
-                    //    export_data.AddRange(planned_data);
-                    //}
-
-                    //List<Dashboard_Export_Data_Point> earned_data = buildExportDataByType2(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Earned.DataPoints, StatsType.Earned);
-                    //if (earned_data.Count > 0)
-                    //{
-                    //    export_data.AddRange(earned_data);
-                    //}
-
-                    //List<Dashboard_Export_Data_Point> remaining_data = buildExportDataByType2(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Remaining.DataPoints, StatsType.Remaining);
-                    //if (remaining_data.Count > 0)
-                    //{
-                    //    export_data.AddRange(remaining_data);
-                    //}
-
                     if (!isDisciplineDataPointsGathered && summaryDiscipline.Burned != null)
                     {
                         isDisciplineDataPointsGathered = true;
@@ -215,14 +194,11 @@ namespace BluePrints.Common.Misc
                     if (summary.Earned != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
-                    //if (summary.Burned != null)
-                    //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Burned, summary.Burned.DataPoints, summary.Actual.DataPoints));
-
-                    //if (summary.Actual != null)
-                    //    export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Actual, summary.Actual.DataPoints));
-
                     if (summary.Remaining != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints));
+
+                    if (summary.RemainingActual != null)
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.RemainingActual, summary.RemainingActual.DataPoints));
                 }
             }
 
