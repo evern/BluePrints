@@ -17,6 +17,7 @@ namespace BluePrints.Data
             DOCTYPE = new HashSet<DOCTYPE>();
             RATE = new HashSet<RATE>();
             USER = new HashSet<USER>();
+            TENDER_PROFILE_ITEM = new HashSet<TENDER_PROFILE_ITEM>();
         }
 
         [Key]
@@ -55,6 +56,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RATE> RATE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TENDER_PROFILE_ITEM> TENDER_PROFILE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<USER> USER { get; set; }

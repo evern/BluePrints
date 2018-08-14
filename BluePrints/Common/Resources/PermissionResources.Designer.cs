@@ -259,6 +259,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage tender profile.
+        /// </summary>
+        internal static string ManageTenderProfile {
+            get {
+                return ResourceManager.GetString("ManageTenderProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage other users.
         /// </summary>
         internal static string ManageUser {

@@ -566,6 +566,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
+        protected DevExpress.Mvvm.IDialogService TenderProfileSelectionDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("TenderProfileSelectionDialog"); }
+        }
+
         protected IOpenFileDialogService OpenFileDialogService
         {
             get { return this.GetService<IOpenFileDialogService>(); }
@@ -932,6 +937,34 @@ namespace BluePrints.ViewModels
         protected override string ViewName
         {
             get { return "PROJECTCollectionViewModelWrapper"; }
+        }
+
+        public void TenderProfile()
+        {
+            if (DisplaySelectedEntity == null)
+                return;
+
+            if(DisplaySelectedEntity.STATUS != ProjectStatus.Tender && DisplaySelectedEntity.STATUS != ProjectStatus.TenderSubmitted)
+            {
+                MessageBoxService.ShowMessage("Project must be a tender to begin tender profiling");
+                return;
+            }
+
+            if (DisplaySelectedEntity.TENDER_PROJECT_START == null)
+            {
+                MessageBoxService.ShowMessage("Please set tender start date before proceeding");
+                return;
+            }
+
+            if(DisplaySelectedEntity.TENDER_PROJECT_DURATION == null)
+            {
+                MessageBoxService.ShowMessage("Please set tender duration before proceeding");
+                return;
+            }
+
+            TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModel = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
+            tenderProfileSelectionViewModel.OnParameterChanged(new EntitiesParameter<PROJECT>(DisplaySelectedEntity));
+            TenderProfileSelectionDialogService.ShowDialog(MessageButton.OK, "Apply tender profile", "TENDER_PROFILESelectionView", tenderProfileSelectionViewModel);
         }
 
         public void EditArea()

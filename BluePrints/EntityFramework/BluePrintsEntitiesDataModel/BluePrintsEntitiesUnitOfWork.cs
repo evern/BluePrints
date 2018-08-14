@@ -286,6 +286,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<STOCK_CODE>(), (STOCK_CODE x) => x.GUID); }
         }
 
+        IRepository<TENDER_PROFILE, Guid> IBluePrintsEntitiesUnitOfWork.TENDER_PROFILES
+        {
+            get { return GetRepository(x => x.Set<TENDER_PROFILE>(), (TENDER_PROFILE x) => x.GUID); }
+        }
+
+        IRepository<TENDER_PROFILE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.TENDER_PROFILE_ITEMS
+        {
+            get { return GetRepository(x => x.Set<TENDER_PROFILE_ITEM>(), (TENDER_PROFILE_ITEM x) => x.GUID); }
+        }
+
         IRepository<UOM, Guid> IBluePrintsEntitiesUnitOfWork.UOMS
         {
             get { return GetRepository(x => x.Set<UOM>(), (UOM x) => x.GUID); }

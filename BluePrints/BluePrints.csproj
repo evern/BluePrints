@@ -596,6 +596,8 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
+    <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_MATERIAL.cs" />
     <Compile Include="EntityFramework\Annotations\DAYWORK_STAFF_ROLE.cs" />
@@ -706,6 +708,8 @@
     <Compile Include="EntityFramework\BluePrintsData\ROLE_PERMISSION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SETTINGS_GLOBAL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_CODE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TENDER_PROFILE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\UOM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
@@ -780,6 +784,9 @@
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_GROUP\STOCK_GROUPCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMSelectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
@@ -1498,6 +1505,15 @@
     <Compile Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml.cs">
       <DependentUpon>STOCK_GROUPCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILESelectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILESelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILE_ITEMCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILECollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TimesheetEntryCollectionView.xaml.cs">
       <DependentUpon>TimesheetEntryCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1855,6 +1871,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILESelectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

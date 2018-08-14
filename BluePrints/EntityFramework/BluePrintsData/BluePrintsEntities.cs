@@ -212,6 +212,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
             modelBuilder.Entity<DEPARTMENT>()
+                .HasMany(e => e.TENDER_PROFILE_ITEM)
+                .WithRequired(e => e.DEPARTMENT)
+                .HasForeignKey(e => e.GUID_DEPARTMENT);
+
+            modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.DOCTYPE)
                 .WithRequired(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DDEPARTMENT)
@@ -564,6 +569,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.TENDER_PROFILE)
+                .WithOptional(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.REGISTER_HOLD)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -767,6 +778,18 @@ namespace BluePrints.Data
             modelBuilder.Entity<SUBJOB_ASSIGNMENT>()
                 .Property(e => e.HIGH_VALUE)
                 .HasPrecision(10, 2);
+
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.TENDER_PROFILE_ITEM)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<TENDER_PROFILE>()
+                .HasMany(e => e.TENDER_PROFILE_ITEM)
+                .WithOptional(e => e.TENDER_PROFILE)
+                .HasForeignKey(e => e.GUID_TENDER_PROFILE)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.BASELINE_ITEM)

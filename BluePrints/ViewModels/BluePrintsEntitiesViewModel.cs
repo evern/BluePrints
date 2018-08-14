@@ -345,6 +345,11 @@ namespace BluePrints.ViewModels
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageSubPrompt", dataCategoryId, "Sub Prompts", "RA_GUIDE_SUBPROMPTCollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
             }
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageTenderProfile))
+            {
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageTenderProfile", dataCategoryId, "Tender Profiles", "TENDER_PROFILECollectionView", null, null, null, false, false, @"Dashboards\PieLabelsDataLabels2_16x16.png"));
+            }
+
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView", null, null, null, false, false, @"Business Objects\BOCustomer_16x16.png"));
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView", null, null, null, false, false, @"Reports\Parameters_16x16.png"));
 

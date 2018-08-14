@@ -236,8 +236,7 @@ namespace BluePrints.ViewModels
 
         public void CopyFrom()
         {
-            var bulkEditEnumsViewModel =
-                            BulkEditEnumsViewModel.Create((IEnumerable<object>)PROJECTCollectionForCopy, "NUMBER");
+            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create((IEnumerable<object>)PROJECTCollectionForCopy, "NUMBER");
             if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select project to copy",
                     "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
             {

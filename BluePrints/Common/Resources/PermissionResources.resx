@@ -201,4 +201,7 @@
   <data name="StandardizeSubJobs" xml:space="preserve">
     <value>Allow user to standardize subjobs in exo</value>
   </data>
+  <data name="ManageTenderProfile" xml:space="preserve">
+    <value>Allow user to manage tender profile</value>
+  </data>
 </root>

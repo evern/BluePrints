@@ -275,6 +275,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<STOCK_CODE, Guid> STOCK_CODES { get; }
 
         /// <summary>
+        /// The TENDER_PROFILE entities repository.
+        /// </summary>
+        IRepository<TENDER_PROFILE, Guid> TENDER_PROFILES { get; }
+
+        /// <summary>
+        /// The TENDER_PROFILE_ITEM entities repository.
+        /// </summary>
+        IRepository<TENDER_PROFILE_ITEM, Guid> TENDER_PROFILE_ITEMS { get; }
+
+        /// <summary>
         /// The COMMODITY_CODES entities repository.
         /// </summary>
         IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }

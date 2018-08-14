@@ -45,6 +45,7 @@ namespace BluePrints.Data
             SUBJOB = new HashSet<SUBJOB>();
             P6_ASSIGNMENT = new HashSet<P6_ASSIGNMENT>();
             STATUS = ProjectStatus.Active;
+            TENDER_PROFILE = new HashSet<TENDER_PROFILE>();
             CONTRACTTYPE = ContractType.LumpSum;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;
