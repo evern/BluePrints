@@ -24,7 +24,7 @@
 
         public decimal SCHEDULE_FINISH_PERCENTAGE { get; set; }
 
-        public BellCurveShape BELLCURVESHAPE { get; set; }
+        public BellCurveShape? BELLCURVESHAPE { get; set; }
 
         public DateTime CREATED { get; set; }
 
