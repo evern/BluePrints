@@ -793,7 +793,7 @@ namespace BluePrints.Common.Projections
                                  where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_NARRATIVE != null
                                  select new { Narrative = TIMESHEET.X_NARRATIVE };
 
-            return timesheetLineNarratives.Select(x => x.Narrative).ToList();
+            return timesheetLineNarratives.Select(x => x.Narrative).Distinct().OrderBy(x => x).ToList();
         }
 
         public static List<string> GetJobVariationCode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
@@ -806,7 +806,7 @@ namespace BluePrints.Common.Projections
                                           where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_VARIATIONCODE != null
                                           select new { VariationCode = TIMESHEET.X_VARIATIONCODE };
 
-            return timesheetLineVariationCode.Select(x => x.VariationCode).ToList();
+            return timesheetLineVariationCode.Select(x => x.VariationCode).Distinct().OrderBy(x => x).ToList();
         }
 
         public static List<string> GetVariationCodes(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
