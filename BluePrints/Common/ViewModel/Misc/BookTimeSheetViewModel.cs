@@ -12,20 +12,24 @@ using BluePrints.Common;
 using BluePrints.Common.Projections;
 using DevExpress.Mvvm;
 using BluePrints.Common.Resources;
+using BluePrints.Common.Misc;
 
 namespace BaseModel.ViewModel.Dialogs
 {
     public class BookTimeSheetViewModel
     {
-        public static BookTimeSheetViewModel Create(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations)
+        public static BookTimeSheetViewModel Create(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> variationCodes, List<string> narratives)
         {
-            return ViewModelSource.Create(() => new BookTimeSheetViewModel(project, deliverable, primeroUnitOfWork, exoAuthorisations));
+            return ViewModelSource.Create(() => new BookTimeSheetViewModel(project, deliverable, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives));
         }
 
         public DateTime BookDate { get; set; }
         private readonly IDeliverable deliverable;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-
+        public List<string> VariationCodes { get; set; }
+        public List<string> Narratives { get; set; }
+        public string Selected_VariationCode { get; set; }
+        public string Selected_Narrative { get; set; }
         List<PrimeroResource> pResourceCollection;
         public List<PrimeroResource> PRESOURCECollection
         {
@@ -194,13 +198,15 @@ namespace BaseModel.ViewModel.Dialogs
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
         private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
-        protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations)
+        protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> variationCodes, List<string> narratives)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();
             this.deliverable = deliverable;
             this.primeroUnitOfWork = primeroUnitOfWork;
             this.exoAuthorisations = exoAuthorisations;
+            this.VariationCodes = variationCodes;
+            this.Narratives = narratives;
 
             foreach (var availableLine in exoAuthorisations)
             {
@@ -360,6 +366,16 @@ namespace BaseModel.ViewModel.Dialogs
         public PrimeroSubJob GetSubJob()
         {
             return Selected_SubJob;
+        }
+
+        public string GetVariationCode()
+        {
+            return Selected_VariationCode;
+        }
+
+        public string GetNarratives()
+        {
+            return Selected_Narrative;
         }
 
         public TimesheetDate GetTimesheetDate()

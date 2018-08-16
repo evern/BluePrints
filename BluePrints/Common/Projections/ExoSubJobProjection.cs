@@ -783,6 +783,32 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
+        public static List<string> GetJobNarratives(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var timesheetLineNarratives = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 join TIMESHEET in primeroUnitOfWork.JOB_TIMESHEETS
+                                 on SUBJOB.JOBNO equals TIMESHEET.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_NARRATIVE != null
+                                 select new { Narrative = TIMESHEET.X_NARRATIVE };
+
+            return timesheetLineNarratives.Select(x => x.Narrative).ToList();
+        }
+
+        public static List<string> GetJobVariationCode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var timesheetLineVariationCode = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                          join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                          on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                          join TIMESHEET in primeroUnitOfWork.JOB_TIMESHEETS
+                                          on SUBJOB.JOBNO equals TIMESHEET.JOBNO
+                                          where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_VARIATIONCODE != null
+                                          select new { Narrative = TIMESHEET.X_VARIATIONCODE };
+
+            return timesheetLineVariationCode.Select(x => x.Narrative).ToList();
+        }
+
         public static List<string> GetVariationCodes(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES

@@ -34,6 +34,7 @@ using System.Linq.Expressions;
 using DevExpress.Data.Filtering;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.PrimeroData;
+using BluePrints.Common.Misc;
 
 namespace BluePrints.ViewModels
 {
@@ -378,9 +379,14 @@ namespace BluePrints.ViewModels
         }
 
         List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
+        List<string> narratives = new List<string>();
+        List<string> variationCodes = new List<string>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false);
+            narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
+            variationCodes = ExoQueries.GetJobVariationCode(primeroUnitOfWork, loadPROJECT.NUMBER);
+            
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
@@ -1900,17 +1906,19 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations);
-            if(bookTimeViewModel.GetResource() == null)
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives);
+            if (bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
             }
-            else if(bookTimeViewModel.GetCostType() == null)
+            else if (bookTimeViewModel.GetCostType() == null)
             {
                 MessageBoxService.ShowMessage("You do not have \nSub Job: " + DisplaySelectedEntity.Subjob_Name + "\nCost Group: " + DisplaySelectedEntity.Discipline_Code + "\nCost Type: " + DisplaySelectedEntity.Commodity_Code + "\nAdded in exo, please contact the project manager for assistance");
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
+                string variationCode = bookTimeViewModel.GetVariationCode();
+                string narrative = bookTimeViewModel.GetNarratives();
                 PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
                 PrimeroResource bookResource = bookTimeViewModel.GetResource();
                 TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
@@ -1953,6 +1961,8 @@ namespace BluePrints.ViewModels
                         newTimeSheet.X_DECLINED = false;
                         newTimeSheet.X_APPROVAL_MANAGER = -1;
                         newTimeSheet.X_SUBMITTED = false;
+                        newTimeSheet.X_NARRATIVE = narrative;
+                        newTimeSheet.X_VARIATIONCODE = variationCode;
                         primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
                     }
 
