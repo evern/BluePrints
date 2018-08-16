@@ -804,9 +804,9 @@ namespace BluePrints.Common.Projections
                                           join TIMESHEET in primeroUnitOfWork.JOB_TIMESHEETS
                                           on SUBJOB.JOBNO equals TIMESHEET.JOBNO
                                           where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_VARIATIONCODE != null
-                                          select new { Narrative = TIMESHEET.X_VARIATIONCODE };
+                                          select new { VariationCode = TIMESHEET.X_VARIATIONCODE };
 
-            return timesheetLineVariationCode.Select(x => x.Narrative).ToList();
+            return timesheetLineVariationCode.Select(x => x.VariationCode).ToList();
         }
 
         public static List<string> GetVariationCodes(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
