@@ -93,7 +93,7 @@ namespace BluePrints.ViewModels
             if (field_name == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_START_PERCENTAGE))
             {
                 decimal startPercentage = (decimal)new_value;
-                if (startPercentage > projection.SCHEDULE_FINISH_PERCENTAGE)
+                if (projection.SCHEDULE_FINISH_PERCENTAGE != 0 && startPercentage > projection.SCHEDULE_FINISH_PERCENTAGE)
                     return "Start % must be lower than finish %";
             }
             else if (field_name == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_FINISH_PERCENTAGE))

@@ -57,7 +57,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTQMRViewModelWrapper()
         {
-            switchChartOnly = true;
+            switchChartOnly = false;
+            doNotApplyBestFit = true;
         }
 
 

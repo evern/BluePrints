@@ -47,12 +47,12 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="SCHEDULE_START_PERCENTAGE" Header="Schedule Start %" HeaderToolTip="When the S-Curve profile starts">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="SCHEDULE_FINISH_PERCENTAGE" Header="Schedule End %" HeaderToolTip="When the S-Curve profile ends">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="BELLCURVESHAPE" Header="Bell Curve" HeaderToolTip="Apply bell curve to manning histogram">
