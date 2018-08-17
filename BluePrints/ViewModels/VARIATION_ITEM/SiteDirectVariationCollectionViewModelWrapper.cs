@@ -65,6 +65,12 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public override void FullRefresh()
+        {
+            ESTIMATE_ITEMCollectionViewModelWrapper = null;
+            base.FullRefresh();
+        }
+
         protected override string ViewName => "CONSTRUCTION_VARIATION_ITEMSViewModelWrapper" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override void StartCreatingMainViewModel()

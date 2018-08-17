@@ -65,12 +65,26 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void collectionViewPropertyChangedIdentified(object key)
+        {
+            BASELINE_ITEMVariation updatedDeliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
+            if (updatedDeliverable != null)
+                updatedDeliverable.Update();
+        }
+
+        public override void FullRefresh()
+        {
+            baseline_itemCollectionViewModelWrapper.Refresh();
+            base.FullRefresh();
+        }
+
         public FilterTreeViewModel<BASELINE_ITEMVariation, Guid> FilterTreeViewModel { get; set; }
 
         protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v2" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override void StartCreatingMainViewModel()
         {
+            collectionViewModelWrapper.RaisePropertyChangeCallBack = collectionViewPropertyChangedIdentified;
             collectionViewModelWrapper.DefaultPhaseInternalNumber = BluePrintsResources.Default_Design_Phase;
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
         }

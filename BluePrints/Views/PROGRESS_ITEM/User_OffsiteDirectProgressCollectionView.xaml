@@ -18,6 +18,7 @@
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Data Date">
                                 <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
+                                <dxb:BarCheckItem Content="Hide Completed" Glyph="{dxc:DXImage Image=Hide_16x16.png}" IsChecked="{Binding DataContext.HideCompleted, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Hide_32x32.png}" ToolTip="Hide completed deliverable" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

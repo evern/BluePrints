@@ -63,6 +63,7 @@ namespace BluePrints.ViewModels
         #region Events
         string UnifiedValueValidation(TProgress projection, string field_name, object new_value);
         void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TProgress projection, bool isNew);
+        Action<object> RaisePropertyChangeCallBack { get; set; }
         #endregion
 
         #region Commands
@@ -433,6 +434,13 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
+        //allows raise property change to propagate to parent
+        public Action<object> RaisePropertyChangeCallBack { get; set; }
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
         private bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
         {
             if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
@@ -631,6 +639,7 @@ namespace BluePrints.ViewModels
             DataUtils.SetNestedValue(localizedPropertyName, entity, newValue);
             AddUndo(entity, localizedPropertyName, oldValue, newValue, EntityMessageType.Changed);
             entity.Update();
+            RaisePropertyChangeCallBack?.Invoke(entity.GUID);
         }
 
         private string localizeColumnFieldName(string fieldName)

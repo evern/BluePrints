@@ -200,6 +200,7 @@ namespace BluePrints.Common.Base
         protected abstract void assign_additional_callbacks(CollectionViewModel<TMainEntity, TMainVariationEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> mainViewModel, IEnumerable<TMainVariationEntity> entities);
 
         #region Call Backs
+
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if (changedType == typeof(VARIATION_ITEM))

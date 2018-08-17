@@ -132,6 +132,11 @@
                                         <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
                                         <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="CommodityCode" Header="Commodity" VisibleIndex="40" />
+                                        <dxg:GridColumn FieldName="{Binding DataContext.Total_Budgeted, ElementName=userControl}" Header="{Binding DataContext.Header_Total_Budgeted, ElementName=userControl}" HeaderToolTip="Total budget" VisibleIndex="40">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="{Binding DataContext.Total_Current, ElementName=userControl}" Header="{Binding DataContext.Header_Total_Current, ElementName=userControl}" HeaderToolTip="Total units including variation" VisibleIndex="50">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

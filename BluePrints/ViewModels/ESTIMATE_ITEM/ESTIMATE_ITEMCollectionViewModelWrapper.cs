@@ -847,9 +847,11 @@ namespace BluePrints.ViewModels
         //    base.OnClose(e);
         //}
 
+        //allows raise property change to propagate to parent
+        public Action<object> RaisePropertyChangeCallBack { get; set; }
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if(changedType == typeof(STOCK_CODE))
+            if (changedType == typeof(STOCK_CODE))
             {
                 this.RaisePropertyChanged(x => x.STOCK_CODECollection);
                 STOCK_CODE changedStock_Code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
