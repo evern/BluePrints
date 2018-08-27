@@ -67,7 +67,7 @@ namespace BluePrints.ViewModels
         public virtual IChartControlService ChartControlService { get { return null; } }
 
         #region Database Operation
-        private PROJECT loadPROJECT;
+        protected PROJECT loadPROJECT;
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
         public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
         public Action<ESTIMATECollectionViewModelWrapper> AssignESTIMATEDelegates;
@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
         private DispatcherTimer selectAllDispatcher;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected override void resolveParameters(object parameter)
         {
@@ -487,7 +487,7 @@ namespace BluePrints.ViewModels
         protected override void executeFirstLoadedActions()
         {
             doHealthCheck();
-            ChartControlService.Animate();
+            ChartControlService?.Animate();
             base.executeFirstLoadedActions();
         }
 
@@ -1164,23 +1164,29 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected DateTime? designDataDate
+        protected PROGRESS liveDesignProgress
         {
             get
             {
                 var collection = GetEntities<PROGRESS>();
-
-                PROGRESS livePROGRESS = null;
                 if (collection != null)
-                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
+                    return collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
 
-                if (livePROGRESS != null)
+                return null;
+            }
+        }
+
+        protected DateTime? designDataDate
+        {
+            get
+            {
+                if (liveDesignProgress != null)
                 {
                     DateTime dateToUse;
-                    if (livePROGRESS.REPORT_DATE != null)
-                        dateToUse = (DateTime)livePROGRESS.REPORT_DATE;
+                    if (liveDesignProgress.REPORT_DATE != null)
+                        dateToUse = (DateTime)liveDesignProgress.REPORT_DATE;
                     else
-                        dateToUse = livePROGRESS.DATA_DATE;
+                        dateToUse = liveDesignProgress.DATA_DATE;
 
                     return dateToUse;
                 }
@@ -1200,22 +1206,29 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected DateTime? constructDataDate
+        protected PROGRESS liveConstructProgress
         {
             get
             {
                 var collection = GetEntities<PROGRESS>();
-                PROGRESS livePROGRESS = null;
                 if (collection != null)
-                    livePROGRESS = collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Construct);
+                    return collection.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Construct);
 
-                if (livePROGRESS != null)
+                return null;
+            }
+        }
+
+        protected DateTime? constructDataDate
+        {
+            get
+            {
+                if (liveConstructProgress != null)
                 {
                     DateTime dateToUse;
-                    if (livePROGRESS.REPORT_DATE != null)
-                        dateToUse = (DateTime)livePROGRESS.REPORT_DATE;
+                    if (liveConstructProgress.REPORT_DATE != null)
+                        dateToUse = (DateTime)liveConstructProgress.REPORT_DATE;
                     else
-                        dateToUse = livePROGRESS.DATA_DATE;
+                        dateToUse = liveConstructProgress.DATA_DATE;
 
                     return dateToUse;
                 }
@@ -1234,7 +1247,6 @@ namespace BluePrints.ViewModels
                     return ((DateTime)constructDataDate).ToString("dd-MMM-yy");
             }
         }
-
         public IEnumerable<STOCK_CODE> STOCK_CODECollection
         {
             get

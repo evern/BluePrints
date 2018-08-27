@@ -746,7 +746,7 @@ namespace BluePrints.Common.Projections
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC };
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_RATE = JOBCOST_LINES.QUOTE_UNITPR };
 
 
             List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoTime(x)).ToList();
@@ -912,10 +912,11 @@ namespace BluePrints.Common.Projections
             exoTime.CommodityId = dbTime.COMMODITY_ID;
             exoTime.CommodityCode = dbTime.COMMODITY_CODE;
             exoTime.CommodityName = dbTime.COMMODITY_NAME;
+            exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
+            exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);
             return exoTime;
         }
     }
-
 
     public class ExoTimeAuthorisation
     {
@@ -935,6 +936,10 @@ namespace BluePrints.Common.Projections
         public string ResourceName { get; set; }
         public string StockCode { get; set; }
         public string StockCodeDescription { get; set; }
+
+        public decimal BudgetQty { get; set; }
+        public decimal BudgetRate { get; set; }
+        public decimal BudgetCosts => BudgetQty * BudgetRate;
     }
 
     public class PrimeroSubJob
