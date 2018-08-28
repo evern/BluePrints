@@ -37,6 +37,8 @@ using System.Data;
 using System.Windows.Media;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Xpf.Editors.Settings;
+using DevExpress.Xpf.Editors;
 
 namespace BluePrints.ViewModels
 {
@@ -64,11 +66,26 @@ namespace BluePrints.ViewModels
         }
 
         IEnumerable<ExoTimeAuthorisation> jobLines { get; set; }
+        IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+        List<string> defaultColumnFieldNames = new List<string>();
+        List<string> hiddenColumnFieldNames = new List<string>();
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            defaultColumnFieldNames.Add(columnEntity);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
+        }
+
+        protected override void onSummaryCalculateComplete()
+        {
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+        }
+
+        public override void FullRefresh()
+        {
+            dataPointsTable = null;
+            base.FullRefresh();
         }
 
         #region Data Points Table
@@ -83,36 +100,21 @@ namespace BluePrints.ViewModels
 
                 if (dataPointsTable == null)
                 {
-                    PROGRESS earliestProgress;
-                    if (constructDataDate < designDataDate)
-                        earliestProgress = liveConstructProgress;
-                    else
-                        earliestProgress = liveDesignProgress;
+                    IQueryable<ExoSubJobProjection> exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
 
                     dataPointsTable = new DataTable();
-                    TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(earliestProgress);
-                    DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(earliestProgress);
-                    DateTime lastDataDate = earliestProgress.DATA_DATE.AddDays(-1 * interval.Days);
+                    TimeSpan interval = new TimeSpan(7, 0, 0, 0);
+                    DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(liveDesignProgress);
+                    DateTime lastDataDate = SingleProjectDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null).Max(x => x.Stats.Remaining.EndDate);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
-                    dataPointsTable.Columns.Add(columnEntity, typeof(DashboardFlatStructure));
+                    dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
 
-                    //bool conditionalFormattingAdded = false;
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        //if (!conditionalFormattingAdded)
-                        //{
-                        colorScaleFormatCondition.FieldName = columnFieldName;
-                        colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
-                        colorScaleFormatCondition.MinValue = 0;
-                        colorScaleFormatCondition.MaxValue = 1;
-                        TableViewService.AddFormatCondition(colorScaleFormatCondition);
-                        //    conditionalFormattingAdded = true;
-                        //}
 
-                        if (alignedDataDate == earliestProgress.DATA_DATE)
+                        if (alignedDataDate == liveDesignProgress.DATA_DATE)
                         {
                             DataColumn lastColumn = new DataColumn();
                             lastColumn.ColumnName = columnFieldName;
@@ -123,7 +125,7 @@ namespace BluePrints.ViewModels
                             dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
-                    foreach (DashboardFlatStructure entity in SingleProjectDashboards)
+                    foreach (ExoSubJobProjection entity in exoSubJobs)
                     {
                         BuildRowStats(entity, false);
                     }
@@ -135,7 +137,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void BuildRowStats(DashboardFlatStructure entity, bool isUpdate)
+        private void BuildRowStats(ExoSubJobProjection entity, bool isUpdate)
         {
             if (dataPointsTable == null)
                 return;
@@ -146,41 +148,71 @@ namespace BluePrints.ViewModels
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((DashboardFlatStructure)dr[columnEntity]).SubjobCode == entity.SubjobCode
+                              where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == entity.SubJob.Code && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == entity.Discipline.Code && ((ExoSubJobProjection)dr[columnEntity]).Commodity.Code == entity.Commodity.Code
                               select dr).FirstOrDefault();
             }
 
             if (newDataRow == null)
                 return;
 
-            ExoTimeAuthorisation jobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubjobCode);
-            if(jobLine != null)
+            ExoTimeAuthorisation jobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
+            if (jobLine != null)
             {
-                entity.Stats.ExoBudgetQty = jobLine.BudgetQty;
-                entity.Stats.ExoBudgetCosts = jobLine.BudgetCosts;
+                entity.ExoBudgetQty = jobLine.BudgetQty;
+                entity.ExoBudgetCosts = jobLine.BudgetCosts;
             }
 
             newDataRow[columnEntity] = entity;
 
-            //for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
-            //{
-            //    string columnName = dataPointsTable.Columns[i].ColumnName;
-            //    if (!defaultColumnFieldNames.Any(x => x == columnName))
-            //        newDataRow[columnName] = 0.00m;
-            //}
+            for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
+            {
+                string columnName = dataPointsTable.Columns[i].ColumnName;
+                if (!defaultColumnFieldNames.Any(x => x == columnName))
+                    newDataRow[columnName] = 0.00m;
+            }
 
-            if (entity.Stats.Earned != null && entity.Stats.Earned.CumulativeDataPoints != null)
-                foreach (Common.ViewModel.Reporting.DataPoint progress in entity.Stats.Remaining.DataPoints)
-                {
-                    string dateField = progress.ProgressDate.Date.ToShortDateString();
-                    if (dataPointsTable.Columns.Contains(dateField))
+            DashboardFlatStructure findDashboardEntity = SingleProjectDashboards.FirstOrDefault(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
+            if(findDashboardEntity != null)
+            {
+                if (findDashboardEntity.Stats.Remaining != null && findDashboardEntity.Stats.Remaining.CumulativeDataPoints != null)
+                    foreach (Common.ViewModel.Reporting.DataPoint progress in findDashboardEntity.Stats.Remaining.DataPoints)
                     {
-                        newDataRow[dateField] = progress.Units;
+                        string dateField = progress.ProgressDate.Date.ToShortDateString();
+                        if (dataPointsTable.Columns.Contains(dateField))
+                        {
+                            newDataRow[dateField] = progress.Units;
+                        }
                     }
-                }
+            }
 
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
+        }
+        #endregion
+
+        #region View Events
+        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
+        {
+            if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
+            {
+                DateTime parsedate;
+                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
+                {
+                    if(parsedate < liveDesignProgress.DATA_DATE)
+                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
+                    else
+                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
+
+                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                }
+                else
+                {
+                    e.Column.Fixed = FixedStyle.Left;
+                    e.Column.ReadOnly = true;
+                }
+            }
+            else
+                e.Column.Visible = false;
         }
         #endregion
     }

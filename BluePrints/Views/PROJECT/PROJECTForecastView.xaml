@@ -38,23 +38,25 @@
                 <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                     <dxlc:LayoutGroup>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectDistribution" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentColumn="{Binding DataContext.LastColumn, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
-                            <dxg:GridColumn Width="150" FieldName="Entity.SubjobCode" Header="Subjob" VisibleIndex="10" />
-                            <dxg:GridColumn FieldName="Entity.AreaCode" Header="Area" VisibleIndex="20" />
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:GridColumn Width="150" FieldName="Entity.SubJob.Code" Header="Subjob" VisibleIndex="10" />
                             <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
-                            <dxg:GridColumn FieldName="Entity.DisciplineCode" Header="Discipline" VisibleIndex="30" />
-                            <dxg:GridColumn FieldName="Entity.CommodityCode" Header="Commodity" VisibleIndex="40" />
-                            <dxg:GridColumn FieldName="Entity.Stats.ExoBudgetQty" Header="Budget Qty" HeaderToolTip="Total budget quantity" VisibleIndex="40">
+                            <dxg:GridColumn FieldName="Entity.Discipline.Code" Header="Discipline" VisibleIndex="30" />
+                            <dxg:GridColumn FieldName="Entity.Commodity.Code" Header="Commodity" VisibleIndex="40" />
+                            <dxg:GridColumn FieldName="Entity.ExoBudgetQty" Header="Budget Qty" HeaderToolTip="Total budget quantity" VisibleIndex="40">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Stats.ExoBudgetCosts" Header="Budget Costs" HeaderToolTip="Total budget costs" VisibleIndex="50">
+                            <dxg:GridColumn FieldName="Entity.ExoBudgetCosts" Header="Budget Costs" HeaderToolTip="Total budget costs" VisibleIndex="50">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridControl.View>
-                                <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" />
+                                <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" />
                             </dxg:GridControl.View>
                         </custom:GridControlEx>
                     </dxlc:LayoutGroup>

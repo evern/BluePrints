@@ -269,7 +269,13 @@ namespace BluePrints.ViewModels
         {
             //for raising can export to excel
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.onSummaryCalculateComplete()));
             selectAllDispatcher.Start();
+        }
+
+        protected virtual void onSummaryCalculateComplete()
+        {
+
         }
 
         public bool CanExportToExcel()
@@ -812,7 +818,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsAllConstructSelected);
 
             if (isExecutedFirstLoadedAction)
-                ChartControlService.Animate();
+                ChartControlService?.Animate();
             else
                 isExecutedFirstLoadedAction = true;
         }

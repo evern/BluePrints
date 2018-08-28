@@ -102,6 +102,9 @@ namespace BluePrints.Common.Projections
         {
             this.RaisePropertiesChanged();
         }
+
+        public decimal ExoBudgetQty { get; set; }
+        public decimal ExoBudgetCosts { get; set; }
     }
 
     public static class ExoMethods
@@ -399,7 +402,7 @@ namespace BluePrints.Common.Projections
     public static class ExoQueries
     {
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS)
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS = null)
         {
             List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
@@ -433,19 +436,22 @@ namespace BluePrints.Common.Projections
                 if (exoLines.Count() > 0)
                 {
                     newSubJobProjection.LineId = exoLine.LineSeqNo;
-                    foreach (ExoTimeAuthorisation exoAuth in exoAuths)
+                    if(ExoSTAFFS != null)
                     {
-                        STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
-                        if (findSTAFF != null)
+                        foreach (ExoTimeAuthorisation exoAuth in exoAuths)
                         {
-                            ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                            USER newUser = new USER();
-                            newUser.NAME = findSTAFF.NAME;
-                            newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
-                            newAuth.User = newUser;
-                            newAuth.ShouldAssign = false;
-                            newAuth.IsAssigned = true;
-                            newSubJobProjection.AuthUsers.Add(newAuth);
+                            STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
+                            if (findSTAFF != null)
+                            {
+                                ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                                USER newUser = new USER();
+                                newUser.NAME = findSTAFF.NAME;
+                                newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
+                                newAuth.User = newUser;
+                                newAuth.ShouldAssign = false;
+                                newAuth.IsAssigned = true;
+                                newSubJobProjection.AuthUsers.Add(newAuth);
+                            }
                         }
                     }
                 }

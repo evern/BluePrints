@@ -22,19 +22,24 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <param name="entity"></param>
         public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false, bool forceIgnore = false)
         {
-            ////provision for when subjob is manually assigned or using legacy subjob
-            //if (entity.Subjob_Guid != null)
-            //    return;
             //when user wish to override default subjob
-            if (forceIgnore || entity.Subjob_Guid != null)
+            if (forceIgnore)
                 return;
 
-            IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
             Guid? existingOrNewPhaseGuid;
             IHaveProcurementSubjob iHaveProcurementSubjobEntity = entity as IHaveProcurementSubjob;
             bool assignToProcurementSubjob = (isProcurementSubjob && iHaveProcurementSubjobEntity != null);
 
             string internalNumber = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
+            IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
+            ////provision for when subjob is manually assigned or using legacy subjob
+            if (entity.Subjob_Guid != null)
+            {
+                SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Subjob_Guid);
+                if (subjob.INTERNAL_NAME1 == internalNumber)
+                    return;
+            }
+
             if (internalNumber != string.Empty)
             {
                 SUBJOB existingSUBJOB = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
@@ -111,11 +116,18 @@ namespace BluePrints.Common.ViewModel.Utils
             if (forceIgnore || (entity.Subjob_Guid == null || entity.Discipline_Guid == null))
                 return;
 
-            //when user wish to override default workpack
-            if (entity.Workpack_Guid != null)
-                return;
+            ////when user wish to override default workpack
+            //if (entity.Workpack_Guid != null)
+            //    return;
 
             WORKPACK existingWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_SUBJOB == entity.Subjob_Guid && x.GUID_DISCIPLINE == entity.Discipline_Guid && x.DISCIPLINE_NUM == entity.Discipline_Number);
+            if((existingWORKPACK != null) && entity.Workpack_Guid != null)
+            {
+                WORKPACK findWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == entity.Workpack_Guid);
+                if (findWORKPACK != null && (findWORKPACK == existingWORKPACK))
+                    return;
+            }
+
             if (existingWORKPACK == null)
             {
                 WORKPACK newWORKPACK = new WORKPACK();
