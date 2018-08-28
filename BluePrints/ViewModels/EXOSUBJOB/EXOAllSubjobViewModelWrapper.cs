@@ -1,4 +1,5 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.Misc;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -10,6 +11,7 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -30,7 +32,7 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new EXOAllSubjobViewModelWrapper(unitOfWorkFactory));
         }
-
+        
         /// <summary>
         /// Initializes a new instance of the BASELINEViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
@@ -39,6 +41,7 @@ namespace BluePrints.ViewModels
         protected EXOAllSubjobViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+
         }
 
         #region Database Operations

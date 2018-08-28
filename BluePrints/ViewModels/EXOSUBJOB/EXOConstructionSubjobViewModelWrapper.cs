@@ -27,6 +27,7 @@ using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -51,6 +52,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new EXOConstructionSubjobViewModelWrapper(unitOfWorkFactory));
         }
 
+        BackgroundWorker backgroundBudgetChecker;
         /// <summary>
         /// Initializes a new instance of the BASELINEViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
@@ -59,6 +61,9 @@ namespace BluePrints.ViewModels
         protected EXOConstructionSubjobViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            backgroundBudgetChecker = new BackgroundWorker();
+            backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
+            backgroundBudgetChecker.WorkerSupportsCancellation = true;
         }
 
         #region Database Operations
@@ -74,6 +79,34 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             exoSTAFFS = primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").ToList();
+        }
+
+        private void BackgroundBudgetChecker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            EXODesignSubjobViewModelWrapper designSubjobWrapper = EXODesignSubjobViewModelWrapper.Create();
+            designSubjobWrapper.SetParentViewModel(this);
+            designSubjobWrapper.OnEntitiesLoadedCallBack = highlightBudgetedSubJobs;
+            designSubjobWrapper.SuppressNotification = true;
+            designSubjobWrapper.SupressCompulsoryEntityNotFoundMessage = true;
+            designSubjobWrapper.InViewModelOnlyMode = true;
+            var supportParameterObj = designSubjobWrapper as ISupportParameter;
+            supportParameterObj.Parameter = new EntitiesParameter<Data.PROJECT>(loadPROJECT);
+        }
+
+        private void highlightBudgetedSubJobs(IEnumerable<ExoSubJobProjection> designSubjobs, object parent_id)
+        {
+            if (MainViewModel == null)
+                return;
+
+            foreach(ExoSubJobProjection designSubjob in designSubjobs)
+            {
+                ExoSubJobProjection findSubJob = DisplayEntities.FirstOrDefault(x => x.SubJob.Code == designSubjob.SubJob.Code && x.Discipline.Code == designSubjob.Discipline.Code && x.Commodity.Code == designSubjob.Commodity.Code);
+                if (findSubJob != null)
+                {
+                    findSubJob.HasBudget = true;
+                    findSubJob.Update();
+                }
+            }
         }
 
         protected override void addEntitiesLoader()
@@ -163,6 +196,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
         {
+            backgroundBudgetChecker.RunWorkerAsync();
             MainViewModel.RawPasteOverride = rawPasteOverride;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -382,10 +416,18 @@ namespace BluePrints.ViewModels
         public void RemoveSelected()
         {
             List<ExoSubJobProjection> removeProjections = DisplaySelectedEntities.Where(x => x.IsLineExistsInExo).ToList();
-            foreach(ExoSubJobProjection removeProjection in removeProjections)
-                MainViewModel.Entities.Remove(removeProjection);
+            if (MessageBoxService.ShowMessage("Are you sure you want to remove " + removeProjections.Count + " selected lines from exo?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
 
-            this.RaisePropertyChanged(x => x.DisplayEntities);
+            foreach (ExoSubJobProjection removeProjection in removeProjections)
+            {
+                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, removeProjection);
+                if(line != null)
+                    primeroUnitOfWork.JOBCOST_LINES.Remove(line);
+            }
+
+            primeroUnitOfWork.SaveChanges();
+            this.FullRefresh();
         }
 
         private void refreshPermissions()

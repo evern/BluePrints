@@ -49,6 +49,7 @@ namespace BluePrints.Common.Projections
         public bool IsDisciplineExistsInExo => Discipline != null && Discipline.Id != null;
         public bool IsCommodityExistsInExo => Commodity != null && Commodity.Id != null;
         public bool IsLineExistsInExo => LineId != null;
+        public bool HasBudget { get; set; }
         //public bool IsLineExistsInExo => SubJob.Id != null;
 
         //used to trick view model
@@ -254,6 +255,7 @@ namespace BluePrints.Common.Projections
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(pUnitOfWork, projectNumber, jobCode);
+
             if (existingSubJobs != null)
                 return (int)existingSubJobs.JOBNO;
             else
@@ -726,7 +728,6 @@ namespace BluePrints.Common.Projections
                                  on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber
                                  select JOBCOST_LINES;
-
 
             if (availableLines.Count() == 0)
                 return null;

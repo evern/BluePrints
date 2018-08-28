@@ -72,7 +72,6 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
         }
 
         protected override void addEntitiesLoader()
