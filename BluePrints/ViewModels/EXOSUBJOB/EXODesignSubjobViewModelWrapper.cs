@@ -496,19 +496,19 @@ namespace BluePrints.ViewModels
             JOBCOST_LINES existingLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
             if(masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >=5 )
             {
-                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact Michelle Wilson or Ryan McFarlane to enable this feature");
+                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact accounts to enable this feature");
                 return;
             }
 
             if(masterJob == null)
             {
-                MessageBoxService.ShowMessage("Project number doesn't exists in exo, please contact Michelle Wilson or Ryan McFarlane to add job");
+                MessageBoxService.ShowMessage("Project number doesn't exists in exo, please contact accounts to add job");
                 return;
             }
 
             if(existingLine == null)
             {
-                MessageBoxService.ShowMessage("Project line is not setup in exo, please contact Michelle Wilson or Ryan McFarlane to add job line");
+                MessageBoxService.ShowMessage("Project line is not setup in exo, please contact accounts to add job line");
                 return;
             }
 
@@ -568,6 +568,8 @@ namespace BluePrints.ViewModels
                             {
                                 selectedLine.Commodity.Id = commodityId;
                             }
+                            else
+                                MessageBoxService.ShowMessage(selectedLine.Commodity.Code + " cost type does not exists in exo, please ask accounts to create it");
                         }
                     }
 

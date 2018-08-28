@@ -97,12 +97,12 @@
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                     <dxr:RibbonPage Caption="Home" MergeOrder="0">
                         <dxr:RibbonPageGroup Caption="Appearance" MergeOrder="1002">
-                            <dxr:RibbonGalleryBarItem LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" Glyph="{dx:DXImage Image=Colors_16x16.png}">
+                            <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxr:RibbonGalleryItemThemeSelectorBehavior />
                                 </dxmvvm:Interaction.Behaviors>
                             </dxr:RibbonGalleryBarItem>
-                            <dxb:BarButtonItem Content="Refresh Navigation Panel" ToolTip="Refresh Right Navigation Panel" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                            <dxb:BarButtonItem Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Navigation Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>
@@ -134,7 +134,7 @@
                         <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
 
                         </dxdo:LayoutPanel>-->
-                        <dxdo:DocumentGroup x:Name="documentGroup" Margin="0" Padding="0" BorderThickness="0" TabContentCacheMode="None">
+                        <dxdo:DocumentGroup x:Name="documentGroup" Margin="0" Padding="0" BorderThickness="0" DestroyContentOnTabSwitching="False" TabContentCacheMode="CacheAllTabs">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxdo:TabbedDocumentUIService />
                             </dxmvvm:Interaction.Behaviors>

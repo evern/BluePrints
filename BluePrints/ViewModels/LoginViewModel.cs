@@ -194,12 +194,12 @@ namespace BluePrints.ViewModels
             }
             else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned)
             {
-                errorText = "Please ask pete to assign a role to you";
+                errorText = "Please email su.bing-wen@primero.com.au to assign a role to you";
                 ShowError(false, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.UsernameNotAdded)
             {
-                errorText = "Please ask pete to add you as a BluePrint user";
+                errorText = "Please email su.bing-wen@primero.com.au to add you as a BluePrint user";
                 ShowError(false, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
