@@ -75,7 +75,7 @@ namespace BluePrints.ViewModels
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private DispatcherTimer selectAllDispatcher;
         private List<DashboardTreeStructure> hierarchicalDashboard = null;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected override void resolveParameters(object parameter)

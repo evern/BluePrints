@@ -319,8 +319,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (DataPoints == null)
-                    return new DateTime();
+                if (DataPoints == null || DataPoints.Count == 0)
+                    return DateTime.Now;
 
                 return DataPoints.Max(x => x.ProgressDate);
             }

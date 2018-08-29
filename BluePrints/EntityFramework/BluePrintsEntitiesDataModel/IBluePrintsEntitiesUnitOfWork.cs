@@ -95,6 +95,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<ESTIMATE, Guid> ESTIMATES { get; }
 
         /// <summary>
+        /// The FORECAST entities repository.
+        /// </summary>
+        IRepository<FORECAST, Guid> FORECASTS { get; }
+
+        /// <summary>
         /// The ESTIMATE_ITEM entities repository.
         /// </summary>
         IRepository<ESTIMATE_ITEM, Guid> ESTIMATE_ITEMS { get; }

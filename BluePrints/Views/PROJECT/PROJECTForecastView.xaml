@@ -56,7 +56,12 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridControl.View>
-                                <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" />
+                                <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" NewItemRowPosition="None" ShowTotalSummary="True">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedProgressUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxg:TableView>
                             </dxg:GridControl.View>
                         </custom:GridControlEx>
                     </dxlc:LayoutGroup>

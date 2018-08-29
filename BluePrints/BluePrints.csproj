@@ -597,6 +597,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
@@ -647,6 +648,7 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE_INCIDENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE_INJURY.cs" />
