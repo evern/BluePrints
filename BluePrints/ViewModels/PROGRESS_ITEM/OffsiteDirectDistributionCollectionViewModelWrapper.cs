@@ -324,14 +324,16 @@ namespace BluePrints.ViewModels
                 return;
 
             string newValueString = Clipboard.GetText().ToString().Replace("%", "");
-            if(newValueString.Contains("\r\n"))
+            List<string> newValueArr = newValueString.Split('\r').ToList();
+            if (newValueString.Contains("\t") || newValueArr.Where(x => x == "\n").Count() > 1)
             {
                 MessageBoxService.ShowMessage("Grid doesn't support pasting from multiple cells, sorry for the inconvenience");
                 return;
             }
 
+            newValueString = newValueArr[0];
             decimal newValueDecimal = 0;
-            if(decimal.TryParse(newValueString, out newValueDecimal))
+            if (decimal.TryParse(newValueString, out newValueDecimal))
             {
                 foreach (var selected_cell in selected_cells)
                 {
@@ -347,6 +349,8 @@ namespace BluePrints.ViewModels
 
             e.Handled = true;
         }
+
+
 
         public void FixProgressItem()
         {

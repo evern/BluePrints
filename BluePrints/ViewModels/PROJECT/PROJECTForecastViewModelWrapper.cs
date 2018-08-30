@@ -121,6 +121,7 @@ namespace BluePrints.ViewModels
                     if(remainingStats.Count() > 0)
                         lastDataDate = remainingStats.Max(x => x.EndDate);
 
+                    lastDataDate = lastDataDate.AddDays(10 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
@@ -264,12 +265,14 @@ namespace BluePrints.ViewModels
                 return;
 
             string newValueString = Clipboard.GetText().ToString().Replace("%", "");
-            if (newValueString.Contains("\r\n"))
+            List<string> newValueArr = newValueString.Split('\r').ToList();
+            if(newValueString.Contains("\t") || newValueArr.Where(x => x == "\n").Count() > 1)
             {
                 MessageBoxService.ShowMessage("Grid doesn't support pasting from multiple cells, sorry for the inconvenience");
                 return;
             }
 
+            newValueString = newValueArr[0];
             decimal newValueDecimal = 0;
             if (decimal.TryParse(newValueString, out newValueDecimal))
             {
