@@ -70,7 +70,7 @@
             <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Background="LightSalmon" Increment="1" IsReadOnly="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
-            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
         </DataTemplate>
     </Application.Resources>
 </Application>

@@ -27,7 +27,7 @@ namespace BluePrints.Data
 
         public string COMMODITY_CODE { get; set; }
 
-        public decimal FORECAST_UNITS { get; set; }
+        public decimal? FORECAST_UNITS { get; set; }
 
         public DateTime FORECAST_DATE { get; set; }
 

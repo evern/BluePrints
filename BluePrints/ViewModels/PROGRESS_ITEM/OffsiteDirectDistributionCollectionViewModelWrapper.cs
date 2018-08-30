@@ -350,8 +350,6 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
-
-
         public void FixProgressItem()
         {
             if (MessageBoxService.ShowMessage("Fixing data will cause some progress to be changed, it is recommended to copy and paste a currency copy of progress to excel before continuing, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)

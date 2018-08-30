@@ -87,6 +87,7 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnEntity);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
+            SelectedDataRows = new ObservableCollection<DataRowView>();
         }
 
         protected override void onSummaryCalculateComplete()
@@ -123,7 +124,6 @@ namespace BluePrints.ViewModels
 
                     lastDataDate = lastDataDate.AddDays(10 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
-
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
@@ -153,31 +153,28 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void BuildRowStats(ExoSubJobProjection entity, bool isUpdate)
+        private void BuildRowStats(ExoSubJobProjection entity, bool isAuxiliary)
         {
             if (dataPointsTable == null)
                 return;
 
-            DataRow newDataRow;
-            if (!isUpdate)
-                newDataRow = dataPointsTable.NewRow();
-            else
-            {
-                newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == entity.SubJob.Code && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == entity.Discipline.Code && ((ExoSubJobProjection)dr[columnEntity]).Commodity.Code == entity.Commodity.Code
+            DataRow newDataRow = (from DataRow dr in dataPointsTable.Rows
+                              where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == entity.SubJob.Code && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == entity.Discipline.Code
                               select dr).FirstOrDefault();
-            }
 
+            bool isUpdate = true;
             if (newDataRow == null)
-                return;
-
-            ExoTimeAuthorisation jobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
-            if (jobLine != null)
             {
-                entity.ExoBudgetQty = jobLine.BudgetQty;
-                entity.ExoBudgetCosts = jobLine.BudgetCosts;
+                isUpdate = false;
+                newDataRow = dataPointsTable.NewRow();
             }
 
+            ExoTimeAuthorisation jobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
+            if (!isAuxiliary && jobLine != null)
+            {
+                entity.ExoBudgetQty += jobLine.BudgetQty;
+                entity.ExoBudgetCosts += jobLine.BudgetCosts;
+            }
             newDataRow[columnEntity] = entity;
 
             for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
@@ -187,7 +184,8 @@ namespace BluePrints.ViewModels
                     newDataRow[columnName] = 0.00m;
             }
 
-            DashboardFlatStructure findDashboardEntity = SingleProjectDashboards.FirstOrDefault(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
+            DashboardFlatStructure findDashboardEntity = SingleProjectDashboards.FirstOrDefault(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
+
             if(findDashboardEntity != null)
             {
                 if (findDashboardEntity.Stats.Remaining != null && findDashboardEntity.Stats.Remaining.CumulativeDataPoints != null)
@@ -196,7 +194,8 @@ namespace BluePrints.ViewModels
                         string dateField = progress.ProgressDate.Date.ToShortDateString();
                         if (dataPointsTable.Columns.Contains(dateField))
                         {
-                            newDataRow[dateField] = progress.Costs;
+                            decimal currentCosts = (decimal)newDataRow[dateField];
+                            newDataRow[dateField] = currentCosts + progress.Costs;
                         }
                     }
 
@@ -207,22 +206,24 @@ namespace BluePrints.ViewModels
                         string dateField = progress.ProgressDate.Date.ToShortDateString();
                         if (dataPointsTable.Columns.Contains(dateField))
                         {
-                            newDataRow[dateField] = progress.Costs;
+                            decimal currentCosts = (decimal)newDataRow[dateField];
+                            newDataRow[dateField] = currentCosts + progress.Costs;
                         }
                     }
             }
 
             //effectively override remaining
-            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code);
+            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code);
             foreach(FORECAST currentRowFORECAST in currentRowFORECASTS)
             {
                 string dateField = currentRowFORECAST.FORECAST_DATE.ToShortDateString();
                 if (dataPointsTable.Columns.Contains(dateField))
                 {
-                    newDataRow[dateField] = currentRowFORECAST.FORECAST_UNITS;
+                    if(currentRowFORECAST.FORECAST_UNITS != null)
+                        newDataRow[dateField] = currentRowFORECAST.FORECAST_UNITS;
                 }
             }
-
+            
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
         }
@@ -293,11 +294,25 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
-        public void Delete()
+        public void DeleteCellContent(object parameter)
         {
-            foreach(DataRowView selectedDataRow in SelectedDataRows)
-            {
+            GridControl gridControl = (GridControl)parameter;
+            TableView tableView = gridControl.View as TableView;
 
+            var selected_cells = tableView.GetSelectedCells();
+            foreach (var selected_cell in selected_cells)
+            {
+                int row_handle = selected_cell.RowHandle;
+                DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
+                DataRow editing_row = editing_row_view.Row;
+                DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.VisibleIndex];
+                ExoSubJobProjection entity = (ExoSubJobProjection)editing_row[columnEntity];
+
+                DateTime deleteCellDate;
+                if(DateTime.TryParse(selected_cell.Column.FieldName, out deleteCellDate))
+                {
+                    findExistingOrAddNewForecast(entity, deleteCellDate, null);
+                }
             }
         }
 
@@ -308,7 +323,7 @@ namespace BluePrints.ViewModels
                 FORECAST changedFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if (changedFORECAST != null)
                 {
-                    ExoSubJobProjection findUpdatedEntity = exoSubJobs.FirstOrDefault(x => x.SubJob.Code == changedFORECAST.SUBJOB_CODE && x.Discipline.Code == changedFORECAST.DISCIPLINE_CODE && x.Commodity.Code == changedFORECAST.COMMODITY_CODE);
+                    ExoSubJobProjection findUpdatedEntity = exoSubJobs.FirstOrDefault(x => x.SubJob.Code == changedFORECAST.SUBJOB_CODE && x.Discipline.Code == changedFORECAST.DISCIPLINE_CODE);
                     if(findUpdatedEntity != null)
                     {
                         BuildRowStats(findUpdatedEntity, true);
@@ -342,24 +357,29 @@ namespace BluePrints.ViewModels
                 DateTime dateTime;
                 if(DateTime.TryParse(e.Column.FieldName, out dateTime))
                 {
-                    findExistingOrAddNewForecast(entity, dateTime, (decimal)e.Value);
+                    decimal? forecastUnits = null;
+                    decimal convertUnits = 0;
+                    if (e.Value != null && decimal.TryParse(e.Value.ToString(), out convertUnits))
+                        forecastUnits = convertUnits;
+
+                    findExistingOrAddNewForecast(entity, dateTime, forecastUnits);
                 }
             }
 
             e.Handled = true;
         }
 
-        private void findExistingOrAddNewForecast(ExoSubJobProjection entity, DateTime forecastDate, decimal forecastUnits)
+        private void findExistingOrAddNewForecast(ExoSubJobProjection entity, DateTime forecastDate, decimal? forecastUnits)
         {
-            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code);
-            if(findFORECAST == null)
+            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code);
+            if(findFORECAST == null && forecastUnits != null)
             {
                 FORECAST newFORECAST = new FORECAST();
                 newFORECAST.GUID = Guid.Empty;
                 newFORECAST.GUID_PROJECT = loadPROJECT.GUID;
                 newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
                 newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
-                newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
+                newFORECAST.COMMODITY_CODE = string.Empty;
                 newFORECAST.FORECAST_DATE = forecastDate.Date;
                 newFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(newFORECAST);
