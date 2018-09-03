@@ -69,6 +69,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
+                //var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in PrimeroUnitOfWork.X_JOB_TRANSACTIONS_DETAILS
+                //                   join JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                //                   on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
+                //                   join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
+                //                   on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                //                   join DR_ACCS in PrimeroUnitOfWork.DR_ACCS
+                //                   on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
+                //                   join STOCK_ITEMS in PrimeroUnitOfWork.STOCK_ITEMS
+                //                   on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
+                //                   join GLP in PrimeroUnitOfWork.GLACCS
+                //                   on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
+                //                   join GLCOS in PrimeroUnitOfWork.GLACCS
+                //                   on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
+                //                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && X_JOB_TRANSACTIONS_DETAIL.jobcode == projectNumber
+                //                   select new;
+
+
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                       join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
                                       on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
@@ -89,6 +106,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 var exoSubjobsList = exoSubjobs.ToList();
                 var jobTransactionsList = jobTransactions.ToList();
+
+                
                 if (jobTransactionsList.Count == 0)
                     return;
 
@@ -106,13 +125,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
                             burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            burnedDataPoint.ActualDate = jobTransaction.TRANSDATE;
                             burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                             burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                             burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Role = jobTransaction.TITLE;
                             burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                             burnedDataPoint.CostType = jobTransaction.COSTDESC3;
-
                             burnedDataPoints.Add(burnedDataPoint);
 
                             ExoDataPoint actualDataPoint = new ExoDataPoint();

@@ -1712,5 +1712,10 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// The X_PURCH_REQ_COMMENTS_FILES entities repository.
         /// </summary>
         IRepository<X_PURCH_REQ_COMMENTS_FILES, int> X_PURCH_REQ_COMMENTS_FILES { get; }
+
+        /// <summary>
+        /// The X_JOB_TRANSACTIONS_DETAIL entities repository.
+        /// </summary>
+        IRepository<X_JOB_TRANSACTIONS_DETAIL, int?> X_JOB_TRANSACTIONS_DETAILS { get; }
     }
 }

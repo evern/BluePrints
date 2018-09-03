@@ -103,7 +103,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         #region Local Variables
         public Stats Burned { get; set; }
-        public Stats Actual { get; set; } 
+        public Stats Actual { get; set; }
+        public Stats Material { get; set; }
         #endregion
 
         #region Progress Stats Summary
@@ -165,6 +166,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true);
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
         }
 
@@ -183,6 +185,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             Actual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
+
+            Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            Material.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             RemainingActual.SetData(cleanSummaryStats.Where(x => x.RemainingActual != null && x.RemainingActual.DataPoints != null).SelectMany(x => x.RemainingActual.DataPoints).ToList());
@@ -207,6 +212,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             Actual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
                 Actual.SetData(summaryStats.Actual.GetData().ToList());
+
+            Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
+                Material.SetData(summaryStats.Actual.GetData().ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             if (summaryStats.RemainingActual != null && summaryStats.RemainingActual.DataPoints != null)

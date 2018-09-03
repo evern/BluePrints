@@ -192,7 +192,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = remainingDataPoints;
         }
 
-        public IEnumerable<ExoDataPoint> ExoDataPoints
+        public List<ExoDataPoint> ExoDataPoints
         {
             get
             {
@@ -203,7 +203,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (exoDataPoints != null)
                 {
                     exoDataPoints = exoDataPoints.OrderBy(x => x.ProgressDate);
-                    return exoDataPoints;
+                    return exoDataPoints.ToList();
                 }
 
                 return new List<ExoDataPoint>();
@@ -246,12 +246,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (dataPoints == null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
                 {
-                    string s;
-                    if (isDebug)
-                        s = string.Empty;
                     decimal qtyPerUnit = this.TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
                     DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate.AddDays(1) : (DateTime?)null;
-                    dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, qtyPerUnit, plotStartdate);
+                    dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, qtyPerUnit, plotStartdate, ExoDataPoints);
                     //dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints);
                 }
 
@@ -417,6 +414,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class DataPoint
     {
         public DateTime ProgressDate { get; set; }
+        public DateTime? ActualDate { get; set; }
         public decimal Units { get; set; }
         public decimal Costs { get; set; }
         //Used to store actuals while storing burn
@@ -431,6 +429,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool IsRemaining { get; set; }
         public bool IsProductivityInflated { get; set; }
         public bool DoNotPlot { get; set; }
+
+        public List<ExoDataPoint> RawExoData { get; set; }
 
         public decimal UnitsPercentage
         {

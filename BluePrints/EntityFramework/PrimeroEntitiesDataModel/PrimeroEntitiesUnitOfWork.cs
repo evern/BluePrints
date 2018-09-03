@@ -1894,5 +1894,13 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
                 return GetRepository(x => x.Set<X_PURCH_REQ_COMMENTS_FILES>(), (X_PURCH_REQ_COMMENTS_FILES x) => x.SEQNO);
             }
         }
+
+        IRepository<X_JOB_TRANSACTIONS_DETAIL, int?> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAILS
+        {
+            get
+            {
+                return GetRepository(x => x.Set<X_JOB_TRANSACTIONS_DETAIL>(), (X_JOB_TRANSACTIONS_DETAIL x) => x.jobno);
+            }
+        }
     }
 }

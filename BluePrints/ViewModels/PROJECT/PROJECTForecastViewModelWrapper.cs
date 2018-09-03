@@ -85,6 +85,7 @@ namespace BluePrints.ViewModels
         {
             base.resolveParameters(parameter);
             defaultColumnFieldNames.Add(columnEntity);
+            defaultColumnFieldNames.Add(breakDownEntity);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
             SelectedDataRows = new ObservableCollection<DataRowView>();
@@ -103,6 +104,7 @@ namespace BluePrints.ViewModels
 
         #region Data Points Table
         string columnEntity = "Entity";
+        string breakDownEntity = "Breakdown";
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
@@ -125,6 +127,7 @@ namespace BluePrints.ViewModels
                     lastDataDate = lastDataDate.AddDays(10 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
+                    dataPointsTable.Columns.Add(breakDownEntity, typeof(IEnumerable<ExoDataPoint>));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {

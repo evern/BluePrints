@@ -328,7 +328,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Convert cumulative summary collection to period summary for bar histogram construction
         /// </summary>
         public static ObservableCollection<DataPoint> ConvertCumulativeToPeriodDataPoint(
-            ObservableCollection<DataPoint> CumulativeDataPointCollection, decimal qtyPerUnit, DateTime? plotStartDate = null)
+            ObservableCollection<DataPoint> CumulativeDataPointCollection, decimal qtyPerUnit, DateTime? plotStartDate = null, List<ExoDataPoint> exoDataPoints = null)
         {
             decimal periodUnits = 0;
             decimal periodCosts = 0;
@@ -338,6 +338,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (CumulativeDataPointCollection != null)
                 for (var i = 0; i < CumulativeDataPointCollection.Count; i++)
                 {
+                    DateTime? exoStartDateRange = null;
+                    DateTime? exoEndDateRange = null;
+
                     if (plotStartDate != null && CumulativeDataPointCollection[i].ProgressDate < plotStartDate)
                         continue;
 
@@ -345,17 +348,21 @@ namespace BluePrints.Common.ViewModel.Reporting
                     {
                         periodUnits = CumulativeDataPointCollection[i].Units;
                         periodCosts = CumulativeDataPointCollection[i].Costs;
+                        exoStartDateRange = CumulativeDataPointCollection[i].ProgressDate;
                     }
                     else
                     {
                         periodUnits = CumulativeDataPointCollection[i].Units - CumulativeDataPointCollection[i - 1].Units;
                         periodCosts = CumulativeDataPointCollection[i].Costs - CumulativeDataPointCollection[i - 1].Costs;
 
-                        //if (periodUnits < 0)
-                        //    periodUnits = 0;
+                        exoStartDateRange = CumulativeDataPointCollection[i - 1].ProgressDate;
+                        exoEndDateRange = CumulativeDataPointCollection[i].ProgressDate;
+                    }
 
-                        //if (periodCosts < 0)
-                        //    periodCosts = 0;
+                    List<ExoDataPoint> groupedExoDataPoints = new List<ExoDataPoint>();
+                    if(exoDataPoints.Count > 0)
+                    {
+                        groupedExoDataPoints.AddRange(exoDataPoints.Where(x => x.ActualDate > exoStartDateRange && x.ActualDate <= exoEndDateRange));
                     }
 
                     PeriodDataPointCollection.Add(new DataPoint
@@ -367,7 +374,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         Quantity = periodUnits * qtyPerUnit,
                         //Costs = periodCosts < 0 ? 0 : periodCosts,
                         //Units = periodUnits < 0 ? 0 : periodUnits,
-                        ProgressDate = CumulativeDataPointCollection[i].ProgressDate
+                        ProgressDate = CumulativeDataPointCollection[i].ProgressDate,
+                        RawExoData = groupedExoDataPoints
                     });
                 }
 
