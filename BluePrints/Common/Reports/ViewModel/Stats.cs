@@ -331,6 +331,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Role { get; set; }
         public string CostGroup { get; set; }
         public string CostType { get; set; }
+        public string Description { get; set; }
+        public string Description2 { get; set; }
+        public string InvoiceNo { get; set; }
+        public string Purchase_GLName { get; set; }
+        public string Cost_GLName { get; set; }
 
         public string PhaseCode
         {

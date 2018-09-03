@@ -60,8 +60,11 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate)
         {
-            if (summary_stats == null || summary_stats.Reportables.Count() == 0)
+            if (summary_stats == null)
                 return null;
+
+            if (summary_stats.Reportables.Count() == 0)
+                summary_stats.Reportables = new List<IReportable>();
 
             //set budgeted, current and earned
             IEnumerable<IReportable> grouped_reportables = summary_stats.Reportables.Where(reportable_predicate);
@@ -76,12 +79,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> actual_data_points = summary_stats.Actual.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> material_data_points = summary_stats.Material.GetData().Select(x => (ExoDataPoint)x);
             //IEnumerable<DataPoint> remaining_actual_data_points = summary_stats.RemainingActual.GetData();
 
             List<ExoDataPoint> burnedRawDataPoints = burned_data_points.Where(predicate).ToList();
             grouped_summary_stats.Burned.SetData(burnedRawDataPoints);
             List<ExoDataPoint> actualRawDataPoints = actual_data_points.Where(predicate).ToList();
             grouped_summary_stats.Actual.SetData(actualRawDataPoints);
+            List<ExoDataPoint> materialRawDataPoints = material_data_points.Where(predicate).ToList();
+            grouped_summary_stats.Material.SetData(materialRawDataPoints);
 
             //Cannot uset setdata on remaining actual because there's no Func<DataPoint, bool> predicate to apply filter on data
             //grouped_summary_stats.RemainingActual.SetData(remaining_actual_data_points);
@@ -98,7 +104,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class SummaryStats : ProgressStats
     {
         #region Compulsory Parameters
-        public IEnumerable<IReportable> Reportables { get; private set; }
+        public IEnumerable<IReportable> Reportables { get; set; }
         #endregion
 
         #region Local Variables

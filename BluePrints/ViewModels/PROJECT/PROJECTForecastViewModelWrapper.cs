@@ -39,6 +39,9 @@ using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Editors;
+using DevExpress.Utils.Filtering;
+using System.ComponentModel.DataAnnotations;
+using DevExpress.Data.Filtering;
 
 namespace BluePrints.ViewModels
 {
@@ -76,6 +79,10 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        public CriteriaOperator FilterCriteria { get; set; }
+        public virtual DateTime EndSelectionDate { get; set; }
+        public virtual DateTime StartSelectionDate { get; set; }
+        public virtual IEnumerable<string> Subjobs { get; set; }
         IEnumerable<ExoTimeAuthorisation> jobLines { get; set; }
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         IEnumerable<ExoSubJobProjection> exoSubJobs;
@@ -89,6 +96,8 @@ namespace BluePrints.ViewModels
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
             SelectedDataRows = new ObservableCollection<DataRowView>();
+            StartSelectionDate = DateTime.Now;
+            DetailedData = new List<ExoDataPoint>();
         }
 
         protected override void onSummaryCalculateComplete()
@@ -127,7 +136,7 @@ namespace BluePrints.ViewModels
                     lastDataDate = lastDataDate.AddDays(10 * interval.Days);
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
-                    dataPointsTable.Columns.Add(breakDownEntity, typeof(IEnumerable<ExoDataPoint>));
+                    //dataPointsTable.Columns.Add(breakDownEntity, typeof(IEnumerable<ExoDataPoint>));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -156,6 +165,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public List<ExoDataPoint> DetailedData { get; set; }
         private void BuildRowStats(ExoSubJobProjection entity, bool isAuxiliary)
         {
             if (dataPointsTable == null)
@@ -188,6 +198,7 @@ namespace BluePrints.ViewModels
             }
 
             DashboardFlatStructure findDashboardEntity = SingleProjectDashboards.FirstOrDefault(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
+            List<ExoDataPoint> exoDataPoints = new List<ExoDataPoint>();
 
             if(findDashboardEntity != null)
             {
@@ -204,6 +215,8 @@ namespace BluePrints.ViewModels
 
                 SummaryStats summaryStats = (SummaryStats)findDashboardEntity.Stats;
                 if (summaryStats.Actual != null && summaryStats.Actual.CumulativeDataPoints != null)
+                {
+                    exoDataPoints.AddRange(summaryStats.Actual.ExoDataPoints);
                     foreach (Common.ViewModel.Reporting.DataPoint progress in summaryStats.Actual.DataPoints)
                     {
                         string dateField = progress.ProgressDate.Date.ToShortDateString();
@@ -213,8 +226,35 @@ namespace BluePrints.ViewModels
                             newDataRow[dateField] = currentCosts + progress.Costs;
                         }
                     }
+                }
+
+                if (summaryStats.Material != null && summaryStats.Material.CumulativeDataPoints != null)
+                {
+                    exoDataPoints.AddRange(summaryStats.Material.ExoDataPoints);
+                    foreach (Common.ViewModel.Reporting.DataPoint progress in summaryStats.Material.DataPoints)
+                    {
+                        string dateField = progress.ProgressDate.Date.ToShortDateString();
+                        if (dataPointsTable.Columns.Contains(dateField))
+                        {
+                            DateTime parseStartDate = DateTime.Parse(dateField);
+                            if (parseStartDate < StartSelectionDate)
+                                StartSelectionDate = parseStartDate;
+
+                            DateTime parseEndDate = DateTime.Parse(dateField);
+                            if (parseEndDate > EndSelectionDate)
+                                EndSelectionDate = parseEndDate;
+
+                            decimal currentCosts = (decimal)newDataRow[dateField];
+                            newDataRow[dateField] = currentCosts + progress.Costs;
+                        }
+                    }
+                }
+
+                DetailedData.AddRange(exoDataPoints);
+                //newDataRow[breakDownEntity] = exoDataPoints;
             }
 
+            Subjobs = DetailedData.Select(x => x.Subjob_Name).ToList();
             //effectively override remaining
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code);
             foreach(FORECAST currentRowFORECAST in currentRowFORECASTS)
@@ -233,6 +273,26 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Events
+
+        public void ShowingEditor(DevExpress.Xpf.Grid.ShowingEditorEventArgs e)
+        {
+            if(e.Column.ReadOnly)
+            {
+                DateTime parseEndDate;
+                if(DateTime.TryParse(e.Column.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
+                {
+                    DataRowView dataRowView = (DataRowView)e.Row;
+                    ExoSubJobProjection entity = (ExoSubJobProjection)dataRowView[columnEntity];
+                    parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
+                    EndSelectionDate = parseEndDate;
+                    StartSelectionDate = parseEndDate.AddDays(-7);
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [ActualDate] > #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+
+                    this.RaisePropertyChanged(x => x.FilterCriteria);
+                }
+            }
+        }
+
         public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
         {
             if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
@@ -422,5 +482,15 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+    }
+
+    public class CostFilteringViewModel
+    {
+        [FilterLookup("Subjobs", UseBlanks = false, UseSelectAll = false)]
+        [Display(Name = "Subjob")]
+        public string Subjob_Name { get; set; }
+        [FilterRange("StartSelectionDate", "EndSelectionDate")]
+        [Display(Name = "Actual Date")]
+        public DateTime ActualDate { get; set; }
     }
 }

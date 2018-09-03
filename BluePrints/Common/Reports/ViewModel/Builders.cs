@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 ObservableCollection<ExoDataPoint> burnedDataPoints = new ObservableCollection<ExoDataPoint>();
                 ObservableCollection<ExoDataPoint> actualDataPoints = new ObservableCollection<ExoDataPoint>();
-
+                ObservableCollection<ExoDataPoint> materialDataPoints = new ObservableCollection<ExoDataPoint>();
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
@@ -69,22 +69,21 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
-                //var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in PrimeroUnitOfWork.X_JOB_TRANSACTIONS_DETAILS
-                //                   join JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
-                //                   on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
-                //                   join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
-                //                   on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                //                   join DR_ACCS in PrimeroUnitOfWork.DR_ACCS
-                //                   on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
-                //                   join STOCK_ITEMS in PrimeroUnitOfWork.STOCK_ITEMS
-                //                   on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
-                //                   join GLP in PrimeroUnitOfWork.GLACCS
-                //                   on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
-                //                   join GLCOS in PrimeroUnitOfWork.GLACCS
-                //                   on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
-                //                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && X_JOB_TRANSACTIONS_DETAIL.jobcode == projectNumber
-                //                   select new;
-
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in PrimeroUnitOfWork.X_JOB_TRANSACTIONS_DETAILS
+                                   join JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                                   on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
+                                   join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
+                                   on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                   join DR_ACCS in PrimeroUnitOfWork.DR_ACCS
+                                   on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
+                                   join STOCK_ITEMS in PrimeroUnitOfWork.STOCK_ITEMS
+                                   on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
+                                   join GLP in PrimeroUnitOfWork.GLACCS
+                                   on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
+                                   join GLCOS in PrimeroUnitOfWork.GLACCS
+                                   on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
+                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber
+                                   select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.master_jobno, X_JOB_TRANSACTIONS_DETAIL.jobcode, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = JOBCOST_HDR2.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME };
 
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                       join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
@@ -144,6 +143,31 @@ namespace BluePrints.Common.ViewModel.Reporting
                         missingSubJobs.Add(jobTransaction.JOBCODE);
                 }
 
+                foreach (var jobMaterial in jobMaterials)
+                {
+                    if (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))
+                    {
+                        ExoDataPoint materialDataPoint = new ExoDataPoint();
+                        materialDataPoint.BudgetedUnits = 0;
+                        materialDataPoint.BudgetedCosts = 0;
+                        materialDataPoint.Units = (decimal)jobMaterial.quantity;
+                        materialDataPoint.Costs = (decimal)jobMaterial.LINECOST * this.CurrencyConversion;
+                        materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
+                        materialDataPoint.ActualDate = jobMaterial.transdate;
+                        materialDataPoint.Subjob_Name = jobMaterial.jobcode;
+                        materialDataPoint.ResourceName = string.Empty;
+                        materialDataPoint.Quantity = (decimal)jobMaterial.quantity;
+                        materialDataPoint.Description = jobMaterial.description;
+                        materialDataPoint.Description2 = jobMaterial.name;
+                        materialDataPoint.InvoiceNo = jobMaterial.invno;
+                        materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
+                        materialDataPoint.CostType = jobMaterial.CostTypeDesc;
+                        materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
+                        materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
+                        materialDataPoints.Add(materialDataPoint);
+                    }
+                }
+
                 foreach (string missingSubJob in missingSubJobs)
                 {
                     SUBJOB newSUBJOB = new SUBJOB();
@@ -154,11 +178,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 projectSummaryStats.Burned = new Stats(summaryObject);
                 projectSummaryStats.Actual = new Stats(summaryObject);
+                projectSummaryStats.Material = new Stats(summaryObject);
                 projectSummaryStats.RemainingActual = new Stats(summaryObject, true);
 
                 projectSummaryStats.Burned.SetData(burnedDataPoints);
                 projectSummaryStats.Actual.SetData(actualDataPoints);
-                
+                projectSummaryStats.Material.SetData(materialDataPoints);
                 projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
                 //LoadingScreenManager.Progress();
             }
