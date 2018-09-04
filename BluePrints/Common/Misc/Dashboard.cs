@@ -298,23 +298,31 @@ namespace BluePrints.Common.Misc
             return export_data_by_type;
         }
 
-        public static int getSubDivideMaxProgress(this IDashboard dashboard, IEnumerable<ExoDataPoint> burned_data_points, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector)
+        public static int getSubDivideMaxProgress(this IDashboard dashboard, IEnumerable<ExoDataPoint> burned_data_points, IEnumerable<ExoDataPoint> material_data_point, IEnumerable<ExoDataPoint> po_data_point, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector)
         {
             IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
             IEnumerable<string> exo_codes = burned_data_points.Select(exo_selector);
+            IEnumerable<string> material_codes = material_data_point.Select(exo_selector);
+            IEnumerable<string> po_codes = po_data_point.Select(exo_selector);
             List<string> loop_codes = new List<string>(reportable_codes);
             loop_codes.AddRange(exo_codes);
+            loop_codes.AddRange(material_codes);
+            loop_codes.AddRange(po_codes);
             HashSet<string> unique_codes = new HashSet<string>(loop_codes);
 
             return unique_codes.Count;
         }
 
-        public static void SubDivideDashboardStats(this IDashboard dashboard, IEnumerable<ExoDataPoint> burned_data_points, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector)
+        public static void SubDivideDashboardStats(this IDashboard dashboard, IEnumerable<ExoDataPoint> burned_data_points, IEnumerable<ExoDataPoint> material_data_point, IEnumerable<ExoDataPoint> po_data_point, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector)
         {
             IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
             IEnumerable<string> exo_codes = burned_data_points.Select(exo_selector);
+            IEnumerable<string> material_codes = material_data_point.Select(exo_selector);
+            IEnumerable<string> po_codes = po_data_point.Select(exo_selector);
             List<string> loop_codes = new List<string>(reportable_codes);
             loop_codes.AddRange(exo_codes);
+            loop_codes.AddRange(material_codes);
+            loop_codes.AddRange(po_codes);
             HashSet<string> unique_codes = new HashSet<string>(loop_codes);
 
             List<DashboardTreeStructure> child_dashboard = new List<DashboardTreeStructure>();
@@ -354,21 +362,23 @@ namespace BluePrints.Common.Misc
             project_dashboard.Summary = project_summary_stats;
 
             IEnumerable<ExoDataPoint> burned_data_points = project_summary_stats.GetBurnedDataPoints();
-            int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
+            IEnumerable<ExoDataPoint> material_data_points = project_summary_stats.GetMaterialDataPoints();
+            IEnumerable<ExoDataPoint> po_data_points = project_summary_stats.GetPODataPoints();
+            int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
 
-            project_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
+            project_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
 
             LoadingScreenManager.ShowLoadingScreen(maxProgress);
             //child dashboards are now subdivided into subjob dashboard
             foreach (DashboardTreeStructure subjob_dashboard in project_dashboard.Child_Dashboards)
             {
                 //subjob_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Department_Code, x => x.Department_Code);
-                subjob_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Discipline_Code, x => x.Discipline_Code);
+                subjob_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Discipline_Code, x => x.Discipline_Code);
 
                 foreach (DashboardTreeStructure discipline_dashboard in subjob_dashboard.Child_Dashboards)
                 {
                     //department_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Discipline_Code, x => x.Discipline_Code);
-                    discipline_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Commodity_Code, x => x.Commodity_Code);
+                    discipline_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Commodity_Code, x => x.Commodity_Code);
                     ////child dashboards are now subdivided into discipline dashboard
                     //foreach (DashboardTreeStructure discipline_dashboard in department_dashboard.Child_Dashboards)
                     //{

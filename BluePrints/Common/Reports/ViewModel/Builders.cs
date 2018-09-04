@@ -44,6 +44,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 ObservableCollection<ExoDataPoint> burnedDataPoints = new ObservableCollection<ExoDataPoint>();
                 ObservableCollection<ExoDataPoint> actualDataPoints = new ObservableCollection<ExoDataPoint>();
                 ObservableCollection<ExoDataPoint> materialDataPoints = new ObservableCollection<ExoDataPoint>();
+                ObservableCollection<ExoDataPoint> poDataPoints = new ObservableCollection<ExoDataPoint>();
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
@@ -69,6 +70,22 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
+                var pos = from PURCHORD_LINES in PrimeroUnitOfWork.PURCHORD_LINES
+                          join PURCHORD_HDR in PrimeroUnitOfWork.PURCHORD_HDR
+                          on PURCHORD_LINES.HDR_SEQNO equals PURCHORD_HDR.SEQNO
+                          join CR_ACCS in PrimeroUnitOfWork.CR_ACCS
+                          on PURCHORD_HDR.ACCNO equals CR_ACCS.ACCNO
+                          join JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
+                          on PURCHORD_LINES.JOBNO equals JOBCOST_HDR.JOBNO
+                          join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
+                          on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                          join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
+                          on PURCHORD_LINES.COSTTYPE equals JOB_COSTTYPES.SEQNO
+                          join JOB_COSTGROUPS in PrimeroUnitOfWork.JOB_COSTGROUPS
+                          on PURCHORD_LINES.COSTGROUP equals JOB_COSTGROUPS.SEQNO
+                          where PURCHORD_LINES.ORD_QUANT > PURCHORD_LINES.SUP_QUANT && PURCHORD_HDR.STATUS != 2 && JOBCOST_HDR2.JOBCODE == projectNumber
+                          select new { PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE };
+                
                 var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in PrimeroUnitOfWork.X_JOB_TRANSACTIONS_DETAILS
                                    join JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
                                    on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
@@ -168,6 +185,31 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }
                 }
 
+                foreach (var po in pos)
+                {
+                    if (!po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010"))
+                    {
+                        ExoDataPoint poDataPoint = new ExoDataPoint();
+                        poDataPoint.BudgetedUnits = 0;
+                        poDataPoint.BudgetedCosts = 0;
+                        poDataPoint.Units = ((decimal)po.ORD_QUANT) - ((decimal)po.SUP_QUANT);
+                        poDataPoint.Costs = poDataPoint.Units * ((decimal)po.UNITPRICE);
+                        poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= po.ORDERDATE);
+                        poDataPoint.ActualDate = po.ORDERDATE;
+                        poDataPoint.Subjob_Name = po.JOBCODE;
+                        poDataPoint.ResourceName = string.Empty;
+                        poDataPoint.Quantity = poDataPoint.Units;
+                        poDataPoint.Description = po.DESCRIPTION;
+                        poDataPoint.Description2 = po.NAME;
+                        poDataPoint.InvoiceNo = string.Empty;
+                        poDataPoint.CostGroup = po.COSTGROUPDESC;
+                        poDataPoint.CostType = po.COSTTYPEDESC;
+                        poDataPoint.Cost_GLName = string.Empty;
+                        poDataPoint.Purchase_GLName = string.Empty;
+                        poDataPoints.Add(poDataPoint);
+                    }
+                }
+
                 foreach (string missingSubJob in missingSubJobs)
                 {
                     SUBJOB newSUBJOB = new SUBJOB();
@@ -179,11 +221,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.Burned = new Stats(summaryObject);
                 projectSummaryStats.Actual = new Stats(summaryObject);
                 projectSummaryStats.Material = new Stats(summaryObject);
+                projectSummaryStats.PO = new Stats(summaryObject);
                 projectSummaryStats.RemainingActual = new Stats(summaryObject, true);
 
                 projectSummaryStats.Burned.SetData(burnedDataPoints);
                 projectSummaryStats.Actual.SetData(actualDataPoints);
                 projectSummaryStats.Material.SetData(materialDataPoints);
+                projectSummaryStats.PO.SetData(poDataPoints);
+
                 projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
                 //LoadingScreenManager.Progress();
             }

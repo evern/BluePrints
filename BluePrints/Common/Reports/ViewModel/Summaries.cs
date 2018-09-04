@@ -49,6 +49,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             return this.Burned.GetData().Select(x => (ExoDataPoint)x);
         }
 
+        public IEnumerable<ExoDataPoint> GetMaterialDataPoints()
+        {
+            return this.Material.GetData().Select(x => (ExoDataPoint)x);
+        }
+
+        public IEnumerable<ExoDataPoint> GetPODataPoints()
+        {
+            return this.PO.GetData().Select(x => (ExoDataPoint)x);
+        }
+
         public void AddMissingExoSubjob(SUBJOB SUBJOB)
         {
             if(!ExoMissingSUBJOBS.Any(x => x.INTERNAL_NAME1 == SUBJOB.INTERNAL_NAME1))
@@ -80,6 +90,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> actual_data_points = summary_stats.Actual.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> material_data_points = summary_stats.Material.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> po_data_points = summary_stats.PO.GetData().Select(x => (ExoDataPoint)x);
             //IEnumerable<DataPoint> remaining_actual_data_points = summary_stats.RemainingActual.GetData();
 
             List<ExoDataPoint> burnedRawDataPoints = burned_data_points.Where(predicate).ToList();
@@ -88,14 +99,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             grouped_summary_stats.Actual.SetData(actualRawDataPoints);
             List<ExoDataPoint> materialRawDataPoints = material_data_points.Where(predicate).ToList();
             grouped_summary_stats.Material.SetData(materialRawDataPoints);
-
+            List<ExoDataPoint> poRawDataPoints = po_data_points.Where(predicate).ToList();
+            grouped_summary_stats.PO.SetData(poRawDataPoints);
             //Cannot uset setdata on remaining actual because there's no Func<DataPoint, bool> predicate to apply filter on data
             //grouped_summary_stats.RemainingActual.SetData(remaining_actual_data_points);
             grouped_summary_stats.RemainingActual.SetRemainingActualData(grouped_summary_stats.Reportables, grouped_summary_stats.Burned.GetData());
             grouped_summary_stats.RecalculateStats(false);
 
-            if (grouped_reportables.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
-                return null;
+            //if (grouped_reportables.Count() == 0 && burnedRawDataPoints.Count() == 0 && actualRawDataPoints.Count() == 0)
+            //    return null;
 
             return grouped_summary_stats;
         }
@@ -111,6 +123,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Stats Burned { get; set; }
         public Stats Actual { get; set; }
         public Stats Material { get; set; }
+        public Stats PO { get; set; }
         #endregion
 
         #region Progress Stats Summary
@@ -173,6 +186,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             Burned = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            PO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
         }
 
@@ -194,6 +209,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Material.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
+
+            PO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            PO.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             RemainingActual.SetData(cleanSummaryStats.Where(x => x.RemainingActual != null && x.RemainingActual.DataPoints != null).SelectMany(x => x.RemainingActual.DataPoints).ToList());
@@ -222,6 +240,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
                 Material.SetData(summaryStats.Actual.GetData().ToList());
+
+            PO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
+                PO.SetData(summaryStats.Actual.GetData().ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             if (summaryStats.RemainingActual != null && summaryStats.RemainingActual.DataPoints != null)

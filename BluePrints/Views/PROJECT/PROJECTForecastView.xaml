@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
@@ -17,11 +17,11 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Live Progress Distribution">
+                        <dxr:RibbonPage Caption="Forecast">
                             <dxr:RibbonPageGroup Caption="Grid">
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                <!--<dxb:BarButtonItem Command="{Binding DataContext.ProgressUndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ProgressRedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />-->
+                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                                 <dxb:BarButtonItem Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
                                 <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" ToolTip="Change selection to cells instead of row" />
@@ -29,7 +29,6 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.FixProgressItemCommand, ElementName=userControl}" Content="Fix Data" Glyph="{dxc:DXImage Image=IDE_16x16.png}" LargeGlyph="{dx:DXImage Image=IDE_32x32.png}" ToolTip="Fix the data in database in case anything unexpected happens" />-->
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -38,41 +37,72 @@
                         <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
-                    <dxlc:LayoutGroup Orientation="Vertical">
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectDistribution" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentColumn="{Binding DataContext.LastColumn, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
-                                <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
-                            </dxmvvm:Interaction.Behaviors>
-                            <dxg:GridColumn Width="150" FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" VisibleIndex="10" />
-                            <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" VisibleIndex="20" />
-                            <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" Visible="False" VisibleIndex="30" />
-                            <dxg:GridColumn FieldName="Entity.ExoBudgetQty" Fixed="Left" Header="Budget Qty" HeaderToolTip="Total budget quantity" Visible="False" VisibleIndex="40">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.ExoBudgetCosts" Fixed="Left" Header="Budget Costs" HeaderToolTip="Total budget costs" VisibleIndex="50">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" NewItemRowPosition="None" ShowTotalSummary="True">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                        <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}">
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView1" AllowEditing="False" Style="{StaticResource DefaultDetailTableViewTemplate}" />
-                            </dxg:GridControl.View>
-                        </dxg:GridControl>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutGroup>
+                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dxc:DXSerializer.Enabled="False" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                    <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
+                        <dxdo:LayoutPanel>
+                            <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectDistribution" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                    <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridColumn Width="150" FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" VisibleIndex="10" />
+                                <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" VisibleIndex="20" />
+                                <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" Visible="False" VisibleIndex="30" />
+                                <dxg:GridColumn FieldName="Entity.ExoBudgetQty" Fixed="Left" Header="Budget Qty" HeaderToolTip="Total budget quantity" Visible="False" VisibleIndex="40">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.ExoBudgetCosts" Fixed="Left" Header="Budget Costs" HeaderToolTip="Total budget costs" VisibleIndex="50">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxdo:LayoutPanel>
+                        <dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">
+                            <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" SortIndex="10" VisibleIndex="10" />
+                                    <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" SortIndex="20" VisibleIndex="20" />
+                                    <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" SortIndex="30" VisibleIndex="30" />
+                                    <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" SortIndex="40" VisibleIndex="40" />
+                                    <dxg:GridColumn FieldName="ResourceName" Header="Resource" VisibleIndex="50" />
+                                    <dxg:GridColumn FieldName="Quantity" Header="Quantity" VisibleIndex="60" />
+                                    <dxg:GridColumn FieldName="Costs" Header="Costs" VisibleIndex="70" />
+                                    <dxg:GridColumn FieldName="Description" Header="Description" VisibleIndex="80" />
+                                    <dxg:GridColumn FieldName="Description2" Header="Additional Desc." VisibleIndex="90" />
+                                    <dxg:GridColumn FieldName="InvoiceNo" Header="InvoiceNo" VisibleIndex="100" />
+                                    <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" VisibleIndex="110" />
+                                    <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" VisibleIndex="120" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Subjob_Name" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Subjob_Name" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView1" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" />
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxdo:LayoutPanel>
+                    </dxdo:LayoutGroup>
+                </dxdo:DockLayoutManager>
             </DockPanel>
         </Grid>
     </Grid>

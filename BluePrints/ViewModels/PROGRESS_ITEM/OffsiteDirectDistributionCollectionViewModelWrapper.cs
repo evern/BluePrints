@@ -299,6 +299,7 @@ namespace BluePrints.ViewModels
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo();
         }
 
+
         public void ProgressUndo()
         {
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
