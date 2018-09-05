@@ -144,7 +144,7 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Cumulative">
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Current_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Earned % to date" ReadOnly="True" VisibleIndex="80">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Earned % to date" ReadOnly="True" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

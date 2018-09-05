@@ -255,6 +255,7 @@ namespace BluePrints.ViewModels
                 project.Update();
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.AllProjectDashboards)));
                 mainThreadDispatcher.BeginInvoke(new Action(() => IsSummaryLoading = false));
             }
 
@@ -915,6 +916,26 @@ namespace BluePrints.ViewModels
         }
 
         public IEnumerable<DashboardFlatStructure> SingleProjectDashboards
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplayEntities.Count == 0)
+                    return null;
+
+                //Only return managed subjobs
+                List<DashboardFlatStructure> dashboards = DisplayEntities.First().Subjob_Dashboards;
+                IEnumerable<DashboardFlatStructure> singleProjectDashboard = null;
+                if (dashboards != null)
+                    singleProjectDashboard = dashboards.Where(x => !x.ShouldHide);
+
+                return singleProjectDashboard;
+            }
+        }
+
+        /// <summary>
+        /// Includes procurement and indirects
+        /// </summary>
+        public IEnumerable<DashboardFlatStructure> AllProjectDashboards
         {
             get
             {

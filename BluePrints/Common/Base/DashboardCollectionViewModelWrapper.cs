@@ -91,6 +91,7 @@ namespace BluePrints.Common.ViewModel
             return base.OnMainViewModelLoaded(entities);
         }
 
+        protected bool skipBindingSwitch { get; set; }
         private void first_loaded_dispatchTimer_Tick(object sender, EventArgs e)
         {
             first_loaded_dispatchTimer.Stop();
@@ -99,7 +100,9 @@ namespace BluePrints.Common.ViewModel
 
             if (MainViewModel.Entities.Count > 0)
             {
-                this.SwitchBinding(DashboardViewType.Units, null, GridControlService);
+                if(!skipBindingSwitch)
+                    this.SwitchBinding(DashboardViewType.Units, null, GridControlService);
+
                 SummaryEntity = MainViewModel.Entities.First();
                 this.RaisePropertyChanged(x => x.SummaryEntity);
             }
@@ -188,7 +191,9 @@ namespace BluePrints.Common.ViewModel
             viewType = button.Name.ToUpper().Contains("COSTS")
                 ? DashboardViewType.Costs
                 : button.Name.ToUpper().Contains("QTY") ? DashboardViewType.Quantity : DashboardViewType.Units;
-            this.SwitchBinding(viewType, null, GridControlService, switchChartOnly);
+
+            if (!skipBindingSwitch)
+                this.SwitchBinding(viewType, null, GridControlService, switchChartOnly);
             ChangeViewMemberFieldNames?.Invoke(viewType);
 
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
@@ -200,9 +205,9 @@ namespace BluePrints.Common.ViewModel
         {
             var button = (BarCheckItem)checkButton;
             bool usePercentage = button.Name.ToUpper().Contains("PERCENT");
-
-            //pass in cost as true by default but when percentage is used isCost will be determine by what is currently used
-            this.SwitchBinding(viewType, usePercentage, GridControlService, switchChartOnly);
+            if (!skipBindingSwitch)
+                //pass in cost as true by default but when percentage is used isCost will be determine by what is currently used
+                this.SwitchBinding(viewType, usePercentage, GridControlService, switchChartOnly);
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)

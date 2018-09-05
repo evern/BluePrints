@@ -542,6 +542,7 @@
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\StringToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\TagToColorConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />

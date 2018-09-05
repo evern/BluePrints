@@ -73,6 +73,9 @@ namespace BluePrints.Common.Misc
         //public string DepartmentCode { get; set; }
         public string DisciplineCode { get; set; }
         public string CommodityCode { get; set; }
+
+        //This is for dashboard that only have material and po stats
+        public bool ShouldHide { get; set; }
     }
 
     public class Dashboard_Export_Data_Point
@@ -413,6 +416,7 @@ namespace BluePrints.Common.Misc
                     //subjobLevelDashboard.DepartmentCode = string.Empty;
                     subjobLevelDashboard.DisciplineCode = string.Empty;
                     subjobLevelDashboard.Stats = subjob_dashboard.Stats;
+                    subjobLevelDashboard.ShouldHide = shouldHideSubjobDashboard(subjob_dashboard.Stats);
                     flatDashboards.Add(subjobLevelDashboard);
                 }
                 else
@@ -434,7 +438,7 @@ namespace BluePrints.Common.Misc
                             //disciplineLevelDashboard.DepartmentCode = string.Empty;
                             disciplineLevelDashboard.DisciplineCode = discipline_dashboard.Code;
                             disciplineLevelDashboard.Stats = discipline_dashboard.Stats;
-
+                            disciplineLevelDashboard.ShouldHide = shouldHideSubjobDashboard(discipline_dashboard.Stats);
                             flatDashboards.Add(disciplineLevelDashboard);
                         }
                         else
@@ -455,54 +459,33 @@ namespace BluePrints.Common.Misc
                                 commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;
                                 commodityLevelDashboard.CommodityCode = commodity_dashboard.Code;
                                 commodityLevelDashboard.Stats = commodity_dashboard.Stats;
-
+                                commodityLevelDashboard.ShouldHide = shouldHideSubjobDashboard(commodity_dashboard.Stats);
                                 flatDashboards.Add(commodityLevelDashboard);
                             }
                         }
                     }
-
-                    //foreach (DashboardTreeStructure department_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
-                    //{
-                    //    SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
-                    //    string areaCode = string.Empty;
-
-                    //    if (subjob != null)
-                    //        areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
-                    //    if (department_dashboard.Child_Dashboards.Count == 0)
-                    //    {
-                    //        DashboardFlatStructure departmentLevelDashboard = new DashboardFlatStructure();
-                    //        departmentLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                    //        departmentLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
-                    //        departmentLevelDashboard.AreaCode = areaCode;
-                    //        departmentLevelDashboard.DepartmentCode = department_dashboard.Code;
-                    //        departmentLevelDashboard.DisciplineCode = string.Empty;
-                    //        departmentLevelDashboard.Stats = department_dashboard.Stats;
-                    //        flatDashboards.Add(departmentLevelDashboard);
-                    //    }
-                    //    else
-                    //    {
-                    //        foreach (DashboardTreeStructure discipline_dashboard in department_dashboard.Child_Dashboards.OrderBy(x => x.Code))
-                    //        {
-                    //            DashboardFlatStructure commodityLevelDashboard = new DashboardFlatStructure();
-                    //            commodityLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                    //            commodityLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
-                    //            commodityLevelDashboard.AreaCode = areaCode;
-                    //            commodityLevelDashboard.DepartmentCode = department_dashboard.Code;
-                    //            commodityLevelDashboard.DisciplineCode = discipline_dashboard.Code;
-                    //            commodityLevelDashboard.Stats = discipline_dashboard.Stats;
-                    //            flatDashboards.Add(commodityLevelDashboard);
-
-                    //            //foreach(DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
-                    //            //{
-
-                    //            //}
-                    //        }
-                    //    }
-                    //}
                 }
             }
 
             return flatDashboards;
+        }
+
+        private static bool shouldHideSubjobDashboard(ProgressStats stats)
+        {
+            if (stats == null)
+                return true;
+
+            SummaryStats summaryStats = stats as SummaryStats;
+            if (summaryStats == null)
+                return true;
+
+            if (summaryStats.Budgeted == null && summaryStats.Burned == null && summaryStats.Current == null)
+                return true;
+
+            if (summaryStats.Budgeted.DataPoints == null && summaryStats.Burned.DataPoints == null && summaryStats.Current.DataPoints == null)
+                return true;
+
+            return false;
         }
     }
 }
