@@ -204,4 +204,7 @@
   <data name="ManageTenderProfile" xml:space="preserve">
     <value>Allow user to manage tender profile</value>
   </data>
+  <data name="ManageForecast" xml:space="preserve">
+    <value>Allow user to manage forecast</value>
+  </data>
 </root>

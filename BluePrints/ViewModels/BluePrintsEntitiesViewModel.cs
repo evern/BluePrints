@@ -465,7 +465,11 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(construct_category_description);
 
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectQMR" + keyString, projectKey, childTitlePrefix + "QMR", "PROJECTQMRView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "QMR", false, false, @"Chart\Column2_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectForecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\Column2_16x16.png"));
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
+            {
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectForecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\Column2_16x16.png"));
+            }
 
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
 

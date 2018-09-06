@@ -151,6 +151,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage forecast.
+        /// </summary>
+        internal static string ManageForecast {
+            get {
+                return ResourceManager.GetString("ManageForecast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage S-Curve holidays.
         /// </summary>
         internal static string ManageHoliday {
