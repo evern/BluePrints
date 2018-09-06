@@ -22,11 +22,17 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<SUBJOB> SUBJOBS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW = null)
+        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<SUBJOB> SUBJOBS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null)
         {
             TimeSpan reporting_interval = ChronologicalHelpers.GetDefaultIntervalTimeSpan();
-            DateTime? earliest_first_aligned_data_date = ChronologicalHelpers.GetEarliestFirstAlignedDataDate(PROGRESSES);
-            DateTime? latest_data_date = ChronologicalHelpers.GetReportLastDataDate(PROGRESSES);
+            DateTime? earliest_first_aligned_data_date;
+
+            if (fixedStartDate != null && fixedDataDate != null)
+                earliest_first_aligned_data_date = ChronologicalHelpers.RewindDataDate((DateTime)fixedStartDate, (DateTime)fixedDataDate, new TimeSpan(7, 0, 0, 0));
+            else
+                earliest_first_aligned_data_date = ChronologicalHelpers.GetEarliestFirstAlignedDataDate(PROGRESSES);
+
+            DateTime? latest_data_date = fixedDataDate == null ? ChronologicalHelpers.GetReportLastDataDate(PROGRESSES) : fixedDataDate;
             
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), reportableItems);
             FullStatsBuilder fullStatsBuilder = null;
@@ -74,7 +80,7 @@ namespace BluePrints.Common.Projections
     public static class DashboardQueries
     {
         public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATE ESTIMATE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null)
         {
             List<PROJECT> PROJECTS = new List<PROJECT>();
             List<BASELINE> BASELINES = new List<BASELINE>();
@@ -87,7 +93,7 @@ namespace BluePrints.Common.Projections
             if (ESTIMATE != null)
                 ESTIMATES.Add(ESTIMATE);
 
-            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, STOCKCODECollection);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, STOCKCODECollection, fixedStartDate, fixedDataDate);
 
             if (project_dashboard.Count() == 0)
                 return null;
@@ -99,7 +105,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATE> ESTIMATES, IEnumerable<PROGRESS> PROGRESSES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
             IEnumerable<VARIATION> VARIATIONS = null,
-            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null)
+            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null)
         {
             IQueryable<PROJECT> project_single_or_active_selection;
             if (project_guid != null)
@@ -153,7 +159,7 @@ namespace BluePrints.Common.Projections
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }
 
-                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION)
+                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, null, fixedStartDate, fixedDataDate)
                 {
                     EntityKey = current_project.GUID,
                     Entity = current_project

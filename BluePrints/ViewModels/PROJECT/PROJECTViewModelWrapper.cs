@@ -78,10 +78,10 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
+        protected bool isCompletelyLoaded { get; set; }
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter =
-                (DualEntitiesParameter<PROJECT, Action<object>>) parameter;
+            var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
@@ -91,7 +91,15 @@ namespace BluePrints.ViewModels
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
 
             HealthCheckIconName = "Apply";
+            FixedStartDate = null;
+            FixedDataDate = null;
         }
+
+        public virtual DateTime? FixedStartDate { get; set; }
+        public string FixedStartDateStr => FixedStartDate == null ? string.Empty : ((DateTime)FixedStartDate).ToString("dd-MMM-yy");
+
+        public virtual DateTime? FixedDataDate { get; set; }
+        public string FixedDataDateStr => FixedDataDate == null ? string.Empty : ((DateTime)FixedDataDate).ToString("dd-MMM-yy");
 
         public override void OnLoaded()
         {
@@ -156,10 +164,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
-            return
-                query =>
-                    query.Where(
-                        x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.GUID == loadPROJECT.GUID);
+            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.GUID == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -199,7 +204,7 @@ namespace BluePrints.ViewModels
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(loadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -276,7 +281,7 @@ namespace BluePrints.ViewModels
 
         protected virtual void onSummaryCalculateComplete()
         {
-
+            isCompletelyLoaded = true;
         }
 
         public bool CanExportToExcel()
@@ -1311,6 +1316,19 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-#endregion
+
+        public CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+        #endregion
     }
 }

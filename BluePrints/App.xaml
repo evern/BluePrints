@@ -1,7 +1,8 @@
 ﻿<Application x:Class="BluePrints.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/DXSplashScreen/BluePrintsSplashScreen.xaml">
     <Application.Resources>
         <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
-        <converter:TagToColorConverter x:Key="TagToColorConverter" />
+        <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
+        <converter:ForecastFutureCellColorConverter x:Key="ForecastFutureCellColorConverter" />
         <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
         <DataTemplate x:Key="percentageTemplateLastDate">
             <Grid>
@@ -70,7 +71,7 @@
         <DataTemplate x:Key="forecastTemplatePast">
             <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
                 <dxe:SpinEdit.Background>
-                    <MultiBinding Converter="{StaticResource TagToColorConverter}">
+                    <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
                         <Binding Path="Column.FieldName" />
                         <Binding ElementName="PART_Editor" Path="EditValue" />
@@ -82,7 +83,15 @@
             <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="Popup" />
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+                <dxe:SpinEdit.Background>
+                    <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
+                        <Binding Path="RowData.Row.Row" />
+                        <Binding Path="Column.FieldName" />
+                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                    </MultiBinding>
+                </dxe:SpinEdit.Background>
+            </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="invisibleCellTemplate">
             <dxe:TextEdit Name="PART_Editor" Width="0" Margin="0" Padding="0" />

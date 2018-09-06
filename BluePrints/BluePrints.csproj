@@ -437,6 +437,7 @@
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
+    <Compile Include="Common\Misc\BellProRata.cs" />
     <Compile Include="Common\Misc\CombinedCommodityCode.cs" />
     <Compile Include="Common\Misc\Dashboard.cs" />
     <Compile Include="Common\Misc\Deliverable_Milestone.cs" />
@@ -540,9 +541,10 @@
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\StringToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
-    <Compile Include="Common\ViewModel\Converters\TagToColorConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
@@ -557,6 +559,7 @@
     <Compile Include="Common\ViewModel\Converters\HoursToTextConverter.cs" />
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
+    <Compile Include="Common\ViewModel\Misc\DistributionSelectViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DateFromToDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\MapDeliverablesClientNumberDialogViewModel.cs" />
@@ -568,6 +571,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\DistributionSelect.xaml.cs">
+      <DependentUpon>DistributionSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
@@ -1624,6 +1630,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\DistributionSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

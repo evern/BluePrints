@@ -6,18 +6,19 @@ using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    public class TagToColorConverter : IMultiValueConverter
+    public class ForecastPreviousCellColorConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
+            SolidColorBrush paleGreenColor = new System.Windows.Media.SolidColorBrush(Colors.PaleGreen);
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)
-                    return new System.Windows.Media.SolidColorBrush(Colors.LimeGreen);
+                    return paleGreenColor;
 
                 if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
-                    return new System.Windows.Media.SolidColorBrush(Colors.LimeGreen);
+                    return paleGreenColor;
 
                 DataRow dataRow = (DataRow)values[0];
                 if (dataRow["ChildEntities"] != DBNull.Value)
@@ -33,7 +34,7 @@ namespace BluePrints.Common.ViewModel.Converters
                             decimal currentValue = (decimal)values[2];
 
                             if (currentValue >= previousValue)
-                                return new System.Windows.Media.SolidColorBrush(Colors.LimeGreen);
+                                return paleGreenColor;
                             else
                                 return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                         }
@@ -45,9 +46,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 string s = ex.ToString();
             }
 
-
-            SolidColorBrush solidColor = new System.Windows.Media.SolidColorBrush(Colors.LimeGreen);
-            return solidColor;
+            return paleGreenColor;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter,

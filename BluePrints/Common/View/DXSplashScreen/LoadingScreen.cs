@@ -8,8 +8,13 @@ namespace BluePrints.Common
 {
     public static class LoadingScreenManager
     {
+        public static bool DisableLoadingScreen { get; set; }
+
         public static void ShowLoadingScreen(int maxProgress)
         {
+            if (DisableLoadingScreen)
+                return;
+
             if (DXSplashScreen.IsActive || maxProgress == 0)
                 return;
 

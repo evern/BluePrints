@@ -127,7 +127,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (jobTransactionsList.Count == 0)
                     return;
 
-                List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, jobTransactionsList.Max(x => x.TRANSDATE).Value, ReportingInterval);
+                List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 HashSet<string> missingSubJobs = new HashSet<string>();
                 foreach (var jobTransaction in jobTransactionsList)
                 {
@@ -165,6 +165,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
+                        string s;
+                        if (jobMaterial.description.Contains("Computer monitor"))
+                            s = string.Empty;
                         materialDataPoint.BudgetedUnits = 0;
                         materialDataPoint.BudgetedCosts = 0;
                         materialDataPoint.Units = (decimal)jobMaterial.quantity;
@@ -181,6 +184,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.CostType = jobMaterial.CostTypeDesc;
                         materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                         materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
+                        Debug.Print(jobMaterial.description + ";" + materialDataPoint.Costs.ToString());
                         materialDataPoints.Add(materialDataPoint);
                     }
                 }

@@ -87,6 +87,8 @@ namespace BluePrints.Common
         [Display(Name = "Closed")] Closed = 2,
         [Display(Name = "Tender WIP")] Tender = 3,
         [Display(Name = "Tender Submitted")] TenderSubmitted = 4,
+        [Display(Name = "Lost")] Lost = 5,
+        [Display(Name = "Lead")] Lead = 6
     }
 
     public enum BaselineStatus

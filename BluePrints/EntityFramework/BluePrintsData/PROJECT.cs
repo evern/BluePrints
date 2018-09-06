@@ -64,6 +64,12 @@
 
         public decimal? TENDER_PROJECT_DURATION { get; set; }
 
+        public DateTime? FORECAST_START_DATE { get; set; }
+
+        public DateTime? FORECAST_DATA_DATE { get; set; }
+
+        public DateTime? FORECAST_END_DATE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

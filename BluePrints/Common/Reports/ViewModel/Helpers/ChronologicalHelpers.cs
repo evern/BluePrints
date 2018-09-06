@@ -82,12 +82,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             var intervalPeriod = (TimeSpan)periodInterval;
             var firstProgressDate = principalProgress.DATA_DATE;
 
-            //rewind the first progress date to scan to before the datadate aligned to startdate day of week
-            while (firstProgressDate.AddDays(-1 * intervalPeriod.Days) >
-                   principalProgress.PROGRESS_START.Date.AddSeconds(-1))
-                firstProgressDate = firstProgressDate.AddDays(-1 * intervalPeriod.Days);
+            return RewindDataDate(principalProgress.PROGRESS_START, principalProgress.DATA_DATE, intervalPeriod);
+        }
 
-            return firstProgressDate;
+        /// <summary>
+        /// Rewind the data date backwards to get the first aligned data date as per the project start date
+        /// </summary>
+        public static DateTime RewindDataDate(DateTime fixedStartDate, DateTime fixedDataDate, TimeSpan periodInterval)
+        {
+            var dataDate = fixedDataDate;
+
+            //rewind the first progress date to scan to before the datadate aligned to startdate day of week
+            while (dataDate.AddDays(-1 * periodInterval.Days) > fixedStartDate.Date.AddSeconds(-1))
+                dataDate = dataDate.AddDays(-1 * periodInterval.Days);
+
+            return dataDate;
         }
 
         public static TimeSpan ConvertProgressIntervalToPeriod(PROGRESS PROGRESS)
@@ -107,7 +116,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             DateTime lastDataPointDate, TimeSpan intervalPeriod)
         {
             var lastProgressDate = firstAlignedDataDate;
-            lastDataPointDate = lastDataPointDate.AddDays(intervalPeriod.Days);
+            //lastDataPointDate = lastDataPointDate.AddDays(intervalPeriod.Days);
             var alignedDataDatesCollection = new List<DateTime>();
             alignedDataDatesCollection.Add(firstAlignedDataDate);
             //forward the first progress date to scan to after the datadate aligned to end day of week
