@@ -468,7 +468,7 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectForecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\Column2_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectForecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\ChangeChartSeriesType_16x16.png"));
             }
 
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
