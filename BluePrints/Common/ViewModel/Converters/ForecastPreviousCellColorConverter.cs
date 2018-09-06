@@ -30,10 +30,10 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal previousValue = (decimal)childEntity.Rows[0][fieldname];
-                            decimal currentValue = (decimal)values[2];
+                            decimal childValue = (decimal)childEntity.Rows[0][fieldname];
+                            decimal parentValue = (decimal)values[2];
 
-                            if (currentValue >= previousValue)
+                            if (parentValue <= childValue)
                                 return paleGreenColor;
                             else
                                 return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
