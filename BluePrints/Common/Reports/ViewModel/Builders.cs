@@ -133,7 +133,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        if (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010"))
+                        if (jobTransaction.COSTDESC3 != null && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
@@ -162,7 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (var jobMaterial in jobMaterials)
                 {
-                    if (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))
+                    if (jobMaterial.CostGroupDesc != null && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010")))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
                         string s;
@@ -184,14 +184,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.CostType = jobMaterial.CostTypeDesc;
                         materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                         materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                        Debug.Print(jobMaterial.description + ";" + materialDataPoint.Costs.ToString());
+                        //Debug.Print(jobMaterial.description + ";" + materialDataPoint.Costs.ToString());
                         materialDataPoints.Add(materialDataPoint);
                     }
                 }
 
                 foreach (var po in pos)
                 {
-                    if (!po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010"))
+                    if (po.COSTGROUPDESC != null && (!po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
                     {
                         ExoDataPoint poDataPoint = new ExoDataPoint();
                         poDataPoint.BudgetedUnits = 0;
