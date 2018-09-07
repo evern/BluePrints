@@ -409,7 +409,10 @@ namespace BluePrints.ViewModels
                             {
                                 decimal currentValue = groupByDateDataPoint.DataPoints.Sum(x => x.Costs);
                                 if (currentValue != 0)
-                                    findExistingOrNewDataRow[alignedDateField] = currentValue;
+                                {
+                                    decimal currentRowValue = (decimal)findExistingOrNewDataRow[alignedDateField];
+                                    findExistingOrNewDataRow[alignedDateField] = currentRowValue + currentValue;
+                                }
                             }
                         }
                     }
@@ -437,7 +440,10 @@ namespace BluePrints.ViewModels
                             {
                                 decimal currentValue = groupByDateDataPoint.DataPoints.Sum(x => x.Costs);
                                 if (currentValue != 0)
-                                    findExistingOrNewDataRow[alignedDateField] = currentValue;
+                                {
+                                    decimal currentRowValue = (decimal)findExistingOrNewDataRow[alignedDateField];
+                                    findExistingOrNewDataRow[alignedDateField] = currentRowValue + currentValue;
+                                }
                             }
                         }
                     }
