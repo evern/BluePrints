@@ -959,6 +959,10 @@ namespace BluePrints.Common.Projections
         public int JobType { get; set; }
         public ChargeType? ChargeType { get; set; }
 
+        public string AreaCode => Code.Length < 9 ? string.Empty : Code.Substring(6, 3);
+        public string SubAreaCode => Code.Length < 11 ? string.Empty : Code.Substring(10, 2);
+        public string PhaseCode => Code.Length < 14 ? string.Empty : Code.Substring(13, 2);
+
         public int? ResourceSeqNo { get; set; }
     }
 

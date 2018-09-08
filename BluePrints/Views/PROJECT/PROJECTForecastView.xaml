@@ -77,6 +77,9 @@
                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
+                                    <dxg:GridColumn FieldName="Entity.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
+                                    <dxg:GridColumn FieldName="Entity.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
+                                    <dxg:GridColumn FieldName="Entity.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="13" />
                                     <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
                                     <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" ReadOnly="True" VisibleIndex="60">
                                         <dxg:GridColumn.EditSettings>

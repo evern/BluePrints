@@ -46,6 +46,7 @@ using DevExpress.Xpf.Docking.Base;
 using BaseModel.ViewModel.UndoRedo;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Timers;
 
 namespace BluePrints.ViewModels
 {
@@ -117,7 +118,7 @@ namespace BluePrints.ViewModels
             DetailedData = new List<ExoDataPoint>();
             alignedDataDateCollection = new List<DateTime>();
             IsHidden = true;
-            doNotApplyBestFit = true;
+            delayPostLoadedTimer = true;
         }
 
         public override DateTime? FixedStartDate
@@ -198,6 +199,12 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.DisableLoadingScreen = false;
             IsLoadingForecast = false;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
+
+            post_loaded_dispatcher_timer = new Timer();
+            post_loaded_dispatcher_timer.Interval = 1500;
+            post_loaded_dispatcher_timer.Elapsed += post_loaded_dispatcher_timer_tick;
+            post_loaded_dispatcher_timer.Start();
+
             base.onSummaryCalculateComplete();
         }
 
