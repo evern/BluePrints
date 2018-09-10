@@ -78,7 +78,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
-    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
+    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveVariation_Code, IHaveHours
     {
         string Subjob_Name { get; }
         PhaseType? Phase { get; }
@@ -211,6 +211,11 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveCommodity_Code
     {
         string Commodity_Code { get; }
+    }
+
+    public interface IHaveVariation_Code
+    {
+        string Variation_Code { get; }
     }
 
     public interface ISupportByDuration

@@ -1937,7 +1937,7 @@ namespace BluePrints.ViewModels
 
                 if(bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
-                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == bookDate.WeekStartDate);
                     if (timesheet != null)
                     {
                         AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);

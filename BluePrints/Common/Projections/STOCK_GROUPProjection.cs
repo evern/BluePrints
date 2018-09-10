@@ -62,6 +62,8 @@ namespace BluePrints.Common.Projections
 
         public string Phase_Code => string.Empty;
 
+        public string Variation_Code => string.Empty;
+
         public string Commodity_Display_Code => Entity.CODE;
 
         public decimal Estimate_Stock_Code_Install_Hours => Deliverables == null ? 0 : Deliverables.Sum(x => x.Estimate_Stock_Code_Install_Hours);

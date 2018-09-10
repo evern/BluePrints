@@ -160,6 +160,8 @@ namespace BluePrints.Common.Projections
 
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
+        public string Variation_Code => Entity.Variation_Code;
+
         //public string Commodity_Code => Entity.STOCK_GROUP == null ? string.Empty : Entity.STOCK_GROUP.CODE;
         public string Commodity_Code => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
 

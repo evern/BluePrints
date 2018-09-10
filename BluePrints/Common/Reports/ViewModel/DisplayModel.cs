@@ -103,6 +103,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Phase_Code => ((IReportable)ProgressItem).Phase_Code;
 
+        public string Variation_Code => ((IReportable)ProgressItem).Variation_Code;
+
         public string Commodity_Code => ((IReportable)ProgressItem).Commodity_Code;
 
         public Guid? Area_Guid => ((IReportable)ProgressItem).Area_Guid;
@@ -307,6 +309,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Deliverable_Name => Reportable.Deliverable_Name;
 
         public string Phase_Code => Reportable.Phase_Code;
+
+        public string Variation_Code => Reportable.Variation_Code;
 
         public string Commodity_Code => Reportable.Commodity_Code;
 

@@ -36,13 +36,14 @@ namespace BluePrints.Common.Projections
     {
         public ExoSubJobProjection()
         {
-
+            Variation_Code = string.Empty;
         }
 
         public int? LineId { get; set; }
         public PrimeroSubJob SubJob { get; set; }
         public PrimeroDiscipline Discipline { get; set; }
         public PrimeroCommodity Commodity { get; set; }
+        public string Variation_Code { get; set; }
         public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
 
         public bool IsSubJobExistsInExo => SubJob != null && SubJob.Id != null;

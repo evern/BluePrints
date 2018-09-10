@@ -108,6 +108,7 @@
                                 <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Variation_Code" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Data_Date" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Units" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Costs" ReadOnly="True" />
@@ -132,6 +133,7 @@
                                         <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
                                         <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="CommodityCode" Header="Commodity" VisibleIndex="40" />
+                                        <dxg:GridColumn FieldName="Variation_Code" Header="Variation" VisibleIndex="45" />
                                         <dxg:GridColumn FieldName="{Binding DataContext.Total_Budgeted, ElementName=userControl}" Header="{Binding DataContext.Header_Total_Budgeted, ElementName=userControl}" HeaderToolTip="Total budget" VisibleIndex="40">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

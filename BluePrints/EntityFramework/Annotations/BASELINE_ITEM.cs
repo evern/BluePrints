@@ -91,6 +91,9 @@ namespace BluePrints.Data
         public string Phase_Code => PHASE == null ? string.Empty : PHASE.INTERNAL_NUM;
 
         [NotMapped]
+        public string Variation_Code => string.Empty;
+
+        [NotMapped]
         public string Commodity_Code
         {
             get

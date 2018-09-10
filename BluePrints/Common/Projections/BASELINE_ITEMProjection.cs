@@ -69,7 +69,9 @@ namespace BluePrints.Common.Projections
 
         public DELIVERABLES_STATUS Deliverable_Status => Entity.DELIVERABLES_STATUS;
 
-        public string Phase_Code => Entity.PHASE == null ? string.Empty : Entity.PHASE.INTERNAL_NUM;
+        public string Phase_Code => Entity.Phase_Code;
+
+        public string Variation_Code => Entity.Variation_Code;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 

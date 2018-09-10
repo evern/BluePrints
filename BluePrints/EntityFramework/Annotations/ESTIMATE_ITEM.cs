@@ -228,5 +228,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
+
+        public string Variation_Code => string.Empty;
     }
 }

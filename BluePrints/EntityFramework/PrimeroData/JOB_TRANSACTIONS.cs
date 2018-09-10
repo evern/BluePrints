@@ -230,5 +230,46 @@ namespace BluePrints.PrimeroData
 
         [StringLength(50)]
         public string X_WAGE_TYPE { get; set; }
+
+        public int CREDIT_SCHEDULE_SEQNO { get; set; }
+
+        public double? STDCOST_IN { get; set; }
+
+        public double? STDCOST_OUT { get; set; }
+
+        public double? AVECOST_IN { get; set; }
+
+        public double? AVECOST_OUT { get; set; }
+
+        public double? LATESTCOST_IN { get; set; }
+
+        public double? LATESTCOST_OUT { get; set; }
+
+        [StringLength(1)]
+        public string LOOKUP_RECOVERABLE { get; set; }
+
+        public int COST_LINENO { get; set; }
+
+        public int STOCK_TRANS_SEQ_IN { get; set; }
+
+        public double? LINECHARGE_WRITEOFF { get; set; }
+
+        public int WIP_IN_PERIOD_SEQNO { get; set; }
+
+        public int WIP_OUT_PERIOD_SEQNO { get; set; }
+
+        public int SU_SEQNO { get; set; }
+
+        [StringLength(50)]
+        public string X_VARIATIONCODE { get; set; }
+
+        [StringLength(50)]
+        public string X_PONUMBER { get; set; }
+
+        [StringLength(50)]
+        public string X_INVOICENO { get; set; }
+
+        [StringLength(50)]
+        public string X_SUPPLIERNAME { get; set; }
     }
 }

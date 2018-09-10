@@ -23,6 +23,8 @@ namespace BluePrints.Common.Projections
 
         public string Phase_Code => string.Empty;
 
+        public string Variation_Code => string.Empty;
+
         public string Commodity_Code => string.Empty;
 
         public Guid? Area_Guid => Guid.Empty;

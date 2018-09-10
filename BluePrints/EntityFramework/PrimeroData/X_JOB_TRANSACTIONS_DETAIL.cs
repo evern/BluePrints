@@ -10,6 +10,9 @@
     {
         public int? jobno { get; set; }
 
+        [StringLength(50)]
+        public string X_VARIATIONCODE { get; set; }
+
         public int? master_jobno { get; set; }
 
         [StringLength(15)]

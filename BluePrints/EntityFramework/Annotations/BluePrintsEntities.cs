@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel.EntityFramework;
 using BaseModel.Misc;
 using BluePrints.Common;
+using BluePrints.PrimeroData;
 using EntityFramework.Functions;
 using System;
 using System.Collections.Generic;

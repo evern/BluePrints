@@ -326,6 +326,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public class ExoDataPoint : DataPoint
     {
+        public ExoDataPoint()
+        {
+            Variation_Code = string.Empty;
+        }
+
         public string Subjob_Name { get; set; }
         public string ResourceName { get; set; }
         public string Role { get; set; }
@@ -336,6 +341,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string InvoiceNo { get; set; }
         public string Purchase_GLName { get; set; }
         public string Cost_GLName { get; set; }
+        public string Variation_Code { get; set; }
+        public bool IsPO { get; set; }
 
         public string PhaseCode
         {

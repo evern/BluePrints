@@ -610,6 +610,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Phase_Code => Entity.Phase_Code;
 
+        public string Variation_Code => Entity.Variation_Code;
+
         public string Commodity_Code => Entity.Commodity_Code;
 
         public Guid? Area_Guid => Entity.Area_Guid;

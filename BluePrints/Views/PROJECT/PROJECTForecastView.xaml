@@ -81,6 +81,7 @@
                                     <dxg:GridColumn FieldName="Entity.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
                                     <dxg:GridColumn FieldName="Entity.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="13" />
                                     <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="21" />
                                     <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" ReadOnly="True" VisibleIndex="60">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -122,7 +123,11 @@
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
+                                                    <dxg:GridColumn Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
+                                                    <dxg:GridColumn Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
+                                                    <dxg:GridColumn Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="13" />
                                                     <dxg:GridColumn Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                                                    <dxg:GridColumn Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="21" />
                                                     <dxg:GridColumn Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" ReadOnly="True" VisibleIndex="60">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -230,6 +235,8 @@
                                     <dxg:GridColumn FieldName="InvoiceNo" Header="InvoiceNo" ReadOnly="True" VisibleIndex="100" />
                                     <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" VisibleIndex="110" />
                                     <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" VisibleIndex="120" />
+                                    <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" VisibleIndex="130" />
+                                    <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" VisibleIndex="140" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Subjob_Name" SummaryType="Count" />
