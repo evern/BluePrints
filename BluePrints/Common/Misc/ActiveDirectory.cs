@@ -80,8 +80,15 @@ namespace BluePrints.Common
             }
 
 
-            if (msg.ToRecipients.Count > 0)
-                msg.SendAndSaveCopy();
+            try
+            {
+                if (msg.ToRecipients.Count > 0)
+                    msg.SendAndSaveCopy();
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
         static bool RedirectionCallback(string url)
