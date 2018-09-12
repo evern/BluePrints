@@ -355,6 +355,7 @@ namespace BluePrints.PrimeroData
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<PrimeroEntities>(null);
+            Database.CommandTimeout = 100000;
             base.OnModelCreating(modelBuilder);
 
             //modelBuilder.Entity<ADJUSTMENT_TYPES>()
