@@ -61,6 +61,20 @@
                                 <dxb:BarCheckItem Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
                                 <dxb:BarCheckItem Content="Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
                                 <dxb:BarCheckItem Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
+                                <dxb:BarStaticItem Content="Internal Num Lock:" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.LockedDateStr, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Deliverables internal number locked date">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:TextEditSettings NullText="Unlocked" />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
+                                <dxb:BarCheckItem Content="Lock Internal Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" IsChecked="{Binding DataContext.InternalNumLocked, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock/Unlock internal numbers" />
+                                <dxb:BarStaticItem Content="Client Num Lock:" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.ClientLockedDateStr, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Deliverables client number locked date">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:TextEditSettings NullText="Unlocked" />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
+                                <dxb:BarCheckItem Content="Lock Client Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" IsChecked="{Binding DataContext.ClientNumLocked, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock/Unlock client numbers" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Tools">
                                 <dxb:BarStaticItem Content="Available Units" />
@@ -140,7 +154,15 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number" />
+                        <dxg:GridColumn FieldName="IsInternalNumberEditable" Visible="False" />
+                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
+                                    <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsClientNumberEditable}" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="Revision Number" />
                         <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type">
                             <dxg:GridColumn.EditSettings>
@@ -349,6 +371,12 @@
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxg:TableView.FormatConditions>
+                                <dxg:FormatCondition Expression="[IsInternalNumberEditable] = 'True'" FieldName="Entity.Entity.INTERNAL_NUM">
+                                    <dxc:Format Background="LightBlue" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[IsClientNumberEditable] = 'True'" FieldName="Entity.Entity.CLIENT_NUM">
+                                    <dxc:Format Background="LightBlue" />
+                                </dxg:FormatCondition>
                                 <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
                                     <dxc:Format Background="#FFFF9B98" />
                                 </dxg:UniqueDuplicateRuleFormatCondition>

@@ -285,11 +285,49 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool CanBook { get; set; }
 
-        public bool IsInternalNumberEditable => IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
+        public bool IsInternalNumberEditable
+        {
+            get
+            {
+                if(InternalNumLockDate != null)
+                {
+                    if (Entity.Entity.CREATED > InternalNumLockDate)
+                    {
+                        return IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
+                    }
+                    else
+                        return false;
+                }
+                else
+                    return IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
+            }
+        }
+
+        public bool IsClientNumberEditable
+        {
+            get
+            {
+                if (ClientNumLockDate != null)
+                {
+                    if (Entity.Entity.CREATED > ClientNumLockDate)
+                    {
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                else
+                    return true;
+            }
+        }
 
         public bool IsInternalNumberAlwaysEditable { get; set; }
 
         public bool IsInternalNumberManualOnly { get; set; }
+
+        public DateTime? InternalNumLockDate { get; set; }
+
+        public DateTime? ClientNumLockDate { get; set; }
 
         public Guid? Variation_Guid { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
         public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }

@@ -35,6 +35,8 @@ namespace BluePrints.Common
             }
         }
 
+        public static string CurrentPassword { get; set; }
+
         public static bool isPreloadMode()
         {
             return CurrentUser == null;

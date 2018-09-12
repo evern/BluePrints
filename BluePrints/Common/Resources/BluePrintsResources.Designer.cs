@@ -259,6 +259,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @primerogroup.com.au.
+        /// </summary>
+        internal static string DefaultAuthenticateDomain {
+            get {
+                return ResourceManager.GetString("DefaultAuthenticateDomain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @primero.com.au.
+        /// </summary>
+        internal static string DefaultMailDomain {
+            get {
+                return ResourceManager.GetString("DefaultMailDomain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to *.
         /// </summary>
         internal static string Entity_Changed {

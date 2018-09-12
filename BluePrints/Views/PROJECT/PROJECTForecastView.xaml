@@ -82,10 +82,12 @@
                                     <dxg:GridColumn FieldName="Entity.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="13" />
                                     <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
                                     <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="21" />
-                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" ReadOnly="True" VisibleIndex="60">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" VisibleIndex="60">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="Outstanding PO" HeaderToolTip="Outstanding PO" ReadOnly="True" VisibleIndex="70">
                                         <dxg:GridColumn.EditSettings>

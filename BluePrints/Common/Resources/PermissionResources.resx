@@ -207,4 +207,13 @@
   <data name="ManageForecast" xml:space="preserve">
     <value>Allow user to manage forecast</value>
   </data>
+  <data name="ManageVariationRegister" xml:space="preserve">
+    <value>Allow user to manage variation register</value>
+  </data>
+  <data name="UnlockInternalNum" xml:space="preserve">
+    <value>Allow user to unlock internal number</value>
+  </data>
+  <data name="ReceiveDeliverableLockStatus" xml:space="preserve">
+    <value>User will receive deliverables lock/unlock status, variation approval notification</value>
+  </data>
 </root>

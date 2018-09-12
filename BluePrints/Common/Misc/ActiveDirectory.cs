@@ -1,9 +1,15 @@
-﻿using BluePrints.Data;
+﻿using BaseModel.DataModel;
+using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Resources;
+using BluePrints.Data;
+using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Linq;
+using System.Timers;
 
 namespace BluePrints.Common
 {
@@ -27,6 +33,66 @@ namespace BluePrints.Common
             }
 
             return result;
+        }
+
+        public static async void ExchangeLogin(string sUserName, string sPassword)
+        {
+            try
+            {
+                string fullEmailAddress = sUserName + BluePrintsResources.DefaultAuthenticateDomain;
+                exService.Credentials = new WebCredentials(fullEmailAddress, LoginCredentials.CurrentPassword);
+                exService.AutodiscoverUrl(fullEmailAddress, RedirectionCallback);
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        public static ExchangeService exService = new ExchangeService() { KeepAlive = true, PreAuthenticate = true };
+        public static Timer EmailTimer = new Timer(60000) { AutoReset = true }; 
+        public static void SendEmail(string fromName, string body, string subject, bool lowPriority = false)
+        {
+            if (lowPriority && EmailTimer.Enabled)
+                return;
+
+            EmailMessage msg = new EmailMessage(exService);
+            msg.Subject = subject;
+            msg.Body = body;
+
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IEnumerable<USER> USERCollection = bluePrintsUOW.USERS;
+            foreach (USER user in USERCollection)
+            {
+                if (user.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == "ReceiveDeliverableLockStatus"))
+                {
+                    string recipientAddress = user.NAME + BluePrintsResources.DefaultMailDomain;
+                    msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(recipientAddress, recipientAddress));
+                }
+            }
+
+            if(!EmailTimer.Enabled)
+            {
+                EmailTimer.Elapsed -= EmailTimer_Elapsed;
+                EmailTimer.Elapsed += EmailTimer_Elapsed;
+                EmailTimer.Start();
+            }
+
+
+            if (msg.ToRecipients.Count > 0)
+                msg.SendAndSaveCopy();
+        }
+
+        static bool RedirectionCallback(string url)
+        {
+            // Return true if the URL is an HTTPS URL.
+            return url.ToLower().StartsWith("https://");
+        }
+
+        private static void EmailTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            EmailTimer.Stop();
         }
 
         public static ArrayList Groups(string userDn, bool recursive)

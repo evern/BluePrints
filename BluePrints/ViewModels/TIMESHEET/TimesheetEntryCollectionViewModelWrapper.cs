@@ -688,7 +688,7 @@ namespace BluePrints.ViewModels
             if(result == okCommand)
             {
                 DateFrom = dateFromToViewModel.DateFrom;
-                DateTo = dateFromToViewModel.DateTo.AddDays(-1);
+                DateTo = dateFromToViewModel.DateTo;
             }
             else
             {

@@ -78,6 +78,7 @@ namespace BluePrints.ViewModels
             base.addEntitiesLoader();
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
         }
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
@@ -88,6 +89,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<VARIATION_REGISTER>, IQueryable<VARIATION_REGISTER>> VARIATION_REGISTERProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         public bool IsLoadingForecast { get; set; }
@@ -357,12 +363,25 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoTimeAuthorisation> relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
                     entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
                     entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
+
+                    forecastCalculation.Budget = entity.ExoBudgetCosts;
+                    forecastCalculation.IsBudgetReadOnly = true;
+                }
+                else
+                {
+                    VARIATION_REGISTER relevantVariationRegister = VARIATION_REGISTERCollectionViewModel.Entities.FirstOrDefault(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.VARIATION_CODE == entity.Variation_Code && x.STATUS == VariationRegisterStatus.Approved);
+                    if(relevantVariationRegister != null)
+                    {
+                        entity.ExoBudgetCosts = relevantVariationRegister.COST;
+                        forecastCalculation.Budget = entity.ExoBudgetCosts;
+                    }
+
+                    forecastCalculation.IsBudgetReadOnly = false;
                 }
 
                 findExistingOrNewDataRow[columnEntity] = entity;
                 findExistingOrNewDataRow[columnCalculation] = forecastCalculation;
 
-                forecastCalculation.Budget = entity.ExoBudgetCosts;
                 setDateFieldsEmpty(findExistingOrNewDataRow, false);
 
                 dataPointsTable.Rows.Add(findExistingOrNewDataRow);
@@ -541,7 +560,6 @@ namespace BluePrints.ViewModels
                 }
             }
         }
-
         #endregion
 
         #region View Events
@@ -583,9 +601,9 @@ namespace BluePrints.ViewModels
                     EndSelectionDate = parseEndDate;
                     StartSelectionDate = parseEndDate.AddDays(-7);
                     if(parseEndDate == firstAlignedDataDate)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [ActualDate] > #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
 
                     IsHidden = false;
 
@@ -890,6 +908,34 @@ namespace BluePrints.ViewModels
                 //entity.Entity.Entity.PRIMARY_TITLE = e.Value.ToString();
                 ///MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, columnPrimaryTitle, e.OldValue, e.Value, EntityMessageType.Changed);
                 //MainViewModel.Save(entity);
+            }
+            else if (e.Column.FieldName.ToUpper() == "CALCULATION.BUDGET")
+            {
+                decimal newValue = 0;
+                if(e.Value != null && decimal.TryParse(e.Value.ToString(), out newValue))
+                {
+                    VARIATION_REGISTER relevantVariationRegister = VARIATION_REGISTERCollectionViewModel.Entities.FirstOrDefault(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.VARIATION_CODE == entity.Variation_Code && x.STATUS == VariationRegisterStatus.Approved);
+                    if (relevantVariationRegister == null)
+                    {
+                        VARIATION_REGISTER newVariationRegister = new VARIATION_REGISTER();
+                        newVariationRegister.SUBJOB_CODE = entity.SubJob.Code;
+                        newVariationRegister.DISCIPLINE_CODE = entity.Discipline.Code;
+                        newVariationRegister.VARIATION_CODE = entity.Variation_Code;
+                        newVariationRegister.COMMODITY_CODE = string.Empty;
+                        newVariationRegister.DESCRIPTION = string.Empty;
+                        newVariationRegister.COSTCODE = string.Empty;
+                        newVariationRegister.STATUS = VariationRegisterStatus.Approved;
+                        newVariationRegister.ORIGINAL_VALUE = 0;
+                        newVariationRegister.CURRENT_VALUE = 0;
+                        newVariationRegister.COST = newValue;
+                        newVariationRegister.GUID_PROJECT = loadPROJECT.GUID;
+                        VARIATION_REGISTERCollectionViewModel.Save(newVariationRegister);
+                    }
+                    else
+                    {
+                        relevantVariationRegister.COST = newValue;
+                    }
+                }
             }
             else
             {
@@ -1197,6 +1243,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<VARIATION_REGISTER, VARIATION_REGISTER, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_REGISTERCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<VARIATION_REGISTER, VARIATION_REGISTER, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_REGISTER>();
+            }
+        }
+
         protected override string ViewName => "PROJECTForecastView_v1.00";
 
         public void LoadLayout()
@@ -1227,5 +1284,6 @@ namespace BluePrints.ViewModels
         public decimal Uncommitted { get; set; }
         public decimal EstimateAtCompletion => Actuals + Outstanding + Uncommitted;
         public decimal Variance => Budget - EstimateAtCompletion;
+        public bool IsBudgetReadOnly { get; set; }
     }
 }

@@ -55,7 +55,8 @@ namespace BluePrints.Common
     {
         [Display(Name = "Only Editable On Unprogressed")] Default = 0,
         [Display(Name = "Always Editable")] AlwaysEditable = 1,
-        [Display(Name = "Manual")] Manual = 2
+        [Display(Name = "Manual")] Manual = 2,
+        [Display(Name = "Locked")] Locked = 3
     }
 
     public enum DesignManager
@@ -89,6 +90,13 @@ namespace BluePrints.Common
         [Display(Name = "Tender Submitted")] TenderSubmitted = 4,
         [Display(Name = "Lost")] Lost = 5,
         [Display(Name = "Lead")] Lead = 6
+    }
+
+    public enum VariationRegisterStatus
+    {
+        [Display(Name = "Identified")] Identified = 0,
+        [Display(Name = "Submitted")] Submitted = 1,
+        [Display(Name = "Approved")] Approved = 2,
     }
 
     public enum BaselineStatus

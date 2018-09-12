@@ -782,10 +782,11 @@ namespace BluePrints.Common.Projections
 
 
             List<ExoTimeAuthorisation> exoTimes;
-            if(byUser)
+            if (byUser)
                 exoTimes = availableLines.Where(x => x.RESOURCE_STAFF_ID == LoginCredentials.CurrentUser.EXO_STAFF_ID).ToList().Select(x => populateExoTimeAuth(x)).ToList();
             else
                 exoTimes = availableLines.ToList().Select(x => populateExoTimeAuth(x)).ToList();
+
 
             return exoTimes;
         }

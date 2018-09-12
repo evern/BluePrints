@@ -468,9 +468,13 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectForecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\ChangeChartSeriesType_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\ChangeChartSeriesType_16x16.png"));
             }
 
+            if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
+            {
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_VariationRegister" + keyString, projectKey, childTitlePrefix + "Variation Register", "VARIATION_REGISTERCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variation Register", false, false, @"Reports\GroupFieldCollection_16x16.png"));
+            }
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageArea))

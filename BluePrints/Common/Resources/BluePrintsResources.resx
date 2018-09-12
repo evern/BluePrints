@@ -243,4 +243,10 @@
   <data name="Notify_HealthCheck_OK" xml:space="preserve">
     <value>Health check completed without any issues</value>
   </data>
+  <data name="DefaultAuthenticateDomain" xml:space="preserve">
+    <value>@primerogroup.com.au</value>
+  </data>
+  <data name="DefaultMailDomain" xml:space="preserve">
+    <value>@primero.com.au</value>
+  </data>
 </root>

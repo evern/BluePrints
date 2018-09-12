@@ -1550,6 +1550,8 @@ namespace BluePrints.ViewModels
                     return true;
             }
         }
+
+        public bool InVariationMode { get; set; }
         #endregion
     }
 }

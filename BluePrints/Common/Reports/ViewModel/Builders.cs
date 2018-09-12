@@ -33,6 +33,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
+        private string extractVariationCode(string variationCode)
+        {
+            if (variationCode == null)
+                return string.Empty;
+
+            if (variationCode.Length >= 6)
+                return variationCode.Substring(0, 6);
+
+            return string.Empty;
+        }
+
         public void BuildExoDataPoints(ProjectSummaryStats summaryObject, ExoBurnedFilterType filterType)
         {
             try
@@ -148,7 +159,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.Role = jobTransaction.TITLE;
                             burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                             burnedDataPoint.CostType = jobTransaction.COSTDESC3;
-                            burnedDataPoint.Variation_Code = jobTransaction.VARIATIONCODE == null ? string.Empty : jobTransaction.VARIATIONCODE;
+                            burnedDataPoint.Variation_Code = extractVariationCode(jobTransaction.VARIATIONCODE);
                             burnedDataPoints.Add(burnedDataPoint);
 
                             ExoDataPoint actualDataPoint = new ExoDataPoint();
@@ -185,7 +196,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.CostType = jobMaterial.CostTypeDesc;
                         materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                         materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                        materialDataPoint.Variation_Code = jobMaterial.VariationCode == null ? string.Empty : jobMaterial.VariationCode;
+                        materialDataPoint.Variation_Code = extractVariationCode(jobMaterial.VariationCode);
                         //Debug.Print(jobMaterial.description + ";" + materialDataPoint.Costs.ToString());
                         materialDataPoints.Add(materialDataPoint);
                     }

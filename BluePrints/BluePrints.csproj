@@ -357,6 +357,12 @@
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -605,6 +611,7 @@
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_REGISTER.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
@@ -749,6 +756,7 @@
     <Compile Include="EntityFramework\Annotations\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB_ASSIGNMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_REGISTER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\DesignTimeBluePrintsEntitiesUnitOfWork.cs" />
@@ -801,6 +809,7 @@
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
@@ -1586,6 +1595,9 @@
     <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
       <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml.cs">
+      <DependentUpon>VARIATION_REGISTERCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1986,6 +1998,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS\PROGRESSCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

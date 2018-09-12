@@ -116,7 +116,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, DateTime? internalNumLockDate = null, DateTime? clientNumLockDate = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -175,7 +175,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 P6_Assignments = PopulateP6Assignment(x, PROJECT, P6_ASSIGNMENTS),
                 P6TASKCollection = P6_TASKS,
                 IsInternalNumberAlwaysEditable = internalNumberMode == DeliverableInternalNumberMode.AlwaysEditable,
-                IsInternalNumberManualOnly = internalNumberMode == DeliverableInternalNumberMode.Manual
+                IsInternalNumberManualOnly = internalNumberMode == DeliverableInternalNumberMode.Manual,
+                InternalNumLockDate = internalNumLockDate,
+                ClientNumLockDate = clientNumLockDate
             }).ToList();
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });

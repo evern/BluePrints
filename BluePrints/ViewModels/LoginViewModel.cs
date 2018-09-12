@@ -105,10 +105,16 @@ namespace BluePrints.ViewModels
             if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername)
+                {
                     //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                    ActiveDirectory.ExchangeLogin(LoginCredentials.CurrentUser.NAME, "NEWpass14.");
+                }
                 else
+                {
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
+                    ActiveDirectory.ExchangeLogin(LoginCredentials.CurrentUser.NAME, UserPassword);
+                }
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
                 ShowMainWindow();
@@ -117,6 +123,7 @@ namespace BluePrints.ViewModels
             else
                 SetUsernamePasswordError(authenticationResult);
         }
+
 
         protected IMessageBoxService MessageBoxService
         {

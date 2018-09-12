@@ -380,5 +380,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository(x => x.Set<WORKPACK>(), (WORKPACK x) => x.GUID); }
         }
+
+        IRepository<VARIATION_REGISTER, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_REGISTERS
+        {
+            get { return GetRepository(x => x.Set<VARIATION_REGISTER>(), (VARIATION_REGISTER x) => x.GUID); }
+        }
     }
 }

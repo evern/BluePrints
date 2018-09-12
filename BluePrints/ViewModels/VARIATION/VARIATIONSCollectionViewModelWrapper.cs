@@ -9,6 +9,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -700,7 +701,7 @@ namespace BluePrints.ViewModels
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
 
             LoadingScreenManager.ShowLoadingScreen(variation_items.Count);
-
+            bool addedNewDeliverable = false;
             foreach (var variation_item in variation_items)
             {
                 TEntity new_deliverable = new TEntity();
@@ -756,6 +757,7 @@ namespace BluePrints.ViewModels
 
                     new_deliverable.Variation_Guid = DisplaySelectedEntity.EntityKey;
                     baseline_itemForInternalNumberGeneration.Add(new_deliverable);
+                    addedNewDeliverable = true;
                 }
 
                 if (variation_item.Variation_Action != VariationAction.NoAction)
@@ -771,6 +773,8 @@ namespace BluePrints.ViewModels
             unitOfWork.SaveChanges();
 
             isApproving = false;
+            if (addedNewDeliverable)
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Variation has been approved for project " + loadPROJECT.NUMBER + " and new deliverable(s) has been added\nPlease review the new internal numbers", loadPROJECT.NUMBER + " variation approved");
             //Full refresh is required to pick up summary
             FullRefresh();
         }

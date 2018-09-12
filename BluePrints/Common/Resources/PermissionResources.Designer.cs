@@ -295,6 +295,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage variation register.
+        /// </summary>
+        internal static string ManageVariationRegister {
+            get {
+                return ResourceManager.GetString("ManageVariationRegister", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage workpack.
         /// </summary>
         internal static string ManageWorkpack {
@@ -313,11 +322,29 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User will receive deliverables lock/unlock status, variation approval notification.
+        /// </summary>
+        internal static string ReceiveDeliverableLockStatus {
+            get {
+                return ResourceManager.GetString("ReceiveDeliverableLockStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to standardize subjobs in exo.
         /// </summary>
         internal static string StandardizeSubJobs {
             get {
                 return ResourceManager.GetString("StandardizeSubJobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow user to unlock internal number.
+        /// </summary>
+        internal static string UnlockInternalNum {
+            get {
+                return ResourceManager.GetString("UnlockInternalNum", resourceCulture);
             }
         }
         
