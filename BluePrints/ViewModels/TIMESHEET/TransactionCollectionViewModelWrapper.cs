@@ -182,6 +182,16 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        public void KeyboardCopy()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^c");
+        }
+
+        public void KeyboardPaste()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^v");
+        }
+
         public override void FullRefresh()
         {
             EntitiesUndoRedoManager.Clear();
