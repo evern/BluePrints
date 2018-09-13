@@ -61,14 +61,14 @@
                                 <dxb:BarCheckItem Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
                                 <dxb:BarCheckItem Content="Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
                                 <dxb:BarCheckItem Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
-                                <dxb:BarStaticItem Content="Internal Num Lock:" />
+                                <dxb:BarStaticItem Content="Internal Lock Date:" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.LockedDateStr, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Deliverables internal number locked date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:TextEditSettings NullText="Unlocked" />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                                 <dxb:BarCheckItem Content="Lock Internal Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" IsChecked="{Binding DataContext.InternalNumLocked, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock/Unlock internal numbers" />
-                                <dxb:BarStaticItem Content="Client Num Lock:" />
+                                <dxb:BarStaticItem Content="Client Lock Date:" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.ClientLockedDateStr, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Deliverables client number locked date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:TextEditSettings NullText="Unlocked" />

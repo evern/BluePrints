@@ -701,6 +701,23 @@ namespace BluePrints.Common.Projections
             return subJobAuths;
         }
 
+        public static IQueryable<JOB_TRANSACTIONS> GetJOB_TRANSACTIONS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var transactions = from JOB_TRANSACTIONS in primeroUnitOfWork.JOB_TRANSACTIONS
+                                 join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                                 on JOB_TRANSACTIONS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
+                                 join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                                 on JOB_TRANSACTIONS.COST_TYPE equals JOB_COSTTYPES.SEQNO
+                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on JOB_TRANSACTIONS.JOBNO equals SUBJOB.JOBNO
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
+                                 select JOB_TRANSACTIONS;
+
+            return transactions;
+        }
+
         public static JOBCOST_LINES GetProjectLine(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobProjection line)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES

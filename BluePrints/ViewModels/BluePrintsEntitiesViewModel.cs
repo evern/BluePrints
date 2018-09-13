@@ -469,6 +469,7 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
             {
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\ChangeChartSeriesType_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Edit Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Edit Transactions", false, false, @"RichEdit\Highlight_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))

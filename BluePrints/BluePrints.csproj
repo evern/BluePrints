@@ -807,6 +807,7 @@
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMSelectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
@@ -1538,6 +1539,9 @@
     <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml.cs">
       <DependentUpon>TENDER_PROFILECollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
+      <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TimesheetEntryCollectionView.xaml.cs">
       <DependentUpon>TimesheetEntryCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1918,6 +1922,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TIMESHEET\TransactionCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
