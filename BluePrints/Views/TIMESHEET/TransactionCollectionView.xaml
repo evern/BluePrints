@@ -70,6 +70,7 @@
                                         <dxg:GridColumn FieldName="Entity.TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="Entity.LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">

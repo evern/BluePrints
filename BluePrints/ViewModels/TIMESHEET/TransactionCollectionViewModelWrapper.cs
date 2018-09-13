@@ -182,6 +182,12 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        public override void FullRefresh()
+        {
+            EntitiesUndoRedoManager.Clear();
+            base.FullRefresh();
+        }
+
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>
