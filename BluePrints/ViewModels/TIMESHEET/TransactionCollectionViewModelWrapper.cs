@@ -180,6 +180,19 @@ namespace BluePrints.ViewModels
                 dataPointsTable = value;
             }
         }
+
+        ObservableCollection<DataRowView> selectedDataRows { get; set; }
+        public ObservableCollection<DataRowView> SelectedDataRows
+        {
+            get
+            {
+                return selectedDataRows;
+            }
+            set
+            {
+                selectedDataRows = value;
+            }
+        }
         #endregion
 
         public void KeyboardCopy()
@@ -340,6 +353,9 @@ namespace BluePrints.ViewModels
 
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isNewRow)
         {
+            if (copyColumn.ReadOnly)
+                return false;
+
             JOB_TRANSACTIONS entity = (JOB_TRANSACTIONS)newRow[ColumnEntity];
             string editFieldname = formatFieldName(copyColumn.FieldName);
 
