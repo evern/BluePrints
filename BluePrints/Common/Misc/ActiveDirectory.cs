@@ -40,7 +40,8 @@ namespace BluePrints.Common
             try
             {
                 string fullEmailAddress = sUserName + BluePrintsResources.DefaultAuthenticateDomain;
-                exService.Credentials = new WebCredentials(fullEmailAddress, LoginCredentials.CurrentPassword);
+                //exService.Credentials = new WebCredentials(fullEmailAddress, sPassword);
+                exService.UseDefaultCredentials = true;
                 exService.AutodiscoverUrl(fullEmailAddress, RedirectionCallback);
             }
             catch(Exception ex)
@@ -65,7 +66,7 @@ namespace BluePrints.Common
             IEnumerable<USER> USERCollection = bluePrintsUOW.USERS;
             foreach (USER user in USERCollection)
             {
-                if (user.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == "ReceiveDeliverableLockStatus"))
+                if (user.ROLE != null && user.ROLE.ROLE_PERMISSION != null && user.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == "ReceiveDeliverableLockStatus"))
                 {
                     string recipientAddress = user.NAME + BluePrintsResources.DefaultMailDomain;
                     msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(recipientAddress, recipientAddress));
