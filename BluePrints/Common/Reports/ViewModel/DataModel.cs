@@ -289,15 +289,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if(InternalNumLockDate != null)
-                {
-                    if (Entity.Entity.CREATED > InternalNumLockDate)
-                    {
-                        return IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
-                    }
-                    else
-                        return false;
-                }
+                if (Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved)
+                    return false;
                 else
                     return IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
             }
@@ -307,15 +300,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (ClientNumLockDate != null)
-                {
-                    if (Entity.Entity.CREATED > ClientNumLockDate)
-                    {
-                        return true;
-                    }
-                    else
-                        return false;
-                }
+                if (Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Approved)
+                    return false;
                 else
                     return true;
             }

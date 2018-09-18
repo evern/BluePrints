@@ -37,6 +37,9 @@ namespace BluePrints.Common
 
         public static async void ExchangeLogin(string sUserName, string sPassword)
         {
+#if DEBUG
+
+#else
             try
             {
                 string fullEmailAddress = sUserName + BluePrintsResources.DefaultAuthenticateDomain;
@@ -48,6 +51,8 @@ namespace BluePrints.Common
             {
 
             }
+#endif
+
         }
 
         public static ExchangeService exService = new ExchangeService() { KeepAlive = true, PreAuthenticate = true };
@@ -60,18 +65,8 @@ namespace BluePrints.Common
             EmailMessage msg = new EmailMessage(exService);
             msg.Subject = subject;
             msg.Body = body;
-
-            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            IEnumerable<USER> USERCollection = bluePrintsUOW.USERS;
-            foreach (USER user in USERCollection)
-            {
-                if (user.ROLE != null && user.ROLE.ROLE_PERMISSION != null && user.ROLE.ROLE_PERMISSION.Any(x => x.PERMISSION == "ReceiveDeliverableLockStatus"))
-                {
-                    string recipientAddress = user.NAME + BluePrintsResources.DefaultMailDomain;
-                    msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(recipientAddress, recipientAddress));
-                }
-            }
+            string recipientAddress = "doc.control@primero.com.au";
+            msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(recipientAddress, recipientAddress));
 
             if(!EmailTimer.Enabled)
             {
@@ -79,7 +74,6 @@ namespace BluePrints.Common
                 EmailTimer.Elapsed += EmailTimer_Elapsed;
                 EmailTimer.Start();
             }
-
 
             try
             {

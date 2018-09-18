@@ -52,6 +52,51 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
+
+        public static IQueryable<BASELINE_ITEMProgress> DocControlProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool buildStats = false, bool useReportDate = false)
+        {
+            IQueryable<BASELINE_ITEM> live_baseline_items = query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active && (x.INTERNALNUM_STATUS == DocumentNumberStatus.Awaiting || x.CLIENTNUM_STATUS == DocumentNumberStatus.Awaiting));
+            List<BASELINE_ITEM> controlBaselineItem = new List<BASELINE_ITEM>();
+            foreach (BASELINE_ITEM live_baseline_item in live_baseline_items)
+            {
+                controlBaselineItem.Add(live_baseline_item);
+            }
+
+            List<BASELINE_ITEMProgress> user_baseline_item_progresses = new List<BASELINE_ITEMProgress>();
+
+            var user_baseline_item_by_projects = controlBaselineItem.GroupBy(x => x.BASELINE.PROJECT).Select(group => new { Project = group.Key, Deliverables = group.ToList() });
+            foreach (var user_baseline_item_by_project in user_baseline_item_by_projects)
+            {
+                PROJECT project = user_baseline_item_by_project.Project;
+
+                PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
+                if (live_progress == null)
+                    continue;
+
+                BASELINE live_baseline = project.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
+                IEnumerable<BASELINE_ITEM> user_project_baseline_item = user_baseline_item_by_project.Deliverables;
+                IEnumerable<SUBJOB> subjobs = project.SUBJOB;
+                IEnumerable<VARIATION> approved_variations = project.VARIATION.Where(x => x.APPROVED != null);
+
+                //need to use external PROGRESS_ITEMS because live_progress.PROGRESS_ITEM is cached and will not update OnMessage
+                IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
+                IEnumerable<RATE> rates = project.RATE;
+
+                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.AlwaysEditable, useReportDate, null).ToList();
+                if (buildStats)
+                {
+                    foreach (BASELINE_ITEMProgress docControlDeliverable in user_project_baseline_item_progress)
+                    {
+                        docControlDeliverable.BuildStats();
+                    }
+                }
+
+                user_baseline_item_progresses.AddRange(user_project_baseline_item_progress);
+            }
+
+            return user_baseline_item_progresses.AsQueryable();
+        }
+
         public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true, bool useReportDate = false)
         {
             //IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
@@ -116,7 +161,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, DateTime? internalNumLockDate = null, DateTime? clientNumLockDate = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -175,9 +220,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 P6_Assignments = PopulateP6Assignment(x, PROJECT, P6_ASSIGNMENTS),
                 P6TASKCollection = P6_TASKS,
                 IsInternalNumberAlwaysEditable = internalNumberMode == DeliverableInternalNumberMode.AlwaysEditable,
-                IsInternalNumberManualOnly = internalNumberMode == DeliverableInternalNumberMode.Manual,
-                InternalNumLockDate = internalNumLockDate,
-                ClientNumLockDate = clientNumLockDate
+                IsInternalNumberManualOnly = internalNumberMode == DeliverableInternalNumberMode.Manual
             }).ToList();
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });

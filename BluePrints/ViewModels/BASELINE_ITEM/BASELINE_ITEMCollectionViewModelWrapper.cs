@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
-        private DeliverablesViewType viewType { get; set; }
+        protected DeliverablesViewType viewType { get; set; }
 
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -133,7 +133,7 @@ namespace BluePrints.ViewModels
         public BASELINE loadBASELINE { get; set; }
         public Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         public PROGRESS livePROGRESS { get; set; }
-        private bool isQueryForLiveStatus;
+        protected bool isQueryForLiveStatus;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         //public bool Is_Autofill_Internal_Number { get; set; }
         private bool allow_drag_drop { get; set; }
@@ -147,52 +147,77 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool ClientNumLocked
+        public bool CanApproveClientNumbers => BASELINEViewModel != null;
+        public void ApproveClientNumbers()
         {
-            get => loadBASELINE == null ? false : loadBASELINE.CLIENTNUM_LOCK == null ? false : true;
-            set
+            if (MessageBoxService.ShowMessage("This will lock all current client numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                if (BASELINEViewModel == null)
-                    return;
+                foreach(BASELINE_ITEMProgress entity in MainViewModel.Entities)
+                {
+                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;
+                }
 
-                if (value)
-                {
-                    if (MessageBoxService.ShowMessage("This will lock all current client number, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
-                    {
-                        loadBASELINE.CLIENTNUM_LOCK = DateTime.Now;
-                        BASELINEViewModel.Save(loadBASELINE);
-                        FullRefresh();
-                    }
-                    else
-                        this.RaisePropertyChanged(x => x.ClientNumLocked);
-                }
-                else
-                {
-                    if (LoginCredentials.hasPermission(PermissionResources.UnlockInternalNum))
-                    {
-                        loadBASELINE.CLIENTNUM_LOCK = null;
-                        BASELINEViewModel.Save(loadBASELINE);
-                        FullRefresh();
-                    }
-                    else
-                    {
-                        MessageBoxService.ShowMessage("Please contact doc control to unlock document number");
-                        this.RaisePropertyChanged(x => x.ClientNumLocked);
-                    }
-                }
-            }
+                MainViewModel.SimpleSaveAll();
+                GridControlService.RefreshData();
+            };
         }
 
-        public bool InternalNumLocked
+        public bool CanApproveInternalNumbers => BASELINEViewModel != null;
+        public void ApproveInternalNumbers()
         {
-            get => loadBASELINE == null ? false : loadBASELINE.INTERNALNUM_LOCK == null ? false : true;
-            set
+            if (MessageBoxService.ShowMessage("This will lock all current internal numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                if(value)
-                    changeInternalNumberMode(DeliverableInternalNumberMode.Locked);
-                else
-                    changeInternalNumberMode(DeliverableInternalNumberMode.Default);
+                foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
+                {
+                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
+                }
+
+                MainViewModel.SimpleSaveAll();
+                GridControlService.RefreshData();
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) in project " + loadPROJECT.NUMBER + " has been locked, please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
+            };
+        }
+
+        public bool CanUnapproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
+        public void UnapproveSelectedInternalNumbers()
+        {
+            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            {
+                MessageBoxService.ShowMessage("You do not have the authority to unapprove internal numbers", "Unauthorised");
+                return;
             }
+
+            if (MessageBoxService.ShowMessage("This will unlock selected internal numbers, if you still couldn't edit the internal number, please make sure internal number mode is set to always editable, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            {
+                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                {
+                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
+                }
+
+                MainViewModel.SimpleSaveAll();
+                GridControlService.RefreshData();
+            };
+        }
+
+        public bool CanUnapproveSelectedClientNumbers => SelectedEntities.Count() > 0;
+        public void UnapproveSelectedClientNumbers()
+        {
+            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            {
+                MessageBoxService.ShowMessage("You do not have the authority to unapprove client numbers", "Unauthorised");
+                return;
+            }
+
+            if (MessageBoxService.ShowMessage("This will unlock selected client numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            {
+                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                {
+                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
+                }
+
+                MainViewModel.SimpleSaveAll();
+                GridControlService.RefreshData();
+            };
         }
 
         public bool InternalNumAlwaysEditable
@@ -231,66 +256,20 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public string LockedDateStr => loadBASELINE == null ? null : loadBASELINE.INTERNALNUM_LOCK == null ? null : ((DateTime)loadBASELINE.INTERNALNUM_LOCK).ToShortDateString();
-
-        public string ClientLockedDateStr => loadBASELINE == null ? null : loadBASELINE.CLIENTNUM_LOCK == null ? null : ((DateTime)loadBASELINE.CLIENTNUM_LOCK).ToShortDateString();
-
         private void changeInternalNumberMode(DeliverableInternalNumberMode newMode)
         {
-            if (BASELINEViewModel == null)
-                return;
-
-            if(InternalNumberMode == DeliverableInternalNumberMode.Locked && newMode != DeliverableInternalNumberMode.Locked)
-            {
-                if (loadBASELINE.INTERNALNUM_LOCK != null)
-                {
-                    if(LoginCredentials.hasPermission(PermissionResources.UnlockInternalNum))
-                    {
-                        loadBASELINE.INTERNALNUM_LOCK = null;
-                        BASELINEViewModel.Save(loadBASELINE);
-                        InternalNumberMode = newMode;
-                        ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "FYI internal numbers for project " + loadPROJECT.NUMBER + " in blueprints has been unlocked by me", loadPROJECT.NUMBER + " Deliverables Locked");
-                        FullRefresh();
-                    }
-                    else
-                    {
-                        MessageBoxService.ShowMessage("Please contact doc control to unlock document number");
-                    }
-                }
-                else
-                {
-                    InternalNumberMode = DeliverableInternalNumberMode.Locked;
-                    loadBASELINE.INTERNALNUM_LOCK = DateTime.Now;
-                    BASELINEViewModel.Save(loadBASELINE);
-                }
-            }
-            else if(newMode == DeliverableInternalNumberMode.Locked)
-            {
-                if (MessageBoxService.ShowMessage("This will lock all current internal numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
-                {
-                    InternalNumberMode = newMode;
-                    loadBASELINE.INTERNALNUM_LOCK = DateTime.Now;
-                    BASELINEViewModel.Save(loadBASELINE);
-                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Internal numbers for project " + loadPROJECT.NUMBER + " in blueprints has been locked by me\nPlease review and update QDMS", loadPROJECT.NUMBER + " Deliverables Locked");
-                    FullRefresh();
-                }
-            }
-            else
-            {
-                InternalNumberMode = newMode;
-                FullRefresh();
-            }
+            InternalNumberMode = newMode;
+            FullRefresh();
 
             this.RaisePropertyChanged(x => x.InternalNumAlwaysEditable);
             this.RaisePropertyChanged(x => x.InternalNumDefault);
             this.RaisePropertyChanged(x => x.InternalNumManual);
-            this.RaisePropertyChanged(x => x.LockedDateStr);
         }
 
 
-        private DeliverableInternalNumberMode InternalNumberMode { get; set; }
+        protected DeliverableInternalNumberMode InternalNumberMode { get; set; }
 
-        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             Interface_InitializeParameters(parameter);
@@ -309,21 +288,11 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            setInternalNumMode(loadBASELINE);
             base.FullRefresh();
-        }
-
-        private void setInternalNumMode(BASELINE baseline)
-        {
-            InternalNumberMode = baseline.INTERNALNUM_LOCK != null ? DeliverableInternalNumberMode.Locked : InternalNumberMode;
-            this.RaisePropertyChanged(x => x.InternalNumAlwaysEditable);
-            this.RaisePropertyChanged(x => x.InternalNumDefault);
-            this.RaisePropertyChanged(x => x.InternalNumManual);
-            this.RaisePropertyChanged(x => x.LockedDateStr);
         }
         #endregion
 
-        public void Interface_InitializeParameters(object parameter)
+        public virtual void Interface_InitializeParameters(object parameter)
         {
             var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
@@ -391,7 +360,6 @@ namespace BluePrints.ViewModels
                 return;
 
             loadBASELINE = entity;
-            setInternalNumMode(loadBASELINE);
 
             if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
                 SetBaselineLockUnlock?.Invoke(true);
@@ -407,7 +375,7 @@ namespace BluePrints.ViewModels
             livePROGRESS = progress;
         }
 
-        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        protected virtual Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             if (isQueryForLiveStatus)
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
@@ -415,12 +383,12 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadBASELINE.GUID_PROJECT);
         }
 
-        private Func<IRepositoryQuery<BASELINE_ITEM_WORK>, IQueryable<BASELINE_ITEM_WORK>> BASELINE_ITEM_WORKProjectionFunc()
+        protected virtual Func<IRepositoryQuery<BASELINE_ITEM_WORK>, IQueryable<BASELINE_ITEM_WORK>> BASELINE_ITEM_WORKProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<DOCTYPE>, IQueryable<DOCTYPE>> DOCTYPEProjectionFunc()
+        protected virtual Func<IRepositoryQuery<DOCTYPE>, IQueryable<DOCTYPE>> DOCTYPEProjectionFunc()
         {
             if (viewType == DeliverablesViewType.Both)
                 return query => query;
@@ -430,7 +398,7 @@ namespace BluePrints.ViewModels
                 return query => query;
         }
 
-        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
+        protected virtual Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             if (isQueryForLiveStatus)
                 return
@@ -440,12 +408,12 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadBASELINE.GUID);
         }
 
-        private Func<IRepositoryQuery<REGISTER_HOLD>, IQueryable<REGISTER_HOLD>> REGISTER_HOLDProjectionFunc()
+        protected virtual Func<IRepositoryQuery<REGISTER_HOLD>, IQueryable<REGISTER_HOLD>> REGISTER_HOLDProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
+        protected virtual Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             //not ready for this yet because some active projects are still using legacy subjob name
             //if (viewType == DeliverablesViewType.Direct)
@@ -457,37 +425,37 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
+        protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
             return query => query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        protected Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.PHASE_TYPE == PhaseType.Design);
         }
 
-        private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        protected virtual Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
+        protected virtual Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        protected virtual Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
         }
 
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        protected virtual Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
         {
             if (livePROGRESS == null)
                 return query => query.Where(x => x.GUID_PROGRESS == Guid.Empty);
@@ -495,12 +463,12 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID_PROGRESS == livePROGRESS.GUID);
         }
 
-        private Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
-        List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
+        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
         List<string> narratives = new List<string>();
         List<string> variationCodes = new List<string>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -516,7 +484,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, loadBASELINE.INTERNALNUM_LOCK, loadBASELINE.CLIENTNUM_LOCK);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -741,7 +709,7 @@ namespace BluePrints.ViewModels
         {
             if(!InVariationMode)
             {
-                if (isNewEntity && (loadBASELINE.INTERNALNUM_LOCK != null || loadBASELINE.CLIENTNUM_LOCK != null))
+                if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
                 {
                     ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable with internal number " + entity.INTERNAL_NUM + " has been added to project " + loadPROJECT.NUMBER + ", please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
                 }

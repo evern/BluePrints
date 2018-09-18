@@ -20,6 +20,12 @@ namespace BluePrints.Common
         }
     }
 
+    public enum DocumentNumberStatus
+    {
+        [Display(Name = "Awaiting Approval")] Awaiting = 0,
+        [Display(Name = "Approved")] Approved = 1
+    }
+
     public enum RosterStatus
     {
         [Display(Name = "Drive in AM")] DIA = 0,

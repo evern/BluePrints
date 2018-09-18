@@ -22,8 +22,8 @@ namespace BluePrints.ViewModels
     public class User_OffsiteDirectProgressCollectionViewModelWrapper : OffsiteDirectProgressCollectionViewModelWrapper
     {
         private USER _loadUSER;
-        IP6EntitiesUnitOfWork p6UOW;
-        List<FullSummarizer> firstLoadProjectStatsSummarizers;
+        protected IP6EntitiesUnitOfWork p6UOW;
+        protected List<FullSummarizer> firstLoadProjectStatsSummarizers;
 
         protected override void resolveParameters(object parameter)
         {

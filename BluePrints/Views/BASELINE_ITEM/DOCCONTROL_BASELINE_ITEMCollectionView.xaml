@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.BASELINE_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:BASELINE_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.DOCCONTROL_BASELINE_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DOCCONTROL_BASELINE_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="glyphTemplate">
@@ -56,28 +56,11 @@
                         <dxr:RibbonPage Caption="Live Deliverables">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
-                            <dxr:RibbonPageGroup Caption="Internal Number Mode">
-                                <dxb:BarCheckItem Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
-                                <dxb:BarCheckItem Content="Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
-                                <dxb:BarCheckItem Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
-                            </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Approvals">
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveInternalNumbersCommand, ElementName=userControl}" Content="Lock Internal Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list internal numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveClientNumbersCommand, ElementName=userControl}" Content="Lock Client Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list client numbers" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Approve Internal Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) internal numbers" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarStaticItem Content="Available Units" />
-                                <dxb:BarEditItem EditValue="{Binding DataContext.FreeUnits, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Remaining units to be assigned when baseline is locked">
-                                    <dxb:BarEditItem.EditSettings>
-                                        <dxe:TextEditSettings NullText="Unlimited" />
-                                    </dxb:BarEditItem.EditSettings>
-                                </dxb:BarEditItem>
-                                <dxb:BarCheckItem Content="Lock Baseline" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total budget units, so that units assigned to all deliverables cannot exceed the current total units" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" Content="Import Client Numbers" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
-                                <dxb:BarCheckItem Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -102,12 +85,13 @@
                 </dxlc:LayoutControl>
                 <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
+                        <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.BASELINE.PROJECT.NUMBER" FilterPopupMode="CheckedList" GroupIndex="0" Header="Project" ReadOnly="True" />
+                        <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from subjob" ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
+                        <dxg:GridColumn Tag="True;True;Autofill from subjob" ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -118,22 +102,22 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="Discipline Number" HeaderToolTip="Changing  this fieldmay affect workpack name, see internal number mode default, editable, manual on the ribbon">
+                        <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="Discipline Number" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="Document Type" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="Document Type" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" HeaderToolTip="Default value can be populated by document type selection">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
@@ -151,7 +135,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="IsInternalNumberEditable" Visible="False" />
+                        <dxg:GridColumn FieldName="IsInternalNumberEditable" ReadOnly="True" Visible="False" />
                         <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
@@ -165,16 +149,16 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="Revision Number" />
-                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type">
+                        <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="Revision Number" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" />
-                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" />
-                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" />
-                        <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.DeliverableStatusGuid" FilterPopupMode="Custom" Header="Status" HeaderToolTip="Changing this field may affect progress if [Update % by Status] button is click in progress">
+                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" ReadOnly="True" />
+                        <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.DeliverableStatusGuid" FilterPopupMode="Custom" Header="Status" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -185,12 +169,12 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <!--<dxg:GridColumn FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
+                        <!--<dxg:GridColumn ReadOnly="True" FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" Tag="CopyPasteSkip" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                     <dxe:ComboBoxEditSettings.StyleSettings>
@@ -199,12 +183,12 @@
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>-->
-                        <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units">
+                        <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours">
+                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid>
@@ -248,7 +232,7 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date">
+                        <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
@@ -268,17 +252,17 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" HeaderToolTip="Automatically assigned field. Changing this will affect subjob and workpack name">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from area and sub-area" FieldName="Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" Visible="true">
+                        <dxg:GridColumn Tag="True;True;Autofill from area and sub-area" FieldName="Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" ReadOnly="True" Visible="true">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
+                        <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" ReadOnly="True" Visible="true">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
@@ -321,7 +305,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" ShowGridMenu="tableView_ShowGridMenu" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
@@ -370,6 +354,8 @@
                                     </dxb:BarEditItem>
                                 </dxb:BarSubItem>
                                 <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Approve Internal Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) internal numbers" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Internal Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Client Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
                                 <dxb:BarItemLinkSeparator />

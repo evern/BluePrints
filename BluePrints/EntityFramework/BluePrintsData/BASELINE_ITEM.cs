@@ -68,6 +68,10 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string REVISION_NUMBER { get; set; }
 
+        public DocumentNumberStatus INTERNALNUM_STATUS { get; set; }
+
+        public DocumentNumberStatus CLIENTNUM_STATUS { get; set; }
+
         public decimal? P6_ASSIGNMENT_STARTUNIT { get; set; }
 
         public bool BY_DURATION { get; set; }

@@ -322,15 +322,6 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User will receive deliverables lock/unlock status, variation approval notification.
-        /// </summary>
-        internal static string ReceiveDeliverableLockStatus {
-            get {
-                return ResourceManager.GetString("ReceiveDeliverableLockStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Allow user to standardize subjobs in exo.
         /// </summary>
         internal static string StandardizeSubJobs {
@@ -340,11 +331,11 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to unlock internal number.
+        ///   Looks up a localized string similar to Allow user to unapprove internal and client numbers.
         /// </summary>
-        internal static string UnlockInternalNum {
+        internal static string UnapproveInternalNumbers {
             get {
-                return ResourceManager.GetString("UnlockInternalNum", resourceCulture);
+                return ResourceManager.GetString("UnapproveInternalNumbers", resourceCulture);
             }
         }
         
