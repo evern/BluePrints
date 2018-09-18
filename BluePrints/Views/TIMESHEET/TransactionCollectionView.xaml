@@ -66,7 +66,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Entity.X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" />
-                                        <dxg:GridColumn FieldName="Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Resource" ReadOnly="True" />
+                                        <dxg:GridColumn FieldName="Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Resource" />
                                         <dxg:GridColumn FieldName="Entity.TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />
