@@ -66,7 +66,12 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Entity.X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" />
-                                        <dxg:GridColumn FieldName="Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Resource" />
+                                        <dxg:GridColumn FieldName="Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                        <dxg:GridColumn FieldName="Entity.STAFFNO" FilterPopupMode="CheckedList" Header="Resource">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Entity.TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />
