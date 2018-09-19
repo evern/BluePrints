@@ -116,7 +116,7 @@ namespace BluePrints.ViewModels
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
             hiddenColumnFieldNames.Add(columnCalculation);
-            hiddenColumnFieldNames.Add(columnChild);
+            hiddenColumnFieldNames.Add(columnCompare);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
             SelectedDataRows = new ObservableCollection<DataRowView>();
@@ -229,10 +229,10 @@ namespace BluePrints.ViewModels
         #region Data Points Table
         string columnEntity = "Entity";
         string columnCalculation = "Calculation";
+        string columnCompare = "CompareEntities";
         string columnChild = "ChildEntities";
         DataTable dataPointsTable = null;
         DateTime firstAlignedDataDate;
-
         public DataTable DataPointsTable
         {
             get
@@ -249,11 +249,6 @@ namespace BluePrints.ViewModels
                     IEnumerable<Stats> actualStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
                     IEnumerable<Stats> materialStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
                     IEnumerable<Stats> poStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
-
-                    //IEnumerable<Stats> remainingStats = AllProjectDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null).Select(x => x.Stats.Remaining);
-                    //DateTime lastDataDate = FixedEndDate == null ?  DateTime.Now : (DateTime)FixedEndDate;
-                    //if(remainingStats.Count() > 0)
-                    //    lastDataDate = remainingStats.Max(x => x.EndDate);
 
                     List<ExoSubJobProjection> combinedSubJobs = new List<ExoSubJobProjection>();
                     combinedSubJobs.AddRange(exoSubJobs.Select(x => new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = x.SubJob.Code }, Discipline = new PrimeroDiscipline() { Code = x.Discipline.Code }, Commodity = new PrimeroCommodity() { Code = x.Commodity.Code } }));
@@ -285,6 +280,7 @@ namespace BluePrints.ViewModels
                     alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, (DateTime)FixedEndDate, interval);
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
                     dataPointsTable.Columns.Add(columnCalculation, typeof(ForecastCalculation));
+                    dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
                     dataPointsTable.Columns.Add(columnChild, typeof(DataTable));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
@@ -296,17 +292,17 @@ namespace BluePrints.ViewModels
                     var groupedSubjobs = combinedSubJobs.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { ProgressDate = group.Key, Projection = group.ToList() });
                     foreach (var groupedSubjob in groupedSubjobs)
                     {
-                        DataRow dataRow = buildRowStats(groupedSubjob.Projection, false);
+                        DataRow dataRow = buildRowStats(groupedSubjob.Projection);
 
-                        DataTable childDataTable = new DataTable();
-                        childDataTable = dataPointsTable.Clone();
+                        DataTable compareDataTable = new DataTable();
+                        compareDataTable = dataPointsTable.Clone();
 
-                        DataRow cloneRow = childDataTable.NewRow();
+                        DataRow cloneRow = compareDataTable.NewRow();
                         setDateFieldsEmpty(cloneRow, false);
 
                         updateForecast(cloneRow, groupedSubjob.Projection.First(), true);
-                        childDataTable.Rows.Add(cloneRow);
-                        dataRow[columnChild] = childDataTable;
+                        compareDataTable.Rows.Add(cloneRow);
+                        dataRow[columnCompare] = compareDataTable;
                     }
 
                     TableViewService.ScrollToLast();
@@ -328,14 +324,23 @@ namespace BluePrints.ViewModels
         }
 
         public List<ExoDataPoint> DetailedData { get; set; }
-        private DataRow buildSingleRowStat(ExoSubJobProjection subjob, bool isUpdate)
+        private void updateDisciplineRowForecast(ExoSubJobProjection disciplineEntity)
         {
-            List<ExoSubJobProjection> exoSubJobProjections = new List<ExoSubJobProjection>();
-            exoSubJobProjections.Add(subjob);
-            return buildRowStats(exoSubJobProjections, isUpdate);
+            DataRow disciplineDataRow = getDataTableRowBy(disciplineEntity.SubJob.Code, disciplineEntity.Discipline.Code, disciplineEntity.Variation_Code);
+            if (disciplineDataRow == null)
+                return;
+
+            updateForecast(disciplineDataRow, disciplineEntity, false);
         }
 
-        private DataRow buildRowStats(IEnumerable<ExoSubJobProjection> groupedSubJobs, bool isUpdate)
+        private DataRow getDataTableRowBy(string subjobCode, string disciplineCode, string variationCode)
+        {
+            return (from DataRow dr in dataPointsTable.Rows
+                    where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == subjobCode && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == disciplineCode && ((ExoSubJobProjection)dr[columnEntity]).Variation_Code == variationCode
+                    select dr).FirstOrDefault();
+        }
+
+        private DataRow buildRowStats(IEnumerable<ExoSubJobProjection> groupedSubJobs)
         {
             if (dataPointsTable == null)
                 return null;
@@ -343,57 +348,46 @@ namespace BluePrints.ViewModels
             if (groupedSubJobs == null || groupedSubJobs.Count() == 0)
                 return null;
 
-            ExoSubJobProjection entity = groupedSubJobs.First();
-            DataRow findExistingOrNewDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == entity.SubJob.Code && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == entity.Discipline.Code && ((ExoSubJobProjection)dr[columnEntity]).Variation_Code == entity.Variation_Code
-                              select dr).FirstOrDefault();
+            ExoSubJobProjection disciplineEntity = groupedSubJobs.First();
+            DataRow disciplineDataRow = getDataTableRowBy(disciplineEntity.SubJob.Code, disciplineEntity.Discipline.Code, disciplineEntity.Variation_Code);
 
             ForecastCalculation forecastCalculation = new ForecastCalculation();
-            if (findExistingOrNewDataRow == null)
+            if (disciplineDataRow == null)
             {
-                //during update the entity must be found
-                if (isUpdate)
-                    return null;
-
-                findExistingOrNewDataRow = dataPointsTable.NewRow();
+                disciplineDataRow = dataPointsTable.NewRow();
 
                 //variation budget cannot be found on exo
-                if(entity.Variation_Code == string.Empty)
+                if(disciplineEntity.Variation_Code == string.Empty)
                 {
-                    IEnumerable<ExoTimeAuthorisation> relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
-                    entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
-                    entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
+                    IEnumerable<ExoTimeAuthorisation> relevantJobLines = jobLines.Where(x => x.SubJobCode == disciplineEntity.SubJob.Code && x.DisciplineCode == disciplineEntity.Discipline.Code);
+                    disciplineEntity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
+                    disciplineEntity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
 
-                    forecastCalculation.Budget = entity.ExoBudgetCosts;
+                    forecastCalculation.Budget = disciplineEntity.ExoBudgetCosts;
                     forecastCalculation.IsBudgetReadOnly = true;
                 }
                 else
                 {
-                    VARIATION_REGISTER relevantVariationRegister = VARIATION_REGISTERCollectionViewModel.Entities.FirstOrDefault(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.VARIATION_CODE == entity.Variation_Code && x.STATUS == VariationRegisterStatus.Approved);
+                    VARIATION_REGISTER relevantVariationRegister = VARIATION_REGISTERCollectionViewModel.Entities.FirstOrDefault(x => x.SUBJOB_CODE == disciplineEntity.SubJob.Code && x.DISCIPLINE_CODE == disciplineEntity.Discipline.Code && x.VARIATION_CODE == disciplineEntity.Variation_Code && x.STATUS == VariationRegisterStatus.Approved);
                     if(relevantVariationRegister != null)
                     {
-                        entity.ExoBudgetCosts = relevantVariationRegister.COST;
-                        forecastCalculation.Budget = entity.ExoBudgetCosts;
+                        disciplineEntity.ExoBudgetCosts = relevantVariationRegister.COST;
+                        forecastCalculation.Budget = disciplineEntity.ExoBudgetCosts;
                     }
 
                     forecastCalculation.IsBudgetReadOnly = false;
                 }
 
-                findExistingOrNewDataRow[columnEntity] = entity;
-                findExistingOrNewDataRow[columnCalculation] = forecastCalculation;
+                disciplineDataRow[columnEntity] = disciplineEntity;
+                disciplineDataRow[columnCalculation] = forecastCalculation;
 
-                setDateFieldsEmpty(findExistingOrNewDataRow, false);
+                setDateFieldsEmpty(disciplineDataRow, false);
 
-                dataPointsTable.Rows.Add(findExistingOrNewDataRow);
-            }
-            else if (isUpdate)
-            {
-                updateForecast(findExistingOrNewDataRow, entity, false);
-                return findExistingOrNewDataRow;
+                dataPointsTable.Rows.Add(disciplineDataRow);
             }
 
-            forecastCalculation = (ForecastCalculation)findExistingOrNewDataRow[columnCalculation];
-            IEnumerable<DashboardFlatStructure> relevantDashboards = AllProjectDashboards.Where(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.Variation_Code == entity.Variation_Code);
+            forecastCalculation = (ForecastCalculation)disciplineDataRow[columnCalculation];
+            IEnumerable<DashboardFlatStructure> relevantDashboards = AllProjectDashboards.Where(x => x.SubjobCode == disciplineEntity.SubJob.Code && x.DisciplineCode == disciplineEntity.Discipline.Code && x.Variation_Code == disciplineEntity.Variation_Code);
             if (relevantDashboards != null && relevantDashboards.Count() > 0)
             {
                 IEnumerable<SummaryStats> summaryStats = relevantDashboards.Select(x => (SummaryStats)x.Stats);
@@ -405,7 +399,7 @@ namespace BluePrints.ViewModels
                     forecastCalculation.Outstanding = poDataPoints.Sum(x => x.Costs);
                 }
 
-                if(entity.Variation_Code == string.Empty)
+                if(disciplineEntity.Variation_Code == string.Empty)
                 {
                     IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null);
                     if (remainingStats != null && remainingStats.Count() > 0)
@@ -422,7 +416,7 @@ namespace BluePrints.ViewModels
                                 {
                                     decimal currentValue = groupByDateDataPoint.DataPoints.Sum(x => x.Costs);
                                     if (currentValue != 0)
-                                        findExistingOrNewDataRow[alignedDateField] = currentValue;
+                                        disciplineDataRow[alignedDateField] = currentValue;
                                 }
                             }
                         }
@@ -446,8 +440,8 @@ namespace BluePrints.ViewModels
                                 decimal currentValue = groupByDateDataPoint.DataPoints.Sum(x => x.Costs);
                                 if (currentValue != 0)
                                 {
-                                    decimal currentRowValue = (decimal)findExistingOrNewDataRow[alignedDateField];
-                                    findExistingOrNewDataRow[alignedDateField] = currentRowValue + currentValue;
+                                    decimal currentRowValue = (decimal)disciplineDataRow[alignedDateField];
+                                    disciplineDataRow[alignedDateField] = currentRowValue + currentValue;
                                 }
                             }
                         }
@@ -477,8 +471,8 @@ namespace BluePrints.ViewModels
                                 decimal currentValue = groupByDateDataPoint.DataPoints.Sum(x => x.Costs);
                                 if (currentValue != 0)
                                 {
-                                    decimal currentRowValue = (decimal)findExistingOrNewDataRow[alignedDateField];
-                                    findExistingOrNewDataRow[alignedDateField] = currentRowValue + currentValue;
+                                    decimal currentRowValue = (decimal)disciplineDataRow[alignedDateField];
+                                    disciplineDataRow[alignedDateField] = currentRowValue + currentValue;
                                 }
                             }
                         }
@@ -489,10 +483,10 @@ namespace BluePrints.ViewModels
             }
 
             //effectively override remaining
-            updateForecast(findExistingOrNewDataRow, entity, false);
-            updateUncommitted(findExistingOrNewDataRow);
+            updateForecast(disciplineDataRow, disciplineEntity, false);
+            calculateUncommitted(disciplineDataRow);
 
-            return findExistingOrNewDataRow;
+            return disciplineDataRow;
         }
 
         private void setForecastCellNull(DataRow updateRow, ExoSubJobProjection entity, string fieldName)
@@ -507,11 +501,11 @@ namespace BluePrints.ViewModels
                 if(DataPointsTable.Columns.Contains(fieldName))
                     updateRow[fieldName] = dateSpecificDataPoints.Sum(x => x.Costs);
 
-                updateUncommitted(updateRow);
+                calculateUncommitted(updateRow);
             }
         }
 
-        private void updateForecast(DataRow dataRow, ExoSubJobProjection entity, bool isChild)
+        private void updateForecast(DataRow dataRow, ExoSubJobProjection entity, bool isCompare)
         {
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.VARIATION_CODE == entity.Variation_Code);
             foreach (FORECAST currentRowFORECAST in currentRowFORECASTS)
@@ -524,7 +518,8 @@ namespace BluePrints.ViewModels
                     if(alignedDataDate != null)
                     {
                         string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
-                        if ((alignedDataDate > FixedDataDate && !isChild) || (alignedDataDate <= FixedDataDate && isChild))
+                        //put forecast history only on compare datatable
+                        if ((alignedDataDate > FixedDataDate && !isCompare) || (alignedDataDate <= FixedDataDate && isCompare))
                             if (dataPointsTable.Columns.Contains(alignedDateField))
                             {
                                 if (currentRowFORECAST.FORECAST_UNITS != null)
@@ -535,7 +530,7 @@ namespace BluePrints.ViewModels
             }
 
             //only do autoforcast on non variation entity
-            if (isChild && entity.Variation_Code == string.Empty)
+            if (isCompare && entity.Variation_Code == string.Empty)
             {
                 IEnumerable<DashboardFlatStructure> relevantDashboards = AllProjectDashboards.Where(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
                 IEnumerable<DashboardFlatStructure> remainingDashboard = relevantDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.DataPoints != null);
@@ -591,6 +586,9 @@ namespace BluePrints.ViewModels
 
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
+            if (gridColumn == null)
+                return;
+
             if (gridColumn.ReadOnly)
             {
                 DateTime parseEndDate;
@@ -881,7 +879,7 @@ namespace BluePrints.ViewModels
                     ExoSubJobProjection findUpdatedEntity = exoSubJobs.FirstOrDefault(x => x.SubJob.Code == changedFORECAST.SUBJOB_CODE && x.Discipline.Code == changedFORECAST.DISCIPLINE_CODE);
                     if(findUpdatedEntity != null)
                     {
-                        buildSingleRowStat(findUpdatedEntity, true);
+                        updateDisciplineRowForecast(findUpdatedEntity);
                     }
                 }
 
@@ -972,17 +970,20 @@ namespace BluePrints.ViewModels
                 newFORECAST.FORECAST_DATE = forecastDate.Date;
                 newFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(newFORECAST);
-                updateUncommitted(dataRow);
+                calculateUncommitted(dataRow);
             }
             else
             {
                 findFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(findFORECAST);
-                updateUncommitted(dataRow);
+                calculateUncommitted(dataRow);
             }
         }
 
-        private void updateUncommitted(DataRow dataRow)
+        /// <summary>
+        /// Sum uncommitted values
+        /// </summary>
+        private void calculateUncommitted(DataRow dataRow)
         {
             ForecastCalculation calculation = (ForecastCalculation)dataRow[columnCalculation];
 
@@ -1261,6 +1262,31 @@ namespace BluePrints.ViewModels
             PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewName);
         }
         #endregion
+
+        //#region Custom Summary
+        //private decimal cumulative_total_units = 0;
+        //private decimal cumulative_baseline_units = 0;
+        //private decimal cumulative_current_units = 0;
+        //public void CustomCommoditySummary(CustomSummaryEventArgs e)
+        //{
+        //    if (e.IsTotalSummary || e.IsGroupSummary)
+        //    {
+        //        if (e.SummaryProcess == CustomSummaryProcess.Start)
+        //        {
+        //            cumulative_total_units = 0;
+        //        }
+        //        if (e.SummaryProcess == CustomSummaryProcess.Calculate)
+        //        {
+        //            ExoDataPoint dataPoint = ((ExoDataPoint)e.Row);
+        //            ExoTimeAuthorisation exoTime = jobLines.FirstOrDefault(x => x.SubJobCode == dataPoint.Subjob_Name && x.CommodityCode == dataPoint.Commodity_Code);
+        //            if(exoTime != null)
+        //                cumulative_total_units = exoTime.BudgetCosts;
+
+        //            e.TotalValue = cumulative_total_units;
+        //        }
+        //    }
+        //}
+        //#endregion
     }
 
     /// <summary>

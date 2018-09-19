@@ -23,7 +23,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 DataRow dataRow = (DataRow)values[0];
                 if (dataRow["ChildEntities"] != DBNull.Value)
                 {
-                    DataTable childEntity = (DataTable)dataRow["ChildEntities"];
+                    DataTable childEntity = (DataTable)dataRow["CompareEntities"];
                     if (childEntity.Rows.Count > 0)
                     {
                         string fieldname = values[1].ToString();

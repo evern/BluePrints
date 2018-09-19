@@ -224,6 +224,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         poDataPoint.Cost_GLName = string.Empty;
                         poDataPoint.Purchase_GLName = string.Empty;
                         poDataPoint.IsPO = true;
+                        poDataPoint.PONumber = po.SEQNO.ToString();
+                        poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
+                        poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
                         poDataPoints.Add(poDataPoint);
                     }
                 }

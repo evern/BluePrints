@@ -343,6 +343,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Cost_GLName { get; set; }
         public string Variation_Code { get; set; }
         public bool IsPO { get; set; }
+        public string PONumber { get; set; }
+        public decimal POOrderQty { get; set; }
+        public decimal POSuppliedQty { get; set; }
 
         public string PhaseCode
         {
