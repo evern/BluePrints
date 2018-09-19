@@ -115,7 +115,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridControl.DetailDescriptor>
-                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding ChildEntities}">
+                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CompareEntities}">
                                             <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew">
                                                 <i:Interaction.Behaviors>
                                                     <behavior:DetailSyncBehavior />
