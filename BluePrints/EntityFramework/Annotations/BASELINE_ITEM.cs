@@ -381,7 +381,7 @@ namespace BluePrints.Data
 
         public void SetHolds(IEnumerable<REGISTER_HOLD_REF> holds)
         {
-            List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.OriginalEntityKey).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
+            List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.OriginalEntityKey && x.REGISTER_HOLD != null).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
             if (deliverable_holds.Count == 0)
                 return;
 
