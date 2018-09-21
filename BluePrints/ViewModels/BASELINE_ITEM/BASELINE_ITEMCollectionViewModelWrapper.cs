@@ -147,34 +147,35 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool CanApproveClientNumbers => BASELINEViewModel != null;
-        public void ApproveClientNumbers()
+        public bool CanLockClientNumbers => BASELINEViewModel != null;
+        public void LockClientNumbers()
         {
             if (MessageBoxService.ShowMessage("This will lock all current client numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach(BASELINE_ITEMProgress entity in MainViewModel.Entities)
                 {
-                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;
+                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
                 }
 
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Client Numbers Locked in " + loadPROJECT.NUMBER, true);
             };
         }
 
-        public bool CanApproveInternalNumbers => BASELINEViewModel != null;
-        public void ApproveInternalNumbers()
+        public bool CanLockInternalNumbers => BASELINEViewModel != null;
+        public void LockInternalNumbers()
         {
             if (MessageBoxService.ShowMessage("This will lock all current internal numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
                 {
-                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
+                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
                 }
 
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) in project " + loadPROJECT.NUMBER + " has been locked, please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Internal Numbers Locked In " + loadPROJECT.NUMBER, true);
             };
         }
 
@@ -191,11 +192,23 @@ namespace BluePrints.ViewModels
             {
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
-                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
+                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
                 }
 
+                List<string> internalNumbers = SelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
+
+                string emailMessage = @"<html> 
+                      <body> 
+                      <p>The following internal number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
+
+                foreach (string internalNumber in internalNumbers)
+                {
+                    emailMessage += "<p>" + internalNumber + "</p>";
+                }
+                emailMessage += "</body></html>";
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Internal Numbers Unapproved in " + loadPROJECT.NUMBER, true);
             };
         }
 
@@ -212,11 +225,23 @@ namespace BluePrints.ViewModels
             {
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
-                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
+                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
                 }
 
+                List<string> clientNumbers = SelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
+
+                string emailMessage = @"<html> 
+                      <body> 
+                      <p>The following client number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
+
+                foreach (string clientNumber in clientNumbers)
+                {
+                    emailMessage += "<p>" + clientNumber + "</p>";
+                }
+                emailMessage += "</body></html>";
+                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Client Numbers Unapproved in " + loadPROJECT.NUMBER, true);
             };
         }
 

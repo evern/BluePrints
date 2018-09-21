@@ -22,8 +22,9 @@ namespace BluePrints.Common
 
     public enum DocumentNumberStatus
     {
-        [Display(Name = "Awaiting Approval")] Awaiting = 0,
-        [Display(Name = "Approved")] Approved = 1
+        [Display(Name = "Preliminary")] Preliminary = 0,
+        [Display(Name = "Awaiting Approval")] Awaiting = 1,
+        [Display(Name = "Approved")] Approved = 2
     }
 
     public enum RosterStatus
