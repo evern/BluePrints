@@ -147,10 +147,10 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool CanLockClientNumbers => BASELINEViewModel != null;
-        public void LockClientNumbers()
+        public bool CanFinalizeClientNumbers => BASELINEViewModel != null;
+        public void FinalizeClientNumbers()
         {
-            if (MessageBoxService.ShowMessage("This will lock all current client numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            if (MessageBoxService.ShowMessage("This will finalize all current client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach(BASELINE_ITEMProgress entity in MainViewModel.Entities)
                 {
@@ -163,10 +163,10 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanLockInternalNumbers => BASELINEViewModel != null;
-        public void LockInternalNumbers()
+        public bool CanFinalizeInternalNumbers => BASELINEViewModel != null;
+        public void FinalizeInternalNumbers()
         {
-            if (MessageBoxService.ShowMessage("This will lock all current internal numbers, excluding newly added, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            if (MessageBoxService.ShowMessage("This will finalize all current internal numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
                 {
