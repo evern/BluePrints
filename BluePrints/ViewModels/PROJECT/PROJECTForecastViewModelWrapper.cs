@@ -778,7 +778,7 @@ namespace BluePrints.ViewModels
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
         {
-            EntitiesUndoRedoManager.Clear();
+            //EntitiesUndoRedoManager.Clear();
             EntitiesUndoRedoManager.PauseActionId();
             var selected_cells = gridTableView.GetSelectedCells();
             if (selected_cells.Count == 0)
@@ -934,7 +934,7 @@ namespace BluePrints.ViewModels
 
         public void DeleteCellContent(object parameter)
         {
-            EntitiesUndoRedoManager.Clear();
+            //EntitiesUndoRedoManager.Clear();
             GridControl gridControl = (GridControl)parameter;
             TableView tableView = gridControl.View as TableView;
             EntitiesUndoRedoManager.PauseActionId();
@@ -1006,7 +1006,6 @@ namespace BluePrints.ViewModels
             if (e.RowHandle == GridControl.AutoFilterRowHandle)
                 return;
 
-            EntitiesUndoRedoManager.Clear();
             DataRowView dataRowView = (DataRowView)e.Row;
             ExoSubJobProjection entity = (ExoSubJobProjection)dataRowView.Row[columnEntity];
             EntitiesUndoRedoManager.PauseActionId();
@@ -1088,7 +1087,10 @@ namespace BluePrints.ViewModels
                 FORECASTCollectionViewModel.Save(findFORECAST);
             }
 
-            if(!isRecursive)
+            //used to ensure child row is set
+            dataRow[forecastDate.ToShortDateString()] = forecastUnits;
+
+            if (!isRecursive)
             {
                 string dateFieldName = forecastDate.ToShortDateString();
                 //need to set child forecast empty
@@ -1100,9 +1102,11 @@ namespace BluePrints.ViewModels
                         ExoSubJobProjection childEntity = (ExoSubJobProjection)childRow[columnEntity];
                         if (childTable.Columns.Contains(dateFieldName))
                         {
-                            EntitiesUndoRedoManager.AddUndo(childRow, dateFieldName, childRow[dateFieldName], DBNull.Value, EntityMessageType.Changed);
-                            findExistingOrAddNewForecast(childRow, childEntity, forecastDate.Date, null, true);
-                            setForecastCellNull(childRow, (ExoSubJobProjection)childRow[columnEntity], dateFieldName);
+                            if(!isBackgroundEdit)
+                                EntitiesUndoRedoManager.AddUndo(childRow, dateFieldName, childRow[dateFieldName], 0.00m, EntityMessageType.Changed);
+
+                            findExistingOrAddNewForecast(childRow, childEntity, forecastDate.Date, 0.00m, true);
+                            //setForecastCellNull(childRow, (ExoSubJobProjection)childRow[columnEntity], dateFieldName);
                         }
                     }
 
@@ -1128,9 +1132,11 @@ namespace BluePrints.ViewModels
                                 cumulativeCosts += childCostOnDate;
                             }
 
-                            //only visually represents the costs but stores null in the database
-                            EntitiesUndoRedoManager.AddUndo(disciplineRow, dateFieldName, disciplineRow[dateFieldName], DBNull.Value, EntityMessageType.Changed);
-                            findExistingOrAddNewForecast(disciplineRow, (ExoSubJobProjection)disciplineRow[columnEntity], forecastDate.Date, null, true);
+                            if (!isBackgroundEdit)
+                                //only visually represents the costs but stores null in the database
+                                EntitiesUndoRedoManager.AddUndo(disciplineRow, dateFieldName, disciplineRow[dateFieldName], cumulativeCosts, EntityMessageType.Changed);
+
+                            findExistingOrAddNewForecast(disciplineRow, (ExoSubJobProjection)disciplineRow[columnEntity], forecastDate.Date, cumulativeCosts, true);
                             disciplineRow[dateFieldName] = cumulativeCosts;
                         }
                     }
@@ -1157,8 +1163,9 @@ namespace BluePrints.ViewModels
                 DateTime parseDateTime;
                 if (DateTime.TryParse(columnName, out parseDateTime))
                     if(parseDateTime > FixedDataDate)
-                        if(((decimal)dataRow[columnName]) > 0)
-                            uncommittedRecalculation += (decimal)dataRow[columnName];
+                        if(dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
+                            if(((decimal)dataRow[columnName]) > 0)
+                                uncommittedRecalculation += (decimal)dataRow[columnName];
             }
 
             ExoSubJobProjection entity = (ExoSubJobProjection)dataRow[columnEntity];
@@ -1177,9 +1184,9 @@ namespace BluePrints.ViewModels
                             decimal cumulativeCostsOnDate = 0;
                             foreach (DataRow childRow in childTable.Rows)
                             {
-
-                                if (((decimal)childRow[columnName]) > 0)
-                                    cumulativeCostsOnDate += (decimal)childRow[columnName];
+                                if (childRow[columnName] != DBNull.Value && childRow[columnName] != null)
+                                    if (((decimal)childRow[columnName]) > 0)
+                                        cumulativeCostsOnDate += (decimal)childRow[columnName];
                             }
 
                             if(cumulativeCostsOnDate != 0)
@@ -1248,7 +1255,7 @@ namespace BluePrints.ViewModels
             {
                 object oldValue = entityProperty.OldValue;
                 ExoSubJobProjection exoSubJob = (ExoSubJobProjection)entityProperty.ChangedEntity[columnEntity];
-                if (oldValue == null)
+                if (oldValue == null || oldValue == DBNull.Value)
                 {
                     setForecastCellNull(entityProperty.ChangedEntity, exoSubJob, entityProperty.PropertyName);
                     //oldValue = 0.00m;
@@ -1262,8 +1269,13 @@ namespace BluePrints.ViewModels
                     decimal? oldValueDecimal = null;
                     if (entityProperty.OldValue != null)
                         oldValueDecimal = (decimal)entityProperty.OldValue;
-                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, oldValueDecimal);
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, oldValueDecimal, true);
                 }
+            }
+
+            foreach(UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                calculateUncommitted(entityProperty.ChangedEntity);
             }
 
             GridControlService.RefreshData();
@@ -1283,7 +1295,7 @@ namespace BluePrints.ViewModels
             {
                 object newValue = entityProperty.NewValue;
                 ExoSubJobProjection exoSubJob = (ExoSubJobProjection)entityProperty.ChangedEntity[columnEntity];
-                if (newValue == null)
+                if (newValue == null || newValue == DBNull.Value)
                 {
                     setForecastCellNull(entityProperty.ChangedEntity, exoSubJob, entityProperty.PropertyName);
                     //newValue = 0.00m;
@@ -1295,10 +1307,15 @@ namespace BluePrints.ViewModels
                 if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
                 {
                     decimal? newValueDecimal = null;
-                    if (entityProperty.NewValue != null)
+                    if (entityProperty.NewValue != DBNull.Value && entityProperty.NewValue != null)
                         newValueDecimal = (decimal)entityProperty.NewValue;
-                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, newValueDecimal);
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, newValueDecimal, true);
                 }
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                calculateUncommitted(entityProperty.ChangedEntity);
             }
 
             GridControlService.RefreshData();
