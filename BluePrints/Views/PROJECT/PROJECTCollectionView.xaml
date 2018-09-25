@@ -97,6 +97,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ProjectType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="GUID_PROJUSER" Header="Project Manager">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="GUID_MANAGEUSER" Header="Design Manager">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MANAGERCollection, ElementName=userControl}" ValueMember="GUID" />

@@ -29,6 +29,8 @@
 
         public ProjectType TYPE { get; set; }
 
+        public Guid? GUID_PROJUSER { get; set; }
+
         public Guid? GUID_MANAGEUSER { get; set; }
 
         public Guid? GUID_OFFICE { get; set; }
