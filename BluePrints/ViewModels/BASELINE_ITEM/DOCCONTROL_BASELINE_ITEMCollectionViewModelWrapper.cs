@@ -147,7 +147,8 @@ namespace BluePrints.ViewModels
             {
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
-                    entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
+                    if(entity.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Awaiting)
+                        entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
                 }
 
                 MainViewModel.SimpleSaveAll();
@@ -168,7 +169,8 @@ namespace BluePrints.ViewModels
             {
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
-                    entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;
+                    if (entity.Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Awaiting)
+                        entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;
                 }
 
                 MainViewModel.SimpleSaveAll();
