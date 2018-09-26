@@ -100,5 +100,11 @@
         public int? glcode { get; set; }
 
         public int? accno { get; set; }
+
+        [Key]
+        [Column(Order = 3)]
+        public double INVOICED { get; set; }
+
+        public DateTime? INVOICEDATE { get; set; }
     }
 }
