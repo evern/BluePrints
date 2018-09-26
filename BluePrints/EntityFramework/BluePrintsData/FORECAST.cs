@@ -33,6 +33,8 @@ namespace BluePrints.Data
 
         public DateTime FORECAST_DATE { get; set; }
 
+        public bool IS_EAC { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
