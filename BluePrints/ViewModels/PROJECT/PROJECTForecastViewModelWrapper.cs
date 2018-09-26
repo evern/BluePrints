@@ -1144,7 +1144,10 @@ namespace BluePrints.ViewModels
             }
 
             //used to ensure child row is set
-            dataRow[forecastDate.ToShortDateString()] = forecastUnits;
+            if(forecastUnits == null)
+                dataRow[forecastDate.ToShortDateString()] = DBNull.Value;
+            else
+                dataRow[forecastDate.ToShortDateString()] = forecastUnits;
 
             if (!isRecursive)
             {
