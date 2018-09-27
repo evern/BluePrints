@@ -17,7 +17,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_CANADA\</PublishUrl>
+    <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>931</ApplicationRevision>
+    <ApplicationRevision>1179</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -115,230 +115,231 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Charts.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.CodeParser.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.CodeParser.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Data.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Data.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.DataAccess.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.DataAccess.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.DataAccess.v18.1.UI, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.DataAccess.v18.1.UI, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Images.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Images.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Mvvm.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Mvvm.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Office.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.Office.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Pdf.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.PivotGrid.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.Pdf.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v18.1.Export, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.RichEdit.v18.1.Export, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Printing.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Printing.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Snap.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Sparkline.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.RichEdit.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Snap.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.SpellChecker.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Utils.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.SpellChecker.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Utils.v18.1.UI, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.Utils.v18.1.UI, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Accordion.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Charts.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Accordion.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Charts.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Controls.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Controls.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.CodeView.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.CodeView.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Core.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Core.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Docking.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Docking.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.DocumentViewer.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.DocumentViewer.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Grid.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Grid.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Grid.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Grid.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Grid.v18.1.Extensions, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Grid.v18.1.Extensions, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Layout.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Layout.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.LayoutControl.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.LayoutControl.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.NavBar.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.NavBar.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Printing.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.PivotGrid.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Printing.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.ExpressionEditor.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.ExpressionEditor.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.ReportDesigner.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.ReportDesigner.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Ribbon.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Ribbon.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Scheduler.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Scheduler.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.SpellChecker.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Themes.DXStyle.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.SpellChecker.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.DXStyle.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.HybridApp.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.HybridApp.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.LightGray.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.LightGray.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.MetropolisLight.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.MetropolisLight.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2007Black.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2007Black.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2007Blue.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2007Blue.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2007Silver.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2007Silver.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2010Black.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2010Black.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2010Blue.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2010Blue.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2010Silver.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2010Silver.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2013.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2013.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2013DarkGray.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2013DarkGray.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2013LightGray.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2013LightGray.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016Black.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2016Black.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016Colorful.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2016Colorful.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016ColorfulSE.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Themes.Office2016DarkGraySE.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Themes.Office2016White.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2016ColorfulSE.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.Office2016DarkGraySE.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.Office2016White.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.Office2016WhiteSE.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Themes.Seven.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.Office2016WhiteSE.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Themes.Seven.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.TouchlineDark.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.TouchlineDark.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpf.Themes.VS2010.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.Xpf.Themes.VS2010.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.Xpo.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.Xpo.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraBars.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraBars.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraCharts.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraCharts.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraCharts.v18.1.Extensions, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraCharts.v18.1.Extensions, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraCharts.v18.1.Wizard, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraCharts.v18.1.Wizard, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraEditors.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraEditors.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraGauges.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraGauges.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraGrid.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraGrid.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraLayout.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraLayout.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraNavBar.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraNavBar.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraPivotGrid.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraPivotGrid.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraPrinting.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraPrinting.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraReports.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraReports.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraReports.v18.1.Extensions, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraReports.v18.1.Extensions, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraRichEdit.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraScheduler.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraRichEdit.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraScheduler.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraScheduler.v18.1.Core, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraScheduler.v18.1.Core, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraScheduler.v18.1.Extensions, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraScheduler.v18.1.Extensions, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraScheduler.v18.1.Reporting, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraScheduler.v18.1.Reporting, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraScheduler.v18.1.Reporting.Extensions, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraScheduler.v18.1.Reporting.Extensions, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraTreeList.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+    <Reference Include="DevExpress.XtraTreeList.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
-    <Reference Include="DevExpress.XtraVerticalGrid.v18.1, Version=18.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
+    <Reference Include="DevExpress.XtraVerticalGrid.v18.1, Version=18.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -355,6 +356,12 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -407,7 +414,6 @@
     <Compile Include="Common\Base\BluePrintsEntitiesAutoNumberCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesMasterDetailCollectionsWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesTreeCollectionWrapper.cs" />
-    <Compile Include="Common\Base\BluePrintsEntityBase.cs" />
     <Compile Include="Common\Base\DashboardCollectionViewModelWrapper.cs" />
     <Compile Include="Common\DragDrop\CustomChildSelector.cs" />
     <Compile Include="Common\DragDrop\CustomDragDropManagers.cs" />
@@ -437,6 +443,7 @@
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
     <Compile Include="Common\Helpers\XMLHelpers.cs" />
+    <Compile Include="Common\Misc\BellProRata.cs" />
     <Compile Include="Common\Misc\CombinedCommodityCode.cs" />
     <Compile Include="Common\Misc\Dashboard.cs" />
     <Compile Include="Common\Misc\Deliverable_Milestone.cs" />
@@ -448,6 +455,8 @@
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
+    <Compile Include="Common\Projections\HSEReportProjection.cs" />
+    <Compile Include="Common\Projections\HSEProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
@@ -455,7 +464,6 @@
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
-    <Compile Include="Common\Projections\TimesheetProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />
     <Compile Include="Common\Projections\MEETING_MINUTEProjection.cs" />
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
@@ -487,6 +495,12 @@
     </Compile>
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.Designer.cs">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportDashboardLookahead.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportDashboardLookahead.Designer.cs">
+      <DependentUpon>XtraReportDashboardLookahead.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Reports\XtraReportDashboard_NoBurn.cs">
       <SubType>Component</SubType>
@@ -532,6 +546,11 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\StringToImageConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
@@ -546,6 +565,8 @@
     <Compile Include="Common\ViewModel\Converters\HoursToTextConverter.cs" />
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
+    <Compile Include="Common\ViewModel\Misc\DistributionSelectViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DateFromToDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\MapDeliverablesClientNumberDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\P6ActivityAssignmentDialogViewModel.cs" />
@@ -556,6 +577,12 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\DistributionSelect.xaml.cs">
+      <DependentUpon>DistributionSelect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\YearSelect.xaml.cs">
+      <DependentUpon>YearSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\DateFromTo.xaml.cs">
       <DependentUpon>DateFromTo.xaml</DependentUpon>
@@ -583,6 +610,21 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_REGISTER.cs" />
+    <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
+    <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
+    <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK_MATERIAL.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK_STAFF_ROLE.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK_LABOUR.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK_EQUIPMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\DAYWORK.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE_INCIDENT.cs" />
+    <Compile Include="EntityFramework\Annotations\HSE_INJURY.cs" />
+    <Compile Include="EntityFramework\Annotations\OFFICE.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_HOLD_REF.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_NODE.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_DRAWING.cs" />
     <Compile Include="EntityFramework\Annotations\RA_STUDY_DATA.cs" />
@@ -603,6 +645,8 @@
     <Compile Include="EntityFramework\Annotations\CLIENT.cs" />
     <Compile Include="EntityFramework\Annotations\COMMODITY_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\HOLIDAY.cs" />
+    <Compile Include="EntityFramework\Annotations\ROSTER_STAFF.cs" />
+    <Compile Include="EntityFramework\Annotations\ROSTER_STAFF_STATUS.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_CODE.cs" />
     <Compile Include="EntityFramework\Annotations\ESTIMATE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_ISSUE.cs" />
@@ -617,6 +661,18 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE_INCIDENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\HSE_INJURY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\OFFICE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_HOLD_REF.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK_MATERIAL.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK_EQUIPMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK_LABOUR.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DAYWORK_STAFF_ROLE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_SUBPROMPT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_GUIDE_PROMPT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_DATA.cs" />
@@ -642,6 +698,8 @@
     <Compile Include="EntityFramework\BluePrintsData\HOLIDAY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\RA_STUDY_TEAM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\ROLE_COMMODITY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ROSTER_STAFF.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\ROSTER_STAFF_STATUS.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DataPoint.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DELIVERABLES_STATUS.cs" />
@@ -667,6 +725,8 @@
     <Compile Include="EntityFramework\BluePrintsData\ROLE_PERMISSION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SETTINGS_GLOBAL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\STOCK_CODE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TENDER_PROFILE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\UOM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
@@ -696,30 +756,42 @@
     <Compile Include="EntityFramework\Annotations\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB_ASSIGNMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_REGISTER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\DesignTimeBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
+    <Compile Include="ViewModels\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DAYWORK\DAYWORKCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DAYWORK\DAYWORK_STAFF_ROLECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXOAllSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_ACTION\MEETING_ACTIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_TYPE\MEETING_TYPECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_AGENDA\MINUTE_AGENDACollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MINUTE_TITLE\MINUTE_TITLECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ROSTER\RosterCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -733,12 +805,20 @@
     <Compile Include="ViewModels\COMMODITY_CODE\COMMODITY_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_GROUP\STOCK_GROUPCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMSelectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
+    <Compile Include="Views\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionView.xaml.cs">
+      <DependentUpon>DOCCONTROL_BASELINE_ITEMCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingView.xaml.cs">
       <DependentUpon>BASELINE_ITEMWorkpackSchedulingView.xaml</DependentUpon>
     </Compile>
@@ -754,6 +834,15 @@
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DAYWORK\DAYWORKCollectionView.xaml.cs">
+      <DependentUpon>DAYWORKCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml.cs">
+      <DependentUpon>DAYWORK_STAFF_ROLECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml.cs">
+      <DependentUpon>EXOALLSUBJOBCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml.cs">
       <DependentUpon>EXONATIVESUBJOBCollectionView.xaml</DependentUpon>
     </Compile>
@@ -762,6 +851,12 @@
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HSE\HSECollectionView.xaml.cs">
+      <DependentUpon>HSECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HSE\HSESingleObjectView.xaml.cs">
+      <DependentUpon>HSESingleObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MEETING\MEETINGCollectionView.xaml.cs">
       <DependentUpon>MEETINGCollectionView.xaml</DependentUpon>
@@ -778,8 +873,20 @@
     <Compile Include="Views\MINUTE_TITLE\MINUTE_TITLECollectionView.xaml.cs">
       <DependentUpon>MINUTE_TITLECollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OFFICE\OFFICECollectionView.xaml.cs">
+      <DependentUpon>OFFICECollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTForecastView.xaml.cs">
+      <DependentUpon>PROJECTForecastView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTIssueView.xaml.cs">
+      <DependentUpon>PROJECTIssueView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTQMRView.xaml.cs">
+      <DependentUpon>PROJECTQMRView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
@@ -795,6 +902,9 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ROSTER\RosterCollectionView.xaml.cs">
+      <DependentUpon>RosterCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -1424,6 +1534,18 @@
     <Compile Include="Views\STOCK_GROUP\STOCK_GROUPCollectionView.xaml.cs">
       <DependentUpon>STOCK_GROUPCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILESelectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILESelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILE_ITEMCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml.cs">
+      <DependentUpon>TENDER_PROFILECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
+      <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TimesheetEntryCollectionView.xaml.cs">
       <DependentUpon>TimesheetEntryCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1481,6 +1603,9 @@
     <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
       <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml.cs">
+      <DependentUpon>VARIATION_REGISTERCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1525,6 +1650,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\DistributionSelect.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\YearSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1576,6 +1709,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1596,6 +1733,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\DAYWORK\DAYWORKCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1605,6 +1754,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HSE\HSECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HSE\HSESingleObjectView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1628,7 +1785,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\OFFICE\OFFICECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTForecastView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTIssueView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTQMRView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1649,6 +1822,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ROSTER\RosterCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1744,6 +1921,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILESelectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TIMESHEET\TransactionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\TIMESHEET\TimesheetEntryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1824,6 +2017,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\VARIATION\VARIATIONCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1883,6 +2080,10 @@
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportDashboardLookahead.resx">
+      <DependentUpon>XtraReportDashboardLookahead.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportDashboard_NoBurn.resx">
       <DependentUpon>XtraReportDashboard_NoBurn.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -1922,6 +2123,7 @@
     <None Include="App.Beta.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <SubType>Designer</SubType>
     </None>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
