@@ -1611,7 +1611,10 @@ namespace BluePrints.ViewModels
         public decimal Outstanding { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
+        public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => Actuals + Outstanding + Uncommitted;
+        public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+        public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal Variance => Budget - EstimateAtCompletion;
         public bool IsBudgetReadOnly { get; set; }
     }
