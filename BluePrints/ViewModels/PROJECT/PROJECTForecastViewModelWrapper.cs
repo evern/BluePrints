@@ -145,7 +145,6 @@ namespace BluePrints.ViewModels
                     loadPROJECT.FORECAST_START_DATE = value;
                     PROJECTCollectionViewModel.Save(loadPROJECT);
                     this.RaisePropertyChanged(x => x.FixedStartDate);
-                    FullRefresh();
                 }
             }
         }
@@ -167,7 +166,6 @@ namespace BluePrints.ViewModels
                     loadPROJECT.FORECAST_DATA_DATE = value;
                     PROJECTCollectionViewModel.Save(loadPROJECT);
                     this.RaisePropertyChanged(x => x.FixedDataDate);
-                    FullRefresh();
                 }
             }
         }
@@ -189,7 +187,6 @@ namespace BluePrints.ViewModels
                     loadPROJECT.FORECAST_END_DATE = value;
                     PROJECTCollectionViewModel.Save(loadPROJECT);
                     this.RaisePropertyChanged(x => x.FixedDataDate);
-                    FullRefresh();
                 }
             }
         }
@@ -560,7 +557,13 @@ namespace BluePrints.ViewModels
                 IEnumerable<Common.ViewModel.Reporting.DataPoint> dateSpecificDataPoints = dataPoints.Where(x => x.ProgressDate.Date == dateTime);
 
                 if(DataPointsTable.Columns.Contains(fieldName))
-                    updateRow[fieldName] = dateSpecificDataPoints.Sum(x => x.Costs);
+                {
+                    decimal sumCost = dateSpecificDataPoints.Sum(x => x.Costs);
+                    if (sumCost == 0)
+                        updateRow[fieldName] = 0.0m;
+                    else
+                        updateRow[fieldName] = sumCost;
+                }
 
                 calculateUncommitted(updateRow);
             }
@@ -1145,7 +1148,7 @@ namespace BluePrints.ViewModels
 
             //used to ensure child row is set
             if(forecastUnits == null)
-                dataRow[forecastDate.ToShortDateString()] = DBNull.Value;
+                dataRow[forecastDate.ToShortDateString()] = 0.00m;
             else
                 dataRow[forecastDate.ToShortDateString()] = forecastUnits;
 
@@ -1187,7 +1190,9 @@ namespace BluePrints.ViewModels
                             foreach (DataRow childRow in childTable.Rows)
                             {
                                 ExoSubJobProjection childEntity = (ExoSubJobProjection)childRow[columnEntity];
-                                decimal childCostOnDate = (decimal)childRow[dateFieldName];
+                                decimal childCostOnDate = 0;
+                                if(childRow[dateFieldName] != DBNull.Value)
+                                    childCostOnDate = (decimal)childRow[dateFieldName];
                                 cumulativeCosts += childCostOnDate;
                             }
 
@@ -1208,7 +1213,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewEAC(ExoSubJobProjection entity, DateTime forecastDate, decimal eacAmount)
         {
-            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code);
+            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && x.IS_EAC);
             if (findFORECAST == null)
             {
                 FORECAST newFORECAST = new FORECAST();
@@ -1466,9 +1471,21 @@ namespace BluePrints.ViewModels
             GridControl gridControl = (GridControl)parameter;
             TableView tableView = gridControl.View as TableView;
             var selected_cells = tableView.GetSelectedCells();
-
             if (selected_cells.Count == 0)
-                return false;
+            {
+                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                .Select(x => (GridControl)gridControl.GetDetail(x))
+                .Where(x => x != null).
+                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+
+                if (selected_cells.Count == 0)
+                    return false;
+                else
+                {
+                    tableView = (TableView)selected_cells.First().Column.View;
+                    gridControl = tableView.Grid;
+                }
+            }
 
             return true;
         }
@@ -1478,8 +1495,23 @@ namespace BluePrints.ViewModels
             GridControl gridControl = (GridControl)parameter;
             TableView tableView = gridControl.View as TableView;
             var selected_cells = tableView.GetSelectedCells();
+            if (selected_cells.Count == 0)
+            {
+                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                .Select(x => (GridControl)gridControl.GetDetail(x))
+                .Where(x => x != null).
+                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
 
-            foreach(var selectedCell in selected_cells)
+                if (selected_cells.Count == 0)
+                    return;
+                else
+                {
+                    tableView = (TableView)selected_cells.First().Column.View;
+                    gridControl = tableView.Grid;
+                }
+            }
+
+            foreach (var selectedCell in selected_cells)
             {
                 var gridColumn = gridControl.Columns[selectedCell.Column.FieldName];
                 if (gridColumn == null || gridColumn.ReadOnly)

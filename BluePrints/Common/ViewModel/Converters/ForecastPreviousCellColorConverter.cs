@@ -21,6 +21,9 @@ namespace BluePrints.Common.ViewModel.Converters
                     return paleGreenColor;
 
                 DataRow dataRow = (DataRow)values[0];
+                if (!dataRow.Table.Columns.Contains("CompareEntities"))
+                    return paleGreenColor;
+
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable childEntity = (DataTable)dataRow["CompareEntities"];
