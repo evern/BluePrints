@@ -96,17 +96,17 @@
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="ITD" HeaderToolTip="Inception to date" ReadOnly="True" VisibleIndex="80">
+                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Actual time and material cost to date" ReadOnly="True" VisibleIndex="80">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Invoiced to date" ReadOnly="True" VisibleIndex="85">
+                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Claims" HeaderToolTip="Claims to date" ReadOnly="True" VisibleIndex="85">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Uncommitted" HeaderToolTip="Uncommitted" ReadOnly="True" VisibleIndex="90">
+                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to complete" ReadOnly="True" VisibleIndex="90">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -154,17 +154,17 @@
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="ITD" HeaderToolTip="Inception to date" ReadOnly="True" VisibleIndex="80">
+                                                <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Actual time and material cost to date" ReadOnly="True" VisibleIndex="80">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Invoiced to date" ReadOnly="True" VisibleIndex="85">
+                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Claims" HeaderToolTip="Claims to date" ReadOnly="True" VisibleIndex="85">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Uncommitted" HeaderToolTip="Uncommitted" ReadOnly="True" VisibleIndex="90">
+                                                <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to completion" ReadOnly="True" VisibleIndex="90">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
