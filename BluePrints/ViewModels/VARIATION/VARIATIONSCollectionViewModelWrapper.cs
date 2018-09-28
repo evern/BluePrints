@@ -772,20 +772,20 @@ namespace BluePrints.ViewModels
 
             unitOfWork.SaveChanges();
 
-            isApproving = false;
-            if (addedDeliverables.Count > 0)
-            {
-                string emailMessage = @"<html> 
-                      <body> 
-                      <p>Variation has been approved for project " + loadPROJECT.NUMBER + " and the following deliverable(s) has been added</p>";
+            //isApproving = false;
+            //if (addedDeliverables.Count > 0)
+            //{
+            //    string emailMessage = @"<html> 
+            //          <body> 
+            //          <p>Variation has been approved for project " + loadPROJECT.NUMBER + " and the following deliverable(s) has been added</p>";
 
-                foreach (string addedDeliverable in addedDeliverables)
-                {
-                    emailMessage += "<p>" + addedDeliverable + "</p>";
-                }
-                emailMessage += "</body></html>";
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, loadPROJECT.NUMBER + " variation approved");
-            }
+            //    foreach (string addedDeliverable in addedDeliverables)
+            //    {
+            //        emailMessage += "<p>" + addedDeliverable + "</p>";
+            //    }
+            //    emailMessage += "</body></html>";
+            //    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, loadPROJECT.NUMBER + " variation approved");
+            //}
 
             //Full refresh is required to pick up summary
             FullRefresh();

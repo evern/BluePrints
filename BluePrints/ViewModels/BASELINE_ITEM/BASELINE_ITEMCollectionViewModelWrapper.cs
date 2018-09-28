@@ -220,16 +220,16 @@ namespace BluePrints.ViewModels
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
-                string emailMessage = @"<html> 
-                      <body> 
-                      <p>The following internal number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
+                //string emailMessage = @"<html> 
+                //      <body> 
+                //      <p>The following internal number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
 
-                foreach (string internalNumber in internalNumbers)
-                {
-                    emailMessage += "<p>" + internalNumber + "</p>";
-                }
-                emailMessage += "</body></html>";
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Internal Numbers Unapproved in " + loadPROJECT.NUMBER, true);
+                //foreach (string internalNumber in internalNumbers)
+                //{
+                //    emailMessage += "<p>" + internalNumber + "</p>";
+                //}
+                //emailMessage += "</body></html>";
+                //ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Internal Numbers Unapproved in " + loadPROJECT.NUMBER, true);
             };
         }
 
@@ -253,16 +253,16 @@ namespace BluePrints.ViewModels
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
-                string emailMessage = @"<html> 
-                      <body> 
-                      <p>The following client number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
+                //string emailMessage = @"<html> 
+                //      <body> 
+                //      <p>The following client number for deliverable(s) in project " + loadPROJECT.NUMBER + " has been unapproved</p>";
 
-                foreach (string clientNumber in clientNumbers)
-                {
-                    emailMessage += "<p>" + clientNumber + "</p>";
-                }
-                emailMessage += "</body></html>";
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Client Numbers Unapproved in " + loadPROJECT.NUMBER, true);
+                //foreach (string clientNumber in clientNumbers)
+                //{
+                //    emailMessage += "<p>" + clientNumber + "</p>";
+                //}
+                //emailMessage += "</body></html>";
+                //ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, "Deliverable's Client Numbers Unapproved in " + loadPROJECT.NUMBER, true);
             };
         }
 
@@ -755,10 +755,10 @@ namespace BluePrints.ViewModels
         {
             if(!InVariationMode)
             {
-                if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
-                {
-                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable with internal number " + entity.INTERNAL_NUM + " has been added to project " + loadPROJECT.NUMBER + ", please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
-                }
+                //if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
+                //{
+                //    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable with internal number " + entity.INTERNAL_NUM + " has been added to project " + loadPROJECT.NUMBER + ", please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
+                //}
             }
 
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;

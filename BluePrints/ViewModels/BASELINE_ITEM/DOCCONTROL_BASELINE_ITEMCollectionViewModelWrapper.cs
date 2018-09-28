@@ -214,6 +214,7 @@ namespace BluePrints.ViewModels
 
             DialogCollectionViewModel<EmailReport> viewModel = DialogCollectionViewModel<EmailReport>.Create(emailReportList);
             ReportDialogService.ShowDialog(MessageButton.OK, "Email Report", "EmailSentReport", viewModel);
+            emailReportList.Clear();
         }
 
         private DevExpress.Mvvm.IDialogService ReportDialogService
