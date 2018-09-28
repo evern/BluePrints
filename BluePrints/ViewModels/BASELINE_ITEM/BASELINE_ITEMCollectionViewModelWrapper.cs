@@ -147,9 +147,15 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool CanFinalizeClientNumbers => BASELINEViewModel != null;
-        public void FinalizeClientNumbers()
+        public bool CanFinaliseClientNumbers => BASELINEViewModel != null;
+        public void FinaliseClientNumbers()
         {
+            if (!LoginCredentials.hasPermission(PermissionResources.FinaliseNumbers))
+            {
+                MessageBoxService.ShowMessage("You do not have the authority to finalise client numbers", "Unauthorised");
+                return;
+            }
+
             if (MessageBoxService.ShowMessage("This will finalize all current client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach(BASELINE_ITEMProgress entity in MainViewModel.Entities)
@@ -159,13 +165,23 @@ namespace BluePrints.ViewModels
 
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Client Numbers Locked in " + loadPROJECT.NUMBER, true);
+                if(loadBASELINE.FIN_CLIENTNUM_BY == null)
+                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Client Numbers Locked in " + loadPROJECT.NUMBER, true);
+
+                loadBASELINE.FIN_CLIENTNUM_BY = LoginCredentials.CurrentUserGuid;
+                BASELINECollectionViewModel.Save(loadBASELINE);
             };
         }
 
-        public bool CanFinalizeInternalNumbers => BASELINEViewModel != null;
-        public void FinalizeInternalNumbers()
+        public bool CanFinaliseInternalNumbers => BASELINEViewModel != null;
+        public void FinaliseInternalNumbers()
         {
+            if (!LoginCredentials.hasPermission(PermissionResources.FinaliseNumbers))
+            {
+                MessageBoxService.ShowMessage("You do not have the authority to finalise internal numbers", "Unauthorised");
+                return;
+            }
+
             if (MessageBoxService.ShowMessage("This will finalize all current internal numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
                 foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
@@ -175,7 +191,12 @@ namespace BluePrints.ViewModels
 
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Internal Numbers Locked In " + loadPROJECT.NUMBER, true);
+
+                if (loadBASELINE.FIN_CLIENTNUM_BY == null)
+                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Internal Numbers Locked In " + loadPROJECT.NUMBER, true);
+
+                loadBASELINE.FIN_INTERNALNUM_BY = LoginCredentials.CurrentUserGuid;
+                BASELINECollectionViewModel.Save(loadBASELINE);
             };
         }
 
@@ -1932,6 +1953,18 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
+            }
+        }
+
 
         public CollectionViewModel<BASELINE_ITEM_WORK, BASELINE_ITEM_WORK, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_WORKCollectionViewModel
         {

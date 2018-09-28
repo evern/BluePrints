@@ -128,5 +128,27 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return alignedDataDatesCollection;
         }
+
+        /// <summary>
+        /// Calculates the data date forward to get the last aligned data date as per the first aligned data date
+        /// </summary>
+        public static List<DateTime> GenerateMonthEndDatesCollection(DateTime firstAlignedDataDate,
+            DateTime lastDataPointDate)
+        {
+            var lastProgressDate = firstAlignedDataDate;
+            //lastDataPointDate = lastDataPointDate.AddDays(intervalPeriod.Days);
+            var alignedDataDatesCollection = new List<DateTime>();
+            //alignedDataDatesCollection.Add(firstAlignedDataDate);
+            //forward the first progress date to scan to after the datadate aligned to end day of week
+            do
+            {
+                DateTime firstOfNextMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1);
+                DateTime lastOfThisMonth = firstOfNextMonth.AddDays(-1);
+                lastProgressDate = lastProgressDate.AddMonths(1);
+                alignedDataDatesCollection.Add(lastOfThisMonth);
+            } while (lastProgressDate < lastDataPointDate);
+
+            return alignedDataDatesCollection;
+        }
     }
 }

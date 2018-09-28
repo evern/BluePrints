@@ -32,7 +32,6 @@
                         <custom:GridControlEx.Columns>
                             <dxg:GridColumn FieldName="SUBJOB_CODE" Header="Subjob Code" />
                             <dxg:GridColumn FieldName="DISCIPLINE_CODE" Header="Discipline Code" />
-                            <dxg:GridColumn FieldName="COMMODITY_CODE" Header="Commodity Code" />
                             <dxg:GridColumn FieldName="VARIATION_CODE" Header="Variation Code" />
                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
                             <dxg:GridColumn FieldName="STATUS" Header="Status">

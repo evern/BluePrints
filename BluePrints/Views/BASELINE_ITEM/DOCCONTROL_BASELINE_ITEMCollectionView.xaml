@@ -30,24 +30,13 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
-            <dxc:DialogService x:Name="MapDeliverableDialog">
-                <dxc:DialogService.DialogStyle>
+            <dx:DialogService x:Name="ReportDialogService">
+                <dx:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                        <Setter Property="MinWidth" Value="600" />
-                        <Setter Property="MinHeight" Value="600" />
                     </Style>
-                </dxc:DialogService.DialogStyle>
-            </dxc:DialogService>
-            <dxc:DialogService x:Name="BookTimeDialog">
-                <dxc:DialogService.DialogStyle>
-                    <Style TargetType="dx:DXDialogWindow">
-                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                        <Setter Property="MinWidth" Value="300" />
-                        <Setter Property="MinHeight" Value="300" />
-                    </Style>
-                </dxc:DialogService.DialogStyle>
-            </dxc:DialogService>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
@@ -61,6 +50,7 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.SendEmailCommand, ElementName=userControl}" Content="Send Approved Notification" Glyph="{dxc:DXImage Image=EmailTemplate_16x16.png}" LargeGlyph="{dx:DXImage Image=EmailTemplate_32x32.png}" ToolTip="Send approved client/internal number email notification" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

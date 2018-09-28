@@ -70,6 +70,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to finalise internal and client numbers.
+        /// </summary>
+        internal static string FinaliseNumbers {
+            get {
+                return ResourceManager.GetString("FinaliseNumbers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage areas.
         /// </summary>
         internal static string ManageArea {

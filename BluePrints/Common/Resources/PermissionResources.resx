@@ -213,4 +213,7 @@
   <data name="UnapproveInternalNumbers" xml:space="preserve">
     <value>Allow user to unapprove internal and client numbers</value>
   </data>
+  <data name="FinaliseNumbers" xml:space="preserve">
+    <value>Allow user to finalise internal and client numbers</value>
+  </data>
 </root>

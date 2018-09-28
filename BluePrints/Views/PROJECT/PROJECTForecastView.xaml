@@ -79,29 +79,35 @@
                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
-                                    <dxg:GridColumn FieldName="Entity.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
-                                    <dxg:GridColumn FieldName="Entity.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
-                                    <dxg:GridColumn FieldName="Entity.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="13" />
                                     <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
-                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="21" />
-                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" VisibleIndex="60">
+                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="Outstanding PO" HeaderToolTip="Outstanding PO" ReadOnly="True" VisibleIndex="70">
+                                    <dxg:GridColumn FieldName="Calculation.Variation" Fixed="Left" Header="Approved Var" HeaderToolTip="Approved variations" VisibleIndex="61" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Actual time and material cost to date" ReadOnly="True" VisibleIndex="80">
+                                    <dxg:GridColumn FieldName="Calculation.CurrentBudget" Fixed="Left" Header="Current Budget" HeaderToolTip="Sum of baseline budget plus approved variations" VisibleIndex="62" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Claims" HeaderToolTip="Claims to date" ReadOnly="True" VisibleIndex="85">
+                                    <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -111,22 +117,22 @@
                                             <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Uncommitted" HeaderToolTip="Uncommitted forecast" ReadOnly="True" VisibleIndex="90">
+                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to complete" ReadOnly="True" VisibleIndex="95">
+                                    <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior perioud EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="95">
+                                    <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at completion" ReadOnly="True" VisibleIndex="100">
+                                    <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -151,30 +157,36 @@
                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                     <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=gridControlChild}" KeyGesture="Delete" />
                                                 </dxmvvm:Interaction.Behaviors>
-                                                <dxg:GridColumn Fixed="Left" ReadOnly="True" VisibleIndex="10" />
-                                                <dxg:GridColumn Fixed="Left" ReadOnly="True" VisibleIndex="11" />
-                                                <dxg:GridColumn Fixed="Left" ReadOnly="True" VisibleIndex="12" />
-                                                <dxg:GridColumn Fixed="Left" ReadOnly="True" VisibleIndex="13" />
+                                                <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
                                                 <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
-                                                <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="21" />
-                                                <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Budget Costs" VisibleIndex="60">
+                                                <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="Outstanding PO" HeaderToolTip="Outstanding PO" ReadOnly="True" VisibleIndex="70">
+                                                <dxg:GridColumn Fixed="Left" Header="Approved Var" HeaderToolTip="Approved variations" VisibleIndex="61" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Actual time and material cost to date" ReadOnly="True" VisibleIndex="80">
+                                                <dxg:GridColumn FieldName="Calculation.CurrentBudget" Fixed="Left" Header="Current Budget" HeaderToolTip="Sum of baseline budget plus approved variations" VisibleIndex="62" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Claims" HeaderToolTip="Claims to date" ReadOnly="True" VisibleIndex="85">
+                                                <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
@@ -184,22 +196,22 @@
                                                         <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Uncommitted" HeaderToolTip="Uncommitted forecast" ReadOnly="True" VisibleIndex="90">
+                                                <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to complete" ReadOnly="True" VisibleIndex="95">
+                                                <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior perioud EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="95">
+                                                <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at completion" ReadOnly="True" VisibleIndex="100">
+                                                <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
@@ -213,7 +225,7 @@
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>   
+                                                </dxg:GridColumn>
                                                 <dxg:GridControl.View>
                                                     <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True">
                                                         <dxmvvm:Interaction.Behaviors>
@@ -245,7 +257,7 @@
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
+                                                    <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
                                                 </dxg:GridControl.GroupSummary>
                                                 <dxg:GridControl.TotalSummary>
                                                     <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
@@ -257,7 +269,7 @@
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
                                                     <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
+                                                    <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
                                                 </dxg:GridControl.TotalSummary>
                                             </dxg:GridControl>
                                         </dxg:DataControlDetailDescriptor>

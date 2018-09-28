@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
-
+            P6_ASSIGNMENTSCollectionViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
             //mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
         }

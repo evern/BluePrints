@@ -38,6 +38,7 @@ using BluePrints.Common.Misc;
 using System.Net.Mail;
 using Microsoft.Exchange.WebServices.Data;
 using BluePrints.P6EntitiesDataModel;
+using System.ComponentModel;
 
 namespace BluePrints.ViewModels
 {
@@ -133,7 +134,8 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-
+        List<BASELINE> internalNumberBaselines = new List<BASELINE>();
+        List<BASELINE> clientNumberBaselines = new List<BASELINE>();
         public bool CanApproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
         public void ApproveSelectedInternalNumbers()
         {
@@ -145,10 +147,15 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will lock selected internal numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
+                BASELINE loadBASELINE = null;
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     if(entity.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Awaiting)
                         entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
+
+                    BASELINE entityBASELINE = entity.Entity.Entity.BASELINE;
+                    if (!internalNumberBaselines.Any(x => x.GUID_PROJECT == entityBASELINE.GUID_PROJECT))
+                        internalNumberBaselines.Add(entityBASELINE);
                 }
 
                 MainViewModel.SimpleSaveAll();
@@ -171,11 +178,54 @@ namespace BluePrints.ViewModels
                 {
                     if (entity.Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Awaiting)
                         entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;
+                    
+                    BASELINE entityBASELINE = entity.Entity.Entity.BASELINE;
+                    if (!clientNumberBaselines.Any(x => x.GUID_PROJECT == entityBASELINE.GUID_PROJECT))
+                        clientNumberBaselines.Add(entityBASELINE);
                 }
 
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
             };
         }
+
+        public void SendEmail()
+        {
+            List<EmailReport> emailReportList = new List<EmailReport>();
+            foreach (BASELINE internalNumberBaseline in internalNumberBaselines)
+            {
+                USER user = USERCollection.FirstOrDefault(x => x.GUID == internalNumberBaseline.FIN_INTERNALNUM_BY);
+                if (user != null)
+                {
+                    emailReportList.Add(new EmailReport() { Number = internalNumberBaseline.PROJECT.NUMBER, Sent = user.NAME, Type = "Internal Number" });
+                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + internalNumberBaseline.PROJECT.NUMBER + " has been approved!", "Deliverable Internal Numbers Approved for " + internalNumberBaseline.PROJECT.NUMBER, true, user.NAME + "@primero.com.au");
+                }
+            }
+
+            foreach (BASELINE clientNumberBaselines in clientNumberBaselines)
+            {
+                USER user = USERCollection.FirstOrDefault(x => x.GUID == clientNumberBaselines.FIN_INTERNALNUM_BY);
+                if (user != null)
+                {
+                    emailReportList.Add(new EmailReport() { Number = clientNumberBaselines.PROJECT.NUMBER, Sent = user.NAME, Type = "Client Number" });
+                    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + clientNumberBaselines.PROJECT.NUMBER + " has been approved!", "Deliverable Client Numbers Approved for " + clientNumberBaselines.PROJECT.NUMBER, true, user.NAME + "@primero.com.au");
+                }
+            }
+
+            DialogCollectionViewModel<EmailReport> viewModel = DialogCollectionViewModel<EmailReport>.Create(emailReportList);
+            ReportDialogService.ShowDialog(MessageButton.OK, "Email Report", "EmailSentReport", viewModel);
+        }
+
+        private DevExpress.Mvvm.IDialogService ReportDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ReportDialogService"); }
+        }
+    }
+
+    public class EmailReport
+    {
+        public string Number { get; set; }
+        public string Sent { get; set; }
+        public string Type { get; set; }
     }
 }

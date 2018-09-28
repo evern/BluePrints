@@ -46,6 +46,10 @@ namespace BluePrints.Data
         [StringLength(20)]
         public string P6MODBASELINE_NAME { get; set; }
 
+        public Guid? FIN_INTERNALNUM_BY { get; set; }
+
+        public Guid? FIN_CLIENTNUM_BY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

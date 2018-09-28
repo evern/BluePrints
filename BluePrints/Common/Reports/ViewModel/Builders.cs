@@ -151,7 +151,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.BudgetedCosts = 0;
                             burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
-                            burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            burnedDataPoint.ProgressDate = (DateTime)jobTransaction.TRANSDATE;
                             burnedDataPoint.ActualDate = jobTransaction.TRANSDATE;
                             burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                             burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
@@ -184,7 +184,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.BudgetedCosts = 0;
                         materialDataPoint.Units = (decimal)jobMaterial.quantity;
                         materialDataPoint.Costs = (decimal)jobMaterial.LINECOST * this.CurrencyConversion;
-                        materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
+                        materialDataPoint.ProgressDate = (DateTime)jobMaterial.transdate;
                         materialDataPoint.ActualDate = jobMaterial.transdate;
                         materialDataPoint.Subjob_Name = jobMaterial.jobcode;
                         materialDataPoint.ResourceName = string.Empty;
@@ -213,7 +213,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         poDataPoint.BudgetedCosts = 0;
                         poDataPoint.Units = ((decimal)po.ORD_QUANT) - ((decimal)po.SUP_QUANT);
                         poDataPoint.Costs = poDataPoint.Units * ((decimal)po.UNITPRICE);
-                        poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= po.ORDERDATE);
+                        poDataPoint.ProgressDate = (DateTime)po.ORDERDATE;
                         poDataPoint.ActualDate = po.ORDERDATE;
                         poDataPoint.Subjob_Name = po.JOBCODE;
                         poDataPoint.ResourceName = string.Empty;

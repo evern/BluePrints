@@ -24,10 +24,6 @@ namespace BluePrints.Data
         public string DISCIPLINE_CODE { get; set; }
 
         [StringLength(50)]
-        public string COMMODITY_CODE { get; set; }
-
-        [Required]
-        [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
         [StringLength(500)]

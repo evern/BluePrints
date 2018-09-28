@@ -57,7 +57,7 @@ namespace BluePrints.Common
 
         public static ExchangeService exService = new ExchangeService() { KeepAlive = true, PreAuthenticate = true };
         public static Timer EmailTimer = new Timer(60000) { AutoReset = true }; 
-        public static void SendEmail(string fromName, string body, string subject, bool lowPriority = false)
+        public static void SendEmail(string fromName, string body, string subject, bool lowPriority = false, string toRecipient = "doc.control@primero.com.au")
         {
             if (lowPriority && EmailTimer.Enabled)
                 return;
@@ -65,8 +65,7 @@ namespace BluePrints.Common
             EmailMessage msg = new EmailMessage(exService);
             msg.Subject = subject;
             msg.Body = body;
-            string recipientAddress = "doc.control@primero.com.au";
-            msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(recipientAddress, recipientAddress));
+            msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(toRecipient, toRecipient));
 
             if(!EmailTimer.Enabled)
             {

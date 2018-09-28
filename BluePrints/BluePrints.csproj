@@ -579,6 +579,9 @@
     <Compile Include="Common\View\DistributionSelect.xaml.cs">
       <DependentUpon>DistributionSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\View\EmailSentReport.xaml.cs">
+      <DependentUpon>EmailSentReport.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
     </Compile>
@@ -1652,6 +1655,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\DistributionSelect.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\EmailSentReport.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

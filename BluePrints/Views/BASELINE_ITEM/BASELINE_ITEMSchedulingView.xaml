@@ -116,7 +116,7 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
                             <!--  need to set tableView name here for export to work  -->
-                            <dxg:TableView Name="tableView" />
+                            <dxg:TableView Name="tableView" AllowEditing="False" />
                         </dxg:GridControl.View>
                     </custom:GridControlEx>
                 </Grid>

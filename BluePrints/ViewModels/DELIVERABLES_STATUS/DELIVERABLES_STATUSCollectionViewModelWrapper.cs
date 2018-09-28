@@ -80,7 +80,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
-            MainViewModel.IsContinueSaveCallBack = IsContinueSaveCallBack;
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = applyProjectionProperties;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -95,11 +95,11 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        private bool IsContinueSaveCallBack(DELIVERABLES_STATUS entity, bool isNewEntity)
+        private bool applyProjectionProperties(DELIVERABLES_STATUS projection)
         {
-            if (isNewEntity && isProjectSpecific)
+            if (isProjectSpecific)
             {
-                entity.GUID_PROJECT = loadPROJECT.GUID;
+                projection.GUID_PROJECT = loadPROJECT.GUID;
             }
 
             return true;
