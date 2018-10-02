@@ -518,7 +518,7 @@ namespace BluePrints.ViewModels
             }
 
             int updatedLineCount = 0;
-            List<string> addedLines = new List<string>();
+            Dictionary<int, string> addedLines = new Dictionary<int, string>();
             foreach (ExoSubJobProjection selectedLine in DisplaySelectedEntities)
             {
                 ChargeType? subjobPhaseType = selectedLine.SubJob == null ? null : selectedLine.SubJob.ChargeType;
@@ -530,9 +530,9 @@ namespace BluePrints.ViewModels
                     continue;
                 }
 
-                if(!selectedLine.IsLineExistsInExo && !addedLines.Any(x => x == selectedLine.SubJob.Code))
+                if(!selectedLine.IsLineExistsInExo)
                 {
-                    if (selectedLine.SubJob.Id == null)
+                    if (selectedLine.SubJob.Id == null && !addedLines.Any(x => x.Value == selectedLine.SubJob.Code))
                     {
                         string title = string.Empty;
                         var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, selectedLine.SubJob.Code + " Title:");
@@ -544,9 +544,13 @@ namespace BluePrints.ViewModels
                         int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJob.Code, masterJob, loadPROJECT.NUMBER, title);
                         if (subJobId != null)
                         {
-                            addedLines.Add(selectedLine.SubJob.Code);
+                            addedLines.Add((int)subJobId, selectedLine.SubJob.Code);
                             selectedLine.SubJob.Id = subJobId;
                         }
+                    }
+                    else if(addedLines.Any(x => x.Value == selectedLine.SubJob.Code))
+                    {
+                        selectedLine.SubJob.Id = addedLines.First(x => x.Value == selectedLine.SubJob.Code).Key;
                     }
 
                     if (selectedLine.Discipline.Id == null)

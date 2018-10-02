@@ -216,4 +216,7 @@
   <data name="FinaliseNumbers" xml:space="preserve">
     <value>Allow user to finalise internal and client numbers</value>
   </data>
+  <data name="ApproveInternalNumbers" xml:space="preserve">
+    <value>Allow user to approve internal and client numbers</value>
+  </data>
 </root>

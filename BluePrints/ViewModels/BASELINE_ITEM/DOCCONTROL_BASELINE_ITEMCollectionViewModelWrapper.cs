@@ -139,9 +139,9 @@ namespace BluePrints.ViewModels
         public bool CanApproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
         public void ApproveSelectedInternalNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            if (!LoginCredentials.hasPermission(PermissionResources.ApproveInternalNumbers))
             {
-                MessageBoxService.ShowMessage("You do not have the authority to unapprove internal numbers", "Unauthorised");
+                MessageBoxService.ShowMessage("You do not have the authority to approve internal numbers", "Unauthorised");
                 return;
             }
 
@@ -166,9 +166,9 @@ namespace BluePrints.ViewModels
         public bool CanApproveSelectedClientNumbers => SelectedEntities.Count() > 0;
         public void ApproveSelectedClientNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            if (!LoginCredentials.hasPermission(PermissionResources.ApproveInternalNumbers))
             {
-                MessageBoxService.ShowMessage("You do not have the authority to unapprove client numbers", "Unauthorised");
+                MessageBoxService.ShowMessage("You do not have the authority to approve client numbers", "Unauthorised");
                 return;
             }
 
@@ -210,6 +210,12 @@ namespace BluePrints.ViewModels
                     emailReportList.Add(new EmailReport() { Number = clientNumberBaselines.PROJECT.NUMBER, Sent = user.NAME, Type = "Client Number" });
                     ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + clientNumberBaselines.PROJECT.NUMBER + " has been approved!", "Deliverable Client Numbers Approved for " + clientNumberBaselines.PROJECT.NUMBER, true, user.NAME + "@primero.com.au");
                 }
+            }
+
+            if (emailReportList.Count == 0)
+            {
+                MessageBox.Show("Nothing to send because no approval has been made");
+                return;
             }
 
             DialogCollectionViewModel<EmailReport> viewModel = DialogCollectionViewModel<EmailReport>.Create(emailReportList);

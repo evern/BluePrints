@@ -61,6 +61,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to approve internal and client numbers.
+        /// </summary>
+        internal static string ApproveInternalNumbers {
+            get {
+                return ResourceManager.GetString("ApproveInternalNumbers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to book time for others.
         /// </summary>
         internal static string BookOtherTime {

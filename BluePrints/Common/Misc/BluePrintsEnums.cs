@@ -115,9 +115,10 @@ namespace BluePrints.Common
 
     public enum DeliverableType
     {
-        [Display(Name = "Deliverable")] Deliverable = 0,
-        [Display(Name = "Deliverable NCR")] DeliverableNCR = 1,
-        [Display(Name = "Task")] Task = 2
+        [Display(Name = "Deliverable ICR")] DeliverableICR = 0,
+        [Display(Name = "Deliverable AFC")] DeliverableAFC = 1,
+        [Display(Name = "Task")] Task = 2,
+        [Display(Name = "Non-Deliverable")] NonDeliverable = 3
     }
 
     public enum ProgressIntervalType

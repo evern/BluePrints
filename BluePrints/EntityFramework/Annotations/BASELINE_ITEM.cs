@@ -281,8 +281,8 @@ namespace BluePrints.Data
                 return DOCTYPE.DELIVERABLES_STATUS
                     .Where(x => x.GUID_PROJECT == PROJECT.GUID)
                     .Where(x => 
-                            (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.Deliverable) ||
-                            (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.DeliverableNCR) || 
+                            (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.DeliverableICR) ||
+                            (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.DeliverableAFC) || 
                             (x.FOR_TASK && DELIVERABLE_TYPE == DeliverableType.Task)).OrderBy(x => x.AUTO_PERCENTAGE);
             }
         }
