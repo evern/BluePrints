@@ -431,7 +431,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class DataPoint
     {
         public DateTime ProgressDate { get; set; }
-        public DateTime? ActualDate { get; set; }
+        public DateTime ActualDate { get; set; }
         public decimal Units { get; set; }
         public decimal Costs { get; set; }
         //Used to store actuals while storing burn

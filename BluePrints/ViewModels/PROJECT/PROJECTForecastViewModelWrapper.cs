@@ -452,7 +452,7 @@ namespace BluePrints.ViewModels
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            decimal currentValue = remainingDataPoints.Where(x => x.ProgressDate.Month == alignedDate.Month && x.ProgressDate.Year == alignedDate.Year).Sum(x => x.Costs);
+                            decimal currentValue = remainingDataPoints.Where(x => x.ActualDate.Month == alignedDate.Month && x.ActualDate.Year == alignedDate.Year).Sum(x => x.Costs);
                             if (currentValue != 0)
                             {
                                 //decimal currentRowValue = (decimal)dataRow[alignedDateField];
@@ -492,7 +492,7 @@ namespace BluePrints.ViewModels
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            decimal currentValue = actualDataPoints.Where(x => x.ProgressDate.Month == alignedDate.Month && x.ProgressDate.Year == alignedDate.Year).Sum(x => x.Costs);
+                            decimal currentValue = actualDataPoints.Where(x => x.ActualDate.Month == alignedDate.Month && x.ActualDate.Year == alignedDate.Year).Sum(x => x.Costs);
                             if (currentValue != 0)
                             {
                                 //decimal currentRowValue = (decimal)dataRow[alignedDateField];
@@ -533,7 +533,7 @@ namespace BluePrints.ViewModels
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            decimal currentValue = materialDataPoints.Where(x => x.ProgressDate.Month == alignedDate.Month && x.ProgressDate.Year == alignedDate.Year).Sum(x => x.Costs);
+                            decimal currentValue = materialDataPoints.Where(x => x.ActualDate.Month == alignedDate.Month && x.ActualDate.Year == alignedDate.Year).Sum(x => x.Costs);
                             if (currentValue != 0)
                             {
                                 decimal currentRowValue = (decimal)dataRow[alignedDateField];

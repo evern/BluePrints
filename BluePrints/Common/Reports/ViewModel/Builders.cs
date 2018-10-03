@@ -151,8 +151,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.BudgetedCosts = 0;
                             burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
-                            burnedDataPoint.ProgressDate = (DateTime)jobTransaction.TRANSDATE;
-                            burnedDataPoint.ActualDate = jobTransaction.TRANSDATE;
+                            burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
                             burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                             burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                             burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
@@ -184,8 +184,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.BudgetedCosts = 0;
                         materialDataPoint.Units = (decimal)jobMaterial.quantity;
                         materialDataPoint.Costs = (decimal)jobMaterial.LINECOST * this.CurrencyConversion;
-                        materialDataPoint.ProgressDate = (DateTime)jobMaterial.transdate;
-                        materialDataPoint.ActualDate = jobMaterial.transdate;
+                        materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
+                        materialDataPoint.ActualDate = jobMaterial.transdate == null ? DateTime.Now : (DateTime)jobMaterial.transdate;
                         materialDataPoint.Subjob_Name = jobMaterial.jobcode;
                         materialDataPoint.ResourceName = string.Empty;
                         materialDataPoint.Quantity = (decimal)jobMaterial.quantity;
@@ -213,8 +213,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         poDataPoint.BudgetedCosts = 0;
                         poDataPoint.Units = ((decimal)po.ORD_QUANT) - ((decimal)po.SUP_QUANT);
                         poDataPoint.Costs = poDataPoint.Units * ((decimal)po.UNITPRICE);
-                        poDataPoint.ProgressDate = (DateTime)po.ORDERDATE;
-                        poDataPoint.ActualDate = po.ORDERDATE;
+                        poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
+                        poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
                         poDataPoint.Subjob_Name = po.JOBCODE;
                         poDataPoint.ResourceName = string.Empty;
                         poDataPoint.Quantity = poDataPoint.Units;
