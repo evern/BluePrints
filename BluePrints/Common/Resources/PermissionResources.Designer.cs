@@ -349,7 +349,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to unapprove internal and client numbers.
+        ///   Looks up a localized string similar to Allow user to modify internal and client numbers.
         /// </summary>
         internal static string UnapproveInternalNumbers {
             get {

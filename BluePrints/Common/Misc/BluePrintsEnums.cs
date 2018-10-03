@@ -85,7 +85,8 @@ namespace BluePrints.Common
         [Display(Name = "Design")] Design = 0,
         [Display(Name = "Design & Construct")] DesignConstruct = 1,
         [Display(Name = "Study")] Study = 2,
-        [Display(Name = "Construct")] Construct = 3
+        [Display(Name = "Construct")] Construct = 3,
+        [Display(Name = "Operation")] Operation = 4
     }
 
     public enum ProjectStatus
