@@ -8,7 +8,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class HSE_INJURY : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class HSE_INJURY : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         public HSE_INJURY()
         {

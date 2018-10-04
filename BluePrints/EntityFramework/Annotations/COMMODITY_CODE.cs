@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class COMMODITY_CODE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class COMMODITY_CODE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

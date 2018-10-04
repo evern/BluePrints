@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("NAME")]
-    public partial class WORKPACK : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class WORKPACK : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WORKPACK()

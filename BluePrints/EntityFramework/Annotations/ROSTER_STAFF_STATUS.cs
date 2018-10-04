@@ -8,7 +8,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class ROSTER_STAFF_STATUS : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class ROSTER_STAFF_STATUS : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

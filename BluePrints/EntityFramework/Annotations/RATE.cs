@@ -13,7 +13,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY")]
-    public partial class RATE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

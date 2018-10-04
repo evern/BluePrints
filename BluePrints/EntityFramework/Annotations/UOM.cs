@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("UOM1")]
-    public partial class UOM : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class UOM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

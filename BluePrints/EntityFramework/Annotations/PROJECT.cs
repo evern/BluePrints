@@ -12,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class PROJECT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()

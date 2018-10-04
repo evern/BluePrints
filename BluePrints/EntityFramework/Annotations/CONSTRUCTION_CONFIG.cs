@@ -8,7 +8,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class CONSTRUCTION_CONFIG : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class CONSTRUCTION_CONFIG : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -12,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NAME")]
-    public partial class MEETING_TYPE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class MEETING_TYPE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

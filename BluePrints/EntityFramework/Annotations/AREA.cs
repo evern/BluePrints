@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("INTERNAL_NUM")]
-    public partial class AREA : EntityBase, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
+    public partial class AREA : EntityBase, IGuidEntityKey, ICanSync, IGuidParentEntityKey, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

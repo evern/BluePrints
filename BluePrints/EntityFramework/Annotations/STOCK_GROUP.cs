@@ -14,7 +14,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("CODE")]
-    public partial class STOCK_GROUP : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class STOCK_GROUP : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

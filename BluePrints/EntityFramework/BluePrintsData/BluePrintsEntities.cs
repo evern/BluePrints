@@ -4,11 +4,18 @@ namespace BluePrints.Data
     using System.Data.Entity;
     using System.Data.Entity.ModelConfiguration.Conventions;
 
-    public partial class BluePrintsEntities : DbContext
+    //dbcontext free of interceptors
+    public class BluePrintsNativeEntities : DbContext
     {
-        public BluePrintsEntities()
+        public BluePrintsNativeEntities()
             : base("name=BluePrintsEntities")
         {
+        }
+
+        public BluePrintsNativeEntities(string configString)
+            : base(configString)
+        {
+
         }
 
         public virtual DbSet<AREA> AREA { get; set; }
@@ -81,7 +88,7 @@ namespace BluePrints.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer<BluePrintsEntities>(null);
+            Database.SetInitializer<BluePrintsNativeEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
@@ -874,4 +881,13 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_WORKPACK);
         }
     }
+
+    public partial class BluePrintsEntities : BluePrintsNativeEntities
+    {
+        public BluePrintsEntities()
+            : base("name=BluePrintsEntities")
+        {
+        }
+    }
 }
+

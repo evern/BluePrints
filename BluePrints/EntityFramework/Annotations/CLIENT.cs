@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
 
-    public partial class CLIENT : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class CLIENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

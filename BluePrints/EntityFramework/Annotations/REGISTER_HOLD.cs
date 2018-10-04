@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_HOLD : EntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
+    public partial class REGISTER_HOLD : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

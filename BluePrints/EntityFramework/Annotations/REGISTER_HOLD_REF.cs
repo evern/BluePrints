@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class REGISTER_HOLD_REF : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class REGISTER_HOLD_REF : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

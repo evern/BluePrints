@@ -38,7 +38,7 @@ namespace BluePrints.Common.Projections
         {
             Variation_Code = string.Empty;
         }
-
+        
         public int? LineId { get; set; }
         public PrimeroSubJob SubJob { get; set; }
         public PrimeroDiscipline Discipline { get; set; }
@@ -106,6 +106,10 @@ namespace BluePrints.Common.Projections
 
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }
+        public Guid GUID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime CREATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime? UPDATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime? DELETED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 
     public static class ExoMethods

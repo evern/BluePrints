@@ -10,7 +10,7 @@ using BaseModel.DataModel;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE : EntityBase, IGuidEntityKey, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
+    public partial class ESTIMATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ESTIMATE()

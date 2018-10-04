@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("CODE")]
-    public partial class DISCIPLINE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class DISCIPLINE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

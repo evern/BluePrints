@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class VARIATION_REGISTER : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class VARIATION_REGISTER : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

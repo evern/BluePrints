@@ -7,7 +7,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class ROLE_PERMISSION : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class ROLE_PERMISSION : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("GUID_PROJECT, INTERNAL_NAME1")]
-    public partial class SUBJOB : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class SUBJOB : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SUBJOB()

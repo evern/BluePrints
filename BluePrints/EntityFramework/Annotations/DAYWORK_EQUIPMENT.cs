@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class DAYWORK_EQUIPMENT : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class DAYWORK_EQUIPMENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

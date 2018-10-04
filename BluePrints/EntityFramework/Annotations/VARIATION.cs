@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("GUID_PROJECT, NAME")]
-    public partial class VARIATION : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class VARIATION : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public VARIATION()

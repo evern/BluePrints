@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="BluePrints.View.SyncScreen" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:dxg="clr-namespace:DevExpress.Xpf.Grid;assembly=DevExpress.Xpf.Grid.v18.1"
+             xmlns:common="clr-namespace:BluePrints.Common" 
+             DataContext="{dxmvvm:ViewModelSource common:SyncScreenViewModel}" 
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" Width="950" Height="800" 
+    mc:Ignorable="d">
+    <Grid x:Name="LayoutRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1.2*" />
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="Content_Area" Grid.Column="0" >
+            <dxg:GridControl x:Name="GridControl" ItemsSource="{Binding SyncInfos}">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn Header="Database" FieldName="Database" />
+                    <dxg:GridColumn Header="Local %" FieldName="LocalProgress" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ProgressBarEditSettings ContentDisplayMode="Value" DisplayFormat="p2" Maximum="1" Minimum="0" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn Header="Remote %" FieldName="RemoteProgress" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ProgressBarEditSettings ContentDisplayMode="Value" DisplayFormat="p2" Maximum="1" Minimum="0" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.TotalSummary>
+                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                </dxg:GridControl.TotalSummary>
+                <dxg:GridControl.GroupSummary>
+                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                </dxg:GridControl.GroupSummary>
+                <dxg:GridControl.View>
+                    <dxg:TableView x:Name="tableView" AllowEditing="False" ShowGroupPanel="False" ShowAutoFilterRow="False" NewItemRowPosition="None">
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+            </dxg:GridControl>
+        </Grid>
+        <Grid Grid.Column="1">
+            <dxg:GridControl x:Name="GridControlDetails" SelectionMode="Row" ItemsSource="{Binding SyncReport}">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn Header="Table" IsSmart="True" ReadOnly="True" FieldName="TableName" />
+                    <dxg:GridColumn Header="Properties" IsSmart="True" ReadOnly="True" FieldName="Properties" />
+                    <dxg:GridColumn Header="Project" IsSmart="True" ReadOnly="True" FieldName="Project" />
+                    <dxg:GridColumn Header="Destination" IsSmart="True" ReadOnly="True" FieldName="Destination" />
+                    <dxg:GridColumn Header="Action" IsSmart="True" ReadOnly="True" FieldName="Action" />
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.TotalSummary>
+                    <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                </dxg:GridControl.TotalSummary>
+                <dxg:GridControl.GroupSummary>
+                    <dxg:GridSummaryItem SummaryType="Count" Alignment="Right" />
+                </dxg:GridControl.GroupSummary>
+                <dxg:GridControl.View>
+                    <dxg:TableView ShowTotalSummary="True" ShowGroupPanel="True"/>
+                </dxg:GridControl.View>
+            </dxg:GridControl>
+        </Grid>
+    </Grid>
+</UserControl>

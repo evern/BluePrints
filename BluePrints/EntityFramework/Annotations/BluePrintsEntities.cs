@@ -20,12 +20,12 @@ namespace BluePrints.Data
         {
             List<string> applicableContext = new List<string>();
             applicableContext.Add("BluePrints.Data.BluePrintsEntities");
-            AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY"));
+            AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY", applicableContext));
             AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext));
         }
     }
 
-    public partial class BluePrintsEntities : DbContext
+    public partial class BluePrintsEntities
     {
         /// <summary>
         /// Allow redo operation to undo deleted record

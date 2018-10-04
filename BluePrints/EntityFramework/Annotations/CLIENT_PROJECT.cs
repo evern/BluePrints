@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class CLIENT_PROJECT : EntityBase, IGuidEntityKey, IHaveCreatedDate, ICanUpdate
+    public partial class CLIENT_PROJECT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, ICanUpdate
     {
         [NotMapped]
         public Guid EntityKey

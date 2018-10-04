@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using System.Collections.ObjectModel;
     using BaseModel.DataModel;
 
-    public partial class MINUTE_AGENDA : EntityBase, IGuidEntityKey, IGuidParentEntityKey, IHaveCreatedDate
+    public partial class MINUTE_AGENDA : EntityBase, IGuidEntityKey, ICanSync, IGuidParentEntityKey, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_AGENDA()

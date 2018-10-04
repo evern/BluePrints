@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
 
-    public partial class RA_STUDY_TYPE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RA_STUDY_TYPE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

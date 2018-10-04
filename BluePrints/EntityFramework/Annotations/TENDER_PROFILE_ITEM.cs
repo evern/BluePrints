@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
 
-    public partial class TENDER_PROFILE_ITEM : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class TENDER_PROFILE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         public TENDER_PROFILE_ITEM()
         {

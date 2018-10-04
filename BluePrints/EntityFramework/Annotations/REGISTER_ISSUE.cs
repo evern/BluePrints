@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class REGISTER_ISSUE : EntityBase, IGuidEntityKey, IEntityNumber, IHaveCreatedDate
+    public partial class REGISTER_ISSUE : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

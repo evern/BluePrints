@@ -8,7 +8,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class HSE : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class HSE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

@@ -11,7 +11,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
 
     [ConstraintAttributes("GUIDE_SUBPROMPT, GUID_GUIDE_PROMPT")]
-    public partial class RA_GUIDE_SUBPROMPT : EntityBase, IGuidEntityKey, IHaveCreatedDate
+    public partial class RA_GUIDE_SUBPROMPT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public Guid EntityKey

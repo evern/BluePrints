@@ -22,6 +22,11 @@ using DevExpress.Mvvm;
 using BluePrints.Common.Base;
 using BluePrints.Views;
 using System.Windows.Controls;
+using System.Data.Entity;
+using BaseModel.Data.Helpers;
+using BaseModel.ViewModel.Dialogs;
+using System.Threading;
+using BluePrints.View;
 
 namespace BluePrints.ViewModels
 {
@@ -401,9 +406,28 @@ namespace BluePrints.ViewModels
             //}
         }
 
-        private void windowClosed(string Id)
+        protected IMessageBoxService MessageBoxService
         {
-            openedProjectView.Remove(Id);
+            get { return this.GetRequiredService<IMessageBoxService>(); }
+        }
+
+        private DevExpress.Mvvm.IDialogService ReportDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ReportDialogService"); }
+        }
+
+        public bool IsSyncDatabaseVisible => CanSyncDatabase;
+        public bool CanSyncDatabase => LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername;
+        public void SyncDatabase()
+        {
+            if (LoginCredentials.CurrentUser.NAME != BluePrintsResources.Default_AdminUsername)
+            {
+                MessageBoxService.ShowMessage("Unauthorised");
+                return;
+            }
+
+            SyncScreenViewModel viewModel = SyncScreenViewModel.Create();
+            ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
         private void CreateProjectTree(PROJECT entity)
@@ -668,4 +692,5 @@ namespace BluePrints.Common.ViewModel
             actionParameter();
         }
     }
+
 }
