@@ -40,5 +40,7 @@ namespace BluePrints.Data
         }
 
         public string EntityGroup => string.Empty;
+
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

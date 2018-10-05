@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
+    using BluePrints.Common.Resources;
 
     public partial class RA_STUDY_DRAWING : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -33,5 +34,6 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public string Office => this.RA_STUDY.PROJECT.NUMBER + " " + this.RA_STUDY.PROJECT.OFFICE.NAME;
     }
 }

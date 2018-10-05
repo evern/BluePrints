@@ -29,6 +29,8 @@ namespace BluePrints.Data
 
         public bool FOR_NCR { get; set; }
 
+        public bool FOR_NONDELIVERABLE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

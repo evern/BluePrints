@@ -30,5 +30,7 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
+
+        public string Office => this.REGISTER_HOLD.PROJECT.NUMBER + " " + this.REGISTER_HOLD.PROJECT.OFFICE.NAME;
     }
 }

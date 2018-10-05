@@ -128,5 +128,7 @@ namespace BluePrints.Data
                 return STATUS == ProjectStatus.Tender || STATUS == ProjectStatus.TenderSubmitted;
             }
         }
+
+        public string Office => this.NUMBER + " " + this.OFFICE.NAME;
     }
 }

@@ -23,7 +23,7 @@
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
-
+        
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

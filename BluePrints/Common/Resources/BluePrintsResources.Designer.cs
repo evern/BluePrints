@@ -331,6 +331,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Global.
+        /// </summary>
+        internal static string GlobalOffice {
+            get {
+                return ResourceManager.GetString("GlobalOffice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health check completed without any issues.
         /// </summary>
         internal static string Notify_HealthCheck_OK {

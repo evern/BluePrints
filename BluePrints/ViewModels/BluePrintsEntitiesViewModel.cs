@@ -417,7 +417,7 @@ namespace BluePrints.ViewModels
         }
 
         public bool IsSyncDatabaseVisible => CanSyncDatabase;
-        public bool CanSyncDatabase => LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername;
+        public bool CanSyncDatabase => LoginCredentials.CurrentUser == null ? false : LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername;
         public void SyncDatabase()
         {
             if (LoginCredentials.CurrentUser.NAME != BluePrintsResources.Default_AdminUsername)

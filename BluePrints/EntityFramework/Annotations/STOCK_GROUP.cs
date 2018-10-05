@@ -36,5 +36,16 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
+
+        public string Office
+        {
+            get
+            {
+                if (this.PROJECT != null)
+                    return this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+
+                return BluePrintsResources.GlobalOffice;
+            }
+        }
     }
 }

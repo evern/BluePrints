@@ -92,5 +92,7 @@ namespace BluePrints.Data
                 return AREA.AREA1;
             }
         }
+
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

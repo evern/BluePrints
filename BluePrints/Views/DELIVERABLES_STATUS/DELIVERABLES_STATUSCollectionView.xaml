@@ -41,18 +41,19 @@
                             <dxg:GridColumn Header="Auto Percentage" FieldName="AUTO_PERCENTAGE" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress" SortIndex="2">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:SpinEdit Name="PART_Editor" Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
+                                        <dxe:SpinEdit Name="PART_Editor" Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Maximum Percentage" FieldName="MAX_PERCENTAGE" HeaderToolTip="Maximum allowed percentage for this status" SortIndex="2">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
+                                    <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="For Deliverable" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
-                            <dxg:GridColumn Header="For Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
-                            <dxg:GridColumn Header="For NCR" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'NCR'?" />
+                            <dxg:GridColumn Header="Deliverable ICR" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable ICR'?" />
+                            <dxg:GridColumn Header="Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
+                            <dxg:GridColumn Header="Deliverable AFC" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable AFC'?" />
+                            <dxg:GridColumn Header="Non Deliverable" FieldName="FOR_NONDELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Non Deliverable'?" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

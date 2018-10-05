@@ -43,5 +43,7 @@
                 return EntityKey;
             }
         }
+
+        public string Office => this.ROSTER_STAFF.PROJECT.NUMBER + " " + this.ROSTER_STAFF.PROJECT.OFFICE.NAME;
     }
 }

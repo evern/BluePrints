@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -40,5 +41,7 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
+
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

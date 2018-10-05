@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
+    using BluePrints.Common.Resources;
 
     public partial class CLIENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -75,5 +76,7 @@ namespace BluePrints.Data
                 return FIRST_NAME + " " + LAST_NAME;
             }
         }
+
+        public string Office => BluePrintsResources.GlobalOffice;
     }
 }

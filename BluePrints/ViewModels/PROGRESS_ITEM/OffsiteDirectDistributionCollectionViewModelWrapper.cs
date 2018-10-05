@@ -613,7 +613,7 @@ namespace BluePrints.ViewModels
                     dataPointsTable = new DataTable();
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-                    DateTime lastDataDate = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
+                    DateTime lastDataDate = loadPROGRESS.DATA_DATE;
                     IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
                     dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));

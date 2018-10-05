@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -48,5 +49,16 @@ namespace BluePrints.Data
         public Guid OriginalEntityKey => GUID_ORIGINAL;
 
         public void SetOriginalEntityKey(Guid newGuid) { GUID_ORIGINAL = newGuid; }
+
+        public string Office
+        {
+            get
+            {
+                if (this.PROJECT != null)
+                    return this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+
+                return BluePrintsResources.GlobalOffice;
+            }
+        }
     }
 }

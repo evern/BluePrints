@@ -4,6 +4,7 @@
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -43,5 +44,7 @@
                 return EntityKey;
             }
         }
+
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

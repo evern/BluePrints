@@ -249,4 +249,7 @@
   <data name="DefaultMailDomain" xml:space="preserve">
     <value>@primero.com.au</value>
   </data>
+  <data name="GlobalOffice" xml:space="preserve">
+    <value>Global</value>
+  </data>
 </root>

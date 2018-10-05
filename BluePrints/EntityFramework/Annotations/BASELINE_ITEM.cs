@@ -5,6 +5,7 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using DevExpress.Mvvm;
     using System;
@@ -283,6 +284,7 @@ namespace BluePrints.Data
                     .Where(x => 
                             (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.DeliverableICR) ||
                             (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.DeliverableAFC) || 
+                            (x.FOR_NONDELIVERABLE && DELIVERABLE_TYPE == DeliverableType.NonDeliverable) || 
                             (x.FOR_TASK && DELIVERABLE_TYPE == DeliverableType.Task)).OrderBy(x => x.AUTO_PERCENTAGE);
             }
         }
@@ -392,6 +394,19 @@ namespace BluePrints.Data
             }
 
             Holds = holdStr.Substring(0, holdStr.Length - 2);
+        }
+
+        public string Office
+        {
+            get
+            {
+                if (this.BASELINE != null)
+                    return "Baseline " + this.BASELINE.PROJECT.NUMBER + " " + this.BASELINE.PROJECT.OFFICE.NAME;
+                else if (this.VARIATION != null)
+                    return "Variation " + this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OFFICE.NAME;
+
+                return BluePrintsResources.GlobalOffice;
+            }
         }
     }
 }

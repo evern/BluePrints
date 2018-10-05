@@ -3,6 +3,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -44,5 +45,7 @@ namespace BluePrints.Data
                 return FIRST_NAME + " " + LAST_NAME;
             }
         }
+
+        public string Office => BluePrintsResources.GlobalOffice;
     }
 }

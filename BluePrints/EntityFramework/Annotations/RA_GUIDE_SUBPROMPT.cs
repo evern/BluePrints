@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
+    using BluePrints.Common.Resources;
 
     [ConstraintAttributes("GUIDE_SUBPROMPT, GUID_GUIDE_PROMPT")]
     public partial class RA_GUIDE_SUBPROMPT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
@@ -36,5 +37,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid GUID_STUDY_TYPE { get; set; }
+
+        public string Office => BluePrintsResources.GlobalOffice;
     }
 }

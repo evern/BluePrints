@@ -43,5 +43,7 @@ namespace BluePrints.Data
                 return EntityKey;
             }
         }
+
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

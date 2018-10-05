@@ -230,5 +230,18 @@ namespace BluePrints.Data
         public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
 
         public string Variation_Code => string.Empty;
+
+        public string Office
+        {
+            get
+            {
+                if (this.ESTIMATE != null)
+                    return this.ESTIMATE.PROJECT.NUMBER + " " + this.ESTIMATE.PROJECT.OFFICE.NAME;
+                else if (this.VARIATION != null)
+                    return this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OFFICE.NAME;
+
+                return string.Empty;
+            }
+        }
     }
 }

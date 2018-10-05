@@ -31,5 +31,6 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

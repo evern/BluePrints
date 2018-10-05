@@ -46,5 +46,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string Revision { get => REVISION; set => REVISION = value; }
+
+        public string Office => this.PROJECT == null ? string.Empty : this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
     }
 }

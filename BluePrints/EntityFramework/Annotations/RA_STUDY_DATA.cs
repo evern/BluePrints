@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
+    using BluePrints.Common.Resources;
 
     public partial class RA_STUDY_DATA : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -61,5 +62,7 @@ namespace BluePrints.Data
         {
             this.guideSubPrompts = guideSubPrompts;
         }
+
+        public string Office => BluePrintsResources.GlobalOffice;
     }
 }
