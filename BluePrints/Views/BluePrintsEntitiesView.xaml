@@ -110,7 +110,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                             </dxr:RibbonGalleryBarItem>
                             <dxb:BarButtonItem Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Navigation Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
-                            <dxb:BarButtonItem IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync database between Perth and Canada" Glyph="{dx:DXImage Image=ManageDatasource_16x16.png}" LargeGlyph="{dx:DXImage Image=ManageDatasource_32x32.png}" ToolTip="Sync Database" />
+                            <dxb:BarButtonItem IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>

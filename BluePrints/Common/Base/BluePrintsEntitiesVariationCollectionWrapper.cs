@@ -55,7 +55,7 @@ namespace BluePrints.Common.Base
             collectionViewModelWrapper.InterfaceUnpauseUndoRedoCallBack = UnpauseUndoRedo;
             collectionViewModelWrapper.BaseEntityQueryCallBack = BaseEntityQueryCallBack;
             collectionViewModelWrapper.SelectedEntities = DisplaySelectedEntities.Select(x => x.Entity);
-            collectionViewModelWrapper.SelectedEntityCallBack = () => DisplaySelectedEntity.Entity;
+            collectionViewModelWrapper.SelectedEntityCallBack = () => DisplaySelectedEntity == null ? null : DisplaySelectedEntity.Entity;
             collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
             collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
