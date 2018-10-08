@@ -52,7 +52,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Deliverable ICR" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable ICR'?" />
                             <dxg:GridColumn Header="Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
-                            <dxg:GridColumn Header="Deliverable AFC" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable AFC'?" />
+                            <dxg:GridColumn Header="Deliverable AFC Only" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable AFC Only'?" />
                             <dxg:GridColumn Header="Non Deliverable" FieldName="FOR_NONDELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Non Deliverable'?" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
