@@ -1337,11 +1337,15 @@ namespace BluePrints.ViewModels
             List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
             {
-                List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, SelectedEntities);
-                newEntities.AddRange(currentEnumerationSaveEntities);
+                for(int i=0;i<timesToDuplicate;i++)
+                {
+                    Duplicate();
+                }
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, SelectedEntities);
+                //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
-            MainViewModel.BulkSave(newEntities);
+            //MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
             UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);
@@ -1356,13 +1360,17 @@ namespace BluePrints.ViewModels
             List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToInsert))
             {
-                List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, SelectedEntities);
-                newEntities.AddRange(currentEnumerationSaveEntities);
+                for (int i = 0; i < timesToInsert; i++)
+                {
+                    Insert();
+                }
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, SelectedEntities);
+                //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
-            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, MainViewModel.Entities);
+            //newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, MainViewModel.Entities);
        
-            MainViewModel.BulkSave(newEntities);
+            //MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
             UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);

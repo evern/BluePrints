@@ -86,11 +86,17 @@ namespace BluePrints.Common.Base
 
         private void PauseUndoRedo()
         {
+            if (MainViewModel == null)
+                return;
+
             mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.PauseActionId()));
         }
 
         private void UnpauseUndoRedo()
         {
+            if (MainViewModel == null)
+                return;
+
             mainThreadDispatcher.BeginInvoke(new Action(() => MainViewModel.EntitiesUndoRedoManager.UnpauseActionId()));
         }
 
@@ -500,8 +506,22 @@ namespace BluePrints.Common.Base
         public bool CanAutoPopulate(object button) => collectionViewModelWrapper.CanAutoPopulate(button);
         public bool CanFindReplace(object button) => collectionViewModelWrapper.CanFindReplace(button);
 
-        public void DuplicateMultiple(BarEditItem barEdit) { if (canEditView()) collectionViewModelWrapper.DuplicateMultiple(barEdit); }
-        public void InsertMultiple(BarEditItem barEdit) { if (canEditView()) collectionViewModelWrapper.InsertMultiple(barEdit); }
+        public void DuplicateMultiple(BarEditItem barEdit)
+        {
+            if (canEditView())
+            {
+                collectionViewModelWrapper.DuplicateMultiple(barEdit);
+            }
+        }
+
+        public void InsertMultiple(BarEditItem barEdit)
+        {
+            if (canEditView())
+            {
+                collectionViewModelWrapper.InsertMultiple(barEdit);
+            }
+        }
+
         public void Duplicate() { if (canEditView()) collectionViewModelWrapper.Duplicate(); }
         public void Insert() { if (canEditView()) collectionViewModelWrapper.Insert(); }
         public void AutoPopulate(object button) { if (isSelectedVariationAddEntity()) collectionViewModelWrapper.AutoPopulate(button); }
