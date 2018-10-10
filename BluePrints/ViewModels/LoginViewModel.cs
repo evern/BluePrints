@@ -106,8 +106,8 @@ namespace BluePrints.ViewModels
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername)
                 {
-                    LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
-                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                    //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
+                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "ASHER.MITCHELL");
                     ActiveDirectory.ExchangeLogin(LoginCredentials.CurrentUser.NAME, "NEWpass14.");
                 }
                 else

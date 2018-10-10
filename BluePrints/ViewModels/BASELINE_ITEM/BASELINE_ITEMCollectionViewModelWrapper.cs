@@ -2110,10 +2110,13 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
+                        string title = subJob.Code + " : " + subJob.Title;
+                        if (title.Length >= 60)
+                            title = title.Substring(0, 59);
                         JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
                         newTimeSheet.STAFFNO = bookResource.SeqNo;
                         newTimeSheet.JOBNO = subJob.Id;
-                        newTimeSheet.TITLE = subJob.Code + " : " + subJob.Title;
+                        newTimeSheet.TITLE = title;
                         newTimeSheet.STOCKCODE = bookCostType.StockCode;
                         newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
                         newTimeSheet.UNITPRICE = 0;
