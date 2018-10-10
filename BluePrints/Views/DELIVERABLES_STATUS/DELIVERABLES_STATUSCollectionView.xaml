@@ -50,9 +50,9 @@
                                     <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Deliverable" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
+                            <dxg:GridColumn Header="Deliverable" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable'?" />
+                            <dxg:GridColumn Header="Deliverable ICR" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable ICR'?" />
                             <dxg:GridColumn Header="Task" FieldName="FOR_TASK" HeaderToolTip="Can this status be chosen for deliverable type of 'Task'?" />
-                            <dxg:GridColumn Header="Deliverable ICR" FieldName="FOR_NCR" HeaderToolTip="Can this status be chosen for deliverable type of 'Deliverable ICR'?" />
                             <dxg:GridColumn Header="Non Deliverable" FieldName="FOR_NONDELIVERABLE" HeaderToolTip="Can this status be chosen for deliverable type of 'Non Deliverable'?" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
