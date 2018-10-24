@@ -117,7 +117,7 @@ namespace BluePrints.Common
     public enum DeliverableType
     {
         [Display(Name = "Deliverable ICR")] DeliverableICR = 0,
-        [Display(Name = "Deliverable AFC Only")] DeliverableAFC = 1,
+        [Display(Name = "Deliverable")] Deliverable = 1,
         [Display(Name = "Task")] Task = 2,
         [Display(Name = "Non-Deliverable")] NonDeliverable = 3
     }
