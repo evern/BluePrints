@@ -107,7 +107,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach(BASELINE_ITEM live_baseline_item in live_baseline_items)
             {
                 //if (current_user_works.Any(works => works.GUID_BASELINE_ITEM_ORIGINAL == live_baseline_item.OriginalEntityKey))
-                if(live_baseline_item.GUID_USER == user.GUID)
+                if(live_baseline_item.GUID_USER != null && live_baseline_item.GUID_USER == user.GUID)
                     user_baseline_item.Add(live_baseline_item);
             }
 

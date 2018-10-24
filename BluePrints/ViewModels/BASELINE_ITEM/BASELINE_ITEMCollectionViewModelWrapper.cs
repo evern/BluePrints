@@ -156,9 +156,9 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if (MessageBoxService.ShowMessage("This will finalize all current client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            if (MessageBoxService.ShowMessage("This will finalize selected deliverable's client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach(BASELINE_ITEMProgress entity in MainViewModel.Entities)
+                foreach(BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
                 }
@@ -182,9 +182,9 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if (MessageBoxService.ShowMessage("This will finalize all current internal numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+            if (MessageBoxService.ShowMessage("This will finalize selected deliverable's internal numbers and send to doc control to lock it.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in MainViewModel.Entities)
+                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
                 }
@@ -2081,120 +2081,7 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives);
-            if (bookTimeViewModel.GetResource() == null)
-            {
-                MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
-            }
-            else if (bookTimeViewModel.GetCostType() == null)
-            {
-                MessageBoxService.ShowMessage("You do not have \nSub Job: " + DisplaySelectedEntity.Subjob_Name + "\nCost Group: " + DisplaySelectedEntity.Discipline_Code + "\nCost Type: " + DisplaySelectedEntity.Commodity_Code + "\nAdded in exo, please contact the project manager for assistance");
-            }
-            else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
-            {
-                string variationCode = bookTimeViewModel.GetVariationCode();
-                string narrative = bookTimeViewModel.GetNarratives();
-                PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
-                PrimeroResource bookResource = bookTimeViewModel.GetResource();
-                TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
-                PrimeroDiscipline bookCostGroup = bookTimeViewModel.GetCostGroup();
-                PrimeroCommodity bookCostType = bookTimeViewModel.GetCostType();
-                decimal bookTime = bookTimeViewModel.BookHours;
-
-                if(bookResource != null && bookCostGroup != null && bookCostType != null)
-                {
-                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == bookDate.WeekStartDate);
-                    if (timesheet != null)
-                    {
-                        AdjustTimeSheetHours(timesheet, bookDate, DisplaySelectedEntity, bookTime);
-                    }
-                    else
-                    {
-                        JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
-                        newTimeSheet.STAFFNO = bookResource.SeqNo;
-                        newTimeSheet.JOBNO = subJob.Id;
-                        newTimeSheet.TITLE = subJob.Code + " : " + subJob.Title;
-                        newTimeSheet.STOCKCODE = bookCostType.StockCode;
-                        newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
-                        newTimeSheet.UNITPRICE = 0;
-                        newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
-                        AdjustTimeSheetHours(newTimeSheet, bookDate, DisplaySelectedEntity, bookTime);
-                        newTimeSheet.IS_OVERTIME = "N";
-                        newTimeSheet.DAY1_POSTED = "N";
-                        newTimeSheet.DAY2_POSTED = "N";
-                        newTimeSheet.DAY3_POSTED = "N";
-                        newTimeSheet.DAY4_POSTED = "N";
-                        newTimeSheet.DAY5_POSTED = "N";
-                        newTimeSheet.DAY6_POSTED = "N";
-                        newTimeSheet.DAY7_POSTED = "N";
-                        newTimeSheet.RATE_SEQNO = 0;
-                        newTimeSheet.RATE_FACTOR = 1;
-                        newTimeSheet.COST_GROUP = bookCostGroup.Id;
-                        newTimeSheet.COST_TYPE = bookCostType.Id;
-                        newTimeSheet.LABOUR_ALLOWANCE = 0;
-                        newTimeSheet.HAS_ALLOWANCE = "N";
-                        newTimeSheet.X_DECLINED = false;
-                        newTimeSheet.X_APPROVAL_MANAGER = -1;
-                        newTimeSheet.X_SUBMITTED = false;
-                        newTimeSheet.X_NARRATIVE = narrative;
-                        newTimeSheet.X_VARIATIONCODE = variationCode;
-                        primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
-                    }
-
-                    primeroUnitOfWork.SaveChanges();
-                }
-            }
-        }
-
-        private void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, IDeliverable deliverable, decimal bookTime)
-        {
-            Double dblTime = Convert.ToDouble(bookTime);
-            switch(bookDate.DayNumber)
-            {
-                case 1:
-                    timesheet.DAY1 = dblTime;
-                    timesheet.DAY1_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 2:
-                    timesheet.DAY2 = dblTime;
-                    timesheet.DAY2_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 3:
-                    timesheet.DAY3 = dblTime;
-                    timesheet.DAY3_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 4:
-                    timesheet.DAY4 = dblTime;
-                    timesheet.DAY4_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 5:
-                    timesheet.DAY5 = dblTime;
-                    timesheet.DAY5_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 6:
-                    timesheet.DAY6 = dblTime;
-                    timesheet.DAY6_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-                case 7:
-                    timesheet.DAY7 = dblTime;
-                    timesheet.DAY7_NARRATIVE = FindExistingOrAddNewNarrative(deliverable.Deliverable_Name);
-                    break;
-            }
-        }
-
-        private int FindExistingOrAddNewNarrative(string description)
-        {
-            NARRATIVES narrative = primeroUnitOfWork.NARRATIVES.FirstOrDefault(x => x.NARRATIVE == description);
-            if (narrative != null)
-                return narrative.SEQNO;
-            else
-            {
-                NARRATIVES newNarrative = new NARRATIVES();
-                newNarrative.NARRATIVE = description;
-                primeroUnitOfWork.NARRATIVES.Add(newNarrative);
-                primeroUnitOfWork.SaveChanges();
-                return newNarrative.SEQNO;
-            }
+            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives, MessageBoxService, BookTimeDialogService);
         }
 
         protected override string ExportExcelFilename()

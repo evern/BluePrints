@@ -1179,5 +1179,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Budget_Quantity => Entity.Budget_Quantity;
 
         public decimal Total_Quantity => Entity.Total_Quantity;
+
+        public string Project_Number => Entity.Project_Number;
     }
 }

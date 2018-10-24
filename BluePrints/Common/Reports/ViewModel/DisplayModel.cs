@@ -216,6 +216,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Quantity => ((IReportable)ProgressItem).Total_Quantity;
 
+        public string Project_Number => ((IReportable)ProgressItem).Project_Number;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -545,6 +547,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool IsByDuration { get => Reportable.IsByDuration; set => Reportable.IsByDuration = value; }
 
         public ChargeType? Charge => Reportable.Charge;
+
+        public string Project_Number => Reportable.Project_Number;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

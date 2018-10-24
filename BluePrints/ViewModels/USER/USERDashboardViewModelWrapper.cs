@@ -51,8 +51,7 @@ namespace BluePrints.ViewModels
             actionObject = parameter as ActionObject;
             if(actionObject == null)
             {
-                var USERParameter = (EntitiesParameter<USER>)parameter;
-                _loadUSER = USERParameter.GetEntity();
+                _loadUSER = LoginCredentials.CurrentUser;
             }
         }
 

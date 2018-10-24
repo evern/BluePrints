@@ -243,5 +243,18 @@ namespace BluePrints.Data
                 return string.Empty;
             }
         }
+
+        public string Project_Number
+        {
+            get
+            {
+                if (this.ESTIMATE != null)
+                    return this.ESTIMATE.PROJECT.NUMBER;
+                else if (this.VARIATION != null)
+                    return this.VARIATION.PROJECT.NUMBER;
+
+                return string.Empty;
+            }
+        }
     }
 }

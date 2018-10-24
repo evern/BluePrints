@@ -313,6 +313,8 @@ namespace BluePrints.Common.Projections
         public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
 
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
+
+        public string Project_Number => Entity.Project_Number;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

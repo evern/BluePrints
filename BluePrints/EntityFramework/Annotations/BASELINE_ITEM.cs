@@ -7,6 +7,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
+    using DevExpress.Data.Filtering;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -263,6 +264,22 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public CriteriaOperator ResourceFilterCriteria
+        {
+            get
+            {
+                if (GUID_DEPARTMENT != null && GUID_DISCIPLINE != null)
+                    return CriteriaOperator.Parse("[GUID_DEPARTMENT] In ({" + GUID_DEPARTMENT.ToString() + "}) And [GUID_DISCIPLINE] In ({" + GUID_DISCIPLINE.ToString() + "})");
+                else if(GUID_DISCIPLINE != null)
+                    return CriteriaOperator.Parse("[GUID_DISCIPLINE] In ({" + GUID_DISCIPLINE.ToString() + "})");
+                else if(GUID_DEPARTMENT != null)
+                    return CriteriaOperator.Parse("[GUID_DEPARTMENT] In ({" + GUID_DEPARTMENT.ToString() + "})");
+
+                return null;
+            }
+        }
+
+        [NotMapped]
         public IEnumerable<DELIVERABLES_STATUS> DeliverableStatusCollection
         {
             get
@@ -406,6 +423,19 @@ namespace BluePrints.Data
                     return "Variation " + this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OFFICE.NAME;
 
                 return BluePrintsResources.GlobalOffice;
+            }
+        }
+
+        public string Project_Number
+        {
+            get
+            {
+                if (this.BASELINE != null)
+                    return this.BASELINE.PROJECT.NUMBER;
+                else if (this.VARIATION != null)
+                    return this.VARIATION.PROJECT.NUMBER;
+
+                return string.Empty;
             }
         }
     }

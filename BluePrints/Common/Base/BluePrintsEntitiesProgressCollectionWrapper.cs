@@ -4,10 +4,12 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -207,9 +209,29 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
+        List<string> narratives = new List<string>();
+        List<string> variationCodes = new List<string>();
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
+            HashSet<string> projectNumbers = new HashSet<string>();
+            foreach (var entity in MainViewModel.Entities)
+            {
+                projectNumbers.Add(entity.Project_Number);
+            }
+
+            foreach(var projectNumber in projectNumbers)
+            {
+                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
+                List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
+                List<string> projectVariationCodes = ExoQueries.GetJobVariationCode(primeroUnitOfWork, projectNumber);
+
+                exoAuthorisations.AddRange(projectExoTimeAuths);
+                narratives.AddRange(projectNarratives);
+                variationCodes.AddRange(projectVariationCodes);
+            }
+
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -1639,7 +1661,19 @@ namespace BluePrints.Common.Base
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
-        } 
+        }
+        #endregion
+
+        #region Book Time
+        private DevExpress.Mvvm.IDialogService BookTimeDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BookTimeDialog"); }
+        }
+
+        public void BookTime()
+        {
+            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives, MessageBoxService, BookTimeDialogService);
+        }
         #endregion
     }
 }

@@ -142,6 +142,8 @@ namespace BluePrints.Common.Projections
 
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
 
+        public string Project_Number => string.Empty;
+
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
         public void SetOriginalEntityKey(Guid newGuid)

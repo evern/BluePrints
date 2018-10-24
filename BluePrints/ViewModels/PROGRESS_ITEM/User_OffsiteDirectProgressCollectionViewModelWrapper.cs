@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
         {
             is_single_project_mode = false;
             var USERParameter = (EntitiesParameter<USER>)parameter;
-            _loadUSER = USERParameter.GetEntity();
+            _loadUSER = LoginCredentials.CurrentUser;
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
         }
@@ -123,6 +123,7 @@ namespace BluePrints.ViewModels
                 }
             }
         }
+
         //protected override void InitializeSummarizer()
         //{
         //    firstLoadProjectStatsSummarizers.Clear();

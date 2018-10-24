@@ -40,7 +40,7 @@ namespace BluePrints.ViewModels
 
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
         private CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
-
+        private DispatcherTimer myDeliverablesDispatcher;
         /// <summary>
         ///     Initializes a new instance of the BluePrintsEntitiesViewModel class.
         ///     This constructor is declared protected to avoid undesired instantiation of the BluePrintsEntitiesViewModel type
@@ -49,6 +49,10 @@ namespace BluePrints.ViewModels
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
         {
+            myDeliverablesDispatcher = new DispatcherTimer();
+            myDeliverablesDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            myDeliverablesDispatcher.Tick += MyDeliverablesDispatcher_Tick;
+
             initializeCategoryDescription();
             _projectCollectionViewModel = CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>.CreateCollectionViewModel(unitOfWorkFactory, x => x.PROJECTS);
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesLoadedCallBack;
@@ -99,6 +103,15 @@ namespace BluePrints.ViewModels
             IsLoaded = true;
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
             MainThreadDispatcher.BeginInvoke(new Action(() => preloadAssemblies(entities)));
+            myDeliverablesDispatcher.Start();
+        }
+
+
+        private void MyDeliverablesDispatcher_Tick(object sender, EventArgs e)
+        {
+            myDeliverablesDispatcher.Stop();
+            if(LoginCredentials.CurrentUser != null)
+            NavigateCore(myDeliverablesDescription);
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)
@@ -250,7 +263,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription companyHSECategoryDescription;
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
-
+        BluePrintsEntitiesModuleDescription myDeliverablesDescription;
         private void initializeCategoryDescription()
         {
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
@@ -280,7 +293,8 @@ namespace BluePrints.ViewModels
                 dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView", null, null, null, true, false, @"Chart\Chart_16x16.png"));
 
             dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", dashboardCategoryId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"));
-            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png"));
+            myDeliverablesDescription = new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
+            dashboardCategoryDescription.ChildModules.Add(myDeliverablesDescription);
 
             if (LoginCredentials.hasPermission(PermissionResources.ApproveInternalNumbers))
                 dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DocControl", dashboardCategoryId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"));

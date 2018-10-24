@@ -73,6 +73,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Quantity => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Quantity);
 
+        public string Project_Number => Entity.PROJECT.NUMBER;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();

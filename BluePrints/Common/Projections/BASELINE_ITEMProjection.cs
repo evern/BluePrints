@@ -153,6 +153,8 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Quantity => Budget_Units;
 
         public decimal Total_Quantity => Total_Units;
+
+        public string Project_Number => Entity.Project_Number;
     }
 
     public class User_Weight
