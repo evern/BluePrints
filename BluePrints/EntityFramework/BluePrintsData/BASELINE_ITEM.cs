@@ -78,6 +78,8 @@ namespace BluePrints.Data
 
         public DateTime? TARGET_DATE { get; set; }
 
+        public DateTime? NEXT_RELEASE_DATE { get; set; }
+
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
 
         public DateTime CREATED { get; set; }

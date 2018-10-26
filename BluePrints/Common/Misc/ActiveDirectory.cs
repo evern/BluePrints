@@ -67,6 +67,7 @@ namespace BluePrints.Common
             msg.Body = body;
             msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(toRecipient, toRecipient));
 
+            //to prevent spamming
             if(!EmailTimer.Enabled)
             {
                 EmailTimer.Elapsed -= EmailTimer_Elapsed;
@@ -80,6 +81,28 @@ namespace BluePrints.Common
                     msg.SendAndSaveCopy();
             }
             catch(Exception ex)
+            {
+
+            }
+        }
+
+        public static void SendEmailFromDocControl(string fromName, string body, string subject, string toRecipient)
+        {
+            string fullEmailAddress = "doc.control@primero.com.au";
+            exService.Credentials = new WebCredentials(fullEmailAddress, "abc123");
+            exService.AutodiscoverUrl(fullEmailAddress, RedirectionCallback);
+
+            EmailMessage msg = new EmailMessage(exService);
+            msg.Subject = subject;
+            msg.Body = body;
+            msg.ToRecipients.Add(new Microsoft.Exchange.WebServices.Data.EmailAddress(toRecipient, toRecipient));
+
+            try
+            {
+                if (msg.ToRecipients.Count > 0)
+                    msg.SendAndSaveCopy();
+            }
+            catch (Exception ex)
             {
 
             }

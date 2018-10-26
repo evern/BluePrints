@@ -110,8 +110,8 @@ namespace BluePrints.ViewModels
         private void MyDeliverablesDispatcher_Tick(object sender, EventArgs e)
         {
             myDeliverablesDispatcher.Stop();
-            if(LoginCredentials.CurrentUser != null)
-            NavigateCore(myDeliverablesDescription);
+            if (LoginCredentials.CurrentUser != null)
+                NavigateCore(myDeliverablesDescription);
         }
 
         private void CreateProjectModules(IEnumerable<PROJECT> entities)

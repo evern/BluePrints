@@ -36,6 +36,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public readonly decimal TotalQty;
         public readonly decimal BudgetedCosts;
         public readonly decimal TotalCosts;
+        public bool StatsBuilt { get; set; }
         readonly IEnumerable<VariationAdjustment> rawVariationAdjustments;
         readonly bool hideDataPointsBeforeDataDate;
         readonly bool alwaysBenchmarkAgainstBudgeted;
@@ -131,6 +132,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetFromP6();
 
             this.rawDataPoints = convertedDataPoints;
+            this.StatsBuilt = true;
         }
 
         public void SetRemainingData(IEnumerable<StoredProcedure_RemainingDataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
@@ -144,6 +146,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetFromP6();
 
             this.rawDataPoints = convertedDataPoints;
+            this.StatsBuilt = true;
         }
 
         public void SetRemainingActualData(IEnumerable<IReportable> groupedReportables, IEnumerable<DataPoint> burnedDataPoints)
@@ -190,6 +193,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetFromP6();
 
             this.rawDataPoints = remainingDataPoints;
+            this.StatsBuilt = true;
         }
 
         public List<ExoDataPoint> ExoDataPoints

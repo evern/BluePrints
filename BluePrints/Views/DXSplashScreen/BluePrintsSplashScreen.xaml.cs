@@ -29,9 +29,9 @@ namespace BluePrints.Views
         private void preloadMainWindow()
         {
             MainWindow preloadWindow = new MainWindow();
-            PROJECTDashboardPreloadUserControl projectDashboardPreloadUserControl = new PROJECTDashboardPreloadUserControl();
-            preloadWindow = null;
-            projectDashboardPreloadUserControl = null;
+            //PROJECTDashboardPreloadUserControl projectDashboardPreloadUserControl = new PROJECTDashboardPreloadUserControl();
+            //preloadWindow = null;
+            //projectDashboardPreloadUserControl = null;
 
             LoginWindow newLoginWindow = new LoginWindow();
             newLoginWindow.Show();

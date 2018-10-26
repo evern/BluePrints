@@ -132,22 +132,22 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<RATE> rates = project.RATE;
 
                 List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
-                if (buildStats)
-                {
-                    foreach (BASELINE_ITEMProgress user_deliverable in user_project_baseline_item_progress)
-                    {
+                //if (buildStats)
+                //{
+                //    foreach (BASELINE_ITEMProgress user_deliverable in user_project_baseline_item_progress)
+                //    {
 
-                        User_Weight current_user_weight = user_deliverable.AssignedUsers.FirstOrDefault(x => x.User != null && x.User.GUID == user.GUID);
-                        if (current_user_weight != null)
-                        {
-                            user_deliverable.BuildStats(current_user_weight.AggregateWeight);
-                        }
-                        else
-                        {
-                            user_deliverable.BuildStats();
-                        }
-                    }
-                }
+                //        User_Weight current_user_weight = user_deliverable.AssignedUsers.FirstOrDefault(x => x.User != null && x.User.GUID == user.GUID);
+                //        if (current_user_weight != null)
+                //        {
+                //            user_deliverable.BuildStats(current_user_weight.AggregateWeight);
+                //        }
+                //        else
+                //        {
+                //            user_deliverable.BuildStats();
+                //        }
+                //    }
+                //}
 
                 user_baseline_item_progresses.AddRange(user_project_baseline_item_progress);
             }
@@ -228,10 +228,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
-
-                if (buildStats)
+                if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                     baseline_item_progress.BuildStats();
-
             }
 
             if(exoAuthorisation != null)
