@@ -78,6 +78,6 @@ namespace BluePrints.Data
             this.commodityCodes = commodityCodes;
         }
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

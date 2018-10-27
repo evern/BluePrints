@@ -31,6 +31,6 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
-        public string Office => this.MEETING.PROJECT.NUMBER + " " + this.MEETING.PROJECT.OFFICE.NAME;
+        public string Office => this.MEETING.PROJECT.NUMBER + " " + this.MEETING.PROJECT.OfficeName;
     }
 }

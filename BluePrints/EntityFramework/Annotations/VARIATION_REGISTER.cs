@@ -37,6 +37,6 @@ namespace BluePrints.Data
         [NotMapped]
         public decimal Margin_Percentage => CURRENT_VALUE == 0 ? 0 : Margin / CURRENT_VALUE;
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

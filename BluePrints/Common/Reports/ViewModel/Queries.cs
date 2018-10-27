@@ -122,6 +122,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (live_progress == null)
                     continue;
 
+                ChronologicalHelpers.AutosetProgressDataDate(live_progress);
                 BASELINE live_baseline = project.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
                 IEnumerable<BASELINE_ITEM> user_project_baseline_item = user_baseline_item_by_project.Deliverables;
                 IEnumerable<SUBJOB> subjobs = project.SUBJOB;

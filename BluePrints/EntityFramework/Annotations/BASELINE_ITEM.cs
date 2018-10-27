@@ -419,9 +419,9 @@ namespace BluePrints.Data
             get
             {
                 if (this.BASELINE != null)
-                    return "Baseline " + this.BASELINE.PROJECT.NUMBER + " " + this.BASELINE.PROJECT.OFFICE.NAME;
+                    return "Baseline " + this.BASELINE.PROJECT.NUMBER + " " + this.BASELINE.PROJECT.OfficeName;
                 else if (this.VARIATION != null)
-                    return "Variation " + this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OFFICE.NAME;
+                    return "Variation " + this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OfficeName;
 
                 return BluePrintsResources.GlobalOffice;
             }

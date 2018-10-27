@@ -15,6 +15,7 @@ using BaseModel.Misc;
 using System.Data.Entity;
 using System.Threading;
 using System.Windows.Threading;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.Common
 {
@@ -155,69 +156,69 @@ namespace BluePrints.Common
         {
             QueueWorkItem<BASELINE>();
             QueueWorkItem<BASELINE_ITEM>();
-            QueueWorkItem<BASELINE_ITEM_WORK>();
-            QueueWorkItem<CLIENT>();
-            QueueWorkItem<COMMODITY_CODE>();
-            QueueWorkItem<CONSTRUCTION_CONFIG>();
-            QueueWorkItem<DAYWORK>();
-            QueueWorkItem<DAYWORK_EQUIPMENT>();
-            QueueWorkItem<DAYWORK_MATERIAL>();
-            QueueWorkItem<DAYWORK_LABOUR>();
-            QueueWorkItem<DAYWORK_STAFF_ROLE>();
-            QueueWorkItem<DELIVERABLES_STATUS>();
-            QueueWorkItem<DEPARTMENT>();
-            QueueWorkItem<DISCIPLINE>();
-            QueueWorkItem<DOCTYPE>();
-            QueueWorkItem<ESTIMATE>();
-            QueueWorkItem<ESTIMATE_ITEM>();
-            QueueWorkItem<FORECAST>();
-            QueueWorkItem<HSE>();
-            QueueWorkItem<HSE_INCIDENT>();
-            QueueWorkItem<HSE_INJURY>();
-            QueueWorkItem<HOLIDAY>();
-            QueueWorkItem<MEETING>();
-            QueueWorkItem<MEETING_USER>();
-            QueueWorkItem<MINUTE_AGENDA>();
-            QueueWorkItem<MINUTE_TITLE>();
-            QueueWorkItem<P6_ASSIGNMENT>();
-            QueueWorkItem<PHASE>();
-            QueueWorkItem<PROGRESS>();
-            QueueWorkItem<PROGRESS_ITEM>();
-            QueueWorkItem<PROJECT>();
-            QueueWorkItem<PROJECT_DISCIPLINE>();
-            QueueWorkItem<PROJECT_REPORT>();
-            QueueWorkItem<RA_GUIDE_PROMPT>();
-            QueueWorkItem<RA_GUIDE_SUBPROMPT>();
-            QueueWorkItem<RA_STUDY>();
-            QueueWorkItem<RA_STUDY_DATA>();
-            QueueWorkItem<RA_STUDY_DRAWING>();
-            QueueWorkItem<RA_STUDY_NODE>();
-            QueueWorkItem<RA_STUDY_TYPE>();
-            QueueWorkItem<RA_STUDY_TEAM>();
-            QueueWorkItem<RATE>();
-            QueueWorkItem<REGISTER>();
-            QueueWorkItem<REGISTER_CHANGE>();
-            QueueWorkItem<REGISTER_HOLD>();
-            QueueWorkItem<REGISTER_HOLD_REF>();
-            QueueWorkItem<REGISTER_ISSUE>();
-            QueueWorkItem<REGISTER_LL>();
-            QueueWorkItem<REGISTER_NC>();
-            QueueWorkItem<REGISTER_RISK>();
-            QueueWorkItem<ROLE>();
-            QueueWorkItem<ROLE_PERMISSION>();
-            QueueWorkItem<ROLE_COMMODITY>();
-            QueueWorkItem<ROSTER_STAFF>();
-            QueueWorkItem<ROSTER_STAFF_STATUS>();
-            QueueWorkItem<SETTINGS_GLOBAL>();
-            QueueWorkItem<STOCK_CODE>();
-            QueueWorkItem<STOCK_GROUP>();
-            QueueWorkItem<UOM>();
-            QueueWorkItem<USER>();
-            QueueWorkItem<VARIATION>();
-            QueueWorkItem<VARIATION_ITEM>();
-            QueueWorkItem<SUBJOB>();
-            QueueWorkItem<SUBJOB_ASSIGNMENT>();
-            QueueWorkItem<VARIATION_REGISTER>();
+            //QueueWorkItem<BASELINE_ITEM_WORK>();
+            //QueueWorkItem<CLIENT>();
+            //QueueWorkItem<COMMODITY_CODE>();
+            //QueueWorkItem<CONSTRUCTION_CONFIG>();
+            //QueueWorkItem<DAYWORK>();
+            //QueueWorkItem<DAYWORK_EQUIPMENT>();
+            //QueueWorkItem<DAYWORK_MATERIAL>();
+            //QueueWorkItem<DAYWORK_LABOUR>();
+            //QueueWorkItem<DAYWORK_STAFF_ROLE>();
+            //QueueWorkItem<DELIVERABLES_STATUS>();
+            //QueueWorkItem<DEPARTMENT>();
+            //QueueWorkItem<DISCIPLINE>();
+            //QueueWorkItem<DOCTYPE>();
+            //QueueWorkItem<ESTIMATE>();
+            //QueueWorkItem<ESTIMATE_ITEM>();
+            //QueueWorkItem<FORECAST>();
+            //QueueWorkItem<HSE>();
+            //QueueWorkItem<HSE_INCIDENT>();
+            //QueueWorkItem<HSE_INJURY>();
+            //QueueWorkItem<HOLIDAY>();
+            //QueueWorkItem<MEETING>();
+            //QueueWorkItem<MEETING_USER>();
+            //QueueWorkItem<MINUTE_AGENDA>();
+            //QueueWorkItem<MINUTE_TITLE>();
+            //QueueWorkItem<P6_ASSIGNMENT>();
+            //QueueWorkItem<PHASE>();
+            //QueueWorkItem<PROGRESS>();
+            //QueueWorkItem<PROGRESS_ITEM>();
+            //QueueWorkItem<PROJECT>();
+            //QueueWorkItem<PROJECT_DISCIPLINE>();
+            //QueueWorkItem<PROJECT_REPORT>();
+            //QueueWorkItem<RA_GUIDE_PROMPT>();
+            //QueueWorkItem<RA_GUIDE_SUBPROMPT>();
+            //QueueWorkItem<RA_STUDY>();
+            //QueueWorkItem<RA_STUDY_DATA>();
+            //QueueWorkItem<RA_STUDY_DRAWING>();
+            //QueueWorkItem<RA_STUDY_NODE>();
+            //QueueWorkItem<RA_STUDY_TYPE>();
+            //QueueWorkItem<RA_STUDY_TEAM>();
+            //QueueWorkItem<RATE>();
+            //QueueWorkItem<REGISTER>();
+            //QueueWorkItem<REGISTER_CHANGE>();
+            //QueueWorkItem<REGISTER_HOLD>();
+            //QueueWorkItem<REGISTER_HOLD_REF>();
+            //QueueWorkItem<REGISTER_ISSUE>();
+            //QueueWorkItem<REGISTER_LL>();
+            //QueueWorkItem<REGISTER_NC>();
+            //QueueWorkItem<REGISTER_RISK>();
+            //QueueWorkItem<ROLE>();
+            //QueueWorkItem<ROLE_PERMISSION>();
+            //QueueWorkItem<ROLE_COMMODITY>();
+            //QueueWorkItem<ROSTER_STAFF>();
+            //QueueWorkItem<ROSTER_STAFF_STATUS>();
+            //QueueWorkItem<SETTINGS_GLOBAL>();
+            //QueueWorkItem<STOCK_CODE>();
+            //QueueWorkItem<STOCK_GROUP>();
+            //QueueWorkItem<UOM>();
+            //QueueWorkItem<USER>();
+            //QueueWorkItem<VARIATION>();
+            //QueueWorkItem<VARIATION_ITEM>();
+            //QueueWorkItem<SUBJOB>();
+            //QueueWorkItem<SUBJOB_ASSIGNMENT>();
+            //QueueWorkItem<VARIATION_REGISTER>();
         }
 
         private void QueueWorkItem<T>()
@@ -268,10 +269,11 @@ namespace BluePrints.Common
                     foreach (var localData in localDbSet)
                     {
                         bool? syncRemote = null;
-                        bool? deleteRemote = null;
                         DateTime localCreated = localData.CREATED;
                         DateTime? localUpdated = localData.UPDATED;
                         DateTime? localDeleted = localData.DELETED;
+                        bool isDataLocal = localData.Office.ToUpper().Contains("PERTH");
+                        bool isDataGlobal = localData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
 
                         T remoteData = remoteDbSet.FirstOrDefault(x => x.GUID == localData.GUID);
                         if (remoteData != null)
@@ -280,46 +282,53 @@ namespace BluePrints.Common
                             DateTime? remoteUpdated = remoteData.UPDATED;
                             DateTime? remoteDeleted = remoteData.DELETED;
 
-                            //Delete
-                            if (remoteDeleted != null && localDeleted != null)
+                            if(isDataGlobal)
                             {
-                                if (remoteDeleted > localDeleted)
-                                    deleteRemote = true;
-                                else if (remoteDeleted < localDeleted)
-                                    deleteRemote = false;
-                            }
-                            else if (remoteDeleted != null && localDeleted == null)
-                            {
-                                deleteRemote = true;
-                            }
-                            else if (remoteDeleted == null && localDeleted != null)
-                            {
-                                deleteRemote = false;
-                            }
-
-                            //Update
-                            else if (remoteUpdated != null && localUpdated != null)
-                            {
-                                if (remoteUpdated > localUpdated)
+                                //Delete
+                                if (remoteDeleted != null && localDeleted != null)
+                                {
+                                    if (remoteDeleted > localDeleted)
+                                        syncRemote = true;
+                                    else if (remoteDeleted < localDeleted)
+                                        syncRemote = false;
+                                }
+                                else if (remoteDeleted != null && localDeleted == null)
+                                {
                                     syncRemote = true;
-                                else if (remoteUpdated < localUpdated)
+                                }
+                                else if (remoteDeleted == null && localDeleted != null)
+                                {
+                                    syncRemote = false;
+                                }
+
+                                //Update
+                                else if (remoteUpdated != null && localUpdated != null)
+                                {
+                                    if (remoteUpdated > localUpdated)
+                                        syncRemote = true;
+                                    else if (remoteUpdated < localUpdated)
+                                        syncRemote = false;
+                                }
+                                else if (remoteUpdated != null && localUpdated == null)
+                                {
+                                    syncRemote = true;
+                                }
+                                else if (remoteUpdated == null && localUpdated != null)
+                                {
+                                    syncRemote = false;
+                                }
+
+                                //Created
+                                if (remoteCreated > localCreated)
+                                    syncRemote = true;
+                                else if (remoteCreated < localCreated)
                                     syncRemote = false;
                             }
-                            else if (remoteUpdated != null && localUpdated == null)
+                            else
                             {
-                                syncRemote = true;
+                                if(remoteData.CREATED != localData.CREATED || remoteData.UPDATED != localData.UPDATED || remoteData.DELETED != localData.DELETED)
+                                    syncRemote = !isDataLocal;
                             }
-                            else if (remoteUpdated == null && localUpdated != null)
-                            {
-                                syncRemote = false;
-                            }
-
-                            //Created
-                            if (remoteCreated > localCreated)
-                                syncRemote = true;
-                            else if (remoteCreated < localCreated)
-                                syncRemote = false;
-
 
                             if (syncRemote == true)
                             {
@@ -329,24 +338,21 @@ namespace BluePrints.Common
                             {
                                 finishAction(new SyncReport() { Action = "Update", Destination = "Remote", Project = localData.Office, Properties = DataUtils.ShallowCopyDiffTracking(remoteData, localData), TableName = typeName });
                             }
-
-                            if(deleteRemote == true)
-                            {
-                                DataUtils.ShallowCopy(localData, remoteData);
-                                finishAction(new SyncReport() { Action = "Delete", Destination = "Local", Project = localData.Office, Properties = string.Empty, TableName = typeName });
-                            }
-                            else if(deleteRemote == false)
-                            {
-                                DataUtils.ShallowCopy(remoteData, localData);
-                                finishAction(new SyncReport() { Action = "Delete", Destination = "Remote", Project = localData.Office, Properties = string.Empty, TableName = typeName });
-                            }
                         }
                         else
                         {
                             T remoteNewData = new T();
-                            remoteDbSet.Add(remoteNewData);
+                            string action = "Add";
+                            //mark local data as deleted if its a remote data and doesn't exists in remote
+                            if (!isDataLocal && !isDataGlobal)
+                            {
+                                localData.DELETED = DateTime.Now;
+                                action = "Add as Deleted";
+                            }
+
                             DataUtils.ShallowCopy(remoteNewData, localData);
-                            finishAction(new SyncReport() { Action = "Add", Destination = "Remote", Project = localData.Office, Properties = string.Empty, TableName = typeName });
+                            remoteDbSet.Add(remoteNewData);
+                            finishAction(new SyncReport() { Action = action, Destination = "Remote", Project = localData.Office, Properties = string.Empty, TableName = typeName });
                         }
 
                         progressLocalAction(typeName, 1);
@@ -370,19 +376,31 @@ namespace BluePrints.Common
                     //List<T> localDbSetList = localDbSet.ToList();
                     foreach (var remoteData in remoteDbSet)
                     {
+                        bool isDataRemote = remoteData.Office.ToUpper().Contains("MONTREAL");
+                        bool isDataGlobal = remoteData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+
                         T localData = localDbSet.FirstOrDefault(x => x.GUID == remoteData.GUID);
                         if (localData == null)
                         {
                             T localNewData = new T();
-                            localDbSet.Add(localNewData);
+                            string action = "Add";
+                            //mark remote data as deleted if it doesn't exists in local
+                            if (!isDataRemote && !isDataGlobal)
+                            {
+                                remoteData.DELETED = DateTime.Now;
+                                action = "Add as Deleted";
+                            }
+
                             DataUtils.ShallowCopy(localNewData, remoteData);
-                            finishAction(new SyncReport() { Action = "Add", Destination = "Local", Properties = string.Empty, TableName = typeName });
+                            localDbSet.Add(localNewData);
+                            finishAction(new SyncReport() { Action = action, Destination = "Local", Project = remoteData.Office, Properties = string.Empty, TableName = typeName });
                         }
 
                         progressRemoteAction(typeName, 1);
                     }
 
                     localDataContext.SaveChanges();
+                    remoteDataContext.SaveChanges();
                     progressRemoteAction(typeName, remoteDataContextCount);
                 }
             }

@@ -93,6 +93,6 @@ namespace BluePrints.Data
             }
         }
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

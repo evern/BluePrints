@@ -213,7 +213,7 @@ namespace BluePrints.Data
         public decimal Discipline_Number => DISCIPLINE_NUM;
 
         [NotMapped]
-        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
 
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
 
@@ -236,9 +236,9 @@ namespace BluePrints.Data
             get
             {
                 if (this.ESTIMATE != null)
-                    return this.ESTIMATE.PROJECT.NUMBER + " " + this.ESTIMATE.PROJECT.OFFICE.NAME;
+                    return this.ESTIMATE.PROJECT.NUMBER + " " + this.ESTIMATE.PROJECT.OfficeName;
                 else if (this.VARIATION != null)
-                    return this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OFFICE.NAME;
+                    return this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OfficeName;
 
                 return string.Empty;
             }

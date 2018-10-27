@@ -51,6 +51,6 @@ namespace BluePrints.Data
             this.roles = roles;
         }
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

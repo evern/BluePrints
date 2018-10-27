@@ -1,6 +1,7 @@
 ﻿using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -91,6 +92,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static DateTime RewindDataDate(DateTime fixedStartDate, DateTime fixedDataDate, TimeSpan periodInterval)
         {
             var dataDate = fixedDataDate;
+            if (fixedDataDate.Year < fixedStartDate.Year)
+                return fixedDataDate;
 
             //rewind the first progress date to scan to before the datadate aligned to startdate day of week
             while (dataDate.AddDays(-1 * periodInterval.Days) > fixedStartDate.Date.AddSeconds(-1))
@@ -107,6 +110,30 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             TimeSpan intervalPeriod = TimeSpan.FromDays((int)PROGRESS.INTERVAL_TYPE * intervalCount);
             return intervalPeriod;
+        }
+
+        public static void AutosetProgressDataDate(PROGRESS progress)
+        {
+            var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(progress);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(progress);
+
+            //multiply by 2 to avoid missing out dates
+            DateTime lastAlignedDataDate = DateTime.Now.AddDays(interval.Days * 2);
+
+            List<DateTime> alignedDataDates = GenerateAlignedDatesCollection(firstAlignedDataDate, lastAlignedDataDate, interval);
+            DateTime currentDateTime = DateTime.Now;
+            if(currentDateTime.DayOfWeek == DayOfWeek.Monday)
+            {
+                DateTime previousWeekDataDate = alignedDataDates.LastOrDefault(x => x < currentDateTime);
+                if (previousWeekDataDate != null)
+                    progress.DATA_DATE = previousWeekDataDate;
+            }
+            else
+            {
+                DateTime currentWeekDataDate = alignedDataDates.FirstOrDefault(x => x > currentDateTime);
+                if (currentWeekDataDate != null)
+                    progress.DATA_DATE = currentWeekDataDate;
+            }
         }
 
         /// <summary>

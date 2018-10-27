@@ -44,6 +44,6 @@
             }
         }
 
-        public string Office => this.ROSTER_STAFF.PROJECT.NUMBER + " " + this.ROSTER_STAFF.PROJECT.OFFICE.NAME;
+        public string Office => this.ROSTER_STAFF.PROJECT.NUMBER + " " + this.ROSTER_STAFF.PROJECT.OfficeName;
     }
 }

@@ -108,6 +108,6 @@ namespace BluePrints.Data
         [NotMapped]
         public int Summary_Closed_Agendas { get; set; }
 
-        public string Office => this.MEETING_TYPE.PROJECT.NUMBER + " " + this.MEETING_TYPE.PROJECT.OFFICE.NAME;
+        public string Office => this.MEETING_TYPE.PROJECT.NUMBER + " " + this.MEETING_TYPE.PROJECT.OfficeName;
     }
 }

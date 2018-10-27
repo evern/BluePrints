@@ -4,6 +4,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using Common;
     using DevExpress.Mvvm;
     using System;
@@ -82,6 +83,18 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public string OfficeName
+        {
+            get
+            {
+                if (OFFICE == null)
+                    return BluePrintsResources.GlobalOffice;
+
+                return OFFICE.NAME;
+            }
+        }
+
+        [NotMapped]
         private IEnumerable<object> disciplines;
 
         [NotMapped]
@@ -129,6 +142,6 @@ namespace BluePrints.Data
             }
         }
 
-        public string Office => this.NUMBER + " " + this.OFFICE.NAME;
+        public string Office => this.NUMBER + " " + this.OfficeName;
     }
 }

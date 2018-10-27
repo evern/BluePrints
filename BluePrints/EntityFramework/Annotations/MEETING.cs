@@ -168,7 +168,7 @@ namespace BluePrints.Data
         [NotMapped]
         public string EntityGroup => GUID_MEETING_TYPE.ToString();
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 
     public class MeetingUser

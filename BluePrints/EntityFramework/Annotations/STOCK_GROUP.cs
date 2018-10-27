@@ -42,7 +42,7 @@ namespace BluePrints.Data
             get
             {
                 if (this.PROJECT != null)
-                    return this.PROJECT.NUMBER + " " + this.PROJECT.OFFICE.NAME;
+                    return this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
                 return BluePrintsResources.GlobalOffice;
             }
