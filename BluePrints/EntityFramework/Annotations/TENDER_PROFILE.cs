@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
+    using BluePrints.Common.Resources;
 
     public partial class TENDER_PROFILE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -33,6 +34,15 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
-        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+        public string Office
+        {
+            get
+            {
+                if(this.PROJECT != null)
+                    return  this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+
+                return BluePrintsResources.GlobalOffice;
+            }
+        }
     }
 }

@@ -43,7 +43,7 @@ namespace BluePrints.Data
         {
             get
             {
-                if (this.TENDER_PROFILE != null)
+                if (this.TENDER_PROFILE != null && this.TENDER_PROFILE.PROJECT != null)
                     return this.TENDER_PROFILE.PROJECT.NUMBER + " " + this.TENDER_PROFILE.PROJECT.OfficeName;
 
                 return BluePrintsResources.GlobalOffice;

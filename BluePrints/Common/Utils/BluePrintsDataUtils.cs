@@ -144,6 +144,12 @@ namespace BluePrints.Common.ViewModel.Utils
 
     public static class BluePrintsDataUtils
     {
+
+        public static bool GuidEquals<T>(T x, T y)
+            where T : class, ICanSync, new()
+        {
+            return x.GUID == y.GUID;
+        }
         /// <summary>
         /// Assign subjob to deliverables or estimation direct item before saving
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name
