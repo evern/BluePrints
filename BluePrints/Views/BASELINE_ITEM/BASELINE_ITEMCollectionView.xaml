@@ -277,11 +277,6 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
                         <dxg:GridColumn FieldName="Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" />
                         <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
@@ -291,7 +286,7 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="StartDate" FilterPopupMode="CheckedList" Header="Start Date" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                        <!--<dxg:GridColumn FieldName="StartDate" FilterPopupMode="CheckedList" Header="Start Date" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings />
                             </dxg:GridColumn.EditSettings>
@@ -305,10 +300,15 @@
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings />
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
+                        </dxg:GridColumn>-->
                         <dxg:GridColumn FieldName="Entity.Entity.NEXT_RELEASE_DATE" FilterPopupMode="CheckedList" Header="Next Release Date" HeaderToolTip="Date for next status gate" IsEnabled="False">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="CanBook" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Time can be booked in exo" ReadOnly="True" />
