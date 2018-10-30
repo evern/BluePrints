@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                var user = USERS.Where(x => x.IS_ACTIVE).FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                var user = USERS.Where(x => x.LEAVE_DATE == null).FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
                 if (user == null)
                     return UserAuthenticationResult.UsernameNotAdded;
                 else

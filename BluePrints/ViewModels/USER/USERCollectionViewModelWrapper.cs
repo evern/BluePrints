@@ -257,7 +257,10 @@ namespace BluePrints.ViewModels
         public void OnAfterEntitySaved(USER projection, USER entity, bool isNewEntity)
         {
             if(isNewEntity && entity.EXO_STAFF_ID == null)
+            {
+                entity.START_DATE = DateTime.Now;
                 entity.EXO_STAFF_ID = getExoStaffId(entity);
+            }
         }
         #endregion
 
