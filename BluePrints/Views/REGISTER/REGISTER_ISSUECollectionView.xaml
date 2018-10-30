@@ -146,11 +146,11 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.FormatConditions>
-                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null">
-                                        <dx:Format Background="#FFFF9B98" Foreground="Black" />
-                                    </dxg:FormatCondition>
                                     <dxg:FormatCondition FieldName="DATE_CLOSED" ApplyToRow="True" Expression="[DATE_CLOSED] Is Not Null">
                                         <dx:Format Background="LightBlue" Foreground="Black" />
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition FieldName="ACTIONED_ON_DWG" Expression="Not IsActionedOnDrawing And [DATE_CLOSED] Is Not Null">
+                                        <dx:Format Background="#FFFF9B98" Foreground="Black" />
                                     </dxg:FormatCondition>
                                 </dxg:TableView.FormatConditions>
                                 <dxg:TableView.RowCellMenuCustomizations>
