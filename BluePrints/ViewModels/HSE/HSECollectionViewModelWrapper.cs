@@ -137,9 +137,9 @@ namespace BluePrints.ViewModels
         public virtual IPivotGridControlService PivotGridControlService { get { return null; } }
 
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return "hse_stats_export.xlsx";
+            return "hse_stats_export";
         }
 
         public override void ExportToExcel()
@@ -148,7 +148,7 @@ namespace BluePrints.ViewModels
             if (FolderBrowserDialogService.ShowDialog())
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
-                PivotGridControlService.ExportToExcel(ResultPath + "\\" + ExportExcelFilename());
+                PivotGridControlService.ExportToExcel(ResultPath + "\\" + ExportFilename() + ".xlsx");
             }
         }
 

@@ -47,25 +47,19 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Type" FieldName="TYPE" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Lessons Learned Title" FieldName="TITLE" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Process Issue" FieldName="PROCESS_ISSUE" AllowMoving="false">
                                 <dxg:GridColumn.EditSettings>
@@ -73,18 +67,14 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Further Action Required" FieldName="FURTHER_ACTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Date Identified" FieldName="DATE_IDENTIFIED" AllowMoving="false" />
                             <dxg:GridColumn Header="Date Closed" FieldName="DATE_CLOSED" AllowMoving="false" />

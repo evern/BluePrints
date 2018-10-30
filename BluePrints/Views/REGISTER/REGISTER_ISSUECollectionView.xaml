@@ -46,25 +46,19 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Title" FieldName="TITLE" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Issue Description" FieldName="DESCRIPTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Proposed Solution or Comments" FieldName="PROPOSED_SOLUTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Schedule Impact" FieldName="SCHEDULE_IMPACT" AllowMoving="false">
                                 <dxg:GridColumn.EditSettings>
@@ -103,18 +97,14 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Client Notification" FieldName="CLIENT_NOTIFICATION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Notified Person" FieldName="NOTIFIED_PERSON" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Date Raised" FieldName="DATE_RAISED" AllowMoving="false" />
                             <dxg:GridColumn Header="Responsible Person" FieldName="GUID_RESPONSIBLE_PERSON" AllowMoving="false">
@@ -123,15 +113,13 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Final Resolution" FieldName="FINAL_RESOLUTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Way Closed" FieldName="WAY_CLOSED" AllowMoving="false">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings TextWrapping="Wrap" />
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Closed Notified Person" FieldName="CLOSED_NOTIFIED_PERSON" AllowMoving="false" />

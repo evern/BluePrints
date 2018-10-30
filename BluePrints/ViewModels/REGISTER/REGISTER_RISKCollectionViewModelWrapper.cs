@@ -181,11 +181,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Register_Risk.xlsx";
+            return loadPROJECT.NUMBER + "_Register_Risk";
         }
-
+        
         public override string UnifiedRowValidation(REGISTER_RISK projection)
         {
             return string.Empty;

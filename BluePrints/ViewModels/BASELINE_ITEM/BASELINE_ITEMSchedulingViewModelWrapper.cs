@@ -760,9 +760,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
+            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
 
         #endregion

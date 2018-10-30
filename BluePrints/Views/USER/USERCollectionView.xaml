@@ -86,6 +86,11 @@
                                     <dxe:SpinEditSettings Increment="0.01" Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IS_ACTIVE" Header="Active" HeaderToolTip="Only active users can login into the system">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

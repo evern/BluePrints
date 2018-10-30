@@ -308,9 +308,9 @@ namespace BluePrints.ViewModels
 
         public Func<IEnumerable<WORKPACKProjection>> GetGridVisibleRows;
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
+            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
 
         public override string UnifiedRowValidation(WORKPACKProjection projection)

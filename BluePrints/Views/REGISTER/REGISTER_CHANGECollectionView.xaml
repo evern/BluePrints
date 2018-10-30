@@ -38,18 +38,14 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Title" FieldName="TITLE" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Issue Description" FieldName="DESCRIPTION" AllowMoving="false">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Schedule Impact" FieldName="SCHEDULE_IMPACT" AllowMoving="false">
                                 <dxg:GridColumn.EditSettings>

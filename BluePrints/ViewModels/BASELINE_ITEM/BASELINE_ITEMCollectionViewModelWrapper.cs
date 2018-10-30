@@ -2085,9 +2085,9 @@ namespace BluePrints.ViewModels
             BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives, MessageBoxService, BookTimeDialogService);
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION + ".xlsx";
+            return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
 
         #endregion

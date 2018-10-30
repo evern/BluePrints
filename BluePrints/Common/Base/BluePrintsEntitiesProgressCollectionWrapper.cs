@@ -335,9 +335,11 @@ namespace BluePrints.Common.Base
         }
 
         public bool isBusy { get; set; }
+        public bool isCalculationCompleted { get; set; }
         protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             isBusy = false;
+            isCalculationCompleted = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
         }
 
@@ -1511,9 +1513,9 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region Reporting
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Progress_" + loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy") + ".xlsx";
+            return loadPROJECT.NUMBER + "_Progress_" + loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy");
         }
         #endregion
 

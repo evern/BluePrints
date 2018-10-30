@@ -34,6 +34,7 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -138,13 +139,31 @@ namespace BluePrints.ViewModels
             return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, true);
         }
 
+        bool isBestFitApplied;
+        private Timer post_loaded_dispatcher_timer;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
+            //placed before current routine because AlwaysSkipMessage should be set to false
+            base.AssignCallBacksAndRaisePropertyChange(entities);
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.IsPasteCellLevel = false;
-            base.AssignCallBacksAndRaisePropertyChange(entities);
+            MainViewModel.AlwaysSkipMessage = false;
+            doNotApplyBestFit = true;
         }
+
+        private void applyBestFit()
+        {
+            if (TableViewService != null && !isBestFitApplied)
+            {
+                if (DisplayEntities != null && DisplayEntities.Count > 0)
+                    TableViewService.ApplyBestFit();
+
+                TableViewService.ScrollToLast();
+                isBestFitApplied = true;
+            }
+        }
+
         #region Collection Call Backs
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
@@ -186,10 +205,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        //because stats aren't fully built yet in progress base class on CalculatePlannedBackgroundWorker, do not calculate dataPointsTable
+        bool canCalculateDataPointsTable;
         protected override void onAfterRefresh()
         {
             base.onAfterRefresh();
+            canCalculateDataPointsTable = true;
             refreshDataPointsTable();
+
+            if(isCalculationCompleted)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => applyBestFit()));
+            }
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -608,6 +635,9 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null || DisplayEntities == null)
                     return null;
 
+                if (!canCalculateDataPointsTable)
+                    return null;
+
                 if(dataPointsTable == null)
                 {
                     dataPointsTable = new DataTable();
@@ -648,8 +678,6 @@ namespace BluePrints.ViewModels
                     {
                         BuildRowStats(entity, false);
                     }
-
-                    TableViewService.ScrollToLast();
                 }
 
                 return dataPointsTable;

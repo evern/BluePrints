@@ -215,9 +215,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Register_Hold.xlsx";
+            return loadPROJECT.NUMBER + "_Register_Hold";
         }
 
 

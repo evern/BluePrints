@@ -253,12 +253,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
             if (isProjectSpecific)
-                return loadPROJECT.NUMBER + "_DeliverablesStatus.xlsx";
+                return loadPROJECT.NUMBER + "_DeliverablesStatus";
             else
-                return "Global_DeliverablesStatus.xlsx";
+                return "Global_DeliverablesStatus";
         }
 
         public override string UnifiedValueValidation(DELIVERABLES_STATUS projection, string field_name, object new_value)

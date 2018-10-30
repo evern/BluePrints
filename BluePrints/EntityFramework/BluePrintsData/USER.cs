@@ -77,6 +77,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_OFFICE { get; set; }
 
+        public bool IS_ACTIVE { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT> PROJECT { get; set; }
 

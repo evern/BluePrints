@@ -338,9 +338,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ExportExcelFilename()
+        protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_Register_Issue.xlsx";
+            return loadPROJECT.NUMBER + "_Register_Issue";
         }
 
         public IEnumerable<AREA> AREACollection

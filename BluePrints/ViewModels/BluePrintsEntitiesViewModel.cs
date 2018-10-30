@@ -110,7 +110,7 @@ namespace BluePrints.ViewModels
         private void MyDeliverablesDispatcher_Tick(object sender, EventArgs e)
         {
             myDeliverablesDispatcher.Stop();
-            if (LoginCredentials.CurrentUser != null)
+            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
                 NavigateCore(myDeliverablesDescription);
         }
 

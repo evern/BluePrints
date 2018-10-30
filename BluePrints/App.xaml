@@ -4,6 +4,11 @@
         <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
         <converter:ForecastFutureCellColorConverter x:Key="ForecastFutureCellColorConverter" />
         <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
+        <DataTemplate x:Key="GridPrintHeaderTemplate">
+            <StackPanel HorizontalAlignment="Left">
+                <dxe:ImageEdit IsPrintingMode="True" MaxHeight="61" MaxWidth="295" IsReadOnly="True" Source="pack://application:,,,/BluePrints;component/Common/Images/PRIMERO.jpg" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Key="percentageTemplateLastDate">
             <Grid>
                 <Grid.ColumnDefinitions>
