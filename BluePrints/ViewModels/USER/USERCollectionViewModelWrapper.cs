@@ -16,6 +16,7 @@ using System.Linq;
 using System.IO.Ports;
 using System.Windows.Threading;
 using System.ComponentModel;
+using DevExpress.Data.Filtering;
 
 namespace BluePrints.ViewModels
 {
@@ -251,6 +252,12 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            HideLeave = true;
+            this.RaisePropertyChanged(x => x.HideLeave);
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
@@ -474,6 +481,59 @@ namespace BluePrints.ViewModels
             serialPortScanTimer.Stop();
             serialPortWriteTimer.Stop();
             base.OnClose(e);
+        }
+
+        bool hideLeaved;
+        public bool HideLeave
+        {
+            get
+            {
+                return hideLeaved;
+            }
+            set
+            {
+                hideLeaved = value;
+                if (GridControlService != null)
+                {
+                    if (value)
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator newCriteriaOperator;
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            string filterCriteria = criteriaOperator.ToString() + " And [LEAVE_DATE] IS NULL";
+                            newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
+                        }
+                        else
+                        {
+                            newCriteriaOperator = CriteriaOperator.Parse("[LEAVE_DATE] IS NULL");
+                        }
+
+                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                    }
+                    else
+                    {
+                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        if (!ReferenceEquals(criteriaOperator, null))
+                        {
+                            CriteriaOperator newCriteriaOperator;
+                            string currentFilterCriteria = criteriaOperator.ToString();
+                            string newfilterCriteria = currentFilterCriteria.Replace("And [LEAVE_DATE] IS NULL", "");
+                            newfilterCriteria = newfilterCriteria.Replace("[LEAVE_DATE] IS NULL", "");
+                            if (newfilterCriteria.Length >= 5)
+                            {
+                                string firstFiveChar = newfilterCriteria.Substring(0, 5);
+                                if (firstFiveChar.ToUpper().Contains("AND"))
+                                    newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
+                            }
+
+
+                            newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
+                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        }
+                    }
+                }
+            }
         }
         #endregion
     }
