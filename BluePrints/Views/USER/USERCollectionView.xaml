@@ -86,9 +86,14 @@
                                     <dxe:SpinEditSettings Increment="0.01" Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="IS_ACTIVE" Header="Active" HeaderToolTip="Only active users can login into the system">
+                            <dxg:GridColumn FieldName="START_DATE" Header="Start Date" HeaderToolTip="User's start date in the company">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:CheckEditSettings />
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="LEAVE_DATE" Header="Leave Date" HeaderToolTip="User's leave date from the company">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
