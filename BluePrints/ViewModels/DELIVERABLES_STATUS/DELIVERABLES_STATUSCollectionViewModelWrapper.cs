@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -61,6 +62,15 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DSTATUS_DOCTYPES, DSTATUS_DOCTYPEProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<DSTATUS_DOCTYPE>, IQueryable<DSTATUS_DOCTYPE>> DSTATUS_DOCTYPEProjectionFunc()
+        {
+            if (isProjectSpecific)
+                return query => query.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == null);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -73,13 +83,21 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             if (isProjectSpecific)
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
+                return query => setAssignedDocumentTypes(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.MAX_PERCENTAGE), DSTATUS_DOCTYPECollection);
             else
-                return query => query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.GUID_DOCTYPE).ThenBy(x => x.MAX_PERCENTAGE);
+                return query => setAssignedDocumentTypes(query.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.MAX_PERCENTAGE), DSTATUS_DOCTYPECollection);
+        }
+
+        private IQueryable<DELIVERABLES_STATUS> setAssignedDocumentTypes(IQueryable<DELIVERABLES_STATUS> query, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPES)
+        {
+            List<DELIVERABLES_STATUS> deliverable_statuses = query.ToList();
+            deliverable_statuses.ForEach(x => x.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES));
+            return deliverable_statuses.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
+            MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = applyProjectionProperties;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -103,6 +121,64 @@ namespace BluePrints.ViewModels
             }
 
             return true;
+        }
+
+        //Save assigned document types on projection
+        private void onAfterEntitySaved(DELIVERABLES_STATUS projectionEntity, DELIVERABLES_STATUS entity, bool isNewEntity)
+        {
+            if (MainViewModel == null)
+                return;
+
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            DeleteProjectionDocTypes(projectionEntity);
+            SaveProjectionDocTypes(projectionEntity);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private void DeleteProjectionDocTypes(DELIVERABLES_STATUS projectionEntity)
+        {
+            List<DOCTYPE> projectionDocTypes = projectionEntity.GetAssignedDocTypes();
+            List<DOCTYPE> assignedDocTypes = projectionDocTypes == null ? new List<DOCTYPE>() : projectionDocTypes.Select(x => x).ToList();
+            List<DSTATUS_DOCTYPE> deleteStatusDocTypes = new List<DSTATUS_DOCTYPE>();
+
+            foreach (DSTATUS_DOCTYPE statusDocType in DSTATUS_DOCTYPECollection.Where(x => x.GUID_STATUS == projectionEntity.GUID))
+            {
+                if (assignedDocTypes.Count == 0)
+                    deleteStatusDocTypes.Add(statusDocType);
+                else
+                {
+                    var assignedDocType = assignedDocTypes.FirstOrDefault(x => x.GUID == statusDocType.GUID_DOCTYPE);
+                    if (assignedDocType == null)
+                        deleteStatusDocTypes.Add(statusDocType);
+                }
+            }
+
+            foreach(DSTATUS_DOCTYPE deleteStatusDocType in deleteStatusDocTypes)
+            {
+                DSTATUS_DOCTYPECollectionViewModel.Delete(deleteStatusDocType);
+            }
+        }
+
+        private void SaveProjectionDocTypes(DELIVERABLES_STATUS projectionEntity)
+        {
+            List<DOCTYPE> projectionDocTypes = projectionEntity.GetAssignedDocTypes();
+            List<DOCTYPE> assignedDocTypes = projectionDocTypes == null ? new List<DOCTYPE>() : projectionDocTypes.Select(x => x).ToList();
+
+            List<DSTATUS_DOCTYPE> currentProjectionDocTypeAssignments = DSTATUS_DOCTYPECollection.Where(x => x.GUID_STATUS == projectionEntity.GUID).ToList();
+            foreach (DOCTYPE assignedDocType in assignedDocTypes)
+            {
+                DSTATUS_DOCTYPE repositoryAssignedDocType = currentProjectionDocTypeAssignments.FirstOrDefault(x => x.GUID_DOCTYPE == assignedDocType.GUID);
+                if (repositoryAssignedDocType == null)
+                {
+                    DSTATUS_DOCTYPE newDocType = new DSTATUS_DOCTYPE();
+                    newDocType.GUID = Guid.Empty;
+                    newDocType.GUID_DOCTYPE = assignedDocType.GUID;
+                    newDocType.GUID_STATUS = projectionEntity.GUID;
+
+                    DSTATUS_DOCTYPECollectionViewModel.Save(newDocType);
+                }
+            }
+
         }
         #endregion
 
@@ -168,56 +244,51 @@ namespace BluePrints.ViewModels
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
-        public void Duplicate(BarEditItem barEdit)
-        {
-            TableViewService.SetImmediateUpdateRowPosition(true);
-            Guid doctypeGuid;
-            List<DELIVERABLES_STATUS> newEntities = new List<DELIVERABLES_STATUS>();
-            if (Guid.TryParse(barEdit.EditValue.ToString(), out doctypeGuid))
-            {
-                VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities, doctypeGuid);
-            }
-            TableViewService.SetImmediateUpdateRowPosition(false);
-        }
+        //public void Duplicate(BarEditItem barEdit)
+        //{
+        //    TableViewService.SetImmediateUpdateRowPosition(true);
+        //    Guid doctypeGuid;
+        //    List<DELIVERABLES_STATUS> newEntities = new List<DELIVERABLES_STATUS>();
+        //    if (Guid.TryParse(barEdit.EditValue.ToString(), out doctypeGuid))
+        //    {
+        //        VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities, doctypeGuid);
+        //    }
+        //    TableViewService.SetImmediateUpdateRowPosition(false);
+        //}
 
-        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, Guid? docTypeGuid = null, bool isCopyFrom = false)
+        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, bool isCopyFrom = false)
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             List<DELIVERABLES_STATUS> duplicateDeliverableStatuses = new List<DELIVERABLES_STATUS>();
-            foreach (var entities in deliverableStatuses)
+            foreach (var entity in deliverableStatuses)
             {
                 var newDeliverableStatus = new DELIVERABLES_STATUS();
-                DataUtils.ShallowCopy(newDeliverableStatus, entities);
+                DataUtils.ShallowCopy(newDeliverableStatus, entity);
                 newDeliverableStatus.GUID = Guid.Empty;
                 if (isProjectSpecific)
                     newDeliverableStatus.GUID_PROJECT = loadPROJECT.GUID;
 
-                if(!isCopyFrom)
+                if (!isCopyFrom)
                 {
-                    if (docTypeGuid != null)
-                        newDeliverableStatus.GUID_DOCTYPE = docTypeGuid;
-                    //insert mode by default
-                    else
+                    if (newDeliverableStatus.MAX_PERCENTAGE > 1m)
                     {
-                        if (newDeliverableStatus.MAX_PERCENTAGE > 1m)
-                        {
-                            MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
-                            continue;
-                        }
-
-                        newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
-                        newDeliverableStatus.MAX_PERCENTAGE = 1m;
+                        MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
+                        continue;
                     }
+
+                    newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
+                    newDeliverableStatus.MAX_PERCENTAGE = 1m;
                 }
 
-                DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && x.GUID_DOCTYPE == newDeliverableStatus.GUID_DOCTYPE);
+                List<DOCTYPE> newAssignedDocTypes = newDeliverableStatus.GetAssignedDocTypes();
+                DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && newAssignedDocTypes.Any(y => x.GetAssignedDocTypes().Any(z => z.GUID == y.GUID)));
                 if (findEntity == null)
                 {
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
                     duplicateDeliverableStatuses.Add(newDeliverableStatus);
                 }
                 else
-                    MessageBoxService.ShowMessage("Doctype with autopercentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists");
+                    MessageBoxService.ShowMessage("Document type with autopercentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists");
             }
 
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
@@ -246,8 +317,10 @@ namespace BluePrints.ViewModels
                     if (entityWithGuid != null)
                     {
                         Guid? queryGuid = entityWithGuid.EntityKey == Guid.Empty ? (Guid?)null : entityWithGuid.EntityKey;
-                        var copyEntities = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
-                        VerifyAndSaveDuplicateItems(copyEntities, null, true);
+                        IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+                        var copyEntities = unitOfWork.DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
+                        setAssignedDocumentTypes(copyEntities, unitOfWork.DSTATUS_DOCTYPES.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == queryGuid));
+                        VerifyAndSaveDuplicateItems(copyEntities, true);
                     }
                 }
             }
@@ -264,6 +337,27 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(DELIVERABLES_STATUS projection, string field_name, object new_value)
         {
             return string.Empty;
+        }
+
+        public IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection
+        {
+            get
+            {
+                return GetEntities<DSTATUS_DOCTYPE>();
+            }
+        }
+
+        public CollectionViewModel<DSTATUS_DOCTYPE, DSTATUS_DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork> DSTATUS_DOCTYPECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<DSTATUS_DOCTYPE, DSTATUS_DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<DSTATUS_DOCTYPE>();
+            }
         }
         #endregion
     }

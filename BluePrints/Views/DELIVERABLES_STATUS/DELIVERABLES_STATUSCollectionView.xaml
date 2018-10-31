@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.DELIVERABLES_STATUSCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DELIVERABLES_STATUSCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Name="userControl" x:Class="BluePrints.Views.DELIVERABLES_STATUSCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DELIVERABLES_STATUSCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,9 +33,25 @@
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the status" />
-                            <dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from" SortIndex="1">
+                            <!--<dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from" SortIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>-->
+                            <dxg:GridColumn Header="Document Types" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
+                                <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings
+                                                  ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"
+                                                  DisplayMember="NAME" 
+                                                  ValidateOnTextInput="True"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  IncrementalFiltering="True"
+                                                  AllowDefaultButton="True"
+                                                  ImmediatePopup="True">
+                                            <dxe:ComboBoxEditSettings.StyleSettings>
+                                                <dxe:CheckedTokenComboBoxStyleSettings NewTokenPosition="Far" EnableTokenWrapping="True" ShowTokenButtons="True" AllowEditTokens="False" />
+                                            </dxe:ComboBoxEditSettings.StyleSettings>
+                                        </dxe:ComboBoxEditSettings>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Auto Percentage" FieldName="AUTO_PERCENTAGE" HeaderToolTip="Percentage that will be automatically assigned when status is assigned in progress" SortIndex="2">
@@ -67,7 +83,7 @@
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarButtonItem Content="Insert" ToolTip="Insert new status below currently selected status." Command="{Binding DataContext.InsertCommand, ElementName=userControl}" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" x:Name="contextMenuInsert" />
-                                    <dxb:BarSubItem Content="Duplicate" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
+                                    <!--<dxb:BarSubItem Content="Duplicate" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}">
                                         <dxb:BarEditItem Content="Document Type" x:Name="contextMenuDuplicate">
                                             <dxb:BarEditItem.EditSettings>
                                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID">
@@ -81,7 +97,7 @@
                                                 </dxe:ComboBoxEditSettings>
                                             </dxb:BarEditItem.EditSettings>
                                         </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
+                                    </dxb:BarSubItem>-->
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>

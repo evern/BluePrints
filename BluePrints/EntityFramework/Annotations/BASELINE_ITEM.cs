@@ -285,7 +285,7 @@ namespace BluePrints.Data
         {
             get
             {
-                if (DOCTYPE == null || DOCTYPE.DELIVERABLES_STATUS == null)
+                if (DOCTYPE == null || DOCTYPE.DSTATUS_DOCTYPE == null)
                     return null;
 
                 if (BASELINE == null && VARIATION == null)
@@ -297,9 +297,10 @@ namespace BluePrints.Data
                 else
                     PROJECT = VARIATION.PROJECT;
 
-                return DOCTYPE.DELIVERABLES_STATUS
-                    .Where(x => x.GUID_PROJECT == PROJECT.GUID)
-                    .Where(x => 
+                //var test = DOCTYPE.DSTATUS_DOCTYPE.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == PROJECT.GUID).Select(x => x.DELIVERABLES_STATUS);
+
+                return DOCTYPE.GetDeliverableStatusByProject(PROJECT.GUID)
+                       .Where(x => 
                             (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.DeliverableICR) ||
                             (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.Deliverable) || 
                             (x.FOR_NONDELIVERABLE && DELIVERABLE_TYPE == DeliverableType.NonDeliverable) || 

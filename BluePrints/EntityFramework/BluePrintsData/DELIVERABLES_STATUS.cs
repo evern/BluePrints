@@ -13,8 +13,6 @@ namespace BluePrints.Data
 
         public Guid? GUID_PROJECT { get; set; }
 
-        public Guid? GUID_DOCTYPE { get; set; }
-
         [Required]
         [StringLength(500)]
         public string NAME { get; set; }
@@ -46,8 +44,9 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
-        public virtual DOCTYPE DOCTYPE { get; set; }
-
         public virtual PROJECT PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DSTATUS_DOCTYPE> DSTATUS_DOCTYPE { get; set; }
     }
 }

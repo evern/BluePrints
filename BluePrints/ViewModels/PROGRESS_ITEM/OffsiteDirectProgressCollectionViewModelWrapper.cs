@@ -125,6 +125,9 @@ namespace BluePrints.ViewModels
 
             foreach (var deliverable in deliverables)
             {
+                if (deliverable.Entity.Entity.DOCTYPE == null)
+                    continue;
+
                 DELIVERABLES_STATUS deliverableStatus = deliverable.Entity.Deliverable_Status;
 
                 //when this is null it means the deliverable status is no longer valid (e.g. deleted)
@@ -132,7 +135,7 @@ namespace BluePrints.ViewModels
                     continue;
 
                 //user are able to fill up/down on statuses that might result in assigned status isn't valid to doctype, so check if status is valid before continuing
-                bool isValidStatus = deliverable.Entity.Entity.DOCTYPE.DELIVERABLES_STATUS.Any(x => x.GUID == deliverableStatus.GUID);
+                bool isValidStatus = deliverable.Entity.Entity.DOCTYPE.GetDeliverableStatusByProject(loadPROJECT.GUID).Any(x => x.GUID == deliverableStatus.GUID);
                 if (!isValidStatus)
                     continue;
 

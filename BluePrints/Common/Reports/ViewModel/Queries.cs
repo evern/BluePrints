@@ -172,36 +172,37 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 baseline_item_queryable = BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(BASELINE_ITEMS, RATES);
 
+            //commented out because multiple resources and weighting isn't used
             //need to cast to list if not AssignUserObject won't stick
             List<BASELINE_ITEMProjection> baseline_item_projection = baseline_item_queryable.ToList();
-            if (BASELINE_ITEM_WORKCollection != null && USERCollection != null)
-            {
-                foreach(BASELINE_ITEMProjection baseline_item in baseline_item_projection)
-                {
-                    if(REGISTER_HOLD_REFCollection != null)
-                        baseline_item.Entity.SetHolds(REGISTER_HOLD_REFCollection);
+            //if (BASELINE_ITEM_WORKCollection != null && USERCollection != null)
+            //{
+            //    foreach(BASELINE_ITEMProjection baseline_item in baseline_item_projection)
+            //    {
+            //        if(REGISTER_HOLD_REFCollection != null)
+            //            baseline_item.Entity.SetHolds(REGISTER_HOLD_REFCollection);
 
-                    baseline_item.AssignUserObject = USERCollection.Where(user => BASELINE_ITEM_WORKCollection.Any(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey && work.GUID_USER == user.GUID)).ToList();
-                    List<USER> current_deliverable_users = new List<USER>();
-                    IEnumerable<BASELINE_ITEM_WORK> current_deliverable_assignments = BASELINE_ITEM_WORKCollection.Where(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey);
+            //        baseline_item.AssignUserObject = USERCollection.Where(user => BASELINE_ITEM_WORKCollection.Any(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey && work.GUID_USER == user.GUID)).ToList();
+            //        List<USER> current_deliverable_users = new List<USER>();
+            //        IEnumerable<BASELINE_ITEM_WORK> current_deliverable_assignments = BASELINE_ITEM_WORKCollection.Where(work => work.GUID_BASELINE_ITEM_ORIGINAL == baseline_item.OriginalEntityKey);
 
-                    foreach (BASELINE_ITEM_WORK assignment in current_deliverable_assignments)
-                    {
-                        USER findUSER = USERCollection.FirstOrDefault(x => x.GUID == assignment.GUID_USER);
-                        if (findUSER != null)
-                            baseline_item.UserWeights.Add(new User_Weight() { User = findUSER, Weight = assignment.WEIGHTING });
-                    }
+            //        foreach (BASELINE_ITEM_WORK assignment in current_deliverable_assignments)
+            //        {
+            //            USER findUSER = USERCollection.FirstOrDefault(x => x.GUID == assignment.GUID_USER);
+            //            if (findUSER != null)
+            //                baseline_item.UserWeights.Add(new User_Weight() { User = findUSER, Weight = assignment.WEIGHTING });
+            //        }
 
-                    decimal total_weight = baseline_item.UserWeights.Sum(x => x.Weight);
-                    if(total_weight > 0)
-                    {
-                        foreach (User_Weight userweight in baseline_item.UserWeights)
-                        {
-                            userweight.AggregateWeight = userweight.Weight / total_weight;
-                        }
-                    }
-                }
-            }
+            //        decimal total_weight = baseline_item.UserWeights.Sum(x => x.Weight);
+            //        if(total_weight > 0)
+            //        {
+            //            foreach (User_Weight userweight in baseline_item.UserWeights)
+            //            {
+            //                userweight.AggregateWeight = userweight.Weight / total_weight;
+            //            }
+            //        }
+            //    }
+            //}
 
             List<VariationAdjustment> projectVariationAdjustments;
             //VARIATIONS are only necessary if front-end requires percentages
@@ -269,7 +270,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             var estimation_direct_progress_by_stockgroupguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != EstimateProgressType.Standalone)
                 .GroupBy(x => x.Entity.Entity.GUID_STOCK_GROUP).Select(group => new { StockGroupGuid = group.Key, DeliverablesByStockGroup = group.ToList() });
-
 
             foreach (STOCK_GROUP STOCK_GROUP in STOCK_GROUPS)
             {

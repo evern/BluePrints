@@ -7,7 +7,9 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     [ConstraintAttributes("GUID_DDEPARTMENT, CODE")]
     public partial class DOCTYPE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
@@ -44,6 +46,14 @@ namespace BluePrints.Data
 
                 return EntityKey;
             }
+        }
+
+        public IEnumerable<DELIVERABLES_STATUS> GetDeliverableStatusByProject(Guid GUID_PROJECT)
+        {
+            if (DSTATUS_DOCTYPE == null)
+                return new List<DELIVERABLES_STATUS>();
+
+            return DSTATUS_DOCTYPE.Where(x => x.DELIVERABLES_STATUS != null && x.DELIVERABLES_STATUS.GUID_PROJECT == GUID_PROJECT).Select(x => x.DELIVERABLES_STATUS);
         }
 
         public string Office => BluePrintsResources.GlobalOffice;

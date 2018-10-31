@@ -34,7 +34,11 @@
                             <dxmvvm:EventToCommand Command="{Binding DataContext.MasterRowCollapsedCommand, ElementName=userControl}" EventName="MasterRowCollapsed" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" />
+                            <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaxLength="3" MaskType="RegEx" MaskAutoComplete="Strong" MaskShowPlaceHolders="True" Mask="[0-9][0-9][0-9]" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.CLIENT_NUM" Header="Client Number" HeaderToolTip="Identifier which the client recognizes" />
                             <dxg:GridColumn FieldName="Entity.TITLE" Header="Title" HeaderToolTip="Description of the area" />
                             <dxg:GridColumn FieldName="Entity.GUID" Header="Key" Visible="False" />
@@ -43,7 +47,11 @@
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
                                 <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" />
+                                        <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" HeaderToolTip="An identifier for the area. Must be unique" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings MaxLength="2" MaskType="RegEx" MaskAutoComplete="Strong" MaskShowPlaceHolders="True" Mask="[0-9][0-9]" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Entity.CLIENT_NUM" Header="Client Number" HeaderToolTip="Identifier which the client recognizes" />
                                         <dxg:GridColumn FieldName="Entity.TITLE" Header="Title" HeaderToolTip="Description of the area" />
                                     </dxg:GridControl.Columns>

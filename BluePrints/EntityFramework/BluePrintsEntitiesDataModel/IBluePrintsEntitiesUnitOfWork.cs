@@ -80,6 +80,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DELIVERABLES_STATUS, Guid> DELIVERABLES_STATUSES { get; }
 
         /// <summary>
+        /// The DSTATUS_DOCTYPE entities repository.
+        /// </summary>
+        IRepository<DSTATUS_DOCTYPE, Guid> DSTATUS_DOCTYPES { get; }
+
+        /// <summary>
         /// The DISCIPLINE entities repository.
         /// </summary>
         IRepository<DISCIPLINE, Guid> DISCIPLINES { get; }

@@ -215,6 +215,12 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DELIVERABLES_STATUS)
                 .HasForeignKey(e => e.GUID_STATUS);
 
+            modelBuilder.Entity<DELIVERABLES_STATUS>()
+                .HasMany(e => e.DSTATUS_DOCTYPE)
+                .WithRequired(e => e.DELIVERABLES_STATUS)
+                .HasForeignKey(e => e.GUID_STATUS)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.DEPARTMENT)
@@ -310,14 +316,15 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DOCTYPE);
 
             modelBuilder.Entity<DOCTYPE>()
-                .HasMany(e => e.DELIVERABLES_STATUS)
-                .WithOptional(e => e.DOCTYPE)
-                .HasForeignKey(e => e.GUID_DOCTYPE);
-
-            modelBuilder.Entity<DOCTYPE>()
                 .HasMany(e => e.ROLE_COMMODITY)
                 .WithRequired(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_COMMODITY)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DOCTYPE>()
+                .HasMany(e => e.DSTATUS_DOCTYPE)
+                .WithOptional(e => e.DOCTYPE)
+                .HasForeignKey(e => e.GUID_DOCTYPE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ESTIMATE>()

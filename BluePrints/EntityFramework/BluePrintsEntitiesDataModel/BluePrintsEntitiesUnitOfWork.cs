@@ -85,6 +85,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DELIVERABLES_STATUS>(), (DELIVERABLES_STATUS x) => x.GUID); }
         }
 
+        IRepository<DSTATUS_DOCTYPE, Guid> IBluePrintsEntitiesUnitOfWork.DSTATUS_DOCTYPES
+        {
+            get { return GetRepository(x => x.Set<DSTATUS_DOCTYPE>(), (DSTATUS_DOCTYPE x) => x.GUID); }
+        }
+
         IRepository<DISCIPLINE, Guid> IBluePrintsEntitiesUnitOfWork.DISCIPLINES
         {
             get { return GetRepository(x => x.Set<DISCIPLINE>(), (DISCIPLINE x) => x.GUID); }

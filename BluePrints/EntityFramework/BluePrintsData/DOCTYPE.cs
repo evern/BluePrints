@@ -13,7 +13,7 @@ namespace BluePrints.Data
         public DOCTYPE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
+            DSTATUS_DOCTYPE = new HashSet<DSTATUS_DOCTYPE>();
             ROLE_COMMODITY = new HashSet<ROLE_COMMODITY>();
         }
 
@@ -50,7 +50,7 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
+        public virtual ICollection<DSTATUS_DOCTYPE> DSTATUS_DOCTYPE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ROLE_COMMODITY> ROLE_COMMODITY { get; set; }

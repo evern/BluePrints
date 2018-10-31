@@ -62,6 +62,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((DELIVERABLES_STATUS x) => x.GUID); }
         }
 
+        IRepository<DSTATUS_DOCTYPE, Guid> IBluePrintsEntitiesUnitOfWork.DSTATUS_DOCTYPES
+        {
+            get { return GetRepository((DSTATUS_DOCTYPE x) => x.GUID); }
+        }
+
         IRepository<DAYWORK, Guid> IBluePrintsEntitiesUnitOfWork.DAYWORKS
         {
             get { return GetRepository((DAYWORK x) => x.GUID); }
