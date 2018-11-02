@@ -495,18 +495,20 @@ namespace BluePrints.ViewModels
                 hideLeaved = value;
                 if (GridControlService != null)
                 {
+                    string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    string filterString = "[LEAVE_DATE] IS NULL OR [LEAVE_DATE] >= #" + currentDate + "#";
                     if (value)
                     {
                         CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
                         CriteriaOperator newCriteriaOperator;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
-                            string filterCriteria = criteriaOperator.ToString() + " And [LEAVE_DATE] IS NULL";
+                            string filterCriteria = criteriaOperator.ToString() + " AND " + filterString;
                             newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
                         }
                         else
                         {
-                            newCriteriaOperator = CriteriaOperator.Parse("[LEAVE_DATE] IS NULL");
+                            newCriteriaOperator = CriteriaOperator.Parse(filterString);
                         }
 
                         GridControlService.SetFilterCriteria(newCriteriaOperator);
@@ -518,8 +520,8 @@ namespace BluePrints.ViewModels
                         {
                             CriteriaOperator newCriteriaOperator;
                             string currentFilterCriteria = criteriaOperator.ToString();
-                            string newfilterCriteria = currentFilterCriteria.Replace("And [LEAVE_DATE] IS NULL", "");
-                            newfilterCriteria = newfilterCriteria.Replace("[LEAVE_DATE] IS NULL", "");
+                            string newfilterCriteria = currentFilterCriteria.ToUpper().Replace("AND " + filterString, "");
+                            newfilterCriteria = newfilterCriteria.Replace(filterString, "");
                             if (newfilterCriteria.Length >= 5)
                             {
                                 string firstFiveChar = newfilterCriteria.Substring(0, 5);

@@ -132,12 +132,12 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ReportingDataDate" FilterPopupMode="CheckedList" Header="Data Date" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn AllowEditing="True" FieldName="Total_Earned_Percentage" FilterPopupMode="CheckedList" Header="Current %" HeaderToolTip="Cumulative % earned since the start of the project. Update this to earn units for this period">
+                                <dxg:GridColumn.HeaderStyle>
+                                    <Style TargetType="Control">
+                                        <Setter Property="Background" Value="LightCyan" />
+                                    </Style>
+                                </dxg:GridColumn.HeaderStyle>
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -173,6 +173,11 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ReportingDataDate" FilterPopupMode="CheckedList" Header="Data Date" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="StartDate" FilterPopupMode="CheckedList" Header="Start Date" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
@@ -191,6 +196,16 @@
                             <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Internal manual target date. Can be set by anyone">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" ReadOnly="True" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" Visible="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_WORKPACK" ReadOnly="True" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>

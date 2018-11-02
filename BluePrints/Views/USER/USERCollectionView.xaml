@@ -35,7 +35,8 @@
                                         <dxe:ComboBoxEditSettings IsTextEditable="False" ItemsSource="{Binding DataContext.AvailablePorts, ElementName=userControl}" />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
-                                <dxb:BarButtonItem Command="{Binding DataContext.PortConnectCommand, ElementName=userControl}" Content="{Binding DataContext.ConnectButtonContent, ElementName=userControl}" Glyph="{dx:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dx:DXImage Image=Satellite_32x32.png}" />
+                                <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph"  Command="{Binding DataContext.PortConnectCommand, ElementName=userControl}" Content="{Binding DataContext.ConnectButtonContent, ElementName=userControl}" Glyph="{dx:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dx:DXImage Image=Satellite_32x32.png}" />
+                                <dxb:BarCheckItem Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding DataContext.HideLeave, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" ToolTip="Show bookable only" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

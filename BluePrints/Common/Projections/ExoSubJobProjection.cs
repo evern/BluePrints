@@ -106,7 +106,8 @@ namespace BluePrints.Common.Projections
 
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }
-        public Guid GUID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid guid { get; set; }
+        public Guid GUID { get => guid; set => guid = value; }
         public DateTime CREATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? UPDATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? DELETED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

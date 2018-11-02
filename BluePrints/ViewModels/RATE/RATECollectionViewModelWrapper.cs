@@ -95,6 +95,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -109,7 +110,20 @@ namespace BluePrints.ViewModels
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.CHARGE_TYPE = loadChargeType;
 
+            if(entity.IsGangRateCalculatable)
+            {
+                entity.RATE1 = entity.GangRate;
+            }
+
             return true;
+        }
+
+        /// <summary>
+        /// CallBack to apply global convention
+        /// </summary>
+        public void OnAfterEntitySaved(RATE projection, RATE entity, bool isNewEntity)
+        {
+            this.RaisePropertyChanged(x => x.DisplayEntities);
         }
 
         public override string UnifiedRowValidation(RATE projection)

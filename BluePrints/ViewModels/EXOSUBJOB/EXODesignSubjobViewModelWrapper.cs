@@ -495,7 +495,7 @@ namespace BluePrints.ViewModels
             JOBCOST_LINES existingLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
             if(masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >=5 )
             {
-                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact accounts to enable this feature");
+                MessageBoxService.ShowMessage("This job is in tender phase in exoand hence pushing to exo is disabled, please contact accounts to enable this feature");
                 return;
             }
 

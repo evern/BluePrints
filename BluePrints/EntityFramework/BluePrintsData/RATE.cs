@@ -25,6 +25,34 @@ namespace BluePrints.Data
 
         public Guid? GUID_COMMODITY { get; set; }
 
+        public decimal? MANAGER_RATE { get; set; }
+
+        public decimal? PRINCIPAL_RATE { get; set; }
+
+        public decimal? LEAD_RATE { get; set; }
+
+        public decimal? SENIOR_RATE { get; set; }
+
+        public decimal? ENGINEER_RATE { get; set; }
+
+        public decimal? GRADUATE_RATE { get; set; }
+
+        public decimal? UNDERGRADUATE_RATE { get; set; }
+
+        public decimal? MANAGER_PERCENT { get; set; }
+
+        public decimal? PRINCIPAL_PERCENT { get; set; }
+
+        public decimal? LEAD_PERCENT { get; set; }
+
+        public decimal? SENIOR_PERCENT { get; set; }
+
+        public decimal? ENGINEER_PERCENT { get; set; }
+
+        public decimal? GRADUATE_PERCENT { get; set; }
+
+        public decimal? UNDERGRADUATE_PERCENT { get; set; }
+
         [Column("RATE")]
         public decimal? RATE1 { get; set; }
 
