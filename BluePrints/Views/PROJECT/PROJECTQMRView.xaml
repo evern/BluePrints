@@ -44,8 +44,7 @@
                     <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
                         <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                             <dxr:RibbonPage Caption="Project">
-                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                                <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                                 <dxr:RibbonPageGroup Caption="Data Date">
                                     <dxb:BarButtonItem Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Chart" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Redesign the current report layout" />
                                     <dxb:BarButtonItem Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="Export Chart" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />

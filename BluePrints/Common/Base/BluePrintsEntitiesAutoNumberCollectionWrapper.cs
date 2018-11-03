@@ -25,5 +25,10 @@ namespace BluePrints.Common.Base
             base.OnLoaded();
         }
 
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
+        {
+            isExcelExportDataAware = false;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
     }
 }

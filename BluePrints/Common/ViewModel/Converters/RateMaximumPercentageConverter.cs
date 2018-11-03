@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 decimal undergraduatePercent = projection.UNDERGRADUATE_PERCENT == null ? 0 : (decimal)projection.UNDERGRADUATE_PERCENT;
                 decimal excludePercent = excludePercentage == null ? 0 : (decimal)excludePercentage;
 
-                decimal totalPercentIncludeCurrent = (managerPercent + principalPercent + leadPercent + seniorPercent + engineerPercent + graduatePercent + undergraduatePercent);
+                decimal totalPercentIncludeCurrent = projection.TotalPercent;
                 decimal totalPercentageExcludeCurrent = totalPercentIncludeCurrent - excludePercent;
 
                 decimal remainingPercent = 1 - totalPercentageExcludeCurrent;

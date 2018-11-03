@@ -37,6 +37,18 @@ namespace BluePrints.Common
         [Display(Name = "R&R")] RnR = 5
     }
 
+    public enum RateRole
+    {
+        [Display(Name = "None")] None = 0,
+        [Display(Name = "Manager")] Manager = 1,
+        [Display(Name = "Principal")] Principal = 2,
+        [Display(Name = "Lead")] Lead = 3,
+        [Display(Name = "Senior")] Senior = 4,
+        [Display(Name = "Engineer")] Engineer = 5,
+        [Display(Name = "Graduade")] Graduate = 6,
+        [Display(Name = "Undergraduate")] Undergraduate = 7
+    }
+
     public enum HSE_NonApplicableCriteria
     {
         Applicable = 0,

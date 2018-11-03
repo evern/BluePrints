@@ -55,8 +55,7 @@
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Live Deliverables">
-                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                             <dxr:RibbonPageGroup Caption="Internal Number Mode">
                                 <dxb:BarCheckItem Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />

@@ -104,6 +104,18 @@ namespace BluePrints.Common.Projections
         public ChargeType? Charge => Entity.Charge;
 
         [NotMapped]
+        public RateRole RateRole { get; set; }
+
+        [NotMapped]
+        public decimal SplitRate { get; set; }
+
+        [NotMapped]
+        public decimal RoleCost => SplitRate * SplitHours;
+
+        [NotMapped]
+        public decimal SplitHours { get; set; }
+
+        [NotMapped]
         private IEnumerable<object> assignUserObject;
 
         [NotMapped]

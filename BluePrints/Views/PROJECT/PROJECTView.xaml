@@ -37,8 +37,7 @@
                     <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
                         <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                             <dxr:RibbonPage Caption="Project">
-                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                                <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                                 <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                                 <dxr:RibbonPageGroup Caption="Data Date">
                                     <dxb:BarStaticItem Content="Design" />

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.RATECollectionView" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:RATECollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.RATECollectionView" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:RATECollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:RateMaximumPercentageConverter x:Key="RateMaximumPercentageConverter" />
@@ -56,7 +56,6 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Rate">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -105,6 +104,12 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Whether rate is derived from gang rate" ReadOnly="True" />
                             <dxg:GridColumn FieldName="MANAGER_RATE" Header="Manager Rate" HeaderToolTip="Charge rate for manager per hour" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
@@ -147,17 +152,12 @@
                             <dxg:GridColumn FieldName="ENGINEER_PERCENT" MinWidth="100" Header="Engineer %" HeaderToolTip="Rate weighting for engineer" CellTemplate="{StaticResource PercentageCellTemplate}" />
                             <dxg:GridColumn FieldName="GRADUATE_PERCENT" MinWidth="100" Header="Graduate %" HeaderToolTip="Rate weighting for graduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
                             <dxg:GridColumn FieldName="UNDERGRADUATE_PERCENT" MinWidth="100" Header="Undergraduate %" HeaderToolTip="Rate weighting for undergraduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                            <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
@@ -166,6 +166,10 @@
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
+                                <dxg:TableView.FormatConditions>
+                                    <dxg:FormatCondition Expression="[IsUsingGangRate] = 'True'" ApplyToRow="True" >
+                                        <dxc:Format Background="LightGreen" />
+                                    </dxg:FormatCondition>
                             </dxg:TableView>
                         </dxg:GridControl.View>
                     </custom:GridControlEx>

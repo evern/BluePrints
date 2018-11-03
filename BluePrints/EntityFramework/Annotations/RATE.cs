@@ -78,41 +78,62 @@ namespace BluePrints.Data
             this.commodityCodes = commodityCodes;
         }
 
-        [NotMapped]
-        public bool IsGangRateTableCompletable
-        {
-            get
-            {
-                return this.MANAGER_PERCENT != null && this.MANAGER_RATE != null && this.PRINCIPAL_PERCENT != null && this.PRINCIPAL_RATE != null && this.LEAD_PERCENT != null && this.LEAD_RATE != null && this.SENIOR_PERCENT != null && this.SENIOR_RATE != null && this.ENGINEER_PERCENT != null && this.ENGINEER_RATE != null && this.GRADUATE_PERCENT != null && this.GRADUATE_RATE != null && this.UNDERGRADUATE_RATE != null && this.UNDERGRADUATE_PERCENT != null;
-            }
-        }
-
         public bool IsGangRateCalculatable
         {
             get
             {
-                if (!IsGangRateTableCompletable)
-                    return false;
-
-                return (this.MANAGER_PERCENT + this.PRINCIPAL_PERCENT + this.LEAD_PERCENT + this.SENIOR_PERCENT + this.ENGINEER_PERCENT + this.GRADUATE_PERCENT + this.UNDERGRADUATE_PERCENT) == 1;
+                return TotalPercent == 1;
             }
         }
 
+        public decimal TotalPercent
+        {
+            get
+            {
+                return (this.ManagerPercent + this.PrincipalPercent + this.LeadPercent + this.SeniorPercent + this.EngineerPercent + this.GraduatePercent + this.UndergraduatePercent);
+            }
+        }
+
+        public decimal ManagerPercent => this.MANAGER_PERCENT == null ? 0 : (decimal)this.MANAGER_PERCENT;
+        public decimal PrincipalPercent => this.PRINCIPAL_PERCENT == null ? 0 : (decimal)this.PRINCIPAL_PERCENT;
+        public decimal LeadPercent => this.LEAD_PERCENT == null ? 0 : (decimal)this.LEAD_PERCENT;
+        public decimal SeniorPercent => this.SENIOR_PERCENT == null ? 0 : (decimal)this.SENIOR_PERCENT;
+        public decimal EngineerPercent => this.ENGINEER_PERCENT == null ? 0 : (decimal)this.ENGINEER_PERCENT;
+        public decimal GraduatePercent => this.GRADUATE_PERCENT == null ? 0 : (decimal)this.GRADUATE_PERCENT;
+        public decimal UndergraduatePercent => this.UNDERGRADUATE_PERCENT == null ? 0 : (decimal)this.UNDERGRADUATE_PERCENT;
+
+        public decimal ManagerRate => this.MANAGER_RATE == null ? 0 : (decimal)this.MANAGER_RATE;
+        public decimal PrincipalRate => this.PRINCIPAL_RATE == null ? 0 : (decimal)this.PRINCIPAL_RATE;
+        public decimal LeadRate => this.LEAD_RATE == null ? 0 : (decimal)this.LEAD_RATE;
+        public decimal SeniorRate => this.SENIOR_RATE == null ? 0 : (decimal)this.SENIOR_RATE;
+        public decimal EngineerRate => this.ENGINEER_RATE == null ? 0 : (decimal)this.ENGINEER_RATE;
+        public decimal GraduateRate => this.GRADUATE_RATE == null ? 0 : (decimal)this.GRADUATE_RATE;
+        public decimal UndergraduateRate => this.UNDERGRADUATE_RATE == null ? 0 : (decimal)this.UNDERGRADUATE_RATE;
+
         public List<Tuple<decimal, decimal>> GetGangRateTable()
         {
-            if (!IsGangRateTableCompletable)
+            if (!IsGangRateCalculatable)
                 return null;
 
             List<Tuple<decimal, decimal>> ratesTable = new List<Tuple<decimal, decimal>>();
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.MANAGER_PERCENT, (decimal)this.MANAGER_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.PRINCIPAL_PERCENT, (decimal)this.PRINCIPAL_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.LEAD_PERCENT, (decimal)this.LEAD_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.SENIOR_PERCENT, (decimal)this.SENIOR_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.ENGINEER_PERCENT, (decimal)this.ENGINEER_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.GRADUATE_PERCENT, (decimal)this.GRADUATE_RATE));
-            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.UNDERGRADUATE_PERCENT, (decimal)this.UNDERGRADUATE_RATE));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.ManagerPercent, (decimal)this.ManagerRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.PrincipalPercent, (decimal)this.PrincipalRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.LeadPercent, (decimal)this.LeadRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.SeniorPercent, (decimal)this.SeniorRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.EngineerPercent, (decimal)this.EngineerRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.GraduatePercent, (decimal)this.GraduateRate));
+            ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.UndergraduatePercent, (decimal)this.UndergraduateRate));
 
             return ratesTable;
+        }
+
+        [NotMapped]
+        public bool IsUsingGangRate
+        {
+            get
+            {
+                return IsGangRateCalculatable && RATE1 == GangRate;
+            }
         }
 
         [NotMapped]
@@ -120,9 +141,6 @@ namespace BluePrints.Data
         {
             get
             {
-                if (!IsGangRateTableCompletable)
-                    return null;
-
                 if (!IsGangRateCalculatable)
                     return null;
 
