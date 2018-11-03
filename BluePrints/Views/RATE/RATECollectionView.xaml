@@ -176,6 +176,7 @@
                                     <dxg:FormatCondition Expression="[IsUsingGangRate] = 'True'" ApplyToRow="True" >
                                         <dxc:Format Background="LightGreen" />
                                     </dxg:FormatCondition>
+                                </dxg:TableView.FormatConditions>
                             </dxg:TableView>
                         </dxg:GridControl.View>
                     </custom:GridControlEx>
