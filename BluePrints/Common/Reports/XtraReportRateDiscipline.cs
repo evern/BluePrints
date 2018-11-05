@@ -21,7 +21,7 @@ namespace BluePrints.Common.Reports
         public void AssignProperties(PROJECT PROJECT, IEnumerable<BASELINE_ITEMProjection> BASELINE_ITEMS)
         {
             objectDataSource1.DataSource = BASELINE_ITEMS;
-            title1.Value = PROJECT.NUMBER + " Deliverable's Costs By Discipline";
+            title1.Value = PROJECT.NUMBER + " Costs By Discipline";
         }
     }
 }
