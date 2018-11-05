@@ -52,31 +52,54 @@ namespace BluePrints.Common.Reports
                     }
             }
 
+            currentREPORT = reportSelector();
+        }
+
+        private XtraReport reportSelector()
+        {
+            XtraReport returnReport = null;
             if (currentReportType == ReportType.Progress_Report)
             {
-                currentREPORT = new XtraReportPROGRESS_ITEMS();
-                reportDesigner1.OpenReport(currentREPORT);
+                returnReport = new XtraReportPROGRESS_ITEMS();
+                reportDesigner1.OpenReport(returnReport);
             }
             else if (currentReportType == ReportType.Baseline_Report)
             {
-                currentREPORT = new XtraReportBASELINE_ITEMS();
-                reportDesigner1.OpenReport(currentREPORT);
+                returnReport = new XtraReportBASELINE_ITEMS();
+                reportDesigner1.OpenReport(returnReport);
             }
             else if (currentReportType == ReportType.Meeting_Minute)
             {
-                currentREPORT = new XtraReportMeeting_Minute();
-                reportDesigner1.OpenReport(currentREPORT);
+                returnReport = new XtraReportMeeting_Minute();
+                reportDesigner1.OpenReport(returnReport);
             }
             else if (currentReportType == ReportType.Project_Report)
             {
-                currentREPORT = new XtraReportDashboard();
-                reportDesigner1.OpenReport(currentREPORT);
+                returnReport = new XtraReportDashboard();
+                reportDesigner1.OpenReport(returnReport);
             }
             else if (currentReportType == ReportType.Risk_Assessment)
             {
-                currentREPORT = new XtraReportStudyData();
-                reportDesigner1.OpenReport(currentREPORT);
+                returnReport = new XtraReportStudyData();
+                reportDesigner1.OpenReport(returnReport);
             }
+            else if (currentReportType == ReportType.RateRole_Report)
+            {
+                returnReport = new XtraReportRateRole();
+                reportDesigner1.OpenReport(returnReport);
+            }
+            else if (currentReportType == ReportType.RateDiscipline_Report)
+            {
+                returnReport = new XtraReportRateDiscipline();
+                reportDesigner1.OpenReport(returnReport);
+            }
+            else if (currentReportType == ReportType.RateDisciplineRole_Report)
+            {
+                returnReport = new XtraReportRateDisciplineRole();
+                reportDesigner1.OpenReport(returnReport);
+            }
+
+            return returnReport;
         }
 
         private void SaveReport()
@@ -130,11 +153,7 @@ namespace BluePrints.Common.Reports
                 collectionViewModel.Delete(currentPROJECT_REPORT);
             }
 
-            if (currentReportType == ReportType.Progress_Report)
-                currentREPORT = new XtraReportPROGRESS_ITEMS();
-            else if (currentReportType == ReportType.Baseline_Report)
-                currentREPORT = new XtraReportBASELINE_ITEMS();
-
+            currentREPORT = reportSelector();
             reportDesigner1.OpenReport(currentREPORT);
         }
 

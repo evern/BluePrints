@@ -1,18 +1,23 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Reports;
 using BluePrints.Data;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -60,6 +65,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
         }
 
         protected virtual Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
@@ -85,6 +91,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.RateDisciplineRole_Report.ToString() || x.REPORT_TYPE == ReportType.RateDiscipline_Report.ToString() || x.REPORT_TYPE == ReportType.RateRole_Report.ToString()));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -316,6 +327,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<PROJECT_REPORT> PROJECT_REPORTCollection
+        {
+            get
+            {
+                return GetEntities<PROJECT_REPORT>();
+            }
+        }
+
         bool hideZeroCost;
         public bool HideZeroCost
         {
@@ -368,6 +387,116 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Reporting
+        public void EditReportRole()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.RateRole_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReportRole()
+        {
+            var roleReport = new XtraReportRateRole();
+            var dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.RateRole_Report.ToString());
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    roleReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //make sure disciplines are all populated
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            roleReport.AssignProperties(loadPROJECT, gridVisibleRows.Select(x => (BASELINE_ITEMProjection)x));
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = roleReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            roleReport.RequestParameters = false;
+            roleReport.CreateDocument(true);
+            previewWindow.Show();
+        }
+
+        public void EditReportDiscipline()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.RateDiscipline_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReportDiscipline()
+        {
+            var DisciplineReport = new XtraReportRateDiscipline();
+            var dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.RateDiscipline_Report.ToString());
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    DisciplineReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //make sure disciplines are all populated
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            DisciplineReport.AssignProperties(loadPROJECT, gridVisibleRows.Select(x => (BASELINE_ITEMProjection)x));
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = DisciplineReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            DisciplineReport.RequestParameters = false;
+            DisciplineReport.CreateDocument(true);
+            previewWindow.Show();
+        }
+
+        public void EditReportDisciplineRole()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.RateDisciplineRole_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReportDisciplineRole()
+        {
+            var DisciplineRoleReport = new XtraReportRateDisciplineRole();
+            var dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.RateDisciplineRole_Report.ToString());
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    DisciplineRoleReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //make sure DisciplineRoles are all populated
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            DisciplineRoleReport.AssignProperties(loadPROJECT, gridVisibleRows.Select(x => (BASELINE_ITEMProjection)x));
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = DisciplineRoleReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            DisciplineRoleReport.RequestParameters = false;
+            DisciplineRoleReport.CreateDocument(true);
+            previewWindow.Show();
         }
         #endregion
     }
