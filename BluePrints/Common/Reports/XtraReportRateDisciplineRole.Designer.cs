@@ -40,8 +40,8 @@
             this.xrPageInfo2 = new DevExpress.XtraReports.UI.XRPageInfo();
             this.reportHeaderBand1 = new DevExpress.XtraReports.UI.ReportHeaderBand();
             this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
-            this.title1 = new DevExpress.XtraReports.Parameters.Parameter();
             this.xrPictureBox1 = new DevExpress.XtraReports.UI.XRPictureBox();
+            this.title1 = new DevExpress.XtraReports.Parameters.Parameter();
             this.Title = new DevExpress.XtraReports.UI.XRControlStyle();
             this.DetailCaption3 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.DetailData3 = new DevExpress.XtraReports.UI.XRControlStyle();
@@ -144,11 +144,6 @@
             this.xrLabel1.StylePriority.UseTextAlignment = false;
             this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
-            // title1
-            // 
-            this.title1.Description = "Title";
-            this.title1.Name = "title1";
-            // 
             // xrPictureBox1
             // 
             this.xrPictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("xrPictureBox1.Image")));
@@ -157,6 +152,11 @@
             this.xrPictureBox1.Name = "xrPictureBox1";
             this.xrPictureBox1.SizeF = new System.Drawing.SizeF(248.2523F, 68.95833F);
             this.xrPictureBox1.Sizing = DevExpress.XtraPrinting.ImageSizeMode.Squeeze;
+            // 
+            // title1
+            // 
+            this.title1.Description = "Title";
+            this.title1.Name = "title1";
             // 
             // Title
             // 
@@ -228,6 +228,7 @@
             this.xrTable1});
             this.PageHeader.HeightF = 25F;
             this.PageHeader.Name = "PageHeader";
+            this.PageHeader.PrintOn = DevExpress.XtraReports.UI.PrintOnPages.NotWithReportFooter;
             // 
             // xrTable1
             // 
