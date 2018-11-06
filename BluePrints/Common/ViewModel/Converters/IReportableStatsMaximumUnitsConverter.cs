@@ -15,16 +15,16 @@ namespace BluePrints.Common.ViewModel.Converters
             System.Globalization.CultureInfo culture)
         {
             if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
-                return 0;
+                return 0m;
 
             if (values[0] == null || values[1] == null || values[2] == null)
-                return 0;
+                return 0m;
 
             try
             {
                 IReportable projection = values[2] as IReportable;
                 if (projection == null)
-                    return 0;
+                    return 0m;
 
                 var totalAllowedUnits = (decimal)values[0];
                 if (totalAllowedUnits == 0)
@@ -35,11 +35,11 @@ namespace BluePrints.Common.ViewModel.Converters
                 IEnumerable<IReportable> allEntitiesExcludingCurrent = AllEntities.Where(x => x.EntityKey != projection.EntityKey);
                 decimal currentAssignedUnits = allEntitiesExcludingCurrent.Count() == 0 ? 0 : allEntitiesExcludingCurrent.Sum(x => x.Budget_Units);
                 decimal spareUnits = totalAllowedUnits - currentAssignedUnits;
-                return spareUnits > 0 ? spareUnits : 0;
+                return spareUnits > 0 ? spareUnits : 0m;
             }
             catch
             {
-                return 0;
+                return 0m;
             }
         }
 
