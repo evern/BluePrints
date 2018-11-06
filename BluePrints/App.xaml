@@ -27,7 +27,7 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <Image Grid.Column="1" ToolTip="Maximum Possible Progress">
+                <Image Grid.Column="1" ToolTip="Maximum Possible Progress, please check gates max %">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>
@@ -59,7 +59,7 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum Possible Progress">
+                <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum Possible Progress, please check gates max %">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>

@@ -907,7 +907,7 @@ namespace BluePrints.ViewModels
         public override string UnifiedRowValidation(BASELINE_ITEMProgress projection)
         {
             if(!isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Entity.Entity.GUID_PHASE))
-                return "Selected document type is reserved for indirect only";
+                return "Selected document type is reserved for indirect only, please change phase to indirect or change to a direct document type";
 
             return string.Empty;
         }
