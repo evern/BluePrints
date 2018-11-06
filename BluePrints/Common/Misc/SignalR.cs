@@ -83,60 +83,61 @@ namespace BluePrints.Common
             var PrimaryKey = new Guid(key);
 
             if (entityName == typeof(AREA).ToString())
-                ReceiveMessage<AREA, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<AREA, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(BASELINE_ITEM).ToString())
-                ReceiveMessage<BASELINE_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<BASELINE_ITEM, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(BASELINE).ToString())
-                ReceiveMessage<BASELINE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<BASELINE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(DEPARTMENT).ToString())
-                ReceiveMessage<DEPARTMENT, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<DEPARTMENT, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(DISCIPLINE).ToString())
-                ReceiveMessage<DISCIPLINE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<DISCIPLINE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(DOCTYPE).ToString())
-                ReceiveMessage<DOCTYPE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<DOCTYPE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(ESTIMATE).ToString())
-                ReceiveMessage<ESTIMATE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<ESTIMATE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PHASE).ToString())
-                ReceiveMessage<PHASE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<PHASE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PROGRESS_ITEM).ToString())
-                ReceiveMessage<PROGRESS_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<PROGRESS_ITEM, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PROGRESS).ToString())
-                ReceiveMessage<PROGRESS, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<PROGRESS, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PROJECT_REPORT).ToString())
-                ReceiveMessage<PROJECT_REPORT, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<PROJECT_REPORT, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PROJECT).ToString())
-                ReceiveMessage<PROJECT, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<PROJECT, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(RATE).ToString())
-                ReceiveMessage<RATE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<RATE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(REGISTER).ToString())
-                ReceiveMessage<REGISTER, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<REGISTER, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(ROLE_PERMISSION).ToString())
-                ReceiveMessage<ROLE_PERMISSION, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<ROLE_PERMISSION, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(ROLE).ToString())
-                ReceiveMessage<ROLE, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<ROLE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(SETTINGS_GLOBAL).ToString())
-                ReceiveMessage<SETTINGS_GLOBAL, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<SETTINGS_GLOBAL, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(UOM).ToString())
-                ReceiveMessage<UOM, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<UOM, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(USER).ToString())
-                ReceiveMessage<USER, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<USER, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(VARIATION_ITEM).ToString())
-                ReceiveMessage<VARIATION_ITEM, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<VARIATION_ITEM, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(VARIATION).ToString())
-                ReceiveMessage<VARIATION, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<VARIATION, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(SUBJOB_ASSIGNMENT).ToString())
-                ReceiveMessage<SUBJOB_ASSIGNMENT, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<SUBJOB_ASSIGNMENT, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(SUBJOB).ToString())
-                ReceiveMessage<SUBJOB, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<SUBJOB, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(DELIVERABLES_STATUS).ToString())
-                ReceiveMessage<DELIVERABLES_STATUS, Guid>(PrimaryKey, MessageType, sender, hwid);
+                ReceiveMessage<DELIVERABLES_STATUS, Guid>(PrimaryKey, key, MessageType, sender, hwid);
         }
 
-        private static void ReceiveMessage<TEntity, TPrimaryKey>(TPrimaryKey primaryKey, EntityMessageType messageType,
+        private static void ReceiveMessage<TEntity, TPrimaryKey>(TPrimaryKey primaryKey, string key, EntityMessageType messageType,
             string sender, string hwid)
             where TEntity : class
         {
-            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, messageType, sender, hwid));
+            Guid keyGuid = new Guid(key);
+            Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, keyGuid, messageType, sender, hwid));
         }
     }
 }

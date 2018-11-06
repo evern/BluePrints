@@ -1062,9 +1062,9 @@ namespace BluePrints.ViewModels
 
                 if (!isNew)
                 {
-                    string deliverableStatusFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEM().DeliverableStatusGuid);
+                    string statusFieldName = "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS);
                     PauseUndoRedo();
-                    AddUndo(projection, deliverableStatusFieldName, oldValue, newValue, EntityMessageType.Changed);
+                    AddUndo(projection, statusFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
                 else
                     projection.Update();
@@ -1086,6 +1086,22 @@ namespace BluePrints.ViewModels
 
                     PauseUndoRedo();
                     AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                    projection.Update();
+                }
+            }
+
+            //when deliverable type or doc type is changed remove deliverable status
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DELIVERABLE_TYPE)) ||
+                field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DOCTYPE)))
+            {
+                if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
+                {
+                    Guid? oldValue = projection.Entity.Entity.GUID_STATUS;
+                    Guid? newValue = null;
+                    projection.Entity.Entity.GUID_STATUS = newValue;
+
+                    PauseUndoRedo();
+                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS), oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
             }

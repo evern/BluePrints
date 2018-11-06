@@ -149,6 +149,9 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.IsPasteCellLevel = false;
             MainViewModel.AlwaysSkipMessage = false;
+            MainViewModel.RefreshOnSameSenderKey = true;
+            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            PROGRESS_ITEMSCollectionViewModel.RefreshOnSameSenderKey = true;
             doNotApplyBestFit = true;
         }
 
@@ -457,12 +460,20 @@ namespace BluePrints.ViewModels
                     //update progress items so that it is accurate at run time
                     IBluePrintsEntitiesUnitOfWork uow = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
                     //refresh from database routine
-                    List<PROGRESS_ITEM> setDeliverableProgress = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == entity.OriginalEntityKey).ToList();
-                    entity.SetProgressItems(setDeliverableProgress);
+                    List<PROGRESS_ITEM> dbPROGRESSES = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == entity.OriginalEntityKey).OrderBy(x => x.EARNED_DATE).ToList();
+                    IEnumerable<PROGRESS_ITEM> unalignedDataDatePROGRESS_ITEMS = dbPROGRESSES.Where(x => !alignedDataDateCollection.Any(y => y.Date == x.EARNED_DATE.Date));
+                    foreach(PROGRESS_ITEM unalignedPROGRESS_ITEM in unalignedDataDatePROGRESS_ITEMS)
+                    {
+                        unalignedPROGRESS_ITEM.EARNED_UNITS = 0;
+                    }
+
+                    uow.SaveChanges();
+                    entity.SetProgressItems(dbPROGRESSES);
 
                     IEnumerable<PROGRESS_ITEM> previousProgresses = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE.Date == currentProgressDate.Date);
                     List<PROGRESS_ITEM> futureProgressToEdit = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
+                    
                     
                     //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
                     if (currentPeriodPROGRESS_ITEM == null && totalUnitsDifferences > 0)
@@ -482,7 +493,7 @@ namespace BluePrints.ViewModels
                         {
                             totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
                             postEditUnits = 0;
-                            MessageBoxService.ShowMessage("Cannot go below currently assigned units. Please check past progress to lower % further");
+                            MessageBoxService.ShowMessage("Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
                         }
 
                         decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
@@ -495,7 +506,7 @@ namespace BluePrints.ViewModels
                     else
                     {
                         MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the last highest % datapoint");
-                        Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, EntityMessageType.Changed));
+                        Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
                         return;
                     }
 
@@ -542,7 +553,7 @@ namespace BluePrints.ViewModels
                 }
 
                 //do this so that deliverable goes through the projection refresh
-                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, EntityMessageType.Changed));
+                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
                 PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
                 //will be unpaused in existingrow or newrow save
             }
@@ -628,6 +639,7 @@ namespace BluePrints.ViewModels
         }
 
         DataTable dataPointsTable = null;
+        List<DateTime> alignedDataDateCollection = null;
         public DataTable DataPointsTable
         {
             get
@@ -644,7 +656,8 @@ namespace BluePrints.ViewModels
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
                     DateTime lastDataDate = loadPROGRESS.DATA_DATE;
-                    IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
+                    if(alignedDataDateCollection == null)
+                        alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
 
                     dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));
 
@@ -721,7 +734,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-            if(!isUpdate)
+            if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
         }
 
