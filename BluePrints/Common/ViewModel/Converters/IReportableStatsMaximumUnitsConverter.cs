@@ -28,7 +28,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 var totalAllowedUnits = (decimal)values[0];
                 if (totalAllowedUnits == 0)
-                    return 10000;
+                    return 10000m;
 
                 var AllEntities = (IEnumerable<IReportable>)values[1];
 

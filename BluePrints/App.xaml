@@ -10,7 +10,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplateLastDate">
-            <Grid MinWidth="60">
+            <Grid MinWidth="80">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="15" />
                     <ColumnDefinition Width="15" />
@@ -42,7 +42,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplate">
-            <Grid MinWidth="60">
+            <Grid MinWidth="80">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="15" />
                     <ColumnDefinition Width="15" />
