@@ -1,4 +1,4 @@
-﻿<Application x:Class="BluePrints.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/DXSplashScreen/BluePrintsSplashScreen.xaml">
+﻿<Application x:Class="BluePrints.App" xmlns:dxp="http://schemas.devexpress.com/winfx/2008/xaml/printing" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/DXSplashScreen/BluePrintsSplashScreen.xaml">
     <Application.Resources>
         <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
         <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
@@ -7,6 +7,15 @@
         <DataTemplate x:Key="GridPrintHeaderTemplate">
             <StackPanel HorizontalAlignment="Left">
                 <dxe:ImageEdit IsPrintingMode="True" MaxHeight="61" MaxWidth="295" IsReadOnly="True" Source="pack://application:,,,/BluePrints;component/Common/Images/PRIMERO.jpg" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="GridPrintFooterTemplate">
+            <StackPanel HorizontalAlignment="Right">
+                <dxe:TextEdit
+                    Width="500"
+                    dxp:ExportSettings.TargetType="PageNumber"
+                    dxp:PageNumberExportSettings.Format="Page {0} of {1}"
+                    dxp:PageNumberExportSettings.Kind="NumberOfTotal" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplateLastDate">
