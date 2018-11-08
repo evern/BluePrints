@@ -78,6 +78,7 @@ namespace BluePrints.ViewModels
 
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IsCalculating = true;
             base.resolveParameters(parameter);
         }
 
@@ -208,6 +209,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool IsCalculating { get; set; }
         //because stats aren't fully built yet in progress base class on CalculatePlannedBackgroundWorker, do not calculate dataPointsTable
         bool canCalculateDataPointsTable;
         protected override void onAfterRefresh()
@@ -218,8 +220,15 @@ namespace BluePrints.ViewModels
 
             if(isCalculationCompleted)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => applyBestFit()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => calculated()));
+                //mainThreadDispatcher.BeginInvoke(new Action(() => applyBestFit()));
             }
+        }
+
+        private void calculated()
+        {
+            IsCalculating = false;
+            this.RaisePropertyChanged(x => x.IsCalculating);
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -265,6 +274,7 @@ namespace BluePrints.ViewModels
                 //spinEdit.MaxValue = 1;
                 //spinEdit.MinValue = 0;
                 //e.Column.EditSettings = spinEdit;
+                e.Column.Width = 80;
                 if(e.Column.FieldName.Contains(loadPROGRESS.DATA_DATE.Date.ToString()))
                     e.Column.CellTemplate = Application.Current.Resources["percentageTemplateLastDate"] as DataTemplate;
                 else
