@@ -157,7 +157,7 @@
                                 <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" ShowTotalSummary="True">
+                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     </dxg:TableView.RowCellMenuCustomizations>

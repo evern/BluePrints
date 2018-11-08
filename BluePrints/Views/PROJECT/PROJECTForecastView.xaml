@@ -299,7 +299,7 @@
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
+                                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
