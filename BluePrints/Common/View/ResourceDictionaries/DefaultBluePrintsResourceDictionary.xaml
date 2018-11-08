@@ -34,7 +34,8 @@
         <!--<dxb:BarButtonItem  Command="{Binding ElementName=tableView, Path=Commands.ShowPrintPreviewDialog}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />-->
     </collections:ArrayList>
     <collections:ArrayList x:Key="RibbonDefaultLayoutButtons">
-
+        <dxb:BarButtonItem Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" Content="Save Layout" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Save current table filters, sorting, grouping and expanded group" />
+        <dxb:BarButtonItem Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
     </collections:ArrayList>
     <collections:ArrayList x:Key="RibbonDefaultReportingButtons">
         <dxb:BarButtonItem Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Report" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redesign the current report layout" />
