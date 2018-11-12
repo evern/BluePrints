@@ -310,7 +310,7 @@ namespace BluePrints.Common.Projections
                     newExoSubJob.EST_HOURS = 0;
                     newExoSubJob.ASSET_COST = 0;
                     newExoSubJob.ASSET_VALUE = 0;
-                    newExoSubJob.BRANCHNO = 0;
+                    newExoSubJob.BRANCHNO = masterJob.BRANCHNO;
                     newExoSubJob.ISACTIVE = "Y";
                     newExoSubJob.HASUNBILLED = "N";
                     newExoSubJob.INVOICEREADY = "N";

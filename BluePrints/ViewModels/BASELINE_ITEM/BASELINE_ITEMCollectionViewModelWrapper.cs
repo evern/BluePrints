@@ -161,6 +161,7 @@ namespace BluePrints.ViewModels
                 foreach(BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
+                    entity.Update();
                 }
 
                 MainViewModel.SimpleSaveAll();
@@ -188,6 +189,7 @@ namespace BluePrints.ViewModels
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
+                    entity.Update();
                 }
 
                 MainViewModel.SimpleSaveAll();
@@ -215,6 +217,7 @@ namespace BluePrints.ViewModels
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
+                    entity.Update();
                 }
 
                 List<string> internalNumbers = SelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
@@ -248,6 +251,7 @@ namespace BluePrints.ViewModels
                 foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
+                    entity.Update();
                 }
 
                 List<string> clientNumbers = SelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
