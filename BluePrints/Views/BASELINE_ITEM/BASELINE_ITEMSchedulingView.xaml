@@ -328,16 +328,16 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Internal Num" FieldName="Entity.Entity.INTERNAL_NUM" ReadOnly="True" />
+                                <dxg:GridColumn Header="Assigned %" FieldName="Assigned_Percentage" ReadOnly="True" AllowEditing="False">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="Client Num" FieldName="Entity.Entity.CLIENT_NUM" ReadOnly="True" />
                                 <dxg:GridColumn Header="Revision Num" FieldName="Entity.Entity.REVISION_NUMBER" ReadOnly="True" />
                                 <dxg:GridColumn Header="Type" FieldName="Entity.Entity.DELIVERABLE_TYPE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Assigned %" FieldName="Assigned_Percentage" ReadOnly="True" AllowEditing="False">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" ReadOnly="True" />
