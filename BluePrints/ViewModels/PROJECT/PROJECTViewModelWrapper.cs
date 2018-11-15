@@ -620,10 +620,12 @@ namespace BluePrints.ViewModels
                     {
                         SummaryStats summary = ((IHaveStats)e.Row).Stats as SummaryStats;
                         if (is_ratio)
+                        {
                             if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
                                 runningTotals += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs;
-                            else
-                                runningTotals += ((IHaveStats)e.Row).Stats.TotalCosts;
+                        }
+                        else
+                            runningTotals += ((IHaveStats)e.Row).Stats.TotalCosts;
 
                         if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
                         {
@@ -682,8 +684,10 @@ namespace BluePrints.ViewModels
                     {
                         SummaryStats summary = ((IHaveStats)e.Row).Stats as SummaryStats;
                         if (is_ratio)
+                        {
                             if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
                                 runningTotals += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
+                        }
                         else
                             runningTotals += ((IHaveStats)e.Row).Stats.TotalUnits;
 
