@@ -21,10 +21,6 @@ namespace BluePrints.Data
             WORKPACK = new HashSet<WORKPACK>();
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             ESTIMATE_ITEM1 = new HashSet<ESTIMATE_ITEM>();
-            STARTDATE = DateTime.Now;
-            ENDDATE = DateTime.Now;
-            REVIEWSTARTDATE = DateTime.Now;
-            REVIEWENDDATE = DateTime.Now;
             BELLCURVESHAPE = Common.BellCurveShape.Balanced;
         }
 

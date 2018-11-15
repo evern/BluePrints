@@ -12,6 +12,7 @@ using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS> entities)
         {
+            MainViewModel.ManualPasteAction = this.ManualPasteAction;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
 
@@ -239,6 +241,12 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(PROGRESS projection, string field_name, object new_value)
         {
             return string.Empty;
+        }
+
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity)
+        {
+            pasteEntity.STATUS = ProgressStatus.Working;
+            return true;
         }
         #endregion
     }

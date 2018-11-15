@@ -85,6 +85,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE> entities)
         {
+            MainViewModel.ManualPasteAction = this.ManualPasteAction;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -187,6 +188,12 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(BASELINE projection, string field_name, object new_value)
         {
             return string.Empty;
+        }
+
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, BASELINE pasteEntity)
+        {
+            pasteEntity.STATUS = BaselineStatus.Working;
+            return true;
         }
         #endregion
     }
