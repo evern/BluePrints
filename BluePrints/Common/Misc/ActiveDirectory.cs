@@ -89,7 +89,7 @@ namespace BluePrints.Common
         public static void SendEmailFromDocControl(string fromName, string body, string subject, string toRecipient)
         {
             string fullEmailAddress = "doc.control@primero.com.au";
-            exService.Credentials = new WebCredentials(fullEmailAddress, "abc123");
+            exService.Credentials = new WebCredentials(fullEmailAddress, "dcPW2018++");
             exService.AutodiscoverUrl(fullEmailAddress, RedirectionCallback);
 
             EmailMessage msg = new EmailMessage(exService);
