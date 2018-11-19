@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BaseModel.Attributes;
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
@@ -10,6 +11,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    [ConstraintAttributes("NAME")]
     public partial class PROGRESS : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]

@@ -187,12 +187,20 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(BASELINE projection, string field_name, object new_value)
         {
+            if(field_name == BindableBase.GetPropertyName(() => new BASELINE().STATUS) && new_value != null)
+            {
+                IEnumerable<BASELINE> otherBASELINES = DisplayEntities.Where(x => x.GUID != projection.GUID);
+                BaselineStatus newStatus = (BaselineStatus)new_value;
+                if (otherBASELINES.Any(x => x.STATUS == BaselineStatus.Live) && newStatus == BaselineStatus.Live)
+                    return "There can be only one live baseline";
+            }
+
             return string.Empty;
         }
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, BASELINE pasteEntity)
         {
-            pasteEntity.STATUS = BaselineStatus.Working;
+            //pasteEntity.STATUS = BaselineStatus.Working;
             return true;
         }
         #endregion

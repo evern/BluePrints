@@ -11,6 +11,8 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
+    using DevExpress.Mvvm;
+    using DevExpress.Mvvm.POCO;
 
     [ConstraintAttributes("NUMBER")]
     public partial class PROJECT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
@@ -122,16 +124,19 @@ namespace BluePrints.Data
             }
         }
 
-        //[NotMapped]
-        //public ProjectStatus ProjectStatus
-        //{
-        //    get { return STATUS; }
-        //    set
-        //    {
-        //        STATUS = value;
-        //        this.RaisePropertyChanged(x => x.IsTender);
-        //    }
-        //}
+        [NotMapped]
+        public ProjectStatus Status
+        {
+            get
+            {
+                return STATUS;
+            }
+            set
+            {
+                STATUS = value;
+                this.RaisePropertiesChanged();
+            }
+        }
 
         [NotMapped]
         public bool IsTender

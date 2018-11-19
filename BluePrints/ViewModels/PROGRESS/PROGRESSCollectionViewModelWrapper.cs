@@ -240,12 +240,20 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(PROGRESS projection, string field_name, object new_value)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().STATUS) && new_value != null)
+            {
+                IEnumerable<PROGRESS> otherPROGRESSES = DisplayEntities.Where(x => x.GUID != projection.GUID && x.TYPE == projection.TYPE);
+                ProgressStatus newStatus = (ProgressStatus)new_value;
+                if (otherPROGRESSES.Any(x => x.STATUS == ProgressStatus.Live) && newStatus == ProgressStatus.Live)
+                    return "There can be only one live progress";
+            }
+
             return string.Empty;
         }
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity)
         {
-            pasteEntity.STATUS = ProgressStatus.Working;
+            //pasteEntity.STATUS = ProgressStatus.Working;
             return true;
         }
         #endregion

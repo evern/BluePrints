@@ -254,14 +254,16 @@ namespace BluePrints.ViewModels
 
         private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
         {
-            bool? isEntityNew = DataUtils.IsNewEntity<PROJECT>(projectionEntity);
+            //commented out because this is not a reliable way of determining entity due to created date isn't mapped back to projection on after saved
+            //bool? isEntityNew = DataUtils.IsNewEntity<PROJECT>(projectionEntity);
+            //end comment
+
             DateTime? tenderStartDate = entity.TENDER_PROJECT_START;
             DateTime? tenderEndDate = entity.TENDER_PROJECT_START == null ? (DateTime?)null : ((DateTime)entity.TENDER_PROJECT_START).AddDays(Convert.ToDouble((decimal)entity.TENDER_PROJECT_DURATION) * 7);
             IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             //only way to determine whether current entity is new to avoid creating multiple 
-            if (isEntityNew != null && ((bool)isEntityNew))
+            if (isNewEntity)
             {
-
                 BASELINE newBASELINE = new BASELINE();
                 newBASELINE.GUID_PROJECT = entity.GUID;
                 newBASELINE.NAME = entity.NUMBER + "_001";
@@ -638,7 +640,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().STATUS))
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT().Status))
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.NUMBER);
