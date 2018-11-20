@@ -88,12 +88,13 @@ namespace BluePrints.Common
 
         public static void SendEmailFromDocControl(string fromName, string body, string subject, string toRecipient)
         {
+            string authenticationName = "document.control@primerogroup.com.au";
             string docControlName = "Doc.Control";
             string fullEmailAddress = docControlName + BluePrintsResources.DefaultAuthenticateDomain;
             ExchangeService docControlExService = new ExchangeService() { KeepAlive = true, PreAuthenticate = true };
             docControlExService.UseDefaultCredentials = false;
-            docControlExService.Credentials = new WebCredentials(fullEmailAddress, "dcPW2018++");
-            docControlExService.AutodiscoverUrl(fullEmailAddress, RedirectionCallback);
+            docControlExService.Credentials = new WebCredentials(authenticationName, "dcPW2018++");
+            docControlExService.AutodiscoverUrl(authenticationName, RedirectionCallback);
 
             EmailMessage msg = new EmailMessage(docControlExService);
             msg.Subject = subject;
