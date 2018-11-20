@@ -188,7 +188,7 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
+            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats, false);
             project.Update();
 
             if (((BackgroundWorker)sender).CancellationPending)

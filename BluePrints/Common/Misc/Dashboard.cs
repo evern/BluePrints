@@ -357,7 +357,13 @@ namespace BluePrints.Common.Misc
             return dashboard;
         }
 
-        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats)
+        /// <summary>
+        /// Separate variation out from data points
+        /// </summary>
+        /// <param name="project_summary_stats">The summary stats to subdivide</param>
+        /// <param name="shouldSeparateVariation">Whether to separater variation</param>
+        /// <returns></returns>
+        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats, bool shouldSeparateVariation)
         {
             if (project_summary_stats == null)
                 return new List<DashboardTreeStructure>();
@@ -383,11 +389,14 @@ namespace BluePrints.Common.Misc
                 {
                     //department_dashboard.SubDivideDashboardStats(burned_data_points, x => x.Discipline_Code, x => x.Discipline_Code);
                     discipline_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Commodity_Code, x => x.Commodity_Code);
-                    //child dashboards are now subdivided into variation dashboard
-                    //foreach (DashboardTreeStructure variation_dashboard in discipline_dashboard.Child_Dashboards)
-                    //{
-                    //    variation_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Variation_Code, x => x.Variation_Code);
-                    //}
+                    if(shouldSeparateVariation)
+                    {
+                        //child dashboards are now subdivided into variation dashboard
+                        foreach (DashboardTreeStructure variation_dashboard in discipline_dashboard.Child_Dashboards)
+                        {
+                            variation_dashboard.SubDivideDashboardStats(burned_data_points, material_data_points, po_data_points, x => x.Variation_Code, x => x.Variation_Code);
+                        }
+                    }
                 }
 
                 LoadingScreenManager.Progress();
@@ -400,7 +409,7 @@ namespace BluePrints.Common.Misc
         public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
-            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats);
+            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, false);
 
             IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
