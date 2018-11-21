@@ -23,6 +23,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -387,6 +388,11 @@ namespace BluePrints.ViewModels
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
+            foreach(var test in pasteData)
+            {
+                Debug.Print(test.Key.FieldName + " " + test.Value);
+            }
+
             string searchStockCodeFieldName;
             if (IsBudget)
                 searchStockCodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Budget_StockCodeGuid);
@@ -480,11 +486,15 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.UOM"));
-                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.NAME"));
-                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.TYPE"));
-                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.SPEC"));
-                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity.ESTIMATE_STOCK_CODE.DESCRIPTION"));
+                            string fieldNameVar = "ESTIMATE";
+                            if (IsBudget)
+                                fieldNameVar = "BUDGET";
+
+                            KeyValuePair<ColumnBase, string> uom_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity." + fieldNameVar + "_STOCK_CODE.UOM"));
+                            KeyValuePair<ColumnBase, string> name_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity." + fieldNameVar + "_STOCK_CODE.NAME"));
+                            KeyValuePair<ColumnBase, string> type_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity." + fieldNameVar + "_STOCK_CODE.TYPE"));
+                            KeyValuePair<ColumnBase, string> spec_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity." + fieldNameVar + "_STOCK_CODE.SPEC"));
+                            KeyValuePair<ColumnBase, string> desc_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains("Entity." + fieldNameVar + "_STOCK_CODE.DESCRIPTION"));
                             editing_stock_code.CODE = stock_code_data.Value;
                             editing_stock_code.UOM = uom_data.Value;
                             editing_stock_code.NAME = name_data.Value;
@@ -858,28 +868,23 @@ namespace BluePrints.ViewModels
                 STOCK_CODE changedStock_Code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(changedStock_Code != null)
                 {
-                    foreach (var entities in MainViewModel.Entities)
+                    foreach (var entity in DisplayEntities)
                     {
-                        Guid? stock_code_guid;
-                        STOCK_CODE stock_code;
-                        if (IsBudget)
+                        if(IsBudget)
                         {
-                            stock_code_guid = entities.Entity.Entity.GUID_BUDGET_STOCK_CODE;
-                            stock_code = entities.Entity.BUDGET_STOCK_CODE;
+                            if (entity.Entity.Entity.GUID_BUDGET_STOCK_CODE == (Guid)key)
+                                entity.Entity.BUDGET_STOCK_CODE = changedStock_Code;
                         }
                         else
                         {
-                            stock_code_guid = entities.Entity.Entity.GUID_ESTIMATE_STOCK_CODE;
-                            stock_code = entities.Entity.ESTIMATE_STOCK_CODE;
+                            if (entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE == (Guid)key)
+                                entity.Entity.ESTIMATE_STOCK_CODE = changedStock_Code;
                         }
 
-                        if (stock_code_guid == (Guid)key)
-                        {
-                            stock_code = changedStock_Code;
-                            entities.Update();
-                        }
+                        entity.Update();
                     }
 
+                    GridControlService.RefreshData();
                     return true;
                 }
             }

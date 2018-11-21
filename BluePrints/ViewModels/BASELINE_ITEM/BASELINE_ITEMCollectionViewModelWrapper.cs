@@ -668,8 +668,6 @@ namespace BluePrints.ViewModels
 
         public Action InterfacePauseUndoRedoManagerCallBack { get; set; }
 
-
-
         /// <summary>
         /// this view model can be used in variation or default collection view, only default collection view specific properties are set here
         /// </summary>

@@ -185,17 +185,24 @@ namespace BluePrints.ViewModels
         }
 
         ESTIMATE_ITEMCollectionViewModelWrapper estimate_itemViewModelWrapper;
+
+        public bool IsApproving { get; set; }
         public bool CanApprove()
         {
-            return DisplaySelectedEntity != null;
+            return !IsApproving && DisplaySelectedEntity != null;
         }
 
 
         public void Approve()
         {
             if (DisplaySelectedEntity.STATUS == BaselineStatus.Live)
+            {
                 MessageBoxService.ShowMessage("Cannot approve live estimate");
-            
+                return;
+            }
+
+            IsApproving = true;
+            this.RaisePropertyChanged(x => x.IsApproving);
             estimate_itemViewModelWrapper = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
             estimate_itemViewModelWrapper.SetParentViewModel(this);
             estimate_itemViewModelWrapper.SuppressNotification = true;
@@ -252,6 +259,8 @@ namespace BluePrints.ViewModels
             estimate.STATUS = BaselineStatus.Live;
             MainViewModel.Save(estimate);
             MessageBoxService.ShowMessage(estimate.NAME + " approved");
+            IsApproving = false;
+            this.RaisePropertyChanged(x => x.IsApproving);
         }
 
         public override string UnifiedRowValidation(ESTIMATE projection)
@@ -271,8 +280,8 @@ namespace BluePrints.ViewModels
                         BaselineStatus oldStatus = (BaselineStatus)oldValue;
                         BaselineStatus newStatus = (BaselineStatus)new_value;
 
-                        if (oldStatus == BaselineStatus.Working && newStatus == BaselineStatus.Live)
-                            return "Please use approve button to move estimate from working to live";
+                        if ((oldStatus == BaselineStatus.Working || oldStatus == BaselineStatus.Superseded) && newStatus == BaselineStatus.Live)
+                            return "Please use the approve button to move estimate from working to live";
                         //else if (oldStatus == BaselineStatus.Live)
                         //    return "Cannot change status once it is live";
                     }
