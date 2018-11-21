@@ -406,10 +406,10 @@ namespace BluePrints.Common.Misc
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool shouldSeparateVariation = false)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
-            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, false);
+            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, shouldSeparateVariation);
 
             IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
@@ -455,8 +455,8 @@ namespace BluePrints.Common.Misc
                         {
                             foreach(DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
                             {
-                                //if (commodity_dashboard.Child_Dashboards.Count == 0)
-                                //{
+                                if (commodity_dashboard.Child_Dashboards == null || commodity_dashboard.Child_Dashboards.Count == 0)
+                                {
                                     SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
                                     string areaCode = string.Empty;
 
@@ -473,31 +473,30 @@ namespace BluePrints.Common.Misc
                                     commodityLevelDashboard.Stats = commodity_dashboard.Stats;
                                     commodityLevelDashboard.ShouldHide = shouldHideSubjobDashboard(commodity_dashboard.Stats);
                                     flatDashboards.Add(commodityLevelDashboard);
-                                //}
-                                //else
-                                //{
-                                //    foreach (DashboardTreeStructure variation_dashboard in commodity_dashboard.Child_Dashboards.OrderBy(x => x.Code))
-                                //    {
-                                //        SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
-                                //        string areaCode = string.Empty;
+                                }
+                                else if(shouldSeparateVariation)
+                                {
+                                    foreach (DashboardTreeStructure variation_dashboard in commodity_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                    {
+                                        SUBJOB subjob = all_subjobs.FirstOrDefault(x => x.INTERNAL_NAME1 == subjob_dashboard.Code);
+                                        string areaCode = string.Empty;
 
-                                //        if (subjob != null)
-                                //            areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
+                                        if (subjob != null)
+                                            areaCode = subjob.AREA == null ? string.Empty : subjob.AREA.INTERNAL_NUM;
 
-                                //        DashboardFlatStructure variationLevelDashboard = new DashboardFlatStructure();
-                                //        variationLevelDashboard.SubjobCode = subjob_dashboard.Code;
-                                //        variationLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
-                                //        variationLevelDashboard.AreaCode = areaCode;
-                                //        //disciplineLevelDashboard.DepartmentCode = string.Empty;
-                                //        variationLevelDashboard.DisciplineCode = discipline_dashboard.Code;
-                                //        variationLevelDashboard.CommodityCode = commodity_dashboard.Code;
-                                //        variationLevelDashboard.Variation_Code = variation_dashboard.Code;
-                                //        variationLevelDashboard.Stats = variation_dashboard.Stats;
-                                //        variationLevelDashboard.ShouldHide = shouldHideSubjobDashboard(variation_dashboard.Stats);
-                                //        flatDashboards.Add(variationLevelDashboard);
-                                //    }
-                                //}
-
+                                        DashboardFlatStructure variationLevelDashboard = new DashboardFlatStructure();
+                                        variationLevelDashboard.SubjobCode = subjob_dashboard.Code;
+                                        variationLevelDashboard.Phase = design_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Design : construction_subjobs.Any(x => x.PHASE.INTERNAL_NUM == subjob_dashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
+                                        variationLevelDashboard.AreaCode = areaCode;
+                                        //disciplineLevelDashboard.DepartmentCode = string.Empty;
+                                        variationLevelDashboard.DisciplineCode = discipline_dashboard.Code;
+                                        variationLevelDashboard.CommodityCode = commodity_dashboard.Code;
+                                        variationLevelDashboard.Variation_Code = variation_dashboard.Code;
+                                        variationLevelDashboard.Stats = variation_dashboard.Stats;
+                                        variationLevelDashboard.ShouldHide = shouldHideSubjobDashboard(variation_dashboard.Stats);
+                                        flatDashboards.Add(variationLevelDashboard);
+                                    }
+                                }
                             }
                         }
                     }

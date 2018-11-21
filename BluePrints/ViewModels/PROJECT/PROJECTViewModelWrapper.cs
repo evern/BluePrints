@@ -79,12 +79,14 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected bool isCompletelyLoaded { get; set; }
+        protected bool shouldSeparateVariation { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
+            shouldSeparateVariation = false;
 
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -256,7 +258,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false);
                 project.RecalculateStats(false);
-                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection);
+                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, shouldSeparateVariation);
                 project.Update();
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));

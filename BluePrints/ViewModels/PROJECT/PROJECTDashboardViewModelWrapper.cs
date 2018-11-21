@@ -67,13 +67,15 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         ActionObject actionObject;
-
+        bool shouldSeparateVariation;
         protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
             {
                 actionObject = parameter as ActionObject;
             }
+
+            shouldSeparateVariation = false;
         }
 
         protected override void addEntitiesLoader()

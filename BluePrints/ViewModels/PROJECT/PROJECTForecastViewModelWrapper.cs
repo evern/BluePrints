@@ -111,6 +111,7 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             IsLoadingForecast = true;
+            shouldSeparateVariation = true;
             LoadingScreenManager.DisableLoadingScreen = true;
             base.resolveParameters(parameter);
             skipBindingSwitch = true;
