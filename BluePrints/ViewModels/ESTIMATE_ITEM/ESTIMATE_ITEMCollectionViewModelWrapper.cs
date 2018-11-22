@@ -388,11 +388,6 @@ namespace BluePrints.ViewModels
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
-            foreach(var test in pasteData)
-            {
-                Debug.Print(test.Key.FieldName + " " + test.Value);
-            }
-
             string searchStockCodeFieldName;
             if (IsBudget)
                 searchStockCodeFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Budget_StockCodeGuid);
