@@ -80,6 +80,7 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
                                     <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                     <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
@@ -159,6 +160,7 @@
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
                                                 <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
+                                                <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                                 <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
