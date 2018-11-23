@@ -223,6 +223,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 41000.
+        /// </summary>
+        internal static string Default_Revenue_StockCode {
+            get {
+                return ResourceManager.GetString("Default_Revenue_StockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lhpwrma6!.
         /// </summary>
         internal static string Default_SecurityKey {

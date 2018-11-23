@@ -2,6 +2,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -72,7 +73,7 @@
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:LayoutSerializationService />
                                 </dxmvvm:Interaction.Behaviors>
-                                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}" >
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -108,11 +109,11 @@
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
+                                    <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
+                                    </dxg:GridColumn>-->
                                     <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -188,11 +189,11 @@
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
+                                                <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
+                                                </dxg:GridColumn>-->
                                                 <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -229,7 +230,7 @@
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                                 <dxg:GridControl.View>
-                                                    <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True">
+                                                    <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True" ShowAutoFilterRow="False" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                                         <dxmvvm:Interaction.Behaviors>
                                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                             <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
@@ -321,35 +322,45 @@
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </Grid>
                         </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">
-                            <dxg:GridControl x:Name="GridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
+                            <dxg:GridControl x:Name="GridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row" >
                                 <!--<dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomCommoditySummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>-->
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
-                                    <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
-                                    <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
-                                    <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="40" />
-                                    <dxg:GridColumn FieldName="ResourceName" Header="Resource" ReadOnly="True" VisibleIndex="50" />
-                                    <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="60" />
-                                    <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="70" />
-                                    <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="80" />
-                                    <dxg:GridColumn FieldName="Description2" Header="Additional Desc." ReadOnly="True" VisibleIndex="90" />
-                                    <dxg:GridColumn FieldName="InvoiceNo" Header="Invoice No" ReadOnly="True" VisibleIndex="100" />
-                                    <dxg:GridColumn FieldName="InvoiceAmount" Header="Invoice Amount" ReadOnly="True" VisibleIndex="110" />
-                                    <dxg:GridColumn FieldName="InvoiceDate" Header="Invoice Date" ReadOnly="True" VisibleIndex="120" />
-                                    <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" VisibleIndex="130" />
-                                    <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" VisibleIndex="140" />
-                                    <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" VisibleIndex="150" />
-                                    <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" VisibleIndex="160" />
-                                    <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="170" />
-                                    <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" VisibleIndex="180" />
-                                    <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" VisibleIndex="190" />
-                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.Bands>
+                                    <dxg:GridControlBand Header="General">
+                                        <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
+                                        <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
+                                        <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" VisibleIndex="40" Visible="False"/>
+                                        <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="50" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Commodity">
+                                        <dxg:GridColumn FieldName="ResourceName" Header="Resource" ReadOnly="True" VisibleIndex="60" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" />
+                                        <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
+                                        <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Costs">
+                                        <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
+                                        <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Details">
+                                        <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" VisibleIndex="110" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}"/>
+                                        <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" VisibleIndex="120" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" />
+                                        <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="130" />
+                                        <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" VisibleIndex="150" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" />
+                                        <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" VisibleIndex="160" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" />
+                                        <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" VisibleIndex="170" Visible="False" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Invoice (Applicable for Rates Job Only)" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" >
+                                        <dxg:GridColumn FieldName="InvoiceNo" Header="Invoice No" ReadOnly="True" VisibleIndex="180" />
+                                        <dxg:GridColumn FieldName="InvoiceAmount" Header="Invoice Amount" ReadOnly="True" VisibleIndex="190" />
+                                        <dxg:GridColumn FieldName="InvoiceDate" Header="Invoice Date" ReadOnly="True" VisibleIndex="200" />
+                                    </dxg:GridControlBand>
+                                </dxg:GridControl.Bands>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem DisplayFormat="Records: {0:n}" FieldName="Subjob_Name" SummaryType="Count" />
                                     <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
@@ -363,7 +374,7 @@
                                     <dxg:GridSummaryItem DisplayFormat="c" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView2" AllowEditing="False" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True">
+                                    <dxg:TableView x:Name="tableView2" AllowEditing="False" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyDetailWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                         </dxg:TableView.RowCellMenuCustomizations>

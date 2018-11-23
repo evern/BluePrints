@@ -111,6 +111,7 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
+            forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = true;
             shouldSeparateVariation = true;
@@ -398,13 +399,19 @@ namespace BluePrints.ViewModels
             dataRow[columnCalculation] = calculation;
 
             IEnumerable<ExoTimeAuthorisation> relevantJobLines;
-            if (entity.Commodity.Code == string.Empty)
-                relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
-            else
-                relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
+            if(entity.Variation_Code == string.Empty)
+            {
+                if (entity.Commodity.Code == string.Empty)
+                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
+                else
+                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
 
-            entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
-            entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
+                entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
+                entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
+            }
+
+            ////populate revenue
+            //ExoTimeAuthorisation revenueLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
 
             calculation.Budget = entity.ExoBudgetCosts;
             calculation.IsBudgetReadOnly = true;
@@ -695,6 +702,7 @@ namespace BluePrints.ViewModels
             setFilter((DataRowView)e.Row, e.Column);
         }
 
+        public bool IsPOColumnsVisible { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (gridColumn == null || dataRowView == null)
@@ -725,7 +733,9 @@ namespace BluePrints.ViewModels
                     }
 
                     IsHidden = false;
+                    IsPOColumnsVisible = false;
                     this.RaisePropertyChanged(x => x.FilterCriteria);
+                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
                 }
                 else if (gridColumn.FieldName.ToUpper().Contains("ACTUALS"))
                 {
@@ -736,7 +746,9 @@ namespace BluePrints.ViewModels
                         FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'");
 
                     IsHidden = false;
+                    IsPOColumnsVisible = false;
                     this.RaisePropertyChanged(x => x.FilterCriteria);
+                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
                 }
                 else if (gridColumn.FieldName.ToUpper().Contains("INVOICED"))
                 {
@@ -747,7 +759,9 @@ namespace BluePrints.ViewModels
                         FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
 
                     IsHidden = false;
+                    IsPOColumnsVisible = false;
                     this.RaisePropertyChanged(x => x.FilterCriteria);
+                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
                 }
                 else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
                 {
@@ -757,7 +771,10 @@ namespace BluePrints.ViewModels
                     else
                         FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [IsPO] = 'True'");
                     IsHidden = false;
+
+                    IsPOColumnsVisible = true;
                     this.RaisePropertyChanged(x => x.FilterCriteria);
+                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
                 }
                 else
                 {
@@ -1632,6 +1649,7 @@ namespace BluePrints.ViewModels
     public class ForecastCalculation
     {
         public decimal Budget { get; set; }
+        public decimal Revenue { get; set; }
         public decimal CurrentBudget => Budget + Variation;
         public decimal Variation { get; set; }
         public decimal Actuals { get; set; }

@@ -44,7 +44,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return string.Empty;
         }
 
-        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, ExoBurnedFilterType filterType)
+        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false)
         {
             try
             {
@@ -66,18 +66,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     qualifiedSubjobs = new List<string>();
                 else
                 {
-                    if (filterType == ExoBurnedFilterType.All)
-                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
-                    else if (filterType == ExoBurnedFilterType.Design)
-                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
-                    else
-                        qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
-
-                    //Can't do this because legacy subjob exists
-                    //else if (filterType == ExoBurnedFilterType.Design)
-                    //    qualifiedSubjobs = subjobs.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design).Select(x => x.INTERNAL_NAME1);
-                    //else
-                    //    qualifiedSubjobs = subjobs.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct).Select(x => x.INTERNAL_NAME1);
+                    qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
@@ -142,7 +131,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 HashSet<string> missingSubJobs = new HashSet<string>();
                 foreach (var jobTransaction in jobTransactionsList)
                 {
-                    if (qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
+                    if (forceRetrieveAllBurned || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
                         if (jobTransaction.COSTDESC3 != null && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))
                         {
@@ -190,7 +179,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.ResourceName = string.Empty;
                         materialDataPoint.Quantity = (decimal)jobMaterial.quantity;
                         materialDataPoint.Description = jobMaterial.description;
-                        materialDataPoint.Description2 = jobMaterial.name;
+                        materialDataPoint.Supplier = jobMaterial.name;
                         materialDataPoint.InvoiceNo = jobMaterial.invno;
                         materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
                         materialDataPoint.CostType = jobMaterial.CostTypeDesc;
@@ -199,6 +188,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         materialDataPoint.Variation_Code = extractVariationCode(jobMaterial.VariationCode);
                         materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
                         materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
+                        materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
                         //Debug.Print(jobMaterial.description + ";" + materialDataPoint.Costs.ToString());
                         materialDataPoints.Add(materialDataPoint);
                     }
@@ -219,7 +209,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         poDataPoint.ResourceName = string.Empty;
                         poDataPoint.Quantity = poDataPoint.Units;
                         poDataPoint.Description = po.DESCRIPTION;
-                        poDataPoint.Description2 = po.NAME;
+                        poDataPoint.Supplier = po.NAME;
                         poDataPoint.InvoiceNo = string.Empty;
                         poDataPoint.CostGroup = po.COSTGROUPDESC;
                         poDataPoint.CostType = po.COSTTYPEDESC;
