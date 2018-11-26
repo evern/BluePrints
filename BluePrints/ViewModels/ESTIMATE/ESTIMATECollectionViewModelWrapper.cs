@@ -270,23 +270,23 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(ESTIMATE projection, string field_name, object new_value)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE().STATUS))
-            {
-                if(new_value != null)
-                {
-                    object oldValue = DataUtils.GetNestedValue(field_name, projection);
-                    if (oldValue != null)
-                    {
-                        BaselineStatus oldStatus = (BaselineStatus)oldValue;
-                        BaselineStatus newStatus = (BaselineStatus)new_value;
+            //if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE().STATUS))
+            //{
+            //    if(new_value != null)
+            //    {
+            //        object oldValue = DataUtils.GetNestedValue(field_name, projection);
+            //        if (oldValue != null)
+            //        {
+            //            BaselineStatus oldStatus = (BaselineStatus)oldValue;
+            //            BaselineStatus newStatus = (BaselineStatus)new_value;
 
-                        if ((oldStatus == BaselineStatus.Working || oldStatus == BaselineStatus.Superseded) && newStatus == BaselineStatus.Live)
-                            return "Please use the approve button to move estimate from working to live";
-                        //else if (oldStatus == BaselineStatus.Live)
-                        //    return "Cannot change status once it is live";
-                    }
-                }
-            }
+            //            if ((oldStatus == BaselineStatus.Working || oldStatus == BaselineStatus.Superseded) && newStatus == BaselineStatus.Live)
+            //                return "Please use the approve button to move estimate from working to live";
+            //            //else if (oldStatus == BaselineStatus.Live)
+            //            //    return "Cannot change status once it is live";
+            //        }
+            //    }
+            //}
 
             return string.Empty;
         }
