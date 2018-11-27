@@ -98,6 +98,7 @@ namespace BluePrints.ViewModels
 
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
+        public ForecastSummary ForecastSummary { get; set; }
         public CriteriaOperator FilterCriteria { get; set; }
         public virtual DateTime EndSelectionDate { get; set; }
         public virtual DateTime StartSelectionDate { get; set; }
@@ -111,9 +112,10 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
+            ForecastSummary = new ForecastSummary();
             forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
             IsLoadingForecast = true;
-            LoadingScreenManager.DisableLoadingScreen = true;
+            LoadingScreenManager.DisableLoadingScreen = false;
             shouldSeparateVariation = true;
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
@@ -122,6 +124,10 @@ namespace BluePrints.ViewModels
             hiddenColumnFieldNames.Add(columnChild);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if (revenueLine != null)
+                ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+
             SelectedDataRows = new ObservableCollection<DataRowView>();
             StartSelectionDate = DateTime.Now;
             DetailedData = new List<ExoDataPoint>();
@@ -314,6 +320,7 @@ namespace BluePrints.ViewModels
                         dataRow[columnCompare] = compareDataTable;
                     }
 
+                    this.RaisePropertyChanged(x => x.ForecastSummary);
                     TableViewService.ScrollToLast();
                 }
 
@@ -406,8 +413,10 @@ namespace BluePrints.ViewModels
                 else
                     relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
 
+                ExoTimeAuthorisation revenueJobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
                 entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
                 entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
+                ForecastSummary.Costs += entity.ExoBudgetCosts;
             }
 
             ////populate revenue
@@ -1663,5 +1672,13 @@ namespace BluePrints.ViewModels
         public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal Variance => Budget - EstimateAtCompletion;
         public bool IsBudgetReadOnly { get; set; }
+    }
+
+    public class ForecastSummary
+    {
+        public decimal Revenue { get; set; }
+        public decimal Costs { get; set; }
+        public decimal Margin => Revenue - Costs;
+        public decimal Margin_Percent => Revenue == 0 ? 0 : Margin / Revenue;
     }
 }

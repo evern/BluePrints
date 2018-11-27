@@ -332,6 +332,7 @@ namespace BluePrints.Common.Misc
             List<DashboardTreeStructure> child_dashboard = new List<DashboardTreeStructure>();
             foreach (string unique_code in unique_codes.OrderBy(x => x))
             {
+                LoadingScreenManager.SetMessage("Dividing " + unique_code);
                 DashboardTreeStructure new_dashboard = create_dashboard(dashboard, unique_code, dashboard.Summary, burned_data_points, x => reportable_selector(x) == unique_code, x => exo_selector(x) == unique_code);
                 if(new_dashboard != null)
                     child_dashboard.Add(new_dashboard);
