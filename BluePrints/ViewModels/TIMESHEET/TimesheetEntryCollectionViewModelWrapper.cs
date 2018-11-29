@@ -83,6 +83,7 @@ namespace BluePrints.ViewModels
 
         protected override void resolveParameters(object parameter)
         {
+            forceApplyBestFit = true;
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             GetDateRange();
@@ -138,6 +139,13 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #region Collection Call Backs
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            doNotPrompt = true;
+            ReadFromExo();
+            doNotPrompt = false;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
 
         public override void FullRefresh()
         {
@@ -278,10 +286,12 @@ namespace BluePrints.ViewModels
             return dataPointsTable != null;
         }
 
+        bool doNotPrompt = false;
         public void ReadFromExo()
         {
-            if (MessageBoxService.ShowMessage("Are you sure you want to read hours from exo?\n\nThis will clear the table and replace hours with hours from exo", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
-                return;
+            if(!doNotPrompt)
+                if (MessageBoxService.ShowMessage("Are you sure you want to read hours from exo?\n\nThis will clear the table and replace hours with hours from exo", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
+                    return;
 
             EntitiesUndoRedoManager.Clear();
             DataPointsTable.Clear();
@@ -359,6 +369,7 @@ namespace BluePrints.ViewModels
                                 newRow[columnCostType] = (int)timeSheet.COST_TYPE;
 
                             newRows.Add(newRow);
+                            validateUserAuth(newRow);
                         }
 
                         foreach (string dateColumnName in dateColumnNames)
@@ -396,7 +407,9 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.RefreshData();
-            MessageBoxService.ShowMessage("Data retrieved from exo");
+
+            if (!doNotPrompt)
+                MessageBoxService.ShowMessage("Data retrieved from exo");
         }
 
         public bool CanCommitToExo()

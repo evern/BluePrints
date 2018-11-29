@@ -115,7 +115,7 @@ namespace BluePrints.ViewModels
             ForecastSummary = new ForecastSummary();
             forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
             IsLoadingForecast = true;
-            LoadingScreenManager.DisableLoadingScreen = false;
+            LoadingScreenManager.DisableLoadingScreen = true;
             shouldSeparateVariation = true;
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
@@ -128,6 +128,7 @@ namespace BluePrints.ViewModels
             if (revenueLine != null)
                 ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
 
+            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroUnitOfWork, loadPROJECT.NUMBER);
             SelectedDataRows = new ObservableCollection<DataRowView>();
             StartSelectionDate = DateTime.Now;
             DetailedData = new List<ExoDataPoint>();
@@ -228,6 +229,9 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             dataPointsTable = null;
+            ForecastSummary.Costs = 0;
+            ForecastSummary.TotalClaims = 0;
+            ForecastSummary.Revenue = 0;
             base.FullRefresh();
         }
 
@@ -381,6 +385,7 @@ namespace BluePrints.ViewModels
                 DataRow cloneRow = childDataTable.NewRow();
                 initializeDataRow(cloneRow, groupedSubjob.SubJob.Code, groupedSubjob.Discipline.Code, groupedSubjob.Commodity.Code, groupedSubjob.Variation_Code);
                 IEnumerable<DashboardFlatStructure> commodityDashboards = AllProjectDashboards.Where(x => x.SubjobCode == groupedSubjob.SubJob.Code && x.DisciplineCode == groupedSubjob.Discipline.Code && x.CommodityCode == groupedSubjob.Commodity.Code && x.Variation_Code == groupedSubjob.Variation_Code);
+
                 populateDataRow(cloneRow, commodityDashboards);
                 updateForecast(cloneRow, groupedSubjob, false);
                 calculateUncommitted(cloneRow);
@@ -416,7 +421,8 @@ namespace BluePrints.ViewModels
                 ExoTimeAuthorisation revenueJobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
                 entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
                 entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
-                ForecastSummary.Costs += entity.ExoBudgetCosts;
+                if (entity.Commodity.Code == string.Empty)
+                    ForecastSummary.Costs += entity.ExoBudgetCosts;
             }
 
             ////populate revenue
@@ -505,6 +511,7 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> actualDataPoints = actualStats.SelectMany(x => x.Actual.ExoDataPoints);
                     forecastCalculation.Actuals += actualDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += actualDataPoints.Sum(x => x.InvoiceAmount);
+                    ForecastSummary.TotalClaims += forecastCalculation.Invoiced;
                     foreach(DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
@@ -545,7 +552,7 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> materialDataPoints = materialStats.SelectMany(x => x.Material.ExoDataPoints);
                     forecastCalculation.Actuals += materialDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
-
+                    ForecastSummary.TotalClaims += forecastCalculation.Invoiced;
                     foreach (DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
@@ -1180,7 +1187,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewForecast(DataRow dataRow, ExoSubJobProjection entity, DateTime forecastDate, decimal? forecastUnits, bool isRecursive = false)
         {
-            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && !x.IS_EAC);
+            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
             if (findFORECAST == null)
             {
                 FORECAST newFORECAST = new FORECAST();
@@ -1189,6 +1196,7 @@ namespace BluePrints.ViewModels
                 newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
                 newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
                 newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
+                newFORECAST.VARIATION_CODE = entity.Variation_Code;
                 newFORECAST.FORECAST_DATE = forecastDate.Date;
                 newFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(newFORECAST);
@@ -1680,5 +1688,6 @@ namespace BluePrints.ViewModels
         public decimal Costs { get; set; }
         public decimal Margin => Revenue - Costs;
         public decimal Margin_Percent => Revenue == 0 ? 0 : Margin / Revenue;
+        public decimal TotalClaims { get; set; }
     }
 }
