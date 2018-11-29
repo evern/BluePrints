@@ -123,10 +123,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 var exoSubjobsList = exoSubjobs.ToList();
                 var jobTransactionsList = jobTransactions.ToList();
 
-                
-                if (jobTransactionsList.Count == 0)
-                    return;
-
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 HashSet<string> missingSubJobs = new HashSet<string>();
                 foreach (var jobTransaction in jobTransactionsList)

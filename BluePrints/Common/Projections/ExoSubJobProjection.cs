@@ -804,17 +804,15 @@ namespace BluePrints.Common.Projections
         public static decimal GetProjectClaims(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var jobClaims = from JOBTRANS in primeroUnitOfWork.JOB_TRANSACTIONS
-                            join JOBCOST_HDR2 in primeroUnitOfWork.JOBCOST_HDR
-                            on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                            join JOBCOST_HDR1 in primeroUnitOfWork.JOBCOST_HDR
-                            on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                            where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X"
-                            select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+                            join JOBCOST_HDR in primeroUnitOfWork.JOBCOST_HDR
+                            on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
+                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.INVOICED > 0 && JOBTRANS.LINE_STATUS != "X"
+                            select new { JOBCOST_HDR.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
 
             IEnumerable<dynamic> dbTimes = jobClaims.ToList();
             if (dbTimes.Count() > 0)
             {
-                return Convert.ToDecimal(dbTimes.Sum(x => (double)x.LINETOTAL));
+                return Convert.ToDecimal(dbTimes.Sum(x => (double)x.INVOICED));
             }
             else
                 return 0;

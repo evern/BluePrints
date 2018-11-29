@@ -124,17 +124,22 @@ namespace BluePrints.ViewModels
             hiddenColumnFieldNames.Add(columnChild);
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
-            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
-            if (revenueLine != null)
-                ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
-
-            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroUnitOfWork, loadPROJECT.NUMBER);
+            initializeSummaryStats();
             SelectedDataRows = new ObservableCollection<DataRowView>();
             StartSelectionDate = DateTime.Now;
             DetailedData = new List<ExoDataPoint>();
             alignedDataDateCollection = new List<DateTime>();
             IsHidden = true;
             delayPostLoadedTimer = true;
+        }
+
+        private void initializeSummaryStats()
+        {
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if (revenueLine != null)
+                ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+
+            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         public override DateTime? FixedStartDate
@@ -230,8 +235,7 @@ namespace BluePrints.ViewModels
         {
             dataPointsTable = null;
             ForecastSummary.Costs = 0;
-            ForecastSummary.TotalClaims = 0;
-            ForecastSummary.Revenue = 0;
+            initializeSummaryStats();
             base.FullRefresh();
         }
 
@@ -511,7 +515,6 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> actualDataPoints = actualStats.SelectMany(x => x.Actual.ExoDataPoints);
                     forecastCalculation.Actuals += actualDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += actualDataPoints.Sum(x => x.InvoiceAmount);
-                    ForecastSummary.TotalClaims += forecastCalculation.Invoiced;
                     foreach(DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
@@ -552,7 +555,6 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> materialDataPoints = materialStats.SelectMany(x => x.Material.ExoDataPoints);
                     forecastCalculation.Actuals += materialDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
-                    ForecastSummary.TotalClaims += forecastCalculation.Invoiced;
                     foreach (DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
