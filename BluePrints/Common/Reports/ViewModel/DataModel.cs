@@ -289,7 +289,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved)
+                if (Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved || Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Awaiting)
                     return false;
                 else
                     return IsInternalNumberAlwaysEditable ? true : Earned_Units_ToDate == 0;
@@ -300,7 +300,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Approved)
+                if (Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Approved || Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Awaiting)
                     return false;
                 else
                     return true;
