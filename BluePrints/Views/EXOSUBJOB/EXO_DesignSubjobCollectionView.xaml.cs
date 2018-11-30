@@ -6,9 +6,9 @@ using System.Windows.Forms;
 
 namespace BluePrints.Views
 {
-    public partial class EXOSUBJOBCollectionView : System.Windows.Controls.UserControl
+    public partial class EXO_DesignSubjobCollectionView : System.Windows.Controls.UserControl
     {
-        public EXOSUBJOBCollectionView()
+        public EXO_DesignSubjobCollectionView()
         {
             InitializeComponent();
         }

@@ -185,7 +185,7 @@ namespace BluePrints.ViewModels
         }
 
         public override void FullRefresh()
-        {
+         {
             base.FullRefresh();
             refreshDataPointsTable();
         }

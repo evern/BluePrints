@@ -801,9 +801,9 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORK_STAFF_ROLECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXOAllSubjobViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXOConstructionSubjobViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXODesignSubjobViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXO_MasterJobViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXO_SubjobViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXO_DesignSubjobViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
@@ -873,14 +873,14 @@
     <Compile Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml.cs">
       <DependentUpon>DAYWORK_STAFF_ROLECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml.cs">
-      <DependentUpon>EXOALLSUBJOBCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\EXOSUBJOB\EXO_MasterJobCollectionView.xaml.cs">
+      <DependentUpon>EXO_MasterJobCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml.cs">
-      <DependentUpon>EXONATIVESUBJOBCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\EXOSUBJOB\EXO_SubJobCollectionView.xaml.cs">
+      <DependentUpon>EXO_SubJobCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXOSUBJOBCollectionView.xaml.cs">
-      <DependentUpon>EXOSUBJOBCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\EXOSUBJOB\EXO_DesignSubjobCollectionView.xaml.cs">
+      <DependentUpon>EXO_DesignSubjobCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
@@ -1786,15 +1786,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXOALLSUBJOBCollectionView.xaml">
+    <Page Include="Views\EXOSUBJOB\EXO_MasterJobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXONATIVESUBJOBCollectionView.xaml">
+    <Page Include="Views\EXOSUBJOB\EXO_SubJobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXOSUBJOBCollectionView.xaml">
+    <Page Include="Views\EXOSUBJOB\EXO_DesignSubjobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

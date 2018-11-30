@@ -264,6 +264,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
+        BluePrintsEntitiesModuleDescription timesheetsDescription;
         private void initializeCategoryDescription()
         {
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
@@ -342,7 +343,7 @@ namespace BluePrints.ViewModels
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"));
 
             if(LoginCredentials.hasPermission(PermissionResources.StandardizeSubJobs))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "All Exo Subjobs", "EXOALLSUBJOBCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "Exo Master Jobs", "EXO_MasterJobCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
@@ -594,8 +595,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Native Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Native Permission", false, false, @"Business Objects\BOUser_16x16.png"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Native Job Setup", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Native Permission", false, false, @"Business Objects\BOUser_16x16.png"));
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheet Entry", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Timesheet Entry", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
             }
 

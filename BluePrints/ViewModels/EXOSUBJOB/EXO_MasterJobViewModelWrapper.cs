@@ -19,7 +19,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class EXOAllSubjobViewModelWrapper :
+    public partial class EXO_MasterJobViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, ExoSubJobProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -27,10 +27,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static EXOAllSubjobViewModelWrapper Create(
+        public static EXO_MasterJobViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new EXOAllSubjobViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new EXO_MasterJobViewModelWrapper(unitOfWorkFactory));
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected EXOAllSubjobViewModelWrapper(
+        protected EXO_MasterJobViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
 
@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "EXOAllSubjobViewModelWrapper";
+                return "EXO_MasterJobViewModelWrapper";
             }
         }
 
