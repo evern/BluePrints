@@ -196,6 +196,7 @@ namespace BluePrints.ViewModels
         #region View Properties
         private void refreshDataPointsTable()
         {
+            alignedDataDateCollection = null;
             dataPointsTable = null;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
         }
