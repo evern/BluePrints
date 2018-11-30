@@ -25,9 +25,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             var summaryDataPoints = new ObservableCollection<DataPoint>();
             DateTime progressLastDataDate;
-            //if (overrideLastPeriodDate != null)
-            //    progressLastDataDate = (DateTime)overrideLastPeriodDate;
-            //else
+            //In progress distribution we want to generate data points even if P6 or subjob says it's finished. i.e. 100% all the way until data date
+            if (overrideLastPeriodDate != null)
+                progressLastDataDate = (DateTime)overrideLastPeriodDate;
+            else
                 progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%

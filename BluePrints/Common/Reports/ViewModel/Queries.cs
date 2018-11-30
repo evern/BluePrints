@@ -13,7 +13,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public static class ProgressQueries
     {
-        public static IQueryable<BASELINE_ITEMProgress> ProjectUser_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, PROJECT project, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection)
+        public static IQueryable<BASELINE_ITEMProgress> ProjectUser_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, PROJECT project, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, bool useExtrapolateDate = false)
         {
             List<BASELINE_ITEMProgress> user_baseline_item_progresses = new List<BASELINE_ITEMProgress>();
             PROGRESS live_progress = project.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
@@ -162,7 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool useProgressDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -211,11 +211,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
-            DateTime? progressDate = null;
-            if (useProgressDate)
-                progressDate = PROGRESS.DATA_DATE;
+            //In progress distribution we want to generate cumulative data point to whatever date user set
+            DateTime? extrapolateDate = null;
+            if (extrapolateDateToDataDate)
+                extrapolateDate = PROGRESS.DATA_DATE;
 
-            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate, progressDate)
+            List<BASELINE_ITEMProgress> baseline_item_progresses = baseline_item_projection.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate, extrapolateDate)
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,

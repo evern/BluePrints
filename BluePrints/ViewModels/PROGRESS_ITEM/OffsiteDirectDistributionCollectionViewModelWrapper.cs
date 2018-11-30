@@ -79,6 +79,7 @@ namespace BluePrints.ViewModels
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             IsCalculating = true;
+            extrapolateDataDate = true;
             base.resolveParameters(parameter);
         }
 
@@ -275,7 +276,7 @@ namespace BluePrints.ViewModels
                 //spinEdit.MaxValue = 1;
                 //spinEdit.MinValue = 0;
                 //e.Column.EditSettings = spinEdit;
-                e.Column.Width = 80;
+                e.Column.Width = 90;
                 if(e.Column.FieldName.Contains(loadPROGRESS.DATA_DATE.Date.ToString()))
                     e.Column.CellTemplate = Application.Current.Resources["percentageTemplateLastDate"] as DataTemplate;
                 else

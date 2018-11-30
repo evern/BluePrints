@@ -10,10 +10,10 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplateLastDate">
-            <Grid Width="80">
+            <Grid Width="90">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15" />
-                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="10" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" ToolTip="Minimum Possible Progress">
@@ -42,10 +42,10 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplate">
-            <Grid Width="80">
+            <Grid Width="90">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15" />
-                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="10" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Minimum Possible Progress">
