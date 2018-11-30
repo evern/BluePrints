@@ -25,9 +25,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             var summaryDataPoints = new ObservableCollection<DataPoint>();
             DateTime progressLastDataDate;
-            if (overrideLastPeriodDate != null)
-                progressLastDataDate = (DateTime)overrideLastPeriodDate;
-            else
+            //if (overrideLastPeriodDate != null)
+            //    progressLastDataDate = (DateTime)overrideLastPeriodDate;
+            //else
                 progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%
