@@ -172,12 +172,12 @@ namespace BluePrints.Common
             //QueueWorkItem<PROJECT>();
             //QueueWorkItem<AREA>();
             //QueueWorkItem<WORKPACK>();
-            //QueueWorkItem<BASELINE>();
+            QueueWorkItem<BASELINE>();
             //QueueWorkItem<PROGRESS>();
             //QueueWorkItem<VARIATION>();
             //QueueWorkItem<ESTIMATE>();
             //QueueWorkItem<SUBJOB>();
-            //QueueWorkItem<BASELINE_ITEM>();
+            QueueWorkItem<BASELINE_ITEM>();
             //QueueWorkItem<PROGRESS_ITEM>();
             //QueueWorkItem<BASELINE_ITEM_WORK>();
             //QueueWorkItem<CLIENT>();
@@ -235,14 +235,13 @@ namespace BluePrints.Common
             //QueueWorkItem<USER>();
             //QueueWorkItem<VARIATION_ITEM>();
             //QueueWorkItem<SUBJOB_ASSIGNMENT>();
-            //QueueWorkItem<VARIATION_REGISTER>();            
+            //QueueWorkItem<VARIATION_REGISTER>();
             //QueueWorkItem<OFFICE>();
             //QueueWorkItem<CLIENT_PROJECT>();
             //QueueWorkItem<MEETING_ACTION>();
             //QueueWorkItem<MEETING_TYPE>();
             //QueueWorkItem<TENDER_PROFILE>();
-            QueueWorkItem<TENDER_PROFILE_ITEM>();
-
+            //QueueWorkItem<TENDER_PROFILE_ITEM>();
         }
 
         private void threadSafeAddEntries<T>(DbSet<T> dbSet, T entry)
@@ -307,8 +306,10 @@ namespace BluePrints.Common
                     DateTime localCreated = localData.CREATED;
                     DateTime? localUpdated = localData.UPDATED;
                     DateTime? localDeleted = localData.DELETED;
-                    bool isDataLocal = localData.Office.ToUpper().Contains("PERTH");
-                    bool isDataGlobal = localData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+                    //bool isDataLocal = localData.Office.ToUpper().Contains("PERTH");
+                    bool isDataLocal = false;
+                    bool isDataGlobal = true;
+                    //bool isDataGlobal = localData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
 
                     T remoteData = remoteDbSet.FirstOrDefault(x => x.GUID == localData.GUID);
                     if (remoteData != null)
@@ -440,8 +441,10 @@ namespace BluePrints.Common
                 Dictionary<string, T> addLocalEntries = new Dictionary<string, T>();
                 foreach (var remoteData in remoteDbSet)
                 {
-                    bool isDataRemote = remoteData.Office.ToUpper().Contains("MONTREAL");
-                    bool isDataGlobal = remoteData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+                    //bool isDataRemote = remoteData.Office.ToUpper().Contains("MONTREAL");
+                    bool isDataRemote = false;
+                    //bool isDataGlobal = remoteData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+                    bool isDataGlobal = true;
 
                     T localData = localDbSet.FirstOrDefault(x => x.GUID == remoteData.GUID);
                     if (localData == null)
