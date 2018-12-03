@@ -163,7 +163,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>-->
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative">
+                        <dxg:GridControlBand Header="Cumulative To Date">
                             <dxg:GridColumn FieldName="Baseline_Percentage" FilterPopupMode="CheckedList" Header="Baseline %" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -229,7 +229,10 @@
                                                     </MultiBinding>
                                                 </Image.Visibility>
                                             </Image>
-                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum Possible Progress">
+                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" >
+                                                <Image.ToolTip>
+                                                    <Binding Path="RowData.Row.IsMaxPercentageRestrictedByFuturePercentage" Converter="{StaticResource MaxPercentageMessageConverter}" />
+                                                </Image.ToolTip>
                                                 <Image.Visibility>
                                                     <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                         <MultiBinding.ConverterParameter>
@@ -240,7 +243,22 @@
                                                     </MultiBinding>
                                                 </Image.Visibility>
                                             </Image>
-                                            <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" />
+                                            <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0"  MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" >
+                                                <dxe:SpinEdit.ErrorToolTipContentTemplate>
+                                                    <DataTemplate>
+                                                        <dxe:TextEdit>
+                                                            <dxe:TextEdit.Text>
+                                                                <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                                                    <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                                                    <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                                                    <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                                                    <Binding Path="Tag" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                                                </MultiBinding>
+                                                            </dxe:TextEdit.Text>
+                                                        </dxe:TextEdit>
+                                                    </DataTemplate>
+                                                </dxe:SpinEdit.ErrorToolTipContentTemplate>
+                                            </dxe:SpinEdit>
                                         </Grid>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
@@ -254,6 +272,52 @@
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControlBand>
+                        <dxg:GridControlBand Header="Cumulative">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="FirstDataDate" FilterPopupMode="CheckedList" Header="First Earned Date" HeaderToolTip="Progress first earned date along the entire timeline" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="LastDataDate" FilterPopupMode="CheckedList" Header="Last Earned Date" HeaderToolTip="Progress last earned date along the entire timeline" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Percentage" FilterPopupMode="CheckedList" Header="Total %" HeaderToolTip="Progress total % along the entire timeline" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FilterPopupMode="CheckedList" Header="All Progress" HeaderToolTip="Progresses along the entire timeline" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" IncrementalFiltering="True" AutoComplete="True" AutoPopulateColumns="False" ItemsSource="{Binding RowData.Row.EarnedPercentages}" IsTextEditable="False" NullValueButtonPlacement="None" NullText="Expand to View" ShowNullTextForEmptyValue="True" PopupMinWidth="500">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False"  >
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="EarnedPercentage" Header="Earned %" ReadOnly="True" >
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                            <dxg:GridColumn FieldName="EarnedDate" Header="Earned Date" ReadOnly="True" SortIndex="1" SortOrder="Descending" >
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControl.Columns>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Period">
@@ -297,7 +361,7 @@
                             <!--<dxg:GridColumn Header="Guid" FieldName="GuidCurrent" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />-->
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" FilterPopupMode="CheckedList" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="M/d/yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" FilterPopupMode="CheckedList" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" Visible="False">
@@ -307,7 +371,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Updated" FilterPopupMode="CheckedList" Header="Progress Updated" HeaderToolTip="Progress last updated date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="M/d/yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" FilterPopupMode="CheckedList" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" Visible="False">

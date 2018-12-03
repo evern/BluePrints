@@ -3,6 +3,7 @@
         <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
         <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
         <converter:ForecastFutureCellColorConverter x:Key="ForecastFutureCellColorConverter" />
+        <converter:ValueOutOfRangeMessageConverter x:Key="ValueOutOfRangeMessageConverter" />
         <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
         <DataTemplate x:Key="GridPrintHeaderTemplate">
             <StackPanel HorizontalAlignment="Left">
@@ -27,7 +28,7 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <Image Grid.Column="1" ToolTip="Maximum Possible Progress, please check gates max %">
+                <Image Grid.Column="1" ToolTip="Maximum Possible Progress">
                     <Image.Visibility>
                         <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                             <MultiBinding.ConverterParameter>
@@ -38,7 +39,22 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="{Binding RowData.Row.Entity.MinPercentage}" />
+                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="{Binding RowData.Row.Entity.MinPercentage}" >
+                    <dxe:SpinEdit.ErrorToolTipContentTemplate>
+                        <DataTemplate>
+                            <dxe:TextEdit>
+                                <dxe:TextEdit.Text>
+                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                        <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                    </MultiBinding>
+                                </dxe:TextEdit.Text>
+                            </dxe:TextEdit>
+                        </DataTemplate>
+                    </dxe:SpinEdit.ErrorToolTipContentTemplate>
+                </dxe:SpinEdit>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplate">
@@ -70,7 +86,22 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="0" />
+                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="0" >
+                    <dxe:SpinEdit.ErrorToolTipContentTemplate>
+                        <DataTemplate>
+                            <dxe:TextEdit>
+                                <dxe:TextEdit.Text>
+                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                        <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
+                                    </MultiBinding>
+                                </dxe:TextEdit.Text>
+                            </dxe:TextEdit>
+                        </DataTemplate>
+                    </dxe:SpinEdit.ErrorToolTipContentTemplate>
+                </dxe:SpinEdit>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplatePast">

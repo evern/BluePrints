@@ -4,6 +4,8 @@
     <converter:NumericCompareToBooleanConverter x:Key="NumericCompareToBooleanConverter" />
     <converter:VariationActionToImageConverter x:Key="VariationActionToImageConverter" />
     <converter:VariationActionToStringConverter x:Key="VariationActionToStringConverter" />
+    <converter:ValueOutOfRangeMessageConverter x:Key="ValueOutOfRangeMessageConverter" />
+    <converter:MaxPercentageMessageConverter x:Key="MaxPercentageMessageConverter" />
     <converter:CollectionConverter x:Key="CollectionConverter" />
     <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
     <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />

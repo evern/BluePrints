@@ -13,6 +13,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -757,70 +758,7 @@ namespace BluePrints.ViewModels
 
         public void UpdateAllPercentagesByStatus()
         {
-            if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?",
-                         BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
-                return;
-
-            IEnumerable<BASELINE_ITEMProgress> deliverables = MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
-            List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
-
-            foreach (var deliverable in deliverables)
-            {
-                if (deliverable.Entity.Entity.DOCTYPE == null)
-                    continue;
-
-                DELIVERABLES_STATUS deliverableStatus = deliverable.Entity.Deliverable_Status;
-
-                //when this is null it means the deliverable status is no longer valid (e.g. deleted)
-                if (deliverableStatus == null)
-                    continue;
-
-                //user are able to fill up/down on statuses that might result in assigned status isn't valid to doctype, so check if status is valid before continuing
-                bool isValidStatus = deliverable.Entity.Entity.DOCTYPE.GetDeliverableStatusByProject(loadPROJECT.GUID).Any(x => x.GUID == deliverableStatus.GUID);
-                if (!isValidStatus)
-                    continue;
-
-                decimal? autoPercentage = deliverableStatus.AUTO_PERCENTAGE;
-                if (autoPercentage != null)
-                {
-                    if (deliverable.Total_Earned_Percentage < autoPercentage)
-                    {
-                        decimal oldPercentage = deliverable.Total_Earned_Percentage;
-                        decimal newPercentage = (decimal)autoPercentage;
-
-                        deliverable.Total_Earned_Percentage = newPercentage;
-                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
-                        updateProgress.AddRange(newPRORESS_ITEMS);
-                    }
-                }
-
-                if (deliverable.Total_Earned_Percentage > deliverableStatus.MAX_PERCENTAGE)
-                {
-                    decimal totalDeliverableUnits = deliverable.Total_Units;
-                    decimal maxAllowableEarnedUnit = totalDeliverableUnits * deliverableStatus.MAX_PERCENTAGE;
-                    if (maxAllowableEarnedUnit > 0)
-                    {
-                        decimal iterateEarnedUnits = 0;
-                        List<PROGRESS_ITEM> progressesByDate = deliverable.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
-                        foreach (PROGRESS_ITEM progressByDate in progressesByDate)
-                        {
-                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
-                            decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
-                            if (postProgressEarnedUnit > maxAllowableEarnedUnit)
-                            {
-                                decimal newProgressEarnUnit = (maxAllowableEarnedUnit - iterateEarnedUnits);
-                                progressByDate.EARNED_UNITS = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
-                                updateProgress.Add(progressByDate);
-                            }
-
-                            iterateEarnedUnits += oldProgressEarnUnit;
-                        }
-                    }
-                }
-
-            }
-
-            PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
+            BluePrintsDataUtils.UpdateAllPercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
             FullRefresh();
         }
 

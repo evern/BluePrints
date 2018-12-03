@@ -38,7 +38,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>-->
-                            <dxg:GridColumn Header="Document Types" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
+                            <dxg:GridColumn Header="Document Types" ColumnFilterMode="DisplayText" SortMode="DisplayText" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings
                                                   ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}"

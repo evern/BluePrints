@@ -261,6 +261,48 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal FutureMaxPercentage
+        {
+            get
+            {
+                if (Total_Units == 0)
+                    return 1;
+
+                return ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+            }
+        }
+
+        public decimal GateMaxPercentage
+        {
+            get
+            {
+                if (Total_Units == 0)
+                    return 1;
+
+                IHaveDeliverableStatus deliverableStatusProjection = Entity as IHaveDeliverableStatus;
+                if (deliverableStatusProjection != null && deliverableStatusProjection.Deliverable_Status != null)
+                {
+                    return deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE;
+                }
+
+                return 1;
+            }
+        }
+
+        public bool IsMaxPercentageRestrictedByFuturePercentage
+        {
+            get
+            {
+                if (Total_Units == 0)
+                    return true;
+
+                if (GateMaxPercentage < FutureMaxPercentage)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
         public override decimal MaxPercentage
         {
             get
@@ -268,18 +310,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (Total_Units == 0)
                     return 1;
 
-                decimal default_max_percentage = ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
-
-                IHaveDeliverableStatus deliverableStatusProjection = Entity as IHaveDeliverableStatus;
-                if (deliverableStatusProjection != null && deliverableStatusProjection.Deliverable_Status != null)
-                {
-                    if (default_max_percentage < deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE)
-                        return default_max_percentage;
-
-                    return deliverableStatusProjection.Deliverable_Status.MAX_PERCENTAGE;
-                }
-
-                return default_max_percentage;
+                if (FutureMaxPercentage < GateMaxPercentage)
+                    return FutureMaxPercentage;
+                else
+                    return GateMaxPercentage;
             }
         }
 
@@ -345,7 +379,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
                         {
                             decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
-                            if (current_deliverable_status.AUTO_PERCENTAGE > Total_Earned_Percentage)
+                            if (current_deliverable_status.AUTO_PERCENTAGE > Total_Percentage)
                                 Total_Earned_Percentage = auto_percentage;
                         }
                     }
@@ -659,6 +693,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Percentage_ToDate => Total_Units == 0 ? 0 : (Earned_Units_ToDate / Total_Units);
 
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
+
+        public DateTime? FirstDataDate => PROGRESS_ITEMS.Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Min(x => x.EARNED_DATE);
+
+        public DateTime? LastDataDate => PROGRESS_ITEMS.Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Max(x => x.EARNED_DATE);
+
+        public IEnumerable<DeliverableEarnedPercentages> EarnedPercentages => Stats == null || Stats.Earned == null || Stats.Earned.CumulativeDataPoints == null || Stats.Earned.CumulativeDataPoints.Count == 0 ? null : Stats.Earned.CumulativeDataPoints.Where(x => Stats.Earned.DataPoints.Any(z => z.ProgressDate == x.ProgressDate)).Select(x => new DeliverableEarnedPercentages() { EarnedDate = x.ProgressDate, EarnedPercentage = x.UnitsPercentage });
 
         public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
         #region local non-interface variables
@@ -1181,5 +1221,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+    }
+
+    public class DeliverableEarnedPercentages
+    {
+        public decimal EarnedPercentage { get; set; }
+        public DateTime EarnedDate { get; set; }
     }
 }

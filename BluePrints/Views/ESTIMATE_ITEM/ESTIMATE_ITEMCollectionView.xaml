@@ -257,7 +257,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATED" FilterPopupMode="CheckedList" Header="Created" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:DateEditSettings DisplayFormat="M/d/yyyy HH:mm:ss" />
+                                        <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" FilterPopupMode="CheckedList" Header="Created By" ReadOnly="True" Visible="False">
@@ -267,7 +267,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATED" FilterPopupMode="CheckedList" Header="Updated" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:DateEditSettings DisplayFormat="M/d/yyyy HH:mm:ss" />
+                                        <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="CheckedList" Header="Updated By" ReadOnly="True" Visible="False">
