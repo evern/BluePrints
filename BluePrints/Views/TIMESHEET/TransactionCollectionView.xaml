@@ -48,7 +48,7 @@
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:LayoutSerializationService />
                                 </dxmvvm:Interaction.Behaviors>
-                                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="Cell" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
+                                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="Cell" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="Entity.JOBNO" FilterPopupMode="CheckedList" Header="Sub Job">
                                             <dxg:GridColumn.EditSettings>
@@ -77,8 +77,16 @@
                                         <dxg:GridColumn FieldName="Entity.LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="Entity.LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
+                                    <dxg:GridControl.GroupSummary>
+                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="Entity.QUANTITY" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="Entity.LINETOTAL" SummaryType="Sum" />
+                                    </dxg:GridControl.GroupSummary>
+                                    <dxg:GridControl.TotalSummary>
+                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="Entity.QUANTITY" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="Entity.LINETOTAL" SummaryType="Sum" />
+                                    </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
+                                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
@@ -96,7 +104,7 @@
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </Grid>
                         </dxdo:LayoutPanel>
                     </dxdo:LayoutGroup>

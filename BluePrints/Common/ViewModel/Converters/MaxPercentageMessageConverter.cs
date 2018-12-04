@@ -13,9 +13,9 @@ namespace BluePrints.Common.ViewModel.Converters
 
             bool isMaxIsMaxPercentageRestrictedByFuturePercentage = (bool)value;
             if (isMaxIsMaxPercentageRestrictedByFuturePercentage)
-                return "Max % is restricted by earned % in the future to avoid going beyond 100%";
+                return "Max % is 100% and is restricted by earned % in the future to avoid going beyond 100%";
             else
-                return "Max % is restricted by gate max %";
+                return "Max % is restricted by gate's max %";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,

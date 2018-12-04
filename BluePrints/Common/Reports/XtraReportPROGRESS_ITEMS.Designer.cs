@@ -1288,7 +1288,7 @@
             series1.ShowInLegend = false;
             series1.ValueDataMembersSerializable = "Budgeted.DataPoints.Units";
             sideBySideBarSeriesView1.AxisYName = "Secondary AxisY Units";
-            sideBySideBarSeriesView1.BarWidth = 0.3D;
+            sideBySideBarSeriesView1.BarWidth = 5D;
             sideBySideBarSeriesView1.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
             sideBySideBarSeriesView1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(175)))), ((int)(((byte)(54)))), ((int)(((byte)(96)))), ((int)(((byte)(146)))));
             sideBySideBarSeriesView1.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
@@ -1300,7 +1300,7 @@
             series2.ShowInLegend = false;
             series2.ValueDataMembersSerializable = "Earned.DataPoints.Units";
             sideBySideBarSeriesView2.AxisYName = "Secondary AxisY Units";
-            sideBySideBarSeriesView2.BarWidth = 0.3D;
+            sideBySideBarSeriesView2.BarWidth = 5D;
             sideBySideBarSeriesView2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             sideBySideBarSeriesView2.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series2.View = sideBySideBarSeriesView2;
@@ -1310,7 +1310,7 @@
             series3.ShowInLegend = false;
             series3.ValueDataMembersSerializable = "Burned.DataPoints.Units";
             sideBySideBarSeriesView3.AxisYName = "Secondary AxisY Units";
-            sideBySideBarSeriesView3.BarWidth = 0.3D;
+            sideBySideBarSeriesView3.BarWidth = 5D;
             sideBySideBarSeriesView3.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             sideBySideBarSeriesView3.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series3.View = sideBySideBarSeriesView3;
@@ -1320,7 +1320,7 @@
             series4.ShowInLegend = false;
             series4.ValueDataMembersSerializable = "Remaining.DataPoints.Units";
             sideBySideBarSeriesView4.AxisYName = "Secondary AxisY Units";
-            sideBySideBarSeriesView4.BarWidth = 0.3D;
+            sideBySideBarSeriesView4.BarWidth = 5D;
             sideBySideBarSeriesView4.Color = System.Drawing.Color.Indigo;
             sideBySideBarSeriesView4.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series4.View = sideBySideBarSeriesView4;

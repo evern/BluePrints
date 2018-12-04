@@ -1328,6 +1328,11 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.INTERNAL_NUM = 
                         BluePrintsDataUtils.GetNewInternalNumber(all_entities.Select(x => x.Entity), unsavedEntities.Select(x => x.Entity), selectedEntity.Entity.Entity.INTERNAL_NUM, selected_entities.Select(x => x.Entity), isInsert);
 
+                    newProjection.Entity.Entity.GUID_STATUS = null;
+                    newProjection.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
+                    newProjection.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
+                    newProjection.Entity.Entity.GUID_USER = null;
+
                     //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
                     AddUndo(newProjection, null, null, null, EntityMessageType.Added);
                     unsavedEntities.Add(newProjection);
