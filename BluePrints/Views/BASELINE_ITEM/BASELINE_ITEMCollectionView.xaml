@@ -100,7 +100,7 @@
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
-                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" HeaderToolTip="Changing this field may affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
                             <dxg:GridColumn.EditSettings>
@@ -188,7 +188,7 @@
                         <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" Tag="" FilterPopupMode="CheckedList" Header="Resource">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
-                                    <dxg:LookUpEdit Name="PART_Editor" IncrementalFiltering="True" AutoComplete="True" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="None" ValueMember="GUID" DisplayMember="Full_Name" PopupMinWidth="500">
+                                    <dxg:LookUpEdit Name="PART_Editor" IncrementalFiltering="True" AutoComplete="True" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" DisplayMember="Full_Name" PopupMinWidth="500">
                                         <dxg:LookUpEdit.StyleSettings>
                                             <dxg:SearchLookUpEditStyleSettings />
                                         </dxg:LookUpEdit.StyleSettings>
@@ -442,7 +442,7 @@
                     <!--<dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>-->
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </Grid>
     </Grid>

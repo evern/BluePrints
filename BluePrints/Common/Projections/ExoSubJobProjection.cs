@@ -717,7 +717,7 @@ namespace BluePrints.Common.Projections
                                  on JOB_TRANSACTIONS.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber
+                                 where MAINJOB.JOBCODE == projectNumber && JOB_TRANSACTIONS.INVOICEDATE == null
                                  select JOB_TRANSACTIONS;
 
             return transactions;
