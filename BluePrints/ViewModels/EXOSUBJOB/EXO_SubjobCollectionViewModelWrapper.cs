@@ -38,7 +38,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class EXO_SubjobViewModelWrapper :
+    public partial class EXO_SubjobCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, ExoSubJobProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -46,10 +46,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static EXO_SubjobViewModelWrapper Create(
+        public static EXO_SubjobCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new EXO_SubjobViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new EXO_SubjobCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         BackgroundWorker backgroundBudgetChecker;
@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected EXO_SubjobViewModelWrapper(
+        protected EXO_SubjobCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             backgroundBudgetChecker = new BackgroundWorker();
@@ -83,7 +83,7 @@ namespace BluePrints.ViewModels
 
         private void BackgroundBudgetChecker_DoWork(object sender, DoWorkEventArgs e)
         {
-            EXO_DesignSubjobViewModelWrapper designSubjobWrapper = EXO_DesignSubjobViewModelWrapper.Create();
+            EXO_DesignSubjobCollectionViewModelWrapper designSubjobWrapper = EXO_DesignSubjobCollectionViewModelWrapper.Create();
             designSubjobWrapper.SetParentViewModel(this);
             designSubjobWrapper.OnEntitiesLoadedCallBack = highlightBudgetedSubJobs;
             designSubjobWrapper.SuppressNotification = true;
@@ -332,7 +332,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                MainViewModel.Entities.Add(tempSubJobProjection);
+                MainViewModel.Entities.Insert(0, tempSubJobProjection);
             }
 
             this.RaisePropertyChanged(x => x.DisplayEntities);
@@ -562,7 +562,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "EXO_SubjobViewModelWrapper";
+                return "EXO_SubjobCollectionViewModelWrapper";
             }
         }
 
