@@ -34,13 +34,29 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="750" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="SubJob.Code" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                <dxg:GridColumn Width="150" FieldName="SubJob.Title" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Discipline.Code" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Discipline.Name" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Commodity.Code" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="HasBudget" Header="Budgeted" HeaderToolTip="Is budgeted in blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBTitleStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" />
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" />
+                                <dxg:GridColumn FieldName="HasBudget" Header="Budgeted" HeaderToolTip="Is budgeted in blueprints" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
@@ -63,7 +79,7 @@
                                         <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                     <dxg:TableView.FormatConditions>
-                                        <dxg:FormatCondition Expression="[IsLineExistsInExo] = 'False'" ApplyToRow="True">
+                                        <dxg:FormatCondition ApplyToRow="True" Expression="[IsLineExistsInExo] = 'False'">
                                             <dxc:Format Background="LightSalmon" />
                                         </dxg:FormatCondition>
                                     </dxg:TableView.FormatConditions>

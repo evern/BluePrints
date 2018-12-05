@@ -13,6 +13,7 @@ using DevExpress.Mvvm.POCO;
 using System.Collections.ObjectModel;
 using BaseModel.Data.Helpers;
 using BluePrints.Common.Resources;
+using BaseModel.DataModel;
 
 namespace BluePrints.Common.Projections
 {
@@ -31,6 +32,45 @@ namespace BluePrints.Common.Projections
         {
             this.RaisePropertiesChanged();
         }
+    }
+
+    //ExoSubJobProjection is not flat so this is created
+    public class ExoSubJobEditableProjection : EntityBase, IGuidEntityKey
+    {
+        public ExoSubJobEditableProjection()
+        {
+            AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+        }
+
+        public int? LineId { get; set; }
+        public int? SubJobId { get; set; }
+        public string SubJobCode { get; set; }
+        public string SubJobTitle { get; set; }
+        public ChargeType? SubJobChargeType { get; set; }
+        public int? DisciplineId { get; set; }
+        public string DisciplineCode { get; set; }
+        public string DisciplineName { get; set; }
+        public int? CommodityId { get; set; }
+        public string CommodityCode { get; set; }
+        public string CommodityName { get; set; }
+        public bool CommodityIsIndirectOnly { get; set; }
+        public string Variation { get; set; }
+        public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
+
+        public bool IsSubJobExistsInExo => SubJobCode != string.Empty;
+        public bool IsDisciplineExistsInExo => DisciplineCode != string.Empty;
+        public bool IsCommodityExistsInExo => CommodityCode != string.Empty;
+        public bool IsLineExistsInExo => LineId != null;
+        public bool HasBudget { get; set; }
+
+        //Used so that class can be used in view model
+        #region View Model Compatibility Members
+        public Guid guid { get; set; }
+
+        public Guid GUID { get => guid; set => guid = value; }
+
+        public Guid EntityKey { get => guid; set => guid = value; }
+        #endregion
     }
 
     public class ExoSubJobProjection : IGuidEntityKey, ICanAssignP6
@@ -116,10 +156,10 @@ namespace BluePrints.Common.Projections
 
     public static class ExoMethods
     {
-        public static int? findExistingOrAddLine(ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
+        public static int? findExistingOrAddLine(ExoSubJobEditableProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            if (exoLine.SubJob.Id == null || exoLine.Discipline.Id == null || exoLine.Commodity.Id == null)
+            if (exoLine.SubJobId == null || exoLine.DisciplineId == null || exoLine.CommodityId == null)
                 return null;
             else
             {
@@ -137,12 +177,12 @@ namespace BluePrints.Common.Projections
                     newLINE.EXCHRATE = copyLine.EXCHRATE;
                     newLINE.DISCOUNT = 0;
                     newLINE.UNITPRICE_INCTAX = 0;
-                    newLINE.JOBNO = (int)exoLine.SubJob.Id;
-                    newLINE.STOCKCODE = exoLine.Commodity.Code.ToUpper();
-                    newLINE.DESCRIPTION = exoLine.Commodity.Name;
+                    newLINE.JOBNO = (int)exoLine.SubJobId;
+                    newLINE.STOCKCODE = exoLine.CommodityCode.ToUpper();
+                    newLINE.DESCRIPTION = exoLine.CommodityName;
                     newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
-                    newLINE.COST_CENTRE = exoLine.Commodity.Id;
-                    newLINE.COST_CENTRE2 = exoLine.Discipline.Id;
+                    newLINE.COST_CENTRE = exoLine.CommodityId;
+                    newLINE.COST_CENTRE2 = exoLine.DisciplineId;
                     newLINE.NARRATIVE = "N";
                     newLINE.LINE_STATUS = "Q";
                     newLINE.TAXNO = copyLine.TAXNO;
@@ -162,7 +202,7 @@ namespace BluePrints.Common.Projections
                     newLINE.KITSEQNO = -1;
                     newLINE.KITCODE = string.Empty;
                     newLINE.PRICE_OVERRIDDEN = "N";
-                    newLINE.LINKED_STOCKCODE = exoLine.Commodity.Code.ToUpper();
+                    newLINE.LINKED_STOCKCODE = exoLine.CommodityCode.ToUpper();
                     newLINE.LINKED_QTY = 1;
                     newLINE.HIDDEN_COST = 0;
                     newLINE.HIDDEN_SELL = 0;
@@ -469,7 +509,56 @@ namespace BluePrints.Common.Projections
             return exoSubJobs.OrderBy(x => x.SubJob.Code).AsQueryable();
         }
 
-        public static IQueryable<ExoSubJobProjection> GetExoSubJobProjection(
+        public static IQueryable<ExoSubJobEditableProjection> GetNativeExoSubJobEditableProjection(
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS = null)
+        {
+            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
+            List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
+            foreach (ExoTimeAuthorisation exoLine in exoLines)
+            {
+                ExoSubJobEditableProjection projection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
+                projection.SubJobId = exoLine.SubJobNo;
+                projection.SubJobCode = exoLine.SubJobCode;
+                projection.DisciplineId = exoLine.DisciplineId;
+                projection.DisciplineCode = exoLine.DisciplineCode;
+                projection.DisciplineName = exoLine.DisciplineName;
+                projection.CommodityCode = exoLine.CommodityCode;
+                projection.CommodityName = exoLine.CommodityName;
+
+                projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
+                projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                if (exoLines.Count() > 0)
+                {
+                    projection.LineId = exoLine.LineSeqNo;
+                    if (ExoSTAFFS != null)
+                    {
+                        foreach (ExoTimeAuthorisation exoAuth in exoAuths)
+                        {
+                            STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
+                            if (findSTAFF != null)
+                            {
+                                ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                                USER newUser = new USER();
+                                newUser.NAME = findSTAFF.NAME;
+                                newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
+                                newAuth.User = newUser;
+                                newAuth.ShouldAssign = false;
+                                newAuth.IsAssigned = true;
+                                projection.AuthUsers.Add(newAuth);
+                            }
+                        }
+                    }
+                }
+
+                exoSubJobs.Add(projection);
+            }
+
+            return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
+        }
+
+        public static IQueryable<ExoSubJobEditableProjection> GetExoSubJobProjection(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<WORKPACK> WORKPACKS,
             Data.PROJECT PROJECT,
@@ -484,70 +573,55 @@ namespace BluePrints.Common.Projections
 
             List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
-            List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
+            List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
             foreach(var groupedDeliverable in groupedDeliverables)
             {
                 if (groupedDeliverable.SubJob == null || groupedDeliverable.Commodity == null)
                     continue;
 
-                ExoSubJobProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
+                ExoSubJobEditableProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
                 ExoTimeAuthorisation exoSubJobAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1);
-                PrimeroSubJob newSubJob = new PrimeroSubJob();
                 if(exoSubJobAuthorisation != null)
                 {
-                    newSubJob.Id = exoSubJobAuthorisation.SubJobNo;
-                    newSubJob.MasterId = exoSubJobAuthorisation.MasterJobNo;
-                    newSubJob.Code = exoSubJobAuthorisation.SubJobCode;
-                    newSubJob.Title = exoSubJobAuthorisation.SubJobTitle;
+                    newSubJobProjection.SubJobId = exoSubJobAuthorisation.SubJobNo;
+                    newSubJobProjection.SubJobCode = exoSubJobAuthorisation.SubJobCode;
+                    newSubJobProjection.SubJobTitle = exoSubJobAuthorisation.SubJobTitle;
                 }
                 else
                 {
                     JOBCOST_HDR findSubJob = GetProjectSubJob(primeroUnitOfWork, PROJECT.NUMBER, groupedDeliverable.SubJob.INTERNAL_NAME1);
                     if (findSubJob != null)
-                        newSubJob.Id = findSubJob.JOBNO;
+                        newSubJobProjection.SubJobId = findSubJob.JOBNO;
 
-                    newSubJob.Code = groupedDeliverable.SubJob.INTERNAL_NAME1;
-                    if(exoAuthorisations.Count > 0)
-                        newSubJob.MasterId = exoAuthorisations.First().MasterJobNo;
+                    newSubJobProjection.SubJobCode = groupedDeliverable.SubJob.INTERNAL_NAME1;
                 }
 
-                newSubJob.ChargeType = groupedDeliverable.SubJob == null ? null : groupedDeliverable.SubJob.PHASE == null ? null : groupedDeliverable.SubJob.PHASE.CHARGE_TYPE;
+                newSubJobProjection.SubJobChargeType = groupedDeliverable.SubJob == null ? null : groupedDeliverable.SubJob.PHASE == null ? null : groupedDeliverable.SubJob.PHASE.CHARGE_TYPE;
                 ExoTimeAuthorisation exoDisciplineAuthorisation = exoAuthorisations.FirstOrDefault(x => x.DisciplineCode == groupedDeliverable.DisciplineCode);
-                PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
                 if(exoDisciplineAuthorisation != null)
                 {
-                    newDiscipline.Id = exoDisciplineAuthorisation.DisciplineId;
-                    newDiscipline.Code = exoDisciplineAuthorisation.DisciplineCode;
-                    newDiscipline.Name = exoDisciplineAuthorisation.DisciplineName;
+                    newSubJobProjection.DisciplineId = exoDisciplineAuthorisation.DisciplineId;
+                    newSubJobProjection.DisciplineCode = exoDisciplineAuthorisation.DisciplineCode;
+                    newSubJobProjection.DisciplineName = exoDisciplineAuthorisation.DisciplineName;
                 }
                 else
                 {
-                    newDiscipline.Code = groupedDeliverable.DisciplineCode;
-                    //newDiscipline.Name = groupedDeliverable.DisciplineName;
+                    newSubJobProjection.DisciplineCode = groupedDeliverable.DisciplineCode;
                 }
 
                 ExoTimeAuthorisation exoCommodityAuthorisation = exoAuthorisations.FirstOrDefault(x => x.CommodityCode == groupedDeliverable.Commodity.CODE);
-                PrimeroCommodity newCommodity = new PrimeroCommodity();
                 if(exoCommodityAuthorisation != null)
                 {
-                    newCommodity.Id = exoCommodityAuthorisation.CommodityId;
-                    newCommodity.Code = exoCommodityAuthorisation.CommodityCode;
-                    //newCommodity.Name = exoCommodityAuthorisation.CommodityName;
-                    //use system name instead
-                    newCommodity.Name = groupedDeliverable.Commodity.NAME;
+                    newSubJobProjection.CommodityId = exoCommodityAuthorisation.CommodityId;
+                    newSubJobProjection.CommodityCode = exoCommodityAuthorisation.CommodityCode;
+                    newSubJobProjection.CommodityName = groupedDeliverable.Commodity.NAME;
                 }
                 else
                 {
-                    newCommodity.Code = groupedDeliverable.Commodity.CODE;
-                    //newCommodity.Name = groupedDeliverable.Commodity.NAME;
+                    newSubJobProjection.CommodityCode = groupedDeliverable.Commodity.CODE;
                 }
 
-                newCommodity.IsIndirectOnly = groupedDeliverable.Commodity == null ? false : groupedDeliverable.Commodity.IS_INDIRECT_ONLY;
-
-                newSubJobProjection.SubJob = newSubJob;
-                newSubJobProjection.Discipline = newDiscipline;
-                newSubJobProjection.Commodity = newCommodity;
-
+                newSubJobProjection.CommodityIsIndirectOnly = groupedDeliverable.Commodity == null ? false : groupedDeliverable.Commodity.IS_INDIRECT_ONLY;
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 ExoTimeAuthorisation exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE);
                 if(exoLine != null)
@@ -574,7 +648,7 @@ namespace BluePrints.Common.Projections
                 exoSubJobs.Add(newSubJobProjection);
             }
 
-            return exoSubJobs.OrderBy(x => x.SubJob.Code).AsQueryable();
+            return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
         }
 
         public static JOBCOST_HDR GetProjectSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, string subJobCode)
@@ -724,7 +798,7 @@ namespace BluePrints.Common.Projections
             return transactions;
         }
 
-        public static JOBCOST_LINES GetProjectLine(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobProjection line)
+        public static JOBCOST_LINES GetProjectLine(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobEditableProjection line)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
@@ -741,7 +815,7 @@ namespace BluePrints.Common.Projections
                                  on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJob.Code.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.Discipline.Code.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.Commodity.Code.ToUpper()
+                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                  select JOBCOST_LINES;
 
 
