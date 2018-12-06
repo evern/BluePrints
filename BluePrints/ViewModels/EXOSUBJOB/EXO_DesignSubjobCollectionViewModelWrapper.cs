@@ -538,11 +538,12 @@ namespace BluePrints.ViewModels
                             title = bulkEditStringsViewModel.EditValue;
                         }
 
-                        int? subJobId = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJobCode, masterJob, loadPROJECT.NUMBER, title);
-                        if (subJobId != null)
+                        JOBCOST_HDR subjob = ExoMethods.findExistingOrAddSubJob(selectedLine.SubJobCode, masterJob, loadPROJECT.NUMBER, title);
+                        if (subjob != null)
                         {
-                            addedLines.Add((int)subJobId, selectedLine.SubJobCode);
-                            selectedLine.SubJobId = subJobId;
+                            int jobNo = (int)subjob.JOBNO;
+                            addedLines.Add(jobNo, selectedLine.SubJobCode);
+                            selectedLine.SubJobId = jobNo;
                         }
                     }
                     else if(addedLines.Any(x => x.Value == selectedLine.SubJobCode))
@@ -552,10 +553,10 @@ namespace BluePrints.ViewModels
 
                     if (selectedLine.DisciplineId == null)
                     {
-                        int? disciplineId = ExoMethods.findExistingOrAddDiscipline(selectedLine.DisciplineCode, selectedLine.DisciplineName);
-                        if (disciplineId != null)
+                        JOB_COSTGROUPS discipline = ExoMethods.findExistingOrAddDiscipline(selectedLine.DisciplineCode, selectedLine.DisciplineName);
+                        if (discipline != null)
                         {
-                            selectedLine.DisciplineId = disciplineId;
+                            selectedLine.DisciplineId = discipline.SEQNO;
                         }
                     }
 
@@ -563,10 +564,10 @@ namespace BluePrints.ViewModels
                     {
                         if(selectedLine.DisciplineId != null)
                         {
-                            int? commodityId = ExoMethods.findExistingCommodity(selectedLine.CommodityCode, selectedLine.CommodityName, (int)selectedLine.DisciplineId);
-                            if (commodityId != null)
+                            JOB_COSTTYPES commodity = ExoMethods.findExistingCommodity(selectedLine.CommodityCode, selectedLine.CommodityName, (int)selectedLine.DisciplineId);
+                            if (commodity != null)
                             {
-                                selectedLine.CommodityId = commodityId;
+                                selectedLine.CommodityId = commodity.SEQNO;
                             }
                             else
                                 MessageBoxService.ShowMessage(selectedLine.CommodityCode + " cost type does not exists in exo, please ask accounts to create it");

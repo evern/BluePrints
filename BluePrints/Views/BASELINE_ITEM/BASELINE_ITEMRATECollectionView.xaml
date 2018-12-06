@@ -89,7 +89,7 @@
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
-                            <!--For Filtering-->
+                            <!--  For Filtering  -->
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
@@ -111,7 +111,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="RateRole" FilterPopupMode="CheckedList" Header="Role" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RateRole}}"  />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RateRole}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
@@ -134,12 +134,12 @@
                                 <dxe:SpinEditSettings Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.GUID_SUBJOB" ReadOnly="True" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" Visible="true">
+                        <dxg:GridColumn FieldName="Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" ReadOnly="True" Visible="true">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.GUID_WORKPACK" ReadOnly="True" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
+                        <dxg:GridColumn FieldName="Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" ReadOnly="True" Visible="true">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
@@ -147,19 +147,19 @@
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n0}" FieldName="SplitHours" ShowInColumn="SplitHours" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:c0}" FieldName="RoleCost"  ShowInColumn="RoleCost" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:c0}" FieldName="RoleCost" ShowInColumn="RoleCost" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.GUID_AREA" ShowInColumn="Entity.GUID_AREA" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n0}" FieldName="SplitHours" ShowInColumn="SplitHours" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:c0}" FieldName="RoleCost"  ShowInColumn="RoleCost" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:c0}" FieldName="RoleCost" ShowInColumn="RoleCost" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.GUID_AREA" ShowInColumn="Entity.GUID_AREA" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                            <dxmvvm:Interaction.Behaviors>
+                            <!--<dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                            </dxmvvm:Interaction.Behaviors>
+                            </dxmvvm:Interaction.Behaviors>-->
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />

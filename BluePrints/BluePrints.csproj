@@ -4891,15 +4891,14 @@
     <Resource Include="Views\DXSplashScreen\Image.png" />
     <Resource Include="Views\DXSplashScreen\Logo.png" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Resource Include="Common\Images\LogoBeta.ico" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\BaseModel\BaseModel\BaseModel\BaseModel.csproj">
       <Project>{25f838cc-cf00-4ba1-a2dd-21b4c02592ce}</Project>
       <Name>BaseModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Common\Images\LogoBeta.ico" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Common\BluePrintsSQL.sql" />

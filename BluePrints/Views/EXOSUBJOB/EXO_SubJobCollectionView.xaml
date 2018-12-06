@@ -4,6 +4,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -32,31 +33,52 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="750" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role">
+                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Free text, type in anything you like">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBTitleStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints">
+                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" />
+                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Select from combobox and then change number">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" />
-                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints">
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="500" ValidateOnTextInput="False" ValueMember="CODE">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" />
-                                <dxg:GridColumn FieldName="HasBudget" Header="Budgeted" HeaderToolTip="Is budgeted in blueprints" />
+                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="HasBudget" Header="Budgeted" HeaderToolTip="Is budgeted in blueprints" ReadOnly="True" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
@@ -68,6 +90,9 @@
                                 <dxg:TableView x:Name="tableView" NewItemRowPosition="Top">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
@@ -85,7 +110,7 @@
                                     </dxg:TableView.FormatConditions>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxc:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
@@ -109,7 +134,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" ShowAutoFilterRow="True" ShowSearchPanelMode="Always" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" ShowAutoFilterRow="True" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
