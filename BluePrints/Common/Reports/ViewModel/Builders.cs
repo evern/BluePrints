@@ -162,7 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (var jobMaterial in jobMaterials)
                 {
-                    if (jobMaterial.CostGroupDesc != null && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010")))
+                    if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
                         materialDataPoint.BudgetedUnits = 0;
@@ -192,7 +192,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (var po in pos)
                 {
-                    if (po.COSTGROUPDESC != null && (!po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
+                    if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
                     {
                         ExoDataPoint poDataPoint = new ExoDataPoint();
                         poDataPoint.BudgetedUnits = 0;

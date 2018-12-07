@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-        private Data.PROJECT loadPROJECT;
+        protected Data.PROJECT loadPROJECT;
         private BASELINE liveBASELINE;
         private PROGRESS livePROGRESS;
         private List<STAFF> exoSTAFFS;
@@ -77,8 +77,8 @@ namespace BluePrints.ViewModels
         public ObservableCollection<ExoSubJobEditableProjection> TestList;
         IEnumerable<JOB_COSTGROUPS> costGroups;
         IEnumerable<JOBCOST_HDR> existingSubJobs;
-        JOBCOST_HDR masterJob;
-        JOBCOST_LINES copyLine;
+        protected JOBCOST_HDR masterJob;
+        protected JOBCOST_LINES copyLine;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
@@ -208,7 +208,8 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
             backgroundBudgetChecker.RunWorkerAsync();
-            MainViewModel.RawPasteOverride = rawPasteOverride;
+            MainViewModel.ManualPasteAction = this.ManualPasteAction;
+            //MainViewModel.RawPasteOverride = rawPasteOverride;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -290,9 +291,9 @@ namespace BluePrints.ViewModels
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             if(masterJob == null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("The master job is not created yet in exo, please contact Ryan McFarlane")));
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("The master job is not created yet in exo, please contact " + BluePrintsResources.Default_CFO)));
             else if (copyLine == null)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("There is no job line yet in exo, please contact Ryan McFarlane")));
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("There is no job line yet in exo, please contact " + BluePrintsResources.Default_CFO)));
 
             //else
             //    updateViewTitles();
@@ -306,7 +307,7 @@ namespace BluePrints.ViewModels
         }
 
         public ExoSubJobAuth SelectedUser { get; set; }
-        public IEnumerable<ExoSubJobAuth> Users
+        public virtual IEnumerable<ExoSubJobAuth> Users
         {
             get
             {
@@ -348,37 +349,52 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void rawPasteOverride(IEnumerable<string> rowData)
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ExoSubJobEditableProjection pasteEntity)
         {
-            foreach (string row in rowData)
+            KeyValuePair<ColumnBase, string> subjobCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)));
+            KeyValuePair<ColumnBase, string> subjobCodeTitleData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobTitle)));
+            KeyValuePair<ColumnBase, string> disciplineCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)));
+            KeyValuePair<ColumnBase, string> disciplineNameData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineName)));
+            KeyValuePair<ColumnBase, string> commodityCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)));
+            KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
+            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)));
+
+            pasteEntity.SubJobCode = subjobCodeData.Value;
+            pasteEntity.SubJobTitle = subjobCodeTitleData.Value;
+            pasteEntity.DisciplineCode = disciplineCodeData.Value;
+            pasteEntity.DisciplineName = disciplineNameData.Value;
+            pasteEntity.CommodityCode = commodityCodeData.Value;
+            pasteEntity.VariationCode = variationCodeData.Value;
+
+            decimal budgetValue = 0;
+            if(decimal.TryParse(budgetData.Value, out budgetValue))
             {
-                List<string> ColumnStrings = row.Split('\t').ToList();
-                if (ColumnStrings.Count < 3)
-                    continue;
-
-                ExoSubJobEditableProjection tempSubJobProjection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
-                tempSubJobProjection.SubJobCode = ColumnStrings[0];
-                tempSubJobProjection.SubJobTitle = ColumnStrings[1];
-                tempSubJobProjection.DisciplineCode = ColumnStrings[2];
-                tempSubJobProjection.DisciplineName = ColumnStrings[3];
-                tempSubJobProjection.CommodityCode = ColumnStrings[4];
-                tempSubJobProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                tempSubJobProjection.AuthUsers = new System.Collections.ObjectModel.ObservableCollection<ExoSubJobAuth>();
-                ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobCode == tempSubJobProjection.SubJobCode);
-                if (existingSameSubJobLine != null)
-                {
-                    foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
-                    {
-                        ExoSubJobAuth newUser = new ExoSubJobAuth();
-                        DataUtils.ShallowCopy(newUser, authUser);
-                        tempSubJobProjection.AuthUsers.Add(newUser);
-                    }
-                }
-
-                MainViewModel.Entities.Insert(0, tempSubJobProjection);
+                pasteEntity.Budget = budgetValue;
             }
 
-            this.RaisePropertyChanged(x => x.DisplayEntities);
+            pasteEntity.PopulateCommodityCodes(COMMODITY_CODECollection);
+            pasteEntity.AuthUsers = new System.Collections.ObjectModel.ObservableCollection<ExoSubJobAuth>();
+            ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobCode == pasteEntity.SubJobCode);
+            if (existingSameSubJobLine != null)
+            {
+                foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                {
+                    ExoSubJobAuth newUser = new ExoSubJobAuth();
+                    DataUtils.ShallowCopy(newUser, authUser);
+                    pasteEntity.AuthUsers.Add(newUser);
+                }
+            }
+
+            string errorMessage = string.Empty;
+            if (MainViewModel.IsValidEntity(pasteEntity, ref errorMessage))
+            {
+                MainViewModel.Entities.Insert(0, pasteEntity);
+                this.RaisePropertyChanged(x => x.DisplayEntities);
+            }
+            else
+                MessageBoxService.ShowMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " is not unique\nCurrent row will be skipped");
+
+            return false;
         }
 
         public bool CanCommitUnbookableToExo()
@@ -401,7 +417,7 @@ namespace BluePrints.ViewModels
 
             if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
             {
-                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact Ryan McFarlane to enable this feature");
+                MessageBoxService.ShowMessage("This job is in tender phase and hence pushing to exo is disabled, please contact " +  BluePrintsResources.Default_CFO + " to enable this feature");
                 return;
             }
 
@@ -415,13 +431,14 @@ namespace BluePrints.ViewModels
             int updatedLineCount = 0;
             foreach (ExoSubJobEditableProjection projection in newLines)
             {
-                if(updateLineSubJob(projection, false))
+                if(ExoMethods.UpdateLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                 {
-                    if (updateLineDiscipline(projection, false))
+                    if (ExoMethods.UpdateLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                     {
-                        if (updateLineCommodity(projection, false))
+                        if (ExoMethods.UpdateLineCommodity(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                         {
-                            projection.LineId = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
+                            JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
+                            projection.LineId = findExistingOrAddLine.SEQNO;
                             if (projection.LineId != null)
                                 updatedLineCount += 1;
 
@@ -441,107 +458,35 @@ namespace BluePrints.ViewModels
             updateViewTitles();
         }
 
-        private bool updateLineSubJob(ExoSubJobEditableProjection projection, bool editLine)
+
+        private bool editLineVariation(ExoSubJobEditableProjection projection)
         {
-            if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
-                return false;
-
-            if (projection.SubJobTitle == null || projection.SubJobTitle == string.Empty)
+            if (projection.LineId != null)
             {
-                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJobCode + " Title:");
-                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                if (line != null)
                 {
-                    projection.SubJobTitle = bulkEditStringsViewModel.EditValue;
+                    line.X_VARIATION_CODE = projection.VariationCode;
+                    primeroUnitOfWork.SaveChanges();
+                    return true;
                 }
-                else
-                    return false;
-            }
-
-            JOBCOST_HDR subjob = ExoMethods.findExistingOrAddSubJob(projection.SubJobCode, masterJob, loadPROJECT.NUMBER, projection.SubJobTitle);
-            if (subjob != null)
-            {
-                projection.SubJobId = subjob.JOBNO;
-                if(editLine)
-                {
-                    if(projection.LineId != null)
-                    {
-                        JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
-                        if (line != null)
-                        {
-                            line.JOBNO = subjob.JOBNO;
-                            primeroUnitOfWork.SaveChanges();
-                        }
-                    }
-                }
-
-                return true;
             }
 
             return false;
         }
 
-        private bool updateLineDiscipline(ExoSubJobEditableProjection projection, bool editLine)
+        private bool editLineBudgetCost(ExoSubJobEditableProjection projection)
         {
-            if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
-                return false;
-
-            if (projection.DisciplineName == null || projection.DisciplineName == string.Empty)
+            if (projection.LineId != null)
             {
-                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.DisciplineCode + " Name:");
-                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input discipline name", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                if (line != null)
                 {
-                    projection.DisciplineName = bulkEditStringsViewModel.EditValue;
+                    line.QUOTE_QTY = 1;
+                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.Budget);
+                    primeroUnitOfWork.SaveChanges();
+                    return true;
                 }
-                else
-                    return false;
-            }
-
-            JOB_COSTGROUPS discipline = ExoMethods.findExistingOrAddDiscipline(projection.DisciplineCode, projection.DisciplineName);
-            if (discipline != null)
-            {
-                projection.DisciplineId = discipline.SEQNO;
-                if (editLine)
-                {
-                    if (projection.LineId != null)
-                    {
-                        JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
-                        if (line != null)
-                        {
-                            line.COST_CENTRE = discipline.SEQNO;
-                            primeroUnitOfWork.SaveChanges();
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool updateLineCommodity(ExoSubJobEditableProjection projection, bool editLine)
-        {
-            if (projection.CommodityCode == null || projection.CommodityCode == string.Empty || projection.DisciplineId == null)
-                return false;
-
-            JOB_COSTTYPES commodity= ExoMethods.findExistingCommodity(projection.CommodityCode, string.Empty, (int)projection.DisciplineId);
-            if (commodity != null)
-            {
-                projection.CommodityId = commodity.SEQNO;
-                if (editLine)
-                {
-                    if (projection.LineId != null)
-                    {
-                        JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
-                        if (line != null)
-                        {
-                            line.COST_CENTRE2 = commodity.SEQNO;
-                            primeroUnitOfWork.SaveChanges();
-                        }
-                    }
-                }
-
-                return true;
             }
 
             return false;
@@ -553,14 +498,25 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Are you sure you want to remove " + removeProjections.Count + " selected lines from exo?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
+            List<ExoSubJobEditableProjection> viewRemoveProjections = new List<ExoSubJobEditableProjection>();
             foreach (ExoSubJobEditableProjection removeProjection in removeProjections)
             {
-                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, removeProjection);
+                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
                 if(line != null)
+                {
                     primeroUnitOfWork.JOBCOST_LINES.Remove(line);
+                    primeroUnitOfWork.SaveChanges();
+                }
+
+
+                viewRemoveProjections.Add(removeProjection);
             }
 
-            primeroUnitOfWork.SaveChanges();
+            foreach(ExoSubJobEditableProjection viewRemoveProjection in viewRemoveProjections)
+            {
+                DisplayEntities.Remove(viewRemoveProjection);
+            }
+
             this.FullRefresh();
         }
 
@@ -616,15 +572,23 @@ namespace BluePrints.ViewModels
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)))
             {
-                updateLineSubJob(projection, true);
+                ExoMethods.UpdateLineSubJob(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)))
             {
-                updateLineDiscipline(projection, true);
+                ExoMethods.UpdateLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
             {
-                updateLineCommodity(projection, true);
+                ExoMethods.UpdateLineCommodity(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)))
+            {
+                editLineVariation(projection);
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)))
+            {
+                editLineBudgetCost(projection);
             }
 
             projection.Update();
@@ -643,7 +607,7 @@ namespace BluePrints.ViewModels
                     projection.DisciplineCode = new_value.ToString();
 
                 updateCostGroupTitle(projection, false);
-                updateLineDiscipline(projection, true);
+                ExoMethods.UpdateLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
                 projection.Update();
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)))
@@ -910,7 +874,18 @@ namespace BluePrints.ViewModels
                 if (DisplayEntities == null || DisplayEntities.Count() == 0)
                     return new List<string>();
 
-                return DisplayEntities.Select(x => x.SubJobCode).Distinct();
+                return DisplayEntities.Select(x => x.SubJobCode).OrderBy(x => x).Distinct();
+            }
+        }
+
+        public IEnumerable<string> VariationCodeStringCollection
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplayEntities.Count() == 0)
+                    return new List<string>();
+
+                return DisplayEntities.Select(x => x.VariationCode).OrderBy(x => x).Distinct();
             }
         }
 

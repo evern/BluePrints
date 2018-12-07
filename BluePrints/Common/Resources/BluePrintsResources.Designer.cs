@@ -151,6 +151,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ryan McFarlane.
+        /// </summary>
+        internal static string Default_CFO {
+            get {
+                return ResourceManager.GetString("Default_CFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CONSTRUCTION.
         /// </summary>
         internal static string Default_Construction_Department {
