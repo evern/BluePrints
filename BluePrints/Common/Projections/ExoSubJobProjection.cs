@@ -63,6 +63,7 @@ namespace BluePrints.Common.Projections
             this.Budget = entity.ExoBudgetCosts;
         }
 
+        [Key]
         public int? LineId { get; set; }
         public int? SubJobId { get; set; }
 
@@ -235,7 +236,7 @@ namespace BluePrints.Common.Projections
             JOBCOST_HDR subjob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, projectNumber, projection.SubJobCode);
             if (projection.SubJobTitle == null || projection.SubJobTitle == string.Empty)
             {
-                if(subjob == null)
+                if (subjob == null)
                 {
                     var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJobCode + " Title:");
                     if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
@@ -288,7 +289,7 @@ namespace BluePrints.Common.Projections
             JOB_COSTGROUPS discipline = ExoQueries.GetDiscipline(primeroUnitOfWork, projection.DisciplineCode);
             if (projection.DisciplineName == null || projection.DisciplineName == string.Empty)
             {
-                if(discipline == null)
+                if (discipline == null)
                 {
                     var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.DisciplineCode + " Name:");
                     if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input discipline name", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
@@ -306,7 +307,7 @@ namespace BluePrints.Common.Projections
 
             if (discipline == null)
             {
-                discipline = CreateNewCostGroup(projection.SubJobCode, projection.SubJobTitle);
+                discipline = CreateNewCostGroup(projection.DisciplineCode, projection.DisciplineName);
                 primeroUnitOfWork.JOB_COSTGROUPS.Add(discipline);
                 primeroUnitOfWork.SaveChanges();
             }
@@ -319,7 +320,7 @@ namespace BluePrints.Common.Projections
                     JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                     if (line != null)
                     {
-                        line.COST_CENTRE = discipline.SEQNO;
+                        line.COST_CENTRE2 = discipline.SEQNO;
                         primeroUnitOfWork.SaveChanges();
                         return true;
                     }
@@ -349,7 +350,9 @@ namespace BluePrints.Common.Projections
                         JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                         if (line != null)
                         {
-                            line.COST_CENTRE2 = commodity.SEQNO;
+                            line.COST_CENTRE = commodity.SEQNO;
+                            line.STOCKCODE = commodity.SHORTCODE.ToUpper();
+
                             primeroUnitOfWork.SaveChanges();
                             return true;
                         }
@@ -710,6 +713,7 @@ namespace BluePrints.Common.Projections
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {
                 ExoSubJobEditableProjection projection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
+                projection.LineId = exoLine.LineSeqNo;
                 projection.SubJobId = exoLine.SubJobNo;
                 projection.SubJobCode = exoLine.SubJobCode;
                 projection.SubJobTitle = exoLine.SubJobTitle;
@@ -1024,11 +1028,11 @@ namespace BluePrints.Common.Projections
             return availableLines.First();
         }
 
-        public static JOBCOST_LINES GetAnyProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        public static JOBCOST_LINES GetMasterProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 on JOBCOST_LINES.JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber
                                  select JOBCOST_LINES;
 

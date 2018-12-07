@@ -215,6 +215,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         poDataPoint.PONumber = po.SEQNO.ToString();
                         poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
                         poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
+                        poDataPoint.Variation_Code = string.Empty;
                         poDataPoints.Add(poDataPoint);
                     }
                 }

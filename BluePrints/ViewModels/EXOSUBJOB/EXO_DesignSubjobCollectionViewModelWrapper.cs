@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static new EXO_DesignSubjobCollectionViewModelWrapper Create(
+        public static EXO_DesignSubjobCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new EXO_DesignSubjobCollectionViewModelWrapper(unitOfWorkFactory));
@@ -384,7 +384,19 @@ namespace BluePrints.ViewModels
 
             if (DisplaySelectedEntities.Any(x => x.SubJobCode.Length > 15))
             {
-                MessageBoxService.ShowMessage("Some lines have subjobs that is more than 12 characters for job codes, hence operation cancelled");
+                MessageBoxService.ShowMessage("Some lines have subjob code that is more than 15 characters for job codes, hence operation cancelled");
+                return;
+            }
+
+            if (DisplaySelectedEntities.Any(x => x.DisciplineCode.Length > 4))
+            {
+                MessageBoxService.ShowMessage("Some lines have discipline code that is more than 4 characters for job codes, hence operation cancelled");
+                return;
+            }
+
+            if (DisplaySelectedEntities.Any(x => x.CommodityCode.Length > 4))
+            {
+                MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters for job codes, hence operation cancelled");
                 return;
             }
 
