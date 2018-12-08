@@ -341,7 +341,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string CostGroup { get; set; }
         public string CostType { get; set; }
         public string Description { get; set; }
-        public string Description2 { get; set; }
+        public string Supplier { get; set; }
         public string InvoiceNo { get; set; }
         public decimal InvoiceAmount { get; set; }
         public DateTime? InvoiceDate { get; set; }

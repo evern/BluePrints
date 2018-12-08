@@ -252,4 +252,10 @@
   <data name="GlobalOffice" xml:space="preserve">
     <value>Global</value>
   </data>
+  <data name="Default_Revenue_StockCode" xml:space="preserve">
+    <value>41000</value>
+  </data>
+  <data name="Default_CFO" xml:space="preserve">
+    <value>Ryan McFarlane</value>
+  </data>
 </root>

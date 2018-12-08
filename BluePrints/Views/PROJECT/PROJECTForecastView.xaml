@@ -2,6 +2,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -66,309 +67,322 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
-                    <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
-                        <dxdo:LayoutPanel>
-                            <Grid>
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:LayoutSerializationService />
-                                </dxmvvm:Interaction.Behaviors>
-                                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                    <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
+                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
+                            <dxdo:LayoutPanel>
+                                <Grid>
                                     <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
-                                        <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
+                                        <dxmvvm:LayoutSerializationService />
                                     </dxmvvm:Interaction.Behaviors>
-                                    <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
-                                    <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
-                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
-                                        <dxg:GridColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                            </DataTemplate>
-                                        </dxg:GridColumn.CellTemplate>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Variation" Fixed="Left" Header="Approved Var" HeaderToolTip="Approved variations" VisibleIndex="61" >
+                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                            <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
+                                        <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
+                                        <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Revenue" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.CurrentBudget" Fixed="Left" Header="Current Budget" HeaderToolTip="Sum of baseline budget plus approved variations" VisibleIndex="62" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridControl.DetailDescriptor>
-                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding ChildEntities}">
-                                            <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
-                                                <i:Interaction.Behaviors>
-                                                    <behavior:DetailSyncBehavior />
-                                                </i:Interaction.Behaviors>
+                                        </dxg:GridColumn>-->
+                                        <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridControl.DetailDescriptor>
+                                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding ChildEntities}">
+                                                <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
+                                                    <i:Interaction.Behaviors>
+                                                        <behavior:DetailSyncBehavior />
+                                                    </i:Interaction.Behaviors>
+                                                    <dxmvvm:Interaction.Behaviors>
+                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                                        <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=gridControlChild}" KeyGesture="Delete" />
+                                                    </dxmvvm:Interaction.Behaviors>
+                                                    <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
+                                                    <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
+                                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
+                                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
+                                                        <dxg:GridColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <dxe:SpinEdit Name="PART_Editor" Increment="100" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                            </DataTemplate>
+                                                        </dxg:GridColumn.CellTemplate>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Revenue" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>-->
+                                                    <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
+                                                        <dxg:GridColumn.EditSettings>
+                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                        </dxg:GridColumn.EditSettings>
+                                                    </dxg:GridColumn>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                                            <dxmvvm:Interaction.Behaviors>
+                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
+                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
+                                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
+                                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
+                                                            </dxmvvm:Interaction.Behaviors>
+                                                            <dxg:TableView.RowCellMenuCustomizations>
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                                                <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
+                                                            </dxg:TableView.RowCellMenuCustomizations>
+                                                        </dxg:TableView>
+                                                    </dxg:GridControl.View>
+                                                    <dxg:GridControl.GroupSummary>
+                                                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
+                                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
+                                                        <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
+                                                    </dxg:GridControl.GroupSummary>
+                                                    <dxg:GridControl.TotalSummary>
+                                                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
+                                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
+                                                        <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
+                                                    </dxg:GridControl.TotalSummary>
+                                                </dxg:GridControl>
+                                            </dxg:DataControlDetailDescriptor>
+                                        </dxg:GridControl.DetailDescriptor>
+                                        <dxg:GridControl.GroupSummary>
+                                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
+                                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
+                                        </dxg:GridControl.GroupSummary>
+                                        <dxg:GridControl.TotalSummary>
+                                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
+                                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
+                                        </dxg:GridControl.TotalSummary>
+                                        <dxg:GridControl.View>
+                                            <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                                 <dxmvvm:Interaction.Behaviors>
-                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
-                                                    <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=gridControlChild}" KeyGesture="Delete" />
+                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
+                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
+                                                    <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
+                                                    <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                                 </dxmvvm:Interaction.Behaviors>
-                                                <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
-                                                <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
-                                                <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
-                                                    <dxg:GridColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                                        </DataTemplate>
-                                                    </dxg:GridColumn.CellTemplate>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn Fixed="Left" Header="Approved Var" HeaderToolTip="Approved variations" VisibleIndex="61" >
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.CurrentBudget" Fixed="Left" Header="Current Budget" HeaderToolTip="Sum of baseline budget plus approved variations" VisibleIndex="62" >
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Actual Rev" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
-                                                <dxg:GridControl.View>
-                                                    <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True">
-                                                        <dxmvvm:Interaction.Behaviors>
-                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
-                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
-                                                            <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
-                                                            <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
-                                                        </dxmvvm:Interaction.Behaviors>
-                                                        <dxg:TableView.RowCellMenuCustomizations>
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                                            <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
-                                                        </dxg:TableView.RowCellMenuCustomizations>
-                                                    </dxg:TableView>
-                                                </dxg:GridControl.View>
-                                                <dxg:GridControl.GroupSummary>
-                                                    <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
-                                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                                    <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
-                                                </dxg:GridControl.GroupSummary>
-                                                <dxg:GridControl.TotalSummary>
-                                                    <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
-                                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
-                                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                                    <!--<dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />-->
-                                                </dxg:GridControl.TotalSummary>
-                                            </dxg:GridControl>
-                                        </dxg:DataControlDetailDescriptor>
-                                    </dxg:GridControl.DetailDescriptor>
-                                    <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
-                                    </dxg:GridControl.GroupSummary>
-                                    <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
-                                    </dxg:GridControl.TotalSummary>
-                                    <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
-                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
-                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
-                                            </dxg:TableView.RowCellMenuCustomizations>
-                                        </dxg:TableView>
-                                    </dxg:GridControl.View>
-                                </custom:GridControlEx>
-                            </Grid>
-                        </dxdo:LayoutPanel>
-                        <dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">
-                            <dxg:GridControl x:Name="GridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
-                                <!--<dxmvvm:Interaction.Behaviors>
+                                                <dxg:TableView.RowCellMenuCustomizations>
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                                    <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
+                                        </dxg:GridControl.View>
+                                    </dxg:GridControl>
+                                </Grid>
+                            </dxdo:LayoutPanel>
+                            <dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">
+                                <dxg:GridControl x:Name="GridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
+                                    <!--<dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomCommoditySummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>-->
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
-                                    <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
-                                    <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
-                                    <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="40" />
-                                    <dxg:GridColumn FieldName="ResourceName" Header="Resource" ReadOnly="True" VisibleIndex="50" />
-                                    <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="60" />
-                                    <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="70" />
-                                    <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="80" />
-                                    <dxg:GridColumn FieldName="Description2" Header="Additional Desc." ReadOnly="True" VisibleIndex="90" />
-                                    <dxg:GridColumn FieldName="InvoiceNo" Header="Invoice No" ReadOnly="True" VisibleIndex="100" />
-                                    <dxg:GridColumn FieldName="InvoiceAmount" Header="Invoice Amount" ReadOnly="True" VisibleIndex="110" />
-                                    <dxg:GridColumn FieldName="InvoiceDate" Header="Invoice Date" ReadOnly="True" VisibleIndex="120" />
-                                    <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" VisibleIndex="130" />
-                                    <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" VisibleIndex="140" />
-                                    <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" VisibleIndex="150" />
-                                    <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" VisibleIndex="160" />
-                                    <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="170" />
-                                    <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" VisibleIndex="180" />
-                                    <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" VisibleIndex="190" />
-                                </dxg:GridControl.Columns>
-                                <dxg:GridControl.GroupSummary>
-                                    <dxg:GridSummaryItem DisplayFormat="Records: {0:n}" FieldName="Subjob_Name" SummaryType="Count" />
-                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
-                                </dxg:GridControl.GroupSummary>
-                                <dxg:GridControl.TotalSummary>
-                                    <dxg:GridSummaryItem DisplayFormat="Records: {0:n}" FieldName="Subjob_Name" SummaryType="Count" />
-                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
-                                </dxg:GridControl.TotalSummary>
-                                <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView2" AllowEditing="False" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True">
-                                        <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyDetailWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                        </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </dxdo:LayoutPanel>
+                                    <dxg:GridControl.Bands>
+                                        <dxg:GridControlBand Header="General">
+                                            <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
+                                            <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
+                                            <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
+                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="False" VisibleIndex="40" />
+                                            <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="50" />
+                                        </dxg:GridControlBand>
+                                        <dxg:GridControlBand Header="Commodity">
+                                            <dxg:GridColumn FieldName="ResourceName" Header="Resource" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="60" />
+                                            <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
+                                        </dxg:GridControlBand>
+                                        <dxg:GridControlBand Header="Costs">
+                                            <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
+                                            <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" />
+                                        </dxg:GridControlBand>
+                                        <dxg:GridControlBand Header="Details">
+                                            <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="110" />
+                                            <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="120" />
+                                            <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="130" />
+                                            <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" VisibleIndex="150" />
+                                            <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" VisibleIndex="160" />
+                                            <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" Visible="False" VisibleIndex="170" />
+                                        </dxg:GridControlBand>
+                                        <dxg:GridControlBand Header="Invoice (Applicable for Rates Job Only)" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}">
+                                            <dxg:GridColumn FieldName="InvoiceNo" Header="Invoice No" ReadOnly="True" VisibleIndex="180" />
+                                            <dxg:GridColumn FieldName="InvoiceAmount" Header="Invoice Amount" ReadOnly="True" VisibleIndex="190" />
+                                            <dxg:GridColumn FieldName="InvoiceDate" Header="Invoice Date" ReadOnly="True" VisibleIndex="200" />
+                                        </dxg:GridControlBand>
+                                    </dxg:GridControl.Bands>
+                                    <dxg:GridControl.GroupSummary>
+                                        <dxg:GridSummaryItem DisplayFormat="Records: {0:n}" FieldName="Subjob_Name" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
+                                    </dxg:GridControl.GroupSummary>
+                                    <dxg:GridControl.TotalSummary>
+                                        <dxg:GridSummaryItem DisplayFormat="Records: {0:n}" FieldName="Subjob_Name" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
+                                    </dxg:GridControl.TotalSummary>
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </dxdo:LayoutPanel>
+                        </dxdo:LayoutGroup>
+                        <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="250" Orientation="Vertical">
+                            <dxdo:LayoutPanel AutoHidden="True" ItemWidth="250" ShowHideButton="True">
+                                <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
+                                    <dxlc:LayoutGroup Header="Project Details" Orientation="Vertical" View="GroupBox">
+                                        <dxlc:LayoutItem Label="Revenue" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revenue, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Costs" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Costs, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Margin" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Margin %" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Claims" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.TotalClaims, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutControl>
+                            </dxdo:LayoutPanel>
+                        </dxdo:LayoutGroup>
                     </dxdo:LayoutGroup>
                 </dxdo:DockLayoutManager>
             </DockPanel>

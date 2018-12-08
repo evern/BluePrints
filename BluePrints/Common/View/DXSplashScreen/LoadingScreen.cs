@@ -10,7 +10,7 @@ namespace BluePrints.Common
     {
         public static bool DisableLoadingScreen { get; set; }
 
-        public static void ShowLoadingScreen(int maxProgress)
+        public static void ShowLoadingScreen(int maxProgress, bool alwaysOnTop = true)
         {
             if (DisableLoadingScreen)
                 return;
@@ -21,27 +21,30 @@ namespace BluePrints.Common
             ResetCurrentProgress();
             SetMaxProgress(maxProgress);
 
-            DXSplashScreen.Show(x => {
-                Window res = new Window()
-                {
-                    ShowActivated = false,
-                    WindowStyle = WindowStyle.None,
-                    ResizeMode = ResizeMode.NoResize,
-                    AllowsTransparency = true,
-                    Background = new SolidColorBrush(Colors.Transparent),
-                    ShowInTaskbar = false,
-                    Topmost = true,
-                    SizeToContent = SizeToContent.WidthAndHeight,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                };
-                WindowFadeAnimationBehavior.SetEnableAnimation(res, true);
-                res.Topmost = false;
-                return res;
-            }, x => {
-                return new LoadingScreen() { DataContext = new SplashScreenViewModel() };
-            }, null, null);
-
-            //DXSplashScreen.Show<LoadingScreen>();
+            if(!alwaysOnTop)
+            {
+                DXSplashScreen.Show(x => {
+                    Window res = new Window()
+                    {
+                        ShowActivated = false,
+                        WindowStyle = WindowStyle.None,
+                        ResizeMode = ResizeMode.NoResize,
+                        AllowsTransparency = true,
+                        Background = new SolidColorBrush(Colors.Transparent),
+                        ShowInTaskbar = false,
+                        Topmost = true,
+                        SizeToContent = SizeToContent.WidthAndHeight,
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    };
+                    WindowFadeAnimationBehavior.SetEnableAnimation(res, true);
+                    res.Topmost = false;
+                    return res;
+                }, x => {
+                    return new LoadingScreen() { DataContext = new SplashScreenViewModel() };
+                }, null, null);
+            }
+            else
+                DXSplashScreen.Show<LoadingScreen>();
         }
 
         public static string DefaultState

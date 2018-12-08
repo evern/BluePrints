@@ -67,7 +67,6 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         ActionObject actionObject;
-
         protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
@@ -188,7 +187,7 @@ namespace BluePrints.ViewModels
 
             project.BuildStats(false);
             project.RecalculateStats(false);
-            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats);
+            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats, false);
             project.Update();
 
             if (((BackgroundWorker)sender).CancellationPending)

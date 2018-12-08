@@ -151,6 +151,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ryan McFarlane.
+        /// </summary>
+        internal static string Default_CFO {
+            get {
+                return ResourceManager.GetString("Default_CFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CONSTRUCTION.
         /// </summary>
         internal static string Default_Construction_Department {
@@ -219,6 +228,15 @@ namespace BluePrints.Common.Resources {
         internal static string Default_Register_Numeric_Length {
             get {
                 return ResourceManager.GetString("Default_Register_Numeric_Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 41000.
+        /// </summary>
+        internal static string Default_Revenue_StockCode {
+            get {
+                return ResourceManager.GetString("Default_Revenue_StockCode", resourceCulture);
             }
         }
         

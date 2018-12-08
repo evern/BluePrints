@@ -1,0 +1,170 @@
+﻿<UserControl x:Class="BluePrints.Views.EXO_SubJobCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXO_SubjobCollectionViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="EXO Permission">
+                            <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                <!--<dxb:BarButtonItem Command="{Binding DataContext.CommitNewLinesToExoCommand, ElementName=userControl}" Content="Upload newly added lines to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from newly added data" />-->
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="750" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Free text, type in sub job code">
+                                    <!--<dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:PopupBaseEdit Name="PART_Editor" Width="150" Height="24" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False">
+                                                <dxe:PopupBaseEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxe:ComboBoxEdit x:Name="PART_ComboBox" AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ShowBorder="False" ValidateOnTextInput="False" />
+                                                    </ControlTemplate>
+                                                </dxe:PopupBaseEdit.PopupContentTemplate>
+                                            </dxe:PopupBaseEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>-->
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, free text" />
+                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Select from combo box and then change last two numbers">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" Mask="[A-Z]{2}\d{2}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo, free text" />
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="500" ValidateOnTextInput="False" ValueMember="CODE">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="VariationCode" Header="Variation" HeaderToolTip="Select from combobox or type in new">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Type in a budget">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in blueprints" ReadOnly="True" />
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" NewItemRowPosition="Top">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CommitNewRowCommand, ElementName=userControl}" EventName="RowUpdated" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding ValidateRowCommand}" EventName="ValidateRow" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete entry from exo" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                    <dxg:TableView.FormatConditions>
+                                        <dxg:FormatCondition ApplyToRow="True" Expression="[IsLineExistsInExo] = 'False'">
+                                            <dxc:Format Background="LightSalmon" />
+                                        </dxg:FormatCondition>
+                                    </dxg:TableView.FormatConditions>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </dxg:GridControl>
+                    </dxlc:LayoutGroup>
+                    <dxc:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
+                            <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" ShowAutoFilterRow="True" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxlc:LayoutGroup>
+                    </dxc:LoadingDecorator>
+                </dxlc:LayoutControl>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

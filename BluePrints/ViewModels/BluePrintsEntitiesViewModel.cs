@@ -276,6 +276,7 @@ namespace BluePrints.ViewModels
             companyHSECategoryDescription = new BluePrintsEntitiesModuleDescription(companyHSECategoryId, projectCategoryId, "Company HSE Report", "HSECollectionView", null, null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png");
             dataCategoryDescription = new BluePrintsEntitiesModuleDescription(dataCategoryId, null, "Data", null, null, null, null, false, true, @"Navigation\DocumentMap_16x16.png");
             stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false, @"Business Objects\BOOrder_16x16.png");
+            stockGroupCategoryDescription = new BluePrintsEntitiesModuleDescription(stockGroupCategoryId, null, "Stock Group", null, null, null, null, false, false, @"Business Objects\BOOrder_16x16.png");
         }
 
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
@@ -342,7 +343,7 @@ namespace BluePrints.ViewModels
             dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"));
 
             if(LoginCredentials.hasPermission(PermissionResources.StandardizeSubJobs))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "All Exo Subjobs", "EXOALLSUBJOBCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "Exo Master Jobs", "EXO_MasterJobCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
@@ -501,16 +502,12 @@ namespace BluePrints.ViewModels
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription("Category_Design" + keyString, null, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
             BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription("Category_Construct" + keyString, null, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
+            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription("Category_EXO" + keyString, null, "EXO", null, null, null, null, false, false, @"Function Library\Financial_16x16.png");
             BluePrintsEntitiesModuleDescription queries_category_description = new BluePrintsEntitiesModuleDescription("Category_Queries" + keyString, null, "Queries", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
 
             projectModuleDescription.ChildModules.Add(design_category_description);
             projectModuleDescription.ChildModules.Add(construct_category_description);
-
-            if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
-            {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Chart\ChangeChartSeriesType_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Edit Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Edit Transactions", false, false, @"RichEdit\Highlight_16x16.png"));
-            }
+            projectModuleDescription.ChildModules.Add(exo_category_description);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
             {
@@ -594,9 +591,15 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Job Setup", "EXOSUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Permission", false, false, @"Business Objects\BOUser_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Exo Native Job Setup", "EXONATIVESUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Native Permission", false, false, @"Business Objects\BOUser_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheet Entry", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Exo Timesheet Entry", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"));
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"));
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"));
+            }
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
+            {
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"));
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
