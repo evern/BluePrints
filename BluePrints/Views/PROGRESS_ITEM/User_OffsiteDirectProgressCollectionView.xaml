@@ -58,7 +58,7 @@
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--For Filtering-->
+                                <!--  For Filtering  -->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -89,36 +89,36 @@
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--For Filtering-->
+                                <!--  For Filtering  -->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" Tag="" FilterPopupMode="CheckedList" Header="Resource">
+                            <dxg:GridColumn Tag="" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" IncrementalFiltering="True" AutoComplete="True" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="None" ValueMember="GUID" DisplayMember="Full_Name" PopupMinWidth="500">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="Full_Name" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="GUID">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
                                             <dxg:LookUpEdit.PopupContentTemplate>
                                                 <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterCriteria="{Binding RowData.Row.Entity.Entity.ResourceFilterCriteria, Mode=OneWay}" >
+                                                    <dxg:GridControl x:Name="PART_GridControl" FilterCriteria="{Binding RowData.Row.Entity.Entity.ResourceFilterCriteria, Mode=OneWay}" SelectionMode="Row" ShowBorder="False">
                                                         <dxg:GridControl.Columns>
                                                             <dxg:GridColumn FieldName="Full_Name" Header="Name" ReadOnly="True" />
-                                                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" ReadOnly="True" >
+                                                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" ReadOnly="True">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
-                                                            <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline" ReadOnly="True" >
+                                                            <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline" ReadOnly="True">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
                                                         </dxg:GridControl.Columns>
                                                         <dxg:GridControl.View>
-                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowFilterPanelMode="ShowAlways" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
                                                         </dxg:GridControl.View>
                                                     </dxg:GridControl>
                                                 </ControlTemplate>
@@ -198,12 +198,12 @@
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" ReadOnly="True" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" Visible="true">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name" ReadOnly="True" Visible="true">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_WORKPACK" ReadOnly="True" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" ReadOnly="True" Visible="true">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
