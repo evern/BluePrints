@@ -92,7 +92,7 @@ namespace BluePrints.ViewModels
 
         protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATE_ITEM, ESTIMATE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<ESTIMATE_ITEMVariation> entities)
         {
-            mainViewModel.ManualPasteAction = ManualPasteAction;
+            mainViewModel.ManualRowPasteAction = ManualPasteAction;
         }
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMVariation pasteEntity)

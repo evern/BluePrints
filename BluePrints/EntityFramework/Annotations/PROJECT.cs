@@ -11,8 +11,6 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using DevExpress.Mvvm;
-    using DevExpress.Mvvm.POCO;
 
     [ConstraintAttributes("NUMBER")]
     public partial class PROJECT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate

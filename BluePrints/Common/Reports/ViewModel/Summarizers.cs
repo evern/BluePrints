@@ -407,11 +407,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(ExoBurnedFilterType filterType)
+        public void BuildBurnedDataPoints(bool forceRetrieveAllBurned)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, filterType);
+                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, forceRetrieveAllBurned);
         }
 
         public void RecalculateStats(bool isCosts)

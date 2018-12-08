@@ -30,16 +30,16 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Code" FieldName="Entity.CODE" HeaderToolTip="An identifier for the commodity code. Must be unique" />
-                            <dxg:GridColumn Header="Description" FieldName="Entity.DESCRIPTION" />
-                            <dxg:GridColumn Header="UOM" FieldName="Entity.UOM" HeaderToolTip="Unit of measure">
+                            <dxg:GridColumn FieldName="Entity.CODE" Header="Code" HeaderToolTip="An identifier for the commodity code. Must be unique" />
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="UOM1" IsTextEditable="True" ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" ValueMember="UOM1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline" FieldName="Entity.GUID_DISCIPLINE">
+                            <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
