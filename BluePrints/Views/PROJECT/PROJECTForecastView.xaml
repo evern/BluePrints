@@ -83,7 +83,7 @@
                                         <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
                                         <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
                                         <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
-                                        <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
+                                        <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -153,10 +153,10 @@
                                                     <dxg:GridColumn Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
                                                     <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
                                                     <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
-                                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budget at contract award" VisibleIndex="60">
+                                                    <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                                         <dxg:GridColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                                <dxe:SpinEdit Name="PART_Editor" Increment="100" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                             </DataTemplate>
                                                         </dxg:GridColumn.CellTemplate>
                                                     </dxg:GridColumn>
@@ -361,7 +361,7 @@
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
                         <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="250" Orientation="Vertical">
-                            <dxdo:LayoutPanel ItemWidth="250" AutoHidden="True" ShowHideButton="True">
+                            <dxdo:LayoutPanel AutoHidden="True" ItemWidth="250" ShowHideButton="True">
                                 <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
                                     <dxlc:LayoutGroup Header="Project Details" Orientation="Vertical" View="GroupBox">
                                         <dxlc:LayoutItem Label="Revenue" LabelPosition="Left">

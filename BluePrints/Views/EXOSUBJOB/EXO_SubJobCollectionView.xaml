@@ -16,11 +16,10 @@
                         <dxr:RibbonPage Caption="EXO Permission">
                             <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.EditTitleCommand, ElementName=userControl}" Content="Edit title" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditName_32x32.png}" ToolTip="Edit exo subjob title" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.EditCostGroupTitleCommand, ElementName=userControl}" Content="Edit cost group title" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.CommitNewLinesToExoCommand, ElementName=userControl}" Content="Upload newly added lines to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from newly added data" />
+                                <!--<dxb:BarButtonItem Command="{Binding DataContext.CommitNewLinesToExoCommand, ElementName=userControl}" Content="Upload newly added lines to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo from newly added data" />-->
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -79,7 +78,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="VariationCode" Header="Variation" HeaderToolTip="Select from combobox or type in new">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Type in a budget">
@@ -100,20 +99,18 @@
                                 <dxg:TableView x:Name="tableView" NewItemRowPosition="Top">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding NewRowAddUndoAndSaveCommand}" EventName="RowUpdated" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CommitNewRowCommand, ElementName=userControl}" EventName="RowUpdated" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding ValidateRowCommand}" EventName="ValidateRow" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                        <dxb:BarButtonItem Command="{Binding DataContext.EditTitleCommand, ElementName=userControl}" Content="Edit title" Glyph="{dxc:DXImage Image=EditName_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditName_32x32.png}" ToolTip="Edit exo subjob title" />
-                                        <dxb:BarButtonItem Command="{Binding DataContext.EditCostGroupTitleCommand, ElementName=userControl}" Content="Edit cost group title" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit exo subjob title" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                         <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                        <dxb:BarButtonItem Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Remove" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Remove row from exo" />
-                                        <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete entry from exo" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                     <dxg:TableView.FormatConditions>
                                         <dxg:FormatCondition ApplyToRow="True" Expression="[IsLineExistsInExo] = 'False'">

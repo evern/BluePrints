@@ -60,15 +60,22 @@ namespace BluePrints.ViewModels
         {
         }
 
-        #region Database Operations
+        #region Code Properties
         private BASELINE liveBASELINE;
         private PROGRESS livePROGRESS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        #endregion
 
+        #region Loading Operations
         protected override void resolveParameters(object parameter)
         {
-            base.resolveParameters(parameter);
+            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
+            loadPROJECT = PROJECTParameter.GetEntity();
+            initializeCompulsoryViewProperties();
+            initializeOptionalViewCollectionsOnRefresh = false;
+            //Not linking to base because it contains background planned subjob check
+            //base.resolveParameters(parameter);
         }
 
         protected override void addEntitiesLoader()
@@ -93,22 +100,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-        }
-
-        private void assign_baseline(BASELINE entity)
-        {
-            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
-
-            liveBASELINE = entity;
-        }
-
-        private void assign_progress(PROGRESS progress)
-        {
-            if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
-
-            livePROGRESS = progress;
         }
 
         private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
@@ -152,7 +143,22 @@ namespace BluePrints.ViewModels
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
-        #endregion
+
+        private void assign_baseline(BASELINE entity)
+        {
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live baseline not found")));
+
+            liveBASELINE = entity;
+        }
+
+        private void assign_progress(PROGRESS progress)
+        {
+            if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
+
+            livePROGRESS = progress;
+        }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
@@ -170,64 +176,50 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+        #endregion
 
-        private void updateViewTitles()
+        #region Events
+        public void UploadToExo()
         {
-            updateSubjobTitles();
-            updateCostGroupTitles();
+            base.CommitToExo(DisplaySelectedEntities);
         }
 
-        private void updateSubjobTitles()
+        public void AutoAssignPermission()
         {
-            if (MainViewModel == null || DisplayEntities.Count == 0)
+            if (MessageBoxService.ShowMessage("This will auto grant permission based on document type authorisation by role, but will not delete existing authorisations, do you wish to continue?", "Auto Assign Permission", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
-            IEnumerable<JOBCOST_HDR> existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
-            foreach (ExoSubJobEditableProjection entity in DisplayEntities)
-            {
-                if (entity.SubJobId == null)
-                    return;
+            int fullProgress = DisplayEntities.Count * USERCollection.Count();
+            LoadingScreenManager.ShowLoadingScreen(fullProgress);
 
-                JOBCOST_HDR existingSubJob = existingSubJobs.FirstOrDefault(x => x.JOBCODE == entity.SubJobCode);
-                if (existingSubJob != null)
+            int addedCount = 0;
+            foreach (ExoSubJobEditableProjection subJob in DisplayEntities.Where(x => x.IsLineExistsInExo))
+            {
+                subJob.AuthUsers.Clear();
+                foreach (USER user in USERCollection)
                 {
-                    entity.SubJobTitle = existingSubJob.TITLE;
-                    entity.Update();
+                    ExoSubJobAuth newUser = new ExoSubJobAuth();
+                    newUser.User = user;
+                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
+                    if (newUser.ShouldAssign && subJob.SubJobId != null)
+                    {
+                        if (ExoMethods.findExistingOrAddResourceAllocation(newUser, (int)subJob.SubJobId))
+                            addedCount += 1;
+
+                        newUser.IsAssigned = true;
+                        subJob.AuthUsers.Add(newUser);
+                    }
+
+                    LoadingScreenManager.Progress();
                 }
             }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            MessageBoxService.ShowMessage(addedCount + " user permission added");
         }
+        #endregion
 
-        private void updateCostGroupTitles()
-        {
-            if (MainViewModel == null || DisplayEntities.Count == 0)
-                return;
-
-            IEnumerable<JOB_COSTGROUPS> costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
-            foreach (ExoSubJobEditableProjection entity in DisplayEntities)
-            {
-                if (entity.DisciplineId == null)
-                    continue;
-
-                JOB_COSTGROUPS costGroup = costGroups.FirstOrDefault(x => x.SHORTCODE == entity.DisciplineCode);
-                if (costGroup != null)
-                {
-                    entity.DisciplineName = costGroup.COSTDESC;
-                    entity.Update();
-                }
-            }
-        }
-
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
-        {
-            updateViewTitles();
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
-        }
-
-        protected override void OnSelectedEntitiesChanged()
-        {
-            refreshPermissions();
-        }
-
+        #region View Properties
         public override IEnumerable<ExoSubJobAuth> Users
         {
             get
@@ -262,12 +254,6 @@ namespace BluePrints.ViewModels
 
                 return permissions.OrderBy(x => x.User.Full_Name);
             }
-        }
-
-        private void refreshPermissions()
-        {
-            this.RaisePropertyChanged(x => x.Users);
-            this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
         }
 
         bool showPreferred;
@@ -323,139 +309,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void AutoAssignPermission()
-        {
-            if (MessageBoxService.ShowMessage("This will auto grant permission based on document type authorisation by role, but will not delete existing authorisations, do you wish to continue?", "Auto Assign Permission", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
-
-            int fullProgress = DisplayEntities.Count * USERCollection.Count();
-            LoadingScreenManager.ShowLoadingScreen(fullProgress);
-
-            int addedCount = 0;
-            foreach(ExoSubJobEditableProjection subJob in DisplayEntities.Where(x => x.IsLineExistsInExo))
-            {
-                subJob.AuthUsers.Clear();
-                foreach(USER user in USERCollection)
-                {
-                    ExoSubJobAuth newUser = new ExoSubJobAuth();
-                    newUser.User = user;
-                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
-                    if(newUser.ShouldAssign && subJob.SubJobId != null)
-                    {
-                        if (ExoMethods.findExistingOrAddResourceAllocation(newUser, (int)subJob.SubJobId))
-                            addedCount += 1;
-
-                        newUser.IsAssigned = true;
-                        subJob.AuthUsers.Add(newUser);
-                    }
-
-                    LoadingScreenManager.Progress();
-                }
-            }
-
-            LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage(addedCount + " user permission added");
-        }
-
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
-        }
-
-        public void UploadToExo()
-        {
-            if(masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >=5 )
-            {
-                MessageBoxService.ShowMessage("This job is in tender phase in ex oand hence pushing to exo is disabled, please contact " + BluePrintsResources.Default_CFO + " to elevate project category");
-                return;
-            }
-
-            if(masterJob == null)
-            {
-                MessageBoxService.ShowMessage("Project number doesn't exists in exo, please contact " + BluePrintsResources.Default_CFO + " to add job");
-                return;
-            }
-
-            if(copyLine == null)
-            {
-                MessageBoxService.ShowMessage("Project line is not setup in exo, please contact " + BluePrintsResources.Default_CFO + " to add job line with jobcode " + loadPROJECT.NUMBER);
-                return;
-            }
-
-            if (DisplaySelectedEntities.Any(x => x.SubJobCode.Length > 15))
-            {
-                MessageBoxService.ShowMessage("Some lines have subjob code that is more than 15 characters for job codes, hence operation cancelled");
-                return;
-            }
-
-            if (DisplaySelectedEntities.Any(x => x.DisciplineCode.Length > 4))
-            {
-                MessageBoxService.ShowMessage("Some lines have discipline code that is more than 4 characters for job codes, hence operation cancelled");
-                return;
-            }
-
-            if (DisplaySelectedEntities.Any(x => x.CommodityCode.Length > 4))
-            {
-                MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters for job codes, hence operation cancelled");
-                return;
-            }
-
-            int updatedLineCount = 0;
-            Dictionary<int, string> addedLines = new Dictionary<int, string>();
-            foreach (ExoSubJobEditableProjection selectedLine in DisplaySelectedEntities)
-            {
-                if (selectedLine.SubJobChargeType == ChargeType.Direct && selectedLine.CommodityIsIndirectOnly)
-                {
-                    MessageBoxService.ShowMessage("This commodity can only be assigned to indirect subjobs");
-                    continue;
-                }
-
-                if (!selectedLine.IsLineExistsInExo)
-                {
-                    if (ExoMethods.UpdateLineSubJob(selectedLine, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                    {
-                        if (ExoMethods.UpdateLineDiscipline(selectedLine, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                        {
-                            if (ExoMethods.UpdateLineCommodity(selectedLine, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                            {
-                                int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
-                                JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, selectedLine, (int)maxJOBCOSTLINEID);
-                                primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
-                                primeroUnitOfWork.SaveChanges();
-                                selectedLine.LineId = newLine.SEQNO;
-                                selectedLine.Update();
-
-                                if (selectedLine.LineId != null)
-                                {
-                                    ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobId == selectedLine.SubJobId);
-                                    if (existingSameSubJobLine != null)
-                                    {
-                                        foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
-                                        {
-                                            ExoSubJobAuth newUser = new ExoSubJobAuth();
-                                            DataUtils.ShallowCopy(newUser, authUser);
-                                            selectedLine.AuthUsers.Add(newUser);
-                                        }
-                                    }
-
-                                    refreshPermissions();
-                                    updatedLineCount += 1;
-                                }
-                            }
-                            else
-                                MessageBoxService.ShowMessage(selectedLine.CommodityCode + " cost type does not exists in exo, please ask " + BluePrintsResources.Default_CFO + " to create it");
-                        }
-                    }
-                }
-            }
-
-            MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-            updateViewTitles();
-        }
-
-        /// <summary>
-        /// The view name to be used when saving layout for IDocumentContent
-        /// </summary>
         protected override string ViewName
         {
             get
@@ -464,17 +317,6 @@ namespace BluePrints.ViewModels
                 return "ExoDesignSubJobViewModelWrapper";
             }
         }
-
-        public override string UnifiedRowValidation(ExoSubJobEditableProjection projection)
-        {
-            return string.Empty;
-        }
-
-        public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value)
-        {
-            return string.Empty;
-        }
-
 
         public IEnumerable<WORKPACK> WORKPACKCollection
         {
@@ -502,5 +344,6 @@ namespace BluePrints.ViewModels
                 return GetEntities<PROGRESS_ITEM>();
             }
         }
+        #endregion
     }
 }

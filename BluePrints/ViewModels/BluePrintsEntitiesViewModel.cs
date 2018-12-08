@@ -264,7 +264,6 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription stockGroupCategoryDescription;
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
-        BluePrintsEntitiesModuleDescription timesheetsDescription;
         private void initializeCategoryDescription()
         {
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(projectCategoryId, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);

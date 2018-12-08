@@ -123,6 +123,21 @@ namespace BluePrints.Common.Projections
             COMMODITY_CODES = COMMODITY_CODECollection;
         }
 
+
+        public void PopulateLineAuthUsers(IEnumerable<ExoSubJobEditableProjection> projections)
+        {
+            ExoSubJobEditableProjection existingSameSubJobLine = projections.FirstOrDefault(x => x.SubJobCode == this.SubJobCode);
+            if (existingSameSubJobLine != null)
+            {
+                foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                {
+                    ExoSubJobAuth newUser = new ExoSubJobAuth();
+                    DataUtils.ShallowCopy(newUser, authUser);
+                    this.AuthUsers.Add(newUser);
+                }
+            }
+        }
+
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
             if(propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
@@ -228,7 +243,7 @@ namespace BluePrints.Common.Projections
 
     public static class ExoMethods
     {
-        public static bool UpdateLineSubJob(ExoSubJobEditableProjection projection, bool editLine, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static bool CommitLineSubJob(ExoSubJobEditableProjection projection, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
                 return false;
@@ -260,7 +275,7 @@ namespace BluePrints.Common.Projections
             }
 
             projection.SubJobId = subjob.JOBNO;
-            if (editLine)
+            if (editLineAfterCommit)
             {
                 if (projection.LineId != null)
                 {
@@ -281,7 +296,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static bool UpdateLineDiscipline(ExoSubJobEditableProjection projection, bool editLine, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static bool CommitLineDiscipline(ExoSubJobEditableProjection projection, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
                 return false;
@@ -313,7 +328,7 @@ namespace BluePrints.Common.Projections
             }
 
             projection.DisciplineId = discipline.SEQNO;
-            if (editLine)
+            if (editLineAfterCommit)
             {
                 if (projection.LineId != null)
                 {
@@ -334,7 +349,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static bool UpdateLineCommodity(ExoSubJobEditableProjection projection, bool editLine, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static bool CommitLineCommodity(ExoSubJobEditableProjection projection, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             if (projection.CommodityCode == null || projection.CommodityCode == string.Empty || projection.DisciplineId == null)
                 return false;
@@ -343,7 +358,7 @@ namespace BluePrints.Common.Projections
             if (commodity != null)
             {
                 projection.CommodityId = commodity.SEQNO;
-                if (editLine)
+                if (editLineAfterCommit)
                 {
                     if (projection.LineId != null)
                     {
@@ -651,6 +666,8 @@ namespace BluePrints.Common.Projections
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {
                 ExoSubJobProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
+                newSubJobProjection.LineId = exoLine.LineSeqNo;
+
                 PrimeroSubJob newSubJob = new PrimeroSubJob();
                 newSubJob.Id = exoLine.SubJobNo;
                 newSubJob.MasterId = exoLine.MasterJobNo;
@@ -675,25 +692,21 @@ namespace BluePrints.Common.Projections
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
-                if (exoLines.Count() > 0)
+                if(ExoSTAFFS != null)
                 {
-                    newSubJobProjection.LineId = exoLine.LineSeqNo;
-                    if(ExoSTAFFS != null)
+                    foreach (ExoTimeAuthorisation exoAuth in exoAuths)
                     {
-                        foreach (ExoTimeAuthorisation exoAuth in exoAuths)
+                        STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
+                        if (findSTAFF != null)
                         {
-                            STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
-                            if (findSTAFF != null)
-                            {
-                                ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                                USER newUser = new USER();
-                                newUser.NAME = findSTAFF.NAME;
-                                newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
-                                newAuth.User = newUser;
-                                newAuth.ShouldAssign = false;
-                                newAuth.IsAssigned = true;
-                                newSubJobProjection.AuthUsers.Add(newAuth);
-                            }
+                            ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                            USER newUser = new USER();
+                            newUser.NAME = findSTAFF.NAME;
+                            newUser.EXO_STAFF_ID = findSTAFF.STAFFNO;
+                            newAuth.User = newUser;
+                            newAuth.ShouldAssign = false;
+                            newAuth.IsAssigned = true;
+                            newSubJobProjection.AuthUsers.Add(newAuth);
                         }
                     }
                 }

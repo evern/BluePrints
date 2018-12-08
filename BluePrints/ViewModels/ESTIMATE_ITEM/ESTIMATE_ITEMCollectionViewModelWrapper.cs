@@ -288,7 +288,7 @@ namespace BluePrints.ViewModels
             //MainViewModel.DisablePasting = true;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.ManualPasteAction = ManualPasteAction;
+            MainViewModel.ManualRowPasteAction = ManualPasteAction;
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
             MainViewModel.CanFillDownCallBack = this.CanFillDown;
             MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
