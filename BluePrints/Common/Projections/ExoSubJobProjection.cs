@@ -1016,7 +1016,7 @@ namespace BluePrints.Common.Projections
             if (line.SubJobCode == null || line.SubJobCode == string.Empty || line.DisciplineCode == null || line.DisciplineCode == string.Empty || line.CommodityCode == null || line.CommodityCode == string.Empty)
                 return null;
 
-            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+            IQueryable<JOBCOST_LINES> projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
                                  on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
                                  join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
@@ -1031,14 +1031,13 @@ namespace BluePrints.Common.Projections
                                  on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper() && JOBCOST_LINES.X_VARIATION_CODE == line.VariationCode
+                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                  select JOBCOST_LINES;
 
-
-            if (availableLines.Count() == 0)
-                return null;
-
-            return availableLines.First();
+            if (line.VariationCode == string.Empty || line.VariationCode == null)
+                return projectLines.FirstOrDefault(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null);
+            else
+                return projectLines.FirstOrDefault(x => x.X_VARIATION_CODE == line.VariationCode);
         }
 
         public static JOBCOST_LINES GetMasterProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)

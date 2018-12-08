@@ -89,6 +89,7 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
+            SubJobRegex = loadPROJECT.NUMBER + @"-\d{3}-\d{2}-[D,C,I]{1}\d{1}";
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
@@ -602,6 +603,7 @@ namespace BluePrints.ViewModels
             }
 
             int updatedLineCount = 0;
+            List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
             foreach (ExoSubJobEditableProjection projection in projections)
             {
                 if (projection.SubJobChargeType == ChargeType.Direct && projection.CommodityIsIndirectOnly)
@@ -634,6 +636,7 @@ namespace BluePrints.ViewModels
                                     }
 
                                     refreshPermissions();
+                                    addedProjections.Add(projection);
                                     updatedLineCount += 1;
                                 }
 
@@ -646,7 +649,13 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+            if(addedProjections.Count() > 0)
+            {
+                //MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
+                OnAfterNewRowAdded(addedProjections.First());
+                //Refreshes collection properties
+                this.RaisePropertiesChanged();
+            }
         }
 
         private bool commitLineVariation(ExoSubJobEditableProjection projection)
@@ -771,6 +780,8 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public string SubJobRegex { get; set; }
+
         public IEnumerable<USER> USERCollection
         {
             get
@@ -787,10 +798,18 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<COMMODITY_CODE>();
+                List<string> allCommodityCodes = new List<string>();
                 if (collection != null)
-                    return collection.OrderBy(x => x.CODE).Distinct().Select(x => x.CODE).Distinct();
+                {
+                    allCommodityCodes.AddRange(collection.OrderBy(x => x.CODE).Distinct().Select(x => x.CODE).Distinct());
+                }
 
-                return new List<string>();
+                if(DisplayEntities != null && DisplayEntities.Count > 0)
+                {
+                    allCommodityCodes.AddRange(DisplayEntities.Select(x => x.CommodityCode));
+                }
+
+                return allCommodityCodes.OrderBy(x => x);
             }
         }
 
