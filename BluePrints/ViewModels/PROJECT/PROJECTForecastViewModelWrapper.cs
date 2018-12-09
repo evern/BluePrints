@@ -239,6 +239,8 @@ namespace BluePrints.ViewModels
         {
             dataPointsTable = null;
             ForecastSummary.Costs = 0;
+            ForecastSummary.Actuals = 0;
+            ForecastSummary.Commitments = 0;
             initializeSummaryStats();
             base.FullRefresh();
         }
@@ -292,14 +294,14 @@ namespace BluePrints.ViewModels
                     foreach(string uniqueSubjob in uniqueSubjobs)
                     {
                         List<string> delimited = uniqueSubjob.Split(';').ToList();
-                        string subjobName = delimited[0];
+                        string subjobCode = delimited[0];
                         string disciplineName = delimited[1];
-                        string commodityName = delimited[2];
-                        string variationName = delimited[3];
+                        string commodityCode = delimited[2];
+                        string variationCode = delimited[3];
 
-                        if (!combinedSubJobs.Any(x => x.SubJob.Code == subjobName && x.Discipline.Code == disciplineName && x.Commodity.Code == commodityName && x.Variation_Code == variationName))
+                        if (!combinedSubJobs.Any(x => x.SubJob.Code == subjobCode && x.Discipline.Code == disciplineName && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
                         {
-                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subjobName }, Discipline = new PrimeroDiscipline() { Code = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityName }, Variation_Code = variationName });
+                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subjobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = variationCode });
                         }
                     }
 
@@ -403,6 +405,10 @@ namespace BluePrints.ViewModels
             disciplineDataRow[columnChild] = childDataTable;
             IEnumerable<DashboardFlatStructure> disciplineDashboards = AllProjectDashboards.Where(x => x.SubjobCode == firstSubJob.SubJob.Code && x.DisciplineCode == firstSubJob.Discipline.Code && x.Variation_Code == firstSubJob.Variation_Code);
             populateDataRow(disciplineDataRow, disciplineDashboards);
+            ForecastCalculation forecastCalculation = (ForecastCalculation)disciplineDataRow[columnCalculation];
+            ForecastSummary.Actuals += forecastCalculation.Actuals;
+            ForecastSummary.Commitments += forecastCalculation.Outstanding;
+
             //effectively override remaining
             updateForecast(disciplineDataRow, (ExoSubJobProjection)disciplineDataRow[columnEntity], false);
             calculateUncommitted(disciplineDataRow);
@@ -523,7 +529,8 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> actualDataPoints = actualStats.SelectMany(x => x.Actual.ExoDataPoints);
                     forecastCalculation.Actuals += actualDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += actualDataPoints.Sum(x => x.InvoiceAmount);
-                    foreach(DateTime alignedDate in alignedDataDateCollection)
+
+                    foreach (DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
                         if (dataPointsTable.Columns.Contains(alignedDateField))
@@ -563,6 +570,7 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> materialDataPoints = materialStats.SelectMany(x => x.Material.ExoDataPoints);
                     forecastCalculation.Actuals += materialDataPoints.Sum(x => x.Costs);
                     forecastCalculation.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
+
                     foreach (DateTime alignedDate in alignedDataDateCollection)
                     {
                         string alignedDateField = ((DateTime)alignedDate).ToShortDateString();
@@ -1818,5 +1826,7 @@ namespace BluePrints.ViewModels
         public decimal Margin => Revenue - Costs;
         public decimal Margin_Percent => Revenue == 0 ? 0 : Margin / Revenue;
         public decimal TotalClaims { get; set; }
+        public decimal Actuals { get; set; }
+        public decimal Commitments { get; set; }
     }
 }

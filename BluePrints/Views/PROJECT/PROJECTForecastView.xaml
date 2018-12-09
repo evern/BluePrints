@@ -376,6 +376,12 @@
                                         <dxlc:LayoutItem Label="Margin %" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Actuals, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Commitments" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Commitments, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Claims" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.TotalClaims, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>

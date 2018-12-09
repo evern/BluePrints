@@ -336,7 +336,6 @@ namespace BluePrints.Common.Misc
             List<DashboardTreeStructure> child_dashboard = new List<DashboardTreeStructure>();
             foreach (string unique_code in unique_codes.OrderBy(x => x))
             {
-                LoadingScreenManager.SetMessage("Dividing " + unique_code);
                 DashboardTreeStructure new_dashboard = create_dashboard(dashboard, unique_code, dashboard.Summary, x => reportable_selector(x) == unique_code, x => exo_selector(x) == unique_code);
                 if(new_dashboard != null)
                     child_dashboard.Add(new_dashboard);
@@ -379,23 +378,27 @@ namespace BluePrints.Common.Misc
             IEnumerable<ExoDataPoint> burned_data_points = project_summary_stats.GetBurnedDataPoints();
             IEnumerable<ExoDataPoint> material_data_points = project_summary_stats.GetMaterialDataPoints();
             IEnumerable<ExoDataPoint> po_data_points = project_summary_stats.GetPODataPoints();
-            int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
-
+            //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
             project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name);
-
+            int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
             LoadingScreenManager.ShowLoadingScreen(maxProgress);
             //child dashboards are now subdivided into subjob dashboard
             foreach (DashboardTreeStructure subjob_dashboard in project_dashboard.Child_Dashboards)
             {
-                if(shouldSeparateVariation)
+                string loadingScreenMessage = "Processing " + subjob_dashboard.Code;
+                LoadingScreenManager.SetMessage(loadingScreenMessage);
+                if (shouldSeparateVariation)
                 {
+                    LoadingScreenManager.SetMessage(loadingScreenMessage + ".");
                     subjob_dashboard.SubDivideDashboardStats(x => x.Variation_Code, x => x.Variation_Code);
                     foreach (DashboardTreeStructure variation_dashboard in subjob_dashboard.Child_Dashboards)
                     {
+                        LoadingScreenManager.SetMessage(loadingScreenMessage + "..");
                         //child dashboards are now subdivided into variation dashboard
                         variation_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
                         foreach (DashboardTreeStructure discipline_dashboard in variation_dashboard.Child_Dashboards)
                         {
+                            LoadingScreenManager.SetMessage(loadingScreenMessage + "...");
                             //child dashboards are now subdivided into discipline dashboard
                             discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code);
                         }
@@ -403,9 +406,11 @@ namespace BluePrints.Common.Misc
                 }
                 else
                 {
+                    LoadingScreenManager.SetMessage(loadingScreenMessage + ".");
                     subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
                     foreach (DashboardTreeStructure discipline_dashboard in subjob_dashboard.Child_Dashboards)
                     {
+                        LoadingScreenManager.SetMessage(loadingScreenMessage + "..");
                         //child dashboards are now subdivided into discipline dashboard
                         discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code);
                     }

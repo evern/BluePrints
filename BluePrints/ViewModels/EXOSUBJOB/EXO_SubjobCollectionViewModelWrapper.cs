@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -90,6 +91,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
 
             SubJobRegex = loadPROJECT.NUMBER + @"-\d{3}-\d{2}-[D,C,I]{1}\d{1}";
+            DisciplineRegex = @"[A-Z]{2}\d{2}";
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
@@ -224,11 +226,21 @@ namespace BluePrints.ViewModels
             string errorMessage = string.Empty;
             if (MainViewModel.IsValidEntity(pasteEntity, ref errorMessage))
             {
-                commitToExo(pasteEntity);
-                MainViewModel.Entities.Insert(0, pasteEntity);
-                this.RaisePropertyChanged(x => x.DisplayEntities);
+                if (pasteEntity.IsCommodityCodeValid)
+                {
+                    if(commitToExo(pasteEntity))
+                    {
+                        MainViewModel.Entities.Insert(0, pasteEntity);
+                        this.RaisePropertyChanged(x => x.DisplayEntities);
+                    }
+                }
+                else
+                {
+                    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + "\nCurrent row will be skipped";
+                }
             }
-            else if (errorMessage.ToUpper().Contains("UNIQUE"))
+
+            if (errorMessage.ToUpper().Contains("UNIQUE"))
                 MessageBoxService.ShowMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode + " is not unique\nCurrent row will be skipped", "Error", MessageButton.OK, MessageIcon.Exclamation);
             else
                 MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
@@ -270,7 +282,8 @@ namespace BluePrints.ViewModels
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
                 {
-                    ExoMethods.CommitLineCommodity(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
+                    if (ExoMethods.CommitLineCommodity(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                        this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)))
                 {
@@ -556,50 +569,71 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region EXO Database
-        private void commitToExo(ExoSubJobEditableProjection projection)
+        private bool commitToExo(ExoSubJobEditableProjection projection)
         {
             List<ExoSubJobEditableProjection> newLines = new List<ExoSubJobEditableProjection>();
             ExoSubJobEditableProjection newLine = projection;
             newLines.Add(newLine);
-            CommitToExo(newLines);
+            return CommitToExo(newLines);
         }
 
-        public void CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
+        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
         {
             if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
             {
                 MessageBoxService.ShowMessage("Uploading to EXO is disabled because this job is in tender phase\nPlease contact " + BluePrintsResources.Default_CFO + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
             }
 
             if (masterJob == null)
             {
                 MessageBoxService.ShowMessage("Project master job doesn't exists in EXO\nPlease request " + BluePrintsResources.Default_CFO + " to add a job with job code " + loadPROJECT.NUMBER, "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
             }
 
             if (copyLine == null)
             {
                 MessageBoxService.ShowMessage("Project master line is not setup in exo\nPlease request " + BluePrintsResources.Default_CFO + " to add a job line linked to master job with job code " + loadPROJECT.NUMBER, "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
             }
 
-            if (projections.Any(x => x.SubJobCode.Length > subjobCodeMaxLength))
+            if (projections.Any(x => x.SubJobCode == null) || projections.Any(x => x.SubJobCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.SubJobCode, SubJobRegex)))
+            {
+                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
+            else if (projections.Any(x => x.SubJobCode.Length > subjobCodeMaxLength))
             {
                 MessageBoxService.ShowMessage("Some lines have subjob code that is more than 15 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
             }
 
-            if (projections.Any(x => x.DisciplineCode.Length > disciplineCodeMaxLength))
+            if (projections.Any(x => x.DisciplineCode == null) || projections.Any(x => x.DisciplineCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.DisciplineCode, DisciplineRegex)))
+            {
+                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
+            else if (projections.Any(x => x.DisciplineCode.Length > disciplineCodeMaxLength))
             {
                 MessageBoxService.ShowMessage("Some lines have discipline code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
             }
 
-            if (projections.Any(x => x.CommodityCode.Length > commodityCodeMaxLength))
+
+            if (projections.Any(x => x.CommodityCode == null) || projections.Any(x => x.CommodityCode == string.Empty))
+            {
+                MessageBoxService.ShowMessage("Some lines doesn't have commodity code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
+            else if (projections.Any(x => x.CommodityCode.Length > commodityCodeMaxLength))
             {
                 MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return;
+                return false;
+            }
+            else if(projections.Any(x => !x.IsCommodityCodeValid))
+            {
+                MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
             }
 
             int updatedLineCount = 0;
@@ -643,7 +677,10 @@ namespace BluePrints.ViewModels
                                 projection.Update();
                             }
                             else
+                            {
                                 MessageBoxService.ShowMessage(projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
+                                continue;
+                            }
                         }
                     }
                 }
@@ -655,7 +692,10 @@ namespace BluePrints.ViewModels
                 OnAfterNewRowAdded(addedProjections.First());
                 //Refreshes collection properties
                 this.RaisePropertiesChanged();
+                return true;
             }
+
+            return false;
         }
 
         private bool commitLineVariation(ExoSubJobEditableProjection projection)
@@ -781,7 +821,7 @@ namespace BluePrints.ViewModels
         }
 
         public string SubJobRegex { get; set; }
-
+        public string DisciplineRegex { get; set; }
         public IEnumerable<USER> USERCollection
         {
             get
