@@ -183,7 +183,7 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
             if (viewType == DeliverablesViewType.Direct)
-                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && ((x.PHASE.PHASE_TYPE == PhaseType.Construct && x.PHASE.CHARGE_TYPE == ChargeType.Direct) || (x.PHASE.PHASE_TYPE == PhaseType.Procurement)));
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && ((x.PHASE.PHASE_TYPE == PhaseType.Construct && x.PHASE.CHARGE_TYPE == ChargeType.Direct) || (x.PHASE.PHASE_TYPE == PhaseType.Indirect)));
             else if (viewType == DeliverablesViewType.Indirect)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null && (x.PHASE.PHASE_TYPE == PhaseType.Construct && x.PHASE.CHARGE_TYPE == ChargeType.Indirect));
             else
@@ -197,7 +197,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct || x.PHASE_TYPE == PhaseType.Procurement);
+            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct || x.PHASE_TYPE == PhaseType.Indirect);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -362,7 +362,7 @@ namespace BluePrints.ViewModels
             {
                 phaseType = PhaseType.Construct;
                 chargeType = ChargeType.Direct;
-                procurementPhaseType = PhaseType.Procurement;
+                procurementPhaseType = PhaseType.Indirect;
                 if (defaultPHASE != null)
                     entity.Phase_Guid = defaultPHASE.GUID;
             }
@@ -370,7 +370,7 @@ namespace BluePrints.ViewModels
             {
                 phaseType = PhaseType.Construct;
                 chargeType = ChargeType.Indirect;
-                procurementPhaseType = PhaseType.Procurement;
+                procurementPhaseType = PhaseType.Indirect;
                 PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Construct) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Indirect));
                 if (indirectPHASE != null)
                     entity.Phase_Guid = indirectPHASE.GUID;
@@ -1244,6 +1244,7 @@ namespace BluePrints.ViewModels
                             newCOMMODITY_CODE.CODE = stockCode.CODE;
                             newCOMMODITY_CODE.DESCRIPTION = "Auto Populate";
                             newCOMMODITY_CODE.UOM = entity.Entity.BUDGET_STOCK_CODE.UOM;
+
                             COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
                             entity.Entity.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
                             entitiesToSave.Add(entity);
@@ -1341,7 +1342,7 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<SUBJOB>();
                 //Cannot filter by PHASE TYPE because upon first addition navigational properties for Collection cannot be obtained
                 if (collection != null)
-                    collection = collection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Procurement).OrderBy(x => x.INTERNAL_NAME1);
+                    collection = collection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Indirect).OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }

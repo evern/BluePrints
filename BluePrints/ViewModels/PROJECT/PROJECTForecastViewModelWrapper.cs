@@ -131,6 +131,7 @@ namespace BluePrints.ViewModels
             alignedDataDateCollection = new List<DateTime>();
             IsHidden = true;
             delayPostLoadedTimer = true;
+            //isExcelExportDataAware = false;
             masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
             copyLine = ExoQueries.GetMasterProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
         }
@@ -1538,6 +1539,17 @@ namespace BluePrints.ViewModels
         public void Redo()
         {
             EntitiesUndoRedoManager.Redo();
+        }
+
+        //Unstable
+        public void ExpandAllMasterRows()
+        {
+            GridControlService.ExpandAllMasterRows();
+        }
+
+        public void CollapseAllMasterRows()
+        {
+            GridControlService.CollapseAllMasterRows();
         }
 
         /// <summary>

@@ -367,7 +367,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<RATE> RATES, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null)
         {
             IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Construct);
-            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
+            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Indirect);
             
             List<ESTIMATE_ITEMProjection> estimate_items = new List<ESTIMATE_ITEMProjection>();
             foreach(ESTIMATE_ITEM estimate_item in ESTIMATE_ITEMS)

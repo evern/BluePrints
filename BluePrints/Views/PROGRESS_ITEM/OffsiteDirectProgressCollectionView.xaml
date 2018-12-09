@@ -205,7 +205,7 @@
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowEditing="True" MinWidth="100" Width="100" FieldName="Total_Earned_Percentage" FilterPopupMode="CheckedList" Header="Current %" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
+                            <dxg:GridColumn Width="100" MinWidth="100" AllowEditing="True" FieldName="Total_Earned_Percentage" FilterPopupMode="CheckedList" Header="Current %" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
                                 <dxg:GridColumn.HeaderStyle>
                                     <Style TargetType="Control">
                                         <Setter Property="Background" Value="LightCyan" />
@@ -230,9 +230,9 @@
                                                     </MultiBinding>
                                                 </Image.Visibility>
                                             </Image>
-                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" >
+                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}">
                                                 <Image.ToolTip>
-                                                    <Binding Path="RowData.Row.IsMaxPercentageRestrictedByFuturePercentage" Converter="{StaticResource MaxPercentageMessageConverter}" />
+                                                    <Binding Converter="{StaticResource MaxPercentageMessageConverter}" Path="RowData.Row.IsMaxPercentageRestrictedByFuturePercentage" />
                                                 </Image.ToolTip>
                                                 <Image.Visibility>
                                                     <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
@@ -244,12 +244,12 @@
                                                     </MultiBinding>
                                                 </Image.Visibility>
                                             </Image>
-                                            <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0"  MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}" >
+                                            <dxe:SpinEdit Name="PART_Editor" Tag="{Binding RowData.Row.IsMaxPercentageRestrictedByFuturePercentage}" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}">
                                                 <dxe:SpinEdit.ErrorToolTipContentTemplate>
                                                     <DataTemplate>
                                                         <dxe:TextEdit>
                                                             <dxe:TextEdit.Text>
-                                                                <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                                                <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}">
                                                                     <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                                                     <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                                                     <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
@@ -294,20 +294,20 @@
                             <dxg:GridColumn AllowSearchPanel="False" FilterPopupMode="CheckedList" Header="All Progress" HeaderToolTip="Progresses along the entire timeline" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" IncrementalFiltering="True" AutoComplete="True" AutoPopulateColumns="False" ItemsSource="{Binding RowData.Row.EarnedPercentages}" IsTextEditable="False" NullValueButtonPlacement="None" NullText="Expand to View" ShowNullTextForEmptyValue="True" PopupMinWidth="500">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.EarnedPercentages}" NullText="Expand to View" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
                                             <dxg:LookUpEdit.PopupContentTemplate>
                                                 <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False"  >
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
                                                         <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn FieldName="EarnedPercentage" Header="Earned %" ReadOnly="True" >
+                                                            <dxg:GridColumn FieldName="EarnedPercentage" Header="Earned %" ReadOnly="True">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                                 </dxg:GridColumn.EditSettings>
                                                             </dxg:GridColumn>
-                                                            <dxg:GridColumn FieldName="EarnedDate" Header="Earned Date" ReadOnly="True" SortIndex="1" SortOrder="Descending" >
+                                                            <dxg:GridColumn FieldName="EarnedDate" Header="Earned Date" ReadOnly="True" SortIndex="1" SortOrder="Descending">
                                                                 <dxg:GridColumn.EditSettings>
                                                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
                                                                 </dxg:GridColumn.EditSettings>
@@ -471,7 +471,7 @@
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" PrintAllDetails="True" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.FormatConditions>
                                 <dxg:FormatCondition ApplyToRow="True" Expression="[IAmCritical] = 'True'" FieldName="IAmCritical">
                                     <dxc:Format Background="LightBlue" />

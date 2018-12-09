@@ -63,7 +63,7 @@
                                 <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="500" ValidateOnTextInput="False" ValueMember="CODE">
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="700" ValidateOnTextInput="False" ValueMember="CODE">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>
@@ -72,7 +72,9 @@
                                                         <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
                                                             <dxg:GridControl.Columns>
                                                                 <dxg:GridColumn FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                <dxg:GridColumn MinWidth="100" FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                                <dxg:GridColumn MinWidth="50" FieldName="UOM" Header="UOM" ReadOnly="True" />
+                                                                <dxg:GridColumn MinWidth="250" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                             </dxg:GridControl.Columns>
                                                             <dxg:GridControl.View>
                                                                 <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />

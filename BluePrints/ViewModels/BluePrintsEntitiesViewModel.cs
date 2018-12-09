@@ -345,21 +345,22 @@ namespace BluePrints.ViewModels
             if(LoginCredentials.hasPermission(PermissionResources.StandardizeSubJobs))
                 dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "Exo Master Jobs", "EXO_MasterJobCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
-            {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Global Stock Groups", "STOCK_GROUPCollectionView", null, null, null, false, false, @"Business Objects\BOProductGroup_16x16.png"));
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Global Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Estimate)), null, null, false, false, @"Business Objects\BOProduct_16x16.png"));
-            }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Global Commodity Codes", "COMMODITY_CODECollectionView", null, null, null, false, false, @"Business Objects\BOOrder_16x16.png"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Commodity Codes", "COMMODITY_CODECollectionView", null, null, null, false, false, @"Business Objects\BOOrder_16x16.png"));
                 //dataCategoryDescription.ChildModules.Add(commodityCategoryDescription);
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
                 //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
+            }
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
+            {
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Stock Groups", "STOCK_GROUPCollectionView", null, null, null, false, false, @"Business Objects\BOProductGroup_16x16.png"));
+                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Estimate)), null, null, false, false, @"Business Objects\BOProduct_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
