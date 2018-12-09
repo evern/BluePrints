@@ -30,18 +30,20 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.CODE" Header="Code" HeaderToolTip="An identifier for the commodity code. Must be unique" />
-                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
-                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure">
+                            <dxg:GridColumn FieldName="Entity.PHASE_TYPE" Header="Phase" HeaderToolTip="Phase">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="UOM1" IsTextEditable="True" ItemsSource="{Binding DataContext.UOMCollection, ElementName=userControl}" ValueMember="UOM1" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.CODE" Header="Code" HeaderToolTip="An identifier for the commodity code. Must be unique" />
+                            <dxg:GridColumn FieldName="Entity.NAME" Header="Name" HeaderToolTip="Name" />
                             <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

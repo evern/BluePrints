@@ -90,7 +90,7 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
-            SubJobRegex = loadPROJECT.NUMBER + @"-\d{3}-\d{2}-[D,C,I]{1}\d{1}";
+            SubJobRegex = loadPROJECT.NUMBER + @"-\d{3}-\d{2}-[D,C,I,P]{1}\d{1}";
             DisciplineRegex = @"[A-Z]{2}\d{2}";
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
@@ -102,8 +102,13 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+        }
+
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         protected void initializeCompulsoryViewProperties()
@@ -236,7 +241,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + "\nCurrent row will be skipped";
+                    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + " and phase type " + pasteEntity.PhaseTypeStr + "\nCurrent row will be skipped";
                 }
             }
 
@@ -632,7 +637,7 @@ namespace BluePrints.ViewModels
             }
             else if(projections.Any(x => !x.IsCommodityCodeValid))
             {
-                MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code and phase", "Warning", MessageButton.OK, MessageIcon.Exclamation);
                 return false;
             }
 

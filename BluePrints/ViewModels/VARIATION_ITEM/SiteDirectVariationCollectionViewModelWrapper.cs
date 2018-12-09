@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = SUBJOBCollection;
                 if (collection != null)
-                    collection = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Procurement).OrderBy(x => x.INTERNAL_NAME1);
+                    collection = SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Indirect).OrderBy(x => x.INTERNAL_NAME1);
                 return collection;
             }
         }

@@ -91,10 +91,45 @@ namespace BluePrints.Common.Projections
 
         public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
 
+        public string PhaseTypeStr
+        {
+            get
+            {
+                if (PhaseType == null)
+                    return string.Empty;
+                else
+                    return PhaseType.ToString();
+            }
+        }
+
+        public PhaseType? PhaseType
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode.Length < 15)
+                    return null;
+
+                string phaseTypeString = SubJobCode.Substring(13, 1).ToUpper();
+                if (phaseTypeString == "I")
+                    return Common.PhaseType.Indirect;
+                else if (phaseTypeString == "P")
+                    return Common.PhaseType.Indirect;
+                else if (phaseTypeString == "D")
+                    return Common.PhaseType.Design;
+                else if (phaseTypeString == "C")
+                    return Common.PhaseType.Construct;
+
+                return null;
+            }
+        }
+
         public bool IsCommodityCodeValid
         {
             get
             {
+                if (CommodityCode == null || ValidCommodityCodes.Count() == 0)
+                    return false;
+
                 return ValidCommodityCodes.Any(x => x.CODE == CommodityCode);
             }
         }
@@ -103,11 +138,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2)
+                if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null)
                     return new List<COMMODITY_CODE>();
 
                 string disciplineCode = DisciplineCode.Substring(0, 2);
-                return COMMODITY_CODES.Where(x => x.DISCIPLINE != null && x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode);
+                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
             }
         }
 
@@ -142,7 +177,7 @@ namespace BluePrints.Common.Projections
         {
             if(propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
             {
-                info.ErrorText = "Invalid commodity code";
+                info.ErrorText = "Invalid commodity code, please check phase and discipline";
             }
         }
 

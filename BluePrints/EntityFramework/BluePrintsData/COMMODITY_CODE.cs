@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,11 +28,16 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string CODE { get; set; }
 
-        [StringLength(200)]
+        [StringLength(500)]
+        public string NAME { get; set; }
+
+        [StringLength(1000)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(10)]
+        [StringLength(100)]
         public string UOM { get; set; }
+       
+        public PhaseType PHASE_TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 
