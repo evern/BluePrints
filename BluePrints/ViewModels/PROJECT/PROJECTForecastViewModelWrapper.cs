@@ -1195,79 +1195,76 @@ namespace BluePrints.ViewModels
                     decimal oldValue = 0;
                     if(decimal.TryParse(e.Value.ToString(), out oldValue))
                     {
-                        if (newValue > 0)
-                        {
-                            ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
-                            JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, projection);
-                            bool isError = false;
-                            projection.Budget = newValue;
+                        ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
+                        JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, projection);
+                        bool isError = false;
+                        projection.Budget = newValue;
 
-                            if (findExistingOrAddLine == null)
+                        if (findExistingOrAddLine == null)
+                        {
+                            if (masterJob == null)
                             {
-                                if (masterJob == null)
+                                MessageBoxService.ShowMessage("Cannot change budget because the master job is not created for project " + loadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                isError = true;
+                            }
+                            else if(copyLine == null)
+                            {
+                                MessageBoxService.ShowMessage("Cannot change budget because the master line is not created for project " + loadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                isError = true;
+                            }
+                            else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                            {
+                                if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                 {
-                                    MessageBoxService.ShowMessage("Cannot change budget because the master job is not created for project " + loadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                    isError = true;
-                                }
-                                else if(copyLine == null)
-                                {
-                                    MessageBoxService.ShowMessage("Cannot change budget because the master line is not created for project " + loadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                    isError = true;
-                                }
-                                else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                                {
-                                    if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                                    if (ExoMethods.CommitLineCommodity(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                     {
-                                        if (ExoMethods.CommitLineCommodity(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                                        {
-                                            int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
-                                            JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
-                                            primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
-                                            primeroUnitOfWork.SaveChanges();
-                                            entity.LineId = newLine.SEQNO;
-                                        }
-                                        else
-                                        {
-                                            MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                            isError = true;
-                                        }
+                                        int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
+                                        JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
+                                        primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
+                                        primeroUnitOfWork.SaveChanges();
+                                        entity.LineId = newLine.SEQNO;
                                     }
                                     else
                                     {
-                                        MessageBoxService.ShowMessage("Cannot change budget because cost group " + projection.DisciplineCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                        MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
                                         isError = true;
                                     }
                                 }
                                 else
                                 {
-                                    MessageBoxService.ShowMessage("Cannot change budget because subjob " + projection.SubJobCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                    MessageBoxService.ShowMessage("Cannot change budget because cost group " + projection.DisciplineCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
                                     isError = true;
                                 }
-
-                                if (isError)
-                                    projection.Budget = 0;
-                                else
-                                {
-                                    DataRow disciplineRow = findDisciplineRow(entity);
-                                    if (disciplineRow != null)
-                                    {
-                                        recalculateChildBudget(disciplineRow);
-                                    }
-                                }
-
-                                projection.Update();
                             }
                             else
                             {
-                                findExistingOrAddLine.QUOTE_QTY = 1;
-                                findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newValue);
-                                primeroUnitOfWork.SaveChanges();
+                                MessageBoxService.ShowMessage("Cannot change budget because subjob " + projection.SubJobCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                isError = true;
+                            }
 
+                            if (isError)
+                                projection.Budget = 0;
+                            else
+                            {
                                 DataRow disciplineRow = findDisciplineRow(entity);
                                 if (disciplineRow != null)
                                 {
                                     recalculateChildBudget(disciplineRow);
                                 }
+                            }
+
+                            projection.Update();
+                        }
+                        else
+                        {
+                            findExistingOrAddLine.QUOTE_QTY = 1;
+                            findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newValue);
+                            primeroUnitOfWork.SaveChanges();
+
+                            DataRow disciplineRow = findDisciplineRow(entity);
+                            if (disciplineRow != null)
+                            {
+                                recalculateChildBudget(disciplineRow);
                             }
                         }
                     }
