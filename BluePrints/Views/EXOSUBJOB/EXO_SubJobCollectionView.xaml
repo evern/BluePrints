@@ -50,7 +50,7 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>-->
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskType="RegEx" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, free text" />

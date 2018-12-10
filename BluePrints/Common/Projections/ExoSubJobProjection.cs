@@ -812,7 +812,7 @@ namespace BluePrints.Common.Projections
             Data.PROJECT PROJECT,
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection)
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
         {
             List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, null).ToList();
 
@@ -869,6 +869,7 @@ namespace BluePrints.Common.Projections
                     newSubJobProjection.CommodityCode = groupedDeliverable.Commodity.CODE;
                 }
 
+                newSubJobProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 newSubJobProjection.CommodityIsIndirectOnly = groupedDeliverable.Commodity == null ? false : groupedDeliverable.Commodity.IS_INDIRECT_ONLY;
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 ExoTimeAuthorisation exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1 && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.Commodity.CODE && (x.VariationCode == string.Empty || x.VariationCode == null));

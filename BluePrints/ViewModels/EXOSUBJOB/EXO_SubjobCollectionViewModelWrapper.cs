@@ -245,10 +245,13 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (errorMessage.ToUpper().Contains("UNIQUE"))
-                MessageBoxService.ShowMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode + " is not unique\nCurrent row will be skipped", "Error", MessageButton.OK, MessageIcon.Exclamation);
-            else
-                MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+            if(errorMessage != string.Empty)
+            {
+                if (errorMessage.ToUpper().Contains("UNIQUE"))
+                    MessageBoxService.ShowMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode + " is not unique\nCurrent row will be skipped", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                else
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+            }
 
             return false;
         }

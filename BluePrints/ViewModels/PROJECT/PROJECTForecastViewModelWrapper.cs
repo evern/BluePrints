@@ -280,7 +280,7 @@ namespace BluePrints.ViewModels
                     {
                         if (!combinedSubJobs.Any(x => x.SubJob.Code == exoSubJob.SubJob.Code && x.Discipline.Code == exoSubJob.Discipline.Code && x.Commodity.Code == exoSubJob.Commodity.Code && x.Variation_Code == exoSubJob.Variation_Code))
                         {
-                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = exoSubJob.SubJob.Code }, Discipline = new PrimeroDiscipline() { Code = exoSubJob.Discipline.Code }, Commodity = new PrimeroCommodity() { Code = exoSubJob.Commodity.Code }, Variation_Code = exoSubJob.Variation_Code });
+                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = exoSubJob.SubJob.Code }, Discipline = new PrimeroDiscipline() { Code = exoSubJob.Discipline.Code }, Commodity = new PrimeroCommodity() { Code = exoSubJob.Commodity.Code }, Variation_Code = normalizeVariationCode(exoSubJob.Variation_Code) });
                         }
                     }
 
@@ -302,7 +302,7 @@ namespace BluePrints.ViewModels
 
                         if (!combinedSubJobs.Any(x => x.SubJob.Code == subjobCode && x.Discipline.Code == disciplineName && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
                         {
-                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subjobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = variationCode });
+                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subjobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = normalizeVariationCode(variationCode) });
                         }
                     }
 
@@ -341,6 +341,18 @@ namespace BluePrints.ViewModels
 
                 return dataPointsTable;
             }
+        }
+
+        /// <summary>
+        /// For the purpose of presentation, variation code must always be empty
+        /// But when budget is edited, findExistingOrAddNewLine will handle the difference between null and string.empty values
+        /// </summary>
+        private string normalizeVariationCode(string subjobVariationCode)
+        {
+            if (subjobVariationCode == null)
+                return string.Empty;
+
+            return subjobVariationCode;
         }
 
         private void setDateFieldsEmpty(DataRow dataRow, bool test)
@@ -420,9 +432,7 @@ namespace BluePrints.ViewModels
 
         private void initializeDataRow(DataRow dataRow, string subJobCode, string disciplineCode, string commodityCode, string variationCode)
         {
-            //string s = string.Empty;
-            //if (variationCode == null)
-            //    s = string.Empty;
+            variationCode = normalizeVariationCode(variationCode);
 
             ExoSubJobProjection entity = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineCode }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = variationCode };
             ForecastCalculation calculation = new ForecastCalculation();
@@ -643,7 +653,7 @@ namespace BluePrints.ViewModels
 
         private void updateForecast(DataRow dataRow, ExoSubJobProjection entity, bool isCompare)
         {
-            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && !x.IS_EAC);
+            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
 
             foreach (FORECAST currentRowFORECAST in currentRowFORECASTS)
             {
@@ -656,7 +666,7 @@ namespace BluePrints.ViewModels
                     {
                         string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
                         //put forecast history only on compare datatable
-                        if ((alignedDataDate > FixedDataDate && !isCompare) || (alignedDataDate <= FixedDataDate && isCompare))
+                        if ((alignedDataDate >= FixedDataDate && !isCompare) || (alignedDataDate <= FixedDataDate && isCompare))
                             if (dataPointsTable.Columns.Contains(alignedDateField))
                             {
                                 if (currentRowFORECAST.FORECAST_UNITS != null)
@@ -903,16 +913,20 @@ namespace BluePrints.ViewModels
             string newValueString = Clipboard.GetText().ToString();
 
             //remove tab in front
-            if(newValueString.Substring(0, 1) == "\t")
+            if(newValueString != string.Empty)
             {
-                newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                if (newValueString.Substring(0, 1) == "\t")
+                {
+                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                }
+
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+                pasteCellData(gridControl, gridTableView, RowData);
+
+                GridControlService.RefreshData();
+                e.Handled = true;
             }
 
-            string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
-            pasteCellData(gridControl, gridTableView, RowData);
-
-            GridControlService.RefreshData();
-            e.Handled = true;
         }
 
 
@@ -1318,7 +1332,7 @@ namespace BluePrints.ViewModels
                 newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
                 newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
                 newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
-                newFORECAST.VARIATION_CODE = entity.Variation_Code;
+                newFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
                 newFORECAST.FORECAST_DATE = forecastDate.Date;
                 newFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(newFORECAST);
@@ -1409,7 +1423,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewEAC(ExoSubJobProjection entity, DateTime forecastDate, decimal eacAmount)
         {
-            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.IS_EAC);
+            FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && x.IS_EAC);
             if (findFORECAST == null)
             {
                 FORECAST newFORECAST = new FORECAST();
@@ -1418,6 +1432,7 @@ namespace BluePrints.ViewModels
                 newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
                 newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
                 newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
+                newFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
                 newFORECAST.FORECAST_DATE = forecastDate.Date;
                 newFORECAST.FORECAST_UNITS = eacAmount;
                 newFORECAST.IS_EAC = true;
@@ -1445,7 +1460,7 @@ namespace BluePrints.ViewModels
                 string columnName = dataColumn.ColumnName;
                 DateTime parseDateTime;
                 if (DateTime.TryParse(columnName, out parseDateTime))
-                    if(parseDateTime > FixedDataDate)
+                    if(parseDateTime >= FixedDataDate)
                         if(dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
                             if(((decimal)dataRow[columnName]) > 0)
                                 uncommittedRecalculation += (decimal)dataRow[columnName];
