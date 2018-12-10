@@ -443,6 +443,7 @@ namespace BluePrints.ViewModels
             }
 
             SyncScreenViewModel viewModel = SyncScreenViewModel.Create();
+            viewModel.SetParentViewModel(this);
             ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
