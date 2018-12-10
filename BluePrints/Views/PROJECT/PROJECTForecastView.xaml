@@ -95,17 +95,17 @@
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Revenue" Visible="True" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" VisibleIndex="85">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>-->
                                         <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
@@ -115,32 +115,32 @@
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridControl.DetailDescriptor>
@@ -165,17 +165,17 @@
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.Actuals" Fixed="Left" Header="Actuals" HeaderToolTip="Cost rate of invoiced to Date, actuals incurred at manhours" ReadOnly="True" VisibleIndex="80">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <!--<dxg:GridColumn FieldName="Calculation.Invoiced" Fixed="Left" Header="Revenue" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>-->
                                                     <dxg:GridColumn FieldName="Calculation.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="% Complete" ReadOnly="True" VisibleIndex="87">
@@ -185,32 +185,32 @@
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.Uncommitted" Fixed="Left" Header="Forecast" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.PreviousEAC" Fixed="Left" Header="Prior EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridColumn FieldName="Calculation.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous budget" ReadOnly="True" VisibleIndex="115">
                                                         <dxg:GridColumn.EditSettings>
-                                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
                                                     <dxg:GridControl.View>
