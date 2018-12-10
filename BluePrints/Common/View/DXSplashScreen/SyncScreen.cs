@@ -166,94 +166,108 @@ namespace BluePrints.Common
             this.RaisePropertyChanged(x => x.SyncReport);
         }
 
+        int qtPriority = 0;
+        int qtPriorityCompletionCount = 0;
         private void updateQueue()
         {
-            if(qt.Count > 0)
+            qtPriorityCompletionCount += 1;
+            if (qtPriority < 6)
             {
-                Thread queuedThread = qt.Dequeue();
-                queuedThread.Start();
+                IEnumerable <ThreadPriority> threadPriorities = qt.Where(x => x.Priority == qtPriority);
+
+                bool isCompleted = qtPriorityCompletionCount >= threadPriorities.Count();
+
+                if(isCompleted)
+                {
+                    qtPriorityCompletionCount = 0;
+                    qtPriority += 1;
+
+                    threadPriorities = qt.Where(x => x.Priority == qtPriority);
+                    foreach (ThreadPriority threadPriority in threadPriorities)
+                    {
+                        threadPriority.Thread.Start();
+                    }
+                }
             }
         }
 
-        Queue<Thread> qt;
+        List<ThreadPriority> qt;
         public void SyncData()
         {
             //ThreadPool.SetMaxThreads(1, 1);
-            qt = new Queue<Thread>();
-            qt.Enqueue(createThread<PROJECT>());
-            qt.Enqueue(createThread<AREA>());
-            qt.Enqueue(createThread<PROJECT>());
-            qt.Enqueue(createThread<AREA>());
-            qt.Enqueue(createThread<WORKPACK>());
-            qt.Enqueue(createThread<BASELINE>());
-            qt.Enqueue(createThread<PROGRESS>());
-            qt.Enqueue(createThread<VARIATION>());
-            qt.Enqueue(createThread<ESTIMATE>());
-            qt.Enqueue(createThread<SUBJOB>());
-            qt.Enqueue(createThread<PROGRESS_ITEM>());
-            qt.Enqueue(createThread<BASELINE_ITEM_WORK>());
-            qt.Enqueue(createThread<CLIENT>());
-            qt.Enqueue(createThread<COMMODITY_CODE>());
-            qt.Enqueue(createThread<CONSTRUCTION_CONFIG>());
-            qt.Enqueue(createThread<DAYWORK>());
-            qt.Enqueue(createThread<DAYWORK_EQUIPMENT>());
-            qt.Enqueue(createThread<DAYWORK_MATERIAL>());
-            qt.Enqueue(createThread<DAYWORK_LABOUR>());
-            qt.Enqueue(createThread<DAYWORK_STAFF_ROLE>());
-            qt.Enqueue(createThread<DELIVERABLES_STATUS>());
-            qt.Enqueue(createThread<DEPARTMENT>());
-            qt.Enqueue(createThread<DISCIPLINE>());
-            qt.Enqueue(createThread<DOCTYPE>());
-            qt.Enqueue(createThread<ESTIMATE_ITEM>());
-            qt.Enqueue(createThread<FORECAST>());
-            qt.Enqueue(createThread<HSE>());
-            qt.Enqueue(createThread<HSE_INCIDENT>());
-            qt.Enqueue(createThread<HSE_INJURY>());
-            qt.Enqueue(createThread<HOLIDAY>());
-            qt.Enqueue(createThread<MEETING>());
-            qt.Enqueue(createThread<MEETING_USER>());
-            qt.Enqueue(createThread<MINUTE_AGENDA>());
-            qt.Enqueue(createThread<MINUTE_TITLE>());
-            qt.Enqueue(createThread<P6_ASSIGNMENT>());
-            qt.Enqueue(createThread<PHASE>());
-            qt.Enqueue(createThread<PROJECT_DISCIPLINE>());
-            qt.Enqueue(createThread<PROJECT_REPORT>());
-            qt.Enqueue(createThread<RA_GUIDE_PROMPT>());
-            qt.Enqueue(createThread<RA_GUIDE_SUBPROMPT>());
-            qt.Enqueue(createThread<RA_STUDY>());
-            qt.Enqueue(createThread<RA_STUDY_DATA>());
-            qt.Enqueue(createThread<RA_STUDY_DRAWING>());
-            qt.Enqueue(createThread<RA_STUDY_NODE>());
-            qt.Enqueue(createThread<RA_STUDY_TYPE>());
-            qt.Enqueue(createThread<RA_STUDY_TEAM>());
-            qt.Enqueue(createThread<RATE>());
-            qt.Enqueue(createThread<REGISTER>());
-            qt.Enqueue(createThread<REGISTER_CHANGE>());
-            qt.Enqueue(createThread<REGISTER_HOLD>());
-            qt.Enqueue(createThread<REGISTER_HOLD_REF>());
-            qt.Enqueue(createThread<REGISTER_ISSUE>());
-            qt.Enqueue(createThread<REGISTER_LL>());
-            qt.Enqueue(createThread<REGISTER_NC>());
-            qt.Enqueue(createThread<REGISTER_RISK>());
-            qt.Enqueue(createThread<ROLE>());
-            qt.Enqueue(createThread<ROLE_PERMISSION>());
-            qt.Enqueue(createThread<ROLE_COMMODITY>());
-            qt.Enqueue(createThread<ROSTER_STAFF>());
-            qt.Enqueue(createThread<ROSTER_STAFF_STATUS>());
-            qt.Enqueue(createThread<SETTINGS_GLOBAL>());
-            qt.Enqueue(createThread<STOCK_CODE>());
-            qt.Enqueue(createThread<STOCK_GROUP>());
-            qt.Enqueue(createThread<UOM>());
-            qt.Enqueue(createThread<USER>());
-            qt.Enqueue(createThread<VARIATION_ITEM>());
-            qt.Enqueue(createThread<SUBJOB_ASSIGNMENT>());
-            qt.Enqueue(createThread<VARIATION_REGISTER>());
-            qt.Enqueue(createThread<OFFICE>());
-            qt.Enqueue(createThread<CLIENT_PROJECT>());
-            qt.Enqueue(createThread<MEETING_ACTION>());
-            qt.Enqueue(createThread<MEETING_TYPE>());
-            qt.Enqueue(createThread<TENDER_PROFILE>());
-            qt.Enqueue(createThread<TENDER_PROFILE_ITEM>());
+            qt = new List<ThreadPriority>();
+            qt.Add(createThread<OFFICE>(1));
+            qt.Add(createThread<UOM>(1));
+            qt.Add(createThread<PROJECT>(2));
+            qt.Add(createThread<DISCIPLINE>(2));
+            qt.Add(createThread<RA_STUDY_TYPE>(2));
+            qt.Add(createThread<DEPARTMENT>(3));
+            qt.Add(createThread<AREA>(3));
+            qt.Add(createThread<COMMODITY_CODE>(3));
+            qt.Add(createThread<MEETING_TYPE>(3));
+            qt.Add(createThread<MEETING_ACTION>(3));
+            qt.Add(createThread<RA_GUIDE_PROMPT>(3));
+            qt.Add(createThread<RA_STUDY>(3));
+            qt.Add(createThread<FORECAST>(3));
+            qt.Add(createThread<BASELINE>(4));
+            qt.Add(createThread<DELIVERABLES_STATUS>(4));
+            qt.Add(createThread<DOCTYPE>(4));
+            qt.Add(createThread<PHASE>(4));
+            qt.Add(createThread<SUBJOB>(4));
+            qt.Add(createThread<USER>(4));
+            qt.Add(createThread<VARIATION>(4));
+            qt.Add(createThread<WORKPACK>(4));
+            qt.Add(createThread<CLIENT>(4));
+            qt.Add(createThread<ESTIMATE>(4));
+            qt.Add(createThread<STOCK_CODE>(4));
+            qt.Add(createThread<STOCK_GROUP>(4));
+            qt.Add(createThread<HSE>(4));
+            qt.Add(createThread<MEETING>(4));
+            qt.Add(createThread<MINUTE_AGENDA>(4));
+            qt.Add(createThread<MINUTE_TITLE>(4));
+            qt.Add(createThread<PROGRESS>(4));
+            qt.Add(createThread<RA_GUIDE_SUBPROMPT>(4));
+            qt.Add(createThread<RA_STUDY_NODE>(4));
+            qt.Add(createThread<RA_STUDY_DRAWING>(4));
+            qt.Add(createThread<BASELINE_ITEM>(4));
+            qt.Add(createThread<REGISTER_HOLD>(4));
+            qt.Add(createThread<ROLE>(4));
+            qt.Add(createThread<BASELINE_ITEM_WORK>(5));
+            qt.Add(createThread<CLIENT_PROJECT>(5));
+            qt.Add(createThread<DAYWORK>(5));
+            qt.Add(createThread<DAYWORK_EQUIPMENT>(5));
+            qt.Add(createThread<DAYWORK_LABOUR>(5));
+            qt.Add(createThread<DAYWORK_MATERIAL>(5));
+            qt.Add(createThread<DAYWORK_STAFF_ROLE>(5));
+            qt.Add(createThread<DSTATUS_DOCTYPE>(5));
+            qt.Add(createThread<ESTIMATE_ITEM>(5));
+            qt.Add(createThread<HOLIDAY>(5));
+            qt.Add(createThread<HSE_INCIDENT>(5));
+            qt.Add(createThread<HSE_INJURY>(5));
+            qt.Add(createThread<MEETING_USER>(5));
+            qt.Add(createThread<P6_ASSIGNMENT>(5));
+            qt.Add(createThread<PROGRESS_ITEM>(5));
+            qt.Add(createThread<PROJECT_DISCIPLINE>(5));
+            qt.Add(createThread<PROJECT_REPORT>(5));
+            qt.Add(createThread<RA_STUDY_DATA>(5));
+            qt.Add(createThread<RA_STUDY_TEAM>(5));
+            qt.Add(createThread<RATE>(5));
+            qt.Add(createThread<REGISTER>(5));
+            qt.Add(createThread<REGISTER_CHANGE>(5));
+            qt.Add(createThread<REGISTER_HOLD_REF>(5));
+            qt.Add(createThread<REGISTER_ISSUE>(5));
+            qt.Add(createThread<REGISTER_LL>(5));
+            qt.Add(createThread<REGISTER_NC>(5));
+            qt.Add(createThread<REGISTER_RISK>(5));
+            qt.Add(createThread<ROLE_COMMODITY>(5));
+            qt.Add(createThread<ROLE_PERMISSION>(5));
+            qt.Add(createThread<ROSTER_STAFF>(5));
+            qt.Add(createThread<SUBJOB_ASSIGNMENT>(5));
+            qt.Add(createThread<TENDER_PROFILE>(5));
+            qt.Add(createThread<VARIATION_ITEM>(5));
+            qt.Add(createThread<VARIATION_REGISTER>(5));
+            qt.Add(createThread<TENDER_PROFILE_ITEM>(5));
+
             updateQueue();
         }
 
@@ -264,10 +278,14 @@ namespace BluePrints.Common
                 dbSet.Add(entry);
         }
 
-        private Thread createThread<T>()
+        private ThreadPriority createThread<T>(int priority)
             where T : class, ICanSync, new()
         {
-            return new Thread(() => processDbSet<T>(new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) }));
+            ThreadPriority newPriority = new ThreadPriority();
+            newPriority.Thread = new Thread(() => processDbSet<T>(new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) }));
+            newPriority.Priority = priority;
+
+            return newPriority;
             //ThreadPool.QueueUserWorkItem(new WaitCallback(processDbSet<T>), new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) });
         }
 
@@ -518,4 +536,9 @@ namespace BluePrints.Common
         }
     }
 
+    public class ThreadPriority
+    {
+        public Thread Thread { get; set; }
+        public int Priority { get; set; }
+    }
 }
