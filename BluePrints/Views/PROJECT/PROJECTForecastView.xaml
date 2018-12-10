@@ -368,16 +368,16 @@
                             <dxdo:LayoutPanel AutoHidden="True" ItemWidth="250" ShowHideButton="True">
                                 <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
                                     <dxlc:LayoutGroup Header="Project Details" Orientation="Vertical" View="GroupBox">
-                                        <dxlc:LayoutItem Label="Revenue" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Budget Revenue" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revenue, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Costs" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Budget Costs" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Costs, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Margin" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Budget Margin" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Margin %" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Budget Margin %" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">

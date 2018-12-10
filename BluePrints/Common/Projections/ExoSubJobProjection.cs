@@ -1041,7 +1041,7 @@ namespace BluePrints.Common.Projections
                                  on JOB_TRANSACTIONS.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber && JOB_TRANSACTIONS.INVOICEDATE == null
+                                 where MAINJOB.JOBCODE == projectNumber
                                  select JOB_TRANSACTIONS;
 
             return transactions;
@@ -1131,7 +1131,7 @@ namespace BluePrints.Common.Projections
             var jobClaims = from JOBTRANS in primeroUnitOfWork.JOB_TRANSACTIONS
                             join JOBCOST_HDR in primeroUnitOfWork.JOBCOST_HDR
                             on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
-                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.INVOICED > 0 && JOBTRANS.LINE_STATUS != "X"
+                            where JOBCOST_HDR.JOBCODE == projectNumber
                             select new { JOBCOST_HDR.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
 
             IEnumerable<dynamic> dbTimes = jobClaims.ToList();
