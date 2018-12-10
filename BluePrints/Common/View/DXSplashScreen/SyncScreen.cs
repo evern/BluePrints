@@ -67,7 +67,7 @@ namespace BluePrints.Common
             SyncInfos = new ObservableCollection<SyncInfo>();
             SyncReport = new ObservableCollection<SyncReport>();
             syncDispatcher = new DispatcherTimer();
-            syncDispatcher.Interval = new TimeSpan(0, 0, 0, 3);
+            syncDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             syncDispatcher.Tick += SyncDispatcher_Tick;
             syncDispatcher.Start();
         }
@@ -166,82 +166,95 @@ namespace BluePrints.Common
             this.RaisePropertyChanged(x => x.SyncReport);
         }
 
+        private void updateQueue()
+        {
+            if(qt.Count > 0)
+            {
+                Thread queuedThread = qt.Dequeue();
+                queuedThread.Start();
+            }
+        }
+
+        Queue<Thread> qt;
         public void SyncData()
         {
-            ThreadPool.SetMaxThreads(1, 1);
-            //QueueWorkItem<PROJECT>();
-            //QueueWorkItem<AREA>();
-            //QueueWorkItem<WORKPACK>();
-            QueueWorkItem<BASELINE>();
-            //QueueWorkItem<PROGRESS>();
-            //QueueWorkItem<VARIATION>();
-            //QueueWorkItem<ESTIMATE>();
-            //QueueWorkItem<SUBJOB>();
-            QueueWorkItem<BASELINE_ITEM>();
-            //QueueWorkItem<PROGRESS_ITEM>();
-            //QueueWorkItem<BASELINE_ITEM_WORK>();
-            //QueueWorkItem<CLIENT>();
-            //QueueWorkItem<COMMODITY_CODE>();
-            //QueueWorkItem<CONSTRUCTION_CONFIG>();
-            //QueueWorkItem<DAYWORK>();
-            //QueueWorkItem<DAYWORK_EQUIPMENT>();
-            //QueueWorkItem<DAYWORK_MATERIAL>();
-            //QueueWorkItem<DAYWORK_LABOUR>();
-            //QueueWorkItem<DAYWORK_STAFF_ROLE>();
-            //QueueWorkItem<DELIVERABLES_STATUS>();
-            //QueueWorkItem<DEPARTMENT>();
-            //QueueWorkItem<DISCIPLINE>();
-            //QueueWorkItem<DOCTYPE>();
-            //QueueWorkItem<ESTIMATE_ITEM>();
-            //QueueWorkItem<FORECAST>();
-            //QueueWorkItem<HSE>();
-            //QueueWorkItem<HSE_INCIDENT>();
-            //QueueWorkItem<HSE_INJURY>();
-            //QueueWorkItem<HOLIDAY>();
-            //QueueWorkItem<MEETING>();
-            //QueueWorkItem<MEETING_USER>();
-            //QueueWorkItem<MINUTE_AGENDA>();
-            //QueueWorkItem<MINUTE_TITLE>();
-            //QueueWorkItem<P6_ASSIGNMENT>();
-            //QueueWorkItem<PHASE>();
-            //QueueWorkItem<PROJECT_DISCIPLINE>();
-            //QueueWorkItem<PROJECT_REPORT>();
-            //QueueWorkItem<RA_GUIDE_PROMPT>();
-            //QueueWorkItem<RA_GUIDE_SUBPROMPT>();
-            //QueueWorkItem<RA_STUDY>();
-            //QueueWorkItem<RA_STUDY_DATA>();
-            //QueueWorkItem<RA_STUDY_DRAWING>();
-            //QueueWorkItem<RA_STUDY_NODE>();
-            //QueueWorkItem<RA_STUDY_TYPE>();
-            //QueueWorkItem<RA_STUDY_TEAM>();
-            //QueueWorkItem<RATE>();
-            //QueueWorkItem<REGISTER>();
-            //QueueWorkItem<REGISTER_CHANGE>();
-            //QueueWorkItem<REGISTER_HOLD>();
-            //QueueWorkItem<REGISTER_HOLD_REF>();
-            //QueueWorkItem<REGISTER_ISSUE>();
-            //QueueWorkItem<REGISTER_LL>();
-            //QueueWorkItem<REGISTER_NC>();
-            //QueueWorkItem<REGISTER_RISK>();
-            //QueueWorkItem<ROLE>();
-            //QueueWorkItem<ROLE_PERMISSION>();
-            //QueueWorkItem<ROLE_COMMODITY>();
-            //QueueWorkItem<ROSTER_STAFF>();
-            //QueueWorkItem<ROSTER_STAFF_STATUS>();
-            //QueueWorkItem<SETTINGS_GLOBAL>();
-            //QueueWorkItem<STOCK_CODE>();
-            //QueueWorkItem<STOCK_GROUP>();
-            //QueueWorkItem<UOM>();
-            //QueueWorkItem<USER>();
-            //QueueWorkItem<VARIATION_ITEM>();
-            //QueueWorkItem<SUBJOB_ASSIGNMENT>();
-            //QueueWorkItem<VARIATION_REGISTER>();
-            //QueueWorkItem<OFFICE>();
-            //QueueWorkItem<CLIENT_PROJECT>();
-            //QueueWorkItem<MEETING_ACTION>();
-            //QueueWorkItem<MEETING_TYPE>();
-            //QueueWorkItem<TENDER_PROFILE>();
-            //QueueWorkItem<TENDER_PROFILE_ITEM>();
+            //ThreadPool.SetMaxThreads(1, 1);
+            qt = new Queue<Thread>();
+            qt.Enqueue(createThread<PROJECT>());
+            qt.Enqueue(createThread<AREA>());
+            qt.Enqueue(createThread<PROJECT>());
+            qt.Enqueue(createThread<AREA>());
+            qt.Enqueue(createThread<WORKPACK>());
+            qt.Enqueue(createThread<BASELINE>());
+            qt.Enqueue(createThread<PROGRESS>());
+            qt.Enqueue(createThread<VARIATION>());
+            qt.Enqueue(createThread<ESTIMATE>());
+            qt.Enqueue(createThread<SUBJOB>());
+            qt.Enqueue(createThread<PROGRESS_ITEM>());
+            qt.Enqueue(createThread<BASELINE_ITEM_WORK>());
+            qt.Enqueue(createThread<CLIENT>());
+            qt.Enqueue(createThread<COMMODITY_CODE>());
+            qt.Enqueue(createThread<CONSTRUCTION_CONFIG>());
+            qt.Enqueue(createThread<DAYWORK>());
+            qt.Enqueue(createThread<DAYWORK_EQUIPMENT>());
+            qt.Enqueue(createThread<DAYWORK_MATERIAL>());
+            qt.Enqueue(createThread<DAYWORK_LABOUR>());
+            qt.Enqueue(createThread<DAYWORK_STAFF_ROLE>());
+            qt.Enqueue(createThread<DELIVERABLES_STATUS>());
+            qt.Enqueue(createThread<DEPARTMENT>());
+            qt.Enqueue(createThread<DISCIPLINE>());
+            qt.Enqueue(createThread<DOCTYPE>());
+            qt.Enqueue(createThread<ESTIMATE_ITEM>());
+            qt.Enqueue(createThread<FORECAST>());
+            qt.Enqueue(createThread<HSE>());
+            qt.Enqueue(createThread<HSE_INCIDENT>());
+            qt.Enqueue(createThread<HSE_INJURY>());
+            qt.Enqueue(createThread<HOLIDAY>());
+            qt.Enqueue(createThread<MEETING>());
+            qt.Enqueue(createThread<MEETING_USER>());
+            qt.Enqueue(createThread<MINUTE_AGENDA>());
+            qt.Enqueue(createThread<MINUTE_TITLE>());
+            qt.Enqueue(createThread<P6_ASSIGNMENT>());
+            qt.Enqueue(createThread<PHASE>());
+            qt.Enqueue(createThread<PROJECT_DISCIPLINE>());
+            qt.Enqueue(createThread<PROJECT_REPORT>());
+            qt.Enqueue(createThread<RA_GUIDE_PROMPT>());
+            qt.Enqueue(createThread<RA_GUIDE_SUBPROMPT>());
+            qt.Enqueue(createThread<RA_STUDY>());
+            qt.Enqueue(createThread<RA_STUDY_DATA>());
+            qt.Enqueue(createThread<RA_STUDY_DRAWING>());
+            qt.Enqueue(createThread<RA_STUDY_NODE>());
+            qt.Enqueue(createThread<RA_STUDY_TYPE>());
+            qt.Enqueue(createThread<RA_STUDY_TEAM>());
+            qt.Enqueue(createThread<RATE>());
+            qt.Enqueue(createThread<REGISTER>());
+            qt.Enqueue(createThread<REGISTER_CHANGE>());
+            qt.Enqueue(createThread<REGISTER_HOLD>());
+            qt.Enqueue(createThread<REGISTER_HOLD_REF>());
+            qt.Enqueue(createThread<REGISTER_ISSUE>());
+            qt.Enqueue(createThread<REGISTER_LL>());
+            qt.Enqueue(createThread<REGISTER_NC>());
+            qt.Enqueue(createThread<REGISTER_RISK>());
+            qt.Enqueue(createThread<ROLE>());
+            qt.Enqueue(createThread<ROLE_PERMISSION>());
+            qt.Enqueue(createThread<ROLE_COMMODITY>());
+            qt.Enqueue(createThread<ROSTER_STAFF>());
+            qt.Enqueue(createThread<ROSTER_STAFF_STATUS>());
+            qt.Enqueue(createThread<SETTINGS_GLOBAL>());
+            qt.Enqueue(createThread<STOCK_CODE>());
+            qt.Enqueue(createThread<STOCK_GROUP>());
+            qt.Enqueue(createThread<UOM>());
+            qt.Enqueue(createThread<USER>());
+            qt.Enqueue(createThread<VARIATION_ITEM>());
+            qt.Enqueue(createThread<SUBJOB_ASSIGNMENT>());
+            qt.Enqueue(createThread<VARIATION_REGISTER>());
+            qt.Enqueue(createThread<OFFICE>());
+            qt.Enqueue(createThread<CLIENT_PROJECT>());
+            qt.Enqueue(createThread<MEETING_ACTION>());
+            qt.Enqueue(createThread<MEETING_TYPE>());
+            qt.Enqueue(createThread<TENDER_PROFILE>());
+            qt.Enqueue(createThread<TENDER_PROFILE_ITEM>());
+            updateQueue();
         }
 
         private void threadSafeAddEntries<T>(DbSet<T> dbSet, T entry)
@@ -251,10 +264,11 @@ namespace BluePrints.Common
                 dbSet.Add(entry);
         }
 
-        private void QueueWorkItem<T>()
+        private Thread createThread<T>()
             where T : class, ICanSync, new()
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(processDbSet<T>), new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) });
+            return new Thread(() => processDbSet<T>(new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) }));
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(processDbSet<T>), new object[] { new Action<string, decimal>(threadSafeSetMaxLocalProgress), new Action<string, decimal>(threadSafeSetMaxRemoteProgress), new Action<string, decimal>(threadSafeProgressLocal), new Action<string, decimal>(threadSafeProgressRemote), new Action<SyncReport>(threadSafeAddSyncReport), new Action<DbSet<T>, T>(threadSafeAddEntries) });
         }
 
         private void processDbSet<T>(object state)
@@ -500,6 +514,7 @@ namespace BluePrints.Common
 
             localDataContext.Dispose();
             remoteDataContext.Dispose();
+            updateQueue();
         }
     }
 
