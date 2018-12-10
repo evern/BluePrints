@@ -7,7 +7,7 @@
         <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
         <DataTemplate x:Key="GridPrintHeaderTemplate">
             <StackPanel HorizontalAlignment="Left">
-                <dxe:ImageEdit IsPrintingMode="True" MaxHeight="61" MaxWidth="295" IsReadOnly="True" Source="pack://application:,,,/BluePrints;component/Common/Images/PRIMERO.jpg" />
+                <dxe:ImageEdit MaxWidth="295" MaxHeight="61" IsPrintingMode="True" IsReadOnly="True" Source="pack://application:,,,/BluePrints;component/Common/Images/PRIMERO.jpg" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="percentageTemplateLastDate">
@@ -39,12 +39,12 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="{Binding RowData.Row.Entity.MinPercentage}" >
+                <dxe:SpinEdit Name="PART_Editor" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="{Binding RowData.Row.Entity.MinPercentage}">
                     <dxe:SpinEdit.ErrorToolTipContentTemplate>
                         <DataTemplate>
                             <dxe:TextEdit>
                                 <dxe:TextEdit.Text>
-                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}">
                                         <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                         <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                         <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
@@ -86,12 +86,12 @@
                         </MultiBinding>
                     </Image.Visibility>
                 </Image>
-                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="0" >
+                <dxe:SpinEdit Name="PART_Editor" Tag="{Binding RowData.Row.Entity.IsMaxPercentageRestrictedByFuturePercentage}" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.Entity.MaxPercentage}" MinValue="0">
                     <dxe:SpinEdit.ErrorToolTipContentTemplate>
                         <DataTemplate>
                             <dxe:TextEdit>
                                 <dxe:TextEdit.Text>
-                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}" >
+                                    <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}">
                                         <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                         <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
                                         <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
@@ -105,7 +105,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplatePast">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
@@ -116,7 +116,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateChild">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
             <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
