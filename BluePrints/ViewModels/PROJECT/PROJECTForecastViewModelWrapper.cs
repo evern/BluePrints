@@ -79,6 +79,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
@@ -96,6 +97,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
+        }
+
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
         public ForecastSummary ForecastSummary { get; set; }
@@ -111,6 +117,7 @@ namespace BluePrints.ViewModels
         List<string> hiddenColumnFieldNames = new List<string>();
         List<DateTime> alignedDataDateCollection;
         protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
+        protected virtual ITableViewService ExportTableViewService { get { return this.GetService<ITableViewService>("ExportTableViewService"); } }
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
@@ -259,6 +266,45 @@ namespace BluePrints.ViewModels
         string columnChild = "ChildEntities";
         DataTable dataPointsTable = null;
         DateTime firstAlignedDataDate;
+
+        DataTable exportTable = null;
+        public DataTable ExportTable
+        {
+            get
+            {
+                if (DataPointsTable == null)
+                    return null;
+
+                if(exportTable == null)
+                {
+                    exportTable = new DataTable();
+                    List<ExoSubJobProjection> commoditySubJobs = new List<ExoSubJobProjection>();
+                    exportTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
+                    exportTable.Columns.Add(columnCalculation, typeof(ForecastCalculation));
+                    foreach (DateTime alignedDataDate in alignedDataDateCollection.Where(x => x.Date >= FixedDataDate))
+                    {
+                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                        exportTable.Columns.Add(columnFieldName, typeof(decimal));
+                    }
+
+                    foreach (DataRow row in DataPointsTable.Rows)
+                    {
+                        DataTable childTable = (DataTable)row[columnChild];
+                        foreach (DataRow childRow in childTable.Rows)
+                        {
+                            DataRow exportRow = exportTable.NewRow();
+                            exportRow[columnEntity] = (ExoSubJobProjection)childRow[columnEntity];
+                            exportRow[columnCalculation] = childRow[columnCalculation];
+
+                            exportTable.Rows.Add(exportRow);
+                        }
+                    }
+                }
+
+                return exportTable;
+            }
+        }
+
         public DataTable DataPointsTable
         {
             get
@@ -278,10 +324,7 @@ namespace BluePrints.ViewModels
                     List<ExoSubJobProjection> combinedSubJobs = new List<ExoSubJobProjection>();
                     foreach (ExoSubJobProjection exoSubJob in exoSubJobs)
                     {
-                        if (!combinedSubJobs.Any(x => x.SubJob.Code == exoSubJob.SubJob.Code && x.Discipline.Code == exoSubJob.Discipline.Code && x.Commodity.Code == exoSubJob.Commodity.Code && x.Variation_Code == exoSubJob.Variation_Code))
-                        {
-                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = exoSubJob.SubJob.Code }, Discipline = new PrimeroDiscipline() { Code = exoSubJob.Discipline.Code }, Commodity = new PrimeroCommodity() { Code = exoSubJob.Commodity.Code }, Variation_Code = normalizeVariationCode(exoSubJob.Variation_Code) });
-                        }
+                        addExoSubJob(combinedSubJobs, exoSubJob.SubJob.Code, exoSubJob.Discipline.Code, exoSubJob.Commodity.Code, exoSubJob.Variation_Code, exoSubJob.SubJob.Title, exoSubJob.Discipline.Name);
                     }
 
                     List<ExoDataPoint> allData = new List<ExoDataPoint>();
@@ -296,14 +339,11 @@ namespace BluePrints.ViewModels
                     {
                         List<string> delimited = uniqueSubjob.Split(';').ToList();
                         string subjobCode = delimited[0];
-                        string disciplineName = delimited[1];
+                        string disciplineCode = delimited[1];
                         string commodityCode = delimited[2];
                         string variationCode = delimited[3];
 
-                        if (!combinedSubJobs.Any(x => x.SubJob.Code == subjobCode && x.Discipline.Code == disciplineName && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
-                        {
-                            combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subjobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = normalizeVariationCode(variationCode) });
-                        }
+                        addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode);
                     }
 
                     //lastDataDate = lastDataDate.AddDays(10 * interval.Days);
@@ -336,10 +376,45 @@ namespace BluePrints.ViewModels
                     }
 
                     this.RaisePropertyChanged(x => x.ForecastSummary);
+                    this.RaisePropertyChanged(x => x.ExportTable);
                     TableViewService.ScrollToLast();
                 }
 
                 return dataPointsTable;
+            }
+        }
+        
+        private void addExoSubJob(List<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode,
+            string subJobTitle = "", string disciplineName = "")
+        {
+            COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityCode);
+            string commodityCodeName = string.Empty;
+            string commodityCodeDescription = string.Empty;
+            string commodityCodeUOM = string.Empty;
+            if (findCOMMODITY_CODE != null)
+            {
+                commodityCodeName = findCOMMODITY_CODE.NAME;
+                commodityCodeDescription = findCOMMODITY_CODE.DESCRIPTION;
+                commodityCodeUOM = findCOMMODITY_CODE.UOM;
+            }
+
+            if(subJobTitle == string.Empty)
+            {
+                ExoSubJobProjection findSubJobProjection = exoSubJobs == null ? null : exoSubJobs.FirstOrDefault(x => x.SubJob.Code == subJobCode);
+                if (findSubJobProjection != null)
+                    subJobTitle = findSubJobProjection.SubJob.Title;
+            }
+
+            if(disciplineName == string.Empty)
+            {
+                ExoSubJobProjection findDisciplineProjection = exoSubJobs == null ? null : exoSubJobs.FirstOrDefault(x => x.Discipline.Code == disciplineCode);
+                if (findDisciplineProjection != null)
+                    disciplineName = findDisciplineProjection.Discipline.Name;
+            }
+
+            if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
+            {
+                combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityCodeName, Description = commodityCodeDescription, UOM = commodityCodeUOM }, Variation_Code = normalizeVariationCode(variationCode) });
             }
         }
 
@@ -399,14 +474,14 @@ namespace BluePrints.ViewModels
 
             ExoSubJobProjection firstSubJob = groupedSubJobs.First();
             DataRow disciplineDataRow = dataPointsTable.NewRow();
-            initializeDataRow(disciplineDataRow, firstSubJob.SubJob.Code, firstSubJob.Discipline.Code, string.Empty, firstSubJob.Variation_Code);
+            initializeDataRow(disciplineDataRow, firstSubJob.SubJob.Code, firstSubJob.SubJob.Title, firstSubJob.Discipline.Code, firstSubJob.Discipline.Name, string.Empty, string.Empty, string.Empty, string.Empty, firstSubJob.Variation_Code);
 
             DataTable childDataTable = new DataTable();
             childDataTable = dataPointsTable.Clone();
             foreach (var groupedSubjob in groupedSubJobs)
             {
                 DataRow cloneRow = childDataTable.NewRow();
-                initializeDataRow(cloneRow, groupedSubjob.SubJob.Code, groupedSubjob.Discipline.Code, groupedSubjob.Commodity.Code, groupedSubjob.Variation_Code);
+                initializeDataRow(cloneRow, groupedSubjob.SubJob.Code, groupedSubjob.SubJob.Title, groupedSubjob.Discipline.Code, groupedSubjob.Discipline.Name, groupedSubjob.Commodity.Code, groupedSubjob.Commodity.Name, groupedSubjob.Commodity.Description, groupedSubjob.Commodity.UOM, groupedSubjob.Variation_Code);
                 IEnumerable<DashboardFlatStructure> commodityDashboards = AllProjectDashboards.Where(x => x.SubjobCode == groupedSubjob.SubJob.Code && x.DisciplineCode == groupedSubjob.Discipline.Code && x.CommodityCode == groupedSubjob.Commodity.Code && x.Variation_Code == groupedSubjob.Variation_Code);
 
                 populateDataRow(cloneRow, commodityDashboards);
@@ -430,11 +505,11 @@ namespace BluePrints.ViewModels
             return disciplineDataRow;
         }
 
-        private void initializeDataRow(DataRow dataRow, string subJobCode, string disciplineCode, string commodityCode, string variationCode)
+        private void initializeDataRow(DataRow dataRow, string subJobCode, string subJobTitle, string disciplineCode, string disciplineName, string commodityCode, string commodityName, string commodityDescription, string commodityUOM, string variationCode)
         {
             variationCode = normalizeVariationCode(variationCode);
 
-            ExoSubJobProjection entity = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode }, Discipline = new PrimeroDiscipline() { Code = disciplineCode }, Commodity = new PrimeroCommodity() { Code = commodityCode }, Variation_Code = variationCode };
+            ExoSubJobProjection entity = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityName, Description = commodityDescription, UOM = commodityUOM }, Variation_Code = variationCode };
             ForecastCalculation calculation = new ForecastCalculation();
             dataRow[columnEntity] = entity;
             dataRow[columnCalculation] = calculation;
@@ -1750,6 +1825,25 @@ namespace BluePrints.ViewModels
                 pasteCellData(gridControl, tableView, RowData);
             }
         }
+
+        public bool CanCreateExportSheet()
+        {
+            return ExportTable != null && FixedDataDate != null;
+        }
+
+        public void CreateExportSheet()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                DateTime exportDate = (DateTime)FixedDataDate;
+                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + exportDate.Year + "-" + exportDate.ToString("MMM") + "_" + loadPROJECT.NUMBER + "_Forecast" + ".xlsx", true);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use");
+            }
+        }
         #endregion
 
         #region Entity Wrapper Properties
@@ -1763,6 +1857,14 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST>();
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                return GetEntities<COMMODITY_CODE>();
             }
         }
 

@@ -1378,6 +1378,8 @@ namespace BluePrints.Common.Projections
         public int? SubJobNo { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
         public string StockCode { get; set; }
         public string StockDescription { get; set; }
         public bool IsIndirectOnly { get; set; }
