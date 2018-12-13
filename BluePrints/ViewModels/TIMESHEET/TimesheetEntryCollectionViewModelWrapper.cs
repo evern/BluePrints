@@ -424,7 +424,7 @@ namespace BluePrints.ViewModels
 
             int committedRow = 0;
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetAllExoLines(primeroUnitOfWork, loadPROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (DataRow row in DataPointsTable.Rows)
             {
                 if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)

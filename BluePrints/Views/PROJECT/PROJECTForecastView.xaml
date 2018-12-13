@@ -12,8 +12,9 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
-            <services:GridControlService x:Name="DetailGridControlService" GridControl="{Binding ElementName=GridControlDetail}" />
-            <services:GridControlService x:Name="ExportTableViewService" GridControl="{Binding ElementName=TableViewExport}" />
+            <services:GridControlService x:Name="DetailGridControlService" GridControl="{Binding ElementName=gridControlDetail}" />
+            <services:GridControlService x:Name="ExportGridControlService" GridControl="{Binding ElementName=gridControlExport}" />
+            <services:TableViewService x:Name="ExportTableViewService" TableView="{Binding ElementName=tableViewExport}" />
             <dxc:FilteringBehavior x:Name="filteringBehavior" SourceType="{x:Type viewmodel:CostFilteringViewModel}" />
             <dxc:DialogService x:Name="DistributionDialogService">
                 <dxc:DialogService.DialogStyle>
@@ -22,26 +23,28 @@
                     </Style>
                 </dxc:DialogService.DialogStyle>
             </dxc:DialogService>
+            <dxmvvm:OpenFileDialogService RestorePreviouslySelectedDirectory="True" />
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Forecast">
-                            <dxr:RibbonPageGroup Caption="Grid">
+                            <dxr:RibbonPageGroup>
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                <!--<dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />-->
+                                <dxb:BarButtonItem Command="{Binding DataContext.ExpandAllGroupsCommand, ElementName=userControl}" Content="Expand All Groups" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all groups, only works when grid is grouped" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.CollapseAllGroupsCommand, ElementName=userControl}" Content="Collapse All Groups" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=CollapseFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Collapse all groups, only works when grid is grouped" />
                                 <!--<dxb:BarButtonItem Command="{Binding DataContext.ExpandAllMasterRowsCommand, ElementName=userControl}" Content="Expand All Rows" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all rows" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.CollapseAllMasterRowsCommand, ElementName=userControl}" Content="Collapse All Rows" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=CollapseFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Collapse all rows" />-->
                                 <dxb:BarButtonItem Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.CreateExportSheetCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ImportSheetCommand, ElementName=userControl}" Content="Import" Glyph="{dx:DXImage Image=SaveTo_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveTo_32x32.png}" ToolTip="Import the spreadsheet that was exported from here" />
                                 <!--<dxb:BarButtonItem Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />-->
                                 <dxb:BarButtonItem Command="{Binding DataContext.SaveEACCommand, ElementName=userControl}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Dates">
                                 <dxb:BarStaticItem Content="Start Date" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.FixedStartDate, ElementName=userControl}" ToolTip="Start date">
                                     <dxb:BarEditItem.EditSettings>
@@ -61,7 +64,6 @@
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                             </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -75,28 +77,26 @@
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                             <dxdo:LayoutPanel Visibility="Collapsed">
                                 <Grid>
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:LayoutSerializationService />
-                                    </dxmvvm:Interaction.Behaviors>
-                                    <dxg:GridControl x:Name="GridControlExport" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                    <dxg:GridControl x:Name="gridControlExport" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.HideColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <dxg:GridColumn FieldName="Entity.SubJob.PhaseCode" Fixed="Left" GroupIndex="0" Header="Phase" ReadOnly="True" VisibleIndex="10" />
-                                        <dxg:GridColumn FieldName="Entity.SubJob.AreaCode" Fixed="Left" GroupIndex="1" Header="Area" ReadOnly="True" VisibleIndex="20" />
-                                        <dxg:GridColumn FieldName="Entity.SubJob.SubAreaCode" Fixed="Left" GroupIndex="2" Header="Sub-Area" ReadOnly="True" VisibleIndex="30" />
-                                        <dxg:GridColumn FieldName="Entity.SubJob.Title" Fixed="Left" Header="Subjob Title" ReadOnly="True" VisibleIndex="40" />
-                                        <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" GroupIndex="3" Header="Variation" ReadOnly="True" VisibleIndex="50" />
-                                        <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" GroupIndex="4" Header="Discipline" ReadOnly="True" VisibleIndex="60" />
+                                        <dxg:GridColumn MaxWidth="30" FieldName="Entity.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="10" />
+                                        <dxg:GridColumn MaxWidth="30" FieldName="Entity.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="20" />
+                                        <dxg:GridColumn MaxWidth="30" FieldName="Entity.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="30" />
+                                        <dxg:GridColumn MaxWidth="75" FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="40" />
+                                        <dxg:GridColumn FieldName="Entity.SubJob.Title" Fixed="Left" Header="Subjob Title" ReadOnly="True" VisibleIndex="45" />
+                                        <dxg:GridColumn MaxWidth="50" FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="50" />
+                                        <dxg:GridColumn MaxWidth="50" FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="60" />
                                         <dxg:GridColumn FieldName="Entity.Discipline.Name" Fixed="Left" Header="Discipline Name" ReadOnly="True" VisibleIndex="70" />
-                                        <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="80" />
+                                        <dxg:GridColumn MaxWidth="50" FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="80" />
                                         <dxg:GridColumn FieldName="Entity.Commodity.Name" Fixed="Left" Header="Commodity Name" ReadOnly="True" VisibleIndex="90" />
                                         <dxg:GridColumn FieldName="Entity.Commodity.Description" Fixed="Left" Header="Commodity Description" ReadOnly="True" VisibleIndex="100" />
                                         <dxg:GridColumn FieldName="Entity.Commodity.UOM" Fixed="Left" Header="Commodity UOM" ReadOnly="True" VisibleIndex="110" />
-                                        <dxg:GridColumn Fixed="Left" Header="Rate" ReadOnly="True" VisibleIndex="120" />
-                                        <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="130" />
+                                        <dxg:GridColumn MaxWidth="50" FieldName="Calculation.Rate" Fixed="Left" Header="Rate" ReadOnly="True" VisibleIndex="120" />
+                                        <dxg:GridColumn MaxWidth="50" FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="130" />
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="TableViewExport" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />
+                                            <dxg:TableView x:Name="tableViewExport" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
                                 </Grid>
@@ -106,7 +106,7 @@
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:LayoutSerializationService />
                                     </dxmvvm:Interaction.Behaviors>
-                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="True" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -349,7 +349,7 @@
                                 </Grid>
                             </dxdo:LayoutPanel>
                             <dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">
-                                <dxg:GridControl x:Name="GridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
+                                <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
                                     <!--<dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomCommoditySummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>-->
