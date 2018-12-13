@@ -1926,7 +1926,11 @@ namespace BluePrints.ViewModels
                         string exportPath = ResultPath + "\\" + exportDate.Year + "-" + exportDate.ToString("MMM") + "_" + loadPROJECT.NUMBER + "_Forecast" + ".xlsx";
                         try
                         {
-                            ws.Protect("", WorksheetProtectionPermissions.Default | WorksheetProtectionPermissions.FormatColumns);
+                            
+                            ws.Protect("", WorksheetProtectionPermissions.Default | WorksheetProtectionPermissions.FormatColumns | WorksheetProtectionPermissions.PivotTables | WorksheetProtectionPermissions.Sort | WorksheetProtectionPermissions.AutoFilters | WorksheetProtectionPermissions.SelectLockedCells | WorksheetProtectionPermissions.SelectUnlockedCells | WorksheetProtectionPermissions.FormatCells | WorksheetProtectionPermissions.FormatRows);
+
+                            spreadsheetControl.Options.Behavior.Group.CollapseExpandOnProtectedSheet = DevExpress.XtraSpreadsheet.DocumentCapability.Enabled;
+                            spreadsheetControl.Options.Behavior.Group.CollapseExpandOnReadOnlyControl = DevExpress.XtraSpreadsheet.DocumentCapability.Enabled;
                             spreadsheetControl.SaveDocument(exportPath);
                             Process.Start(exportPath);
                         }
