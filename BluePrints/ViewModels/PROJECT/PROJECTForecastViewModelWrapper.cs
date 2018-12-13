@@ -1853,6 +1853,8 @@ namespace BluePrints.ViewModels
                     using (SpreadsheetControl spreadsheetControl = new SpreadsheetControl())
                     {
                         System.Drawing.Color editableColor = System.Drawing.Color.Yellow;
+                        string costFormat = "$#,###,###";
+                        string numberFormat = "#,###,###";
                         spreadsheetControl.LoadDocument(stream);
                         Worksheet ws = spreadsheetControl.Document.Worksheets[0];
                         DevExpress.Spreadsheet.Range usedRange = ws.GetUsedRange();
@@ -1878,6 +1880,8 @@ namespace BluePrints.ViewModels
                             Cell budgetCell = usedRange[rowIndex, spreadSheetBudgetIndex];
                             Cell rateCell = usedRange[rowIndex, spreadSheetRateIndex];
 
+                            budgetCell.NumberFormat = costFormat;
+                            rateCell.NumberFormat = costFormat;
                             ws[phaseCell.GetReferenceA1()].Protection.Locked = true;
                             ws[areaCell.GetReferenceA1()].Protection.Locked = true;
                             ws[subAreaCell.GetReferenceA1()].Protection.Locked = true;
@@ -1890,6 +1894,10 @@ namespace BluePrints.ViewModels
                             ws[commodityNameCell.GetReferenceA1()].Protection.Locked = true;
                             ws[commodityDescriptionCell.GetReferenceA1()].Protection.Locked = true;
                             ws[commodityUOMCell.GetReferenceA1()].Protection.Locked = true;
+
+                            string uomFormat = numberFormat;
+                            if (!commodityUOMCell.Value.IsEmpty)
+                                uomFormat = numberFormat + @" """ + commodityUOMCell.Value.TextValue + @"""";
 
                             if (isReadOnly)
                             {
@@ -1910,6 +1918,7 @@ namespace BluePrints.ViewModels
 
                                     Cell currentCell = usedRange[rowIndex, columnIndex];
                                     currentCell.FillColor = editableColor;
+                                    currentCell.NumberFormat = uomFormat;
                                 }
                             }
                         }
