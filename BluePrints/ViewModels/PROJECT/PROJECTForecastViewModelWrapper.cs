@@ -2010,17 +2010,16 @@ namespace BluePrints.ViewModels
 
                         LoadingScreenManager.SetMessage("Processing " + loadingMessage);
                         Cell budgetCell = usedRange[rowIndex, spreadSheetBudgetIndex];
-                        if (budgetCell.Value.IsEmpty)
-                            continue;
-
-                        decimal budget = Convert.ToDecimal(budgetCell.Value.NumericValue);
+                        decimal budget = 0;
+                        if (!budgetCell.Value.IsEmpty && budgetCell.Value.IsNumeric)
+                            budget = Convert.ToDecimal(budgetCell.Value.NumericValue);
 
                         Cell rateCell = usedRange[rowIndex, spreadSheetRateIndex];
-                        if (rateCell.Value.IsEmpty || !rateCell.Value.IsNumeric)
-                            continue;
+                        decimal rate = 0;
+                        if (!rateCell.Value.IsEmpty && rateCell.Value.IsNumeric)
+                            rate = Convert.ToDecimal(rateCell.Value.NumericValue);
 
-                        decimal rate = Convert.ToDecimal(rateCell.Value.NumericValue);
-                        if(speedMode && rate == 0)
+                        if (speedMode && rate == 0)
                             continue;
 
                         DataRow dataRow = (from DataRow dr in childRowsCollection
