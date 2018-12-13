@@ -42,11 +42,11 @@ namespace BluePrints.Reports
 
             replaceDataMember(xrDataSummaryCumulativeEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryCumulativePlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryCumulativeBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryCumulativeBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
             replaceDataMember(xrDataSummaryPeriodEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
             replaceDataMember(xrDataSummaryPeriodPlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
-            replaceDataMember(xrDataSummaryPeriodBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
+            //replaceDataMember(xrDataSummaryPeriodBurnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
 
             replaceDataMember(xrDataBaselineBudgeted, strReplaceFrom, strReplaceTo, formatString);
 

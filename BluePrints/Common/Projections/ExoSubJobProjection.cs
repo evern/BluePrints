@@ -61,6 +61,7 @@ namespace BluePrints.Common.Projections
             this.CommodityName = entity.Commodity == null ? string.Empty : entity.Commodity.Name;
             this.VariationCode = entity.Variation_Code;
             this.Budget = entity.ExoBudgetCosts;
+            this.Rate = entity.ExoForecastRate;
         }
 
         [Key]
@@ -88,6 +89,7 @@ namespace BluePrints.Common.Projections
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
         public decimal Budget { get; set; }
+        public decimal Rate { get; set; }
 
         public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
 
@@ -267,6 +269,7 @@ namespace BluePrints.Common.Projections
             this.RaisePropertiesChanged();
         }
 
+        public decimal ExoForecastRate { get; set; }
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }
         public Guid guid { get; set; }
@@ -447,8 +450,8 @@ namespace BluePrints.Common.Projections
         {
             JOBCOST_LINES newLINE = new JOBCOST_LINES();
             newLINE.QUOTE_QTY = 1;
-            newLINE.QUOTE_UNITPR = 0;
-            newLINE.ACTUAL_UNITCOST = Convert.ToDouble(projection.Budget);
+            newLINE.QUOTE_UNITPR = projection.Rate == 0 ? (Double?)null : Convert.ToDouble(projection.Rate);
+            newLINE.ACTUAL_UNITCOST = projection.Budget == 0 ? (Double?)null : Convert.ToDouble(projection.Budget);
             newLINE.TRANSDATE = DateTime.Now.Date;
             newLINE.EXCHRATE = copyLine.EXCHRATE;
             newLINE.DISCOUNT = 0;
@@ -695,7 +698,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
@@ -755,7 +758,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<ExoSubJobEditableProjection> GetNativeExoSubJobEditableProjection(
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
@@ -819,7 +822,7 @@ namespace BluePrints.Common.Projections
             var groupedDeliverables = baseline_item_progresses.GroupBy(x => new { SubJob = x.Entity.Entity.SUBJOB, DisciplineCode = x.Discipline_Code, DisciplineName = x.Entity.Entity.Discipline_Name, Commodity = x.Entity.Entity.DOCTYPE })
                                       .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.DisciplineName, group.Key.Commodity });
 
-            List<ExoTimeAuthorisation> exoLines = GetAllExoLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
             foreach(var groupedDeliverable in groupedDeliverables)
@@ -1061,12 +1064,6 @@ namespace BluePrints.Common.Projections
                                  on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 join JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
-                                 on JOBCOST_LINES.JOBNO equals JOB_RESOURCE_ALLOCATION.JOBNO
-                                 join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                                 on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
-                                 join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
-                                 on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                  select JOBCOST_LINES;
 
@@ -1102,9 +1099,9 @@ namespace BluePrints.Common.Projections
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST };
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST, FORECAST_RATE = JOBCOST_LINES.QUOTE_UNITPR };
 
-            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoTime(x)).ToList();
+            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoLine(x)).ToList();
             return exoTimes;
         }
 
@@ -1211,25 +1208,6 @@ namespace BluePrints.Common.Projections
             return availableLines.Select(x => x.VariationCode).OrderBy(x => x).Distinct().ToList();
         }
 
-        public static List<ExoTimeAuthorisation> GetAllExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
-        {
-            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
-                                 join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
-                                 on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
-                                 join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
-                                 on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
-                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
-                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 //where MAINJOB.JOBCODE == projectNumber && !SUBJOB.JOBCODE.Contains("D1") && !SUBJOB.JOBCODE.Contains("I1")
-                                 where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST };
-
-
-            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoLine(x)).ToList();
-            return exoTimes;
-        }
 
         public static List<ExoSubJobProjection> GetMasterExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
@@ -1268,6 +1246,7 @@ namespace BluePrints.Common.Projections
             exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
             exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
             exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);
+            exoTime.ForecastRate = Convert.ToDecimal(dbTime.FORECAST_RATE);
 
             return exoTime;
         }
@@ -1291,28 +1270,6 @@ namespace BluePrints.Common.Projections
             exoTime.ResourceName = dbTime.RESOURCENAME;
             exoTime.StockCode = dbTime.DEFAULT_STOCKCODE;
             exoTime.StockCodeDescription = dbTime.STOCK_CODE_DESC;
-            return exoTime;
-        }
-
-        private static ExoTimeAuthorisation populateExoTime(dynamic dbTime)
-        {
-            ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();
-            exoTime.LineSeqNo = dbTime.LINEID;
-            exoTime.MasterJobNo = dbTime.MASTERJOBNO;
-            exoTime.SubJobNo = dbTime.SUBJOBNO;
-            exoTime.SubJobCode = dbTime.SUBJOBNAME;
-            exoTime.SubJobTitle = dbTime.SUBJOBTITLE;
-            exoTime.DisciplineId = dbTime.DISCIPLINE_ID;
-            exoTime.DisciplineCode = dbTime.DISCIPLINE_CODE;
-            exoTime.DisciplineName = dbTime.DISCIPLINE_NAME;
-            exoTime.CommodityId = dbTime.COMMODITY_ID;
-            exoTime.CommodityCode = dbTime.COMMODITY_CODE;
-            exoTime.CommodityName = dbTime.COMMODITY_NAME;
-            exoTime.StockCode = dbTime.STOCK_CODE;
-            exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
-            exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
-            exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);
-            exoTime.VariationCode = dbTime.VARIATION_CODE;
             return exoTime;
         }
     }
@@ -1339,6 +1296,7 @@ namespace BluePrints.Common.Projections
         public decimal BudgetQty { get; set; }
         public decimal BudgetRev { get; set; }
         public decimal BudgetRate { get; set; }
+        public decimal ForecastRate { get; set; }
         public decimal BudgetCosts => BudgetQty * BudgetRate;
     }
 
@@ -1378,6 +1336,8 @@ namespace BluePrints.Common.Projections
         public int? SubJobNo { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
         public string StockCode { get; set; }
         public string StockDescription { get; set; }
         public bool IsIndirectOnly { get; set; }
