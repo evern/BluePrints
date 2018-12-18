@@ -185,6 +185,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnSelectedEntitiesChanged()
         {
+            refreshPermissions();
         }
         #endregion
 

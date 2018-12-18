@@ -1140,7 +1140,7 @@ namespace BluePrints.Common.Projections
                 return 0;
         }
 
-        public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, bool byUser = true)
+        public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, bool byUser = true, bool showDisabledUsers = false)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
@@ -1158,8 +1158,7 @@ namespace BluePrints.Common.Projections
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION };
-
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE };
 
             List<ExoTimeAuthorisation> exoTimes;
             if (byUser)
@@ -1167,6 +1166,8 @@ namespace BluePrints.Common.Projections
             else
                 exoTimes = availableLines.ToList().Select(x => populateExoTimeAuth(x)).ToList();
 
+            if (!showDisabledUsers)
+                exoTimes = exoTimes.Where(x => x.ResourceEndDate >= DateTime.Now).ToList();
 
             return exoTimes;
         }
@@ -1268,6 +1269,7 @@ namespace BluePrints.Common.Projections
             exoTime.ResourceSeqNo = dbTime.RESOURCE_SEQNO;
             exoTime.ResourceStaffId = dbTime.RESOURCE_STAFF_ID;
             exoTime.ResourceName = dbTime.RESOURCENAME;
+            exoTime.ResourceEndDate = dbTime.END_DATE;
             exoTime.StockCode = dbTime.DEFAULT_STOCKCODE;
             exoTime.StockCodeDescription = dbTime.STOCK_CODE_DESC;
             return exoTime;
@@ -1290,6 +1292,7 @@ namespace BluePrints.Common.Projections
         public int ResourceSeqNo { get; set; }
         public int? ResourceStaffId { get; set; }
         public string ResourceName { get; set; }
+        public DateTime ResourceEndDate { get; set; }
         public string StockCode { get; set; }
         public string StockCodeDescription { get; set; }
         public string VariationCode { get; set; }
