@@ -122,6 +122,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 var exoSubjobsList = exoSubjobs.ToList();
                 var jobTransactionsList = jobTransactions.ToList();
+                var jobMaterialsList = jobMaterials.ToList();
+                var poList = pos.ToList();
 
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 HashSet<string> missingSubJobs = new HashSet<string>();
@@ -160,7 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         missingSubJobs.Add(jobTransaction.JOBCODE);
                 }
 
-                foreach (var jobMaterial in jobMaterials)
+                foreach (var jobMaterial in jobMaterialsList)
                 {
                     if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
                     {
@@ -190,7 +192,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }
                 }
 
-                foreach (var po in pos)
+                foreach (var po in poList)
                 {
                     if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
                     {

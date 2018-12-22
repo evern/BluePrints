@@ -7,6 +7,7 @@ namespace BluePrints.PrimeroData
         public PrimeroEntities()
             : base("name=PrimeroEntities")
         {
+            this.Database.CommandTimeout = 5000;
         }
 
         public virtual DbSet<ADJUSTMENT_TYPES> ADJUSTMENT_TYPES { get; set; }
