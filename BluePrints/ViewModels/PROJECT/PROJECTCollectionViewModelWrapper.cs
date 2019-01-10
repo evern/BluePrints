@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -51,8 +52,11 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCoreCommand;
+        BackgroundWorker backgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            backgroundWorker.WorkerSupportsCancellation = true;
             navigateCoreCommand = ((EntitiesParameter<Action<object>>)parameter).GetEntity();
         }
 
@@ -642,9 +646,9 @@ namespace BluePrints.ViewModels
 
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT().Status))
             {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.NUMBER);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                if(!backgroundWorker.IsBusy)
+                    backgroundWorker.RunWorkerAsync(new object[] { projection });
+
                 ProjectStatus oldStatus = (ProjectStatus)old_value;
                 ProjectStatus newStatus = (ProjectStatus)new_value;
                 //switching between tender won't do anything
@@ -689,6 +693,17 @@ namespace BluePrints.ViewModels
 
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var argumentObject = (object[])e.Argument;
+            var project = (PROJECT)argumentObject[0];
+
+            Thread.Sleep(10000);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public override string UnifiedRowValidation(PROJECT projection)
@@ -1048,6 +1063,12 @@ namespace BluePrints.ViewModels
         protected IDocumentManagerService DocumentManagerService
         {
             get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            backgroundWorker.CancelAsync();
+            base.OnClose(e);
         }
 
         public void Edit()
