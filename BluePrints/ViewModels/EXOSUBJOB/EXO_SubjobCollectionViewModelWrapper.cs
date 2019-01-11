@@ -229,7 +229,7 @@ namespace BluePrints.ViewModels
             pasteEntity.PopulateLineAuthUsers(DisplayEntities);
 
             string errorMessage = string.Empty;
-            if (MainViewModel.IsValidEntity(pasteEntity, ref errorMessage))
+            if (MainViewModel.IsValidEntity(pasteEntity, null, ref errorMessage))
             {
                 if (pasteEntity.IsCommodityCodeValid)
                 {
@@ -268,7 +268,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (MainViewModel.IsValidEntity(projection, ref errorMessage) && projection.IsLineExistsInExo)
+            if (MainViewModel.IsValidEntity(projection, null, ref errorMessage) && projection.IsLineExistsInExo)
             {
                 if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobTitle)))
                 {

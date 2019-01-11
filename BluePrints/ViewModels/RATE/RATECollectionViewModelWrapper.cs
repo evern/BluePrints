@@ -81,7 +81,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null) && x.PHASE_TYPE != PhaseType.Design);
         }
 
         private IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
@@ -133,6 +133,22 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
         {
+            if(field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
+            {
+                if (DisplayEntities.Any(x => (x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                    return "Duplicate entries by department, discipline and commodity";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            {
+                if (DisplayEntities.Any(x => (x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                    return "Duplicate entries by department, discipline and commodity";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new RATE().CommodityCodeId))
+            {
+                if (DisplayEntities.Any(x => (x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == (Guid?)new_value) && x.GUID != projection.GUID))
+                    return "Duplicate entries by department, discipline and commodity";
+            }
+
             return string.Empty;
         }
 
@@ -174,6 +190,25 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void RemoveDuplicates()
+        {
+            List<RATE> Rates = new List<RATE>(DisplayEntities);
+            List<RATE> DeleteRates = new List<RATE>();
+            for(int i = 0;i < Rates.Count;i++)
+            {
+                RATE entity = Rates[i];
+                if (Rates.Any(x => x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_COMMODITY == entity.GUID_COMMODITY && x.GUID != entity.GUID))
+                {
+                    Rates.Remove(entity);
+                    DeleteRates.Add(entity);
+                }
+            }
+
+            int removeCount = DeleteRates.Count;
+            MainViewModel.BaseBulkDelete(DeleteRates);
+            MessageBoxService.ShowMessage(removeCount + " duplicates entries removed");
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -199,13 +234,13 @@ namespace BluePrints.ViewModels
             {
                 List<CombinedCommodityCode> combinedCommodityCodes = new List<CombinedCommodityCode>();
                 if (DOCTYPECollection != null)
-                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Design, Code = x.CODE, Key = x.GUID }));
+                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Design, Code = x.CODE, Key = x.GUID, Description = x.NAME }));
 
-                if (COMMODITY_CODECollection != null)
-                    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Construct, Code = x.CODE, Key = x.GUID }));
+                //if (COMMODITY_CODECollection != null)
+                //    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Construct, Code = x.CODE, Key = x.GUID, Description = x.DESCRIPTION }));
 
-                if (COMMODITY_CODECollection != null)
-                    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Indirect, Code = x.CODE, Key = x.GUID }));
+                //if (COMMODITY_CODECollection != null)
+                //    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Indirect, Code = x.CODE, Key = x.GUID, Description = x.DESCRIPTION }));
 
                 return combinedCommodityCodes.OrderBy(x => x.Code);
             }
