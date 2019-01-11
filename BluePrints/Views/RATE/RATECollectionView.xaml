@@ -45,6 +45,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -56,6 +57,9 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Rate">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarButtonItem Command="{Binding DataContext.RemoveDuplicatesCommand, ElementName=userControl}" Content="Remove Duplicates" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -95,14 +99,36 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="CommodityCodeId" Header="Commodity" HeaderToolTip="Which commodity the current rate will be applied to">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxg:LookUpEditSettings Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" DisplayMember="Code" IsTextEditable="true" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" PopupMinWidth="500" ValueMember="Key">
+                                            <dxg:LookUpEditSettings.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEditSettings.StyleSettings>
+                                            <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="Code" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEditSettings.PopupContentTemplate>
+                                        </dxg:LookUpEditSettings>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" ReadOnly="True" FieldName="CommodityCodeId" Header="Description (Read Only)" HeaderToolTip="Description of the selected commodity">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="Code" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.CommodityCodes}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Key" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="Description" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.CommodityCodes}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Key" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <!--  For Filtering  -->
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Description" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
@@ -113,8 +139,6 @@
                                 <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Whether rate is derived from gang rate" ReadOnly="True" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Gang Rate Parameters">
-
-
                                 <dxg:GridColumn FieldName="MANAGER_RATE" Header="Manager Rate" HeaderToolTip="Charge rate for manager per hour" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
@@ -157,6 +181,7 @@
                                 <dxg:GridColumn FieldName="ENGINEER_PERCENT" MinWidth="100" Header="Engineer %" HeaderToolTip="Rate weighting for engineer" CellTemplate="{StaticResource PercentageCellTemplate}" />
                                 <dxg:GridColumn FieldName="GRADUATE_PERCENT" MinWidth="100" Header="Graduate %" HeaderToolTip="Rate weighting for graduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
                                 <dxg:GridColumn FieldName="UNDERGRADUATE_PERCENT" MinWidth="100" Header="Undergraduate %" HeaderToolTip="Rate weighting for undergraduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
+                                <dxg:GridColumn FieldName="UniqueConstraint" Visible="False" Header="Constraint" HeaderToolTip="Unique Constraints" />
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.TotalSummary>
@@ -176,6 +201,9 @@
                                     <dxg:FormatCondition Expression="[IsUsingGangRate] = 'True'" ApplyToRow="True" >
                                         <dxc:Format Background="LightGreen" />
                                     </dxg:FormatCondition>
+                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="UniqueConstraint" ApplyToRow="True">
+                                        <dxc:Format Background="#FFFF9B98" />
+                                    </dxg:UniqueDuplicateRuleFormatCondition>
                                 </dxg:TableView.FormatConditions>
                             </dxg:TableView>
                         </dxg:GridControl.View>

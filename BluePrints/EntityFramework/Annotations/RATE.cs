@@ -94,6 +94,22 @@ namespace BluePrints.Data
             }
         }
 
+        public string UniqueConstraint
+        {
+            get
+            {
+                string constraint = string.Empty;
+                if (GUID_DEPARTMENT != null)
+                    constraint += GUID_DEPARTMENT.ToString();
+                if (GUID_DISCIPLINE != null)
+                    constraint += GUID_DISCIPLINE.ToString();
+                if (GUID_COMMODITY != null)
+                    constraint += GUID_COMMODITY.ToString();
+
+                return constraint;
+            }
+        }
+
         public decimal ManagerPercent => this.MANAGER_PERCENT == null ? 0 : (decimal)this.MANAGER_PERCENT;
         public decimal PrincipalPercent => this.PRINCIPAL_PERCENT == null ? 0 : (decimal)this.PRINCIPAL_PERCENT;
         public decimal LeadPercent => this.LEAD_PERCENT == null ? 0 : (decimal)this.LEAD_PERCENT;
