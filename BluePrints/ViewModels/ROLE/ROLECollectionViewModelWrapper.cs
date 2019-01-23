@@ -251,21 +251,6 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        protected override void PopulateNewProjection(ROLEProjection projection)
-        {
-            projection.Entity.NAME = "(new)";
-        }
-
-        protected override string GetParentEntityKeyFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." + BindableBase.GetPropertyName(() => new ROLE().PARENTGUID);
-        }
-
-        protected override string GetSortOrderFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new ROLEProjection().Entity) + "." + BindableBase.GetPropertyName(() => new ROLE().SORTORDER);
-        }
-
         #region View Properties
 
         /// <summary>

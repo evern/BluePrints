@@ -102,21 +102,6 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        protected override void PopulateNewProjection(MINUTE_TITLE projection)
-        {
-            projection.NAME = "(new)";
-        }
-
-        protected override string GetParentEntityKeyFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new MINUTE_TITLE().GUID_PARENT);
-        }
-
-        protected override string GetSortOrderFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new MINUTE_TITLE().SORTORDER);
-        }
-
         public override string UnifiedRowValidation(MINUTE_TITLE projection)
         {
             return string.Empty;

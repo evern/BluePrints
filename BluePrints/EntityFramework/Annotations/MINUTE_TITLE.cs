@@ -12,7 +12,7 @@ namespace BluePrints.Data
     using System.Linq;
     using BaseModel.DataModel;
 
-    public partial class MINUTE_TITLE : EntityBase, IGuidEntityKey, ICanSync, IGuidParentEntityKey, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
+    public partial class MINUTE_TITLE : EntityBase, IGuidEntityKey, ICanSync, IGuidParentEntityKey, INewEntityName, IHaveCreatedDate, IHaveSortOrder, IHaveExpandState
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MINUTE_TITLE()
@@ -109,5 +109,8 @@ namespace BluePrints.Data
         public int Summary_Closed_Agendas { get; set; }
 
         public string Office => this.MEETING_TYPE.PROJECT.NUMBER + " " + this.MEETING_TYPE.PROJECT.OfficeName;
+
+        [NotMapped]
+        public string NewEntityName { get => NAME; set => NAME = value; }
     }
 }

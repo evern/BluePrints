@@ -11,7 +11,7 @@ namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.NAME")]
     [RequiredAttributes("Entity.NAME")]
-    public class ROLEProjection : BluePrintsProjectionBase<ROLE>, IGuidParentEntityKey, IHaveSortOrder, IHaveExpandState
+    public class ROLEProjection : BluePrintsProjectionBase<ROLE>, IGuidParentEntityKey, INewEntityName, IHaveSortOrder, IHaveExpandState
     {
         public ObservableCollection<ROLE_PERMISSION> ROLE_PERMISSIONS { get; set; }
 
@@ -80,6 +80,8 @@ namespace BluePrints.Common.Projections
         public string DisplayNumber => string.Empty;
 
         public bool IsLast => true;
+
+        public string NewEntityName { get => Entity.NAME; set => Entity.NAME = value; }
     }
 
     public static class ROLEProjectionQueries
