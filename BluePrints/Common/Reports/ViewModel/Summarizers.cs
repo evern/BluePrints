@@ -35,7 +35,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             SetEarnedDataPoints(weightingPortion);
             SetRemainingDataPoints(weightingPortion);
             Summarize();
-            LoadingScreenManager.CloseLoadingScreen();
+
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
         }
 
         protected int GetAllMaxProgress()
