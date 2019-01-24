@@ -67,7 +67,7 @@ namespace BluePrints.Common.Base
                 collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, valuePair);
 
             collectionViewModelWrapper.InVariationMode = true;
-            collectionViewModelWrapper.OnParameterChanged(collectionViewParameter);
+            collectionViewModelWrapper.OnParameterChange(collectionViewParameter);
             #endregion
         }
 

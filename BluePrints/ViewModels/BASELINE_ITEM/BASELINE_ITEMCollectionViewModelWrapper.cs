@@ -45,7 +45,7 @@ namespace BluePrints.ViewModels
         where TDeliverable : class, IDeliverable
     {
         Guid load_context_guid { get; }
-        void OnParameterChanged(object parameter);
+        void OnParameterChange(object parameter);
         Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
         Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }

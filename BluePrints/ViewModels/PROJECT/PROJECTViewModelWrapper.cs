@@ -391,7 +391,7 @@ namespace BluePrints.ViewModels
                 BASELINE_ITEMCollectionViewModelWrapper deliverablesWrapper = BASELINE_ITEMCollectionViewModelWrapper.Create();
                 deliverablesWrapper.OnReportablesLoadedCallBack = OnDeliverablesLoadedCallBack;
                 TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
-                deliverablesWrapper.OnParameterChanged(collectionViewParameter);
+                deliverablesWrapper.OnParameterChange(collectionViewParameter);
             }
         }
 

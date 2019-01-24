@@ -100,7 +100,7 @@ namespace BluePrints.ViewModels
             }
 
             disable_immediate_post = true;
-            MINUTE_TITLECollectionViewModelWrapper.OnParameterChanged(new EntitiesParameter<MEETING_TYPE>(loadMEETING.MEETING_TYPE));
+            MINUTE_TITLECollectionViewModelWrapper.OnParameterChange(new EntitiesParameter<MEETING_TYPE>(loadMEETING.MEETING_TYPE));
         }
 
         protected override void addEntitiesLoader()

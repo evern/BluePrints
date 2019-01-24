@@ -72,7 +72,7 @@ namespace BluePrints.ViewModels
 
             TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter;
             collectionViewParameter = new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(loadPROJECT, null, DeliverablesViewType.Both);
-            baselineItemCollectionViewModelWrapper.OnParameterChanged(collectionViewParameter);
+            baselineItemCollectionViewModelWrapper.OnParameterChange(collectionViewParameter);
             baselineItemCollectionViewModelWrapper.OnEntitiesLoadedCallBack = AssignDeliverables;
             //loadPROJECT = PROJECTParameter.GetEntity();
         }

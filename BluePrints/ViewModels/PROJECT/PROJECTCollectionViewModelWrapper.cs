@@ -980,7 +980,7 @@ namespace BluePrints.ViewModels
             }
 
             TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModel = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
-            tenderProfileSelectionViewModel.OnParameterChanged(new EntitiesParameter<PROJECT>(DisplaySelectedEntity));
+            tenderProfileSelectionViewModel.OnParameterChange(new EntitiesParameter<PROJECT>(DisplaySelectedEntity));
             TenderProfileSelectionDialogService.ShowDialog(MessageButton.OK, "Apply tender profile", "TENDER_PROFILESelectionView", tenderProfileSelectionViewModel);
         }
 
