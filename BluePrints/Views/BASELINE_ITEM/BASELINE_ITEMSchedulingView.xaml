@@ -98,6 +98,7 @@
                     </Grid.RowDefinitions>
                     <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding DataContext.ExcelExportData, ElementName=userControl}" Visibility="Collapsed">
                         <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Unique Id" FieldName="DeliverableKey" ReadOnly="True" />
                             <dxg:GridColumn Header="Deliverable Id" FieldName="INTERNAL_NUM" ReadOnly="True" />
                             <dxg:GridColumn Header="Deliverable Description" FieldName="Deliverable_Description" ReadOnly="True" />
                             <dxg:GridColumn Header="P6 Id" FieldName="P6_ACTIVITY" ReadOnly="True" />
