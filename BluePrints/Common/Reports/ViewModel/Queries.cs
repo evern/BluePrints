@@ -228,17 +228,12 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
-            LoadingScreenManager.ShowLoadingScreen(baseline_item_progresses.Count);
-            LoadingScreenManager.SetMessage("Building Deliverable's Stats");
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
                 if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                     baseline_item_progress.BuildStats();
-
-                LoadingScreenManager.Progress();
             }
-            LoadingScreenManager.CloseLoadingScreen();
 
             if(exoAuthorisation != null)
             {
