@@ -343,6 +343,15 @@ namespace BluePrints.ViewModels
                         newSTATUS.GUID = Guid.Empty;
                         newSTATUS.GUID_PROJECT = entity.GUID;
                         unitOfWork.DELIVERABLES_STATUSES.Add(newSTATUS);
+
+                        foreach(DSTATUS_DOCTYPE statusDocType in status.DSTATUS_DOCTYPE)
+                        {
+                            DSTATUS_DOCTYPE newSTATUS_DOCTYPE = new DSTATUS_DOCTYPE();
+                            DataUtils.ShallowCopy(newSTATUS_DOCTYPE, statusDocType);
+                            newSTATUS_DOCTYPE.GUID = Guid.Empty;
+                            newSTATUS_DOCTYPE.GUID_STATUS = Guid.Empty;
+                            newSTATUS.DSTATUS_DOCTYPE.Add(newSTATUS_DOCTYPE);
+                        }
                         //DELIVERABLES_STATUSViewModel.Save(newSTATUS);
                     }
 
