@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -91,7 +92,15 @@ namespace BluePrints.ViewModels
         private IQueryable<DELIVERABLES_STATUS> setAssignedDocumentTypes(IQueryable<DELIVERABLES_STATUS> query, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPES)
         {
             List<DELIVERABLES_STATUS> deliverable_statuses = query.ToList();
-            deliverable_statuses.ForEach(x => x.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES));
+            LoadingScreenManager.ShowLoadingScreen(deliverable_statuses.Count);
+            foreach(var deliverable_status in deliverable_statuses)
+            {
+                deliverable_status.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES);
+                LoadingScreenManager.Progress();
+            }
+            LoadingScreenManager.CloseLoadingScreen();
+
+            //deliverable_statuses.ForEach(x => x.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES));
             return deliverable_statuses.AsQueryable();
         }
 
