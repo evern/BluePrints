@@ -76,8 +76,6 @@ namespace BluePrints.Data
 
         public bool BY_DURATION { get; set; }
 
-        public DateTime? TARGET_DATE { get; set; }
-
         public DateTime? NEXT_RELEASE_DATE { get; set; }
 
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
@@ -89,6 +87,14 @@ namespace BluePrints.Data
         public DateTime? CANCELLED { get; set; }
 
         public Guid? CANCELLEDBY { get; set; }
+        
+        public DateTime? START_DATE { get; set; }
+
+        public DateTime? END_DATE { get; set; }
+
+        public DateTime? FORECAST_START_DATE { get; set; }
+
+        public DateTime? TARGET_DATE { get; set; }
 
         public DateTime? UPDATED { get; set; }
 

@@ -200,7 +200,12 @@
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Internal manual target date. Can be set by anyone">
+                            <dxg:GridColumn FieldName="Entity.Entity.FORECAST_START_DATE" FilterPopupMode="CheckedList" Header="Target Start" HeaderToolTip="Target date when the deliverable is going to start, this will override subjob forecast start date, only affects remaining S-Curve">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target End" HeaderToolTip="Target date when the deliverable is going to end, this will override subjob forecast end date, only affects remaining S-Curve">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>

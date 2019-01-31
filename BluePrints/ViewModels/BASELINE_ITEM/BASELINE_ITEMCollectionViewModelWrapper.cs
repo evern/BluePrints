@@ -1787,6 +1787,8 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool IsTender => loadPROJECT == null ? false : loadPROJECT.IsTender;
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

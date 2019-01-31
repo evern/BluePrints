@@ -103,6 +103,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override bool OnBeforeEntitySaved(TENDER_PROFILE_ITEM entity)
         {
+            if (projectTENDER_PROFILE == null)
+                return false;
+
             entity.GUID_TENDER_PROFILE = projectTENDER_PROFILE.GUID;
             return true;
         }
@@ -160,7 +163,13 @@ namespace BluePrints.ViewModels
         /// </summary>
         private void initializeDeliverablesViewModel()
         {
-            LoadingScreenManager.ShowLoadingScreen(1);
+            if (projectTENDER_PROFILE == null)
+            {
+                MessageBoxService.ShowMessage("Please select a tender profile before generating deliverables");
+                return;
+            }
+
+            LoadingScreenManager.ShowLoadingScreen(1, false);
             BASELINE currentLiveBASELINE = bluePrintsUnitOfWork.BASELINES.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
             if (currentLiveBASELINE != null)
                 currentLiveBASELINE.STATUS = BaselineStatus.Superseded;
@@ -229,7 +238,8 @@ namespace BluePrints.ViewModels
                 //User couldn't proceed to this stage without having the following property validated as not null from PROJECTCollectionView
                 DateTime startDate = (DateTime)loadPROJECT.TENDER_PROJECT_START;
                 decimal tenderDuration = (decimal)loadPROJECT.TENDER_PROJECT_DURATION;
-                DateTime endDate = startDate.AddDays(Convert.ToDouble(tenderDuration) * 7);
+                int totalDurationInDays = Convert.ToInt32(tenderDuration * 7);
+                DateTime endDate = startDate.AddDays(totalDurationInDays);
 
                 BASELINE_ITEMProgress baseline_item = new BASELINE_ITEMProgress();
                 baseline_item.Entity.Entity.GUID_DEPARTMENT = assignDepartment;
@@ -241,6 +251,15 @@ namespace BluePrints.ViewModels
                 baseline_item.Entity.Entity.BUDGET_HOURS = assignHours;
                 //Doc type has been validated before and it doesn't matter which is used
                 baseline_item.Entity.Entity.GUID_DOCTYPE = baseline_itemCollectionViewModel.DOCTYPECollection.First().GUID;
+
+                //pro-rate the dates of the deliverable based on tender item
+                int startProrateDurationInDays = Convert.ToInt32(totalDurationInDays * tenderItem.SCHEDULE_START_PERCENTAGE);
+                DateTime proRatedStartDate = startDate.AddDays(startProrateDurationInDays);
+                int endProrateDurationInDays = Convert.ToInt32(totalDurationInDays * (1 - tenderItem.SCHEDULE_FINISH_PERCENTAGE));
+                DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
+
+                baseline_item.Entity.Entity.START_DATE = proRatedStartDate;
+                baseline_item.Entity.Entity.END_DATE = proRatedEndDate;
                 baseline_itemCollectionViewModel.Save(baseline_item);
 
                 //subjobs will be generated in baseline_itemCollectionViewModel and notify SUBJOBCollection
@@ -332,14 +351,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<SUBJOB> SUBJOBCollection
-        {
-            get
-            {
-                return GetEntities<SUBJOB>();
-            }
-        }
-
         public IEnumerable<TENDER_PROFILE> DefaultTENDER_PROFILECollection
         {
             get
@@ -351,6 +362,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<SUBJOB> SUBJOBCollection
+        {
+            get
+            {
+                var collection = GetEntities<SUBJOB>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NAME1);
+                return collection;
+            }
+        }
 
         public IEnumerable<TENDER_PROFILE> TENDER_PROFILECollection
         {
