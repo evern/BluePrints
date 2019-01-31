@@ -229,7 +229,9 @@ namespace BluePrints.ViewModels
             else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                 return query => query.Where(x => x.GUID == Guid.Empty);
             else
-                return query => query.ToArray().Where(x => x.GUID_ROLE == null || x.GUID_ROLE == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID_ROLE)).AsQueryable();
+                return query => query;
+            //else
+            //    return query => query.ToArray().Where(x => x.GUID_ROLE == null || x.GUID_ROLE == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID_ROLE)).AsQueryable();
         }
 
         public IEnumerable<Guid> ChildrenRoles(Guid roleGuid)
