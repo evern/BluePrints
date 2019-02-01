@@ -27,7 +27,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1385</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.1.1387</MinimumRequiredVersion>
+    <ApplicationRevision>1387</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
 	<MinimumRequiredVersion>1.0.1.1385</MinimumRequiredVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
