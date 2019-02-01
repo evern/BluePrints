@@ -215,7 +215,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride, IEntityNumber
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride, IEntityNumber, ISupportVariationDuplicate
     {
         public BASELINE_ITEMProgress()
         {
@@ -340,6 +340,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return true;
             }
         }
+        
+        //used by variation to remember which id was it duplicate from because duplicate() is called from BaselineItemProgress and doesn't have the variation informatin
+        public Guid? DuplicateFromGuid { get; set; }
 
         public bool IsInternalNumberAlwaysEditable { get; set; }
 

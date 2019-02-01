@@ -277,6 +277,12 @@
                                     <dxg:FormatCondition ApplyToRow="True" Expression="[Variation_Action] = 'Add'" FieldName="Variation_Action">
                                         <dxc:Format Background="LightBlue" />
                                     </dxg:FormatCondition>
+                                    <dxg:FormatCondition ApplyToRow="True" Expression="[Variation_Action] = 'Append'" FieldName="Variation_Action">
+                                        <dxc:Format Background="LightGreen" />
+                                    </dxg:FormatCondition>
+                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.Entity.INTERNAL_NUM">
+                                        <dxc:Format Background="#FFFF9B98" />
+                                    </dxg:UniqueDuplicateRuleFormatCondition>
                                 </dxg:TableView.FormatConditions>
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />

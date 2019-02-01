@@ -48,10 +48,12 @@ namespace BluePrints.ViewModels
         void OnParameterChange(object parameter);
         Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
         Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
+        Action<TProgress> OnAfterDuplicateCallBack { get; set; }
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
         string DefaultPhaseInternalNumber { get; set; }
         Func<TProgress> SelectedEntityCallBack { get; set; }
         IEnumerable<TProgress> SelectedEntities { get; set; }
+        Func<IEnumerable<TProgress>> GetAllEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
         void CleanUpEntitiesLoader();
@@ -104,6 +106,7 @@ namespace BluePrints.ViewModels
         public string DefaultPhaseInternalNumber { get; set; }
         public BASELINE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
         public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
+        public Func<IEnumerable<BASELINE_ITEMProgress>> GetAllEntities { get; set; }
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
         protected DeliverablesViewType viewType { get; set; }
@@ -567,6 +570,7 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.SetParentViewModel(this);
 
+            GetAllEntities = () => { return MainViewModel.Entities; };
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
             //used for interface when this is loaded from variation
@@ -759,6 +763,7 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
+        public Action<BASELINE_ITEMProgress> OnAfterDuplicateCallBack { get; set; }
         public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
             if(!InVariationMode)
@@ -770,6 +775,8 @@ namespace BluePrints.ViewModels
             }
 
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            if (isNewEntity)
+                OnAfterDuplicateCallBack?.Invoke(projectionEntity);
             //save_deliverable_users(projectionEntity);
         }
         #endregion
@@ -1177,7 +1184,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, MainViewModel.Entities, SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, GetAllEntities(), SelectedEntities);
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1242,7 +1249,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, MainViewModel.Entities, SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, GetAllEntities(), SelectedEntities);
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1307,6 +1314,7 @@ namespace BluePrints.ViewModels
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
                     newProjection.Entity.EntityKey = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
+                    newProjection.DuplicateFromGuid = selectedEntity.EntityKey;
 
                     //because this function is used in variation, let ApplyProjection handle this
                     newProjection.Entity.Entity.GUID_BASELINE = null;

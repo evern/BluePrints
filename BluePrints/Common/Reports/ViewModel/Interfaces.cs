@@ -178,6 +178,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal DC_Value { get; set; }
     }
 
+    public interface ISupportVariationDuplicate
+    {
+        //used by variation to remember which id was it duplicate from because duplicate() is called from BaselineItemProgress and doesn't have the variation informatin
+        Guid? DuplicateFromGuid { get; set; }
+    }
+
     public interface ICanTrack
     {
         EstimateProgressType Progress_Type { get; }
