@@ -102,6 +102,7 @@ namespace BluePrints.Common.Misc
     public enum StatsType
     {
         Planned, 
+        PlannedLate, 
         Earned,
         Burned,
         Actual,
@@ -195,6 +196,9 @@ namespace BluePrints.Common.Misc
                     if (summary.Budgeted != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Planned, summary.Budgeted.DataPoints));
 
+                    if (summary.BudgetedLate != null)
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.PlannedLate, summary.BudgetedLate.DataPoints));
+
                     if (summary.Earned != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
@@ -247,6 +251,10 @@ namespace BluePrints.Common.Misc
             foreach (ViewModel.Reporting.DataPoint data_point in data_points)
             {
                 Dashboard_Export_Data_Point new_export_data = new Dashboard_Export_Data_Point();
+                string s = string.Empty;
+                if (stats_type == StatsType.PlannedLate)
+                    s = string.Empty;
+
                 new_export_data.Type = stats_type;
                 new_export_data.Data_Date = data_point.ProgressDate;
                 new_export_data.Units = data_point.Units;
