@@ -208,7 +208,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                 StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
                                 weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                weightedPlannedDataPoints.Add(weightedPlannedLateDataPoint);
+                                weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
                             }
                         }
 
