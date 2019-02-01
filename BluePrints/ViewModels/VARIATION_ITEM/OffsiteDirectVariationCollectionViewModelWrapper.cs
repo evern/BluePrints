@@ -110,8 +110,6 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-
-
         public override string UnifiedValueValidation(BASELINE_ITEMVariation projection, string field_name, object newValue)
         {
             //budgeted hours field is disabled but just in case

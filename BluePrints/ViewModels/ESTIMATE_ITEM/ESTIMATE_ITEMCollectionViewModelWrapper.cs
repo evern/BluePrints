@@ -296,6 +296,7 @@ namespace BluePrints.ViewModels
             MainViewModel.UseRegularSplitting = true;
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.SetParentViewModel(this);
+            GetAllEntities = () => { return MainViewModel.Entities; };
             STOCK_CODECollectionViewModel.SetParentViewModel(this);
             AREACollectionViewModel.SetParentViewModel(this);
             SUBJOBSCollectionViewModel.SetParentViewModel(this);
@@ -645,6 +646,8 @@ namespace BluePrints.ViewModels
         public void OnEntitiesSavedCallBack(ESTIMATE_ITEMProgress projectionEntity, ESTIMATE_ITEM entity, bool isNewEntity)
         {
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            if (isNewEntity)
+                OnAfterDuplicateCallBack?.Invoke(projectionEntity);
         }
 
         bool neverAskAndEdit;
@@ -1554,6 +1557,8 @@ namespace BluePrints.ViewModels
         }
 
         public bool InVariationMode { get; set; }
+        public Func<IEnumerable<ESTIMATE_ITEMProgress>> GetAllEntities { get; set; }
+        public Action<ESTIMATE_ITEMProgress> OnAfterDuplicateCallBack { get; set; }
         #endregion
     }
 }

@@ -55,9 +55,11 @@ namespace BluePrints.Common.Base
             collectionViewModelWrapper.InterfaceUnpauseUndoRedoCallBack = UnpauseUndoRedo;
             collectionViewModelWrapper.BaseEntityQueryCallBack = BaseEntityQueryCallBack;
             collectionViewModelWrapper.SelectedEntities = DisplaySelectedEntities.Select(x => x.Entity);
+            collectionViewModelWrapper.GetAllEntities = () => { return DisplayEntities.Select(x => x.Entity); };
             collectionViewModelWrapper.SelectedEntityCallBack = () => DisplaySelectedEntity == null ? null : DisplaySelectedEntity.Entity;
             collectionViewModelWrapper.OnReportablesLoadedCallBack = OnViewModelWrapperLoadedCallBack;
             collectionViewModelWrapper.ApplyViewSpecificPropertiesToEntityCallBack = ApplyViewSpecificPropertiesToEntityCallBack;
+            collectionViewModelWrapper.OnAfterDuplicateCallBack = onAfterDuplicateCallBack;
             collectionViewModelWrapper.SetParentViewModel(this);
             KeyValuePair<DeliverablesViewType, EstimateViewMode> valuePair = new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Budget);
             TripleEntitiesParameter<PROJECT, IAmBaseline, object> collectionViewParameter;
@@ -200,7 +202,28 @@ namespace BluePrints.Common.Base
         {
             if (reportableEntity.Baseline_Guid == null)
             {
-                reportableEntity.Variation_Guid = loadVARIATION.GUID;
+                reportableEntity.Variation_Guid = loadVARIATION.EntityKey;
+            }
+        }
+
+        private void onAfterDuplicateCallBack(TMainReportableEntity reportableEntity)
+        {
+            //hereby maps the collectionViewModelWrapper duplicated entities variation units to this variation units and save new variation, variation will be transformed in mainviewmodel query to join up with newly created variation item
+            ISupportVariationDuplicate supportVariationDuplicationEntity = reportableEntity as ISupportVariationDuplicate;
+            if (supportVariationDuplicationEntity != null)
+            {
+                TMainVariationEntity findDuplicateFromEntity = DisplayEntities.FirstOrDefault(x => x.EntityKey == supportVariationDuplicationEntity.DuplicateFromGuid);
+                if (findDuplicateFromEntity != null)
+                {
+                    VARIATION_ITEM newVARIATION_ITEM = new VARIATION_ITEM();
+
+                    newVARIATION_ITEM.GUID_VARIATION = loadVARIATION.EntityKey;
+                    newVARIATION_ITEM.GUID_ORIBASEITEM = reportableEntity.OriginalEntityKey;
+                    newVARIATION_ITEM.VARIATION_UNITS = findDuplicateFromEntity.Variation_Units;
+                    newVARIATION_ITEM.ACTION = VariationAction.Add;
+
+                    VARIATION_ITEMSCollectionViewModel.Save(newVARIATION_ITEM);
+                }
             }
         }
 
