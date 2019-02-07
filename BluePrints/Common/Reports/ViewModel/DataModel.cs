@@ -643,12 +643,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
-        public void BuildStats(decimal weightingPortion = 1)
+        public void BuildStats(decimal weightingPortion = 1, bool earnOnly = false)
         {
             if (StatSummarizer == null || Stats == null)
                 return;
 
-            StatSummarizer.Build(false, false, weightingPortion);
+            StatSummarizer.Build(false, false, weightingPortion, earnOnly);
         }
 
         public void BuildBudgetedStats(decimal weightingPortion = 1)

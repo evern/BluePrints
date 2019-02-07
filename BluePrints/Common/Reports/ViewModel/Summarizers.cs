@@ -12,7 +12,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1);
+        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false);
         void Summarize();
     }
 
@@ -25,15 +25,22 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1)
+        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
 
-            SetBudgetDataPoints(weightingPortion);
-            SetCurrentDataPoints(weightingPortion);
+            if(!earnOnly)
+            {
+                SetBudgetDataPoints(weightingPortion);
+                SetCurrentDataPoints(weightingPortion);
+            }
+
             SetEarnedDataPoints(weightingPortion);
-            SetRemainingDataPoints(weightingPortion);
+
+            if(!earnOnly)
+                SetRemainingDataPoints(weightingPortion);
+
             Summarize();
 
             if (showLoadingScreen)

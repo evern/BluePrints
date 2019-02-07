@@ -256,7 +256,7 @@ namespace BluePrints.ViewModels
                 BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if (deliverable != null)
                 {
-                    deliverable.BuildStats();
+                    deliverable.BuildStats(1, true);
                     BuildRowStats(deliverable, true);
                     mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
                 }
