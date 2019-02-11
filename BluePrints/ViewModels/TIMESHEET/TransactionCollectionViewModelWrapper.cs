@@ -332,9 +332,6 @@ namespace BluePrints.ViewModels
 
                         DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
-                        var gg = from c in editing_row.Table.Columns.Cast<DataColumn>()
-                                 select c.ColumnName;
-
                         pasteValueColumnOffset += 1;
                         if (pasteValueColumnOffset >= grouped_results.Count)
                             pasteValueColumnOffset = 0;

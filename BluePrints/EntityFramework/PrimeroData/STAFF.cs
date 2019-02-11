@@ -76,6 +76,16 @@ namespace BluePrints.PrimeroData
         [StringLength(1)]
         public string IS_SUPERVISOR { get; set; }
 
+        [Required]
+        [StringLength(1)]
+        public string API_ACCESS { get; set; }
+
+        [Required]
+        [StringLength(1)]
+        public string MOBILE_ACCESS { get; set; }
+
+        public int LAST_ACKNOWLEDGED_VERSION { get; set; }
+
         [StringLength(15)]
         public string NICKNAME { get; set; }
 
