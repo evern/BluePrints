@@ -44,7 +44,7 @@ namespace BluePrints.PrimeroData
         [StringLength(23)]
         public string DEFAULT_STOCKCODE { get; set; }
 
-        [StringLength(3)]
+        [StringLength(4)]
         public string SHORTCODE { get; set; }
 
         [StringLength(40)]

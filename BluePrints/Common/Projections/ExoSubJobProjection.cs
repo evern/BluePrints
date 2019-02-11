@@ -7,6 +7,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DevExpress.Mvvm.POCO;
@@ -19,6 +20,8 @@ using DevExpress.XtraEditors.DXErrorProvider;
 using DevExpress.Mvvm;
 using BaseModel.Attributes;
 using BaseModel.ViewModel.Dialogs;
+using System.Text.RegularExpressions;
+using System.Data.Linq.SqlClient;
 
 namespace BluePrints.Common.Projections
 {
@@ -427,11 +430,12 @@ namespace BluePrints.Common.Projections
                 return null;
             else
             {
-                int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(pUnitOfWork);
                 JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine);
                 if (line != null)
                     return line;
-                else if (maxJOBCOSTLINEID != null)
+
+                int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(pUnitOfWork);
+                if (maxJOBCOSTLINEID != null)
                 {
                     JOBCOST_LINES newLine = CreateNewLine(copyLine, exoLine, (int)maxJOBCOSTLINEID);
                     pUnitOfWork.JOBCOST_LINES.Add(newLine);
@@ -444,6 +448,144 @@ namespace BluePrints.Common.Projections
                     return null;
                 }
             }
+        }
+
+        public static JOBCOST_RESOURCE FindExistingOrAddResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffId, int? seqNo, string name, string title, string defaultStockCode, string shortCode)
+        {
+            string uppercaseName = name.ToUpper();
+            string uppercaseTitle = title.ToUpper();
+            string uppercaseDefaultStockCode = defaultStockCode == null ? string.Empty : defaultStockCode.ToUpper();
+            string uppercaseShortCode = shortCode == null ? string.Empty : shortCode.ToUpper();
+
+            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, seqNo, uppercaseName);
+            if(resource != null)
+            {
+                resource.ISACTIVE = "Y";
+                resource.RESOURCENAME = uppercaseName;
+                resource.TITLE = uppercaseTitle;
+                resource.DEFAULT_STOCKCODE = uppercaseDefaultStockCode;
+                resource.SHORTCODE = uppercaseShortCode;
+                return resource;
+            }
+            else
+            {
+                if (staffId != null)
+                {
+                    JOBCOST_RESOURCE newJOBCOST_RESOURCE = createNewResource((int)staffId, uppercaseName, uppercaseTitle, uppercaseDefaultStockCode, uppercaseShortCode);
+                    pUnitOfWork.JOBCOST_RESOURCE.Add(newJOBCOST_RESOURCE);
+                    return newJOBCOST_RESOURCE;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+
+        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
+        {
+            string uppercaseName = name.ToUpper();
+            string uppercaseTitle = title.ToUpper();
+
+            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, uppercaseName);
+            if (staff != null)
+            {
+                staff.ISACTIVE = "Y";
+                staff.NAME = uppercaseName;
+                staff.JOBTITLE = uppercaseTitle;
+                staff.SECURITYPROFILEID = securityProfileId;
+                staff.USERPROFILEID = userProfileId;
+                staff.REPORTS_TO_STAFFNO = reportToStaffId;
+
+                return staff;
+            }
+            else
+            {
+                STAFF newSTAFF = createNewStaff(uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId);
+                pUnitOfWork.STAFF.Add(newSTAFF);
+
+                //need to save changes here to get new staff id;
+                pUnitOfWork.SaveChanges();
+                return newSTAFF;
+            }
+        }
+
+        public static void RemoveResources(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
+        {
+            foreach(ExoResourceProjection projection in projections)
+            {
+                JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, projection.RESOURCE_SEQNO, projection.RESOURCENAME);
+                if (resource != null)
+                    resource.ISACTIVE = "N";
+            }
+        }
+
+        public static void RemoveStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
+        {
+            foreach (ExoResourceProjection projection in projections)
+            {
+                STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, projection.STAFFNO, projection.RESOURCENAME);
+                if (staff != null)
+                    staff.ISACTIVE = "N";
+            }
+        }
+
+        private static JOBCOST_RESOURCE createNewResource(int staffId, string name, string title, string defaultStockCode, string shortCode)
+        {
+            JOBCOST_RESOURCE newJOBCOST_RESOURCE = new JOBCOST_RESOURCE();
+            newJOBCOST_RESOURCE.RESOURCENAME = name;
+            newJOBCOST_RESOURCE.COSTRATE0 = 0;
+            newJOBCOST_RESOURCE.COSTRATE1 = 0;
+            newJOBCOST_RESOURCE.COSTRATE2 = 0;
+            newJOBCOST_RESOURCE.COSTRATE3 = 0;
+            newJOBCOST_RESOURCE.SELLRATE0 = 0;
+            newJOBCOST_RESOURCE.SELLRATE1 = 0;
+            newJOBCOST_RESOURCE.SELLRATE2 = 0;
+            newJOBCOST_RESOURCE.SELLRATE3 = 0;
+            newJOBCOST_RESOURCE.NORMALHOURS = 0;
+            Regex initials = new Regex(@"(\b[a-zA-Z])[a-zA-Z]* ?");
+            string init = initials.Replace(name, "$1");
+            newJOBCOST_RESOURCE.TITLE = title;
+            newJOBCOST_RESOURCE.ISACTIVE = "Y";
+
+            //use new unit of work to prevent concurrency issues
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            string generatedShortCode = ExoQueries.GetStaffShortcode(pUnitOfWork, init);
+            newJOBCOST_RESOURCE.STAFFNO = staffId;
+            newJOBCOST_RESOURCE.SHORTCODE = shortCode == string.Empty ? generatedShortCode : shortCode;
+            newJOBCOST_RESOURCE.DEFAULT_STOCKCODE = defaultStockCode == string.Empty ? generatedShortCode : defaultStockCode;
+
+            return newJOBCOST_RESOURCE;
+        }
+
+        private static STAFF createNewStaff(string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
+        {
+            //use new unit of work to prevent concurrency issues
+            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+            STAFF newSTAFF = new STAFF();
+            newSTAFF.NAME = name;
+            newSTAFF.JOBTITLE = title;
+            newSTAFF.MENU_NO = 2;
+            newSTAFF.SECURITYPROFILEID = securityProfileId;
+            newSTAFF.USERPROFILEID = userProfileId;
+            newSTAFF.LOGINID = ExoQueries.GetLoginId(pUnitOfWork, name);
+            newSTAFF.PASSWORD_CHANGED = DateTime.Now;
+            newSTAFF.BAD_LOGIN_COUNT = 0;
+            newSTAFF.ACCOUNT_STATUS = 0;
+            newSTAFF.DISCOUNTRATE = 0;
+            newSTAFF.IS_SUPERVISOR = "N";
+            newSTAFF.ABSENT = "N";
+            newSTAFF.EMPLOYEE_CODE = -1;
+            newSTAFF.SMTP_SEQNO = -1;
+            newSTAFF.HAS_BUDGETS = "N";
+            newSTAFF.REPORTS_TO_STAFFNO = reportToStaffId;
+            newSTAFF.API_ACCESS = "N";
+            newSTAFF.MOBILE_ACCESS = "N";
+            newSTAFF.LAST_ACKNOWLEDGED_VERSION = 0;
+
+            return newSTAFF;
         }
 
         public static JOBCOST_LINES CreateNewLine(JOBCOST_LINES copyLine, ExoSubJobEditableProjection projection, int maxJobLineId)
@@ -968,16 +1110,68 @@ namespace BluePrints.Common.Projections
             if (staffId == null)
                 return null;
 
-            var resourceAllocation = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+            var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
                                      where STAFF.STAFFNO == staffId
                                      select JOBCOST_RESOURCE;
 
-            if (resourceAllocation.Count() == 0)
+            if (resources.Count() == 0)
                 return null;
 
-            return resourceAllocation.First().SEQNO;
+            return resources.First().SEQNO;
+        }
+
+        public static string GetLoginId(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string name)
+        {
+            if (name == string.Empty)
+                return null;
+
+            List<string> nameSplit = name.Split(' ').ToList();
+            string firstName = nameSplit.First();
+
+            var staffs = from STAFF in primeroUnitOfWork.STAFF
+                            where STAFF.LOGINID.StartsWith(firstName)
+                            select STAFF;
+
+            int largestNumber = 0;
+            foreach (var staff in staffs)
+            {
+                string resultString = Regex.Match(staff.LOGINID, @"\d+").Value;
+                if (resultString != string.Empty)
+                {
+                    int affixValue = Int32.Parse(resultString);
+                    affixValue += 1;
+                    if (affixValue > largestNumber)
+                        largestNumber = affixValue;
+                }
+            }
+
+            return string.Concat(firstName, largestNumber.ToString());
+        }
+
+        public static string GetStaffShortcode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string partialShortCode)
+        {
+            string formatPartialShortCode = partialShortCode.Length > 2 ? partialShortCode.Substring(0, 2) : partialShortCode;
+            var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                            where JOBCOST_RESOURCE.SHORTCODE.StartsWith(formatPartialShortCode)
+                            select JOBCOST_RESOURCE;
+
+            List<JOBCOST_RESOURCE> allResources = resources.ToList();
+            int largestNumber = 0;
+            foreach(var resource in allResources)
+            {
+                string resultString = Regex.Match(resource.SHORTCODE, @"\d+").Value;
+                if(resultString != string.Empty)
+                {
+                    int affixValue = Int32.Parse(resultString);
+                    affixValue += 1;
+                    if (affixValue > largestNumber)
+                        largestNumber = affixValue;
+                }
+            }
+
+            return string.Concat(partialShortCode, largestNumber.ToString());
         }
 
         public static JOB_COSTTYPES GetCommodity(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string commodityCode)
@@ -1018,6 +1212,52 @@ namespace BluePrints.Common.Projections
                                   select JOBCOST_LINES.JOBCOSTLINEID).Max();
 
             return maxLineId;
+        }
+
+        public static JOBCOST_RESOURCE FindJOBCOST_RESOURCE(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? seqNo, string name)
+        {
+            IQueryable<JOBCOST_RESOURCE> resources;
+            
+            if(seqNo == null)
+                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                              where JOBCOST_RESOURCE.RESOURCENAME == name
+                              select JOBCOST_RESOURCE);
+            else
+                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                             where JOBCOST_RESOURCE.SEQNO == seqNo
+                             select JOBCOST_RESOURCE);
+
+            if (resources.Count() > 0)
+                return resources.First();
+
+            return null;
+        }
+
+
+        public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name)
+        {
+            IQueryable<STAFF> staffs;
+            if(staffNo == null)
+                staffs = (from STAFF in primeroUnitOfWork.STAFF
+                                                      where STAFF.NAME == name
+                                                      select STAFF);
+            else
+                staffs = (from STAFF in primeroUnitOfWork.STAFF
+                          where STAFF.STAFFNO == staffNo
+                          select STAFF);
+
+            if (staffs.Count() > 0)
+                return staffs.First();
+
+            return null;
+        }
+
+        public static int? GetSTAFFID(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            int? maxLineId = (from STAFF in primeroUnitOfWork.STAFF
+                              select STAFF.STAFFNO).Max();
+
+            return maxLineId + 1;
         }
 
         public static IQueryable<JOB_RESOURCE_ALLOCATION> GetAuthSubJobs(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
@@ -1218,6 +1458,18 @@ namespace BluePrints.Common.Projections
 
             List<ExoSubJobProjection> exoTimes = availableLines.ToList().Select(x => new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Id = x.SUBJOBNO, Code = x.SUBJOBNAME, Title = x.SUBJOBTITLE } }).ToList();
             return exoTimes;
+        }
+
+        public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                     join STAFF in primeroUnitOfWork.STAFF
+                                     on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                                     where JOBCOST_RESOURCE.ISACTIVE == "Y"
+                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO };
+
+            //EntityKey is used to prevent duplicate error message
+            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { EntityKey = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE })).AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)

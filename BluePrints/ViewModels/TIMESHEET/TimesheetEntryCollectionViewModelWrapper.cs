@@ -138,6 +138,7 @@ namespace BluePrints.ViewModels
             MainViewModel.IsPasteCellLevel = false;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+
         #region Collection Call Backs
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
