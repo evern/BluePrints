@@ -144,12 +144,16 @@ namespace BluePrints.ViewModels
                 if(addedStaff != null)
                 {
                     resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
+                    //map back generated properties to projection
                     resource.STAFFNO = addedStaff.STAFFNO;
+                    resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
+
                     JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUnitOfWork, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
 
                     //map back generated properties to projection
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
                     resource.SHORTCODE = addedResource.SHORTCODE;
+
                 }
 
                 resource.Update();

@@ -56,7 +56,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" >
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="RESOURCE_STAFFNO" Header="Linked to Staff" HeaderToolTip="Cannot be changed once entered, please double check" >

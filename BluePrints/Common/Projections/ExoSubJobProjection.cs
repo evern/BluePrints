@@ -496,7 +496,7 @@ namespace BluePrints.Common.Projections
                 staff.JOBTITLE = uppercaseTitle;
                 staff.SECURITYPROFILEID = securityProfileId;
                 staff.USERPROFILEID = userProfileId;
-                staff.REPORTS_TO_STAFFNO = reportToStaffId;
+                staff.REPORTS_TO_STAFFNO = reportToStaffId == null ? staff.STAFFNO : reportToStaffId;
 
                 return staff;
             }
@@ -507,6 +507,12 @@ namespace BluePrints.Common.Projections
 
                 //need to save changes here to get new staff id;
                 pUnitOfWork.SaveChanges();
+                if (newSTAFF.REPORTS_TO_STAFFNO == null)
+                {
+                    newSTAFF.REPORTS_TO_STAFFNO = newSTAFF.STAFFNO;
+                    pUnitOfWork.SaveChanges();
+                }
+
                 return newSTAFF;
             }
         }
