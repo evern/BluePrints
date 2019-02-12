@@ -222,6 +222,13 @@ namespace BluePrints.ViewModels
                     return "Name is required";
             }
 
+            if (!projection.IsNewRow)
+            {
+                if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) ||
+                   field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?\n\nThis might cause fragmentation with timesheet(s)", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                    return "User cancel";
+            }
             return string.Empty;
         }
 
