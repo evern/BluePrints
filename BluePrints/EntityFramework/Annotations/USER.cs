@@ -46,6 +46,10 @@ namespace BluePrints.Data
             }
         }
 
+        //for use in EXO_SubJobCollectionView
+        [NotMapped]
+        public int SecurityProfileID { get; set; }
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }

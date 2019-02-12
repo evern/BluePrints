@@ -453,7 +453,7 @@ namespace BluePrints.Common.Projections
         public static JOBCOST_RESOURCE FindExistingOrAddResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffId, int? seqNo, string name, string title, string defaultStockCode, string shortCode)
         {
             string uppercaseName = name.ToUpper();
-            string uppercaseTitle = title.ToUpper();
+            string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
             string uppercaseDefaultStockCode = defaultStockCode == null ? string.Empty : defaultStockCode.ToUpper();
             string uppercaseShortCode = shortCode == null ? string.Empty : shortCode.ToUpper();
 
@@ -463,8 +463,8 @@ namespace BluePrints.Common.Projections
                 resource.ISACTIVE = "Y";
                 resource.RESOURCENAME = uppercaseName;
                 resource.TITLE = uppercaseTitle;
-                resource.DEFAULT_STOCKCODE = uppercaseDefaultStockCode;
-                resource.SHORTCODE = uppercaseShortCode;
+                resource.DEFAULT_STOCKCODE = uppercaseDefaultStockCode == string.Empty ? resource.DEFAULT_STOCKCODE : uppercaseDefaultStockCode;
+                resource.SHORTCODE = uppercaseShortCode == string.Empty ? resource.SHORTCODE : uppercaseShortCode;
                 return resource;
             }
             else
@@ -486,7 +486,7 @@ namespace BluePrints.Common.Projections
         public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
         {
             string uppercaseName = name.ToUpper();
-            string uppercaseTitle = title.ToUpper();
+            string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
 
             STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, uppercaseName);
             if (staff != null)
@@ -584,6 +584,7 @@ namespace BluePrints.Common.Projections
             newSTAFF.API_ACCESS = "N";
             newSTAFF.MOBILE_ACCESS = "N";
             newSTAFF.LAST_ACKNOWLEDGED_VERSION = 0;
+            newSTAFF.ISACTIVE = "Y";
 
             return newSTAFF;
         }
@@ -1171,7 +1172,7 @@ namespace BluePrints.Common.Projections
                 }
             }
 
-            return string.Concat(partialShortCode, largestNumber.ToString());
+            return string.Concat(formatPartialShortCode, largestNumber.ToString());
         }
 
         public static JOB_COSTTYPES GetCommodity(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string commodityCode)
@@ -1466,10 +1467,10 @@ namespace BluePrints.Common.Projections
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
                                      where JOBCOST_RESOURCE.ISACTIVE == "Y"
-                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO };
+                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO };
 
             //EntityKey is used to prevent duplicate error message
-            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { EntityKey = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE })).AsQueryable();
+            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { EntityKey = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false })).AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)

@@ -70,6 +70,7 @@ namespace BluePrints.ViewModels
         protected Data.PROJECT loadPROJECT;
         private List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
@@ -104,6 +105,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -796,8 +798,10 @@ namespace BluePrints.ViewModels
 
                     newUser.NAME = staff.NAME;
                     newUser.EXO_STAFF_ID = staff.STAFFNO;
+                    newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
+                    newUser.SecurityProfileID = staff.SECURITYPROFILEID;
                     displayUserAuth.User = newUser;
-
+                    
                     if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == newUser.EXO_STAFF_ID)))
                         displayUserAuth.IsAssigned = true;
                     else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == newUser.EXO_STAFF_ID)))
@@ -858,6 +862,17 @@ namespace BluePrints.ViewModels
                 }
 
                 return allCommodityCodes.OrderBy(x => x);
+            }
+        }
+
+        public IEnumerable<PrimeroData.PROFILE> PROFILECollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.PROFILE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.PROFILENAME);
+                return collection;
             }
         }
 

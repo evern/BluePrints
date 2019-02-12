@@ -2,6 +2,9 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+                </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -14,7 +17,10 @@
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
                         <dxr:RibbonPage Caption="EXO Permission">
                             <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
-                                <dxb:BarButtonItem Command="{Binding DataContext.DeleteSelectedCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" /><dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.DeleteSelectedCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected row(s)" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Refresh current table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarButtonItem Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Undo last action" />
+                                <dxb:BarButtonItem Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redo undone action" />
                                 <dxb:BarButtonItem Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
                                 <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
@@ -50,18 +56,29 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" >
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.STAFFCollection, ElementName=userControl}" ValueMember="STAFFNO" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings NullText="Leave empty to autogenerate"  ReadOnly="True"/>
-                                    </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn FieldName="RESOURCE_STAFFNO" Header="Linked to Staff" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="SHORTCODE" Header="Short Code" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings NullText="Leave empty to autogenerate" />
-                                    </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="SHORTCODE" Header="Short Code" HeaderToolTip="Cannot be changed once entered, please double check">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
@@ -71,7 +88,7 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" NewItemRowPosition="Top">
+                                <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowAutoFilterRow="True">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
@@ -82,7 +99,9 @@
                                         <dxmvvm:EventToCommand Command="{Binding ValidateRowCommand}" EventName="ValidateRow" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding DataContext.DeleteSelectedCommand, ElementName=userControl}" Content="Delete Row(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.DeleteSelectedCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected row(s)" />
+                                        <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Refresh current table with updated data. Also clears any undo redo entries" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>

@@ -28,18 +28,29 @@ namespace BluePrints.Common.Projections
     {
         public ExoResourceProjection()
         {
+            IsNewRow = true;
         }
 
         [Key]
         public Guid EntityKey { get; set; }
         public int? RESOURCE_SEQNO { get; set; }
+        public int? RESOURCE_STAFFNO { get; set; }
         public int? STAFFNO { get; set; }
+
+        [Required]
         public string RESOURCENAME { get; set; }
         public string TITLE { get; set; }
         public string DEFAULT_STOCKCODE { get; set; }
         public string SHORTCODE { get; set; }
+
+        [Required]
         public int SECURITYPROFILEID { get; set; }
+
+        [Required]
         public int USERPROFILEID { get; set; }
         public int? REPORTS_TO_STAFFNO { get; set; }
+
+        //indicate whether this row is commited to database
+        public bool IsNewRow { get; set; }
     }
 }

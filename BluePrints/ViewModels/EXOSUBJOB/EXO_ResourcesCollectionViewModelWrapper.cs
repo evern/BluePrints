@@ -57,7 +57,6 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription<STAFF, STAFF, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STAFF);
             loaderCollection.AddLoaderDescription<PROFILE, PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
         }
         #endregion
@@ -75,8 +74,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoResourceProjection> entities)
         {
-            MainViewModel.ManualRowPasteAction = ManualRowPasteAction;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleted;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -96,6 +95,12 @@ namespace BluePrints.ViewModels
             return false;
         }
 
+        protected bool onBeforeEntityDeleted(ExoResourceProjection projection)
+        {
+            delete(projection);
+            return false;
+        }
+
         /// <summary>
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
         /// </summary>
@@ -104,17 +109,31 @@ namespace BluePrints.ViewModels
             if (e.RowHandle == DataControlBase.NewItemRowHandle)
             {
                 ExoResourceProjection exoResource = (ExoResourceProjection)e.Row;
-                commitToExo(exoResource);
-                OnAfterNewRowAdded(exoResource);
+                commitToExo(exoResource, true);
             }
         }
 
-        private void commitToExo(ExoResourceProjection projection)
+        private void commitToExo(ExoResourceProjection projection, bool addedFromView = false)
         {
             List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
             ExoResourceProjection newLine = projection;
             newLines.Add(newLine);
             commitToExo(newLines);
+
+            //need to add post to capture generated id and properties
+            //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
+            if (addedFromView || !DisplayEntities.Any(x => x.STAFFNO == projection.STAFFNO))
+            {
+                if(!addedFromView)
+                {
+                    projection.IsNewRow = false;
+                    DisplayEntities.Insert(0, projection);
+                }
+
+                OnAfterNewRowAdded(projection);
+                if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);
+            }
         }
 
         private void commitToExo(IEnumerable<ExoResourceProjection> projections)
@@ -124,9 +143,13 @@ namespace BluePrints.ViewModels
                 STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUnitOfWork, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO);
                 if(addedStaff != null)
                 {
+                    resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
                     resource.STAFFNO = addedStaff.STAFFNO;
-                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUnitOfWork, resource.STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
+                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUnitOfWork, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
+
+                    //map back generated properties to projection
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
+                    resource.SHORTCODE = addedResource.SHORTCODE;
                 }
 
                 resource.Update();
@@ -141,12 +164,15 @@ namespace BluePrints.ViewModels
                 return;
 
             delete(displaySelectedEntities);
+        }
 
-            List<ExoResourceProjection> removeEntities = displaySelectedEntities.ToList();
-            foreach (var selectedEntity in removeEntities)
-            {
-                DisplayEntities.Remove(selectedEntity);
-            }
+        private void delete(ExoResourceProjection projection)
+        {
+
+            List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
+            ExoResourceProjection newLine = projection;
+            newLines.Add(newLine);
+            delete(newLines);
         }
 
         private void delete(IEnumerable<ExoResourceProjection> projections)
@@ -154,14 +180,14 @@ namespace BluePrints.ViewModels
             ExoMethods.RemoveStaff(primeroUnitOfWork, projections);
             ExoMethods.RemoveResources(primeroUnitOfWork, projections);
             primeroUnitOfWork.SaveChanges();
-        }
 
-        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ExoResourceProjection pasteEntity)
-        {
-            commitToExo(pasteEntity);
-            DisplayEntities.Insert(0, pasteEntity);
-            OnAfterNewRowAdded(pasteEntity);
-            return false;
+            List<ExoResourceProjection> removeProjections = projections.ToList();
+            foreach(ExoResourceProjection removeProjection in removeProjections)
+            {
+                DisplayEntities.Remove(removeProjection);
+                if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(removeProjection, null, null, null, EntityMessageType.Deleted);
+            }
         }
 
         /// <summary>
@@ -178,11 +204,20 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ExoResourceProjection projection)
         {
+            if (projection.RESOURCENAME == null || projection.RESOURCENAME == string.Empty)
+                return "Name is required";
+
             return string.Empty;
         }
 
         public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().RESOURCENAME))
+            {
+                if (new_value == null || new_value.ToString() == string.Empty)
+                    return "Name is required";
+            }
+
             return string.Empty;
         }
 
@@ -204,17 +239,6 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<PROFILE>();
                 if (collection != null)
                     collection = collection.Where(x => x.PROFILETYPE == 2).OrderBy(x => x.PROFILENAME);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STAFF> STAFFCollection
-        {
-            get
-            {
-                var collection = GetEntities<STAFF>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }

@@ -139,6 +139,11 @@
                             <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" />
+                                    <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Security Profile" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.PROFILECollection, ElementName=userControl}" ValueMember="ID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
                                     <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
                                     <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
