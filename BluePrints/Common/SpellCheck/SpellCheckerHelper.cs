@@ -66,8 +66,8 @@ namespace BluePrints.Common
 #if DEBUG
 
 #else
-            spellChecker.Dictionaries.Add(GetDefaultDictionary());
-            spellChecker.Dictionaries.Add(GetCustomDictionary());
+            //spellChecker.Dictionaries.Add(GetDefaultDictionary());
+            //spellChecker.Dictionaries.Add(GetCustomDictionary());
 #endif
         }
 
