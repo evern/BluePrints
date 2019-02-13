@@ -143,6 +143,8 @@ namespace BluePrints.ViewModels
             base.resolveParameters(parameter);
             ForecastSummary = new ForecastSummary();
             forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
+            useProductivityFactorOnRemaining = true; //calculate remaining costs using productivity factor
+            maxProductivityFactorOnRemaining = 5; //maximum productivity factor to apply when deliverable isn't started when it's meant to
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = false;
             shouldSeparateVariation = true;

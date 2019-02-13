@@ -51,12 +51,12 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false)
+        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, bool earnOnly = false, bool useProductivityFactorOnRemaining = false, decimal maxProductivityFactorOnRemaining = 3)
         {
             if (projectSummarizer == null)
                 return;
 
-            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion);
+            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion, false, useProductivityFactorOnRemaining, maxProductivityFactorOnRemaining);
             //Build burned must come after build so that remaining can be retrieved for remaining actual
             projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllBurned);
 

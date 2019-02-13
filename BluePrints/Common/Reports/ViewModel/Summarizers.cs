@@ -12,7 +12,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false);
+        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false, bool useProductivity = false, decimal maxProductivityFactor = 3);
         void Summarize();
     }
 
@@ -25,7 +25,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false)
+        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false, bool useProductivity = false, decimal maxProductivityFactor = 3)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
@@ -39,7 +39,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             SetEarnedDataPoints(weightingPortion);
 
             if(!earnOnly)
-                SetRemainingDataPoints(weightingPortion);
+                SetRemainingDataPoints(weightingPortion, useProductivity, maxProductivityFactor);
 
             Summarize();
 
@@ -68,7 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public abstract void SetEarnedDataPoints(decimal weightingPortion = 1);
 
         public abstract int SetRemainingDataPointsProgress();
-        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1);
+        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, decimal maxProductivity = 3);
 
         public virtual void Summarize()
         {
@@ -327,7 +327,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, decimal maxProductivity = 3)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
@@ -387,7 +387,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }
                     else
                     {
-                        reportableObject.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                        List<StoredProcedure_RemainingDataPoint> storedProcedure_RemainingDataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
+                        if (useProductivity)
+                        {
+                            double maxProductivityDbl = Convert.ToDouble(maxProductivity);
+                            double maxProductivityFactor = (1 / maxProductivityDbl);
+                            storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, reportableObject.Current_Productivity, maxProductivityFactor));
+                        }
+
+                        reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.DataPoints);
                         //SummaryStats summaryStats = reportableObject.Stats as SummaryStats;
                         //if (summaryStats != null)
                         //    reportableObject.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
@@ -398,6 +406,18 @@ namespace BluePrints.Common.ViewModel.Reporting
                     LoadingScreenManager.Progress();
                 }
             }
+        }
+
+        /// <summary>
+        /// Inflate datapoint's units and price by a factor
+        /// </summary>
+        private void productivityInflation(StoredProcedure_RemainingDataPoint dataPoint, decimal currentProductivity, double maxProductivityFactor)
+        {
+            double currentProductivityDbl = Convert.ToDouble(currentProductivity);
+            double productivity = currentProductivityDbl == 0 ? maxProductivityFactor : currentProductivityDbl;
+
+            dataPoint.PeriodRemainingUnits = dataPoint.PeriodRemainingUnits / productivity;
+            dataPoint.PeriodRemainingPrice = dataPoint.PeriodRemainingPrice / productivity;
         }
 
         public override void Summarize()
@@ -485,7 +505,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, decimal maxProductivity = 3)
         {
             PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion);
             LoadingScreenManager.Progress();
