@@ -251,7 +251,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (dataPoints == null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
                 {
                     decimal qtyPerUnit = this.TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
-                    DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate.AddDays(1) : (DateTime?)null;
+                    DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate : (DateTime?)null;
                     dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints, qtyPerUnit, plotStartdate, ExoDataPoints);
                     //dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints);
                 }

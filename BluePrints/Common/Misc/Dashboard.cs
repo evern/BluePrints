@@ -106,6 +106,7 @@ namespace BluePrints.Common.Misc
         Earned,
         Burned,
         Actual,
+        Current,
         Remaining,
         RemainingActual
     }
@@ -202,6 +203,13 @@ namespace BluePrints.Common.Misc
                     if (summary.Earned != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
 
+                    if (summary.Current != null)
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Current, summary.Current.DataPoints));
+
+                    //string s = string.Empty;
+                    //if (commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code == "14408-200-00-D1" && commodity_code_dashboard.Parent_Dashboard.Code == "EL91" && commodity_code_dashboard.Code == "SPC")
+                    //    s = string.Empty;
+
                     if (summary.Remaining != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints));
 
@@ -228,7 +236,6 @@ namespace BluePrints.Common.Misc
                 new_export_data.Costs = data_point.Costs;
                 new_export_data.Subjob_Name = subJobName;
                 new_export_data.Discipline_Name = disciplineName;
-
                 if (actual_data_points != null)
                 {
                     ViewModel.Reporting.DataPoint current_period_actual = actual_data_points.FirstOrDefault(x => x.ProgressDate == data_point.ProgressDate);
@@ -251,9 +258,6 @@ namespace BluePrints.Common.Misc
             foreach (ViewModel.Reporting.DataPoint data_point in data_points)
             {
                 Dashboard_Export_Data_Point new_export_data = new Dashboard_Export_Data_Point();
-                string s = string.Empty;
-                if (stats_type == StatsType.PlannedLate)
-                    s = string.Empty;
 
                 new_export_data.Type = stats_type;
                 new_export_data.Data_Date = data_point.ProgressDate;
