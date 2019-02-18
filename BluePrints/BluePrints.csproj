@@ -444,6 +444,7 @@
     <Compile Include="Common\Filtering\View\FilterTreeView.xaml.cs">
       <DependentUpon>FilterTreeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Helpers\EnumHelper.cs" />
     <Compile Include="Common\Misc\ActiveDirectory.cs" />
     <Compile Include="Common\Helpers\CommonMethods.cs" />
     <Compile Include="Common\Helpers\CustomMessageBoxService.cs" />
@@ -468,6 +469,7 @@
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_ITEMVariation.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
+    <Compile Include="Common\Projections\PROJECT_Summary.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />
@@ -571,6 +573,8 @@
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MaxPercentageMessageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ValueOutOfRangeMessageConverter.cs" />
@@ -643,6 +647,8 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY_SETTING.cs" />
+    <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY.cs" />
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\DSTATUS_DOCTYPE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
@@ -696,6 +702,8 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY_SETTING.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DSTATUS_DOCTYPE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
@@ -823,6 +831,7 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
@@ -922,6 +931,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTSummaryView.xaml.cs">
+      <DependentUpon>PROJECTSummaryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTForecastView.xaml.cs">
       <DependentUpon>PROJECTForecastView.xaml</DependentUpon>
@@ -1850,6 +1862,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTSummaryView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

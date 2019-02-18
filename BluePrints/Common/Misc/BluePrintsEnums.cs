@@ -20,6 +20,16 @@ namespace BluePrints.Common
         }
     }
 
+    public enum StaticSummaryRowTypes
+    {
+        [Display(Name = "Hours (manhour indirect)")]
+        Indirect_Man_Hours = 0,
+        [Display(Name = "Hours (manhours direct)")]
+        Direct_Man_Hours = 1,
+        [Display(Name = "Costs")]
+        Costs = 2
+    }
+
     public enum DocumentNumberStatus
     {
         [Display(Name = "Preliminary")] Preliminary = 0,

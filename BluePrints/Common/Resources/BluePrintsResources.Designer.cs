@@ -295,6 +295,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to D.
+        /// </summary>
+        internal static string DesignPhaseCode {
+            get {
+                return ResourceManager.GetString("DesignPhaseCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to C.
+        /// </summary>
+        internal static string DirectPhaseCode {
+            get {
+                return ResourceManager.GetString("DirectPhaseCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to *.
         /// </summary>
         internal static string Entity_Changed {
@@ -354,6 +372,15 @@ namespace BluePrints.Common.Resources {
         internal static string GlobalOffice {
             get {
                 return ResourceManager.GetString("GlobalOffice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I.
+        /// </summary>
+        internal static string IndirectPhaseCode {
+            get {
+                return ResourceManager.GetString("IndirectPhaseCode", resourceCulture);
             }
         }
         
@@ -453,6 +480,15 @@ namespace BluePrints.Common.Resources {
         internal static string P6_Assignment_Units_Populated {
             get {
                 return ResourceManager.GetString("P6_Assignment_Units_Populated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to P.
+        /// </summary>
+        internal static string ProcurementPhaseCode {
+            get {
+                return ResourceManager.GetString("ProcurementPhaseCode", resourceCulture);
             }
         }
         

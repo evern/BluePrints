@@ -258,4 +258,16 @@
   <data name="Default_CFO" xml:space="preserve">
     <value>Ryan McFarlane</value>
   </data>
+  <data name="DesignPhaseCode" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="DirectPhaseCode" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="IndirectPhaseCode" xml:space="preserve">
+    <value>I</value>
+  </data>
+  <data name="ProcurementPhaseCode" xml:space="preserve">
+    <value>P</value>
+  </data>
 </root>

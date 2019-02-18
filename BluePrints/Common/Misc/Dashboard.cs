@@ -1,9 +1,12 @@
-﻿using BluePrints.Common.Resources;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -29,11 +32,11 @@ namespace BluePrints.Common.Misc
 
         public string Code { get; set; }
 
-        public string PhaseCode
+        public string PhaseCodeFromSubJobCode
         {
             get
             {
-                if (Code == string.Empty)
+                if (Code == null || Code == string.Empty)
                     return string.Empty;
 
                 List<string> codePartition = Code.Split('-').ToList();
@@ -67,6 +70,7 @@ namespace BluePrints.Common.Misc
     public class DashboardFlatStructure : DashboardTreeStructure, IHaveStats
     {
         public PhaseType? Phase { get; set; }
+        public string PhaseCode { get; set; }
         public string SubjobCode { get; set; }
         public string AreaCode { get; set; }
         public string SubAreaCode { get; set; }
@@ -372,7 +376,6 @@ namespace BluePrints.Common.Misc
             
             return dashboard;
         }
-
         /// <summary>
         /// Separate variation out from data points
         /// </summary>
@@ -387,9 +390,6 @@ namespace BluePrints.Common.Misc
             DashboardTreeStructure project_dashboard = new DashboardTreeStructure();
             project_dashboard.Summary = project_summary_stats;
 
-            IEnumerable<ExoDataPoint> burned_data_points = project_summary_stats.GetBurnedDataPoints();
-            IEnumerable<ExoDataPoint> material_data_points = project_summary_stats.GetMaterialDataPoints();
-            IEnumerable<ExoDataPoint> po_data_points = project_summary_stats.GetPODataPoints();
             //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
             project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name);
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
@@ -499,7 +499,7 @@ namespace BluePrints.Common.Misc
         {
             DashboardFlatStructure newDashboard = new DashboardFlatStructure();
             newDashboard.SubjobCode = subjobDashboard.Code;
-            newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCode) ? PhaseType.Construct : (PhaseType?)null;
+            newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
             newDashboard.DisciplineCode = disciplineCode;
             newDashboard.CommodityCode = commodityCode;
             newDashboard.Variation_Code = variationCode;

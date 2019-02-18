@@ -32,6 +32,8 @@ namespace BluePrints.Data
             MEETING_TYPE = new HashSet<MEETING_TYPE>();
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
             PROGRESS = new HashSet<PROGRESS>();
+            PROJECT_SUMMARY = new HashSet<PROJECT_SUMMARY>();
+            PROJECT_SUMMARY_SETTINGS = new HashSet<PROJECT_SUMMARY_SETTING>();
             STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
