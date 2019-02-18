@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private DispatcherTimer selectAllDispatcher;
-        private List<DashboardTreeStructure> hierarchicalDashboard = null;
+        protected List<DashboardTreeStructure> hierarchicalDashboard = null;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
@@ -263,7 +263,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(false, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining, maxProductivityFactorOnRemaining);
                 project.RecalculateStats(false);
-                project.Subjob_Dashboards = DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, shouldSeparateVariation);
+                project.Subjob_Dashboards = getDashboardStructure(project);
                 project.Update();
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));
@@ -278,12 +278,19 @@ namespace BluePrints.ViewModels
             }
         }
 
+        protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project)
+        {
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, shouldSeparateVariation);
+        }
+
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //for raising can export to excel
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
             mainThreadDispatcher.BeginInvoke(new Action(() => this.onSummaryCalculateComplete()));
-            selectAllDispatcher.Start();
+
+            if(selectAllDispatcher != null)
+                selectAllDispatcher.Start();
         }
 
         protected virtual void onSummaryCalculateComplete()

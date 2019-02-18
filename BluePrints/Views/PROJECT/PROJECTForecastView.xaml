@@ -45,19 +45,19 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.ImportSheetCommand, ElementName=userControl}" Content="Import" Glyph="{dx:DXImage Image=SaveTo_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveTo_32x32.png}" ToolTip="Import the spreadsheet that was exported from here" />
                                 <!--<dxb:BarButtonItem Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />-->
                                 <dxb:BarButtonItem Command="{Binding DataContext.SaveEACCommand, ElementName=userControl}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
-                                <dxb:BarStaticItem Content="Start Date" />
+                                <dxb:BarStaticItem Content="Start Date" Glyph="{dxc:DXImage Image=AlignVerticalLeft2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalLeft2_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.FixedStartDate, ElementName=userControl}" ToolTip="Start date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
-                                <dxb:BarStaticItem Content="Data Date" />
+                                <dxb:BarStaticItem Content="Data Date" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.FixedDataDate, ElementName=userControl}" ToolTip="Data date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
-                                <dxb:BarStaticItem Content="End Date" />
+                                <dxb:BarStaticItem Content="End Date" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.FixedEndDate, ElementName=userControl}" ToolTip="End date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:DateEditSettings />
@@ -121,7 +121,7 @@
                                         <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                    <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
@@ -195,7 +195,7 @@
                                                     <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                                         <dxg:GridColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <dxe:SpinEdit Name="PART_Editor" Increment="100" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                                <dxe:SpinEdit Name="PART_Editor" Increment="100" IsReadOnly="{Binding RowData.Row.Calculation.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                             </DataTemplate>
                                                         </dxg:GridColumn.CellTemplate>
                                                     </dxg:GridColumn>
@@ -335,7 +335,6 @@
                                                 <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                                     <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
-                                                    <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                                     <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                                                     <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
                                                     <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />

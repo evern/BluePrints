@@ -509,6 +509,16 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
+        public static string GetPhaseCode(string subjobCode)
+        {
+            if (subjobCode == string.Empty)
+                return string.Empty;
+            else if (subjobCode.Length < 15)
+                return string.Empty;
+
+            return subjobCode.Substring(13, 2);
+        }
+
         public static void WORKPACK_Populate_Name(WORKPACK workpack, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection)
         {
             SUBJOB querySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == workpack.GUID_SUBJOB);

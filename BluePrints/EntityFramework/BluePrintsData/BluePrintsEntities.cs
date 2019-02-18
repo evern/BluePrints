@@ -51,6 +51,8 @@ namespace BluePrints.Data
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
+        public virtual DbSet<PROJECT_SUMMARY> PROJECT_SUMMARY { get; set; }
+        public virtual DbSet<PROJECT_SUMMARY_SETTING> PROJECT_SUMMARY_SETTING { get; set; }
         public virtual DbSet<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
         public virtual DbSet<RA_GUIDE_PROMPT> RA_GUIDE_PROMPT { get; set; }
@@ -649,6 +651,18 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.VARIATION_REGISTER)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.PROJECT_SUMMARY)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.PROJECT_SUMMARY_SETTINGS)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

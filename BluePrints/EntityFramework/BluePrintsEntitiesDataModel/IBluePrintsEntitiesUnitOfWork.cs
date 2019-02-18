@@ -160,6 +160,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROJECT, Guid> PROJECTS { get; }
 
         /// <summary>
+        /// The PROJECT_SUMMARY entities repository.
+        /// </summary>
+        IRepository<PROJECT_SUMMARY, Guid> PROJECT_SUMMARIES { get; }
+
+        /// <summary>
+        /// The PROJECT_SUMMARY_SETTING entities repository.
+        /// </summary>
+        IRepository<PROJECT_SUMMARY_SETTING, Guid> PROJECT_SUMMARY_SETTINGS { get; }
+
+        /// <summary>
         /// The PROJECT_DISCIPLINE entities repository.
         /// </summary>
         IRepository<PROJECT_DISCIPLINE, Guid> PROJECT_DISCIPLINES { get; }

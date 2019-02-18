@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
         public virtual DateTime EndSelectionDate { get; set; }
         public virtual DateTime StartSelectionDate { get; set; }
         public virtual IEnumerable<string> Subjobs { get; set; }
-        IEnumerable<ExoTimeAuthorisation> jobLines { get; set; }
+        protected IEnumerable<ExoTimeAuthorisation> jobLines { get; set; }
         protected JOBCOST_HDR masterJob;
         protected JOBCOST_LINES copyLine;
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -122,21 +122,21 @@ namespace BluePrints.ViewModels
         protected virtual IGridControlService ExportGridControlService { get { return this.GetService<IGridControlService>("ExportGridControlService"); } }
         protected virtual ITableViewService ExportTableViewService { get { return this.GetService<ITableViewService>("ExportTableViewService"); } }
 
-        int spreadSheetPhaseIndex = 0;
-        int spreadSheetAreaIndex = 1;
-        int spreadSheetSubAreaIndex = 2;
-        int spreadSheetSubJobIndex = 3;
-        int spreadSheetSubJobTitleIndex = 4;
-        int spreadSheetVariationIndex = 5;
-        int spreadSheetDisciplineIndex = 6;
-        int spreadSheetDisciplineNameIndex = 7;
-        int spreadSheetCommodityIndex = 8;
-        int spreadSheetCommodityNameIndex = 9;
-        int spreadSheetCommodityDescriptionIndex = 10;
-        int spreadSheetCommodityUOMIndex = 11;
-        int spreadSheetRateIndex = 12;
-        int spreadSheetBudgetIndex = 13;
-        int spreadSheetDateStartIndex = 14;
+        protected int spreadSheetPhaseIndex = 0;
+        protected int spreadSheetAreaIndex = 1;
+        protected int spreadSheetSubAreaIndex = 2;
+        protected int spreadSheetSubJobIndex = 3;
+        protected int spreadSheetSubJobTitleIndex = 4;
+        protected int spreadSheetVariationIndex = 5;
+        protected int spreadSheetDisciplineIndex = 6;
+        protected int spreadSheetDisciplineNameIndex = 7;
+        protected int spreadSheetCommodityIndex = 8;
+        protected int spreadSheetCommodityNameIndex = 9;
+        protected int spreadSheetCommodityDescriptionIndex = 10;
+        protected int spreadSheetCommodityUOMIndex = 11;
+        protected int spreadSheetRateIndex = 12;
+        protected int spreadSheetBudgetIndex = 13;
+        protected int spreadSheetDateStartIndex = 14;
 
         protected override void resolveParameters(object parameter)
         {
@@ -276,10 +276,10 @@ namespace BluePrints.ViewModels
         }
 
         #region Data Points Table
-        string columnEntity = "Entity";
-        string columnCalculation = "Calculation";
-        string columnCompare = "CompareEntities";
-        string columnChild = "ChildEntities";
+        protected string columnEntity = "Entity";
+        protected string columnCalculation = "Calculation";
+        protected string columnCompare = "CompareEntities";
+        protected string columnChild = "ChildEntities";
         DataTable dataPointsTable = null;
         DateTime firstAlignedDataDate;
 
@@ -305,7 +305,7 @@ namespace BluePrints.ViewModels
                         exportTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
-                    foreach (DataRow row in DataPointsTable.Rows)
+                    foreach (DataRow row in dataPointsTable.Rows)
                     {
                         DataTable childTable = (DataTable)row[columnChild];
                         foreach (DataRow childRow in childTable.Rows)
@@ -343,7 +343,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public DataTable DataPointsTable
+        public virtual DataTable DataPointsTable
         {
             get
             {
@@ -1258,7 +1258,6 @@ namespace BluePrints.ViewModels
                 return;
 
             DataRowView dataRowView = (DataRowView)e.Row;
-            ExoSubJobProjection entity = (ExoSubJobProjection)dataRowView.Row[columnEntity];
             EntitiesUndoRedoManager.PauseActionId();
             commitCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
             EntitiesUndoRedoManager.UnpauseActionId();
@@ -1267,7 +1266,7 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
-        private void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
+        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
         {
             ExoSubJobProjection entity = (ExoSubJobProjection)row[columnEntity];
 
@@ -1651,7 +1650,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        bool isBackgroundEdit = false;
+        protected bool isBackgroundEdit = false;
         /// <summary>
         /// Function to undo the entity changes
         /// Must be used in conjunction of EntitiesUndoManager

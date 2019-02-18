@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.ViewModel.Utils;
 using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -353,18 +354,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal POOrderQty { get; set; }
         public decimal POSuppliedQty { get; set; }
 
-        public string PhaseCode
-        {
-            get
-            {
-                if (Subjob_Name == string.Empty)
-                    return string.Empty;
-                else if (Subjob_Name.Length < 15)
-                    return string.Empty;
-                
-                return Subjob_Name.Substring(13, 2);
-            }
-        }
+        public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(Subjob_Name);
 
         public string Department_Code
         {

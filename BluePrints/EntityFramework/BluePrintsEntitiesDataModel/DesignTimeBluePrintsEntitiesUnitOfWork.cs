@@ -172,6 +172,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((PROJECT x) => x.GUID); }
         }
 
+        IRepository<PROJECT_SUMMARY, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_SUMMARIES
+        {
+            get { return GetRepository((PROJECT_SUMMARY x) => x.GUID); }
+        }
+
+        IRepository<PROJECT_SUMMARY_SETTING, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_SUMMARY_SETTINGS
+        {
+            get { return GetRepository((PROJECT_SUMMARY_SETTING x) => x.GUID); }
+        }
+
         IRepository<PROJECT_DISCIPLINE, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_DISCIPLINES
         {
             get { return GetRepository((PROJECT_DISCIPLINE x) => x.GUID); }

@@ -1560,6 +1560,19 @@ namespace BluePrints.Common.Projections
         public decimal BudgetRate { get; set; }
         public decimal ForecastRate { get; set; }
         public decimal BudgetCosts => BudgetQty * BudgetRate;
+
+        public string PhaseCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(13, 2);
+            }
+        }
     }
 
     public class PrimeroSubJob
