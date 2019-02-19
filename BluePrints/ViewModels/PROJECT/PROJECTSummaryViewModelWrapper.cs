@@ -375,7 +375,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    actual = designActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units) + directActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
+                    actual = designActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units)) + directActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                     designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedUnits));
                     designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Units));
                     designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
