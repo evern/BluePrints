@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -469,7 +469,6 @@
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\ESTIMATION_ITEMVariation.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
-    <Compile Include="Common\Projections\PROJECT_Summary.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
     <Compile Include="Common\Projections\VariationBase.cs" />

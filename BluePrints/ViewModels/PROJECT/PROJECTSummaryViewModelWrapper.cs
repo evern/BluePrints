@@ -14,7 +14,10 @@ using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -54,6 +57,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
@@ -61,6 +65,7 @@ namespace BluePrints.ViewModels
 
         PROJECT_SUMMARY_SETTING loadProject_Summary_Setting;
         public PROJECT_SUMMARY_SETTING PROJECT_SUMMARY_SETTINGS => loadProject_Summary_Setting;
+        protected PROGRESS live_PROGRESS;
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
@@ -72,6 +77,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
         }
 
         private Func<IRepositoryQuery<PROJECT_SUMMARY>, IQueryable<PROJECT_SUMMARY>> PROJECT_SUMMARYProjectionFunc()
@@ -336,42 +346,61 @@ namespace BluePrints.ViewModels
                 actual = indirectActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                 if (rowType == StaticSummaryRowTypes.Indirect_Man_Hours)
                 {
+                    IEnumerable<TASK> indirectTASKS = TASKS(BluePrintsResources.P6_Procurement_ACTVCODE);
                     constructionBudget = null;
                     constructionRemaining = null;
                     constructionPlanned = null;
                     constructionEarned = null;
-
-                    totalBudgetReadOnly = false;
-                    totalRemainingReadOnly = false;
                     totalEarned = actual;
-                    if (PROJECT_SUMMARY != null)
+
+                    if(LoadP6PROJECT != null)
                     {
-                        totalBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
-                        totalPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
-                        totalRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
+                        totalBudget = indirectTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
+                        totalPlanned = getPeriodCumulativePlanned(indirectTASKS);
+                        totalRemaining = indirectTASKS.Where(x => x.remain_work_qty != null).Sum(x => (decimal)x.remain_work_qty);
+                    }
+                    else
+                    {
+                        totalBudgetReadOnly = false;
+                        totalRemainingReadOnly = false;
+                        if (PROJECT_SUMMARY != null)
+                        {
+                            totalBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
+                            totalPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
+                            totalRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
+                        }
                     }
                 }
                 else
                 {
-                    constructionBudgetReadOnly = false;
                     designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedUnits));
-
-                    constructionRemainingReadOnly = false;
                     designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Units));
-
-                    constructionEarnedReadOnly = false;
                     designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
-
-                    constructionPlannedReadOnly = false;
                     designPlanned = directDesignPlannedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
 
-                    if(PROJECT_SUMMARY != null)
+                    if(LoadP6PROJECT != null)
                     {
-                        constructionBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
-                        constructionRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
-                        constructionEarned = PROJECT_SUMMARY.EARNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.EARNED_UNITS;
-                        constructionPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
+                        IEnumerable<TASK> directTASKS = TASKS(BluePrintsResources.P6_Construction_ACTVCODE);
+                        constructionBudget = directTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
+                        constructionRemaining = directTASKS.Where(x => x.remain_work_qty != null).Sum(x => (decimal)x.remain_work_qty);
+                        constructionEarned = directTASKS.Where(x => x.act_work_qty != null).Sum(x => (decimal)x.act_work_qty);
+                        constructionPlanned = getPeriodCumulativePlanned(directTASKS);
                     }
+                    else
+                    {
+                        constructionBudgetReadOnly = false;
+                        constructionRemainingReadOnly = false;
+                        constructionEarnedReadOnly = false;
+                        constructionPlannedReadOnly = false;
+                        if (PROJECT_SUMMARY != null)
+                        {
+                            constructionBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
+                            constructionRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
+                            constructionEarned = PROJECT_SUMMARY.EARNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.EARNED_UNITS;
+                            constructionPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
+                        }
+                    }
+
 
                     totalBudget = (decimal)designBudget + (decimal)constructionBudget;
                     totalRemaining = (decimal)designRemaining + (decimal)constructionRemaining;
@@ -522,6 +551,44 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private decimal getPeriodCumulativePlanned(IEnumerable<TASK> TASKS)
+        {
+            decimal periodCumulativePlanned = 0;
+            if (LoadP6PROJECT.last_recalc_date != null)
+            {
+                foreach (TASK task in TASKS)
+                {
+                    if (task.target_drtn_hr_cnt == null || task.target_start_date == null || task.target_end_date == null)
+                        continue;
+
+                    DateTime startDate = (DateTime)task.target_start_date;
+                    DateTime endDate = (DateTime)task.target_end_date;
+
+                    TimeSpan totalDays = endDate - startDate;
+                    decimal totalWorkingHours = (decimal)task.target_drtn_hr_cnt;
+                    if (totalWorkingHours == 0)
+                        continue;
+
+                    decimal totalUnits = task.target_work_qty == null ? 0 : (decimal)task.target_work_qty;
+                    decimal taskTotalDays = Convert.ToDecimal(totalDays.TotalDays);
+                    //get pro-rated working days per day
+                    decimal workingHoursPerDays = totalWorkingHours / taskTotalDays;
+                    DateTime lastRecalcDate = ((DateTime)LoadP6PROJECT.last_recalc_date);
+                    TimeSpan elapsedTimespan = lastRecalcDate - startDate;
+                    if(elapsedTimespan.TotalDays > 0)
+                    {
+                        decimal elapsedDays = Convert.ToDecimal(elapsedTimespan.TotalDays);
+                        decimal elapsedWorkingHours = elapsedDays * workingHoursPerDays;
+                        decimal pctComplete = elapsedWorkingHours / totalWorkingHours;
+
+                        periodCumulativePlanned += (pctComplete * totalUnits);
+                    }
+                }
+            }
+
+            return periodCumulativePlanned;
+        }
+
         private StaticSummaryRowTypes getRowType(DataRow row, string fieldName)
         {
             StaticSummaryRowTypes rowType = (StaticSummaryRowTypes)row[Fields.RowType.ToString()];
@@ -651,6 +718,42 @@ namespace BluePrints.ViewModels
             }
         }
 
+        protected P6Data.PROJECT LoadP6PROJECT
+        {
+            get
+            {
+                if (liveDesignProgress == null || liveDesignProgress.P6PROGRESS_NAME == string.Empty)
+                    return null;
+                else
+                    return p6UnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == liveDesignProgress.P6PROGRESS_NAME);
+            }
+        }
+
+        List<TASK> taskCollection;
+        public IEnumerable<TASK> TASKCollection
+        {
+            get
+            {
+                if(taskCollection == null)
+                {
+                    if (LoadP6PROJECT == null)
+                        taskCollection = new List<TASK>();
+                    else
+                        taskCollection = p6UnitOfWork.TASK.Where(x => x.proj_id == LoadP6PROJECT.proj_id).ToList();
+                }
+
+                return taskCollection;
+            }
+        }
+
+        public IEnumerable<P6Data.PROJECT> P6PROJECTCollection
+        {
+            get
+            {
+                return GetEntities<P6Data.PROJECT>();
+            }
+        }
+
         public CollectionViewModel<PROJECT_SUMMARY, PROJECT_SUMMARY, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_SUMMARYCollectionViewModel
         {
             get
@@ -679,6 +782,24 @@ namespace BluePrints.ViewModels
 
                 return (CollectionViewModel<PROJECT_SUMMARY_SETTING, PROJECT_SUMMARY_SETTING, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_SUMMARY_SETTING>();
             }
+        }
+
+        private IEnumerable<TASK> TASKS(string phaseActvCode)
+        {
+            if (LoadP6PROJECT == null)
+                return new List<TASK>();
+
+            List<TASK> returnTaskCollection = new List<TASK>();
+            foreach (TASK task in TASKCollection)
+            {
+                if (task.delete_date != null)
+                    continue;
+
+                if (task.TASKACTV.Any(taskact => taskact.ACTVCODE != null && taskact.ACTVCODE.short_name.ToUpper() == phaseActvCode))
+                    returnTaskCollection.Add(task);
+            }
+
+            return returnTaskCollection.AsQueryable();
         }
         #endregion
     }

@@ -100,7 +100,7 @@
                                                 <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
                                                 <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Period_Planned" Header="Planned Value (PV)" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
                                             </dxg:GridControlBand>
-                                            <dxg:GridControlBand Header="Construction (Hours Only)">
+                                            <dxg:GridControlBand Visible="False" Header="Construction (Hours Only)">
                                                 <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Budget" Header="Budget at Completion (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
                                                 <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
                                                 <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" />

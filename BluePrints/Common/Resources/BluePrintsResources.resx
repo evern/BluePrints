@@ -270,4 +270,10 @@
   <data name="ProcurementPhaseCode" xml:space="preserve">
     <value>P</value>
   </data>
+  <data name="P6_Construction_ACTVCODE" xml:space="preserve">
+    <value>CO</value>
+  </data>
+  <data name="P6_Procurement_ACTVCODE" xml:space="preserve">
+    <value>PR</value>
+  </data>
 </root>
