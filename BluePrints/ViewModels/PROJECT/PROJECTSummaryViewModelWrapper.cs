@@ -718,6 +718,15 @@ namespace BluePrints.ViewModels
             }
         }
 
+        //hide design and construction specific stats when P6 project is found
+        public bool ShowStats
+        {
+            get
+            {
+                return LoadP6PROJECT == null;
+            }
+        }
+
         protected P6Data.PROJECT LoadP6PROJECT
         {
             get
