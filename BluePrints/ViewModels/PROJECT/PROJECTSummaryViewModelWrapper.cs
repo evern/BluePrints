@@ -252,6 +252,7 @@ namespace BluePrints.ViewModels
             IEnumerable<DashboardFlatStructure> directDashboards = AllProjectDashboards.Where(x => BluePrintsDataUtils.GetPhaseCode(x.SubjobCode).Contains(BluePrintsResources.DirectPhaseCode));
 
             IEnumerable<Stats> indirectActualStats = indirectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+            IEnumerable<Stats> directActualStats = directDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
             IEnumerable<Stats> directDesignRemainingStats = designDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null).Select(x => x.Stats.Remaining);
             IEnumerable<Stats> directDesignPlannedStats = designDashboards.Where(x => x.Stats != null && x.Stats.Budgeted != null).Select(x => x.Stats.Budgeted);
             IEnumerable<Stats> directDesignEarnedStats = designDashboards.Where(x => x.Stats != null && x.Stats.Earned != null).Select(x => x.Stats.Earned);
@@ -343,9 +344,9 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                actual = indirectActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                 if (rowType == StaticSummaryRowTypes.Indirect_Man_Hours)
                 {
+                    actual = indirectActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                     IEnumerable<TASK> indirectTASKS = TASKS(BluePrintsResources.P6_Procurement_ACTVCODE);
                     constructionBudget = null;
                     constructionRemaining = null;
@@ -373,6 +374,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
+                    actual = directActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                     designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedUnits));
                     designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Units));
                     designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
