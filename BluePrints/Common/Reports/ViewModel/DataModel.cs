@@ -228,6 +228,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        public override string ToString()
+        {
+            return this.Deliverable_Name;
+        }
+
         public DateTime? StartDate
         {
             get

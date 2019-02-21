@@ -97,6 +97,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Quantity => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Quantity);
 
+        public decimal Earned_Units_ToDate => throw new NotImplementedException();
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }
