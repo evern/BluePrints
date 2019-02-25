@@ -276,4 +276,7 @@
   <data name="P6_Procurement_ACTVCODE" xml:space="preserve">
     <value>PR</value>
   </data>
+  <data name="P6_Design_ACTVCODE" xml:space="preserve">
+    <value>DE</value>
+  </data>
 </root>

@@ -98,6 +98,11 @@ namespace BluePrints.Common.Reports
                 returnReport = new XtraReportRateDisciplineRole();
                 reportDesigner1.OpenReport(returnReport);
             }
+            else if (currentReportType == ReportType.Project_Summary)
+            {
+                returnReport = new XtraReportProjectSummary();
+                reportDesigner1.OpenReport(returnReport);
+            }
 
             return returnReport;
         }

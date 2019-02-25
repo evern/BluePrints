@@ -280,6 +280,7 @@
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateToComplete" ShowInColumn="Calculation.EstimateToComplete" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />
@@ -292,6 +293,7 @@
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.PreviousEAC" ShowInColumn="Calculation.PreviousEAC" SummaryType="Sum" />
+                                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateToComplete" ShowInColumn="Calculation.EstimateToComplete" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.EstimateAtCompletion" ShowInColumn="Calculation.EstimateAtCompletion" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variance" ShowInColumn="Calculation.Variance" SummaryType="Sum" />
                                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Invoiced" ShowInColumn="Calculation.Invoiced" SummaryType="Sum" />

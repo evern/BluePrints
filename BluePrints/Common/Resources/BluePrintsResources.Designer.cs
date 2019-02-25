@@ -493,6 +493,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DE.
+        /// </summary>
+        internal static string P6_Design_ACTVCODE {
+            get {
+                return ResourceManager.GetString("P6_Design_ACTVCODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PR.
         /// </summary>
         internal static string P6_Procurement_ACTVCODE {

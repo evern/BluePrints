@@ -1,7 +1,9 @@
-﻿using System;
+﻿using BluePrints.Common.Projections;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -23,16 +25,18 @@ namespace BluePrints.Common.ViewModel.Converters
                     return transparentColor;
 
                 DataRow dataRow = (DataRow)values[0];
-                string fieldName = values[1].ToString();
-                List<Tuple<string, string>> fieldNamesLookup = (List<Tuple<string, string>>)dataRow["Lookup"];
+                string fieldName = values[1].ToString().Replace("Entity.", "");
+                ProjectSummary summary = (ProjectSummary)dataRow["Entity"];
+                List<Tuple<string, string>> fieldNamesLookup = summary.Lookup;
                 Tuple<string, string> currentFieldName = fieldNamesLookup.FirstOrDefault(x => x.Item1 == fieldName);
 
                 if(currentFieldName != null)
                 {
                     string readOnlyFieldName = currentFieldName.Item2;
-                    bool isReadOnly = (bool)dataRow[readOnlyFieldName];
+                    PropertyInfo propertyInfo = summary.GetType().GetProperty(readOnlyFieldName);
+                    bool isReadOnly = (bool)propertyInfo.GetValue(summary);
 
-                    if(!isReadOnly)
+                    if (!isReadOnly)
                     {
                         return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                     }

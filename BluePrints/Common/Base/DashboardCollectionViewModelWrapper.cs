@@ -282,7 +282,7 @@ namespace BluePrints.Common.ViewModel
             return SummaryEntity != null && SummaryEntity.Stats != null;
         }
 
-        public void ViewReport()
+        public virtual void ViewReport()
         {
             SummaryStats displaySummary = SummaryEntity.Stats as SummaryStats;
             if (displaySummary == null)

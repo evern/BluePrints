@@ -15,7 +15,7 @@
                 <Setter Property="Height" Value="75" />
             </Style>
             <DataTemplate x:Key="projectSummaryCellTemplate">
-                <dxe:SpinEdit Name="PART_Editor" Mask="{Binding RowData.Row.Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="100" MinValue="0" >
+                <dxe:SpinEdit Name="PART_Editor" Mask="{Binding RowData.Row.Entity.Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="100" MinValue="0" >
                     <dxe:SpinEdit.Background>
                         <MultiBinding Converter="{StaticResource ProjectSummaryCellColorConverter}">
                             <Binding Path="RowData.Row.Row" />
@@ -81,6 +81,7 @@
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                             </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -94,48 +95,48 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecastSummary" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}"  SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                         <dxg:GridControl.Bands>
-                                            <dxg:GridControlBand Visible="False" Header="Design (Hours Only)">
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Budget" Header="Budget at Completion (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Design_Period_Planned" Header="Planned Value (PV)" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                            <dxg:GridControlBand Visible="{Binding DataContext.ShowStats, ElementName=userControl}" Header="Design (Hours Only)">
+                                                <!--<dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Design_Budget" Header="Budget at Completion (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />-->
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Design_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Design_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Design_Period_Planned" Header="Planned Value (PV)" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
                                             </dxg:GridControlBand>
-                                            <dxg:GridControlBand Visible="False" Header="Construction (Hours Only)">
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Budget" Header="Budget at Completion (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Construction_Period_Planned" Header="Planned Value (PV)"  HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                            <dxg:GridControlBand Visible="{Binding DataContext.ShowStats, ElementName=userControl}" Header="Construction (Hours Only)">
+                                                <!--<dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Construction_Budget" Header="Budget at Completion (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />-->
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Construction_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Construction_Remaining" Header="Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn Visible="{Binding DataContext.ShowStats, ElementName=userControl}" MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Construction_Period_Planned" Header="Planned Value (PV)"  HeaderTemplate="{StaticResource columnHeaderTemplate}" />
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="Summary" >
-                                                <dxg:GridColumn Width="150" FieldName="RowType" Header="Phase" ReadOnly="True"  >
+                                                <dxg:GridColumn Width="150" FieldName="Entity.RowType" Header="Phase" ReadOnly="True"  >
                                                     <dxg:GridColumn.EditSettings>
-                                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" AllowDrop="False" AllowDefaultButton="False" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StaticSummaryRowTypes}, UseNumericEnumValue=True}" />
+                                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" AllowDrop="False" AllowDefaultButton="False" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StaticSummaryRowTypes}, UseNumericEnumValue=False}" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Total_Budget" Header="Budget at Completion Cost (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Total_Remaining" Header="Total Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Total_Actuals" Header="Actual Hrs / Costs (AC) to Date" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="EAC" Header="Estimate / Forecast Cost at Completion" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Total_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Total_Period_Planned" Header="Planned Value (PV)" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Original_Contract_Value" Header="Original Contract Value" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Approved_Variation" Header="Approved Variations" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Unapproved_Variation" Header="Unapproved Variation ($ and hours)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
-                                                <dxg:GridColumn MaxWidth="75" FieldName="Unapproved_EOT" AllowCellMerge="True" Header="Unapproved EOT (Days)" HeaderTemplate="{StaticResource columnHeaderTemplate}">
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Total_Budget" Header="Budget at Completion Cost (BAC)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Total_Remaining" Header="Total Remaining Hours" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Total_Actuals" Header="Actual Hrs / Costs (AC) to Date" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.EAC" Header="Estimate / Forecast Cost at Completion" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Total_Earned" Header="Earned Value (EV)" HeaderTemplate="{StaticResource columnHeaderTemplate}" ReadOnly="True" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Total_Period_Planned" Header="Planned Value (PV)" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Original_Contract_Value" Header="Original Contract Value" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Approved_Variation" Header="Approved Variations" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" CellTemplate="{StaticResource projectSummaryCellTemplate}" FieldName="Entity.Unapproved_Variation" Header="Unapproved Variation ($ and hours)" HeaderTemplate="{StaticResource columnHeaderTemplate}" />
+                                                <dxg:GridColumn MaxWidth="75" FieldName="Entity.Unapproved_EOT" AllowCellMerge="True" Header="Unapproved EOT (Days)" HeaderTemplate="{StaticResource columnHeaderTemplate}">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <dxe:SpinEdit Name="PART_Editor" Background="LightSalmon" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="10"/>
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn MaxWidth="75" FieldName="Contract_Completion_Date" AllowCellMerge="True" Header="Contract Completion Date (incl approved EOT)" HeaderTemplate="{StaticResource columnHeaderTemplate}" >
+                                                <dxg:GridColumn MaxWidth="75" FieldName="Entity.Contract_Completion_Date" AllowCellMerge="True" Header="Contract Completion Date (incl approved EOT)" HeaderTemplate="{StaticResource columnHeaderTemplate}" >
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <dxe:DateEdit Name="PART_Editor" Background="LightSalmon" />
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn MaxWidth="75" FieldName="Forecast_Completion_Date" Header="Forecast Completion Date" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" >
+                                                <dxg:GridColumn MaxWidth="75" FieldName="Entity.Forecast_Completion_Date" Header="Forecast Completion Date" ReadOnly="True" HeaderTemplate="{StaticResource columnHeaderTemplate}" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:DateEditSettings />
                                                     </dxg:GridColumn.EditSettings>

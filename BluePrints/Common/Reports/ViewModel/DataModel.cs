@@ -228,6 +228,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        public override string ToString()
+        {
+            return EntityNumber;
+        }
+
         public DateTime? StartDate
         {
             get

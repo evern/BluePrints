@@ -9,6 +9,7 @@ using BluePrints.Common.Base;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
@@ -21,10 +22,12 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -71,6 +74,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_SUMMARIES, PROJECT_SUMMARYProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_SUMMARY_SETTINGS, PROJECT_SUMMARY_SETTINGProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             base.addEntitiesLoader();
         }
 
@@ -94,51 +98,12 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private enum Fields
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            RowType,
-            Design_Budget,
-            Design_Remaining,
-            Total_Actuals,
-            EAC,
-            Design_Earned,
-            Total_Earned,
-            Design_Period_Planned,
-            Total_Period_Planned,
-            SPI,
-            CPI,
-            Current_Contract_Value,
-            GPM,
-            Forecast_Completion_Date,
-            Mask,
-            Construction_TotalBudget_ReadOnly,
-            Construction_Budget_ReadOnly,
-            Construction_Planned_ReadOnly,
-            Construction_Earned_ReadOnly,
-            Construction_Remaining_ReadOnly,
-            Total_Remaining_ReadOnly,
-            Always_Read_Only,
-            Lookup
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Project_Summary.ToString());
         }
 
-        private enum EditableFields
-        {
-            Total_Budget,
-            Construction_Budget,
-            Construction_Period_Planned,
-            Construction_Earned,
-            Construction_Remaining,
-            Total_Remaining,
-            Original_Contract_Value,
-            Approved_Variation,
-            Unapproved_Variation
-        }
-
-        private enum GlobalEditableFields
-        {
-            Unapproved_EOT,
-            Contract_Completion_Date,
-        }
+        const string columnEntity = "Entity";
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
@@ -156,41 +121,7 @@ namespace BluePrints.ViewModels
                     if(summaryDataPointsTable == null)
                     {
                         summaryDataPointsTable = new DataTable();
-                        summaryDataPointsTable.Columns.Add(Fields.RowType.ToString(), typeof(StaticSummaryRowTypes));
-                        summaryDataPointsTable.Columns.Add(Fields.Design_Budget.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Construction_Budget.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Total_Budget.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Design_Remaining.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Construction_Remaining.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Total_Remaining.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Total_Actuals.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.EAC.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Design_Earned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Construction_Earned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Total_Earned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Design_Period_Planned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Construction_Period_Planned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Total_Period_Planned.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.SPI.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.CPI.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Original_Contract_Value.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Approved_Variation.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.Current_Contract_Value.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(Fields.GPM.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(EditableFields.Unapproved_Variation.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(GlobalEditableFields.Unapproved_EOT.ToString(), typeof(decimal));
-                        summaryDataPointsTable.Columns.Add(GlobalEditableFields.Contract_Completion_Date.ToString(), typeof(DateTime));
-                        summaryDataPointsTable.Columns.Add(Fields.Forecast_Completion_Date.ToString(), typeof(DateTime));
-                        summaryDataPointsTable.Columns.Add(Fields.Mask.ToString(), typeof(string));
-                        summaryDataPointsTable.Columns.Add(Fields.Construction_TotalBudget_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Total_Remaining_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Construction_Budget_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Construction_Planned_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Construction_Earned_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Construction_Remaining_ReadOnly.ToString(), typeof(bool));
-                        summaryDataPointsTable.Columns.Add(Fields.Lookup.ToString(), typeof(List<Tuple<string, string>>));
-                        summaryDataPointsTable.Columns.Add(Fields.Always_Read_Only.ToString(), typeof(bool));
-
+                        summaryDataPointsTable.Columns.Add(columnEntity, typeof(ProjectSummary));
 
                         populateRow(StaticSummaryRowTypes.Indirect_Man_Hours);
                         populateRow(StaticSummaryRowTypes.Direct_Man_Hours);
@@ -213,8 +144,9 @@ namespace BluePrints.ViewModels
 
             foreach(DataRow dataRow in dataRowCollection)
             {
-                dataRow[GlobalEditableFields.Unapproved_EOT.ToString()] = loadProject_Summary_Setting.UNAPPROVED_EOT_DAYS == null ? 0 : loadProject_Summary_Setting.UNAPPROVED_EOT_DAYS;
-                dataRow[GlobalEditableFields.Contract_Completion_Date.ToString()] = loadProject_Summary_Setting.CONTRACT_COMPLETION_DATE;
+                ProjectSummary entity = (ProjectSummary)dataRow[columnEntity];
+                entity.Unapproved_EOT = loadProject_Summary_Setting.UNAPPROVED_EOT_DAYS;
+                entity.Contract_Completion_Date = loadProject_Summary_Setting.CONTRACT_COMPLETION_DATE;
             }
         }
 
@@ -223,7 +155,7 @@ namespace BluePrints.ViewModels
             IEnumerable<DataRow> dataRowCollection = from DataRow dr in summaryDataPointsTable.Rows
                                                      select dr;
 
-            return dataRowCollection.FirstOrDefault(x => (StaticSummaryRowTypes)x[Fields.RowType.ToString()] == rowType);
+            return dataRowCollection.FirstOrDefault(x => ((ProjectSummary)x[columnEntity]).RowType == rowType);
         }
 
         private void populateRow(StaticSummaryRowTypes rowType, bool isUpdate = false)
@@ -259,20 +191,20 @@ namespace BluePrints.ViewModels
             IEnumerable<Stats> directDesignEarnedStats = designDashboards.Where(x => x.Stats != null && x.Stats.Earned != null).Select(x => x.Stats.Earned);
 
             List<Tuple<string, string>> fieldNamesLookup = new List<Tuple<string, string>>();
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Total_Budget.ToString(), Fields.Construction_TotalBudget_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Construction_Budget.ToString(), Fields.Construction_Budget_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Construction_Period_Planned.ToString(), Fields.Construction_Planned_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Construction_Earned.ToString(), Fields.Construction_Earned_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Construction_Remaining.ToString(), Fields.Construction_Remaining_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(EditableFields.Total_Remaining.ToString(), Fields.Total_Remaining_ReadOnly.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(GlobalEditableFields.Unapproved_EOT.ToString(), Fields.Always_Read_Only.ToString()));
-            fieldNamesLookup.Add(new Tuple<string, string>(GlobalEditableFields.Contract_Completion_Date.ToString(), Fields.Always_Read_Only.ToString()));
-            foreach (EditableFields fields in (EditableFields[])Enum.GetValues(typeof(EditableFields)))
-            {
-                fieldNamesLookup.Add(new Tuple<string, string>(fields.ToString(), Fields.Always_Read_Only.ToString()));
-            }
+            //fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Total_Budget), GetPropertyName(() => new ProjectSummary().ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Construction_Budget), GetPropertyName(() => new ProjectSummary().Construction_Budget_ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Construction_Period_Planned), GetPropertyName(() => new ProjectSummary().Construction_Planned_ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Construction_Earned), GetPropertyName(() => new ProjectSummary().Construction_Earned_ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Construction_Remaining), GetPropertyName(() => new ProjectSummary().Construction_Remaining_ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Total_Remaining), GetPropertyName(() => new ProjectSummary().Total_Remaining_ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Original_Contract_Value), GetPropertyName(() => new ProjectSummary().ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Unapproved_EOT), GetPropertyName(() => new ProjectSummary().ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Approved_Variation), GetPropertyName(() => new ProjectSummary().ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Unapproved_Variation), GetPropertyName(() => new ProjectSummary().ReadOnly)));
+            fieldNamesLookup.Add(new Tuple<string, string>(GetPropertyName(() => new ProjectSummary().Contract_Completion_Date), GetPropertyName(() => new ProjectSummary().ReadOnly)));
 
-            newRow[Fields.Lookup.ToString()] = fieldNamesLookup;
+            ProjectSummary entity = new ProjectSummary();
+            entity.Lookup = fieldNamesLookup;
             switch (rowType)
             {
                 case StaticSummaryRowTypes.Indirect_Man_Hours:
@@ -321,12 +253,23 @@ namespace BluePrints.ViewModels
             bool constructionPlannedReadOnly = true;
             bool constructionEarnedReadOnly = true;
 
+            if (PROJECT_SUMMARY != null)
+            {
+                originalContractValue = PROJECT_SUMMARY.ORI_CONTRACT == null ? 0 : (decimal)PROJECT_SUMMARY.ORI_CONTRACT;
+                approvedVariations = PROJECT_SUMMARY.APPROVED_VAR == null ? 0 : (decimal)PROJECT_SUMMARY.APPROVED_VAR;
+
+                entity.Original_Contract_Value = originalContractValue;
+                entity.Approved_Variation = approvedVariations;
+                entity.Unapproved_Variation = PROJECT_SUMMARY.UNAPPROVED_VAR == null ? 0 : (decimal)PROJECT_SUMMARY.UNAPPROVED_VAR;
+            }
+
             if (rowType == StaticSummaryRowTypes.Costs)
             {
                 //designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedCosts));
                 designBudget = null;
                 constructionBudget = null;
-                totalBudget = filteredForecastCalculaton.Sum(x => x.Budget);
+                //totalBudget = filteredForecastCalculaton.Sum(x => x.Budget);
+                totalBudget = originalContractValue + approvedVariations;
                 //designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Costs));
                 designRemaining = null;
                 constructionRemaining = null;
@@ -355,19 +298,20 @@ namespace BluePrints.ViewModels
                     constructionEarned = null;
                     totalEarned = actual;
 
-                    if(LoadP6PROJECT != null)
+                    totalBudget = originalContractValue + approvedVariations;
+                    if (LoadP6PROJECT != null)
                     {
-                        totalBudget = indirectTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
+                        //totalBudget = indirectTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
                         totalPlanned = getPeriodCumulativePlanned(indirectTASKS);
                         totalRemaining = indirectTASKS.Where(x => x.remain_work_qty != null).Sum(x => (decimal)x.remain_work_qty);
                     }
                     else
                     {
-                        totalBudgetReadOnly = false;
+                        //totalBudgetReadOnly = false;
                         totalRemainingReadOnly = false;
                         if (PROJECT_SUMMARY != null)
                         {
-                            totalBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
+                            //totalBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
                             totalPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
                             totalRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
                         }
@@ -376,88 +320,88 @@ namespace BluePrints.ViewModels
                 else
                 {
                     actual = designActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units)) + directActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
-                    designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedUnits));
-                    designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Units));
-                    designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
-                    designPlanned = directDesignPlannedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
 
                     if(LoadP6PROJECT != null)
                     {
                         IEnumerable<TASK> directTASKS = TASKS(BluePrintsResources.P6_Construction_ACTVCODE);
-                        constructionBudget = directTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
+                        //constructionBudget = directTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
                         constructionRemaining = directTASKS.Where(x => x.remain_work_qty != null).Sum(x => (decimal)x.remain_work_qty);
                         constructionEarned = directTASKS.Where(x => x.act_work_qty != null).Sum(x => (decimal)x.act_work_qty);
                         constructionPlanned = getPeriodCumulativePlanned(directTASKS);
+
+                        IEnumerable<TASK> designTASKS = TASKS(BluePrintsResources.P6_Design_ACTVCODE);
+                        //designBudget = designTASKS.Where(x => x.target_work_qty != null).Sum(x => (decimal)x.target_work_qty);
+                        designRemaining = designTASKS.Where(x => x.remain_work_qty != null).Sum(x => (decimal)x.remain_work_qty);
+                        designEarned = designTASKS.Where(x => x.act_work_qty != null).Sum(x => (decimal)x.act_work_qty);
+                        designPlanned = getPeriodCumulativePlanned(designTASKS);
                     }
                     else
                     {
-                        constructionBudgetReadOnly = false;
+                        //designBudget = directDesignPlannedStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.BudgetedUnits));
+                        designRemaining = directDesignRemainingStats.Where(x => x.DataPoints != null).Sum(x => x.DataPoints.Sum(y => y.Units));
+                        designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
+                        designPlanned = directDesignPlannedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Units);
+
+                        //constructionBudgetReadOnly = false;
                         constructionRemainingReadOnly = false;
                         constructionEarnedReadOnly = false;
                         constructionPlannedReadOnly = false;
                         if (PROJECT_SUMMARY != null)
                         {
-                            constructionBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
+                            //constructionBudget = PROJECT_SUMMARY.BUDGET_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.BUDGET_UNITS;
                             constructionRemaining = PROJECT_SUMMARY.FORECAST_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.FORECAST_UNITS;
                             constructionEarned = PROJECT_SUMMARY.EARNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.EARNED_UNITS;
                             constructionPlanned = PROJECT_SUMMARY.PLANNED_UNITS == null ? 0 : (decimal)PROJECT_SUMMARY.PLANNED_UNITS;
                         }
                     }
 
-
-                    totalBudget = (decimal)designBudget + (decimal)constructionBudget;
+                    totalBudget = originalContractValue + approvedVariations;
+                    //totalBudget = (decimal)designBudget + (decimal)constructionBudget;
                     totalRemaining = (decimal)designRemaining + (decimal)constructionRemaining;
                     totalEarned = (decimal)designEarned + (decimal)constructionEarned;
                     totalPlanned = (decimal)designPlanned + (decimal)constructionPlanned;
                 }
             }
 
-            if (PROJECT_SUMMARY != null)
-            {
-                originalContractValue = PROJECT_SUMMARY.ORI_CONTRACT == null ? 0 : (decimal)PROJECT_SUMMARY.ORI_CONTRACT;
-                approvedVariations = PROJECT_SUMMARY.APPROVED_VAR == null ? 0 : (decimal)PROJECT_SUMMARY.APPROVED_VAR;
-
-                newRow[EditableFields.Original_Contract_Value.ToString()] = originalContractValue;
-                newRow[EditableFields.Approved_Variation.ToString()] = approvedVariations;
-                newRow[EditableFields.Unapproved_Variation.ToString()] = PROJECT_SUMMARY.UNAPPROVED_VAR == null ? 0 : PROJECT_SUMMARY.UNAPPROVED_VAR;
-            }
 
             decimal forecast = actual + totalRemaining;
             decimal currentContractValue = originalContractValue + approvedVariations;
 
-            newRow[Fields.RowType.ToString()] = rowType;
-            if (designBudget != null) newRow[Fields.Design_Budget.ToString()] = designBudget;
-            if (constructionBudget != null) newRow[EditableFields.Construction_Budget.ToString()] = constructionBudget;
-            newRow[EditableFields.Total_Budget.ToString()] = totalBudget;
-            if (designRemaining != null) newRow[Fields.Design_Remaining.ToString()] = designRemaining;
-            if (constructionRemaining != null) newRow[EditableFields.Construction_Remaining.ToString()] = constructionRemaining;
-            newRow[EditableFields.Total_Remaining.ToString()] = totalRemaining;
-            newRow[Fields.EAC.ToString()] = forecast;
-            newRow[Fields.Total_Actuals.ToString()] = actual;
-            if (designEarned != null) newRow[Fields.Design_Earned.ToString()] = designEarned;
-            if (constructionEarned != null) newRow[EditableFields.Construction_Earned.ToString()] = constructionEarned;
-            newRow[Fields.Total_Earned.ToString()] = totalEarned;
-            if (designPlanned != null) newRow[Fields.Design_Period_Planned.ToString()] = designPlanned;
-            if (constructionPlanned != null) newRow[EditableFields.Construction_Period_Planned.ToString()] = constructionPlanned;
-            newRow[Fields.Total_Period_Planned.ToString()] = totalPlanned;
+            entity.RowType = rowType;
+            entity.Design_Budget = designBudget;
+            entity.Construction_Budget = constructionBudget;
+            entity.Total_Budget = totalBudget;
+            entity.Design_Remaining = designRemaining;
+            entity.Construction_Remaining = constructionRemaining;
+            entity.Total_Remaining = totalRemaining;
+            entity.EAC = forecast;
+            entity.Total_Actuals = actual;
+            entity.Design_Earned = designEarned;
+            entity.Construction_Earned = constructionEarned;
+            entity.Total_Earned = totalEarned;
+            entity.Design_Period_Planned = designPlanned;
+            entity.Construction_Period_Planned = constructionPlanned;
+            entity.Total_Period_Planned = totalPlanned;
+
             IEnumerable<BluePrints.Common.ViewModel.Reporting.DataPoint> remainingDataPoints = filteredDashboards.Where(x => x.Stats.Remaining.DataPoints != null).SelectMany(x => x.Stats.Remaining.DataPoints);
             DateTime lastForecastDate = FORECASTCollection.Count() == 0 ? DateTime.Now : FORECASTCollection.Max(x => x.FORECAST_DATE);
             DateTime lastRemainingDate = remainingDataPoints.Count() == 0 ? DateTime.Now : remainingDataPoints.Max(x => x.ProgressDate);
-            newRow[Fields.Forecast_Completion_Date.ToString()] = lastForecastDate < lastRemainingDate ? lastRemainingDate : lastForecastDate;
-            newRow[Fields.Mask.ToString()] = rowType == StaticSummaryRowTypes.Costs ? "c0" : "n0";
 
-            newRow[Fields.SPI.ToString()] = totalPlanned == 0 ? 0 : totalEarned / totalPlanned;
-            newRow[Fields.CPI.ToString()] = actual == 0 ? 0 : totalEarned / actual;
-            newRow[Fields.Current_Contract_Value.ToString()] = currentContractValue;
-            newRow[Fields.GPM.ToString()] = currentContractValue == 0 ? 0 : (currentContractValue - forecast) / currentContractValue;
-            newRow[Fields.Construction_TotalBudget_ReadOnly.ToString()] = totalBudgetReadOnly;
-            newRow[Fields.Total_Remaining_ReadOnly.ToString()] = totalRemainingReadOnly;
-            newRow[Fields.Construction_Budget_ReadOnly.ToString()] = constructionBudgetReadOnly;
-            newRow[Fields.Construction_Planned_ReadOnly.ToString()] = constructionPlannedReadOnly;
-            newRow[Fields.Construction_Remaining_ReadOnly.ToString()] = constructionRemainingReadOnly;
-            newRow[Fields.Construction_Earned_ReadOnly.ToString()] = constructionEarnedReadOnly;
-            newRow[Fields.Always_Read_Only.ToString()] = false;
+            entity.Forecast_Completion_Date = lastForecastDate < lastRemainingDate ? lastRemainingDate : lastForecastDate;
+            entity.Mask = rowType == StaticSummaryRowTypes.Costs ? "c0" : "n0";
+            entity.SPI = totalPlanned == 0 ? 0 : totalEarned / totalPlanned;
+            entity.CPI = actual == 0 ? 0 : totalEarned / actual;
+            entity.Current_Contract_Value = currentContractValue;
+            entity.GPM = currentContractValue == 0 ? 0 : (currentContractValue - forecast) / currentContractValue;
+            entity.Construction_TotalBudget_ReadOnly = totalBudgetReadOnly;
+            entity.Total_Remaining_ReadOnly = totalRemainingReadOnly;
+            entity.Construction_Budget_ReadOnly = constructionBudgetReadOnly;
+            entity.Construction_Planned_ReadOnly = constructionPlannedReadOnly;
+            entity.Construction_Remaining_ReadOnly = constructionRemainingReadOnly;
+            entity.Construction_Earned_ReadOnly = constructionEarnedReadOnly;
+            entity.ReadOnly = false;
 
+            newRow[columnEntity] = entity;
             if(!isUpdate)
                 summaryDataPointsTable.Rows.Add(newRow);
         }
@@ -466,10 +410,10 @@ namespace BluePrints.ViewModels
         #region View Events
         protected override void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
         {
-
-            if (fieldName == GlobalEditableFields.Unapproved_EOT.ToString())
+            fieldName = fieldName.Replace(string.Concat(columnEntity, "."), "");
+            if (fieldName == GetPropertyName(() => new ProjectSummary().Unapproved_EOT))
                 UnapprovedEOT = (decimal)newValue;
-            else if (fieldName == GlobalEditableFields.Contract_Completion_Date.ToString())
+            else if (fieldName == GetPropertyName(() => new ProjectSummary().Contract_Completion_Date))
                 ContractCompletion = (DateTime)newValue;
             else
             {
@@ -483,6 +427,7 @@ namespace BluePrints.ViewModels
 
         private PROJECT_SUMMARY findExistingOrAddPROJECT_SUMMARY(StaticSummaryRowTypes rowType, string fieldName, object newValue)
         {
+            fieldName = fieldName.Replace(string.Concat(columnEntity, "."), "");
             PROJECT_SUMMARY findPROJECT_SUMMARY = PROJECT_SUMMARYCollectionViewModel.Entities.FirstOrDefault(x => x.PHASE_TYPE == rowType);
             if (findPROJECT_SUMMARY == null)
             {
@@ -521,37 +466,24 @@ namespace BluePrints.ViewModels
 
         private void UpdatePROJECT_SUMMARYProperties(PROJECT_SUMMARY project_summary, string fieldName, object newValue)
         {
-            EditableFields editableFieldName = (EditableFields)Enum.Parse(typeof(EditableFields), fieldName);
-            switch (editableFieldName)
-            {
-                case EditableFields.Original_Contract_Value:
-                    project_summary.ORI_CONTRACT = (decimal)newValue;
-                    break;
-                case EditableFields.Approved_Variation:
-                    project_summary.APPROVED_VAR = (decimal)newValue;
-                    break;
-                case EditableFields.Unapproved_Variation:
-                    project_summary.UNAPPROVED_VAR = (decimal)newValue;
-                    break;
-                case EditableFields.Construction_Budget:
-                    project_summary.BUDGET_UNITS = (decimal)newValue;
-                    break;
-                case EditableFields.Construction_Earned:
-                    project_summary.EARNED_UNITS = (decimal)newValue;
-                    break;
-                case EditableFields.Construction_Period_Planned:
-                    project_summary.PLANNED_UNITS = (decimal)newValue;
-                    break;
-                case EditableFields.Construction_Remaining:
-                    project_summary.FORECAST_UNITS = (decimal)newValue;
-                    break;
-                case EditableFields.Total_Budget:
-                    project_summary.BUDGET_UNITS = (decimal)newValue;
-                    break;
-                case EditableFields.Total_Remaining:
-                    project_summary.FORECAST_UNITS = (decimal)newValue;
-                    break;
-            }
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Original_Contract_Value))
+                project_summary.ORI_CONTRACT = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Approved_Variation))
+                project_summary.APPROVED_VAR = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Unapproved_Variation))
+                project_summary.UNAPPROVED_VAR = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Construction_Budget))
+                project_summary.BUDGET_UNITS = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Construction_Earned))
+                project_summary.EARNED_UNITS = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Construction_Period_Planned))
+                project_summary.PLANNED_UNITS = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Construction_Remaining))
+                project_summary.FORECAST_UNITS = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Total_Budget))
+                project_summary.BUDGET_UNITS = (decimal)newValue;
+            if(fieldName == GetPropertyName(() => new ProjectSummary().Total_Remaining))
+                project_summary.FORECAST_UNITS = (decimal)newValue;
         }
 
         private decimal getPeriodCumulativePlanned(IEnumerable<TASK> TASKS)
@@ -594,8 +526,7 @@ namespace BluePrints.ViewModels
 
         private StaticSummaryRowTypes getRowType(DataRow row, string fieldName)
         {
-            StaticSummaryRowTypes rowType = (StaticSummaryRowTypes)row[Fields.RowType.ToString()];
-            return rowType;
+            return ((ProjectSummary)row[columnEntity]).RowType;
         }
 
         public override void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
@@ -604,9 +535,9 @@ namespace BluePrints.ViewModels
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                if (entityProperty.PropertyName == GlobalEditableFields.Unapproved_EOT.ToString())
+                if (entityProperty.PropertyName == GetPropertyName(() => new ProjectSummary().Unapproved_EOT))
                     UnapprovedEOT = (decimal?)entityProperty.OldValue;
-                else if (entityProperty.PropertyName == GlobalEditableFields.Contract_Completion_Date.ToString())
+                else if (entityProperty.PropertyName == GetPropertyName(() => new ProjectSummary().Contract_Completion_Date))
                     ContractCompletion = (DateTime?)entityProperty.OldValue;
                 else
                 {
@@ -630,9 +561,9 @@ namespace BluePrints.ViewModels
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                if (entityProperty.PropertyName == GlobalEditableFields.Unapproved_EOT.ToString())
+                if (entityProperty.PropertyName == GetPropertyName(() => new ProjectSummary().Unapproved_EOT))
                     UnapprovedEOT = (decimal?)entityProperty.NewValue;
-                else if (entityProperty.PropertyName == GlobalEditableFields.Contract_Completion_Date.ToString())
+                else if (entityProperty.PropertyName == GetPropertyName(() => new ProjectSummary().Contract_Completion_Date))
                     ContractCompletion = (DateTime?)entityProperty.NewValue;
                 else
                 {
@@ -812,6 +743,60 @@ namespace BluePrints.ViewModels
             }
 
             return returnTaskCollection.AsQueryable();
+        }
+
+        public override bool CanEditReport()
+        {
+            return !IsLoadingForecast;
+        }
+
+        public override void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Project_Summary);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public override bool CanViewReport()
+        {
+            return !IsLoadingForecast;
+        }
+
+        public override void ViewReport()
+        {
+            XtraReportProjectSummary summaryReport = new XtraReportProjectSummary();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    summaryReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            List<ProjectSummary> projectSummaries = new List<ProjectSummary>();
+            IEnumerable<DataRow> dataRowCollection = from DataRow dr in summaryDataPointsTable.Rows
+                                                     select dr;
+
+            foreach (var dataRow in dataRowCollection)
+            {
+                ProjectSummary rowSummary = (ProjectSummary)dataRow[columnEntity];
+                projectSummaries.Add(rowSummary);
+            }
+
+            summaryReport.AssignProperties(projectSummaries, loadPROJECT.NUMBER, FixedDataDate);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = summaryReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            summaryReport.RequestParameters = false;
+            summaryReport.CreateDocument(true);
+            previewWindow.Show();
         }
         #endregion
     }

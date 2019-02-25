@@ -250,7 +250,8 @@ namespace BluePrints.Common
         Risk_Assessment,
         RateRole_Report,
         RateDiscipline_Report,
-        RateDisciplineRole_Report
+        RateDisciplineRole_Report,
+        Project_Summary
     }
 
     public enum P6TASKTYPE
