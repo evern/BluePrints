@@ -1113,10 +1113,11 @@ namespace BluePrints.Common.Base
 
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             List<P6Simulation> simulationResults = new List<P6Simulation>();
+
             foreach (ICanAssignP6 deliverable in deliverables)
             {
                 LoadingScreenManager.Progress();
-                if (deliverable.Total_Units == 0)
+                if (deliverable.Total_Units == 0 && deliverable.Earned_Units_ToDate == 0)
                     continue;
 
                 IReportable current_progress_deliverable = deliverable as IReportable;
@@ -1132,19 +1133,9 @@ namespace BluePrints.Common.Base
                 DateTime? first_progress_date = isNullProgress ? (DateTime?)null :  current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
                 DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
                 decimal total_percentage_to_date;
-                //if(isSimulation)
-                //{
-                //    IQueryable<PROGRESS_ITEM> currentDeliverableProgresses = bluePrintsUOW.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
-                //    decimal totalEarnedUnits = 0;
-                //    if (currentDeliverableProgresses.Count() > 0)
-                //        totalEarnedUnits = currentDeliverableProgresses.Sum(x => x.EARNED_UNITS);
 
-                //    total_percentage_to_date = totalEarnedUnits / deliverable.Total_Units;
-                //}
-                //else
-                //{
-                    total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
-                //}
+                total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
+
                 if (deliverable.P6_Assignments.Count == 0)
                     continue;
 
@@ -1154,26 +1145,43 @@ namespace BluePrints.Common.Base
                 for (int i = 0; i < all_assignments.Count; i++)
                 {
                     P6_ASSIGNMENT p6_assignment = all_assignments[i];
+
+                    //sometimes deliverable is cancelled after units has been earned
+                    bool isDeliverableCancelled = false;
+                    if (deliverable.Total_Units == 0 && deliverable.Earned_Units_ToDate > 0)
+                        isDeliverableCancelled = true;
+
+                    //current activity assignment value must be limited to total earned percentage
+                    decimal high_percentage_to_use;
+                    if (isDeliverableCancelled)
+                        high_percentage_to_use = 1.00m;
+                    else
+                        high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
+
+                    //current percentage pro-rate
+                    decimal current_percentage = p6_assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m) ? ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m) : 0;
+
+                    //full assignment percentage used to calculate remaining units
+                    decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.01m);
+
+                    //current activity assignment unit
+                    decimal current_assignment_units;
+                    if (isDeliverableCancelled)
+                        current_assignment_units = current_percentage * deliverable.Earned_Units_ToDate;
+                    else
+                        current_assignment_units = current_percentage * deliverable.Total_Units;
+
+                    //current activity full assignment units to calculate remaining units
+                    decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
+
+                    if (MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units + " before it was cancelled\n\nDo you want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                        continue;
+
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
-                        //current activity assignment value must be limited to total earned percentage
-                        decimal high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
-
-                        //current percentage pro-rate
-                        decimal current_percentage = p6_assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m) ? ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m) : 0;
-
-                        //full assignment percentage used to calculate remaining units
-                        decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.01m);
-
-                        //current activity assignment unit
-                        decimal current_assignment_units = current_percentage * deliverable.Total_Units;
-
-                        //current activity full assignment units to calculate remaining units
-                        decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
-
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
-                        decimal current_task_to_activity_percentage = full_assignment_units / (decimal)P6TASK.target_work_qty;
+                        decimal current_task_to_activity_percentage = (P6TASK.target_work_qty == null || P6TASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)P6TASK.target_work_qty;
 
                         P6Simulation simulation = new P6Simulation(p6_assignment);
                         simulation.PushUnits = current_assignment_units;
@@ -1213,8 +1221,11 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.target_work_qty <= 0)
                         {
-                            errorMessage = P6TASK.task_code + " doesn't have budgeted units, please re-populate budgeted units on baseline";
-                            break;
+                            if(!isDeliverableCancelled)
+                            {
+                                errorMessage = P6TASK.task_code + " doesn't have budgeted units, please re-populate budgeted units on baseline";
+                                break;
+                            }
                         }
 
                         if (P6TASK.remain_work_qty >= 0)
@@ -1222,8 +1233,11 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.remain_work_qty < 0)
                         {
-                            errorMessage = "Negative remaining units on " + P6TASK.task_code + " because budgeted units is less than earned units, please re-populate budgeted units on baseline";
-                            break;
+                            if (!isDeliverableCancelled)
+                            {
+                                errorMessage = "Negative remaining units on " + P6TASK.task_code + " because budgeted units is less than earned units, please re-populate budgeted units on baseline";
+                                break;
+                            }
                         }
 
                         if (P6TASK.remain_work_qty == 0)
@@ -1326,7 +1340,7 @@ namespace BluePrints.Common.Base
                 return;
             }
 
-            IEnumerable<ICanAssignP6> deliverables = entities.Where(x => x.Total_Units > 0);
+            IEnumerable<ICanAssignP6> deliverables = entities;
             #region reset budgeted on progress
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 

@@ -280,6 +280,8 @@ namespace BluePrints.Common.Projections
         public DateTime CREATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? UPDATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? DELETED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public decimal Earned_Units_ToDate => throw new NotImplementedException();
     }
 
     public static class ExoMethods

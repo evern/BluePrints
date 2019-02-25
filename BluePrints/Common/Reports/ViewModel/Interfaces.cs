@@ -133,6 +133,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? P6_WorkpackGuid { get; }
         DateTime? TaskAssignmentStartDate { get; set; }
         decimal EarnedUnitsAccountedFor { get; set; }
+        decimal Earned_Units_ToDate { get; }
     }
 
     public interface ICanSetProgresses
