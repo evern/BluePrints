@@ -393,7 +393,7 @@ namespace BluePrints.Common.Misc
             //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
             project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name);
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
-            LoadingScreenManager.ShowLoadingScreen(maxProgress);
+            LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
             //child dashboards are now subdivided into subjob dashboard
             foreach (DashboardTreeStructure subjob_dashboard in project_dashboard.Child_Dashboards)
             {

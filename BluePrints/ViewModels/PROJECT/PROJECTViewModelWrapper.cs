@@ -519,7 +519,7 @@ namespace BluePrints.ViewModels
 
         public Action Redraw;
 
-        public void RaisePropertyChanged()
+        public new void RaisePropertyChanged()
         {
             if (Redraw != null)
                 mainThreadDispatcher.BeginInvoke(new Action(() => Redraw()));
