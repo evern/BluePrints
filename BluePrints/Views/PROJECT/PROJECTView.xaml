@@ -45,6 +45,13 @@
                                     <dxb:BarStaticItem Content="Construct" />
                                     <dxb:BarStaticItem Content="{Binding DataContext.ConstructDataDate, ElementName=userControl}" ToolTip="Construct Data date" />
                                 </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup Caption="Export">
+                                    <dxb:BarSubItem Content="Detailed Export" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
+                                        <dxb:BarButtonItem Content="Export Planned" ToolTip="Export planned datapoints to excel" Command="{Binding DataContext.ExportPlannedCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                        <dxb:BarButtonItem Content="Export Earned" ToolTip="Export earned datapoints to excel" Command="{Binding DataContext.ExportEarnedCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                        <dxb:BarButtonItem Content="Export Remaining" ToolTip="Export remaining datapoints to excel" Command="{Binding DataContext.ExportRemainingCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                    </dxb:BarSubItem>
+                                </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Tools" DataContext="{Binding DataContext, ElementName=userControl}">
                                     <dxb:BarButtonItem x:Name="biHealthCheck" Command="{Binding ProjectHealthCheckCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Health Check" ToolTip="Check S-Curve accuracy">
                                         <dxb:BarButtonItem.GlyphTemplate>
@@ -83,7 +90,6 @@
                                     <!--<dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DoNotAutoRefresh, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                                     <dxb:BarButtonItem Command="{Binding ShowP6ErrorsCommand}" Content="P6 Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any invalid mappings because activity isn't found on P6" />
                                     <dxb:BarButtonItem Command="{Binding ShowExoErrorsCommand}" Content="Exo Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any subjobs in exo that isn't available in blueprints" />
-                                    <!--<dxb:BarButtonItem Content="Export" ToolTip="Export all datapoints to excel" Command="{Binding ExportToExcelCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />-->
                                     <!--<dxb:BarButtonItem Content="Export" ToolTip="Export selected rows S-Curve to PDF" Command="{Binding ExportToPDFCommand}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />-->
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup Caption="Data">
@@ -107,7 +113,7 @@
                                 <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Discipline_Name" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Commodity_Code" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Variation_Code" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Internal_Name" Visible="{Binding DataContext.IsExportInternalNameVisible, ElementName=userControl}" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Data_Date" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Units" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Costs" ReadOnly="True" />
