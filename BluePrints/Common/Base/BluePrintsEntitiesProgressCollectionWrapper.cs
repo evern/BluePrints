@@ -1105,7 +1105,7 @@ namespace BluePrints.Common.Base
         {
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
+            LoadingScreenManager.ShowLoadingScreen(deliverables.Count(), false);
             if (isSimulation)
                 LoadingScreenManager.SetMessage("Simulating progress to P6");
             else
@@ -1147,9 +1147,7 @@ namespace BluePrints.Common.Base
                     P6_ASSIGNMENT p6_assignment = all_assignments[i];
 
                     //sometimes deliverable is cancelled after units has been earned
-                    bool isDeliverableCancelled = false;
-                    if (deliverable.Total_Units == 0 && deliverable.Earned_Units_ToDate > 0)
-                        isDeliverableCancelled = true;
+                    bool isDeliverableCancelled = deliverable.Total_Units == 0 && deliverable.Earned_Units_ToDate > 0;
 
                     //current activity assignment value must be limited to total earned percentage
                     decimal high_percentage_to_use;
@@ -1174,7 +1172,7 @@ namespace BluePrints.Common.Base
                     //current activity full assignment units to calculate remaining units
                     decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
 
-                    if (MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units + " before it was cancelled\n\nDo you want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                    if (isDeliverableCancelled && MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units.ToString("n2") + " units before it was cancelled\n\nDo you want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                         continue;
 
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
