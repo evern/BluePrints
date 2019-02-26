@@ -396,10 +396,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
 
                         reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.DataPoints);
-                        //SummaryStats summaryStats = reportableObject.Stats as SummaryStats;
-                        //if (summaryStats != null)
-                        //    reportableObject.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
-
                         reportableObject.Update();
                     }
 

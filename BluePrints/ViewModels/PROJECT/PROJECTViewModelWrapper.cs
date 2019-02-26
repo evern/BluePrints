@@ -303,16 +303,75 @@ namespace BluePrints.ViewModels
             return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Subjob_Dashboards != null;
         }
 
+        string exportFileName = string.Empty;
+        protected override string ExportFilename()
+        {
+            return exportFileName;
+        }
+
+        public bool IsExportInternalNameVisible { get; set; }
+
         public override void ExportToExcel()
         {
             if (hierarchicalDashboard == null)
                 return;
 
             LoadingScreenManager.ShowLoadingScreen(1);
-            PROJECT_Dashboard project = DisplayEntities.First();
-            project.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard);
+            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard);
+            IsExportInternalNameVisible = false;
+            this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
             this.RaisePropertyChanged(x => x.ExcelExportData);
             LoadingScreenManager.CloseLoadingScreen();
+
+            exportFileName = loadPROJECT.NUMBER + "_" + "All_BP_Export" + ((DateTime)designDataDate).ToString("yyyymmdd");
+            base.ExportToExcel();
+        }
+
+        public bool CanExportRemaining()
+        {
+            return CanExportToExcel();
+        }
+
+        public void ExportRemaining()
+        {
+            export(StatsType.Remaining);
+        }
+
+        public bool CanExportEarned()
+        {
+            return CanExportToExcel();
+        }
+
+        public void ExportEarned()
+        {
+            export(StatsType.Earned);
+        }
+
+        public bool CanExportPlanned()
+        {
+            return CanExportToExcel();
+        }
+
+        public void ExportPlanned()
+        {
+            export(StatsType.Planned);
+        }
+
+        private void export(StatsType statsType)
+        {
+            if (hierarchicalDashboard == null)
+                return;
+
+            LoadingScreenManager.ShowLoadingScreen(1);
+            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            dashboard.Export_Data = DashboardHelpers.BuildExportDataByType(statsType, loadPROJECT.NUMBER, dashboard);
+            IsExportInternalNameVisible = true;
+            this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
+            this.RaisePropertyChanged(x => x.ExcelExportData);
+            LoadingScreenManager.CloseLoadingScreen();
+
+            exportFileName = loadPROJECT.NUMBER + "_" + statsType.ToString() +  "_BP_Export" + ((DateTime)designDataDate).ToString("yyyymmdd");
             base.ExportToExcel();
         }
 

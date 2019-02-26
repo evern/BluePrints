@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BluePrints.Data.BluePrintsEntities;
 
 namespace BluePrints.Common.Misc
 {
@@ -91,6 +92,7 @@ namespace BluePrints.Common.Misc
         //public string Department_Name { get; set; }
         public string Discipline_Name { get; set; }
         public string Commodity_Code { get; set; }
+        public string Internal_Name { get; set; }
         public DateTime Data_Date { get; set; }
         public StatsType Type { get; set; }
         public decimal Units { get; set; }
@@ -137,6 +139,73 @@ namespace BluePrints.Common.Misc
             }
 
             return export_data;
+        }
+
+        public static List<Dashboard_Export_Data_Point> BuildExportDataByType(StatsType statsType, string projectNumber, PROJECT_Dashboard dashboard)
+        {
+            List<Dashboard_Export_Data_Point> exports = new List<Dashboard_Export_Data_Point>();
+            IEnumerable<IReportable> reportables = ((SummaryStats)dashboard.Stats).Reportables;
+            using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
+            {
+                if(statsType == StatsType.Remaining)
+                {
+                    List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(projectNumber);
+                    foreach (StoredProcedure_RemainingDataPoint dataPoint in remainingDataPoints)
+                    {
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodRemainingUnits, dataPoint.PeriodRemainingPrice));
+                    }
+                }
+                else if(statsType == StatsType.Earned)
+                {
+                    foreach(IReportable reportable in reportables)
+                    {
+                        exports.Add(createExportDataPoint(reportables, statsType, reportable.OriginalEntityKey, dashboard.Stats.ReportingDataDate, reportable.Earned_Units_ToDate, reportable.Earned_Costs_ToDate));
+                    }
+                }
+                else if(statsType == StatsType.Planned)
+                {
+                    List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(projectNumber);
+                    foreach (StoredProcedure_PlannedDataPoint dataPoint in plannedDataPoints)
+                    {
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodPlannedUnits, dataPoint.PeriodPlannedPrice));
+                    }
+                }
+            }
+
+            return exports;
+        }
+
+        private static Dashboard_Export_Data_Point createExportDataPoint(IEnumerable<IReportable> reportables, StatsType statsType, Guid originalGuid, DateTime dataDate, object units, object price)
+        {
+            Dashboard_Export_Data_Point new_export = new Dashboard_Export_Data_Point();
+            IReportable reportable = reportables.FirstOrDefault(x => x.OriginalEntityKey == originalGuid);
+            if (reportable != null)
+            {
+                new_export.Commodity_Code = reportable.Commodity_Code;
+                new_export.Discipline_Name = reportable.Discipline_Code;
+                new_export.Subjob_Name = reportable.Subjob_Name;
+                new_export.Internal_Name = reportable.Deliverable_Name;
+            }
+            else
+            {
+                string s = string.Empty;
+            }
+
+            new_export.Type = StatsType.Remaining;
+            new_export.Data_Date = dataDate;
+
+            if(units.GetType() == typeof(double))
+            {
+                new_export.Units = Convert.ToDecimal(units);
+                new_export.Costs = Convert.ToDecimal(price);
+            }
+            else if(units.GetType() == typeof(decimal))
+            {
+                new_export.Units = (decimal)units;
+                new_export.Costs = (decimal)price;
+            }
+
+            return new_export;
         }
 
         public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Subjob_Dashboards)
