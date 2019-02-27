@@ -167,7 +167,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
-            MainViewModel.ManualRowPasteAction = this.ManualRowPasteAction;
+            MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }

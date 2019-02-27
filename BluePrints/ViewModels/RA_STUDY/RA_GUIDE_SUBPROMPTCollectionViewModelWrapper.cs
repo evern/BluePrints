@@ -95,7 +95,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_GUIDE_SUBPROMPT> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
-            MainViewModel.ManualRowPasteAction = ManualPasteAction;
+            MainViewModel.FuncManualRowPastingIsContinue = ManualPasteAction;
             MainViewModel.SetParentViewModel(this);
             RA_GUIDE_PROMPTViewModel.SetParentViewModel(this);
             RA_STUDY_TYPEViewModel.SetParentViewModel(this);

@@ -253,6 +253,21 @@ namespace BluePrints.Data
             }
         }
 
+        public bool SetDeliverableStatusByName(string statusName)
+        {
+            if (DeliverableStatusCollection == null)
+                return false;
+
+            DELIVERABLES_STATUS deliverable_status_by_name = DeliverableStatusCollection.FirstOrDefault(x => x.NAME.ToUpper() == statusName.ToUpper());
+            if (deliverable_status_by_name != null)
+            {
+                GUID_STATUS = deliverable_status_by_name.GUID;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool IsDeliverableStatusValid(Guid? DeliverableStatusGuid)
         {
             if (DeliverableStatusGuid == null)
@@ -281,32 +296,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public IEnumerable<DELIVERABLES_STATUS> DeliverableStatusCollection
-        {
-            get
-            {
-                if (DOCTYPE == null || DOCTYPE.DSTATUS_DOCTYPE == null)
-                    return null;
-
-                if (BASELINE == null && VARIATION == null)
-                    return null;
-
-                PROJECT PROJECT;
-                if (BASELINE != null)
-                    PROJECT = BASELINE.PROJECT;
-                else
-                    PROJECT = VARIATION.PROJECT;
-
-                //var test = DOCTYPE.DSTATUS_DOCTYPE.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == PROJECT.GUID).Select(x => x.DELIVERABLES_STATUS);
-
-                return DOCTYPE.GetDeliverableStatusByProject(PROJECT.GUID)
-                       .Where(x => 
-                            (x.FOR_DELIVERABLE && DELIVERABLE_TYPE == DeliverableType.DeliverableICR) ||
-                            (x.FOR_NCR && DELIVERABLE_TYPE == DeliverableType.Deliverable) || 
-                            (x.FOR_NONDELIVERABLE && DELIVERABLE_TYPE == DeliverableType.NonDeliverable) || 
-                            (x.FOR_TASK && DELIVERABLE_TYPE == DeliverableType.Task)).OrderBy(x => x.AUTO_PERCENTAGE);
-            }
-        }
+        public IEnumerable<DELIVERABLES_STATUS> DeliverableStatusCollection { get; set; }
 
         [NotMapped]
         public string Deliverable_Name

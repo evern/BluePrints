@@ -97,7 +97,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true, bool useReportDate = false)
+        public static IQueryable<BASELINE_ITEMProgress> User_OffsiteDirectProgressItemTransformation(IQueryable<BASELINE_ITEM> query, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<USER> USERCollection, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKSCollection, USER user, bool buildStats = true, bool useReportDate = false, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null)
         {
             //IQueryable<BASELINE_ITEM> user_baseline_item = query.Where(x => x.GUID_USER == user.GUID && x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.PROJECT.STATUS == ProjectStatus.Active);
             //List<BASELINE_ITEM_WORK> current_user_works = BASELINE_ITEM_WORKSCollection.Where(x => x.GUID_USER == user.GUID).ToList();
@@ -132,7 +132,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
                 IEnumerable<RATE> rates = project.RATE;
 
-                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection).ToList();
+                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection, false, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, project.GUID).ToList();
                 //if (buildStats)
                 //{
                 //    foreach (BASELINE_ITEMProgress user_deliverable in user_project_baseline_item_progress)
@@ -149,7 +149,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 //        }
                 //    }
                 //}
-
+                
                 user_baseline_item_progresses.AddRange(user_project_baseline_item_progress);
             }
 
@@ -162,7 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -228,19 +228,49 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
+            IEnumerable<DELIVERABLES_STATUS> deliverables_statuses = null;
+            if (ProjectGuidForDeliverablesStatus == null)
+                deliverables_statuses = DELIVERABLES_STATUSCollection;
+            else if(DELIVERABLES_STATUSCollection != null)
+                deliverables_statuses = DELIVERABLES_STATUSCollection.Where(x => x.GUID_PROJECT == ProjectGuidForDeliverablesStatus);
+
+            //post processing
             foreach (BASELINE_ITEMProgress baseline_item_progress in baseline_item_progresses)
             {
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
                 if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                     baseline_item_progress.BuildStats();
-            }
 
-            if(exoAuthorisation != null)
-            {
-                foreach(BASELINE_ITEMProgress deliverable in baseline_item_progresses)
+                if (exoAuthorisation != null)
                 {
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
-                    deliverable.CanBook = findAuthorisation != null;
+                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == baseline_item_progress.Subjob_Name && x.DisciplineCode == baseline_item_progress.Discipline_Code && x.CommodityCode == baseline_item_progress.Commodity_Code);
+                    baseline_item_progress.CanBook = findAuthorisation != null;
+                }
+
+                if(deliverables_statuses != null)
+                {
+                    IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_deliverable_type;
+                    switch(baseline_item_progress.Entity.Entity.DELIVERABLE_TYPE)
+                    {
+                        case DeliverableType.Deliverable:
+                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NCR);
+                            break;
+                        case DeliverableType.DeliverableICR:
+                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_DELIVERABLE);
+                            break;
+                        case DeliverableType.NonDeliverable:
+                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NONDELIVERABLE);
+                            break;
+                        case DeliverableType.Task:
+                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_TASK);
+                            break;
+                        default:
+                            deliverables_status_by_deliverable_type = new List<DELIVERABLES_STATUS>();
+                            break;
+                    }
+
+                    IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_document_type = deliverables_status_by_deliverable_type.Where(x => DSTATUS_DOCTYPECollection.Any(y => y.GUID_STATUS == x.GUID && y.GUID_DOCTYPE == baseline_item_progress.Entity.Entity.GUID_DOCTYPE));
+                    baseline_item_progress.Entity.Entity.DeliverableStatusCollection = deliverables_status_by_document_type.OrderBy(x => x.AUTO_PERCENTAGE);
                 }
             }
 
