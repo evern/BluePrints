@@ -96,6 +96,7 @@ namespace BluePrints.ViewModels
             }
 
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DSTATUS_DOCTYPES, DSTATUS_DOCTYPEProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
 
             base.addEntitiesLoader();
@@ -130,6 +131,14 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
         }
 
+        protected virtual Func<IRepositoryQuery<DSTATUS_DOCTYPE>, IQueryable<DSTATUS_DOCTYPE>> DSTATUS_DOCTYPEProjectionFunc()
+        {
+            if (is_single_project_mode)
+                return query => query.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.DELIVERABLES_STATUS.PROJECT.STATUS == ProjectStatus.Active);
+        }
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
@@ -139,7 +148,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, true);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, true, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         bool isBestFitApplied;
@@ -377,12 +386,38 @@ namespace BluePrints.ViewModels
 
             newValueString = newValueArr[0];
             decimal newValueDecimal = 0;
-            if (decimal.TryParse(newValueString, out newValueDecimal))
+            
+            foreach (var selected_cell in selected_cells)
             {
-                foreach (var selected_cell in selected_cells)
+                DataRowView editing_row = (DataRowView)gridControl.GetRow(selected_cell.RowHandle);
+                BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)editing_row[columnEntity];
+                if (DataUtils.FormatColumnFieldname(selected_cell.Column.FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
                 {
-                    DataRowView editing_row = (DataRowView)gridControl.GetRow(selected_cell.RowHandle);
-                    BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)editing_row[columnEntity];
+                    Guid? oldValue = entity.Entity.Entity.GUID_STATUS;
+                    if (entity.Entity.Entity.SetDeliverableStatusByName(newValueString))
+                    {
+                        Guid? newValue = entity.Entity.Entity.GUID_STATUS;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, selected_cell.Column.FieldName, oldValue, newValue, EntityMessageType.Changed);
+
+                        DELIVERABLES_STATUS currentDELIVERABLE_STATUS = entity.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_STATUS);
+                        if(currentDELIVERABLE_STATUS != null && currentDELIVERABLE_STATUS.AUTO_PERCENTAGE != null)
+                        {
+                            decimal oldTotalPercentage = entity.Total_Percentage;
+                            decimal auto_percentage = (decimal)currentDELIVERABLE_STATUS.AUTO_PERCENTAGE;
+                            if (auto_percentage > entity.Total_Percentage)
+                            {
+                                entity.Total_Earned_Percentage = auto_percentage;
+                                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage), oldTotalPercentage, auto_percentage, EntityMessageType.Changed);
+                            }
+                        }
+
+                        MainViewModel.Save(entity);
+                        //do this so that deliverable goes through the projection refresh
+                        //Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
+                    }
+                }
+                else if (decimal.TryParse(newValueString, out newValueDecimal))
+                {
                     decimal oldValue = (decimal)editing_row[selected_cell.Column.FieldName];
                     if (newValueDecimal > 1)
                         newValueDecimal *= 0.01m;
@@ -789,6 +824,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.MAX_PERCENTAGE);
                 return collection;
+            }
+        }
+
+        public IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection
+        {
+            get
+            {
+                return GetEntities<DSTATUS_DOCTYPE>();
             }
         }
 

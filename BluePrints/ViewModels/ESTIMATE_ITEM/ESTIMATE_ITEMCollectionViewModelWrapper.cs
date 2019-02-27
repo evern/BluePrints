@@ -289,7 +289,7 @@ namespace BluePrints.ViewModels
             //MainViewModel.DisablePasting = true;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.ManualRowPasteAction = ManualPasteAction;
+            MainViewModel.FuncManualRowPastingIsContinue = FuncManualRowPasteAction;
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
             MainViewModel.CanFillDownCallBack = this.CanFillDown;
             MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
@@ -387,7 +387,7 @@ namespace BluePrints.ViewModels
                 BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
         }
 
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
+        public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
             string searchStockCodeFieldName;
             if (IsBudget)

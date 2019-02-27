@@ -16,6 +16,9 @@ using System.ComponentModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.P6EntitiesDataModel;
 using DevExpress.Data.Filtering;
+using BaseModel.Data.Helpers;
+using DevExpress.Xpf.Grid;
+using BluePrints.Common.ViewModel.Utils;
 
 namespace BluePrints.ViewModels
 {
@@ -47,7 +50,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, USERCollection, BASELINE_ITEM_WORKCollection, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, USERCollection, BASELINE_ITEM_WORKCollection, _loadUSER, true, false, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         protected override void onMainViewModelFirstLoaded(object sender, EventArgs e)
@@ -57,6 +60,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             HideCompleted = true;
             this.RaisePropertyChanged(x => x.HideCompleted);
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
@@ -69,7 +73,6 @@ namespace BluePrints.ViewModels
                 return GetEntities<BASELINE_ITEM_WORK>();
             }
         }
-
 
         bool hideCompleted;
         public bool HideCompleted

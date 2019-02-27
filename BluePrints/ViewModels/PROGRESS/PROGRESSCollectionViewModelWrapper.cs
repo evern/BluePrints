@@ -89,7 +89,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS> entities)
         {
-            MainViewModel.ManualRowPasteAction = this.ManualPasteAction;
+            MainViewModel.FuncManualRowPastingIsContinue = this.ManualPasteAction;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
 

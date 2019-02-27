@@ -1,4 +1,5 @@
-﻿using BaseModel.Helpers;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
@@ -11,6 +12,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,7 +146,6 @@ namespace BluePrints.Common.ViewModel.Utils
 
     public static class BluePrintsDataUtils
     {
-
         public static bool GuidEquals<T>(T x, T y)
             where T : class, ICanSync, new()
         {
@@ -238,6 +239,44 @@ namespace BluePrints.Common.ViewModel.Utils
                 if (assignToProcurementSubjob)
                     iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = null;
             }
+        }
+
+        public static bool FuncManualCellPastingIsContinue(BASELINE_ITEMProgress projection, ColumnBase column, string pasteValue, List<UndoRedoArg<BASELINE_ITEMProgress>> undoRedoArgs)
+        {
+            bool isProgress = DataUtils.FormatColumnFieldname(column.FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid);
+
+            if (isProgress || DataUtils.FormatColumnFieldname(column.FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DeliverableStatusGuid))
+            {
+                object oldValue = projection.Entity.Entity.GUID_STATUS;
+                if (projection.Entity.Entity.SetDeliverableStatusByName(pasteValue))
+                {
+                    object newValue = projection.Entity.Entity.GUID_STATUS;
+                    if (undoRedoArgs != null)
+                        undoRedoArgs.Add(new UndoRedoArg<BASELINE_ITEMProgress>() { FieldName = column.FieldName, Projection = projection, OldValue = oldValue, NewValue = newValue });
+
+                    if(isProgress)
+                    {
+                        DELIVERABLES_STATUS currentDELIVERABLE_STATUS = projection.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_STATUS);
+                        if(currentDELIVERABLE_STATUS != null && currentDELIVERABLE_STATUS.AUTO_PERCENTAGE != null)
+                        {
+                            decimal oldTotalPercentage = projection.Total_Percentage;
+                            decimal auto_percentage = (decimal)currentDELIVERABLE_STATUS.AUTO_PERCENTAGE;
+                            if (auto_percentage > projection.Total_Percentage)
+                            {
+                                projection.Total_Earned_Percentage = auto_percentage;
+
+                                if (undoRedoArgs != null)
+                                    undoRedoArgs.Add(new UndoRedoArg<BASELINE_ITEMProgress>() { FieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage), Projection = projection, OldValue = oldTotalPercentage, NewValue = auto_percentage });
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+
+            return true;
         }
 
         /// <summary>

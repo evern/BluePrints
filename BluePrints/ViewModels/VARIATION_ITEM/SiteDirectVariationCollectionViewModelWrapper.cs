@@ -92,12 +92,12 @@ namespace BluePrints.ViewModels
 
         protected override void assign_additional_callbacks(CollectionViewModel<ESTIMATE_ITEM, ESTIMATE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork> mainViewModel, IEnumerable<ESTIMATE_ITEMVariation> entities)
         {
-            mainViewModel.ManualRowPasteAction = ManualPasteAction;
+            mainViewModel.FuncManualRowPastingIsContinue = ManualPasteAction;
         }
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMVariation pasteEntity)
         {
-            return ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).ManualPasteAction(pasteData, pasteEntity.Entity);
+            return ((ESTIMATE_ITEMCollectionViewModelWrapper)collectionViewModelWrapper).FuncManualRowPasteAction(pasteData, pasteEntity.Entity);
         }
 
         //when internal number is not unique, do not set internal number property
