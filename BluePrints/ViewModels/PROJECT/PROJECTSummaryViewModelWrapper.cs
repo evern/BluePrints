@@ -103,8 +103,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Project_Summary.ToString());
         }
 
-        const string columnEntity = "Entity";
-
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
             loadProject_Summary_Setting = PROJECT_SUMMARY_SETTINGCollection.FirstOrDefault();
