@@ -174,14 +174,17 @@ namespace BluePrints.ViewModels
             List<DataRow> filteredDataRows = new List<DataRow>();
             List<DashboardFlatStructure> filteredDashboards = new List<DashboardFlatStructure>();
             IEnumerable<DataRow> indirectRows = baseDataRows.Where(x => BluePrintsDataUtils.GetPhaseCode(((ExoSubJobProjection)x[columnEntity]).SubJob.Code).Contains(BluePrintsResources.IndirectPhaseCode));
+            IEnumerable<DataRow> procurementRows = baseDataRows.Where(x => BluePrintsDataUtils.GetPhaseCode(((ExoSubJobProjection)x[columnEntity]).SubJob.Code).Contains(BluePrintsResources.ProcurementPhaseCode));
             IEnumerable<DataRow> directRows = baseDataRows.Where(x => BluePrintsDataUtils.GetPhaseCode(((ExoSubJobProjection)x[columnEntity]).SubJob.Code).Contains(BluePrintsResources.DirectPhaseCode));
             IEnumerable<DataRow> designRows = baseDataRows.Where(x => BluePrintsDataUtils.GetPhaseCode(((ExoSubJobProjection)x[columnEntity]).SubJob.Code).Contains(BluePrintsResources.DesignPhaseCode));
 
             IEnumerable<DashboardFlatStructure> indirectDashboards = AllProjectDashboards.Where(x => BluePrintsDataUtils.GetPhaseCode(x.SubjobCode).Contains(BluePrintsResources.IndirectPhaseCode));
+            IEnumerable<DashboardFlatStructure> procurementDashboards = AllProjectDashboards.Where(x => BluePrintsDataUtils.GetPhaseCode(x.SubjobCode).Contains(BluePrintsResources.ProcurementPhaseCode));
             IEnumerable<DashboardFlatStructure> designDashboards = AllProjectDashboards.Where(x => BluePrintsDataUtils.GetPhaseCode(x.SubjobCode).Contains(BluePrintsResources.DesignPhaseCode));
             IEnumerable<DashboardFlatStructure> directDashboards = AllProjectDashboards.Where(x => BluePrintsDataUtils.GetPhaseCode(x.SubjobCode).Contains(BluePrintsResources.DirectPhaseCode));
 
             IEnumerable<Stats> indirectActualStats = indirectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+            IEnumerable<Stats> procurementActualStats = procurementDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
             IEnumerable<Stats> designActualStats = designDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
             IEnumerable<Stats> directActualStats = directDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
             IEnumerable<Stats> directDesignRemainingStats = designDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null).Select(x => x.Stats.Remaining);
@@ -207,7 +210,9 @@ namespace BluePrints.ViewModels
             {
                 case StaticSummaryRowTypes.Indirect_Man_Hours:
                     filteredDataRows.AddRange(indirectRows);
+                    filteredDataRows.AddRange(procurementRows);
                     filteredDashboards.AddRange(indirectDashboards);
+                    filteredDashboards.AddRange(procurementDashboards);
                     break;
                 case StaticSummaryRowTypes.Direct_Man_Hours:
                     filteredDataRows.AddRange(directRows);
@@ -217,9 +222,11 @@ namespace BluePrints.ViewModels
                     break;
                 default:
                     filteredDataRows.AddRange(indirectRows);
+                    filteredDataRows.AddRange(procurementRows);
                     filteredDataRows.AddRange(directRows);
                     filteredDataRows.AddRange(designRows);
                     filteredDashboards.AddRange(indirectDashboards);
+                    filteredDashboards.AddRange(procurementDashboards);
                     filteredDashboards.AddRange(directDashboards);
                     filteredDashboards.AddRange(designDashboards);
                     break;
@@ -288,7 +295,7 @@ namespace BluePrints.ViewModels
             {
                 if (rowType == StaticSummaryRowTypes.Indirect_Man_Hours)
                 {
-                    actual = indirectActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
+                    actual = indirectActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units)) + procurementActualStats.Sum(x => x.ExoDataPoints.Sum(y => y.Units));
                     IEnumerable<TASK> indirectTASKS = TASKS(BluePrintsResources.P6_Procurement_ACTVCODE);
                     constructionBudget = null;
                     constructionRemaining = null;
