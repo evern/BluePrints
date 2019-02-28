@@ -151,6 +151,16 @@ namespace BluePrints.Common.ViewModel.Utils
         {
             return x.GUID == y.GUID;
         }
+
+        public static decimal GetReportableProductivity(IReportable reportable)
+        {
+            decimal reportableProductivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
+            if (reportableProductivity == 0)
+                reportableProductivity = 1;
+
+            return reportableProductivity;
+        }
+
         /// <summary>
         /// Assign subjob to deliverables or estimation direct item before saving
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name

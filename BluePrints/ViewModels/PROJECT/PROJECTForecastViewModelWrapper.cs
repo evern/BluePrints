@@ -144,7 +144,6 @@ namespace BluePrints.ViewModels
             ForecastSummary = new ForecastSummary();
             forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
             useProductivityFactorOnRemaining = true; //calculate remaining costs using productivity factor
-            maxProductivityFactorOnRemaining = 5; //maximum productivity factor to apply when deliverable isn't started when it's meant to
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = false;
             shouldSeparateVariation = true;
@@ -268,9 +267,7 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             dataPointsTable = null;
-            ForecastSummary.Costs = 0;
-            ForecastSummary.Actuals = 0;
-            ForecastSummary.Commitments = 0;
+            ForecastSummary.Reset();
             initializeSummaryStats();
             base.FullRefresh();
         }
@@ -541,6 +538,7 @@ namespace BluePrints.ViewModels
             ForecastCalculation forecastCalculation = (ForecastCalculation)disciplineDataRow[columnCalculation];
             ForecastSummary.Actuals += forecastCalculation.Actuals;
             ForecastSummary.Commitments += forecastCalculation.Outstanding;
+            ForecastSummary.EstimateAtCompletion += forecastCalculation.EstimateAtCompletion;
 
             //effectively override remaining
             updateForecast(disciplineDataRow, (ExoSubJobProjection)disciplineDataRow[columnEntity], false);
@@ -574,7 +572,9 @@ namespace BluePrints.ViewModels
             entity.ExoForecastRate = relevantJobLines.Sum(x => x.ForecastRate);
 
             if (entity.Commodity.Code == string.Empty)
+            {
                 ForecastSummary.Costs += entity.ExoBudgetCosts;
+            }
 
             ////populate revenue
             //ExoTimeAuthorisation revenueLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
@@ -1393,6 +1393,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewForecast(DataRow dataRow, ExoSubJobProjection entity, DateTime forecastDate, decimal? forecastUnits, bool isRecursive = false)
         {
+            decimal? oldValue = 0.00m;
             FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
             if (findFORECAST == null)
             {
@@ -1409,15 +1410,22 @@ namespace BluePrints.ViewModels
             }
             else
             {
+                oldValue = findFORECAST.FORECAST_UNITS;
                 findFORECAST.FORECAST_UNITS = forecastUnits;
                 FORECASTCollectionViewModel.Save(findFORECAST);
             }
 
-            //used to ensure child row is set
-            if(forecastUnits == null)
-                dataRow[forecastDate.ToShortDateString()] = 0.00m;
-            else
-                dataRow[forecastDate.ToShortDateString()] = forecastUnits;
+            //only do this on discipline level so we don't add new forecasted units twice
+            if(entity.Commodity.Code == string.Empty)
+            {
+                decimal? newValue = 0.00m;
+                //used to ensure child row is set
+                if (forecastUnits != null)
+                    newValue = forecastUnits;
+
+                dataRow[forecastDate.ToShortDateString()] = newValue;
+                updateEstimateAtComplete(oldValue, newValue);
+            }
 
             if (!isRecursive)
             {
@@ -1472,7 +1480,18 @@ namespace BluePrints.ViewModels
                     calculateUncommitted(dataRow);
                     calculateUncommitted(disciplineRow);
                 }
+
+
             }
+        }
+
+        private void updateEstimateAtComplete(decimal? oldValue, decimal? newValue)
+        {
+            decimal oldForecastUnits = oldValue == null ? 0 : (decimal)oldValue;
+            decimal newForecastUnits = newValue == null ? 0 : (decimal)newValue;
+            ForecastSummary.EstimateAtCompletion -= oldForecastUnits;
+            ForecastSummary.EstimateAtCompletion += newForecastUnits;
+            this.RaisePropertyChanged(x => x.ForecastSummary);
         }
 
         private DataRow findDisciplineRow(ExoSubJobProjection entity)
@@ -2223,6 +2242,19 @@ namespace BluePrints.ViewModels
 
     public class ForecastSummary
     {
+        /// <summary>
+        /// Reset all settable figures to 0
+        /// </summary>
+        public void Reset()
+        {
+            Revenue = 0;
+            Costs = 0;
+            TotalClaims = 0;
+            Actuals = 0;
+            Commitments = 0;
+            EstimateAtCompletion = 0;
+        }
+
         public decimal Revenue { get; set; }
         public decimal Costs { get; set; }
         public decimal Margin => Revenue - Costs;
@@ -2230,5 +2262,6 @@ namespace BluePrints.ViewModels
         public decimal TotalClaims { get; set; }
         public decimal Actuals { get; set; }
         public decimal Commitments { get; set; }
+        public decimal EstimateAtCompletion { get; set; }
     }
 }

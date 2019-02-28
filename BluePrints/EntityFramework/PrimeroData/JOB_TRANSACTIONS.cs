@@ -1,10 +1,13 @@
 namespace BluePrints.PrimeroData
 {
+    using BaseModel.DataModel;
+    using BaseModel.Misc;
+    using DevExpress.Mvvm.POCO;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class JOB_TRANSACTIONS
+    public partial class JOB_TRANSACTIONS : EntityBase, IGuidEntityKey
     {
         [Key]
         public int SEQNO { get; set; }
@@ -271,5 +274,8 @@ namespace BluePrints.PrimeroData
 
         [StringLength(50)]
         public string X_SUPPLIERNAME { get; set; }
+
+        [NotMapped]
+        public Guid EntityKey { get; set; }
     }
 }
