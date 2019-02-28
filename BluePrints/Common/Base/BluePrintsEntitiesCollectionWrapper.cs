@@ -6,8 +6,8 @@ using DevExpress.Mvvm;
 namespace BluePrints.Common.Base
 {
     public abstract class BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> : CollectionViewModelsWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork>
-        where TMainEntity : class, IGuidEntityKey, new()
-        where TMainProjectionEntity : class, IGuidEntityKey, ICanUpdate, new()
+        where TMainEntity : class, new()
+        where TMainProjectionEntity : class, ICanUpdate, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         public SpellCheckerModule SpellCheckerModule { get; set; }

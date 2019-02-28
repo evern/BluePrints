@@ -49,7 +49,7 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class TransactionCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, JOB_TRANSACTIONS, Guid, IBluePrintsEntitiesUnitOfWork>
+        <JOB_TRANSACTIONS, JOB_TRANSACTIONS, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -65,15 +65,11 @@ namespace BluePrints.ViewModels
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-        public ObservableCollection<string> VARIATIONCODECollection { get; set; }
-        public string ColumnEntity = "Entity";
+        JOBCOST_HDR loadJOBCOST_HDR;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
-            JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>(ExoQueries.GetJOB_TRANSACTIONS(primeroUnitOfWork, loadPROJECT.NUMBER));
-            VARIATIONCODECollection = new ObservableCollection<string>(ExoQueries.GetVariationCodes(primeroUnitOfWork, loadPROJECT.NUMBER));
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -83,7 +79,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
-            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -94,19 +90,19 @@ namespace BluePrints.ViewModels
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.JOB_TRANSACTIONS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<JOB_TRANSACTIONS>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<JOB_TRANSACTIONS>, IQueryable<JOB_TRANSACTIONS>> specifyMainViewModelProjection()
         {
-            return query => JOB_TRANSACTIONS.OrderByDescending(x => x.TRANSDATE).AsQueryable();
+            return query => query.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.JOBNO);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<JOB_TRANSACTIONS> entities)
         {
             MainViewModel.IsPasteCellLevel = true;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySavedIsContinue;
+            //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySavedIsContinue;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -130,13 +126,6 @@ namespace BluePrints.ViewModels
         {
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
-
-        private void reselectDeliverable()
-        {
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
-        }
-
-        public ExoTimeAuthorisation SelectedDataRow { get; set; }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -162,17 +151,6 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
-        
-
-        private void SaveEntity()
-        {
-            primeroUnitOfWork.SaveChanges();
-        }
-
-        private string formatFieldName(string fieldName)
-        {
-            return fieldName.Replace(ColumnEntity + ".", "");
-        }
 
         public override string UnifiedValueValidation(JOB_TRANSACTIONS projection, string field_name, object new_value)
         {
