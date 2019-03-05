@@ -57,7 +57,6 @@ namespace BluePrints.ViewModels
         protected PROJECTViewModelWrapper()
         {
             useProductivityFactorOnRemaining = false;
-            maxProductivityFactorOnRemaining = 3;
         }
 
         protected IDialogService ActivityDetailDialogService
@@ -84,7 +83,6 @@ namespace BluePrints.ViewModels
         protected bool shouldSeparateVariation { get; set; }
         protected bool forceRetrieveAllBurned { get; set; }
         protected bool useProductivityFactorOnRemaining { get; set; }
-        protected decimal maxProductivityFactorOnRemaining { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
@@ -261,7 +259,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(false, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining, maxProductivityFactorOnRemaining);
+                project.BuildStats(false, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining);
                 project.RecalculateStats(false);
                 project.Subjob_Dashboards = getDashboardStructure(project);
                 project.Update();

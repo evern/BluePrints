@@ -18,15 +18,14 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class BookTimeSheetViewModel
     {
-        public static BookTimeSheetViewModel Create(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> variationCodes, List<string> narratives)
+        public static BookTimeSheetViewModel Create(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
         {
-            return ViewModelSource.Create(() => new BookTimeSheetViewModel(project, deliverable, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives));
+            return ViewModelSource.Create(() => new BookTimeSheetViewModel(project, deliverable, primeroUnitOfWork, exoAuthorisations, narratives));
         }
 
         public DateTime BookDate { get; set; }
         private readonly IDeliverable deliverable;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-        public List<string> VariationCodes { get; set; }
         public List<string> Narratives { get; set; }
         public string Selected_VariationCode { get; set; }
         public string Selected_Narrative { get; set; }
@@ -94,6 +93,7 @@ namespace BaseModel.ViewModel.Dialogs
                 this.RaisePropertyChanged(x => x.PDISCIPLINECollection);
                 this.RaisePropertyChanged(x => x.COMMODITYCODECollection);
                 this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
+                this.RaisePropertyChanged(x => x.VariationCodeCollection);
             }
         }
 
@@ -134,6 +134,7 @@ namespace BaseModel.ViewModel.Dialogs
                 this.RaisePropertyChanged(x => x.Selected_Commodity);
                 this.RaisePropertyChanged(x => x.COMMODITYCODECollection);
                 this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
+                this.RaisePropertyChanged(x => x.VariationCodeCollection);
             }
         }
 
@@ -147,9 +148,13 @@ namespace BaseModel.ViewModel.Dialogs
                 Selected_Commodity = null;
                 this.RaisePropertyChanged(x => x.Selected_CommodityCode);
                 this.RaisePropertyChanged(x => x.PCOMMODITYCollection);
+                this.RaisePropertyChanged(x => x.VariationCodeCollection);
             }
         }
 
+        /// <summary>
+        /// This is used to filter PCOMMODITYCODE to get stock code, because there are multiple stock code under a single commodity code from exo authorisation
+        /// </summary>
         public List<string> COMMODITYCODECollection
         {
             get
@@ -174,6 +179,7 @@ namespace BaseModel.ViewModel.Dialogs
             {
                 selectedCommodity = value;
                 this.RaisePropertyChanged(x => x.Selected_Commodity);
+                this.RaisePropertyChanged(x => x.VariationCodeCollection);
             }
         }
 
@@ -195,17 +201,50 @@ namespace BaseModel.ViewModel.Dialogs
             set { pCommodityCollection = value; }
         }
 
+        public List<string> VariationCodeCollection
+        {
+            get
+            {
+                if (selectedSubJob == null || selectedDiscipline == null || Selected_CommodityCode == null || Selected_CommodityCode == string.Empty || Selected_Resource == null || Selected_Commodity == null)
+                    return new List<string>();
+
+                IEnumerable<string> authorisedVariationCodes = exoAuthorisations.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.CommodityId == Selected_Commodity.Id).Select(x => x.VariationCode).Distinct().ToList();
+                List<string> authorised_variations = new List<string>();
+
+                foreach(string authorisedVariationCode in authorisedVariationCodes)
+                {
+                    //when null is detected we can book as empty variation code
+                    if (authorisedVariationCode == null)
+                        authorised_variations.Add(string.Empty);
+                    else
+                        authorised_variations.Add(authorisedVariationCode);
+                }
+
+                authorised_variations = authorised_variations.OrderBy(x => x).ToList();
+                //when there isn't any variation code present we can book as empty variation code
+                if (authorised_variations.Count == 0)
+                {
+                    authorised_variations.Add(string.Empty);
+                    Selected_VariationCode = string.Empty;
+                }
+                else
+                    Selected_VariationCode = authorised_variations.First();
+
+                this.RaisePropertyChanged(x => x.Selected_VariationCode);
+                return authorised_variations;
+            }
+        }
+
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
         private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
-        protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> variationCodes, List<string> narratives)
+        protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();
             this.deliverable = deliverable;
             this.primeroUnitOfWork = primeroUnitOfWork;
             this.exoAuthorisations = exoAuthorisations;
-            this.VariationCodes = variationCodes;
             this.Narratives = narratives;
 
             foreach (var availableLine in exoAuthorisations)

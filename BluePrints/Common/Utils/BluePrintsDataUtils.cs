@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
@@ -21,9 +22,9 @@ namespace BluePrints.Common.ViewModel.Utils
 {
     public static class BluePrintsUtils
     {
-        public static void BookTime(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> variationCodes, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
+        public static void BookTime(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(project, deliverable, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives);
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(project, deliverable, primeroUnitOfWork, exoAuthorisations, narratives);
             if (bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
@@ -34,15 +35,17 @@ namespace BluePrints.Common.ViewModel.Utils
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
-                string variationCode = bookTimeViewModel.GetVariationCode();
                 string narrative = bookTimeViewModel.GetNarratives();
                 PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
                 PrimeroResource bookResource = bookTimeViewModel.GetResource();
                 TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
                 PrimeroDiscipline bookCostGroup = bookTimeViewModel.GetCostGroup();
                 PrimeroCommodity bookCostType = bookTimeViewModel.GetCostType();
+                string variationCode = bookTimeViewModel.GetVariationCode();
                 decimal bookTime = bookTimeViewModel.BookHours;
 
+                //variation code is always saved in exo as null
+                variationCode = variationCode == string.Empty ? null : variationCode;
                 if (bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
                     JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == bookDate.WeekStartDate);
@@ -151,6 +154,16 @@ namespace BluePrints.Common.ViewModel.Utils
         {
             return x.GUID == y.GUID;
         }
+
+        public static decimal GetReportableProductivity(IReportable reportable)
+        {
+            decimal reportableProductivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
+            if (reportableProductivity == 0)
+                reportableProductivity = 1;
+
+            return reportableProductivity;
+        }
+
         /// <summary>
         /// Assign subjob to deliverables or estimation direct item before saving
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name

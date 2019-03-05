@@ -40,7 +40,7 @@
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup Name="LayoutGroupVariationCode" Height="50" Orientation="Horizontal" View="Group">
             <dxlc:LayoutItem Height="50" Label="Variation Code:">
-                <dxe:ComboBoxEdit EditValue="{Binding Selected_VariationCode, Mode=TwoWay}" AutoComplete="True" ItemsSource="{Binding VariationCodes}" />
+                <dxe:ComboBoxEdit EditValue="{Binding Selected_VariationCode, Mode=TwoWay}" IsTextEditable="False" AutoComplete="True" ItemsSource="{Binding VariationCodeCollection}" />
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup Name="LayoutGroupNarratives" Height="50" Orientation="Horizontal" View="Group">

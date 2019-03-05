@@ -163,7 +163,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (reportable.Stats.Remaining == null)
                     continue;
 
-                decimal productivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
+                decimal productivity = BluePrintsDataUtils.GetReportableProductivity(reportable);
                 if (productivity == 0)
                     productivity = 1;
 
