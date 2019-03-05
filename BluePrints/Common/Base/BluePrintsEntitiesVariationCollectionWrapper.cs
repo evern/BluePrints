@@ -209,23 +209,25 @@ namespace BluePrints.Common.Base
 
         private void onAfterDuplicateCallBack(TMainReportableEntity reportableEntity)
         {
+            FullRefreshWithoutClearingUndoRedo();
             //hereby maps the collectionViewModelWrapper duplicated entities variation units to this variation units and save new variation, variation will be transformed in mainviewmodel query to join up with newly created variation item
-            ISupportVariationDuplicate supportVariationDuplicationEntity = reportableEntity as ISupportVariationDuplicate;
-            if (supportVariationDuplicationEntity != null)
-            {
-                TMainVariationEntity findDuplicateFromEntity = DisplayEntities.FirstOrDefault(x => x.EntityKey == supportVariationDuplicationEntity.DuplicateFromGuid);
-                if (findDuplicateFromEntity != null)
-                {
-                    VARIATION_ITEM newVARIATION_ITEM = new VARIATION_ITEM();
+            //ISupportVariationDuplicate supportVariationDuplicationEntity = reportableEntity as ISupportVariationDuplicate;
+            //if (supportVariationDuplicationEntity != null)
+            //{
+            //    MainViewModel.Refresh();
+            //    TMainVariationEntity findDuplicateFromEntity = DisplayEntities.FirstOrDefault(x => x.EntityKey == supportVariationDuplicationEntity.DuplicateFromGuid);
+            //    if (findDuplicateFromEntity != null)
+            //    {
+            //        VARIATION_ITEM newVARIATION_ITEM = new VARIATION_ITEM();
 
-                    newVARIATION_ITEM.GUID_VARIATION = loadVARIATION.EntityKey;
-                    newVARIATION_ITEM.GUID_ORIBASEITEM = reportableEntity.OriginalEntityKey;
-                    newVARIATION_ITEM.VARIATION_UNITS = findDuplicateFromEntity.Variation_Units;
-                    newVARIATION_ITEM.ACTION = VariationAction.Add;
+            //        newVARIATION_ITEM.GUID_VARIATION = loadVARIATION.EntityKey;
+            //        newVARIATION_ITEM.GUID_ORIBASEITEM = reportableEntity.OriginalEntityKey;
+            //        newVARIATION_ITEM.VARIATION_UNITS = findDuplicateFromEntity.Variation_Units;
+            //        newVARIATION_ITEM.ACTION = VariationAction.Add;
 
-                    VARIATION_ITEMSCollectionViewModel.Save(newVARIATION_ITEM);
-                }
-            }
+            //        VARIATION_ITEMSCollectionViewModel.Save(newVARIATION_ITEM);
+            //    }
+            //}
         }
 
         protected abstract void assign_additional_callbacks(CollectionViewModel<TMainEntity, TMainVariationEntity, TMainEntityPrimaryKey, TMainEntityUnitOfWork> mainViewModel, IEnumerable<TMainVariationEntity> entities);
@@ -245,6 +247,8 @@ namespace BluePrints.Common.Base
                         affectedDisplayEntity.Variation_Units = updated_VARIATION_ITEM.VARIATION_UNITS;
                         GridControlService.RefreshSummary();
                         affectedDisplayEntity.Update();
+
+                        MainViewModel.Refresh();
                     }
                 }
 
