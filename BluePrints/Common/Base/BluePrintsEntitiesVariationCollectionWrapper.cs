@@ -186,6 +186,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = OnBeforeEntityDeleted;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
+            MainViewModel.AlwaysSkipMessage = true;
             collectionViewModelWrapper.GetEditableAllEntitiesCallBack = getEditableAllEntities;
             assign_additional_callbacks(MainViewModel, entities);
             MainViewModel.SetParentViewModel(this);
