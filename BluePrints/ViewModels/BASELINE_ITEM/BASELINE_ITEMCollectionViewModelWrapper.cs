@@ -535,12 +535,10 @@ namespace BluePrints.ViewModels
 
         protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
         List<string> narratives = new List<string>();
-        List<string> variationCodes = new List<string>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false);
             narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
-            variationCodes = ExoQueries.GetJobVariationCode(primeroUnitOfWork, loadPROJECT.NUMBER);
             
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
@@ -2135,7 +2133,7 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives, MessageBoxService, BookTimeDialogService);
+            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
 
         protected override string ExportFilename()

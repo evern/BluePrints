@@ -101,8 +101,6 @@ namespace BluePrints.ViewModels
             systemColumnFieldNames.Add(columnCostType);
             systemColumnFieldNames.Add(columnVariationCode);
             systemColumnFieldNames.Add(columnNarrative);
-
-            VariationCodes = new ObservableCollection<string>(ExoQueries.GetVariationCodes(primeroUnitOfWork, loadPROJECT.NUMBER));
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -123,6 +121,7 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false, true);
+            VariationCodes = new ObservableCollection<string>(exoAuthorisations.Select(x => x.VariationCode).Distinct().OrderBy(x => x));
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
@@ -437,6 +436,8 @@ namespace BluePrints.ViewModels
                     string variationCode = row[columnVariationCode].ToString();
                     if (variationCode.Length > 50)
                         variationCode = variationCode.Substring(0, 50);
+                    else if (variationCode == string.Empty)
+                        variationCode = null;
 
                     string narrative = row[columnNarrative].ToString();
 
@@ -735,6 +736,7 @@ namespace BluePrints.ViewModels
             else
                 pasteCellData(gridControl, gridTableView, RowData);
 
+            gridControl.RefreshData();
             e.Handled = true;
         }
 
@@ -1075,7 +1077,7 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
                 entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.NewValue;
-                if (entityProperty.NewValue != DBNull.Value)
+                if (entityProperty.NewValue != DBNull.Value || entityProperty.OldValue.ToString() == string.Empty)
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, string.Empty);
                 else
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
@@ -1125,7 +1127,7 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
                 entityProperty.ChangedEntity[entityProperty.PropertyName] = entityProperty.OldValue;
-                if (entityProperty.OldValue != DBNull.Value)
+                if (entityProperty.OldValue != DBNull.Value || entityProperty.OldValue.ToString() == string.Empty)
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, string.Empty);
                 else
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
@@ -1143,24 +1145,43 @@ namespace BluePrints.ViewModels
             {
                 ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == (int)validateRow[columnResourceSeqNo]).FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnJobNo] && x.DisciplineId == (int)validateRow[columnCostGroup] && x.CommodityId == (int)validateRow[columnCostType]);
                 if (findAuthorisation == null)
-                    validateRow.SetColumnError(0, "User is not authorised to book");
+                    validateRow.SetColumnError(columnResourceSeqNo, "User is not authorised to book");
                 else
-                    validateRow.SetColumnError(0, string.Empty);
-
-                //findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnJobNo] && x.DisciplineId == (int)validateRow[columnCostGroup] && x.CommodityId == (int)validateRow[columnCostType]);
-                //if (findAuthorisation == null)
-                //    validateRow.SetColumnError(0, "User is not authorised to book");
-                //else
-                //    validateRow.SetColumnError(0, string.Empty);
+                    validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
             }
 
             if (validateRow[columnJobNo].ToString() != string.Empty && validateRow[columnCostGroup].ToString() != string.Empty && validateRow[columnCostType].ToString() != string.Empty)
             {
-                ExoTimeAuthorisation findAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobNo == (int)validateRow[columnJobNo] && x.DisciplineId == (int)validateRow[columnCostGroup] && x.CommodityId == (int)validateRow[columnCostType]);
-                if (findAuthorisation == null)
-                    validateRow.SetColumnError(1, "Current job line doesn't exists");
+                IEnumerable<ExoTimeAuthorisation> findAuthorisationByJobNumber = exoAuthorisations.Where(x => x.SubJobNo == (int)validateRow[columnJobNo]);
+                
+                if (findAuthorisationByJobNumber.Count() == 0)
+                    validateRow.SetColumnError(columnJobNo, "Invalid, please check whether a job no exists");
                 else
-                    validateRow.SetColumnError(1, string.Empty);
+                {
+                    IEnumerable<ExoTimeAuthorisation> findAuthorisationByDisciplineId = findAuthorisationByJobNumber.Where(x => x.DisciplineId == (int)validateRow[columnCostGroup]);
+                    if (findAuthorisationByDisciplineId.Count() == 0)
+                        validateRow.SetColumnError(columnJobNo, "Invalid, please check whether discipline code exists on job no");
+                    else
+                    {
+                        IEnumerable<ExoTimeAuthorisation> findAuthorisationByCommodityId = findAuthorisationByDisciplineId.Where(x => x.CommodityId == (int)validateRow[columnCostType]);
+                        if (findAuthorisationByDisciplineId.Count() == 0)
+                            validateRow.SetColumnError(columnJobNo, "Invalid, please check whether commodity code exists on discipline code and job no");
+                        else if(validateRow[columnVariationCode].ToString() != string.Empty)
+                        {
+                            string variationCode = validateRow[columnVariationCode].ToString();
+                            if (variationCode != string.Empty)
+                            {
+                                IEnumerable<ExoTimeAuthorisation> findAuthorisationByVariationCode = findAuthorisationByCommodityId.Where(x => x.VariationCode == variationCode);
+                                if(findAuthorisationByVariationCode.Count() == 0)
+                                    validateRow.SetColumnError(columnJobNo, "Invalid, please check whether variation code exists on commodity code, discipline code and job no");
+                                else
+                                    validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
+                            }
+                            else
+                                validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
+                        }
+                    }
+                }
             }
         }
 

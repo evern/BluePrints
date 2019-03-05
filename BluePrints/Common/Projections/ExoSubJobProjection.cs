@@ -22,6 +22,7 @@ using BaseModel.Attributes;
 using BaseModel.ViewModel.Dialogs;
 using System.Text.RegularExpressions;
 using System.Data.Linq.SqlClient;
+using BluePrints.Common.Misc;
 
 namespace BluePrints.Common.Projections
 {
@@ -1407,7 +1408,7 @@ namespace BluePrints.Common.Projections
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE };
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE };
 
             List<ExoTimeAuthorisation> exoTimes;
             if (byUser)
@@ -1433,31 +1434,6 @@ namespace BluePrints.Common.Projections
 
             return timesheetLineNarratives.Select(x => x.Narrative).Distinct().OrderBy(x => x).ToList();
         }
-
-        public static List<string> GetJobVariationCode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
-        {
-            var timesheetLineVariationCode = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-                                          join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                          on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                          join TIMESHEET in primeroUnitOfWork.JOB_TIMESHEETS
-                                          on SUBJOB.JOBNO equals TIMESHEET.JOBNO
-                                          where MAINJOB.JOBCODE == projectNumber && TIMESHEET.X_VARIATIONCODE != null
-                                          select new { VariationCode = TIMESHEET.X_VARIATIONCODE };
-
-            return timesheetLineVariationCode.Select(x => x.VariationCode).Distinct().OrderBy(x => x).ToList();
-        }
-
-        public static List<string> GetVariationCodes(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
-        {
-            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
-                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber
-                                 select new { VariationCode = JOBCOST_LINES.X_VARIATION_CODE };
-
-            return availableLines.Select(x => x.VariationCode).OrderBy(x => x).Distinct().ToList();
-        }
-
 
         public static List<ExoSubJobProjection> GetMasterExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
@@ -1533,6 +1509,7 @@ namespace BluePrints.Common.Projections
             exoTime.ResourceEndDate = dbTime.END_DATE;
             exoTime.StockCode = dbTime.DEFAULT_STOCKCODE;
             exoTime.StockCodeDescription = dbTime.STOCK_CODE_DESC;
+            exoTime.VariationCode = dbTime.VARIATIONCODE;
             return exoTime;
         }
     }

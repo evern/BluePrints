@@ -218,7 +218,6 @@ namespace BluePrints.Common.Base
 
         protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
         List<string> narratives = new List<string>();
-        List<string> variationCodes = new List<string>();
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
@@ -232,11 +231,9 @@ namespace BluePrints.Common.Base
             {
                 List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
                 List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
-                List<string> projectVariationCodes = ExoQueries.GetJobVariationCode(primeroUnitOfWork, projectNumber);
 
                 exoAuthorisations.AddRange(projectExoTimeAuths);
                 narratives.AddRange(projectNarratives);
-                variationCodes.AddRange(projectVariationCodes);
             }
 
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
@@ -1694,7 +1691,7 @@ namespace BluePrints.Common.Base
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, variationCodes, narratives, MessageBoxService, BookTimeDialogService);
+            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
         #endregion
     }
