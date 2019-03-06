@@ -44,6 +44,7 @@ namespace BluePrints.Common.Base
                 (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
+
             reinitializeCollectionViewModelWrapper();
         }
 

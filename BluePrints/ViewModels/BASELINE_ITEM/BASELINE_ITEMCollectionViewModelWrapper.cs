@@ -46,13 +46,14 @@ namespace BluePrints.ViewModels
     {
         Guid load_context_guid { get; }
         void OnParameterChange(object parameter);
+        IEnumerable<TProgress> SelectedEntities { get; set; }
         Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
         Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         Action<TProgress> OnAfterDuplicateCallBack { get; set; }
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
         string DefaultPhaseInternalNumber { get; set; }
         Func<TProgress> SelectedEntityCallBack { get; set; }
-        IEnumerable<TProgress> SelectedEntities { get; set; }
+        IEnumerable<TProgress> DisplaySelectedEntities { get; set; }
         Func<IEnumerable<TProgress>> GetAllEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
@@ -97,16 +98,9 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class BASELINE_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IDeliverableCollectionViewModelWrapper<BASELINE_ITEMProgress, BASELINE_ITEM>, ISupportFiltering<BASELINE_ITEMProgress>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
-        public Action<bool> SetBaselineLockUnlock;
-        public Func<BASELINE_ITEMProgress> SelectedEntityCallBack { get; set; }
-        public string Base_Entity_String => "Entity.Entity.";
-        public string Projection_Entity_String { get; set; }
         public string DefaultPhaseInternalNumber { get; set; }
-        public BASELINE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
-        public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
-        public Func<IEnumerable<BASELINE_ITEMProgress>> GetAllEntities { get; set; }
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
         protected DeliverablesViewType viewType { get; set; }
@@ -132,10 +126,10 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
-        public PROJECT loadPROJECT { get; set; }
-        public BASELINE loadBASELINE { get; set; }
-        public Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
-        public PROGRESS livePROGRESS { get; set; }
+        protected PROJECT loadPROJECT { get; set; }
+        protected BASELINE loadBASELINE { get; set; }
+        protected Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
+        protected PROGRESS livePROGRESS { get; set; }
         protected bool isQueryForLiveStatus;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         //public bool Is_Autofill_Internal_Number { get; set; }
@@ -161,7 +155,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will finalize selected deliverable's client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach(BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach(BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
                     entity.Update();
@@ -189,7 +183,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will finalize selected deliverable's internal numbers and send to doc control to lock it.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
                     entity.Update();
@@ -206,7 +200,7 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanUnapproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
+        public bool CanUnapproveSelectedInternalNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedInternalNumbers()
         {
             if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
@@ -217,13 +211,13 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will unlock selected internal numbers, if you still couldn't edit the internal number, please make sure internal number mode is set to always editable, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
                     entity.Update();
                 }
 
-                List<string> internalNumbers = SelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
+                List<string> internalNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
@@ -240,7 +234,7 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanUnapproveSelectedClientNumbers => SelectedEntities.Count() > 0;
+        public bool CanUnapproveSelectedClientNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedClientNumbers()
         {
             if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
@@ -251,13 +245,13 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will unlock selected client numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
                     entity.Update();
                 }
 
-                List<string> clientNumbers = SelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
+                List<string> clientNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
@@ -326,7 +320,15 @@ namespace BluePrints.ViewModels
         protected readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            Interface_InitializeParameters(parameter);
+            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
+            loadPROJECT = receiveParameter.GetFirstEntity();
+            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
+            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
+
+            if (loadPROJECT != null)
+                isQueryForLiveStatus = true;
+
+            Allow_Drag_Drop = false;
         }
 
         //#region Interface Delegates
@@ -348,15 +350,7 @@ namespace BluePrints.ViewModels
 
         public virtual void Interface_InitializeParameters(object parameter)
         {
-            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
-            loadPROJECT = receiveParameter.GetFirstEntity();
-            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
-            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
-            if (loadPROJECT != null)
-                isQueryForLiveStatus = true;
-
-            Allow_Drag_Drop = false;
             //Is_Autofill_Internal_Number = true;
         }
 
@@ -415,11 +409,6 @@ namespace BluePrints.ViewModels
                 return;
 
             loadBASELINE = entity;
-
-            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
-                SetBaselineLockUnlock?.Invoke(true);
-            else
-                SetBaselineLockUnlock?.Invoke(false);
         }
 
         private void assign_progress(PROGRESS progress)
@@ -551,7 +540,7 @@ namespace BluePrints.ViewModels
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
-        private IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
+        protected virtual IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
         {
             if (BaseEntityQueryCallBack != null)
                 return BaseEntityQueryCallBack(query);
@@ -575,7 +564,6 @@ namespace BluePrints.ViewModels
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             MainViewModel.SetParentViewModel(this);
 
-            GetAllEntities = () => { return MainViewModel.Entities; };
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
             //used for interface when this is loaded from variation
@@ -682,7 +670,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         private void SetViewSpecificProperties()
         {
-            SelectedEntities = DisplaySelectedEntities;
+            DisplaySelectedEntities = DisplaySelectedEntities;
             DefaultPhaseInternalNumber = BluePrintsResources.Default_Design_Phase;
         }
 
@@ -813,7 +801,7 @@ namespace BluePrints.ViewModels
             if (fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.AssignUserObject)))
                 return fieldName;
 
-            return Base_Entity_String + DataUtils.FormatColumnFieldname(fieldName);
+            return DataUtils.FormatColumnFieldname(fieldName);
         }
         #endregion
 
@@ -1166,13 +1154,12 @@ namespace BluePrints.ViewModels
             }
 
             BASELINECollectionViewModel.Save(loadBASELINE);
-            SetBaselineLockUnlock?.Invoke(isLock);
             this.RaisePropertiesChanged();
         }
 
         public bool CanDuplicate()
         {
-            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;
@@ -1189,7 +1176,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, GetAllEntities(), SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, DisplayEntities, DisplaySelectedEntities);
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1254,7 +1241,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, GetAllEntities(), SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, DisplayEntities, DisplaySelectedEntities);
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1357,7 +1344,7 @@ namespace BluePrints.ViewModels
 
         public bool CanDuplicateMultiple(BarEditItem barEdit)
         {
-            if (SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;
@@ -1383,7 +1370,7 @@ namespace BluePrints.ViewModels
                 {
                     Duplicate();
                 }
-                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, SelectedEntities);
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
@@ -1406,7 +1393,7 @@ namespace BluePrints.ViewModels
                 {
                     Insert();
                 }
-                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, SelectedEntities);
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
@@ -1420,7 +1407,7 @@ namespace BluePrints.ViewModels
         
         public bool CanAutoPopulate(object button)
         {
-            if (SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                     return false;
 
             return true;
@@ -1445,7 +1432,7 @@ namespace BluePrints.ViewModels
 
             Dictionary<Guid, string> internalNumberUndoInfos = new Dictionary<Guid, string>();
             if (fieldName == internalNumberFieldName)
-                foreach (var entity in SelectedEntities)
+                foreach (var entity in DisplaySelectedEntities)
                 {
                     if(entity.IsInternalNumberEditable)
                     {
@@ -1454,7 +1441,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-            foreach (var entity in SelectedEntities)
+            foreach (var entity in DisplaySelectedEntities)
             {
                 var entitySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
                 if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
@@ -1621,21 +1608,21 @@ namespace BluePrints.ViewModels
             if (info.Column.ReadOnly)
                 return false;
 
-            if (SelectedEntity == null || SelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
+            if (DisplaySelectedEntity == null || DisplaySelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
                 return false;
 
-            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(localizeColumnFieldName(info.Column.FieldName), SelectedEntity);
+            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(localizeColumnFieldName(info.Column.FieldName), DisplaySelectedEntity);
             if (columnPropertyInfo.PropertyType == typeof(string))
             {
-                var constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType());
+                var constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType());
                 if (constraintString == null)
-                    constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType().BaseType);
+                    constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
 
                 var bulkEditDisabledString =
-                    DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType());
+                    DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType());
                 if (bulkEditDisabledString == null)
                     bulkEditDisabledString =
-                        DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType().BaseType);
+                        DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
 
                 if (constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name) ||
                     bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name))
@@ -1650,7 +1637,7 @@ namespace BluePrints.ViewModels
         public void FindReplace(object button)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            BASELINE_ITEMProgress first_selected_entity = SelectedEntities.First();
+            BASELINE_ITEMProgress first_selected_entity = DisplaySelectedEntities.First();
             string fieldName = localizeColumnFieldName(info.Column.FieldName);
             object find_nested_value = DataUtils.GetNestedValue(fieldName, first_selected_entity);
 
@@ -1674,7 +1661,7 @@ namespace BluePrints.ViewModels
                 PauseUndoRedo();
                 string new_find_value = bulkFindAndReplaceViewModel.FindValue;
                 string replace_value = bulkFindAndReplaceViewModel.ReplaceValue;
-                foreach (BASELINE_ITEMProgress selected_entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress selected_entity in DisplaySelectedEntities)
                 {
                     object nested_value = DataUtils.GetNestedValue(fieldName, selected_entity);
                     string old_column_value;
@@ -1733,7 +1720,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;

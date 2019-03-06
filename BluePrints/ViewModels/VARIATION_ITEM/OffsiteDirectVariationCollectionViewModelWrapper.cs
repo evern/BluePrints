@@ -26,9 +26,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single VARIATION object view model.
     /// </summary>
-    public partial class OffsiteDirectVariationCollectionViewModelWrapper :
-        BluePrintsEntitiesVariationCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, BASELINE_ITEMVariation, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMVariation>
+    public partial class OffsiteDirectVariationCollectionViewModelWrapper : BASELINE_ITEMCollectionViewModelWrapper
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
@@ -39,15 +37,24 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new OffsiteDirectVariationCollectionViewModelWrapper());
         }
 
-        //have to implement this here because LINQ to entity doesn't support translating interface properties
-        protected override IQueryable<BASELINE_ITEM> BaseEntityQueryCallBack(IRepositoryQuery<BASELINE_ITEM> query)
+        protected VARIATION loadVARIATION;
+        protected override void resolveParameters(object parameter)
+        {            
+            var receiveParameter =
+                (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
+            loadPROJECT = receiveParameter.GetFirstEntity();
+            loadVARIATION = receiveParameter.GetSecondEntity();
+            base.resolveParameters(parameter);
+        }
+
+        protected override IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
         {
             if (loadVARIATION.APPROVED == null)
                 //When variation is not approved, retrieve current live deliverables and variation deliverables
-                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == variation_guid && x.GUID_BASELINE == null));
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
-                return query.Where(x => x.GUID_BASELINE == variation_baseline_guid && x.GUID_VARIATION == variation_guid);
+                return query.Where(x => x.GUID_BASELINE == variation_baseline_guid && x.GUID_VARIATION == loadVARIATION.GUID);
         }
 
         BASELINE_ITEMCollectionViewModelWrapper baseline_itemCollectionViewModelWrapper;
