@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -27,8 +27,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1502</MinimumRequiredVersion>
-    <ApplicationRevision>1502</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.1.1504</MinimumRequiredVersion>
+    <ApplicationRevision>1504</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -624,9 +624,6 @@
     </Compile>
     <Compile Include="Common\View\EmailSentReport.xaml.cs">
       <DependentUpon>EmailSentReport.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Common\View\ExoVariationConfirmation.xaml.cs">
-      <DependentUpon>ExoVariationConfirmation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
@@ -1727,10 +1724,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\EmailSentReport.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Common\View\ExoVariationConfirmation.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
