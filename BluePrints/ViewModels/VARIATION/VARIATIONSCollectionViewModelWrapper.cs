@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -12,8 +13,11 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -51,12 +55,17 @@ namespace BluePrints.ViewModels
 
         private PROJECT loadPROJECT;
         private PhaseType phaseType;
+
+        EXO_SubjobCollectionViewModelWrapper exoJobCollectionViewModel;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, PhaseTypeClass>) parameter;
             loadPROJECT = project_phasetype_parameter.GetFirstEntity();
             phaseType = project_phasetype_parameter.GetSecondEntity().phaseType;
+            exoJobCollectionViewModel = EXO_SubjobCollectionViewModelWrapper.Create(bluePrintsUnitOfWorkFactory);
+            exoJobCollectionViewModel.OnParameterChange(new EntitiesParameter<Data.PROJECT>(loadPROJECT));
+            exoJobCollectionViewModel.SetParentViewModel(this);
         }
 
         protected override void addEntitiesLoader()
@@ -68,6 +77,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -350,6 +365,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
         public IEnumerable<BASELINE> BASELINECollection
         {
             get
@@ -471,25 +494,46 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity.Entity.SUBMITTED != null)
                 return false;
 
+            if (DisplaySelectedEntity.Entity.APPROVED != null)
+                return false;
+
+            return true;
+        }
+
+        public bool CanUnsubmit()
+        {
+            if (DisplaySelectedEntity == null)
+                return false;
+
+            if (LiveBASELINE == null && LiveESTIMATE == null)
+                return false;
+
+            if (DisplaySelectedEntity.Entity == null)
+                return false;
+
+            if (DisplaySelectedEntity.Entity.SUBMITTED == null)
+                return false;
+
             if (DisplaySelectedEntity != null && DisplaySelectedEntity.Entity.APPROVED != null)
                 return false;
 
             return true;
         }
 
-        /// <summary>
-        /// Submits an entity.
-        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the SubmitCommand property that can be used as a binding source in views.
-        /// </summary>
-        /// <param name="projectionEntity">An entity to Submit.</param>
         public void Submit()
         {
-            DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
-            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
-            MainViewModel.Save(DisplaySelectedEntity);
+            if (phaseType == PhaseType.Design)
+                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationSubmit, null, false);
+            else if (phaseType == PhaseType.Construct)
+                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationSubmit, null, false);
+        }
 
-            //Full refresh is required to pick up summary
-            FullRefresh();
+        public void Unsubmit()
+        {
+            if (phaseType == PhaseType.Design)
+                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationUnsubmit, null, false);
+            else if (phaseType == PhaseType.Construct)
+                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationUnsubmit, null, false);
         }
 
         /// <summary>
@@ -551,18 +595,36 @@ namespace BluePrints.ViewModels
 
             isApproving = true;
             if(phaseType == PhaseType.Design)
-                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
+                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
             else if(phaseType == PhaseType.Construct)
-                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVARIATION_ITEMSLoaded, null, false);
+                CreateVARIATION_ITEMSViewModelWrapper<ESTIMATE_ITEMVariation>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
         }
 
-        private void OnVARIATION_ITEMSLoaded(IEnumerable<object> projections, object parentId)
+        private void OnVariationApprove(IEnumerable<object> projections, object parentId)
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             if(phaseType == PhaseType.Design)
-                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS)));
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, ExoInteraction.None)));
             else if (phaseType == PhaseType.Construct)
-                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS)));
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS, ExoInteraction.None)));
+        }
+
+        private void OnVariationSubmit(IEnumerable<object> projections, object parentId)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            if (phaseType == PhaseType.Design)
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, ExoInteraction.Add)));
+            else if (phaseType == PhaseType.Construct)
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS, ExoInteraction.Add)));
+        }
+
+        private void OnVariationUnsubmit(IEnumerable<object> projections, object parentId)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            if (phaseType == PhaseType.Design)
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<BASELINE, BASELINE_ITEM, BASELINE_ITEMProjection, BASELINE_ITEMProgress, BASELINE_ITEMVariation>(projections.ToList(), LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, ExoInteraction.Remove)));
+            else if (phaseType == PhaseType.Construct)
+                mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE<ESTIMATE, ESTIMATE_ITEM, ESTIMATE_ITEMProjection, ESTIMATE_ITEMProgress, ESTIMATE_ITEMVariation>(projections.ToList(), LiveESTIMATE, ESTIMATEViewModel, bluePrintsUOW, bluePrintsUOW.ESTIMATE_ITEMS, ExoInteraction.Remove)));
         }
 
         public bool CanRevert()
@@ -657,7 +719,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public void ReviseBASELINE<TBaseline, TEntity, TDeliverableRate, TReportable, TVariation>(IEnumerable<object> objects, TBaseline liveBASELINE, CollectionViewModel<TBaseline, TBaseline, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel, IBluePrintsEntitiesUnitOfWork unitOfWork, IRepository<TEntity, Guid> repository)
+        public void ReviseBASELINE<TBaseline, TEntity, TDeliverableRate, TReportable, TVariation>(IEnumerable<object> objects, TBaseline liveBASELINE, CollectionViewModel<TBaseline, TBaseline, Guid, IBluePrintsEntitiesUnitOfWork> collectionViewModel, IBluePrintsEntitiesUnitOfWork unitOfWork, IRepository<TEntity, Guid> repository, ExoInteraction exoInteraction)
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariation, new()
             where TDeliverableRate : class, IDeliverable_Rates, IProjection<TEntity>, new()
@@ -691,88 +753,121 @@ namespace BluePrints.ViewModels
             newBASELINE.Baseline_Status = BaselineStatus.Live;
             collectionViewModel.Save(newBASELINE);
 
-            DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
-            DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.EntityKey;
-            DisplaySelectedEntity.Entity.GUID_BASELINE = newBASELINE.EntityKey;
-            MainViewModel.Save(DisplaySelectedEntity);
+            string variationCode = DisplaySelectedEntity.Entity.NAME;
+            //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
+            if (exoInteraction == ExoInteraction.None)
+            {
+                DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
+                DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.EntityKey;
+                DisplaySelectedEntity.Entity.GUID_BASELINE = newBASELINE.EntityKey;
+                MainViewModel.Save(DisplaySelectedEntity);
+            }
 
-            //var newBASELINE_ITEMS = new ObservableCollection<BASELINE_ITEM>();
             List<TEntity> baseline_itemForInternalNumberGeneration = new List<TEntity>();
             List<TVariation> variation_items = objects.Select(x => (TVariation)x).ToList();
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
 
             LoadingScreenManager.ShowLoadingScreen(variation_items.Count);
             List<string> addedDeliverables = new List<string>();
+
+            List<ExoSubJobEditableProjection> exoVariation = new List<ExoSubJobEditableProjection>();
             foreach (var variation_item in variation_items)
             {
                 TEntity new_deliverable = new TEntity();
                 DataUtils.ShallowCopy(new_deliverable, variation_item.Entity.Entity.Entity);
 
-                if (variation_item.Variation_Action == VariationAction.Cancel)
+               if(exoInteraction == ExoInteraction.None)
                 {
-                    if (variation_item.Entity.Earned_Units_Total == 0)
-                        new_deliverable.DC_Value += -1 * new_deliverable.Total_Units;
-                    else
-                        new_deliverable.DC_Value += -1 * (new_deliverable.Total_Units - variation_item.Entity.Earned_Units_Total);
-
-                    //Save deducted variation units for future viewing
-                    variation_item.VARIATION_ITEM.VARIATION_UNITS = new_deliverable.DC_Value;
-                    VARIATION_ITEMSViewModel.Save(variation_item.VARIATION_ITEM);
-                }
-                else if (variation_item.Variation_Action == VariationAction.Append)
-                {
-                    decimal edit_value;
-                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
-                        edit_value = new_deliverable.Estimated_Value;
-                    else
-                        edit_value = new_deliverable.DC_Value;
-
-                    if (variation_item.Variation_Units < 0)
+                    if (variation_item.Variation_Action == VariationAction.Cancel)
                     {
-                        decimal maximumReducibleUnits = -1 * (new_deliverable.Total_Units - variation_item.Entity.Earned_Units_Total);
-                        if (variation_item.Variation_Units < maximumReducibleUnits)
-                            edit_value += maximumReducibleUnits;
+                        if (variation_item.Entity.Earned_Units_Total == 0)
+                            new_deliverable.DC_Value += -1 * new_deliverable.Total_Units;
+                        else
+                            new_deliverable.DC_Value += -1 * (new_deliverable.Total_Units - variation_item.Entity.Earned_Units_Total);
+
+                        //Save deducted variation units for future viewing
+                        variation_item.VARIATION_ITEM.VARIATION_UNITS = new_deliverable.DC_Value;
+                        VARIATION_ITEMSViewModel.Save(variation_item.VARIATION_ITEM);
+                    }
+                    else if (variation_item.Variation_Action == VariationAction.Append)
+                    {
+                        decimal edit_value;
+                        if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
+                            edit_value = new_deliverable.Estimated_Value;
+                        else
+                            edit_value = new_deliverable.DC_Value;
+
+                        if (variation_item.Variation_Units < 0)
+                        {
+                            decimal maximumReducibleUnits = -1 * (new_deliverable.Total_Units - variation_item.Entity.Earned_Units_Total);
+                            if (variation_item.Variation_Units < maximumReducibleUnits)
+                                edit_value += maximumReducibleUnits;
+                            else
+                                edit_value += variation_item.Variation_Units;
+                        }
                         else
                             edit_value += variation_item.Variation_Units;
-                    }
-                    else
-                        edit_value += variation_item.Variation_Units;
 
-                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
-                        new_deliverable.Estimated_Value = edit_value;
-                    else
-                        new_deliverable.DC_Value = edit_value;
-                }
-                else if (variation_item.Variation_Action == VariationAction.Add)
-                {
+                        if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
+                            new_deliverable.Estimated_Value = edit_value;
+                        else
+                            new_deliverable.DC_Value = edit_value;
+                    }
+                    else if (variation_item.Variation_Action == VariationAction.Add)
+                    {
+                        new_deliverable.EntityKey = Guid.Empty;
+                        new_deliverable.Baseline_Guid = newBASELINE.EntityKey;
+                        //newBASELINE_ITEM.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(
+                        //    loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
+                        //    newBASELINE_ITEM.DOCTYPE);
+
+                        if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
+                            new_deliverable.Estimated_Value += variation_item.Variation_Units;
+                        else
+                            new_deliverable.DC_Value += variation_item.Variation_Units;
+
+                        new_deliverable.Variation_Guid = DisplaySelectedEntity.EntityKey;
+                        baseline_itemForInternalNumberGeneration.Add(new_deliverable);
+                        addedDeliverables.Add(new_deliverable.Deliverable_Name);
+                    }
+
+                    if (variation_item.Variation_Action != VariationAction.NoAction)
+                        new_deliverable.Variation_Guid = DisplaySelectedEntity.EntityKey;
+
                     new_deliverable.EntityKey = Guid.Empty;
                     new_deliverable.Baseline_Guid = newBASELINE.EntityKey;
-                    //newBASELINE_ITEM.INTERNAL_NUM = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(
-                    //    loadPROJECT, baseline_itemForInternalNumberGeneration, newBASELINE_ITEM.AREA, newBASELINE_ITEM.DISCIPLINE,
-                    //    newBASELINE_ITEM.DOCTYPE);
+                    //BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
+                    repository.Add(new_deliverable);
+                }
+                //if its purely a scan to determine variation
+                else if (exoInteraction != ExoInteraction.None && variation_item.Variation_Action == VariationAction.Add && variationCode != string.Empty)
+                {
+                    string subJobCode = variation_item.Entity.Subjob_Name;
+                    string disciplineCode = variation_item.Entity.Discipline_Code;
+                    string commodityCode = variation_item.Entity.Commodity_Code;
 
-                    if (DisplaySelectedEntity.Entity.TYPE == VariationType.Internal)
-                        new_deliverable.Estimated_Value += variation_item.Variation_Units;
-                    else
-                        new_deliverable.DC_Value += variation_item.Variation_Units;
-
-                    new_deliverable.Variation_Guid = DisplaySelectedEntity.EntityKey;
-                    baseline_itemForInternalNumberGeneration.Add(new_deliverable);
-                    addedDeliverables.Add(new_deliverable.Deliverable_Name);
+                    if(!exoVariation.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
+                    {
+                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
+                        //set commodity code convention so that error can be raised natively within model with GetPropertyError
+                        newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
+                        exoVariation.Add(newVariationSubJob);
+                    }
                 }
 
-                if (variation_item.Variation_Action != VariationAction.NoAction)
-                    new_deliverable.Variation_Guid = DisplaySelectedEntity.EntityKey;
-
-                new_deliverable.EntityKey = Guid.Empty;
-                new_deliverable.Baseline_Guid = newBASELINE.EntityKey;
-                //BASELINE_ITEMSViewModel.Save(newBASELINE_ITEM);
-                repository.Add(new_deliverable);
                 LoadingScreenManager.Progress();
             }
 
-            unitOfWork.SaveChanges();
+            if (exoInteraction != ExoInteraction.None)
+                pushToExo(exoVariation, exoInteraction);
+            else
+            {
+                unitOfWork.SaveChanges();
+                //Full refresh is required to pick up summary
+                FullRefresh();
+            }
 
+            #region Send Email
             //isApproving = false;
             //if (addedDeliverables.Count > 0)
             //{
@@ -786,10 +881,119 @@ namespace BluePrints.ViewModels
             //    }
             //    emailMessage += "</body></html>";
             //    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, emailMessage, loadPROJECT.NUMBER + " variation approved");
-            //}
+            //} 
+            #endregion
+        }
 
-            //Full refresh is required to pick up summary
-            FullRefresh();
+        private DevExpress.Mvvm.IDialogService ConfirmationDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ConfirmationDialogService"); }
+        }
+
+        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        private void pushToExo(List<ExoSubJobEditableProjection> exoVariationJobs, ExoInteraction exoInteraction)
+        {
+            bool isAnyVariationJobsExists = false;
+            bool isAnyVariationJobNotExists = false;
+            foreach (var exoVariationJob in exoVariationJobs)
+            {
+                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob);
+                if (line != null)
+                    isAnyVariationJobsExists = true;
+                else
+                    isAnyVariationJobNotExists = true;
+            }
+
+            //when all jobs already exists just continue to submit the current variation
+            if (exoInteraction == ExoInteraction.Add && !isAnyVariationJobNotExists)
+            {
+                SubmitSelectedEntity();
+                //refresh is required to populate summary
+                FullRefresh();
+                return;
+            }
+            else if(exoInteraction == ExoInteraction.Remove && !isAnyVariationJobsExists)
+            {
+                UnsubmitSelectedEntity();
+                //refresh is required to populate summary
+                FullRefresh();
+                return;
+            }
+
+            string message = string.Empty;
+            if (exoInteraction == ExoInteraction.Add)
+                message = "Push OK to commit the following variation jobs to EXO, or push cancel and revise added deliverables if the codes are incorrect";
+            else
+                message = "Push OK to remove the following variation jobs from EXO";
+
+            DialogCollectionViewModel<ExoSubJobEditableProjection> viewModel = DialogCollectionViewModel<ExoSubJobEditableProjection>.Create(exoVariationJobs);
+            if (ConfirmationDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ExoVariationConfirmation", viewModel) == MessageResult.OK)
+            {
+                if(exoInteraction == ExoInteraction.Add)
+                {
+                    if (exoJobCollectionViewModel.CommitToExo(exoVariationJobs))
+                    {
+                        SubmitSelectedEntity();
+                        MessageBoxService.ShowMessage("Variation code pushed to exo, please go to exo jobs to add user(s) authorisation");
+                        //refresh is required to populate summary
+                        FullRefresh();
+                    }
+                    else
+                    {
+                        MessageBoxService.ShowMessage("Pushed to exo failed, variation is not submitted");
+                    }
+                }
+                else
+                {
+                    bool hasRemoved = false;
+                    foreach (var exoVariationJob in exoVariationJobs)
+                    {
+                        JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob);
+                        if (line != null)
+                        {
+                            hasRemoved = true;
+                            primeroUnitOfWork.JOBCOST_LINES.Remove(line);
+                        }
+                    }
+
+                    if(hasRemoved)
+                    {
+                        primeroUnitOfWork.SaveChanges();
+                        MessageBoxService.ShowMessage("Variation codes removed from exo");
+                    }
+
+                    UnsubmitSelectedEntity();
+                    //refresh is required to populate summary
+                    FullRefresh();
+                }
+            }
+        }
+
+        private void UnsubmitSelectedEntity()
+        {
+            DisplaySelectedEntity.Entity.SUBMITTED = null;
+            DisplaySelectedEntity.Entity.SUBMITTEDBY = null;
+            MainViewModel.Save(DisplaySelectedEntity);
+        }
+
+        private void SubmitSelectedEntity()
+        {
+            DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
+            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
+            MainViewModel.Save(DisplaySelectedEntity);
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            exoJobCollectionViewModel.Dispose();
+            base.OnClose(e);
+        }
+
+        public enum ExoInteraction
+        {
+            None,
+            Add,
+            Remove
         }
         #endregion
     }

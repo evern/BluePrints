@@ -1,4 +1,6 @@
 ﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
+using DevExpress.Xpf.Grid;
 using System.Windows.Controls;
 
 namespace BluePrints.Views

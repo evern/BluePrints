@@ -1317,10 +1317,11 @@ namespace BluePrints.Common.Projections
                                  where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                  select JOBCOST_LINES;
 
+            List<JOBCOST_LINES> listProjectLines = projectLines.ToList();
             if (line.VariationCode == string.Empty || line.VariationCode == null)
-                return projectLines.FirstOrDefault(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null);
+                return listProjectLines.FirstOrDefault(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null);
             else
-                return projectLines.FirstOrDefault(x => x.X_VARIATION_CODE == line.VariationCode);
+                return listProjectLines.FirstOrDefault(x => x.X_VARIATION_CODE == line.VariationCode);
         }
 
         public static JOBCOST_LINES GetMasterProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)

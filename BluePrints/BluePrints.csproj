@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1501</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.1.1502</MinimumRequiredVersion>
     <ApplicationRevision>1502</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -624,6 +624,9 @@
     </Compile>
     <Compile Include="Common\View\EmailSentReport.xaml.cs">
       <DependentUpon>EmailSentReport.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ExoVariationConfirmation.xaml.cs">
+      <DependentUpon>ExoVariationConfirmation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
@@ -1724,6 +1727,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\EmailSentReport.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ExoVariationConfirmation.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

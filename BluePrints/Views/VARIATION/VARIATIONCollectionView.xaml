@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.VARIATIONCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONSCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.VARIATIONCollectionView" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATIONSCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -8,6 +8,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="ConfirmationDialogService">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="600" />
+                        <Setter Property="MinHeight" Value="600" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
@@ -19,6 +30,7 @@
                                 <dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />
                                 <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                 <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
+                                <dxb:BarButtonItem Content="Unsubmit" Command="{Binding DataContext.UnsubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" Glyph="{dx:DXImage Image=Reset_16x16.png}" />
                                 <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Apply_32x32.png}" Glyph="{dx:DXImage Image=Apply_16x16.png}" />
                                 <dxb:BarButtonItem Content="Revert" ToolTip="Revert changes made by last variation" Command="{Binding DataContext.RevertCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}" Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" />
                             </dxr:RibbonPageGroup>
@@ -43,7 +55,14 @@
                             </dxmvvm:EventToCommand>
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Name" FieldName="Entity.NAME" FilterPopupMode="CheckedList" VisibleIndex="10" />
+                            <dxg:GridColumn Header="Name" FieldName="Entity.NAME" FilterPopupMode="CheckedList" VisibleIndex="10" >
+                                <!--<dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings Mask="VOP\d{3} - .*" MaskType="RegEx" MaskSaveLiteral="True" ValidateOnTextInput="False" NullText="Start by entering numbers, VOP### - {description}" MaskShowPlaceHolders="True" />
+                                </dxg:GridColumn.EditSettings>-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings  />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" HeaderToolTip="Internal variation will have additional units added into baseline units column. External variation will have additional units added to variation units column" FilterPopupMode="CheckedList" VisibleIndex="20">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
@@ -55,8 +74,8 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Submitted" FieldName="Entity.SUBMITTED" HeaderToolTip="Contents within submitted variation will be read only" FilterPopupMode="CheckedList" VisibleIndex="50" />
-                            <dxg:GridColumn Header="Approved" FieldName="Entity.APPROVED" HeaderToolTip="Contents within approved variation will only show changes made instead of the full deliverables list" FilterPopupMode="CheckedList" VisibleIndex="60" />
+                            <dxg:GridColumn Header="Submitted" FieldName="Entity.SUBMITTED" ReadOnly="True" HeaderToolTip="Contents within submitted variation will be read only" FilterPopupMode="CheckedList" VisibleIndex="50" />
+                            <dxg:GridColumn Header="Approved" FieldName="Entity.APPROVED" ReadOnly="True" HeaderToolTip="Contents within approved variation will only show changes made instead of the full deliverables list" FilterPopupMode="CheckedList" VisibleIndex="60" />
                             <dxg:GridColumn Header="From Baseline" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates which baseline is before applying current variation changes" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
@@ -89,7 +108,7 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                     <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" CommandParameter="{Binding Row.Row}" />
