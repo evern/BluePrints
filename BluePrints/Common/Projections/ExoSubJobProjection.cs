@@ -1058,17 +1058,27 @@ namespace BluePrints.Common.Projections
         public static JOBCOST_HDR GetProjectSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, string subJobCode)
         {
             //remove the need to have a master subjob code
-            //var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-            //              join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-            //              on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-            //              where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == subJobCode
-            //              select SUBJOB;
-
             var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber
-                                 select SUBJOB;
+                          join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                          on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                          where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == subJobCode
+                          select SUBJOB;
+
+            if (subJobs.Count() == 0)
+                return null;
+
+            return subJobs.First();
+        }
+
+
+        public static JOBCOST_HDR GetAnyProjectSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            //remove the need to have a master subjob code
+            var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                          join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                          on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                          where MAINJOB.JOBCODE == projectNumber
+                          select SUBJOB;
 
             if (subJobs.Count() == 0)
                 return null;
@@ -1331,14 +1341,8 @@ namespace BluePrints.Common.Projections
                 return listProjectLines.FirstOrDefault(x => x.X_VARIATION_CODE == line.VariationCode);
         }
 
-        public static JOBCOST_LINES GetMasterProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        public static JOBCOST_LINES GetAnyProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
-            //var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
-            //                     join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-            //                     on JOBCOST_LINES.JOBNO equals MAINJOB.JOBNO
-            //                     where MAINJOB.JOBCODE == projectNumber
-            //                     select JOBCOST_LINES;
-
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO

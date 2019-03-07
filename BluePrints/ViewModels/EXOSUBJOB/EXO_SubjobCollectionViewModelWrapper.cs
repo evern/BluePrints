@@ -115,8 +115,8 @@ namespace BluePrints.ViewModels
 
         protected void initializeCompulsoryViewProperties()
         {
-            masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
-            copyLine = ExoQueries.GetMasterProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
+            masterJob = ExoQueries.GetAnyProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER);
+            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         private void initializeOptionalViewCollections()
