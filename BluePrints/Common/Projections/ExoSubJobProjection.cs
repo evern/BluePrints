@@ -1333,9 +1333,15 @@ namespace BluePrints.Common.Projections
 
         public static JOBCOST_LINES GetMasterProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
+            //var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+            //                     join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+            //                     on JOBCOST_LINES.JOBNO equals MAINJOB.JOBNO
+            //                     where MAINJOB.JOBCODE == projectNumber
+            //                     select JOBCOST_LINES;
+
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 on JOBCOST_LINES.JOBNO equals MAINJOB.JOBNO
+                                 on JOBCOST_LINES.MASTER_JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber
                                  select JOBCOST_LINES;
 
