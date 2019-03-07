@@ -1057,10 +1057,17 @@ namespace BluePrints.Common.Projections
 
         public static JOBCOST_HDR GetProjectSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, string subJobCode)
         {
+            //remove the need to have a master subjob code
+            //var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+            //              join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+            //              on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+            //              where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == subJobCode
+            //              select SUBJOB;
+
             var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == subJobCode
+                                 where MAINJOB.JOBCODE == projectNumber
                                  select SUBJOB;
 
             if (subJobs.Count() == 0)
