@@ -699,12 +699,16 @@ namespace BluePrints.ViewModels
             {
                 if (projection.Entity.APPROVED == null && new_value != null)
                     return "Please use the button above to approve this variation, if you wish to edit the date you can do so after approving it.";
+                else if(projection.Entity.APPROVED != null && new_value == null)
+                    return "Please use the revert button above to unapprove this variation.";
             }
 
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.SUBMITTED))
             {
                 if (projection.Entity.SUBMITTED == null && new_value != null)
                     return "Please use the button above to submit this variation, if you wish to edit the date you can do so after submitting it.";
+                else if (projection.Entity.SUBMITTED != null && new_value == null)
+                    return "Please use the revert button above to unsubmit this variation.";
             }
 
             return string.Empty;
@@ -926,7 +930,7 @@ namespace BluePrints.ViewModels
             else
                 message = "Push OK to remove the following variation jobs from EXO";
 
-            DialogCollectionViewModel<ExoSubJobEditableProjection> viewModel = DialogCollectionViewModel<ExoSubJobEditableProjection>.Create(exoVariationJobs);
+            DialogCollectionViewModel<ExoSubJobEditableProjection> viewModel = DialogCollectionViewModel<ExoSubJobEditableProjection>.Create(exoVariationJobs, message);
             if (ConfirmationDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ExoVariationConfirmation", viewModel) == MessageResult.OK)
             {
                 if(exoInteraction == ExoInteraction.Add)
