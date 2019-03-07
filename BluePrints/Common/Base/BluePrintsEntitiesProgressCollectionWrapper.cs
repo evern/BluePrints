@@ -1228,11 +1228,17 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.remain_work_qty < 0)
                         {
-                            if (!isDeliverableCancelled)
-                            {
-                                errorMessage = "Negative remaining units on " + P6TASK.task_code + " because budgeted units is less than earned units, please re-populate budgeted units on baseline";
-                                break;
-                            }
+                            #region Commercially approved variation temporary fix
+                            //this happens when variation is not pushed to P6, so we have to re-Adjust P6 units act_work_qty back to target_work_qty and set remain_work_qty as 0
+                            P6TASK.act_work_qty = P6TASK.target_work_qty;
+                            P6TASK.remain_work_qty = 0; 
+                            #endregion
+
+                            //if (!isDeliverableCancelled)
+                            //{
+                            //    errorMessage = "Negative remaining units on " + P6TASK.task_code + " because budgeted units is less than earned units, please re-populate budgeted units on baseline";
+                            //    break;
+                            //}
                         }
 
                         if (P6TASK.remain_work_qty == 0)
