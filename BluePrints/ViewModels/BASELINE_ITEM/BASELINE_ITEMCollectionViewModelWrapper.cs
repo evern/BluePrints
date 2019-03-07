@@ -53,7 +53,7 @@ namespace BluePrints.ViewModels
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
         string DefaultPhaseInternalNumber { get; set; }
         Func<TProgress> SelectedEntityCallBack { get; set; }
-        IEnumerable<TProgress> DisplaySelectedEntities { get; set; }
+        ObservableCollection<TProgress> DisplaySelectedEntities { get; set; }
         Func<IEnumerable<TProgress>> GetAllEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
@@ -127,7 +127,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
         protected PROJECT loadPROJECT { get; set; }
-        protected BASELINE loadBASELINE { get; set; }
+        public BASELINE loadBASELINE { get; set; }
         protected Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         protected PROGRESS livePROGRESS { get; set; }
         protected bool isQueryForLiveStatus;

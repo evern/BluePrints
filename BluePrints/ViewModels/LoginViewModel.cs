@@ -43,7 +43,6 @@ namespace BluePrints.ViewModels
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
         private DispatcherTimer delayedConnectDispatcher;
-        bool isUsernameLoadedFromXML;
         protected virtual BaseModel.ViewModel.Services.IWindowService WindowService { get { return this.GetService<BaseModel.ViewModel.Services.IWindowService>(); } }
 
         public LoginViewModel()
@@ -58,9 +57,6 @@ namespace BluePrints.ViewModels
             delayedConnectDispatcher.Tick += DelayedConnectDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-            if (UserName != string.Empty)
-                isUsernameLoadedFromXML = true;
-
 #if DEBUG
             Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
 #endif

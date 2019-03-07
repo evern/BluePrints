@@ -152,7 +152,6 @@ namespace BluePrints.ViewModels
         }
 
         bool isBestFitApplied;
-        private Timer post_loaded_dispatcher_timer;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
             //placed before current routine because AlwaysSkipMessage should be set to false

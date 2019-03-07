@@ -1038,7 +1038,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        bool isBackgroundEdit = false;
         /// <summary>
         /// Function to redo the entity changes
         /// Must be used in conjunction of EntitiesUndoManager
@@ -1046,7 +1045,6 @@ namespace BluePrints.ViewModels
         /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
         public virtual void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
         {
-            isBackgroundEdit = true;
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkDeleteProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Deleted);
@@ -1065,7 +1063,6 @@ namespace BluePrints.ViewModels
                 }
 
                 DataPointsTable.Rows.Remove(bulkDeleteProperty.ChangedEntity);
-                //bulkDeleteProperty.ChangedEntity.Delete();
             }
             EntitiesUndoRedoManager.UnpauseActionId();
 
@@ -1083,10 +1080,7 @@ namespace BluePrints.ViewModels
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
 
                 validateUserAuth(entityProperty.ChangedEntity);
-                //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue);
             }
-
-            isBackgroundEdit = false;
         }
 
         /// <summary>
@@ -1096,7 +1090,6 @@ namespace BluePrints.ViewModels
         /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
         public virtual void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
         {
-            isBackgroundEdit = true;
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkDeleteProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Deleted);
@@ -1133,10 +1126,7 @@ namespace BluePrints.ViewModels
                     entityProperty.ChangedEntity.SetColumnError(entityProperty.PropertyName, valueNotFoundError);
 
                 validateUserAuth(entityProperty.ChangedEntity);
-                //DataUtils.SetNestedValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue);
             }
-
-            isBackgroundEdit = false;
         }
 
         private void validateUserAuth(DataRow validateRow)
