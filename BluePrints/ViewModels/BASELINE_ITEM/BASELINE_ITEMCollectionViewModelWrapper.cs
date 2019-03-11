@@ -536,11 +536,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
-        protected virtual IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
+        protected virtual IQueryable<BASELINE_ITEM> baseQueryFilter(IRepositoryQuery<BASELINE_ITEM> query)
         {
             if (BaseEntityQueryCallBack != null)
                 return BaseEntityQueryCallBack(query);
@@ -583,7 +583,7 @@ namespace BluePrints.ViewModels
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        protected virtual bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
         {
             if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
             {
@@ -643,27 +643,6 @@ namespace BluePrints.ViewModels
                 return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Budget_Units);
             }
         }
-        //public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
-        //{
-        //    if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
-        //        fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DOCTYPE)) ||
-        //        fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)))
-        //    {
-        //        foreach (BASELINE_ITEMProgress entity in entities)
-        //        {
-        //            if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
-        //            {
-        //                string oldValue = entity.Entity.Entity.INTERNAL_NUM;
-        //                string newValue = generateInternalNumber(entity);
-        //                entity.Entity.Entity.INTERNAL_NUM = newValue;
-
-        //                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
-        //            }
-        //        }
-        //    }
-        //}
-
-        public Action InterfacePauseUndoRedoManagerCallBack { get; set; }
 
         /// <summary>
         /// this view model can be used in variation or default collection view, only default collection view specific properties are set here
@@ -695,7 +674,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        public virtual bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
         {
             //if (MainViewModel.isBackgroundEdit)
             //    return true;
@@ -757,9 +736,10 @@ namespace BluePrints.ViewModels
         }
 
         public Action<BASELINE_ITEMProgress> OnAfterDuplicateCallBack { get; set; }
-        public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
+        public virtual void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            if(!InVariationMode)
+            #region Send Email
+            if (!InVariationMode)
             {
                 //if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
                 //{
@@ -767,6 +747,7 @@ namespace BluePrints.ViewModels
                 //}
             }
 
+            #endregion
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
             if (isNewEntity)
                 OnAfterDuplicateCallBack?.Invoke(projectionEntity);
@@ -1086,8 +1067,13 @@ namespace BluePrints.ViewModels
                     string newValue = generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
 
-                    PauseUndoRedo();
-                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                    //when it's new this entity will be added as EntityMessageType.Added later
+                    if(!isNew)
+                    {
+                        PauseUndoRedo();
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                    }
+
                     projection.Update();
                 }
             }
@@ -1103,7 +1089,7 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.GUID_STATUS = newValue;
 
                     PauseUndoRedo();
-                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS), oldValue, newValue, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS), oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
             }

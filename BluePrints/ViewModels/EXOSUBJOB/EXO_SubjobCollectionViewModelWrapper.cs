@@ -128,7 +128,7 @@ namespace BluePrints.ViewModels
 
         private void BackgroundBudgetChecker_DoWork(object sender, DoWorkEventArgs e)
         {
-            EXO_DesignSubjobCollectionViewModelWrapper designSubjobWrapper = EXO_DesignSubjobCollectionViewModelWrapper.Create();
+            EXO_DesignSubjobCollectionViewModelWrapper designSubjobWrapper = EXO_DesignSubjobCollectionViewModelWrapper.CreateDesignSubJobCollection();
             designSubjobWrapper.SetParentViewModel(this);
             designSubjobWrapper.OnEntitiesLoadedCallBack = updateBudgetedSubJobs;
             designSubjobWrapper.SuppressNotification = true;

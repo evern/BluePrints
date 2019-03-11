@@ -170,7 +170,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportByDuration, ISupportVariation, IHaveProcurementSubjob, IEstimateItem
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, ISupportByDuration, IHaveProcurementSubjob, IEstimateItem
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -215,7 +215,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation, IHaveDBProductivityOverride, IEntityNumber, ISupportVariationDuplicate
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ISupportByDuration, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber
     {
         public BASELINE_ITEMProgress()
         {
@@ -228,60 +228,51 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public VARIATION_ITEM VARIATION_ITEM { get; set; }
+        public VARIATION_ITEM VARIATION_ITEM { get; private set; }
+
+        public void UpdateVariationItem(VARIATION_ITEM variationItem)
+        {
+            VARIATION_ITEM = variationItem;
+            if (VARIATION_ITEM != null)
+                uncommittedVariationAction = VARIATION_ITEM.ACTION;
+        }
+
+        public VARIATION_ITEM UpdateVariationItem(Guid variationGuid)
+        {
+            if(VARIATION_ITEM == null)
+                VARIATION_ITEM = new VARIATION_ITEM();
+
+            VARIATION_ITEM.GUID_ORIBASEITEM = Entity.OriginalEntityKey;
+            VARIATION_ITEM.GUID_VARIATION = variationGuid;
+            VARIATION_ITEM.VARIATION_UNITS = DisplayVariationUnits;
+            VARIATION_ITEM.ACTION = (VariationAction)uncommittedVariationAction;
+            return VARIATION_ITEM;
+        }
 
         public DateTime? SubmittedDate { get; set; }
 
         public DateTime? ApprovedDate { get; set; }
 
-        public bool ShouldSaveVariation => (VARIATION_ITEM == null && Variation_Action != VariationAction.NoAction) || (VARIATION_ITEM != null && (VARIATION_ITEM.GUID == Guid.Empty || VARIATION_ITEM.ACTION != Variation_Action || VARIATION_ITEM.VARIATION_UNITS != variation_units));
+        public bool ShouldSaveVariation => VARIATION_ITEM == null || uncommittedVariationAction != committedVariationAction || uncommittedVariationUnits != committedVariationUnits;
 
-        decimal? variation_units;
-        public decimal UnapprovedVariation_Units
+        private decimal? uncommittedVariationUnits;
+        // Unapproved variation units, can only be seen in variation view
+        public decimal DisplayVariationUnits
         {
             get
             {
-                if (variation_units == null)
-                    variation_units = get_actual_variation_units();
+                if (uncommittedVariationUnits == null)
+                    uncommittedVariationUnits = committedVariationUnits;
 
-                return (decimal)variation_units;
+                return (decimal)uncommittedVariationUnits;
             }
-            set { variation_units = value; }
+            set { uncommittedVariationUnits = value; }
         }
+        private decimal committedVariationUnits => VARIATION_ITEM == null ? 0 : VARIATION_ITEM.VARIATION_UNITS;
 
-        private decimal get_actual_variation_units()
-        {
-            if (VARIATION_ITEM == null)
-                return 0;
-
-            return VARIATION_ITEM.VARIATION_UNITS;
-        }
-
-        VariationAction? variation_action;
-        public VariationAction Variation_Action
-        {
-            get
-            {
-                if (variation_action == null)
-                    variation_action = get_actual_variation_action();
-
-                return (VariationAction)variation_action;
-            }
-            set { variation_action = value; }
-        }
-
-        private VariationAction get_actual_variation_action()
-        {
-            if (VARIATION_ITEM == null)
-            {
-                if (base.Entity.Baseline_Guid == null)
-                    return VariationAction.Add;
-                else
-                    return VariationAction.NoAction;
-            }
-
-            return VARIATION_ITEM.ACTION;
-        }
+        private VariationAction uncommittedVariationAction;
+        public VariationAction DisplayVariationAction { get => committedVariationAction != null ? (VariationAction)committedVariationAction : uncommittedVariationAction; set => uncommittedVariationAction = value; }
+        private VariationAction? committedVariationAction => VARIATION_ITEM == null ? (VariationAction?)null : VARIATION_ITEM.ACTION;
 
         public bool AdjustUnitsReadOnly => (IsSubmitted || IsByDuration);
 
@@ -289,9 +280,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal UnapprovedTotal_Units => IsByDuration ? 0 : (base.Entity.Budget_Units + UnapprovedVariation_Units);
+        public decimal DisplayTotalUnits => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + DisplayVariationUnits);
 
-        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Entity.Budget_Units + Variation_Units) * base.Entity.Budget_ItemRate;
+        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + DisplayVariationUnits) * base.Entity.Budget_ItemRate;
 
         public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
 
@@ -304,10 +295,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (IsApproved)
                     return Variation_Units;
 
-                if (Variation_Action == VariationAction.Cancel)
+                if (DisplayVariationAction == VariationAction.Cancel)
                     return MinNegativeUnits;
 
-                return Variation_Units;
+                return DisplayVariationUnits;
             }
         }
 
@@ -321,7 +312,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (EntityKey == Guid.Empty)
                     return false;
 
-                if (Variation_Action != VariationAction.Add)
+                if (DisplayVariationAction != VariationAction.Add)
                     return true;
 
                 return false;
@@ -335,7 +326,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (IsSubmitted || IsApproved)
                     return false;
 
-                if (Variation_Action != VariationAction.Add)
+                if (DisplayVariationAction != VariationAction.Add)
                     return true;
 
                 return false;
@@ -369,7 +360,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool CanToggleCancellation
         {
-            get { return !IsSubmitted && Variation_Action != VariationAction.Add; }
+            get { return !IsSubmitted && DisplayVariationAction != VariationAction.Add; }
         }
 
         public override void Update()
@@ -549,6 +540,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         #region User Report
         public string User_Name { get; set; }
         public string User_Role { get; set; }
+        BASELINE_ITEM ISupportVariation<BASELINE_ITEM>.Entity  => this.Entity.Entity;
         #endregion
     }
 

@@ -40,21 +40,30 @@ namespace BluePrints.ViewModels
         protected VARIATION loadVARIATION;
         protected override void resolveParameters(object parameter)
         {            
-            var receiveParameter =
-                (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
+            var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
-            base.resolveParameters(parameter);
+            viewType = DeliverablesViewType.Both;
+            isQueryForLiveStatus = true;
+
+            //base.resolveParameters(parameter);
         }
 
-        protected override IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
+        protected override void addEntitiesLoader()
         {
-            if (loadVARIATION.APPROVED == null)
-                //When variation is not approved, retrieve current live deliverables and variation deliverables
-                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
-            else
-                //When variation is approved, retrieve deliverables from variation connected baseline
-                return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE && x.GUID_VARIATION == loadVARIATION.GUID);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, x => loadVARIATION = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
+            base.addEntitiesLoader();
+        }
+
+        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == loadVARIATION.GUID);
+        }
+
+        private Func<IRepositoryQuery<VARIATION_ITEM>, IQueryable<VARIATION_ITEM>> VARIATION_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID);
         }
 
         protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v3" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
@@ -67,12 +76,34 @@ namespace BluePrints.ViewModels
                 VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
             }
 
-            return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, loadVARIATION, VARIATION_ITEMS, RATECollection);
+            return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, loadVARIATION, VARIATION_ITEMS, RATECollection);
         }
 
-        public override string UnifiedRowValidation(BASELINE_ITEMProgress projection)
+        protected override IQueryable<BASELINE_ITEM> baseQueryFilter(IRepositoryQuery<BASELINE_ITEM> query)
         {
-            return string.Empty;
+            if (loadVARIATION.APPROVED == null)
+                //When variation is not approved, retrieve current live deliverables and variation deliverables
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
+            else
+                //When variation is approved, retrieve deliverables from variation connected baseline
+                return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE && x.GUID_VARIATION == loadVARIATION.GUID);
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
+        {
+            //not attaching to baseline when deliverable is added through variation list
+            if (projectionEntity.Baseline_Guid == null)
+                projectionEntity.Variation_Guid = loadVARIATION.EntityKey;
+
+            //because TProjection is not IProjection<TMainEntity>, do it manually here
+            DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
+
+            //not calling base here because we do not want to assign baseline_guid;
         }
 
         public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object newValue)
@@ -115,11 +146,23 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
-            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
+            if (!isNew && field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationUnits))
+            {
+                if (projection.DisplayVariationAction != VariationAction.Add)
+                {
+                    VariationAction old_action = projection.DisplayVariationAction;
+
+                    if ((decimal)new_value == 0)
+                        projection.DisplayVariationAction = VariationAction.NoAction;
+                    else
+                        projection.DisplayVariationAction = VariationAction.Append;
+                }
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
             {
                 decimal oldValue = projection.Variation_Units;
                 decimal newValue = 0;
-                projection.UnapprovedVariation_Units = newValue;
+                projection.DisplayVariationUnits = newValue;
                 if(!isNew)
                 {
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
@@ -131,5 +174,116 @@ namespace BluePrints.ViewModels
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
+
+        #region Tag saving behavior
+        public void BulkDelete(IEnumerable<BASELINE_ITEMProgress> selectedEntities)
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to delete " + displaySelectedEntities.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            if (!DisplaySelectedEntities.Any(x => x.DisplayVariationAction == VariationAction.Add))
+            {
+                MessageBoxService.ShowMessage("Selection contains deliverable(s) that aren't variation, you can only delete deliverable that is added through variation", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.BaseBulkDelete(displaySelectedEntities);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public override void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
+        {
+            //copy the original entity key to projection first before saving variation
+            base.OnEntitiesSavedCallBack(projectionEntity, entity, isNewEntity);
+
+            if (isNewEntity)
+                projectionEntity.DisplayVariationAction = VariationAction.Add;
+
+            if (projectionEntity.ShouldSaveVariation)
+                saveVariation(projectionEntity);
+        }
+
+        /// <summary>
+        /// Delete variation item before entity is deleted
+        /// </summary>
+        /// <param name="undoRedoEntity"></param>
+        protected override bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress delete_entity)
+        {
+            if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(delete_entity, null, null, null, EntityMessageType.Deleted);
+
+            //don't delete the varation item just yet because user might be redoing later
+            if (delete_entity.VARIATION_ITEM != null && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                VARIATION_ITEMSCollectionViewModel.Delete(delete_entity.VARIATION_ITEM);
+
+            return true;
+        }
+
+        public void CancelDeliverable(BASELINE_ITEMProgress projectionEntity)
+        {
+            if (loadVARIATION == null || loadVARIATION.SUBMITTED != null || loadVARIATION.APPROVED != null)
+                return;
+
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            if (projectionEntity.DisplayVariationAction == VariationAction.Add)
+                return;
+
+            VariationAction newAction;
+            if (projectionEntity.DisplayVariationAction == VariationAction.Cancel)
+                newAction = VariationAction.NoAction;
+            else
+                newAction = VariationAction.Cancel;
+
+            var oldUnits = projectionEntity.DisplayVariationUnits;
+            projectionEntity.DisplayVariationUnits = 0;
+
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationUnits), oldUnits,
+                projectionEntity.DisplayVariationUnits, EntityMessageType.Changed);
+
+            var oldAction = projectionEntity.DisplayVariationAction;
+
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projectionEntity,
+                BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationAction), oldAction, newAction,
+                EntityMessageType.Changed);
+
+            projectionEntity.DisplayVariationAction = newAction;
+
+            MainViewModel.Save(projectionEntity);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+
+            projectionEntity.Update();
+        }
+        #endregion
+
+        #region Variation Specific
+        private void saveVariation(BASELINE_ITEMProgress projectionEntity)
+        {
+            VARIATION_ITEM updateVARIATION_ITEM = projectionEntity.UpdateVariationItem(loadVARIATION.GUID);
+            VARIATION_ITEMSCollectionViewModel.Save(updateVARIATION_ITEM);
+        }
+        #endregion
+
+        #region View Property
+        public NewItemRowPosition NewItemRowPosition
+        {
+            get
+            {
+                if (loadVARIATION != null && loadVARIATION.SUBMITTED == null)
+                    return NewItemRowPosition.Top;
+
+                return NewItemRowPosition.None;
+            }
+        }
+
+        private CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_ITEMSCollectionViewModel
+        {
+            get
+            {
+                return (CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_ITEM>();
+            }
+        }
+        #endregion
     }
 }

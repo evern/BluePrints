@@ -13,7 +13,7 @@ using BaseModel.DataModel;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariation, IHaveProcurementSubjob
+    public partial class ESTIMATE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEM()
         {

@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static EXO_DesignSubjobCollectionViewModelWrapper Create(
+        public static EXO_DesignSubjobCollectionViewModelWrapper CreateDesignSubJobCollection(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new EXO_DesignSubjobCollectionViewModelWrapper(unitOfWorkFactory));
