@@ -46,13 +46,14 @@ namespace BluePrints.ViewModels
     {
         Guid load_context_guid { get; }
         void OnParameterChange(object parameter);
+        IEnumerable<TProgress> SelectedEntities { get; set; }
         Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
         Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         Action<TProgress> OnAfterDuplicateCallBack { get; set; }
         Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
         string DefaultPhaseInternalNumber { get; set; }
         Func<TProgress> SelectedEntityCallBack { get; set; }
-        IEnumerable<TProgress> SelectedEntities { get; set; }
+        ObservableCollection<TProgress> DisplaySelectedEntities { get; set; }
         Func<IEnumerable<TProgress>> GetAllEntities { get; set; }
         //some functionality will edit existing live deliverables, so this has to be used to validate in context
         Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
@@ -97,16 +98,9 @@ namespace BluePrints.ViewModels
     /// </summary>
     public partial class BASELINE_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IDeliverableCollectionViewModelWrapper<BASELINE_ITEMProgress, BASELINE_ITEM>, ISupportFiltering<BASELINE_ITEMProgress>
+        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
-        public Action<bool> SetBaselineLockUnlock;
-        public Func<BASELINE_ITEMProgress> SelectedEntityCallBack { get; set; }
-        public string Base_Entity_String => "Entity.Entity.";
-        public string Projection_Entity_String { get; set; }
         public string DefaultPhaseInternalNumber { get; set; }
-        public BASELINE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
-        public IEnumerable<BASELINE_ITEMProgress> SelectedEntities { get; set; }
-        public Func<IEnumerable<BASELINE_ITEMProgress>> GetAllEntities { get; set; }
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
         protected DeliverablesViewType viewType { get; set; }
@@ -132,10 +126,10 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
-        public PROJECT loadPROJECT { get; set; }
+        protected PROJECT loadPROJECT { get; set; }
         public BASELINE loadBASELINE { get; set; }
-        public Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
-        public PROGRESS livePROGRESS { get; set; }
+        protected Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
+        protected PROGRESS livePROGRESS { get; set; }
         protected bool isQueryForLiveStatus;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         //public bool Is_Autofill_Internal_Number { get; set; }
@@ -161,7 +155,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will finalize selected deliverable's client numbers and send to doc control to lock it.\nThis action excludes any newly added deliverable.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach(BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach(BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Awaiting;
                     entity.Update();
@@ -189,7 +183,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will finalize selected deliverable's internal numbers and send to doc control to lock it.\nare you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Awaiting;
                     entity.Update();
@@ -206,7 +200,7 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanUnapproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
+        public bool CanUnapproveSelectedInternalNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedInternalNumbers()
         {
             if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
@@ -217,13 +211,13 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will unlock selected internal numbers, if you still couldn't edit the internal number, please make sure internal number mode is set to always editable, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
                     entity.Update();
                 }
 
-                List<string> internalNumbers = SelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
+                List<string> internalNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
@@ -240,7 +234,7 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanUnapproveSelectedClientNumbers => SelectedEntities.Count() > 0;
+        public bool CanUnapproveSelectedClientNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedClientNumbers()
         {
             if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
@@ -251,13 +245,13 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will unlock selected client numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
                 {
                     entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
                     entity.Update();
                 }
 
-                List<string> clientNumbers = SelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
+                List<string> clientNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
                 MainViewModel.SimpleSaveAll();
                 GridControlService.RefreshData();
 
@@ -326,7 +320,15 @@ namespace BluePrints.ViewModels
         protected readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            Interface_InitializeParameters(parameter);
+            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
+            loadPROJECT = receiveParameter.GetFirstEntity();
+            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
+            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
+
+            if (loadPROJECT != null)
+                isQueryForLiveStatus = true;
+
+            Allow_Drag_Drop = false;
         }
 
         //#region Interface Delegates
@@ -348,15 +350,7 @@ namespace BluePrints.ViewModels
 
         public virtual void Interface_InitializeParameters(object parameter)
         {
-            var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
-            loadPROJECT = receiveParameter.GetFirstEntity();
-            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
-            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
-            if (loadPROJECT != null)
-                isQueryForLiveStatus = true;
-
-            Allow_Drag_Drop = false;
             //Is_Autofill_Internal_Number = true;
         }
 
@@ -415,11 +409,6 @@ namespace BluePrints.ViewModels
                 return;
 
             loadBASELINE = entity;
-
-            if (entity.BUDGETED_UNITS != null && entity.BUDGETED_UNITS > 0)
-                SetBaselineLockUnlock?.Invoke(true);
-            else
-                SetBaselineLockUnlock?.Invoke(false);
         }
 
         private void assign_progress(PROGRESS progress)
@@ -547,11 +536,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(base_entity_query(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
-        private IQueryable<BASELINE_ITEM> base_entity_query(IRepositoryQuery<BASELINE_ITEM> query)
+        protected virtual IQueryable<BASELINE_ITEM> baseQueryFilter(IRepositoryQuery<BASELINE_ITEM> query)
         {
             if (BaseEntityQueryCallBack != null)
                 return BaseEntityQueryCallBack(query);
@@ -575,7 +564,6 @@ namespace BluePrints.ViewModels
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             MainViewModel.SetParentViewModel(this);
 
-            GetAllEntities = () => { return MainViewModel.Entities; };
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
             //used for interface when this is loaded from variation
@@ -595,7 +583,7 @@ namespace BluePrints.ViewModels
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        protected virtual bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
         {
             if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
             {
@@ -655,34 +643,13 @@ namespace BluePrints.ViewModels
                 return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Budget_Units);
             }
         }
-        //public void OnFillOrCellLevelPasting(IEnumerable<BASELINE_ITEMProgress> entities, string fieldName)
-        //{
-        //    if(fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_AREA)) ||
-        //        fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DOCTYPE)) ||
-        //        fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)))
-        //    {
-        //        foreach (BASELINE_ITEMProgress entity in entities)
-        //        {
-        //            if (entity.IsInternalNumberEditable && !entity.IsInternalNumberManualOnly)
-        //            {
-        //                string oldValue = entity.Entity.Entity.INTERNAL_NUM;
-        //                string newValue = generateInternalNumber(entity);
-        //                entity.Entity.Entity.INTERNAL_NUM = newValue;
-
-        //                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
-        //            }
-        //        }
-        //    }
-        //}
-
-        public Action InterfacePauseUndoRedoManagerCallBack { get; set; }
 
         /// <summary>
         /// this view model can be used in variation or default collection view, only default collection view specific properties are set here
         /// </summary>
         private void SetViewSpecificProperties()
         {
-            SelectedEntities = DisplaySelectedEntities;
+            DisplaySelectedEntities = DisplaySelectedEntities;
             DefaultPhaseInternalNumber = BluePrintsResources.Default_Design_Phase;
         }
 
@@ -707,7 +674,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        public virtual bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
         {
             //if (MainViewModel.isBackgroundEdit)
             //    return true;
@@ -769,9 +736,10 @@ namespace BluePrints.ViewModels
         }
 
         public Action<BASELINE_ITEMProgress> OnAfterDuplicateCallBack { get; set; }
-        public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
+        public virtual void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            if(!InVariationMode)
+            #region Send Email
+            if (!InVariationMode)
             {
                 //if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
                 //{
@@ -779,6 +747,7 @@ namespace BluePrints.ViewModels
                 //}
             }
 
+            #endregion
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
             if (isNewEntity)
                 OnAfterDuplicateCallBack?.Invoke(projectionEntity);
@@ -789,7 +758,6 @@ namespace BluePrints.ViewModels
         #region View Localization Helpers
         private void setNestedValueWithUndo(BASELINE_ITEMProgress entity, string propertyName, object newValue, Dictionary<Guid, string> internalNumberUndoInfos = null)
         {
-            string localizedPropertyName = localizeColumnFieldName(propertyName);
             object oldValue = null;
             if (internalNumberUndoInfos != null)
             {
@@ -798,22 +766,13 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                oldValue = DataUtils.GetNestedValue(localizedPropertyName, entity);
+                oldValue = DataUtils.GetNestedValue(propertyName, entity);
             }
 
-            DataUtils.SetNestedValue(localizedPropertyName, entity, newValue);
-            AddUndo(entity, localizedPropertyName, oldValue, newValue, EntityMessageType.Changed);
+            DataUtils.SetNestedValue(propertyName, entity, newValue);
+            AddUndo(entity, propertyName, oldValue, newValue, EntityMessageType.Changed);
             entity.Update();
             RaisePropertyChangeCallBack?.Invoke(entity.GUID);
-        }
-
-        private string localizeColumnFieldName(string fieldName)
-        {
-            //Technical debt, must move AssignUserObject to base entity
-            if (fieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.AssignUserObject)))
-                return fieldName;
-
-            return Base_Entity_String + DataUtils.FormatColumnFieldname(fieldName);
         }
         #endregion
 
@@ -945,31 +904,19 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public Action<BASELINE_ITEMProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
         public void AddUndo(BASELINE_ITEMProgress changedEntity, string propertyName, object oldValue, object newValue, EntityMessageType messageType)
         {
-            if (InterfaceAddUndoRedoCallBack != null)
-                InterfaceAddUndoRedoCallBack(changedEntity, propertyName == null ? null : localizeColumnFieldName(propertyName), oldValue, newValue, messageType);
-            else
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, propertyName == null ? null : localizeColumnFieldName(propertyName), oldValue, newValue, messageType);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, propertyName, oldValue, newValue, messageType);
         }
 
-        public Action InterfacePauseUndoRedoCallBack { get; set; }
         public void PauseUndoRedo()
         {
-            if (InterfacePauseUndoRedoCallBack != null)
-                InterfacePauseUndoRedoCallBack();
-            else
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
         }
 
-        public Action InterfaceUnpauseUndoRedoCallBack { get; set; }
         public void UnpauseUndoRedo()
         {
-            if (InterfaceUnpauseUndoRedoCallBack != null)
-                InterfaceUnpauseUndoRedoCallBack();
-            else
-                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
         //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
@@ -983,56 +930,19 @@ namespace BluePrints.ViewModels
         //        e.Handled = true;
         //    }
         //}
-
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
-            if(isNew)
+            if (isNew)
             {
                 projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
-            }
-
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
-                if ((bool)new_value)
-                {
-                    decimal oldValue = projection.Entity.Entity.BUDGET_HOURS;
-                    if (oldValue > 0)
-                    {
-                        decimal newValue = 0;
-                        string budgetHoursFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS);
-                        projection.Entity.Entity.BUDGET_HOURS = newValue;
-                        PauseUndoRedo();
-                        AddUndo(projection, budgetHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
-                    }
-                }
-            }
-
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
-            {
-                Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
-                Guid? newValue = (Guid?)null;
-
-                projection.Entity.Entity.GUID_SUBAREA = newValue;
-                if (!isNew)
-                {
-                    string subAreaFieldName = BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid);
-                    PauseUndoRedo();
-                    AddUndo(projection, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
-                }
-                else
-                {
-                    //Area is required immediately for subarea selection
-                    projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
-                    projection.Update();
-                }
             }
 
             //only new row will change department according to doc type selection
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
-                if(isNew)
+                if (isNew)
                 {
                     if (chosenDOCTYPE != null)
                     {
@@ -1053,6 +963,7 @@ namespace BluePrints.ViewModels
                         projection.Entity.Entity.GUID_PHASE = indirectPhase.GUID;
                 }
             }
+
             //only new row will change area and subarea according to subjob selection
             if (isNew && field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB))
             {
@@ -1068,6 +979,58 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_SUBJOB)) && new_value == null)
+            {
+                allowSubJobDeletion = true;
+            }
+
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_WORKPACK)) && new_value == null)
+            {
+                allowWorkpackDeletion = true;
+            }
+
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+
+        //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+            {
+                if ((bool)new_value)
+                {
+                    decimal oldValue = projection.Entity.Entity.BUDGET_HOURS;
+                    if (oldValue > 0)
+                    {
+                        decimal newValue = 0;
+                        string budgetHoursFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS));
+                        projection.Entity.Entity.BUDGET_HOURS = newValue;
+                        PauseUndoRedo();
+                        AddUndo(projection, budgetHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
+                    }
+                }
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
+            {
+                Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
+                Guid? newValue = (Guid?)null;
+
+                projection.Entity.Entity.GUID_SUBAREA = newValue;
+                if (!isNew)
+                {
+                    string subAreaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
+                    PauseUndoRedo();
+                    AddUndo(projection, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
+                }
+                else
+                {
+                    //Area is required immediately for subarea selection
+                    projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    projection.Update();
+                }
+            }
+
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) || field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
             {
                 Guid? oldValue = projection.Entity.Entity.GUID_STATUS;
@@ -1076,7 +1039,7 @@ namespace BluePrints.ViewModels
 
                 if (!isNew)
                 {
-                    string statusFieldName = "Entity.Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS);
+                    string statusFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS));
                     PauseUndoRedo();
                     AddUndo(projection, statusFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
@@ -1090,7 +1053,7 @@ namespace BluePrints.ViewModels
             {
                 if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
                 {
-                    string fieldName = "Entity.Entity." + field_name;
+                    string fieldName = formatFieldName(field_name);
                     //commit the latest value for internal number generation
                     DataUtils.SetNestedValue(fieldName, projection, new_value);
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
@@ -1098,8 +1061,13 @@ namespace BluePrints.ViewModels
                     string newValue = generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
 
-                    PauseUndoRedo();
-                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM), oldValue, newValue, EntityMessageType.Changed);
+                    //when it's new this entity will be added as EntityMessageType.Added later
+                    if(!isNew)
+                    {
+                        PauseUndoRedo();
+                        AddUndo(projection, formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM)), oldValue, newValue, EntityMessageType.Changed);
+                    }
+
                     projection.Update();
                 }
             }
@@ -1115,19 +1083,9 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.GUID_STATUS = newValue;
 
                     PauseUndoRedo();
-                    AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS), oldValue, newValue, EntityMessageType.Changed);
+                    AddUndo(projection, formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS)), oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
-            }
-
-            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_SUBJOB)) && new_value == null)
-            {
-                allowSubJobDeletion = true;
-            }
-
-            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_WORKPACK)) && new_value == null)
-            {
-                allowWorkpackDeletion = true;
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
@@ -1166,13 +1124,12 @@ namespace BluePrints.ViewModels
             }
 
             BASELINECollectionViewModel.Save(loadBASELINE);
-            SetBaselineLockUnlock?.Invoke(isLock);
             this.RaisePropertiesChanged();
         }
 
         public bool CanDuplicate()
         {
-            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;
@@ -1189,7 +1146,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, GetAllEntities(), SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, DisplayEntities, DisplaySelectedEntities);
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1254,7 +1211,7 @@ namespace BluePrints.ViewModels
             if (!_isProcessingMultiple)
                 PauseUndoRedo();
 
-            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, GetAllEntities(), SelectedEntities);
+            List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, DisplayEntities, DisplaySelectedEntities);
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
@@ -1357,7 +1314,7 @@ namespace BluePrints.ViewModels
 
         public bool CanDuplicateMultiple(BarEditItem barEdit)
         {
-            if (SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;
@@ -1383,7 +1340,7 @@ namespace BluePrints.ViewModels
                 {
                     Duplicate();
                 }
-                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, SelectedEntities);
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
@@ -1406,7 +1363,7 @@ namespace BluePrints.ViewModels
                 {
                     Insert();
                 }
-                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, SelectedEntities);
+                //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToInsert, true, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
@@ -1420,7 +1377,7 @@ namespace BluePrints.ViewModels
         
         public bool CanAutoPopulate(object button)
         {
-            if (SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                     return false;
 
             return true;
@@ -1434,18 +1391,18 @@ namespace BluePrints.ViewModels
             if (info.Column == null)
                 return;
 
-            var areaFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA));
-            var subAreaFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
-            var subjobFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB));
-            var workpackFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK));
-            var internalNumberFieldName = localizeColumnFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
+            var areaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA));
+            var subAreaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
+            var subjobFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB));
+            var workpackFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK));
+            var internalNumberFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
 
             var entitiesToSave = new List<BASELINE_ITEMProgress>();
-            string fieldName = localizeColumnFieldName(info.Column.FieldName);
+            string fieldName = formatFieldName(info.Column.FieldName);
 
             Dictionary<Guid, string> internalNumberUndoInfos = new Dictionary<Guid, string>();
             if (fieldName == internalNumberFieldName)
-                foreach (var entity in SelectedEntities)
+                foreach (var entity in DisplaySelectedEntities)
                 {
                     if(entity.IsInternalNumberEditable)
                     {
@@ -1454,7 +1411,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-            foreach (var entity in SelectedEntities)
+            foreach (var entity in DisplaySelectedEntities)
             {
                 var entitySUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
                 if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
@@ -1566,6 +1523,12 @@ namespace BluePrints.ViewModels
             BackgroundRefresh();
         }
 
+        private string formatFieldName(string fieldName)
+        {
+            string cleanFieldName = DataUtils.FormatColumnFieldname(fieldName);
+            return "Entity.Entity." + cleanFieldName;
+        }
+
         protected override void onAfterRefresh()
         {
             allowSubJobDeletion = false;
@@ -1621,21 +1584,21 @@ namespace BluePrints.ViewModels
             if (info.Column.ReadOnly)
                 return false;
 
-            if (SelectedEntity == null || SelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
+            if (DisplaySelectedEntity == null || DisplaySelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
                 return false;
 
-            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(localizeColumnFieldName(info.Column.FieldName), SelectedEntity);
+            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(formatFieldName(info.Column.FieldName), DisplaySelectedEntity);
             if (columnPropertyInfo.PropertyType == typeof(string))
             {
-                var constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType());
+                var constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType());
                 if (constraintString == null)
-                    constraintString = DataUtils.GetConstraintPropertyStrings(SelectedEntity.GetType().BaseType);
+                    constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
 
                 var bulkEditDisabledString =
-                    DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType());
+                    DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType());
                 if (bulkEditDisabledString == null)
                     bulkEditDisabledString =
-                        DataUtils.GetBulkEditDisabledPropertyStrings(SelectedEntity.GetType().BaseType);
+                        DataUtils.GetBulkEditDisabledPropertyStrings(DisplaySelectedEntity.GetType().BaseType);
 
                 if (constraintString != null && constraintString.Any(x => x == columnPropertyInfo.Name) ||
                     bulkEditDisabledString != null && bulkEditDisabledString.Any(x => x == columnPropertyInfo.Name))
@@ -1650,8 +1613,8 @@ namespace BluePrints.ViewModels
         public void FindReplace(object button)
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            BASELINE_ITEMProgress first_selected_entity = SelectedEntities.First();
-            string fieldName = localizeColumnFieldName(info.Column.FieldName);
+            BASELINE_ITEMProgress first_selected_entity = DisplaySelectedEntities.First();
+            string fieldName = formatFieldName(info.Column.FieldName);
             object find_nested_value = DataUtils.GetNestedValue(fieldName, first_selected_entity);
 
             string find_value;
@@ -1674,7 +1637,7 @@ namespace BluePrints.ViewModels
                 PauseUndoRedo();
                 string new_find_value = bulkFindAndReplaceViewModel.FindValue;
                 string replace_value = bulkFindAndReplaceViewModel.ReplaceValue;
-                foreach (BASELINE_ITEMProgress selected_entity in SelectedEntities)
+                foreach (BASELINE_ITEMProgress selected_entity in DisplaySelectedEntities)
                 {
                     object nested_value = DataUtils.GetNestedValue(fieldName, selected_entity);
                     string old_column_value;
@@ -1733,7 +1696,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
                 return false;
 
             return true;

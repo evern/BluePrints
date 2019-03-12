@@ -520,6 +520,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [A-Z]{2}\d{2}.
+        /// </summary>
+        internal static string Regex_DISCIPLINE {
+            get {
+                return ResourceManager.GetString("Regex_DISCIPLINE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -\d{3}-\d{2}-[D,C,I,P]{1}\d{1}.
+        /// </summary>
+        internal static string Regex_SUBJOB {
+            get {
+                return ResourceManager.GetString("Regex_SUBJOB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uncategorised.
         /// </summary>
         internal static string UncategorisedStockCode {

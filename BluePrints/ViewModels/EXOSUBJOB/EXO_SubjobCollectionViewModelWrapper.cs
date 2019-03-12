@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
 
         #region Code Properties
         protected Data.PROJECT loadPROJECT;
-        private List<STAFF> exoSTAFFS;
+        protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -91,8 +91,8 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
-            SubJobRegex = loadPROJECT.NUMBER + @"-\d{3}-\d{2}-[D,C,I,P]{1}\d{1}";
-            DisciplineRegex = @"[A-Z]{2}\d{2}";
+            SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
+            DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
@@ -115,20 +115,20 @@ namespace BluePrints.ViewModels
 
         protected void initializeCompulsoryViewProperties()
         {
-            masterJob = ExoQueries.GetAnyProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER);
-            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
+            masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
+            copyLine = ExoQueries.GetMasterProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
+            exoSTAFFS = ExoQueries.GetStaffs(primeroUnitOfWork).ToList();
         }
 
         private void initializeOptionalViewCollections()
         {
-            exoSTAFFS = primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").ToList();
             costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
             existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         private void BackgroundBudgetChecker_DoWork(object sender, DoWorkEventArgs e)
         {
-            EXO_DesignSubjobCollectionViewModelWrapper designSubjobWrapper = EXO_DesignSubjobCollectionViewModelWrapper.Create();
+            EXO_DesignSubjobCollectionViewModelWrapper designSubjobWrapper = EXO_DesignSubjobCollectionViewModelWrapper.CreateDesignSubJobCollection();
             designSubjobWrapper.SetParentViewModel(this);
             designSubjobWrapper.OnEntitiesLoadedCallBack = updateBudgetedSubJobs;
             designSubjobWrapper.SuppressNotification = true;
@@ -167,6 +167,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
+            MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -358,7 +359,7 @@ namespace BluePrints.ViewModels
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
 
-                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId && x.VariationCode == selectedEntity.VariationCode))
+                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
                         ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                         if (findAuth == null)
@@ -384,7 +385,7 @@ namespace BluePrints.ViewModels
                         e.Handled = true;
                     }
 
-                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId && x.VariationCode == selectedEntity.VariationCode))
+                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
                         ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                         if (findAuth != null)
@@ -564,6 +565,9 @@ namespace BluePrints.ViewModels
 
         protected void refreshPermissions()
         {
+            isPermissionLoading = true;
+            this.RaisePropertyChanged(x => x.IsPermissionLoading);
+
             this.RaisePropertyChanged(x => x.Users);
             this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
         }
@@ -773,6 +777,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+
+        protected bool isPermissionLoading;
+
+        //if user clicks on an autofilter row and isPermissionLoading is true it won't be set to false ever and this can freeze up the view
+        public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
+
         public ExoSubJobAuth SelectedUser { get; set; }
         public virtual IEnumerable<ExoSubJobAuth> Users
         {
@@ -813,6 +823,8 @@ namespace BluePrints.ViewModels
                     orderedAuthUsers.Add(displayUserAuth);
                 }
 
+                isPermissionLoading = false;
+                this.RaisePropertyChanged(x => x.IsPermissionLoading);
                 permissions.AddRange(orderedAuthUsers.OrderBy(x => x.User.Full_Name));
                 return permissions;
             }
@@ -839,9 +851,16 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<USER>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
+
+                List<USER> returnSTAFF = new List<USER>();
+                foreach(USER user in collection)
+                {
+                    //don't return any user that is disabled in EXO
+                    if (exoSTAFFS.Any(x => x.STAFFNO == user.EXO_STAFF_ID))
+                        returnSTAFF.Add(user);
+                }
+                
+                return returnSTAFF.OrderBy(x => x.NAME);
             }
         }
 

@@ -41,6 +41,7 @@
                                 <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                 <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Budget" Header="Budget" HeaderToolTip="Budget in Exo (From deliverable list)" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
@@ -66,8 +67,8 @@
                             </dxg:GridControl.View>
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
-                    <dxc:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
-                        <dxlc:LayoutGroup Name="LayoutGroupPermission" DataContext="{Binding DataContext, ElementName=userControl, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Horizontal" View="Group">
+                    <dxc:LoadingDecorator DataContext="{Binding DataContext, ElementName=userControl}" IsSplashScreenShown="{Binding IsPermissionLoading}">
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                             <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.Full_Name" FilterPopupMode="CheckedList" Header="User" />
@@ -92,7 +93,7 @@
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView1" MouseUp="tableView1_MouseUp">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>

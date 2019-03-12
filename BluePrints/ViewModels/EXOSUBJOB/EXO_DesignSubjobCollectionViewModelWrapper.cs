@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static EXO_DesignSubjobCollectionViewModelWrapper Create(
+        public static EXO_DesignSubjobCollectionViewModelWrapper CreateDesignSubJobCollection(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new EXO_DesignSubjobCollectionViewModelWrapper(unitOfWorkFactory));
@@ -74,6 +74,8 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
             initializeCompulsoryViewProperties();
             initializeOptionalViewCollectionsOnRefresh = false;
+            SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
+            DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -253,6 +255,8 @@ namespace BluePrints.ViewModels
                     permissions.Add(newUser);
                 }
 
+                isPermissionLoading = false;
+                this.RaisePropertyChanged(x => x.IsPermissionLoading);
                 return permissions.OrderBy(x => x.User.Full_Name);
             }
         }

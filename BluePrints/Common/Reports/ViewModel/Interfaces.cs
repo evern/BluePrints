@@ -165,13 +165,37 @@ namespace BluePrints.Common.ViewModel.Reporting
     #endregion
 
     #region Property Specification Interfaces
-    public interface ISupportVariationSummary : ISupportVariation
+    //for managing unapproved variation hours on deliverable
+    public interface ISupportVariation<IDeliverable> : ISupportVariationSummary, IReportable
     {
-        decimal Forecast_Units { get; }
-        decimal Variation_Cost { get; }
+        IDeliverable Entity { get; }
+        VARIATION_ITEM VARIATION_ITEM { get; }
+        DateTime? SubmittedDate { get; set; }
+        DateTime? ApprovedDate { get; set; }
+        bool AdjustUnitsReadOnly { get; }
+        bool IsSubmitted { get; }
+        bool IsApproved { get; }
+        decimal Forecast_Total_Costs { get; }
+        bool IsReadOnly { get; }
+        bool IsCancellable { get; }
+        bool IsEnabled { get; }
+        decimal MinNegativeUnits { get; }
+        bool CanToggleCancellation { get; }
+        decimal DisplayVariationUnits { get; set; }
+        VariationAction DisplayVariationAction { get; set; }
+        bool ShouldSaveVariation { get; }
     }
 
-    public interface ISupportVariation
+    //for suummarising total unapproved hours and costs
+    public interface ISupportVariationSummary : ISupportVariationRevision
+    {
+        //use to show what the units will be after approval
+        decimal Forecast_Units { get; }
+        decimal Forecast_Costs { get; }
+    }
+
+    //for revising deliverable with approved variation hours
+    public interface ISupportVariationRevision
     {
         Guid? Baseline_Guid { get; set; }
         Guid? Variation_Guid { get; set; }

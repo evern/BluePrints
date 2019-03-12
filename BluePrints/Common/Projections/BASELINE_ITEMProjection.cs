@@ -14,7 +14,7 @@ using System.Linq;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_BASELINE, Entity.INTERNAL_NUM")]
-    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus, IHaveDBProductivityOverride, ISupportVariation, IEntityNumber
+    public class BASELINE_ITEMProjection : BluePrintsProjectionBase<BASELINE_ITEM>, IDeliverable_Rates, ISupportByDuration, IHaveDeliverableStatus, IHaveDBProductivityOverride, IEntityNumber, ISupportVariationRevision
     {
         public BASELINE_ITEMProjection()
             : base()
