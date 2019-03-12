@@ -779,6 +779,8 @@ namespace BluePrints.ViewModels
         #region View Properties
 
         protected bool isPermissionLoading;
+
+        //if user clicks on an autofilter row and isPermissionLoading is true it won't be set to false ever and this can freeze up the view
         public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
 
         public ExoSubJobAuth SelectedUser { get; set; }
