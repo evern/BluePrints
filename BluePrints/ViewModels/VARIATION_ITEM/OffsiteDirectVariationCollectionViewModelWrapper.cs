@@ -45,7 +45,6 @@ namespace BluePrints.ViewModels
             loadVARIATION = receiveParameter.GetSecondEntity();
             viewType = DeliverablesViewType.Both;
             isQueryForLiveStatus = true;
-
             //base.resolveParameters(parameter);
         }
 
@@ -92,6 +91,21 @@ namespace BluePrints.ViewModels
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        public override bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        {
+            //do not allow modification to deliverable's lists on existing deliverables
+            if (entity.EntityKey != Guid.Empty && entity.DisplayVariationAction != VariationAction.Add)
+            {
+                //only save variation units
+                if (entity.ShouldSaveVariation)
+                    saveVariation(entity);
+
+                return false;
+            }
+
+            return base.OnBeforeEntitySaved(entity);
         }
 
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)

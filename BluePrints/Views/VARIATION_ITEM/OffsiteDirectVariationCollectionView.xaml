@@ -191,7 +191,7 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Cost" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_Costs" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -205,7 +205,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Variation_Cost" Header="Adjustment Costs" HeaderToolTip="Costs that will be adjusted after variation approval" ReadOnly="True">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Costs" Header="Adjustment Costs" HeaderToolTip="Costs that will be adjusted after variation approval" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -264,20 +264,20 @@
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayVariationUnits" ShowInColumn="DisplayVariationUnits" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayTotalUnits" ShowInColumn="Entity.DisplayTotalUnits" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Total_Cost" ShowInColumn="Total_Cost" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayTotalUnits" ShowInColumn="DisplayTotalUnits" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_Costs" ShowInColumn="Forecast_Total_Costs" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Forecast_Units" ShowInColumn="Forecast_Units" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Variation_Cost" ShowInColumn="Variation_Cost" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Costs" ShowInColumn="Forecast_Costs" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayVariationUnits" ShowInColumn="DisplayVariationUnits" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayTotalUnits" ShowInColumn="Entity.DisplayTotalUnits" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Total_Cost" ShowInColumn="Total_Cost" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="DisplayTotalUnits" ShowInColumn="DisplayTotalUnits" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_Costs" ShowInColumn="Forecast_Total_Costs" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Forecast_Units" ShowInColumn="Forecast_Units" SummaryType="SUM" />
-                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Variation_Cost" ShowInColumn="Variation_Cost" SummaryType="SUM" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Costs" ShowInColumn="Forecast_Costs" SummaryType="SUM" />
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
@@ -298,7 +298,7 @@
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                                    <dxb:BarButtonItem x:Name="contextMenuDuplicate" Command="{Binding DataContext.DuplicateCommand, ElementName=userControl}" Content="Duplicate" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Duplicate selected deliverables and assign the same internal number" />
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
                                         <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" Content="Count" EditValue="2">
@@ -308,21 +308,6 @@
                                                         <dxe:ButtonInfo GlyphKind="Apply">
                                                             <dxmvvm:Interaction.Behaviors>
                                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
-                                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" Content="Count" EditValue="2">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
                                                             </dxmvvm:Interaction.Behaviors>
                                                         </dxe:ButtonInfo>
                                                     </dxe:SpinEditSettings.Buttons>

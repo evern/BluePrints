@@ -280,11 +280,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal DisplayTotalUnits => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + DisplayVariationUnits);
+        public decimal DisplayTotalUnits => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units);
 
-        public virtual decimal Total_Cost => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + DisplayVariationUnits) * base.Entity.Budget_ItemRate;
+        public virtual decimal Forecast_Total_Costs => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * base.Entity.Budget_ItemRate;
 
-        public virtual decimal Variation_Cost => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
+        public virtual decimal Forecast_Costs => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
 
         //use to show what the units will be after approval
         public decimal Forecast_Units

@@ -175,7 +175,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         bool AdjustUnitsReadOnly { get; }
         bool IsSubmitted { get; }
         bool IsApproved { get; }
-        decimal Total_Cost { get; }
+        decimal Forecast_Total_Costs { get; }
         bool IsReadOnly { get; }
         bool IsCancellable { get; }
         bool IsEnabled { get; }
@@ -191,7 +191,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         //use to show what the units will be after approval
         decimal Forecast_Units { get; }
-        decimal Variation_Cost { get; }
+        decimal Forecast_Costs { get; }
     }
 
     //for revising deliverable with approved variation hours

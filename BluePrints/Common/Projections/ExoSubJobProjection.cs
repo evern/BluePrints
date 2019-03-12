@@ -785,10 +785,21 @@ namespace BluePrints.Common.Projections
         public static bool findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, int jobNo)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo);
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo, true);
 
             if (resourceAllocation != null)
+            {
+                if(resourceAllocation.END_DATE < DateTime.Now)
+                {
+                    resourceAllocation.START_DATE = BluePrintsConstants.DefaultFirstDay;
+                    resourceAllocation.END_DATE = BluePrintsConstants.DefaultLastDay;
+                    resourceAllocation.START_TIME = BluePrintsConstants.DefaultStartTime;
+                    resourceAllocation.END_TIME = BluePrintsConstants.DefaultStartTime;
+                    pUnitOfWork.SaveChanges();
+                }
+
                 return false;
+            }
             else
             {
                 int? resourceNo = ExoQueries.GetStaffResourceNo(pUnitOfWork, existingPermission.User.EXO_STAFF_ID);
@@ -810,15 +821,10 @@ namespace BluePrints.Common.Projections
                 newAllocation.RESOURCE_SEQNO = (int)resourceNo;
                 newAllocation.JOBNO = jobNo;
 
-                int year = DateTime.Now.Year;
-                DateTime firstDay = new DateTime(year, 1, 1);
-                DateTime startTime = new DateTime(1899, 12, 30, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                DateTime lastDay = new DateTime(2099, 1, 1);
-
-                newAllocation.START_DATE = firstDay;
-                newAllocation.END_DATE = lastDay;
-                newAllocation.START_TIME = startTime;
-                newAllocation.END_TIME = startTime;
+                newAllocation.START_DATE = BluePrintsConstants.DefaultFirstDay;
+                newAllocation.END_DATE = BluePrintsConstants.DefaultLastDay;
+                newAllocation.START_TIME = BluePrintsConstants.DefaultStartTime;
+                newAllocation.END_TIME = BluePrintsConstants.DefaultStartTime;
                 newAllocation.TOTAL_HOURS = 999999;
                 newAllocation.APPOINTMENT_SCHEDULED = "N";
                 pUnitOfWork.JOB_RESOURCE_ALLOCATION.Add(newAllocation);
@@ -833,7 +839,7 @@ namespace BluePrints.Common.Projections
         public static void deleteResourceAllocation(ExoSubJobAuth existingPermission, int jobNo)
         {
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo);
+            JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo, false);
 
             if (resourceAllocation != null)
             {
@@ -930,7 +936,7 @@ namespace BluePrints.Common.Projections
                 projection.Budget = exoLine.BudgetCosts;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
-                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
+                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode && x.VariationCode == exoLine.VariationCode);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 if (exoLines.Count() > 0)
                 {
@@ -971,24 +977,25 @@ namespace BluePrints.Common.Projections
         {
             List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, null).ToList();
 
-            var groupedDeliverables = baseline_item_progresses.GroupBy(x => new { SubJob = x.Entity.Entity.SUBJOB, DisciplineCode = x.Discipline_Code, DisciplineName = x.Entity.Entity.Discipline_Name, Commodity = x.Entity.Entity.DOCTYPE })
-                                      .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.DisciplineName, group.Key.Commodity });
+            var groupedDeliverables = baseline_item_progresses.GroupBy(x => new { SubJob = x.Entity.Entity.SUBJOB, DisciplineCode = x.Discipline_Code, Commodity = x.Entity.Entity.DOCTYPE })
+                                      .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, DisciplineName = group.Select(x => x.Entity.Entity.Discipline_Name), group.Key.Commodity, TotalCosts = group.Sum(x => x.Total_Costs) });
 
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
+
             foreach(var groupedDeliverable in groupedDeliverables)
             {
                 if (groupedDeliverable.SubJob == null || groupedDeliverable.Commodity == null)
                     continue;
 
                 ExoSubJobEditableProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
-                ExoTimeAuthorisation exoSubJobAuthorisation = exoAuthorisations.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1);
-                if(exoSubJobAuthorisation != null)
+                ExoTimeAuthorisation exoSubJobLines = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob.INTERNAL_NAME1);
+                if(exoSubJobLines != null)
                 {
-                    newSubJobProjection.SubJobId = exoSubJobAuthorisation.SubJobNo;
-                    newSubJobProjection.SubJobCode = exoSubJobAuthorisation.SubJobCode;
-                    newSubJobProjection.SubJobTitle = exoSubJobAuthorisation.SubJobTitle;
+                    newSubJobProjection.SubJobId = exoSubJobLines.SubJobNo;
+                    newSubJobProjection.SubJobCode = exoSubJobLines.SubJobCode;
+                    newSubJobProjection.SubJobTitle = exoSubJobLines.SubJobTitle;
                 }
                 else
                 {
@@ -1000,23 +1007,23 @@ namespace BluePrints.Common.Projections
                 }
 
                 newSubJobProjection.SubJobChargeType = groupedDeliverable.SubJob == null ? null : groupedDeliverable.SubJob.PHASE == null ? null : groupedDeliverable.SubJob.PHASE.CHARGE_TYPE;
-                ExoTimeAuthorisation exoDisciplineAuthorisation = exoAuthorisations.FirstOrDefault(x => x.DisciplineCode == groupedDeliverable.DisciplineCode);
-                if(exoDisciplineAuthorisation != null)
+                ExoTimeAuthorisation exoDisciplineLines = exoLines.FirstOrDefault(x => x.DisciplineCode == groupedDeliverable.DisciplineCode);
+                if(exoDisciplineLines != null)
                 {
-                    newSubJobProjection.DisciplineId = exoDisciplineAuthorisation.DisciplineId;
-                    newSubJobProjection.DisciplineCode = exoDisciplineAuthorisation.DisciplineCode;
-                    newSubJobProjection.DisciplineName = exoDisciplineAuthorisation.DisciplineName;
+                    newSubJobProjection.DisciplineId = exoDisciplineLines.DisciplineId;
+                    newSubJobProjection.DisciplineCode = exoDisciplineLines.DisciplineCode;
+                    newSubJobProjection.DisciplineName = exoDisciplineLines.DisciplineName;
                 }
                 else
                 {
                     newSubJobProjection.DisciplineCode = groupedDeliverable.DisciplineCode;
                 }
 
-                ExoTimeAuthorisation exoCommodityAuthorisation = exoAuthorisations.FirstOrDefault(x => x.CommodityCode == groupedDeliverable.Commodity.CODE);
-                if(exoCommodityAuthorisation != null)
+                ExoTimeAuthorisation exoCommodityLines = exoLines.FirstOrDefault(x => x.CommodityCode == groupedDeliverable.Commodity.CODE);
+                if(exoCommodityLines != null)
                 {
-                    newSubJobProjection.CommodityId = exoCommodityAuthorisation.CommodityId;
-                    newSubJobProjection.CommodityCode = exoCommodityAuthorisation.CommodityCode;
+                    newSubJobProjection.CommodityId = exoCommodityLines.CommodityId;
+                    newSubJobProjection.CommodityCode = exoCommodityLines.CommodityCode;
                     newSubJobProjection.CommodityName = groupedDeliverable.Commodity.NAME;
                 }
                 else
@@ -1024,6 +1031,7 @@ namespace BluePrints.Common.Projections
                     newSubJobProjection.CommodityCode = groupedDeliverable.Commodity.CODE;
                 }
 
+                newSubJobProjection.Budget = groupedDeliverable.TotalCosts;
                 newSubJobProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 newSubJobProjection.CommodityIsIndirectOnly = groupedDeliverable.Commodity == null ? false : groupedDeliverable.Commodity.IS_INDIRECT_ONLY;
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
@@ -1069,6 +1077,19 @@ namespace BluePrints.Common.Projections
             return subJobs.First();
         }
 
+        public static IQueryable<STAFF> GetStaffs(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            var querySTAFF = from STAFF in primeroUnitOfWork.STAFF
+                             join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                             on STAFF.STAFFNO equals JOBCOST_RESOURCE.STAFFNO
+                             join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                             on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
+                             where STAFF.ISACTIVE == "Y"
+                             select STAFF;
+
+            return querySTAFF;
+        }
+
         public static IEnumerable<JOBCOST_HDR> GetProjectSubJobs(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
@@ -1083,10 +1104,16 @@ namespace BluePrints.Common.Projections
             return subJobs;
         }
 
-        public static JOB_RESOURCE_ALLOCATION GetResourceAllocation(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, ExoSubJobAuth existingAuth, int jobNo)
+        public static JOB_RESOURCE_ALLOCATION GetResourceAllocation(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, ExoSubJobAuth existingAuth, int jobNo, bool includeDisabled)
         {
             if (existingAuth.User == null || existingAuth.User.EXO_STAFF_ID == null)
                 return null;
+
+            DateTime disabledDateTime;
+            if (includeDisabled)
+                disabledDateTime = BluePrintsConstants.DefaultStartTime;
+            else
+                disabledDateTime = DateTime.Now;
 
             int staffId = (int)existingAuth.User.EXO_STAFF_ID;
             var resourceAllocation = from JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
@@ -1094,7 +1121,7 @@ namespace BluePrints.Common.Projections
                                      on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
-                                     where STAFF.STAFFNO == staffId && JOB_RESOURCE_ALLOCATION.JOBNO == jobNo && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
+                                     where STAFF.STAFFNO == staffId && JOB_RESOURCE_ALLOCATION.JOBNO == jobNo && JOB_RESOURCE_ALLOCATION.END_DATE >= disabledDateTime
                                      select JOB_RESOURCE_ALLOCATION;
 
             if (resourceAllocation.Count() == 0)

@@ -79,24 +79,24 @@ namespace BluePrints.Reports
 
 
 
-            string strBudgetReplaceFrom;
-            string strBudgetReplaceTo;
+            //string strBudgetReplaceFrom;
+            //string strBudgetReplaceTo;
 
             //string formatString;
             if (useLate)
             {
-                strBudgetReplaceFrom = "Budgeted.";
-                strBudgetReplaceTo = "BudgetedLate.";
+                //strBudgetReplaceFrom = "Budgeted.";
+                //strBudgetReplaceTo = "BudgetedLate.";
                 //formatString = "{0:c}";
             }
             else
             {
-                strBudgetReplaceFrom = "BudgetedLate.";
-                strBudgetReplaceTo = "Budgeted.";
+                //strBudgetReplaceFrom = "BudgetedLate.";
+                //strBudgetReplaceTo = "Budgeted.";
                 //formatString = "{0:n1}";
             }
 
-            string percentageFormatString = "{0:0.00%}";
+            //string percentageFormatString = "{0:0.00%}";
 
             //replaceDataMember(xrDataSummaryCumulativeEarnedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);
             //replaceDataMember(xrDataSummaryCumulativePlannedPercent, strReplaceFrom, strReplaceTo, percentageFormatString);

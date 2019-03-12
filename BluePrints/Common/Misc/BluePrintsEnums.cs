@@ -18,6 +18,10 @@ namespace BluePrints.Common
         {
             get { return 0; }
         }
+
+        public static DateTime DefaultStartTime = new DateTime(1899, 1, 1, 0, 0, 0);
+        public static DateTime DefaultFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
+        public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
     public enum StaticSummaryRowTypes

@@ -65,6 +65,7 @@ namespace BluePrints.ViewModels
             phaseType = project_phasetype_parameter.GetSecondEntity().phaseType;
             exoJobCollectionViewModel = EXO_SubjobCollectionViewModelWrapper.Create(bluePrintsUnitOfWorkFactory);
             exoJobCollectionViewModel.OnParameterChange(new EntitiesParameter<Data.PROJECT>(loadPROJECT));
+            exoJobCollectionViewModel.AlwaysSkipMessage = true;
             exoJobCollectionViewModel.SetParentViewModel(this);
         }
 
@@ -74,7 +75,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
@@ -108,14 +108,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<VARIATION_ITEM>, IQueryable<VARIATION_ITEM>> VARIATION_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.VARIATION.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
-        {
-            if (LiveBASELINE == null)
-                return query => query.Where(x => x.GUID == Guid.Empty);
-            else
-                return query => query.Where(x => x.GUID_BASELINE == LiveBASELINE.GUID);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -278,14 +270,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEMSViewModel
-        {
-            get
-            {
-                return (CollectionViewModel<BASELINE_ITEM, BASELINE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE_ITEM>();
-            }
-        }
-
         public CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_ITEMSViewModel
         {
             get
@@ -359,15 +343,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<ESTIMATE>();
-                return collection;
-            }
-        }
-
-        public IEnumerable<BASELINE_ITEM> BASELINE_ITEMCollection
-        {
-            get
-            {
-                var collection = GetEntities<BASELINE_ITEM>();
                 return collection;
             }
         }
@@ -557,6 +532,7 @@ namespace BluePrints.ViewModels
                 variation_itemsViewModelWrapper.SuppressNotification = true;
                 variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
                 variation_itemsViewModelWrapper.InViewModelOnlyMode = true;
+                variation_itemsViewModelWrapper.AlwaysSkipMessage = true;
                 var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
                 baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, loadVARIATION);
 
@@ -725,7 +701,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
             List<string> addedDeliverables = new List<string>();
 
-            List<ExoSubJobEditableProjection> exoVariation = new List<ExoSubJobEditableProjection>();
+            List<ExoSubJobEditableProjection> exoVariations = new List<ExoSubJobEditableProjection>();
             foreach (var deliverable in deliverables)
             {
                 TEntity new_deliverable = new TEntity();
@@ -795,18 +771,24 @@ namespace BluePrints.ViewModels
                     repository.Add(new_deliverable);
                 }
                 //if its purely a scan to determine variation
-                else if (exoInteraction != ExoInteraction.None && deliverable.DisplayVariationAction == VariationAction.Add && variationCode != string.Empty)
+                else if (exoInteraction != ExoInteraction.None && (deliverable.DisplayVariationAction == VariationAction.Add || deliverable.DisplayVariationAction == VariationAction.Append) && variationCode != string.Empty)
                 {
-                    string subJobCode = deliverable.Entity.Subjob_Name;
-                    string disciplineCode = deliverable.Entity.Discipline_Code;
-                    string commodityCode = deliverable.Entity.Commodity_Code;
+                    string subJobCode = deliverable.Subjob_Name;
+                    string disciplineCode = deliverable.Discipline_Code;
+                    string commodityCode = deliverable.Commodity_Code;
+                    decimal variationCost = deliverable.Forecast_Costs;
 
-                    if(!exoVariation.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
+                    ExoSubJobEditableProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
+                    if (exoVariation == null)
                     {
-                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
+                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode, Budget = variationCost };
                         //set commodity code convention so that error can be raised natively within model with GetPropertyError
                         newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
-                        exoVariation.Add(newVariationSubJob);
+                        exoVariations.Add(newVariationSubJob);
+                    }
+                    else
+                    {
+                        exoVariation.Budget += variationCost;
                     }
                 }
 
@@ -814,7 +796,7 @@ namespace BluePrints.ViewModels
             }
 
             if (exoInteraction != ExoInteraction.None)
-                pushToExo(exoVariation, exoInteraction);
+                pushToExo(exoVariations, exoInteraction);
             else
             {
                 unitOfWork.SaveChanges();

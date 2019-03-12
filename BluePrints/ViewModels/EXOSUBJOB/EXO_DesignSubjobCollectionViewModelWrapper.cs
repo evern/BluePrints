@@ -74,6 +74,8 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
             initializeCompulsoryViewProperties();
             initializeOptionalViewCollectionsOnRefresh = false;
+            SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
+            DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -253,6 +255,8 @@ namespace BluePrints.ViewModels
                     permissions.Add(newUser);
                 }
 
+                isPermissionLoading = false;
+                this.RaisePropertyChanged(x => x.IsPermissionLoading);
                 return permissions.OrderBy(x => x.User.Full_Name);
             }
         }
