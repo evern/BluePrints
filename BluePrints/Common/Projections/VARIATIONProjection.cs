@@ -39,7 +39,7 @@ namespace BluePrints.Common.Projections
                 if (DetailEntities == null)
                     return 0;
 
-                return DetailEntities.Sum(x => x.Variation_Cost);
+                return DetailEntities.Sum(x => x.Forecast_Costs);
             }
         }
     }

@@ -345,8 +345,6 @@ namespace BluePrints.Common
                 else
                 {
                     setupLocalAction(typeName, localTotalCount);
-                    int processedCount = 0;
-
                     //List<T> localDbItems = localDbSet.ToList();
                     //List<T> remoteDbItems = remoteDbSet.ToList();
                     Dictionary<string, T> addRemoteEntries = new Dictionary<string, T>();
@@ -485,7 +483,6 @@ namespace BluePrints.Common
                 else
                 {
                     setupRemoteAction(typeName, remoteTotalCount);
-                    int processedCount = 0;
                     //List<T> remoteDbItems = remoteDbSet.ToList();
                     //List<T> localDbItems = localDbSet.ToList();
                     Dictionary<string, T> addLocalEntries = new Dictionary<string, T>();

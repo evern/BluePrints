@@ -77,7 +77,7 @@ namespace BluePrints.Common.Projections
             string group2 = "2. OTHER INJURIES";
             string group3 = "3. NON INJURY INCIDENTS";
             string group4 = "4. HSE KPI's";
-            string group5 = "5. HSE TRAINING";
+            //string group5 = "5. HSE TRAINING";
             string group6 = "6. TOTALS";
 
             HSEReportProjection INJURIES_REC_LTI = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group1 };

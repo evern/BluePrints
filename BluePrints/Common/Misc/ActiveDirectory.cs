@@ -82,7 +82,7 @@ namespace BluePrints.Common
             }
             catch(Exception ex)
             {
-
+                string s = ex.ToString();
             }
         }
 
@@ -108,7 +108,7 @@ namespace BluePrints.Common
             }
             catch (Exception ex)
             {
-
+                string s = ex.ToString();
             }
         }
 

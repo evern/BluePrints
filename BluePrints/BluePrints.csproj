@@ -412,7 +412,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Base\BluePrintsDocumentManagerServiceExtensions.cs" />
-    <Compile Include="Common\Base\BluePrintsEntitiesVariationCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesProgressCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesSchedulingCollectionWrapper.cs" />
     <Compile Include="Common\Base\BluePrintsEntitiesCollectionWrapper.cs" />
@@ -459,6 +458,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Projections\BASELINE_ITEMVariation.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\ExoResourceProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
@@ -467,12 +467,10 @@
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
-    <Compile Include="Common\Projections\ESTIMATION_ITEMVariation.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
-    <Compile Include="Common\Projections\VariationBase.cs" />
     <Compile Include="Common\Projections\MEETING_MINUTEProjection.cs" />
     <Compile Include="Common\Projections\WORKPACKProjection.cs" />
     <Compile Include="Common\Reports\ViewModel\DataModel.cs" />
@@ -482,7 +480,6 @@
     <Compile Include="Common\Projections\AREAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProjection.cs" />
     <Compile Include="Common\Projections\VARIATIONProjection.cs" />
-    <Compile Include="Common\Projections\BASELINE_ITEMVariation.cs" />
     <Compile Include="Common\Projections\PROJECT_Dashboard.cs" />
     <Compile Include="Common\Projections\ROLE_PERMISSIONInfo.cs" />
     <Compile Include="Common\Misc\TASK_AppointmentInfo.cs" />
@@ -868,7 +865,6 @@
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\SiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
@@ -1674,9 +1670,6 @@
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION_ITEM\SiteDirectVariationCollectionView.xaml.cs">
-      <DependentUpon>SiteDirectVariationCollectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\SUBJOB\SUBJOBCollectionView.xaml.cs">
       <DependentUpon>SUBJOBCollectionView.xaml</DependentUpon>
     </Compile>
@@ -2113,10 +2106,6 @@
     <Page Include="Views\VARIATION\VARIATIONCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\VARIATION_ITEM\SiteDirectVariationCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SUBJOB\SUBJOBCollectionView.xaml">
       <SubType>Designer</SubType>
