@@ -662,37 +662,35 @@ namespace BluePrints.ViewModels
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariationRevision, new()
         {
-            //Must cleanup before doing baseline update to prevent wrapper from refreshing
-            //CleanUpVARIATION_ITEMS(variation_itemsViewModelWrapperForApproval);
-            TBaseline newBASELINE = new TBaseline();
-            liveBASELINE.Baseline_Status = BaselineStatus.Superseded;
-            collectionViewModel.Save(liveBASELINE);
-
-            DataUtils.ShallowCopy(newBASELINE, liveBASELINE);
-            newBASELINE.EntityKey = Guid.Empty;
-
-            string valueToFill = liveBASELINE.Revision;
-            int numericFieldLength = 0;
-            int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
-            if(numericIndex == null)
-            {
-                newBASELINE.Revision = liveBASELINE.Revision.Last().ToString() + 1.ToString();
-            }
-            else
-            {
-                string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
-                long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
-                newBASELINE.Revision = valueToFillStringOnly + (valueToFillNumberOnly + 1).ToString();
-            }
-
-            //not saving new baseline as live yet because editBASELINE_ITEMS still depends on the current live baseline for copying BASELINE_ITEMS
-            newBASELINE.Baseline_Status = BaselineStatus.Live;
-            collectionViewModel.Save(newBASELINE);
-
             string variationCode = DisplaySelectedEntity.Entity.NAME;
+            TBaseline newBASELINE = new TBaseline();
             //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
             if (exoInteraction == ExoInteraction.None)
             {
+                liveBASELINE.Baseline_Status = BaselineStatus.Superseded;
+                collectionViewModel.Save(liveBASELINE);
+
+                DataUtils.ShallowCopy(newBASELINE, liveBASELINE);
+                newBASELINE.EntityKey = Guid.Empty;
+
+                string valueToFill = liveBASELINE.Revision;
+                int numericFieldLength = 0;
+                int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
+                if (numericIndex == null)
+                {
+                    newBASELINE.Revision = liveBASELINE.Revision.Last().ToString() + 1.ToString();
+                }
+                else
+                {
+                    string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
+                    long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
+                    newBASELINE.Revision = valueToFillStringOnly + (valueToFillNumberOnly + 1).ToString();
+                }
+
+                //not saving new baseline as live yet because editBASELINE_ITEMS still depends on the current live baseline for copying BASELINE_ITEMS
+                newBASELINE.Baseline_Status = BaselineStatus.Live;
+                collectionViewModel.Save(newBASELINE);
+
                 DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
                 DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.EntityKey;
                 DisplaySelectedEntity.Entity.GUID_BASELINE = newBASELINE.EntityKey;
@@ -711,7 +709,8 @@ namespace BluePrints.ViewModels
                 TEntity new_deliverable = new TEntity();
                 DataUtils.ShallowCopy(new_deliverable, deliverable.Entity);
 
-               if(exoInteraction == ExoInteraction.None)
+                //only revise when new baseline is created
+                if(newBASELINE.EntityKey != Guid.Empty)
                 {
                     if (deliverable.DisplayVariationAction == VariationAction.Cancel)
                     {
@@ -875,7 +874,7 @@ namespace BluePrints.ViewModels
                     if (exoJobCollectionViewModel.CommitToExo(exoVariationJobs))
                     {
                         SubmitSelectedEntity();
-                        MessageBoxService.ShowMessage("Variation code pushed to exo, please go to exo jobs to add user(s) authorisation");
+                        MessageBoxService.ShowMessage("Variation code(s) pushed to exo");
                         //refresh is required to populate summary
                         FullRefresh();
                     }
