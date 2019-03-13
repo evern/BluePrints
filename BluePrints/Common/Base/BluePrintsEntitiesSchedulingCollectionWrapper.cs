@@ -733,10 +733,10 @@ namespace BluePrints.Common.Base
             P6_ASSIGNMENT swap_p6_assignment;
             //look for next assignment in sequence
             if (!isUp)
-                swap_p6_assignment = targetDeliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
+                swap_p6_assignment = targetDeliverables.Where(x => x.GUID == context_deliverable.GUID)
                     .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.LOW_VALUE == (context_p6_assignment.HIGH_VALUE + 0.01m));
             else
-                swap_p6_assignment = targetDeliverables.Where(x => x.EntityKey == context_deliverable.EntityKey)
+                swap_p6_assignment = targetDeliverables.Where(x => x.GUID == context_deliverable.GUID)
                     .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.HIGH_VALUE == (context_p6_assignment.LOW_VALUE - 0.01m));
 
             if (swap_p6_assignment != null)
@@ -744,7 +744,7 @@ namespace BluePrints.Common.Base
                 var swap_assignment_id = swap_p6_assignment.P6_ACTIVITYID;
                 swap_p6_assignment.P6_ACTIVITYID = context_p6_assignment.P6_ACTIVITYID;
                 context_p6_assignment.P6_ACTIVITYID = swap_assignment_id;
-                swap_selected_p6_assignment = P6_Assignments.First(x => x.EntityKey == swap_p6_assignment.EntityKey);
+                swap_selected_p6_assignment = P6_Assignments.First(x => x.GUID == swap_p6_assignment.GUID);
                 return p6_assignments_in_order;
             }
 

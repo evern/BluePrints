@@ -89,7 +89,7 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.EntityKey), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.GUID), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()

@@ -543,7 +543,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 if (selectedDISCIPLINE != null)
                     InternalNum += "-" + selectedDISCIPLINE.CODE;
 
-                var internalNameCount = BASELINE_ITEMEntities.Where(x => x.EntityKey != excludeGUID).Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
+                var internalNameCount = BASELINE_ITEMEntities.Where(x => x.GUID != excludeGUID).Count(x => x.INTERNAL_NUM != null && x.INTERNAL_NUM.Contains(InternalNum));
                 internalNameCount += 1;
 
                 var countString = string.Empty;

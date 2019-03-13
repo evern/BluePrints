@@ -31,9 +31,6 @@ namespace BluePrints.Data
         public Guid? ParentEntityKey { get => GUID_PARENT; set => GUID_PARENT = value; }
 
         [NotMapped]
-        public Guid EntityKey { get => GUID; set => GUID = value; }
-
-        [NotMapped]
         public bool IsExpanded { get; set; }
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;

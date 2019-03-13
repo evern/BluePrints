@@ -13,20 +13,6 @@ namespace BluePrints.Data
     public partial class REGISTER_RISK : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public string EntityNumber
         {
             get { return NUMBER; }

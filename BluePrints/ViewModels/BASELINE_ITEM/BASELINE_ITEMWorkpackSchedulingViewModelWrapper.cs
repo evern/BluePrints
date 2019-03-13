@@ -77,8 +77,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
 
             base.addEntitiesLoader();
+        }
+
+        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -99,7 +105,7 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
         }
 
         private void assign_baseline(BASELINE entity)
@@ -162,7 +168,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => WORKPACKQueries.WORKPACKProjectionOffsiteTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
+            return query => WORKPACKQueries.WORKPACKProjectionOffsiteTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, true, P6_ASSIGNMENTS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
@@ -216,6 +222,8 @@ namespace BluePrints.ViewModels
                 return loadPROJECT.GUID.ToString();
             }
         }
+
+        public IEnumerable<VARIATION> VARIATIONCollection => GetEntities<VARIATION>();
 
         public IEnumerable<RATE> RATECollection
         {

@@ -325,7 +325,7 @@ namespace BluePrints.ViewModels
                     IGuidEntityKey entityWithGuid = bulkEditEnumsViewModel.SelectedItem as IGuidEntityKey;
                     if (entityWithGuid != null)
                     {
-                        Guid? queryGuid = entityWithGuid.EntityKey == Guid.Empty ? (Guid?)null : entityWithGuid.EntityKey;
+                        Guid? queryGuid = entityWithGuid.GUID == Guid.Empty ? (Guid?)null : entityWithGuid.GUID;
                         IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
                         var copyEntities = unitOfWork.DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
                         setAssignedDocumentTypes(copyEntities, unitOfWork.DSTATUS_DOCTYPES.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == queryGuid));

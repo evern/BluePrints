@@ -71,6 +71,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, TASKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -187,7 +193,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACKProjection>> specifyMainViewModelProjection()
         {
-            return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, null, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
+            return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, VARIATIONCollection, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
         }
 
         //Do not refresh because it is refresh heavy

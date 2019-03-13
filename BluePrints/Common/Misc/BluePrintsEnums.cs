@@ -137,7 +137,8 @@ namespace BluePrints.Common
     {
         [Display(Name = "Superseded")] Superseded = 0,
         [Display(Name = "Working")] Working = 1,
-        [Display(Name = "Live")] Live = 2
+        [Display(Name = "Live")] Live = 2, 
+        [Display(Name = "Variation")] Variation = 3
     }
 
     public enum DeliverableType

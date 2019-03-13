@@ -94,7 +94,7 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -399,7 +399,7 @@ namespace BluePrints.ViewModels
                 {
                     var newProjection = new BASELINE_ITEMProgress();
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.GUID = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
                     newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
                     newProjection.Entity.Entity.DC_HOURS = 0;
@@ -596,7 +596,7 @@ namespace BluePrints.ViewModels
             DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
             DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
             var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
-                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
+                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.GUID);
 
             return internalNum;
         }

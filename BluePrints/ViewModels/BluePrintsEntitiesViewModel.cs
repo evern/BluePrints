@@ -454,7 +454,7 @@ namespace BluePrints.ViewModels
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
             string childTitlePrefix = "[" + entity.NUMBER + "] ";
-            string keyString = entity.EntityKey.ToString();
+            string keyString = entity.GUID.ToString();
             string projectKey = projectViewIdPrefix + keyString;
 
             object parentId;

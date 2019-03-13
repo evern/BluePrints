@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
 
         public void OnEntitySavedCallBack(SUBJOBProjection projectionEntity, SUBJOB entity, bool isNewEntity)
         {
-            projectionEntity.EntityKey = entity.GUID;
+            projectionEntity.GUID = entity.GUID;
         }
         #endregion
 

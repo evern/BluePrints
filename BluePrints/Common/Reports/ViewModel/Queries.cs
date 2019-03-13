@@ -156,13 +156,32 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
+        public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectVariationItemTransformation(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, BASELINE BASELINE, IEnumerable<VARIATION> ApprovedVARIATIONS, VARIATION VARIATION, IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES)
+        {
+            //when either live progress or variation doesn't exists don't return anything
+            IQueryable<BASELINE_ITEMProgress> Baseline_ItemProgresses;
+            if (PROGRESS == null || VARIATION == null)
+                Baseline_ItemProgresses = new List<BASELINE_ITEMProgress>().AsQueryable();
+            else
+                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, ApprovedVARIATIONS);
+
+            foreach (var baseline_item in Baseline_ItemProgresses)
+            {
+                baseline_item.UpdateVariationItem(VARIATION_ITEMS.Where(y => y.GUID_ORIBASEITEM == baseline_item.Entity.Entity.GUID_ORIGINAL).FirstOrDefault());
+                baseline_item.SubmittedDate = VARIATION.SUBMITTED;
+                baseline_item.ApprovedDate = VARIATION.APPROVED;
+            }
+
+            return Baseline_ItemProgresses;
+        }
+
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             PROJECT PROJECT,
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -204,12 +223,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //    }
             //}
 
-            List<VariationAdjustment> projectVariationAdjustments;
-            //VARIATIONS are only necessary if front-end requires percentages
-            if (VARIATIONS != null)
-                projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), baseline_item_projection);
-            else
-                projectVariationAdjustments = new List<VariationAdjustment>();
+            List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.AsQueryable(), baseline_item_projection);
 
             //In progress distribution we want to generate cumulative data point to whatever date user set
             DateTime? extrapolateDate = null;
@@ -340,7 +354,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (setProgressesProjection == null)
                 return;
 
-            foreach (dynamic item in PROGRESS_ITEMSByOriginalGuid)
+            List<dynamic> progressByOriginalGuid = PROGRESS_ITEMSByOriginalGuid.ToList();
+            foreach (dynamic item in progressByOriginalGuid)
             {
                 if (item.OriginalGuid == reportable.OriginalEntityKey)
                 {

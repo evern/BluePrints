@@ -14,20 +14,6 @@ namespace BluePrints.Data
     public partial class REGISTER_HOLD : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public string EntityNumber
         {
             get { return NUMBER; }
@@ -72,7 +58,7 @@ namespace BluePrints.Data
 
         public void SetDeliverables(IEnumerable<BASELINE_ITEM> deliverables, IEnumerable<REGISTER_HOLD_REF> register_hold_deliverables)
         {
-            assignDeliverableObjects = deliverables.Where(baselineItem => register_hold_deliverables.Any(registerHoldRef => registerHoldRef.GUID_HOLD == EntityKey && registerHoldRef.GUID_BASELINE_ITEM == baselineItem.GUID_ORIGINAL)).ToList();
+            assignDeliverableObjects = deliverables.Where(baselineItem => register_hold_deliverables.Any(registerHoldRef => registerHoldRef.GUID_HOLD == GUID && registerHoldRef.GUID_BASELINE_ITEM == baselineItem.GUID_ORIGINAL)).ToList();
         }
 
         public string EntityGroup => string.Empty;

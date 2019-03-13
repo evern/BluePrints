@@ -91,13 +91,17 @@ namespace BluePrints.Common.Projections
 
         public string P6AssignmentDescription2 => Entity.DISCIPLINE == null ? string.Empty : Entity.DISCIPLINE.NAME;
 
-        public Guid DeliverableKey => Entity.EntityKey;
+        public Guid DeliverableKey => Entity.GUID;
 
         public decimal Budget_Quantity => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Budget_Quantity);
 
         public decimal Total_Quantity => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Quantity);
 
         public decimal Earned_Units_ToDate => throw new NotImplementedException();
+
+        public decimal Variation_Costs => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Variation_Costs);
+
+        public decimal Total_Costs => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Costs);
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
@@ -121,7 +125,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<VARIATION> VARIATIONS, 
             IEnumerable<STOCK_GROUP> STOCK_GROUPS,
             IEnumerable<STOCK_CODE> STOCK_CODES,
-            IEnumerable<PROGRESS> PROGRESSES,
+            IEnumerable<PROGRESS> PROGRESSES, 
             IEnumerable<TASK> P6TASKS,
             Data.PROJECT PROJECT
             )
@@ -132,7 +136,7 @@ namespace BluePrints.Common.Projections
             List<BASELINE_ITEMProgress> baseline_item_progresses = new List<BASELINE_ITEMProgress>();
             List<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATE_ITEMProgress>();
             if (designPROGRESS != null)
-                baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS.AsQueryable(), PROJECT, designPROGRESS, RATES, designPROGRESS.PROGRESS_ITEM, null, true, null).ToList();
+                baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS.AsQueryable(), PROJECT, designPROGRESS, RATES, designPROGRESS.PROGRESS_ITEM, VARIATIONS, true, null).ToList();
 
             if(constructPROGRESS != null)
                 estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS.AsQueryable(), PROJECT, RATES, constructPROGRESS, constructPROGRESS.PROGRESS_ITEM.ToList(), false, STOCK_CODES, STOCK_GROUPS).ToList();
@@ -171,9 +175,9 @@ namespace BluePrints.Common.Projections
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
         {
-            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, null).ToList();
+            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, true, null).ToList();
 
             List<WORKPACKProjection> workpacks = new List<WORKPACKProjection>();
             var progress_item_by_subjobs = baseline_item_progresses.GroupBy(x => x.Entity.Entity.GUID_WORKPACK).Select(group => new { SubjobName = group.Key, Progresses = group.ToList() });

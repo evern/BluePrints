@@ -80,6 +80,7 @@ namespace BluePrints.ViewModels
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             IsCalculating = true;
+            this.RaisePropertyChanged(x => x.IsCalculating);
             extrapolateDataDate = true;
             base.resolveParameters(parameter);
         }
@@ -196,6 +197,8 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
          {
+            IsCalculating = true;
+            this.RaisePropertyChanged(x => x.IsCalculating);
             base.FullRefresh();
             refreshDataPointsTable();
         }

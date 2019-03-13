@@ -32,7 +32,7 @@
                                 <dxb:BarButtonItem Content="Submit" Command="{Binding DataContext.SubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CheckBox_32x32.png}" Glyph="{dx:DXImage Image=CheckBox_16x16.png}" />
                                 <dxb:BarButtonItem Content="Unsubmit" Command="{Binding DataContext.UnsubmitCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" Glyph="{dx:DXImage Image=Reset_16x16.png}" />
                                 <dxb:BarButtonItem Content="Approve" Command="{Binding DataContext.ApproveCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Apply_32x32.png}" Glyph="{dx:DXImage Image=Apply_16x16.png}" />
-                                <dxb:BarButtonItem Content="Revert" ToolTip="Revert changes made by last variation" Command="{Binding DataContext.RevertCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}" Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" />
+                                <dxb:BarButtonItem Content="Unapprove" ToolTip="Unapprove changes made by selected variation" Command="{Binding DataContext.UnapproveCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_16x16.png}" Glyph="{dx:DXImage Image=DoublePrev_32x32.png}" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -63,7 +63,7 @@
                                     <dxe:TextEditSettings  />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" HeaderToolTip="Internal variation will have additional units added into baseline units column. External variation will have additional units added to variation units column" FilterPopupMode="CheckedList" VisibleIndex="20">
+                            <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" Visible="False" FilterPopupMode="CheckedList" VisibleIndex="20">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
                                 </dxg:GridColumn.EditSettings>
@@ -76,12 +76,12 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Submitted" FieldName="Entity.SUBMITTED" HeaderToolTip="Contents within submitted variation will be read only" FilterPopupMode="CheckedList" VisibleIndex="50" />
                             <dxg:GridColumn Header="Approved" FieldName="Entity.APPROVED" HeaderToolTip="Contents within approved variation will only show changes made instead of the full deliverables list" FilterPopupMode="CheckedList" VisibleIndex="60" />
-                            <dxg:GridColumn Header="From Baseline" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates which baseline is before applying current variation changes" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
+                            <dxg:GridColumn Header="From Baseline" Visible="False" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates which baseline is before applying current variation changes" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="To Baseline" FieldName="Entity.GUID_BASELINE" HeaderToolTip="Indicates which baseline incorporates current variation changes" ReadOnly="True" AllowEditing="False" FilterPopupMode="CheckedList" VisibleIndex="80">
+                            <dxg:GridColumn Header="To Baseline"  Visible="False" FieldName="Entity.GUID_BASELINE" HeaderToolTip="Indicates which baseline incorporates current variation changes" ReadOnly="True" AllowEditing="False" FilterPopupMode="CheckedList" VisibleIndex="80">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

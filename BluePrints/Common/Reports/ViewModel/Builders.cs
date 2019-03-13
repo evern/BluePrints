@@ -278,7 +278,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.EntityKey);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
                 foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints)
                 {
@@ -295,7 +295,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.EntityKey);
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
                 foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
                 {

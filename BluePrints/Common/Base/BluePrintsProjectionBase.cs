@@ -16,10 +16,5 @@ namespace BluePrints.Common.Base
     public abstract class BluePrintsProjectionBase<TEntity> : ProjectionBase<TEntity>
         where TEntity : class, IGuidEntityKey, new()
     {
-        public Guid GUID
-        {
-            get { return base.EntityKey; }
-            set { base.EntityKey = value; }
-        }
     }
 }

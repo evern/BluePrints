@@ -96,7 +96,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Type in a budget">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />

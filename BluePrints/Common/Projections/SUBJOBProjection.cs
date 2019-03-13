@@ -33,17 +33,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Units);
 
-        public decimal Total_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Units);
-
-        public decimal Variation_Units => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Units);
-
         public decimal Budget_ItemRate => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_ItemRate);
 
         public decimal Budget_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Costs);
-
-        public decimal Variation_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Variation_Costs);
-
-        public decimal Total_Costs => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Costs);
 
         public string Commodity_Display_Code => Commodity_Code;
 
@@ -71,9 +63,11 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Quantity => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Budget_Quantity);
 
-        public decimal Total_Quantity => DeliverableRates == null ? 0 : DeliverableRates.Sum(x => x.Total_Quantity);
-
         public string Project_Number => Entity.PROJECT.NUMBER;
+
+        public decimal Variation_Quantity => throw new NotImplementedException();
+
+        public decimal Total_Quantity => throw new NotImplementedException();
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

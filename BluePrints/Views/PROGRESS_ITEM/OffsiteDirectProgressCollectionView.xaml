@@ -132,12 +132,12 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
@@ -455,8 +455,8 @@
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:p}" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:c2}" FieldName="DisplayPeriodEarnedCosts" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Total_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
@@ -471,8 +471,8 @@
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:p}" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:c2}" FieldName="DisplayPeriodEarnedCosts" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Total_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>

@@ -48,10 +48,10 @@ namespace BluePrints.Data
                     {
                         //If key field already has generated guid it means that record should be modified, assuming redo operation have entity with null value in deleted field
                         //This will essentially undelete the record
-                        if (guidKeyEntity.EntityKey != Guid.Empty)
+                        if (guidKeyEntity.GUID != Guid.Empty)
                             dbEntry.State = EntityState.Modified;
                         else
-                            guidKeyEntity.EntityKey = newGuid;
+                            guidKeyEntity.GUID = newGuid;
                     }
 
                     IOriginalGuidEntityKey originalGuidKeyEntity = dbEntry.Entity as IOriginalGuidEntityKey;
@@ -214,14 +214,12 @@ namespace BluePrints.Data
     {
         public static void AsyncRefreshDeliverablesDataPointsByProject(string projectNumber)
         {
-            RefreshDeliverablesPlannedDataPointsByProject(projectNumber);
-            RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
+            Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber));
         }
 
         public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
         {
-            await RefreshDeliverablesPlannedDataPointsByProject(projectNumber);
-            await RefreshDeliverablesRemainingDataPointsByProject(projectNumber);
+            await Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber));
         }
 
         public static async Task RefreshAllDataPoints()

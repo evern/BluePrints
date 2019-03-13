@@ -14,11 +14,6 @@ namespace BluePrints.Common.Base
         where TEntity : class, IGuidEntityKey, new()
         where TProjection : class, IGuidEntityKey, new()
     {
-        public Guid GUID
-        {
-            get { return base.EntityKey; }
-            set { base.EntityKey = value; }
-        }
     }
 
     /// <summary>
@@ -32,11 +27,5 @@ namespace BluePrints.Common.Base
         where TChild : class, IGuidEntityKey, IGuidParentEntityKey, new()
         where TProjection : class, IGuidEntityKey, new()
     {
-        [NotMapped]
-        public Guid GUID
-        {
-            get { return base.EntityKey; }
-            set { base.EntityKey = value; }
-        }
     }
 }

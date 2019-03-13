@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IReportable> Reportables { get; }
     }
 
-    public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate
+    public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate, IHaveVariation
     {
         SingleObjectSummarizer StatSummarizer { get; }
         decimal Current_Productivity { get; }
@@ -63,7 +63,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IDeliverable_Quantity> Deliverables { get; }
     }
 
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack
+    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack, IHaveVariation
     {
         
     }
@@ -78,7 +78,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
-    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveVariation_Code, IHaveHours
+    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
     {
         string Project_Number { get; }
         string Subjob_Name { get; }
@@ -118,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
 
-    public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours
+    public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours, IHaveVariation
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; }
         IEnumerable<PROGRESS_ITEM> Progresses { get; }
@@ -197,10 +197,17 @@ namespace BluePrints.Common.ViewModel.Reporting
     //for revising deliverable with approved variation hours
     public interface ISupportVariationRevision
     {
-        Guid? Baseline_Guid { get; set; }
-        Guid? Variation_Guid { get; set; }
-        decimal Estimated_Value { get; set; }
-        decimal DC_Value { get; set; }
+        Guid? GUID_BASELINE { get; set; }
+        Guid? GUID_VARIATION { get; set; }
+        Guid GUID_ORIGINAL { get; set; }
+    }
+
+    public interface ISupportGangRate
+    {
+        RateRole RateRole { get; set; }
+        decimal SplitRate { get; set; }
+        decimal SplitHours { get; set; }
+        decimal RoleCost { get; }
     }
 
     public interface ISupportVariationDuplicate
@@ -218,8 +225,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal Budget_ItemRate { get; }
         decimal Budget_Costs { get; }
-        decimal Variation_Costs { get; }
-        decimal Total_Costs { get; }
     }
 
     public interface IHaveStockCode
@@ -245,14 +250,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Commodity_Code { get; }
     }
 
-    public interface IHaveVariation_Code
+    public interface IHaveVariation
     {
-        string Variation_Code { get; }
-    }
-
-    public interface ISupportByDuration
-    {
-        bool IsByDuration { get; }
+        decimal Variation_Units { get; }
+        decimal Variation_Costs { get; }
+        decimal Total_Units { get; }
+        decimal Total_Costs { get; }
     }
 
     public interface IHaveDeliverableStatus
@@ -270,8 +273,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveHours
     {
         decimal Budget_Units { get; }
-        decimal Total_Units { get; }
-        decimal Variation_Units { get; }
         decimal Budget_Quantity { get; }
         decimal Total_Quantity { get; }
     }

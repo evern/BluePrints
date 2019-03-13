@@ -20,20 +20,6 @@ namespace BluePrints.Data
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
             MINUTE_TITLE1 = new HashSet<MINUTE_TITLE>();
         }
-
-        [NotMapped]
-        public Guid? ParentEntityKey
-        {
-            get
-            {
-                return GUID_PARENT;
-            }
-            set
-            {
-                GUID_PARENT = value;
-            }
-        }
-
         [NotMapped]
         public DateTime EntityCreatedDate
         {
@@ -87,9 +73,6 @@ namespace BluePrints.Data
             }
         }
 
-        [NotMapped]
-        public Guid EntityKey { get => GUID; set => GUID = value; }
-
         private void minute_number_constructor(MINUTE_TITLE parent_minute_title, List<string> minute_title_collector)
         {
             if(parent_minute_title != null)
@@ -112,5 +95,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string NewEntityName { get => NAME; set => NAME = value; }
+
+        public Guid? ParentEntityKey { get => GUID_PARENT; set => GUID_PARENT = value; }
     }
 }

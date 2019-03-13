@@ -58,20 +58,6 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get

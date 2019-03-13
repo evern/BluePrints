@@ -29,7 +29,6 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.FixProgressItemCommand, ElementName=userControl}" Content="Fix Data" Glyph="{dxc:DXImage Image=IDE_16x16.png}" LargeGlyph="{dx:DXImage Image=IDE_32x32.png}" ToolTip="Fix the data in database in case anything unexpected happens" />
                             </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                             <dxr:RibbonPageGroup Caption="Data Date">
                                 <dxb:BarButtonItem Command="{Binding DataContext.DateBackwardCommand, ElementName=userControl}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
@@ -104,7 +103,7 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Primary Title" IsEnabled="False" />
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
@@ -143,7 +142,7 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Fixed="Left" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" Visible="False" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Secondary Title" IsEnabled="False" ReadOnly="True" Visible="False" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Fixed="Left" Header="Comments" ReadOnly="True" Visible="False" />
-                                <dxg:GridColumn FieldName="Entity.Total_Earned_Percentage" FilterPopupMode="CheckedList" Fixed="Left" Header="Total_Earned_Percentage" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn FieldName="Total_Earned_Percentage" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Earned %" ReadOnly="True" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
@@ -152,13 +151,13 @@
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Earned_Units_OnDataDate" SummaryType="Sum" />
                                 <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Earned_Units_ToDate" SummaryType="Sum" />
-                                <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Entity.Total_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Total_Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Earned_Units_OnDataDate" SummaryType="Sum" />
                                 <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Earned_Units_ToDate" SummaryType="Sum" />
-                                <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Entity.Total_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Total_Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>

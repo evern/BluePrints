@@ -185,7 +185,7 @@ namespace BluePrints.ViewModels
 
         public void HoldRegister()
         {
-            DocumentInfo DocumentInfo = new DocumentInfo("View_HoldRegister" + loadPROJECT.EntityKey.ToString(),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_HoldRegister" + loadPROJECT.GUID.ToString(),
             new EntitiesParameter<PROJECT>(loadPROJECT),
                 "REGISTER_HOLDCollectionView",
                 "[" + loadPROJECT.NUMBER + "] Hold Register");
@@ -234,7 +234,7 @@ namespace BluePrints.ViewModels
             editingEntity.GUID_CHANGE = newRegister.GUID;
             MainViewModel.Save(editingEntity);
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ChangeRegister" + loadPROJECT.EntityKey.ToString(),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ChangeRegister" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "REGISTER_CHANGECollectionView",
                     "[" + loadPROJECT.NUMBER + "] Change Register");
@@ -262,7 +262,7 @@ namespace BluePrints.ViewModels
             editingEntity.GUID_HOLD = newRegister.GUID;
             MainViewModel.Save(editingEntity);
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_HoldRegister" + loadPROJECT.EntityKey.ToString(),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_HoldRegister" + loadPROJECT.GUID.ToString(),
                 new EntitiesParameter<PROJECT>(loadPROJECT),
                     "REGISTER_HOLDCollectionView",
                     "[" + loadPROJECT.NUMBER + "] Hold Register");

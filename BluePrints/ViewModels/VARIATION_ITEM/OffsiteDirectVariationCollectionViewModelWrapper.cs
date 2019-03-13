@@ -50,14 +50,8 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc, x => loadVARIATION = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
             base.addEntitiesLoader();
-        }
-
-        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID == loadVARIATION.GUID);
         }
 
         private Func<IRepositoryQuery<VARIATION_ITEM>, IQueryable<VARIATION_ITEM>> VARIATION_ITEMProjectionFunc()
@@ -74,15 +68,16 @@ namespace BluePrints.ViewModels
             {
                 VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
             }
-
-            return query => Baseline_ItemVariationQuery.OffsiteDirectVariationItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, loadVARIATION, VARIATION_ITEMS, RATECollection);
+            
+            return query => ProgressQueries.OffsiteDirectVariationItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, VARIATIONCollection, loadVARIATION, VARIATION_ITEMS, RATECollection);
         }
 
         protected override IQueryable<BASELINE_ITEM> baseQueryFilter(IRepositoryQuery<BASELINE_ITEM> query)
         {
             if (loadVARIATION.APPROVED == null)
                 //When variation is not approved, retrieve current live deliverables and variation deliverables
-                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
+                //Also x.GUID_VARIATION != loadVARIATION.GUID prevents deliverable from getting shown twice due to it not being removed from the live deliverable's list because other variation has units on it
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid && x.GUID_VARIATION != loadVARIATION.GUID) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
                 return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE && x.GUID_VARIATION == loadVARIATION.GUID);
@@ -93,26 +88,11 @@ namespace BluePrints.ViewModels
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
-        public override bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
-        {
-            //do not allow modification to deliverable's lists on existing deliverables
-            if (entity.EntityKey != Guid.Empty && entity.DisplayVariationAction != VariationAction.Add)
-            {
-                //only save variation units
-                if (entity.ShouldSaveVariation)
-                    saveVariation(entity);
-
-                return false;
-            }
-
-            return base.OnBeforeEntitySaved(entity);
-        }
-
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
             //not attaching to baseline when deliverable is added through variation list
-            if (projectionEntity.Baseline_Guid == null)
-                projectionEntity.Variation_Guid = loadVARIATION.EntityKey;
+            if (projectionEntity.GUID_BASELINE == null)
+                projectionEntity.GUID_VARIATION = loadVARIATION.GUID;
 
             //because TProjection is not IProjection<TMainEntity>, do it manually here
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
@@ -206,6 +186,21 @@ namespace BluePrints.ViewModels
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
+        public override bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        {
+            //do not allow modification to existing deliverables
+            if (entity.GUID != Guid.Empty && entity.DisplayVariationAction != VariationAction.Add)
+            {
+                //only save variation units
+                if (entity.ShouldSaveVariation)
+                    saveVariation(entity);
+
+                return false;
+            }
+
+            return base.OnBeforeEntitySaved(entity);
+        }
+
         public override void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
             //copy the original entity key to projection first before saving variation
@@ -216,6 +211,16 @@ namespace BluePrints.ViewModels
 
             if (projectionEntity.ShouldSaveVariation)
                 saveVariation(projectionEntity);
+        }
+
+        protected override void onBeforeEntitiesDuplicated(BASELINE_ITEMProgress copyEntity, BASELINE_ITEMProgress newEntity)
+        {
+            newEntity.DisplayVariationUnits = copyEntity.DisplayVariationUnits;
+            //cannot put VariationAction.Add here because OnBeforeEntitySaved will skip this entity
+            //newEntity.DisplayVariationAction = VariationAction.Add;
+            newEntity.Entity.Entity.BUDGET_HOURS = 0;
+
+            base.onBeforeEntitiesDuplicated(copyEntity, newEntity);
         }
 
         /// <summary>
