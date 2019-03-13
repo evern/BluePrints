@@ -279,11 +279,9 @@
                         <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
                         <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" />
                         <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <!--<dxg:GridColumn FieldName="StartDate" FilterPopupMode="CheckedList" Header="Start Date" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
