@@ -26,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 if (currentValue > maxValue)
                 {
-                    if(currentValue == 1)
+                    if(currentValue > 1)
                         return "Max % is 100%";
                     else if(IsMaxPercentageRestrictedByFuturePercentage)
                         return "Total % exceeds 100%, please check % on future data dates";
