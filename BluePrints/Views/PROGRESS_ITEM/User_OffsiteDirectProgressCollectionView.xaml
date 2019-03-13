@@ -127,7 +127,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>

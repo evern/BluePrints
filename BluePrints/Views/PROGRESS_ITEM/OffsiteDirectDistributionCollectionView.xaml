@@ -103,7 +103,7 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Primary Title" IsEnabled="False" />
-                                <dxg:GridColumn FieldName="Entity.Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>

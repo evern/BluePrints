@@ -246,7 +246,7 @@ namespace BluePrints.Common.Base
         /// </summary>
         /// <param name="projectionEntity"></param>
         /// <param name="isNewEntity"></param>
-        protected void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
+        protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
         {
             if (!have_group_entity && projectionEntity.ShouldSaveProgress)
             {

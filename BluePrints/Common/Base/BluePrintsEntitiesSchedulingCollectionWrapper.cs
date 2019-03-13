@@ -228,6 +228,9 @@ namespace BluePrints.Common.Base
                 }
             }
 
+            P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = true;
+            P6TASKCollectionViewModel.AlwaysSkipMessage = true;
+            MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => summarize_activities_units(Activities_Source, entities)));
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -689,6 +692,8 @@ namespace BluePrints.Common.Base
         {
             List<string> affected_activity_ids = new List<string>();
 
+            List<P6_Activity> summarizeActivity = new List<P6_Activity>();
+            LoadingScreenManager.ShowLoadingScreen(remove_p6_assignments.Count());
             foreach (P6_ASSIGNMENTProjection remove_p6_assignment in remove_p6_assignments)
             {
                 affected_activity_ids.Add(remove_p6_assignment.Entity.P6_ACTIVITYID);
@@ -711,9 +716,19 @@ namespace BluePrints.Common.Base
                 }
 
                 foreach (P6_Activity activity in Activities_Source.Where(x => affected_activity_ids.Any(str => str == x.P6_ActivityId)))
-                    summarize_wbs_parent_unit(activity);
+                {
+                    if (!summarizeActivity.Any(x => x.P6_ActivityId == activity.P6_ActivityId))
+                        summarizeActivity.Add(activity);
+                }
 
                 P6_ASSIGNMENTSCollectionViewModel.BulkSave(p6_assignments_in_order);
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            foreach(P6_Activity activity in summarizeActivity)
+            {
+                summarize_wbs_parent_unit(activity);
             }
         }
 

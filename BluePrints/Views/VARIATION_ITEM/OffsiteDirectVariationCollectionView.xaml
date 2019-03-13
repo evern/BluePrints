@@ -191,7 +191,7 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_Costs" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_Costs" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

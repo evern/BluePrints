@@ -227,9 +227,9 @@
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" ReadOnly="True" />
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Estimated Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                        <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
+                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

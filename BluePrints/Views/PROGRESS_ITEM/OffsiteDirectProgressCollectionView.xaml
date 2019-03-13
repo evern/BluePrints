@@ -127,7 +127,7 @@
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Budgeted">
                             <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
-                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Estimated Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
@@ -137,7 +137,7 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>

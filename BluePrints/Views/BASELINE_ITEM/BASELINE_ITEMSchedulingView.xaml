@@ -367,34 +367,41 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Variation Hours" FieldName="Variation_Units" ReadOnly="True" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
+                                <dxg:GridColumn Header="Costs" FieldName="Total_Costs" ReadOnly="True" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" AllowSearchPanel="False">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="DC Hours" FieldName="Entity.Entity.DC_HOURS" ReadOnly="True" />
-                                <dxg:GridColumn Header="Costs" FieldName="Entity.Total_Costs" ReadOnly="True" AllowSearchPanel="False">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                                <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:0n}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Total_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" SummaryType="Sum" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                                <dxg:GridSummaryItem FieldName="Entity.Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.DC_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:0n}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Total_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" SummaryType="Sum" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableViewAssignments" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">

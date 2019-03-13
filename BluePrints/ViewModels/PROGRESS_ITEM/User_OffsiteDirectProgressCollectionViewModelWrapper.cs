@@ -60,6 +60,10 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            //due to heavy query through navigational properties, always skip messages for both deliverable and progress
+            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = true;
+            MainViewModel.AlwaysSkipMessage = true;
+
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             HideCompleted = true;
             this.RaisePropertyChanged(x => x.HideCompleted);
