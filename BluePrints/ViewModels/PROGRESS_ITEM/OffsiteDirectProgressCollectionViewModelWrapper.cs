@@ -341,7 +341,7 @@ namespace BluePrints.ViewModels
         public void FixVariation()
         {
             IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            IQueryable<VARIATION> approvedVariations = unitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null && x.TYPE == VariationType.External);
+            IQueryable<VARIATION> approvedVariations = unitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
 
             List<BASELINE_ITEMProgress> saveEntities = new List<BASELINE_ITEMProgress>();
             foreach (var entity in MainViewModel.Entities)

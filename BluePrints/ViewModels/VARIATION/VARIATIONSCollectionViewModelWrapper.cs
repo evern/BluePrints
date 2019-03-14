@@ -123,6 +123,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
+            MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
             VARIATION_ITEMSViewModel.SetParentViewModel(this);
@@ -164,7 +165,23 @@ namespace BluePrints.ViewModels
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
             projection.Update();
             isApproving = false;
+            restoreSelectedEntity();
             //BackgroundRefresh();
+        }
+
+        public override bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (sender != MainViewModel && changedType == typeof(VARIATION))
+            {
+                Guid guid = (Guid)key;
+                VARIATIONProjection variationToRefresh = DisplayEntities.FirstOrDefault(x => x.GUID == guid);
+                List<VARIATIONProjection> refreshEntities = new List<VARIATIONProjection>();
+                refreshEntities.Add(variationToRefresh);
+                if (variationToRefresh != null)
+                    variationSummaryBackgroundWorker.RunWorkerAsync(refreshEntities);
+            }
+
+            return base.OnBeforeEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         #region CallBacks
@@ -218,21 +235,34 @@ namespace BluePrints.ViewModels
             ReloadEntitiesCollection();
         }
 
+        private void refreshSummary()
+        {
+            if (DisplaySelectedEntity != null)
+                selectedEntityKey = DisplaySelectedEntity.GUID;
+
+            variationSummaryBackgroundWorker.RunWorkerAsync(DisplayEntities);
+        }
+
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
-            if(selectedEntityKey != null && DisplayEntities != null)
-            {
-                DisplaySelectedEntity = DisplayEntities.FirstOrDefault(x => x.GUID == selectedEntityKey);
-                if (DisplaySelectedEntity != null)
-                {
-                    DisplaySelectedEntities.Clear();
-                    DisplaySelectedEntities.Add(DisplaySelectedEntity);
-                    selectedEntityKey = null;
-                    this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
-                    this.RaisePropertyChanged(x => x.DisplaySelectedEntities);
-                }
-            }
+            restoreSelectedEntity();
+        }
+
+        private void restoreSelectedEntity()
+        {
+            //if (selectedEntityKey != null && DisplayEntities != null)
+            //{
+            //    DisplaySelectedEntity = DisplayEntities.FirstOrDefault(x => x.GUID == selectedEntityKey);
+            //    if (DisplaySelectedEntity != null)
+            //    {
+            //        DisplaySelectedEntities.Clear();
+            //        DisplaySelectedEntities.Add(DisplaySelectedEntity);
+            //        selectedEntityKey = null;
+            //        this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
+            //        this.RaisePropertyChanged(x => x.DisplaySelectedEntities);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -726,7 +756,7 @@ namespace BluePrints.ViewModels
             {
                 if(variationStage == VariationStages.Unapprove)
                 {
-                    //remove deliverable if none of the attached variation is approved
+                    //remove deliverable only when none of the attached variations are associated with it
                     var deliverableVariationQuery = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
                                                     join BASELINE in bluePrintsUnitOfWork.BASELINES
                                                     on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
@@ -738,7 +768,7 @@ namespace BluePrints.ViewModels
                                                     select new { BASELINE_ITEM, VARIATIONS };
 
                     List<BASELINE_ITEM_VARIATIONContainer> deliverableVariations = deliverableVariationQuery.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
-                    if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.VARIATION.APPROVED == null))
+                    if (deliverableVariations.Count == 0)
                     {
                         bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(deliverableVariations.First().BASELINE_ITEM);
                         bluePrintsUnitOfWork.SaveChanges();
@@ -846,7 +876,7 @@ namespace BluePrints.ViewModels
                     Unsubmit();
                 else
                     //Full refresh is required to pick up summary
-                    FullRefresh();
+                    refreshSummary();
             }
 
             #region Send Email
@@ -891,14 +921,14 @@ namespace BluePrints.ViewModels
             {
                 SubmitSelectedEntity();
                 //refresh is required to populate summary
-                FullRefresh();
+                refreshSummary();
                 return;
             }
             else if(exoInteraction == VariationStages.Unsubmit && !isAnyVariationJobsExists)
             {
                 UnsubmitSelectedEntity();
                 //refresh is required to populate summary
-                FullRefresh();
+                refreshSummary();
                 return;
             }
 
@@ -918,7 +948,7 @@ namespace BluePrints.ViewModels
                         SubmitSelectedEntity();
                         MessageBoxService.ShowMessage("Variation code(s) pushed to exo");
                         //refresh is required to populate summary
-                        FullRefresh();
+                        refreshSummary();
                     }
                     else
                     {
@@ -946,7 +976,7 @@ namespace BluePrints.ViewModels
 
                     UnsubmitSelectedEntity();
                     //refresh is required to populate summary
-                    FullRefresh();
+                    refreshSummary();
                 }
             }
         }

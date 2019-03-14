@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (VARIATION.Count() == 0)
                 return variationAdjustments;
 
-            IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null && x.TYPE == VariationType.External);
+            IQueryable<VARIATION> ApprovedVARIATION = VARIATION.Where(x => x.APPROVED != null);
             foreach (VARIATION variation in ApprovedVARIATION)
             {
                 IEnumerable<VARIATION_ITEM> applicableVariation_Item = variation.VARIATION_ITEM.Where(x => x.ACTION == VariationAction.Add || x.ACTION == VariationAction.Append || x.ACTION == VariationAction.Cancel);

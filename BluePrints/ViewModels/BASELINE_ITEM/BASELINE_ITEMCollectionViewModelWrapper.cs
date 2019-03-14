@@ -343,7 +343,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
@@ -536,15 +536,20 @@ namespace BluePrints.ViewModels
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        protected virtual bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        protected virtual DeleteInterceptMode onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
         {
-            if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+            if(VARIATIONCollection.Any(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL)))
+            {
+                MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has variation");
+                return DeleteInterceptMode.DiscontinueAll;
+            }
+            else if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
             {
                 MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has been progressed");
-                return false;
+                return DeleteInterceptMode.DiscontinueAll;
             }
             
-            return true;
+            return DeleteInterceptMode.Continue;
         }
 
         private void save_deliverable_users(BASELINE_ITEMProgress entity)

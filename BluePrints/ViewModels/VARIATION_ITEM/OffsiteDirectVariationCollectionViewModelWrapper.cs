@@ -18,6 +18,7 @@ using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
@@ -227,7 +228,7 @@ namespace BluePrints.ViewModels
         /// Delete variation item before entity is deleted
         /// </summary>
         /// <param name="undoRedoEntity"></param>
-        protected override bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress delete_entity)
+        protected override DeleteInterceptMode onBeforeEntitiesDeleted(BASELINE_ITEMProgress delete_entity)
         {
             if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(delete_entity, null, null, null, EntityMessageType.Deleted);
@@ -236,7 +237,7 @@ namespace BluePrints.ViewModels
             if (delete_entity.VARIATION_ITEM != null && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 VARIATION_ITEMSCollectionViewModel.Delete(delete_entity.VARIATION_ITEM);
 
-            return true;
+            return DeleteInterceptMode.Continue;
         }
 
         public void CancelDeliverable(BASELINE_ITEMProgress projectionEntity)
@@ -285,6 +286,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Property
+        protected override void OnClose(CancelEventArgs e)
+        {
+            Messenger.Default.Send(new EntityMessage<VARIATION, Guid>(loadVARIATION.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
+            base.OnClose(e);
+        }
+
         public NewItemRowPosition NewItemRowPosition
         {
             get

@@ -367,7 +367,7 @@
                             <!--<dxg:GridColumn Header="Guid" FieldName="GuidCurrent" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />-->
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" FilterPopupMode="CheckedList" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" FilterPopupMode="CheckedList" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" Visible="False">
@@ -377,7 +377,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Updated" FilterPopupMode="CheckedList" Header="Progress Updated" HeaderToolTip="Progress last updated date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" FilterPopupMode="CheckedList" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" Visible="False">
