@@ -146,6 +146,8 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
+                        <!--for checking-->
+                        <!--<dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" FilterPopupMode="CheckedList" Header="DC Hours" ReadOnly="True" />-->
                         <dxg:GridColumn FieldName="Entity.Entity.INTERNALNUM_STATUS" FilterPopupMode="CheckedList" Header="Internal Number Status" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />

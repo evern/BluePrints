@@ -76,12 +76,12 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Submitted" FieldName="Entity.SUBMITTED" HeaderToolTip="Contents within submitted variation will be read only" FilterPopupMode="CheckedList" VisibleIndex="50" />
                             <dxg:GridColumn Header="Approved" FieldName="Entity.APPROVED" HeaderToolTip="Contents within approved variation will only show changes made instead of the full deliverables list" FilterPopupMode="CheckedList" VisibleIndex="60" />
-                            <dxg:GridColumn Header="From Baseline" Visible="False" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates which baseline is before applying current variation changes" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
+                            <dxg:GridColumn Header="From Baseline" FieldName="Entity.GUID_ORIBASELINE" HeaderToolTip="Indicates which baseline is before applying current variation changes" ReadOnly="True" AllowEditing="False" VisibleIndex="70">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="To Baseline"  Visible="False" FieldName="Entity.GUID_BASELINE" HeaderToolTip="Indicates which baseline incorporates current variation changes" ReadOnly="True" AllowEditing="False" FilterPopupMode="CheckedList" VisibleIndex="80">
+                            <dxg:GridColumn Header="To Baseline" FieldName="Entity.GUID_BASELINE" HeaderToolTip="Indicates which baseline incorporates current variation changes" ReadOnly="True" AllowEditing="False" FilterPopupMode="CheckedList" VisibleIndex="80">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

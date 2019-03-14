@@ -85,7 +85,6 @@ namespace BluePrints.Common.Projections
 
         public virtual decimal Forecast_Costs => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
 
-        //use to show what the units will be after approval
         public decimal Forecast_Units => DisplayVariationUnits;
 
         public bool IsReadOnly

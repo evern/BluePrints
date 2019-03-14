@@ -168,6 +168,18 @@ namespace BluePrints.Common.Projections
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
             IEnumerable<RATE> RATES)
         {
+            //List<VARIATION_ITEM> variation_items = VARIATIONS.SelectMany(x => x.VARIATION_ITEM).ToList();
+            //List<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToList();
+
+            ////deliverable that should exists are those that are added through the deliverable's list
+            //var baselineItem = from baseline_item in baseline_items
+            //           join variation_item in variation_items
+            //           on baseline_item.GUID_ORIGINAL equals variation_item.GUID_ORIBASEITEM
+            //           into bv
+            //           from variation_defaultIfEmpty in bv.DefaultIfEmpty()
+            //           where baseline_item.GUID_VARIATION == null || (baseline_item.GUID_VARIATION != null && variation_defaultIfEmpty != null)
+            //           select baseline_item;
+
             return
                 BASELINE_ITEMS.ToArray()
                     .Select(x => new BASELINE_ITEMProjection()

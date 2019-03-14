@@ -182,6 +182,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal MinNegativeUnits { get; }
         bool CanToggleCancellation { get; }
         decimal DisplayVariationUnits { get; set; }
+        decimal DisplayTotalUnits { get; }
         VariationAction DisplayVariationAction { get; set; }
         bool ShouldSaveVariation { get; }
     }

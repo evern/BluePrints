@@ -81,12 +81,28 @@ namespace BluePrints.ViewModels
                 return query.Where(x => (x.GUID_BASELINE == load_context_guid && x.GUID_VARIATION != loadVARIATION.GUID) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
-                return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE && x.GUID_VARIATION == loadVARIATION.GUID);
+                return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if(changedType == typeof(VARIATION_ITEM))
+            {
+                VARIATION_ITEM variation_item = VARIATION_ITEMSCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
+                if(variation_item != null)
+                {
+                    BASELINE_ITEMProgress projection = DisplayEntities.FirstOrDefault(x => x.GUID_ORIGINAL == variation_item.GUID_ORIBASEITEM);
+                    if (projection != null)
+                        projection.Update();
+                }
+            }
+
+            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
@@ -148,9 +164,19 @@ namespace BluePrints.ViewModels
                     VariationAction old_action = projection.DisplayVariationAction;
 
                     if ((decimal)new_value == 0)
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationAction), projection.DisplayVariationAction, VariationAction.NoAction,
+                        EntityMessageType.Changed);
+
                         projection.DisplayVariationAction = VariationAction.NoAction;
+                    }
                     else
+                    {
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationAction), projection.DisplayVariationAction, VariationAction.Append,
+                        EntityMessageType.Changed);
+
                         projection.DisplayVariationAction = VariationAction.Append;
+                    }
                 }
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
@@ -161,7 +187,7 @@ namespace BluePrints.ViewModels
                 if(!isNew)
                 {
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Variation_Units), oldValue, newValue, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationUnits), oldValue, newValue, EntityMessageType.Changed);
                 }
                 else
                     projection.Update();
@@ -288,7 +314,7 @@ namespace BluePrints.ViewModels
         #region View Property
         protected override void OnClose(CancelEventArgs e)
         {
-            Messenger.Default.Send(new EntityMessage<VARIATION, Guid>(loadVARIATION.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
+            Messenger.Default.Send(new EntityMessage<VARIATION, Guid>(loadVARIATION.GUID, MainViewModel.Key, EntityMessageType.Changed, this, CurrentHWID, false));
             base.OnClose(e);
         }
 

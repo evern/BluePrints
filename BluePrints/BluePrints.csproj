@@ -600,6 +600,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\DistributionSelectViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\ListErrorMessagesModel.cs" />
     <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DateFromToDialogViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\MapDeliverablesClientNumberDialogViewModel.cs" />
@@ -624,6 +625,9 @@
     </Compile>
     <Compile Include="Common\View\ExoVariationConfirmation.xaml.cs">
       <DependentUpon>ExoVariationConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ListErrorMessages.xaml.cs">
+      <DependentUpon>ListErrorMessages.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
@@ -1724,6 +1728,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\ExoVariationConfirmation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ListErrorMessages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

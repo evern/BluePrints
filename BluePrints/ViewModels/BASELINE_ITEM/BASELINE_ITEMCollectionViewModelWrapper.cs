@@ -540,8 +540,12 @@ namespace BluePrints.ViewModels
         {
             if(VARIATIONCollection.Any(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL)))
             {
-                MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has variation");
-                return DeleteInterceptMode.DiscontinueAll;
+                //when there are unapproved variations that have add specification then it's save to delete
+                if(!VARIATIONCollection.Where(x => x.APPROVED == null).Any(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL && y.ACTION == VariationAction.Add)))
+                {
+                    MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has variation");
+                    return DeleteInterceptMode.DiscontinueAll;
+                }
             }
             else if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
             {
