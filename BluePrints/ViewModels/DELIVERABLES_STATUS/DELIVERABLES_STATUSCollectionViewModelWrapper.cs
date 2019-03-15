@@ -304,11 +304,6 @@ namespace BluePrints.ViewModels
             MainViewModel.BulkSave(duplicateDeliverableStatuses);
         }
 
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
-        }
-
         public bool CanCopyFrom()
         {
             return isProjectSpecific;

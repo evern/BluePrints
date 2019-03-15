@@ -431,122 +431,109 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
-        /// <summary>
-        /// Determines whether an entities can be Submitd
-        /// Since CollectionViewModelBase is a POCO view model, this method will be used as a CanExecute callback for SubmitCommand.
-        /// </summary>
-        /// <param name="projectionEntity">Entities to Submit.</param>
-        public bool CanSubmit()
+        public override void OnDisplaySelectedEntityChanged(VARIATIONProjection entity)
         {
-            if (DisplaySelectedEntity == null)
-                return false;
-
-            if (LiveBASELINE == null && LiveESTIMATE == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity.SUBMITTED != null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity.APPROVED != null)
-                return false;
-
-            return true;
+            this.RaisePropertyChanged(x => x.IsSubmitted);
+            this.RaisePropertyChanged(x => x.IsApproved);
+            base.OnDisplaySelectedEntityChanged(entity);
         }
 
-        public bool CanUnsubmit()
+        const string messageEntityNotSelected = "Please select a variation";
+        const string messageBaselineDoesntExists = "Live baseline does not exists";
+        const string messageIsApproving = "Variation is in the process of approving, please wait";
+        bool isApproving = false;
+        public bool IsSubmitted
         {
-            if (DisplaySelectedEntity == null)
-                return false;
-
-            if (LiveBASELINE == null && LiveESTIMATE == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity.SUBMITTED == null)
-                return false;
-
-            if (DisplaySelectedEntity != null && DisplaySelectedEntity.Entity.APPROVED != null)
-                return false;
-
-            return true;
-        }
-
-        public void Submit()
-        {
-            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationSubmit, null, false);
-        }
-
-        public void Unsubmit()
-        {
-            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnsubmit, null, false);
-        }
-
-        /// <summary>
-        /// Determines whether an entities can be approved
-        /// Since CollectionViewModelBase is a POCO view model, this method will be used as a CanExecute callback for ApproveCommand.
-        /// </summary>
-        /// <param name="projectionEntity">Entities to approve.</param>
-        public bool CanApprove()
-        {
-            if (isApproving)
-                return false;
-
-            if (MainViewModel == null || DisplaySelectedEntity == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity.SUBMITTED == null)
-                return false;
-
-            if (DisplaySelectedEntity.Entity.APPROVED != null)
-                return false;
-
-            return true;
-        }
-
-        bool isApproving;
-        /// <summary>
-        /// Approves an entity.
-        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the ApproveCommand property that can be used as a binding source in views.
-        /// </summary>
-        /// <param name="projectionEntity">An entity to approve.</param>
-        public void Approve()
-        {
-            var errorMessage = string.Empty;
-            if (DisplaySelectedEntity == null)
-                errorMessage = "Nothing within variation to approve";
-            else if (loadPROJECT == null)
-                errorMessage = "Project not found";
-            else if (LivePROGRESS == null)
-                errorMessage = "Live progress not found";
-            else
+            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.SUBMITTED != null;
+            set
             {
-                if (phaseType == PhaseType.Design && LiveBASELINE == null)
-                    errorMessage = "Live baseline not found";
-                else if(phaseType == PhaseType.Construct && LiveESTIMATE == null)
-                    errorMessage = "Live estimate not found";
-            }
-            
-            if (errorMessage != string.Empty)
-            {
-                MessageBoxService.ShowMessage(errorMessage);
-                return;
-            }
+                string errorMessage = string.Empty;
+                if (DisplaySelectedEntity == null)
+                    errorMessage = messageEntityNotSelected;
 
-            if(MessageBoxService.ShowMessage("Are you sure you want to approve variation " + DisplaySelectedEntity.Entity.NAME + "?", "Approve", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
+                if (LiveBASELINE == null && LiveESTIMATE == null)
+                    errorMessage = messageBaselineDoesntExists;
 
-            isApproving = true;
-            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
+                if (!value && DisplaySelectedEntity.Entity.APPROVED != null)
+                    errorMessage = "Please unapprove variation before unsubmitting";
+
+                if (errorMessage != string.Empty)
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+                else if(value)
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationSubmit, null, false);
+                else if(!value)
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnsubmit, null, false);
+            }
         }
 
+        public bool IsApproved
+        {
+            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.APPROVED != null;
+            set
+            {
+                string errorMessage = string.Empty;
+                if (isApproving)
+                    errorMessage = messageIsApproving;
+
+                if (DisplaySelectedEntity == null)
+                    errorMessage = messageEntityNotSelected;
+
+                if (value && DisplaySelectedEntity.Entity.SUBMITTED == null)
+                    errorMessage = "Please submit variation before approving";
+
+                if (errorMessage != string.Empty)
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+                else if (value)
+                {
+                    isApproving = true;
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
+                }
+                else if(!value)
+                {
+                    isApproving = true;
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
+                }
+            }
+        }
+
+        public bool IsClientApproved
+        {
+            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.CLIENT_APPROVED != null;
+            set
+            {
+                string errorMessage = string.Empty;
+                if (isApproving)
+                    errorMessage = messageIsApproving;
+
+                if (DisplaySelectedEntity == null)
+                    errorMessage = messageEntityNotSelected;
+
+                if (value && DisplaySelectedEntity.Entity.SUBMITTED == null)
+                    errorMessage = "Please submit variation before marking it as client approved";
+
+                if (value && DisplaySelectedEntity.Entity.APPROVED == null)
+                    errorMessage = "Please approve variation before marking it as client approved";
+
+                if (errorMessage != string.Empty)
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+                else if (value)
+                {
+                    DisplaySelectedEntity.Entity.CLIENT_APPROVED = DateTime.Now;
+                    DisplaySelectedEntity.Entity.CLIENT_APPROVEDBY = LoginCredentials.CurrentUserGuid;
+                    MainViewModel.Save(DisplaySelectedEntity);
+                    OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
+                    DisplaySelectedEntity.Update();
+                }
+                else if (!value)
+                {
+                    DisplaySelectedEntity.Entity.CLIENT_APPROVED = null;
+                    DisplaySelectedEntity.Entity.CLIENT_APPROVEDBY = null;
+                    MainViewModel.Save(DisplaySelectedEntity);
+                    OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
+                    DisplaySelectedEntity.Update();
+                }
+            }
+        }
         #region Variation_Item revision
         public ICollectionViewModelsWrapper<TMainProjectionEntity> CreateVARIATION_ITEMSViewModelWrapper<TMainProjectionEntity>(VARIATION loadVARIATION, Action<IEnumerable<TMainProjectionEntity>, object> onLoadedAction, Func<object> getParentIdFunc, bool supressCompulsoryEntityNotFoundMessage)
             where TMainProjectionEntity : class, IGuidEntityKey, new()
@@ -675,10 +662,18 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.CLIENT_APPROVED))
+            {
+                if (projection.Entity.CLIENT_APPROVED == null && new_value != null)
+                    return "Please check the client approve button above to client approve this variation, if you wish to edit the date you can do so after client approving it.";
+                else if (projection.Entity.CLIENT_APPROVED != null && new_value == null)
+                    return "Please use the revert button above to unsubmit this variation.";
+            }
+
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.APPROVED))
             {
                 if (projection.Entity.APPROVED == null && new_value != null)
-                    return "Please use the button above to approve this variation, if you wish to edit the date you can do so after approving it.";
+                    return "Please check the approve button above to approve this variation, if you wish to edit the date you can do so after approving it.";
                 else if(projection.Entity.APPROVED != null && new_value == null)
                     return "Please use the revert button above to unapprove this variation.";
             }
@@ -686,9 +681,9 @@ namespace BluePrints.ViewModels
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.SUBMITTED))
             {
                 if (projection.Entity.SUBMITTED == null && new_value != null)
-                    return "Please use the button above to submit this variation, if you wish to edit the date you can do so after submitting it.";
+                    return "Please check the submit button above to submit this variation, if you wish to edit the date you can do so after submitting it.";
                 else if (projection.Entity.SUBMITTED != null && new_value == null)
-                    return "Please use the revert button above to unsubmit this variation.";
+                    return "Please uncheck the submit button above to unsubmit this variation.";
             }
 
             return string.Empty;
@@ -724,6 +719,7 @@ namespace BluePrints.ViewModels
                 liveBASELINE.GUID = revisedBaseline.GUID;
 
                 DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
+                DisplaySelectedEntity.Entity.APPROVEDBY = LoginCredentials.CurrentUserGuid;
                 DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
                 DisplaySelectedEntity.Entity.GUID_BASELINE = revisedBaseline.GUID;
                 MainViewModel.Save(DisplaySelectedEntity);
@@ -735,7 +731,7 @@ namespace BluePrints.ViewModels
             List<ExoSubJobEditableProjection> exoVariations = new List<ExoSubJobEditableProjection>();
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            List<ListErrorMessages> errorMessages = new List<ListErrorMessages>();
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (var deliverable in deliverables)
             {
                 if(variationStage == VariationStages.Unapprove)
@@ -751,7 +747,7 @@ namespace BluePrints.ViewModels
                     decimal earnedUnits = earnedUnitsItems.Count == 0 ? 0 : earnedUnitsItems.Sum(x => x.PROGRESS_ITEM.EARNED_UNITS);
                     decimal reducedUnits = (deliverable.DisplayTotalUnits - deliverable.DisplayVariationUnits);
                     if (reducedUnits < earnedUnits)
-                        errorMessages.Add(new ListErrorMessages() { NAME = deliverable.Deliverable_Name, ERROR = "Cannot unapprove this item because reduced units (" + reducedUnits.ToString() + ") will be less than earned units (" + earnedUnits.ToString() + ")" });
+                        errorMessages.Add(new ErrorMessage(deliverable.Deliverable_Name, "Cannot unapprove this item because reduced units (" + reducedUnits.ToString() + ") will be less than earned units (" + earnedUnits.ToString() + ")"));
                     else
                     {
                         //remove deliverable only when none of the attached variations are associated with it
@@ -896,8 +892,8 @@ namespace BluePrints.ViewModels
                 {
                     if(errorMessages.Count > 0)
                     {
-                        DialogCollectionViewModel<ListErrorMessages> viewModel = DialogCollectionViewModel<ListErrorMessages>.Create(errorMessages, "Unapprove cannot continue because of the following error");
-                        ConfirmationDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Unapprove cannot continue because of the following error");
+                        ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
                     }
                     else
                     {
@@ -916,11 +912,13 @@ namespace BluePrints.ViewModels
                         //}
 
                         DisplaySelectedEntity.Entity.APPROVED = null;
+                        DisplaySelectedEntity.Entity.APPROVEDBY = null;
                         DisplaySelectedEntity.Entity.GUID_ORIBASELINE = null;
                         DisplaySelectedEntity.Entity.GUID_BASELINE = null;
                         MainViewModel.Save(DisplaySelectedEntity);
 
-                        Unsubmit();
+                        //this will invoke unsubmit in the setter
+                        IsSubmitted = false;
                     }
                 }
 
@@ -932,6 +930,8 @@ namespace BluePrints.ViewModels
                     refreshSummary();
             }
 
+            //call this to raise property change on selected entity status
+            OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
             #region Send Email
             //isApproving = false;
             //if (addedDeliverables.Count > 0)

@@ -37,6 +37,10 @@ namespace BluePrints.Data
 
         public Guid? APPROVEDBY { get; set; }
 
+        public DateTime? CLIENT_APPROVED { get; set; }
+
+        public Guid? CLIENT_APPROVEDBY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

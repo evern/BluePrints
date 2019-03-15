@@ -406,7 +406,7 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Construct;
 
-        protected override bool have_group_entity => true;
+        protected override bool haveGroupEntity => true;
         #endregion
 
         #region Disposing

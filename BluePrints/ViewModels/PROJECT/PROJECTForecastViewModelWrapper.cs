@@ -1243,11 +1243,6 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
-        }
-
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>

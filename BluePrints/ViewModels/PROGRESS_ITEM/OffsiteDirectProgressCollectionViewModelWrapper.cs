@@ -323,7 +323,7 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Design;
 
-        protected override bool have_group_entity => false;
+        protected override bool haveGroupEntity => false;
         #endregion
 
         #region Reporting

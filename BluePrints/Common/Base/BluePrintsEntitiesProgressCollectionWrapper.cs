@@ -240,7 +240,7 @@ namespace BluePrints.Common.Base
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
-        protected abstract bool have_group_entity { get; }
+        protected abstract bool haveGroupEntity { get; }
         /// <summary>
         /// Save progress item during BASELINE_ITEM Undo/Redo operation
         /// </summary>
@@ -248,7 +248,7 @@ namespace BluePrints.Common.Base
         /// <param name="isNewEntity"></param>
         protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
         {
-            if (!have_group_entity && projectionEntity.ShouldSaveProgress)
+            if (!haveGroupEntity && projectionEntity.ShouldSaveProgress)
             {
                 IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());

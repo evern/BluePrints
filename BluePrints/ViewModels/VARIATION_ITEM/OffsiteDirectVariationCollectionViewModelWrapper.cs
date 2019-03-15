@@ -86,9 +86,11 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleted;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
+        //required to refresh row after background undo/redo operation
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if(changedType == typeof(VARIATION_ITEM))
@@ -254,7 +256,7 @@ namespace BluePrints.ViewModels
         /// Delete variation item before entity is deleted
         /// </summary>
         /// <param name="undoRedoEntity"></param>
-        protected override DeleteInterceptMode onBeforeEntitiesDeleted(BASELINE_ITEMProgress delete_entity)
+        protected DeleteInterceptMode onBeforeEntityDeleted(BASELINE_ITEMProgress delete_entity)
         {
             if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(delete_entity, null, null, null, EntityMessageType.Deleted);

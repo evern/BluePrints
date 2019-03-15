@@ -21,7 +21,7 @@
                 <DockPanel>
                     <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
                         <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                            <dxr:RibbonPage Caption="Project">
+                            <dxr:RibbonPage Caption="{Binding ViewName}">
                                 <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                                 <dxr:RibbonPageGroup Caption="Data Date">
                                     <dxb:BarStaticItem Content="Design" />

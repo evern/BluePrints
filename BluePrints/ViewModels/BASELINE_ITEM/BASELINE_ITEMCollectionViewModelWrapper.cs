@@ -37,6 +37,7 @@ using BluePrints.PrimeroData;
 using BluePrints.Common.Misc;
 using System.Net.Mail;
 using Microsoft.Exchange.WebServices.Data;
+using BluePrints.Common.ViewModel.Misc;
 
 namespace BluePrints.ViewModels
 {
@@ -513,7 +514,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntitiesDeleted;
+            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             MainViewModel.SetParentViewModel(this);
 
@@ -536,24 +537,51 @@ namespace BluePrints.ViewModels
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        protected virtual DeleteInterceptMode onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            if(VARIATIONCollection.Any(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL)))
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            List<BASELINE_ITEMProgress> deleteEntities = new List<BASELINE_ITEMProgress>();
+            bool showErrorMessage = false;
+            foreach(BASELINE_ITEMProgress entity in entities)
             {
-                //when there are unapproved variations that have add specification then it's save to delete
-                if(!VARIATIONCollection.Where(x => x.APPROVED == null).Any(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL && y.ACTION == VariationAction.Add)))
+                IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL && y.ACTION != VariationAction.NoAction));
+
+                //when there are variations that relates to this deliverable
+                if (attachedVARIATIONS.Count() > 0)
                 {
-                    MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has variation");
-                    return DeleteInterceptMode.DiscontinueAll;
+                    string variations = string.Empty;
+                    foreach(VARIATION attachedVARIATION in attachedVARIATIONS)
+                    {
+                        variations += attachedVARIATION.NAME + ", ";
+                    }
+
+                    if(variations.Length > 2)
+                        variations = variations.Substring(0, variations.Length - 2);
+
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Variations exists: " + variations));
+                    showErrorMessage = true;
+                }
+                else if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+                {
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Has been progressed"));
+                    showErrorMessage = true;
+                }
+                else
+                {
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
+                    deleteEntities.Add(entity);
                 }
             }
-            else if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+
+            if(showErrorMessage)
             {
-                MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has been progressed");
-                return DeleteInterceptMode.DiscontinueAll;
+                MainViewModel.BaseBulkDelete(deleteEntities);
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot delete deliverable(s) due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                return false;
             }
-            
-            return DeleteInterceptMode.Continue;
+
+            return true;
         }
 
         private void save_deliverable_users(BASELINE_ITEMProgress entity)
@@ -1529,11 +1557,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Find and Replace
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
-        }
-
         private DevExpress.Mvvm.IDialogService BookTimeDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BookTimeDialog"); }
