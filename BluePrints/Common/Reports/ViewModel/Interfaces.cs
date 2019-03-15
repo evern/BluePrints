@@ -53,6 +53,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal? Remaining_Productivity { get; }
     }
 
+    public interface IBookable
+    {
+        bool CanBook { get; set; }
+    }
+
     public interface IEstimateItem
     {
         ESTIMATE_ITEMProgress ReadOnlyEstimate { get; }

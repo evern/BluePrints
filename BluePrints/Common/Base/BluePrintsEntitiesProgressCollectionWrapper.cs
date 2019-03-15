@@ -38,7 +38,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
         where TMainEntity : class, IGuidEntityKey, IDeliverable, new()
-        where TMainProjectionEntity : class, IGuidEntityKey, IReportable, new()
+        where TMainProjectionEntity : class, IGuidEntityKey, IReportable, IBookable, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         #region Initialization
@@ -216,27 +216,24 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
-        List<string> narratives = new List<string>();
+        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
+        List<string> narratives = null;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
+            Task.Run(() => loadExoData());
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void loadExoData()
+        {
             HashSet<string> projectNumbers = new HashSet<string>();
             foreach (var entity in MainViewModel.Entities)
             {
                 projectNumbers.Add(entity.Project_Number);
             }
 
-            foreach(var projectNumber in projectNumbers)
-            {
-                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
-                List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
-
-                exoAuthorisations.AddRange(projectExoTimeAuths);
-                narratives.AddRange(projectNarratives);
-            }
-
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
@@ -508,6 +505,30 @@ namespace BluePrints.Common.Base
             if (updateEntity.PROGRESS_ITEM_Current == null)
             {
                 updateEntity.AppendProgressItem(newPROGRESS_ITEM);
+            }
+        }
+        #endregion
+
+        #region Book Time
+        public bool CanShowBookable()
+        {
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
+                return false;
+
+            return true;
+        }
+
+        bool showBookable;
+        public bool ShowBookable
+        {
+            get
+            {
+                return showBookable;
+            }
+            set
+            {
+                showBookable = value;
+                BluePrintsUtils.ApplyShowBookableFilter(GridControlService, value);
             }
         }
         #endregion
@@ -1080,7 +1101,6 @@ namespace BluePrints.Common.Base
 
             return interpolationDate.OrderBy(x => x.Date).ToList();
         }
-
 
         bool isPushingToP6;
         protected abstract IEntitiesSchedulingCollectionWrapper scheduling_view_model { get; }
@@ -1697,7 +1717,10 @@ namespace BluePrints.Common.Base
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            if (exoAuthorisations == null || narratives == null)
+                MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
+            else
+                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
         #endregion
     }

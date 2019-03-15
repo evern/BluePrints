@@ -132,7 +132,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 IEnumerable<PROGRESS_ITEM> progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_progress.GUID);
                 IEnumerable<RATE> rates = project.RATE;
 
-                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection, false, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, project.GUID).ToList();
+                List<BASELINE_ITEMProgress> user_project_baseline_item_progress = OffsiteDirectProgressItemTransformation(user_project_baseline_item.AsQueryable(), project, live_progress, rates, progresses, approved_variations, false, null, DeliverableInternalNumberMode.Default, useReportDate, null, USERCollection, BASELINE_ITEM_WORKSCollection, false, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, project.GUID).ToList();
                 //if (buildStats)
                 //{
                 //    foreach (BASELINE_ITEMProgress user_deliverable in user_project_baseline_item_progress)
@@ -181,7 +181,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, List<ExoTimeAuthorisation> exoAuthorisation = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -257,12 +257,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
                 if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                     baseline_item_progress.BuildStats();
-
-                if (exoAuthorisation != null)
-                {
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == baseline_item_progress.Subjob_Name && x.DisciplineCode == baseline_item_progress.Discipline_Code && x.CommodityCode == baseline_item_progress.Commodity_Code);
-                    baseline_item_progress.CanBook = findAuthorisation != null;
-                }
 
                 if(deliverables_statuses != null)
                 {

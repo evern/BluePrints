@@ -78,6 +78,15 @@ namespace BluePrints.ViewModels
             }
         }
 
+        /// <summary>
+        /// The view name to be used when saving layout for IDocumentContent
+        /// </summary>
+        protected override string ViewName
+        {
+            //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
+            get { return "UserOffsiteDirectProgressViewModelWrapper"; }
+        }
+
         bool hideCompleted;
         public bool HideCompleted
         {
@@ -90,31 +99,32 @@ namespace BluePrints.ViewModels
                 hideCompleted = value;
                 if (GridControlService != null)
                 {
+                    string filterString = "[Total_Earned_Percentage] <> 1.00000m";
                     if (value)
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         CriteriaOperator newCriteriaOperator;
-                        if (!ReferenceEquals(criteriaOperator, null))
+                        if (!ReferenceEquals(criteriaOperator, null) && criteriaOperator.ToString() != filterString)
                         {
-                            string filterCriteria = criteriaOperator.ToString() + " And [Total_Earned_Percentage] <> 1.00000m";
+                            string filterCriteria = criteriaOperator.ToString() + " And " + filterString;
                             newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
                         }
                         else
                         {
-                            newCriteriaOperator = CriteriaOperator.Parse("[Total_Earned_Percentage] <> 1.00000m");
+                            newCriteriaOperator = CriteriaOperator.Parse(filterString);
                         }
 
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        GridControlService.FilterCriteria = newCriteriaOperator;
                     }
                     else
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
                             CriteriaOperator newCriteriaOperator;
                             string currentFilterCriteria = criteriaOperator.ToString();
-                            string newfilterCriteria = currentFilterCriteria.Replace("And [Total_Earned_Percentage] <> 1.00000m", "");
-                            newfilterCriteria = newfilterCriteria.Replace("[Total_Earned_Percentage] <> 1.00000m", "");
+                            string newfilterCriteria = currentFilterCriteria.Replace("And " + filterString, "");
+                            newfilterCriteria = newfilterCriteria.Replace(filterString, "");
                             if (newfilterCriteria.Length >= 5)
                             {
                                 string firstFiveChar = newfilterCriteria.Substring(0, 5);
@@ -124,7 +134,7 @@ namespace BluePrints.ViewModels
 
 
                             newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                            GridControlService.FilterCriteria = newCriteriaOperator;
                         }
                     }
                 }

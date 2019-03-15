@@ -21,26 +21,26 @@ using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    public class BASElINE_ITEMRATECollectionViewModelWrapper :
+    public class BASELINE_ITEMRATECollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, BASELINE_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of BASElINE_ITEMRATECollectionViewModelWrapper as a POCO view model.
+        /// Creates a new instance of BASELINE_ITEMRATECollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BASElINE_ITEMRATECollectionViewModelWrapper Create(
+        public static BASELINE_ITEMRATECollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new BASElINE_ITEMRATECollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new BASELINE_ITEMRATECollectionViewModelWrapper(unitOfWorkFactory));
         }
 
 
-        /// Initializes a new instance of the BASElINE_ITEMRATECollectionViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the BASElINE_ITEMRATECollectionViewModelWrapper type without the POCO proxy factory.
+        /// Initializes a new instance of the BASELINE_ITEMRATECollectionViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the BASELINE_ITEMRATECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected BASElINE_ITEMRATECollectionViewModelWrapper(
+        protected BASELINE_ITEMRATECollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -236,7 +236,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override string ViewName
         {
-            get { return "BASElINE_ITEMRATECollectionViewModelWrapper"; }
+            get { return "BASELINE_ITEMRATECollectionViewModelWrapper"; }
         }
 
         public IEnumerable<DOCTYPE> BASELINE_ITEMCollection
@@ -350,7 +350,7 @@ namespace BluePrints.ViewModels
                 {
                     if (value)
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         CriteriaOperator newCriteriaOperator;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
@@ -362,11 +362,11 @@ namespace BluePrints.ViewModels
                             newCriteriaOperator = CriteriaOperator.Parse(criteria);
                         }
 
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        GridControlService.FilterCriteria = newCriteriaOperator;
                     }
                     else
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
                             CriteriaOperator newCriteriaOperator;
@@ -382,7 +382,7 @@ namespace BluePrints.ViewModels
 
 
                             newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                            GridControlService.FilterCriteria = newCriteriaOperator;
                         }
                     }
                 }

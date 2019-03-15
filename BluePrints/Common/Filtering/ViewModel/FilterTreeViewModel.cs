@@ -145,7 +145,7 @@ namespace BluePrints.Common.Filtering
         }
 
         void UpdateFilterExpression() {
-            viewModel.GridControlService.SetFilterCriteria(ActiveFilterItem == null ? null : ActiveFilterItem.FilterCriteria);
+            viewModel.GridControlService.FilterCriteria = ActiveFilterItem == null ? null : ActiveFilterItem.FilterCriteria;
         }
 
         ObservableCollection<FilterItem> CreateFilterItems(IEnumerable<FilterInfo> filters) {
@@ -187,7 +187,7 @@ namespace BluePrints.Common.Filtering
         void ShowFilter(FilterItem filterItem, CustomFilterViewModel filterViewModel, Action onSave) {
             if(FilterDialogService.ShowDialog(MessageButton.OKCancel, "Create Custom Filter", "CustomFilterView", filterViewModel) != MessageResult.OK)
                 return;
-            filterItem.FilterCriteria = viewModel.GridControlService.GetFilterCriteria();
+            filterItem.FilterCriteria = viewModel.GridControlService.FilterCriteria;
             filterItem.Name = filterViewModel.FilterName;
             ActiveFilterItem = filterItem;
             onSave();

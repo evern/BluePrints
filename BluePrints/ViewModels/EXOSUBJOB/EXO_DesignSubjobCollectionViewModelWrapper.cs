@@ -281,7 +281,7 @@ namespace BluePrints.ViewModels
                 {
                     if (value)
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         CriteriaOperator newCriteriaOperator;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
@@ -293,11 +293,11 @@ namespace BluePrints.ViewModels
                             newCriteriaOperator = CriteriaOperator.Parse("[ShouldAssign] In (True)");
                         }
 
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        GridControlService.FilterCriteria = newCriteriaOperator;
                     }
                     else
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
                             CriteriaOperator newCriteriaOperator;
@@ -313,7 +313,7 @@ namespace BluePrints.ViewModels
 
 
                             newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                            GridControlService.FilterCriteria = newCriteriaOperator;
                         }
                     }
                 }

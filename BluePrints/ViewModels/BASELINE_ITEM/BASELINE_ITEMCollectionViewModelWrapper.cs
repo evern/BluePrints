@@ -476,21 +476,32 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
-        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
-        List<string> narratives = new List<string>();
+        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
+        List<string> narratives = null;
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false);
-            narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
-            
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            System.Threading.Tasks.Task.Run(() => loadExoData());
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void loadExoData()
+        {
+            HashSet<string> projectNumbers = new HashSet<string>();
+            projectNumbers.Add(loadPROJECT.NUMBER);
+
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -1702,46 +1713,7 @@ namespace BluePrints.ViewModels
             set
             {
                 showBookable = value;
-                if (GridControlService != null)
-                {
-                    if(value)
-                    {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
-                        CriteriaOperator newCriteriaOperator;
-                        if (!ReferenceEquals(criteriaOperator, null))
-                        {
-                            string filterCriteria = criteriaOperator.ToString() + " And [CanBook] In (True)";
-                            newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
-                        }
-                        else
-                        {
-                            newCriteriaOperator = CriteriaOperator.Parse("[CanBook] In (True)");
-                        }
-
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
-                    }
-                    else
-                    {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
-                        if (!ReferenceEquals(criteriaOperator, null))
-                        {
-                            CriteriaOperator newCriteriaOperator;
-                            string currentFilterCriteria = criteriaOperator.ToString();
-                            string newfilterCriteria = currentFilterCriteria.Replace("And [CanBook] In (True)", "");
-                            newfilterCriteria = newfilterCriteria.Replace("[CanBook] In (True)", "");
-                            if (newfilterCriteria.Length >= 5)
-                            {
-                                string firstFiveChar = newfilterCriteria.Substring(0, 5);
-                                if(firstFiveChar.ToUpper().Contains("AND"))
-                                    newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
-                            }
-
-
-                            newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
-                        }
-                    }
-                }
+                BluePrintsUtils.ApplyShowBookableFilter(GridControlService, value);
             }
         }
 
@@ -2088,7 +2060,10 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            if (exoAuthorisations == null || narratives == null)
+                MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
+            else
+                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
 
         protected override string ExportFilename()

@@ -9,6 +9,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="BookTimeDialog">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="300" />
+                        <Setter Property="MinHeight" Value="300" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
@@ -37,6 +48,7 @@
                                 </dxb:BarButtonItem>
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Tools">
+                                <dxb:BarCheckItem Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                                 <!--<dxb:BarButtonItem Content="Fix Status" Command="{Binding DataContext.FixDeliverablesStatusCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Replace_32x32.png}" Glyph="{dx:DXImage Image=Replace_16x16.png}" />-->
                                 <dxb:BarButtonItem Command="{Binding DataContext.UpdateAllPercentagesByStatusCommand, ElementName=userControl}" Content="Update % by Gates" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Bulk update all deliverables progress by it's gate. Deliverables without gates will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." />
                                 <!--<dxb:BarButtonItem Command="{Binding DataContext.InteractWithP6Command, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Pull From P6" Glyph="{dxc:DXImage Image=DoublePrev_16x16.png}" IsVisible="{Binding DataContext.IsInteractWithP6Visible, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoublePrev_32x32.png}" ToolTip="WARNING: DO NOT USE IF YOU ARE NOT HARRY! Updates deliverables progress based on activity % in P6." />
@@ -489,6 +501,8 @@
                                 </dxg:ColorScaleFormatCondition>
                             </dxg:TableView.FormatConditions>
                             <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItem Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />

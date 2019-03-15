@@ -501,7 +501,7 @@ namespace BluePrints.ViewModels
                     string filterString = "[LEAVE_DATE] IS NULL OR [LEAVE_DATE] >= #" + currentDate + "#";
                     if (value)
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         CriteriaOperator newCriteriaOperator;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
@@ -513,11 +513,11 @@ namespace BluePrints.ViewModels
                             newCriteriaOperator = CriteriaOperator.Parse(filterString);
                         }
 
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
+                        GridControlService.FilterCriteria = newCriteriaOperator;
                     }
                     else
                     {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
+                        CriteriaOperator criteriaOperator = GridControlService.FilterCriteria;
                         if (!ReferenceEquals(criteriaOperator, null))
                         {
                             CriteriaOperator newCriteriaOperator;
@@ -533,7 +533,7 @@ namespace BluePrints.ViewModels
 
 
                             newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
+                            GridControlService.FilterCriteria = newCriteriaOperator;
                         }
                     }
                 }
