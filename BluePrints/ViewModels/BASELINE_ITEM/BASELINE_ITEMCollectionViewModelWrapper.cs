@@ -37,62 +37,10 @@ using BluePrints.PrimeroData;
 using BluePrints.Common.Misc;
 using System.Net.Mail;
 using Microsoft.Exchange.WebServices.Data;
+using BluePrints.Common.ViewModel.Misc;
 
 namespace BluePrints.ViewModels
 {
-    public interface IDeliverableCollectionViewModelWrapper<TProgress, TDeliverable>
-        where TProgress : class, IReportable
-        where TDeliverable : class, IDeliverable
-    {
-        Guid load_context_guid { get; }
-        void OnParameterChange(object parameter);
-        IEnumerable<TProgress> SelectedEntities { get; set; }
-        Action<IEnumerable<TProgress>> OnReportablesLoadedCallBack { get; set; }
-        Action<TProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
-        Action<TProgress> OnAfterDuplicateCallBack { get; set; }
-        Func<IRepositoryQuery<TDeliverable>, IQueryable<TDeliverable>> BaseEntityQueryCallBack { get; set; }
-        string DefaultPhaseInternalNumber { get; set; }
-        Func<TProgress> SelectedEntityCallBack { get; set; }
-        ObservableCollection<TProgress> DisplaySelectedEntities { get; set; }
-        Func<IEnumerable<TProgress>> GetAllEntities { get; set; }
-        //some functionality will edit existing live deliverables, so this has to be used to validate in context
-        Func<IEnumerable<TProgress>> GetEditableAllEntitiesCallBack { get; set; }
-        void CleanUpEntitiesLoader();
-
-        #region Undo-Redo
-        Action<TProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
-        Action InterfacePauseUndoRedoCallBack { get; set; }
-        Action InterfaceUnpauseUndoRedoCallBack { get; set; }
-        #endregion
-
-        #region Events
-        string UnifiedValueValidation(TProgress projection, string field_name, object new_value);
-        void UnifiedCellValueChanging(string field_name, object old_value, object new_value, TProgress projection, bool isNew);
-        Action<object> RaisePropertyChangeCallBack { get; set; }
-        #endregion
-
-        #region Commands
-        bool CanDuplicateMultiple(BarEditItem barEdit);
-        bool CanInsertMultiple(BarEditItem barEdit);
-        bool CanDuplicate();
-        bool CanInsert();
-        bool CanAutoPopulate(object button);
-        bool CanFindReplace(object button);
-
-        void DuplicateMultiple(BarEditItem barEdit);
-        void InsertMultiple(BarEditItem barEdit);
-        void Duplicate();
-        void Insert();
-        void AutoPopulate(object button);
-        void FindReplace(object button);
-        #endregion
-
-        void Save(TProgress progress_entity);
-        void Delete(TProgress progress_entity);
-
-        bool InVariationMode { get; set; }
-    }
-
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
@@ -389,8 +337,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
             loaderCollection.AddLoaderDescription<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD_REF);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
+        }
+
+        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
@@ -536,7 +490,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -560,7 +514,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntitiesDeleted;
+            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             MainViewModel.SetParentViewModel(this);
 
@@ -583,14 +537,50 @@ namespace BluePrints.ViewModels
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        protected virtual bool onBeforeEntitiesDeleted(BASELINE_ITEMProgress entity)
+        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            List<BASELINE_ITEMProgress> deleteEntities = new List<BASELINE_ITEMProgress>();
+            bool showErrorMessage = false;
+            foreach(BASELINE_ITEMProgress entity in entities)
             {
-                MessageBoxService.ShowMessage("Cannot delete " + entity.Entity.Entity.INTERNAL_NUM + " because it has been progressed");
+                IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL && y.ACTION != VariationAction.NoAction));
+
+                //when there are variations that relates to this deliverable
+                if (attachedVARIATIONS.Count() > 0)
+                {
+                    string variations = string.Empty;
+                    foreach(VARIATION attachedVARIATION in attachedVARIATIONS)
+                    {
+                        variations += attachedVARIATION.NAME + ", ";
+                    }
+
+                    if(variations.Length > 2)
+                        variations = variations.Substring(0, variations.Length - 2);
+
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Variations exists: " + variations));
+                    showErrorMessage = true;
+                }
+                else if (entity.PROGRESS_ITEMS.Count > 0 && entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+                {
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Has been progressed"));
+                    showErrorMessage = true;
+                }
+                else
+                {
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
+                    deleteEntities.Add(entity);
+                }
+            }
+
+            if(showErrorMessage)
+            {
+                MainViewModel.BaseBulkDelete(deleteEntities);
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot delete deliverable(s) due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
                 return false;
             }
-            
+
             return true;
         }
 
@@ -761,7 +751,7 @@ namespace BluePrints.ViewModels
             object oldValue = null;
             if (internalNumberUndoInfos != null)
             {
-                var keyValuePair = internalNumberUndoInfos.FirstOrDefault(x => x.Key == entity.EntityKey);
+                var keyValuePair = internalNumberUndoInfos.FirstOrDefault(x => x.Key == entity.GUID);
                 oldValue = keyValuePair.Value;
             }
             else
@@ -1274,9 +1264,9 @@ namespace BluePrints.ViewModels
                 {
                     var newProjection = new BASELINE_ITEMProgress();
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.GUID = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
-                    newProjection.DuplicateFromGuid = selectedEntity.EntityKey;
+                    newProjection.DuplicateFromGuid = selectedEntity.GUID;
 
                     //because this function is used in variation, let ApplyProjection handle this
                     newProjection.Entity.Entity.GUID_BASELINE = null;
@@ -1302,7 +1292,7 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Preliminary;
                     newProjection.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
                     newProjection.Entity.Entity.GUID_USER = null;
-
+                    onBeforeEntitiesDuplicated(selectedEntity, newProjection);
                     //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
                     AddUndo(newProjection, null, null, null, EntityMessageType.Added);
                     unsavedEntities.Add(newProjection);
@@ -1310,6 +1300,11 @@ namespace BluePrints.ViewModels
             }
 
             return unsavedEntities;
+        }
+
+        protected virtual void onBeforeEntitiesDuplicated(BASELINE_ITEMProgress copyEntity, BASELINE_ITEMProgress newEntity)
+        {
+
         }
 
         public bool CanDuplicateMultiple(BarEditItem barEdit)
@@ -1555,18 +1550,13 @@ namespace BluePrints.ViewModels
             if(errorMessage.Length > 2)
                 errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
 
-            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
+            var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.GUID);
 
             return internalNum;
         }
         #endregion
 
         #region Find and Replace
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
-        }
-
         private DevExpress.Mvvm.IDialogService BookTimeDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BookTimeDialog"); }
@@ -1813,6 +1803,8 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public IEnumerable<VARIATION> VARIATIONCollection => GetEntities<VARIATION>();
 
         public IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection
         {

@@ -161,7 +161,7 @@ namespace BluePrints.Common.Projections
 
                 var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, null, fixedStartDate, fixedDataDate)
                 {
-                    EntityKey = current_project.GUID,
+                    GUID = current_project.GUID,
                     Entity = current_project
                 };
 

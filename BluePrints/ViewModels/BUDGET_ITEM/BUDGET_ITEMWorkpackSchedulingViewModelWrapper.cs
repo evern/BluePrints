@@ -102,7 +102,7 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
         }
 
         private void assign_budget(ESTIMATE entity)
@@ -163,7 +163,7 @@ namespace BluePrints.ViewModels
 
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.APPROVED != null && x.TYPE == VariationType.External && x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.APPROVED != null && x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()

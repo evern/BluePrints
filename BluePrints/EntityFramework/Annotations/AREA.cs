@@ -12,20 +12,6 @@ namespace BluePrints.Data
     public partial class AREA : EntityBase, IGuidEntityKey, ICanSync, IGuidParentEntityKey, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public Guid? ParentEntityKey
         {
             get

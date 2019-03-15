@@ -323,7 +323,7 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Design;
 
-        protected override bool have_group_entity => false;
+        protected override bool haveGroupEntity => false;
         #endregion
 
         #region Reporting
@@ -341,7 +341,7 @@ namespace BluePrints.ViewModels
         public void FixVariation()
         {
             IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            IQueryable<VARIATION> approvedVariations = unitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null && x.TYPE == VariationType.External);
+            IQueryable<VARIATION> approvedVariations = unitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.APPROVED != null);
 
             List<BASELINE_ITEMProgress> saveEntities = new List<BASELINE_ITEMProgress>();
             foreach (var entity in MainViewModel.Entities)

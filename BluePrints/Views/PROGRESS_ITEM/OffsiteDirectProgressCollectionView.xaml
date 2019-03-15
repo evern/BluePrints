@@ -13,7 +13,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Live Deliverables Progress">
+                        <dxr:RibbonPage Caption="{Binding ViewName}">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                             <dxr:RibbonPageGroup Caption="Data Date">
@@ -127,17 +127,17 @@
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Budgeted">
                             <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
-                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Estimated Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.DC_HOURS" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Estimated Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
@@ -367,7 +367,7 @@
                             <!--<dxg:GridColumn Header="Guid" FieldName="GuidCurrent" ReadOnly="True" FilterPopupMode="CheckedList" IsEnabled="False" />-->
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" FilterPopupMode="CheckedList" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" FilterPopupMode="CheckedList" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" Visible="False">
@@ -377,7 +377,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Updated" FilterPopupMode="CheckedList" Header="Progress Updated" HeaderToolTip="Progress last updated date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm:ss" />
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" FilterPopupMode="CheckedList" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" Visible="False">
@@ -455,8 +455,8 @@
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:p}" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:c2}" FieldName="DisplayPeriodEarnedCosts" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Total_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
@@ -471,8 +471,8 @@
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:p}" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:c2}" FieldName="DisplayPeriodEarnedCosts" ShowInColumn="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.Total_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>

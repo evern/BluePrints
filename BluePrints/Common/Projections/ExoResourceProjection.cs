@@ -32,7 +32,7 @@ namespace BluePrints.Common.Projections
         }
 
         [Key]
-        public Guid EntityKey { get; set; }
+        public Guid GUID { get; set; }
         public int? RESOURCE_SEQNO { get; set; }
         public int? RESOURCE_STAFFNO { get; set; }
         public int? STAFFNO { get; set; }

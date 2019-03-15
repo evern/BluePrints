@@ -19,6 +19,7 @@ using DevExpress.Xpf.Grid;
 using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
+using BluePrints.Common.Projections;
 
 namespace BluePrints.ViewModels
 {

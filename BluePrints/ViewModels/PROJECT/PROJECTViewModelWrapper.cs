@@ -80,7 +80,6 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected bool isCompletelyLoaded { get; set; }
-        protected bool shouldSeparateVariation { get; set; }
         protected bool forceRetrieveAllBurned { get; set; }
         protected bool useProductivityFactorOnRemaining { get; set; }
         protected override void resolveParameters(object parameter)
@@ -89,7 +88,6 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
-            shouldSeparateVariation = false;
 
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -278,7 +276,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, shouldSeparateVariation);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

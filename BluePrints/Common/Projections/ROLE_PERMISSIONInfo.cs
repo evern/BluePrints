@@ -32,20 +32,6 @@ namespace BluePrints.Data
             }
         }
 
-        [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid GUID { get; set; }

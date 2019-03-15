@@ -149,7 +149,7 @@ namespace BluePrints.ViewModels
 
             if (entity.AssignDeliverables != null)
             {
-                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.EntityKey))
+                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.GUID))
                 {
                     if (!entity.AssignDeliverables.Any(x => x.GUID_ORIGINAL == assignment.GUID_BASELINE_ITEM))
                         remove_register_hold_ref.Add(assignment);
@@ -159,9 +159,9 @@ namespace BluePrints.ViewModels
                 List<REGISTER_HOLD_REF> add_register_holds = new List<REGISTER_HOLD_REF>();
                 foreach (BASELINE_ITEM deliverable in entity.AssignDeliverables)
                 {
-                    if (!REGISTER_HOLD_REFCollection.Any(x => x.GUID_BASELINE_ITEM == deliverable.GUID_ORIGINAL && x.GUID_HOLD == entity.EntityKey))
+                    if (!REGISTER_HOLD_REFCollection.Any(x => x.GUID_BASELINE_ITEM == deliverable.GUID_ORIGINAL && x.GUID_HOLD == entity.GUID))
                     {
-                        add_register_holds.Add(new REGISTER_HOLD_REF() { GUID_BASELINE_ITEM = deliverable.GUID_ORIGINAL, GUID_HOLD = entity.EntityKey });
+                        add_register_holds.Add(new REGISTER_HOLD_REF() { GUID_BASELINE_ITEM = deliverable.GUID_ORIGINAL, GUID_HOLD = entity.GUID });
                     }
 
                 }
@@ -170,7 +170,7 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.EntityKey))
+                foreach (REGISTER_HOLD_REF assignment in REGISTER_HOLD_REFCollection.Where(x => x.GUID_HOLD == entity.GUID))
                 {
                     remove_register_hold_ref.Add(assignment);
                 }

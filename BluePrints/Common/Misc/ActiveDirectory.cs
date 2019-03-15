@@ -34,8 +34,8 @@ namespace BluePrints.Common
 
             return result;
         }
-
-        public static async void ExchangeLogin(string sUserName, string sPassword)
+        
+        public static void ExchangeLoginAsync(string sUserName, string sPassword)
         {
 #if DEBUG
 

@@ -23,7 +23,7 @@ namespace BluePrints.Common.Projections
 
         public void GroupProjectStats(SummaryStats project_summary_stats)
         {
-            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Subjob_Guid == Entity.EntityKey, x => x.Subjob_Name == Entity.INTERNAL_NAME1);
+            Stats = SummaryStatsHelpers.Group_Summary_Stats(project_summary_stats, x => x.Subjob_Guid == Entity.GUID, x => x.Subjob_Name == Entity.INTERNAL_NAME1);
         }
 
         #region SUBJOB Mapping
@@ -73,7 +73,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard_Summary(IQueryable<SUBJOB> SUBJOBS,
             PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
         {
-            IEnumerable<SUBJOB_Dashboard> subjob_dashboards = SUBJOBS.Where(x => x.GUID_PROJECT == projectDashboard.EntityKey).Select(x => new SUBJOB_Dashboard() {EntityKey = x.GUID, Entity = x});
+            IEnumerable<SUBJOB_Dashboard> subjob_dashboards = SUBJOBS.Where(x => x.GUID_PROJECT == projectDashboard.GUID).Select(x => new SUBJOB_Dashboard() {GUID = x.GUID, Entity = x});
             List<SUBJOB_Dashboard> newSUBJOBDashboards = subjob_dashboards.ToList();
             newSUBJOBDashboards.ForEach(x => x.GroupProjectStats((SummaryStats)projectDashboard.Stats));
             if (subAreaCollection != null)

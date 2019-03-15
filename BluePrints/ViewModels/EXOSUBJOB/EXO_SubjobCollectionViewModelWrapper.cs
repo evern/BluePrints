@@ -784,6 +784,7 @@ namespace BluePrints.ViewModels
         public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
 
         public ExoSubJobAuth SelectedUser { get; set; }
+        List<ExoSubJobAuth> orderedAuthUsers;
         public virtual IEnumerable<ExoSubJobAuth> Users
         {
             get
@@ -798,41 +799,45 @@ namespace BluePrints.ViewModels
                 if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
                     return null;
 
-                List<ExoSubJobAuth> orderedAuthUsers = new List<ExoSubJobAuth>();
-                foreach (STAFF staff in exoSTAFFS)
+                if (orderedAuthUsers == null)
                 {
-                    ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
-                    USER newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
-                    if (newUser == null)
-                        newUser = new USER();
+                    orderedAuthUsers = new List<ExoSubJobAuth>();
+                    foreach (STAFF staff in exoSTAFFS)
+                    {
+                        ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
+                        USER newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+                        if (newUser == null)
+                            newUser = new USER();
 
-                    newUser.NAME = staff.NAME;
-                    newUser.EXO_STAFF_ID = staff.STAFFNO;
-                    newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
-                    newUser.SecurityProfileID = staff.SECURITYPROFILEID;
-                    displayUserAuth.User = newUser;
-                    
-                    if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == newUser.EXO_STAFF_ID)))
-                        displayUserAuth.IsAssigned = true;
-                    else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == newUser.EXO_STAFF_ID)))
-                        displayUserAuth.IsAssigned = null;
-                    else
-                        displayUserAuth.IsAssigned = false;
+                        newUser.NAME = staff.NAME;
+                        newUser.EXO_STAFF_ID = staff.STAFFNO;
+                        newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
+                        newUser.SecurityProfileID = staff.SECURITYPROFILEID;
+                        displayUserAuth.User = newUser;
 
-                    displayUserAuth.ShouldAssign = false;
-                    orderedAuthUsers.Add(displayUserAuth);
+
+                        orderedAuthUsers.Add(displayUserAuth);
+                    }
                 }
+
+                foreach(ExoSubJobAuth authorisation in orderedAuthUsers)
+                {
+                    if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == authorisation.User.EXO_STAFF_ID)))
+                        authorisation.IsAssigned = true;
+                    else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == authorisation.User.EXO_STAFF_ID)))
+                        authorisation.IsAssigned = null;
+                    else
+                        authorisation.IsAssigned = false;
+
+                    authorisation.ShouldAssign = false;
+                }
+                
 
                 isPermissionLoading = false;
                 this.RaisePropertyChanged(x => x.IsPermissionLoading);
                 permissions.AddRange(orderedAuthUsers.OrderBy(x => x.User.Full_Name));
                 return permissions;
             }
-        }
-
-        protected DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
         }
 
         protected override string ViewName

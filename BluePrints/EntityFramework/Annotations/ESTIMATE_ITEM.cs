@@ -13,26 +13,12 @@ using BaseModel.DataModel;
 
 namespace BluePrints.Data
 {
-    public partial class ESTIMATE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, IHaveProcurementSubjob
+    public partial class ESTIMATE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, IHaveDBProductivityOverride, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEM()
         {
             DISCIPLINE_NUM = 1;
             PROGRESS_TYPE = 0;
-        }
-
-        [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
         }
 
         [NotMapped]
@@ -256,5 +242,7 @@ namespace BluePrints.Data
                 return string.Empty;
             }
         }
+
+        public decimal Variation_Quantity => throw new NotImplementedException();
     }
 }

@@ -15,20 +15,6 @@ namespace BluePrints.Data
     public partial class BASELINE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-        
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }

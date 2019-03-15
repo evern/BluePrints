@@ -119,42 +119,42 @@ namespace BluePrints.ViewModels
             project.Disciplines = DISCIPLINECollection.Where(discipline => PROJECT_DISCIPLINECollection.Any(pd => pd.GUID_PROJECT == project.GUID && pd.GUID_DISCIPLINE == discipline.GUID)).ToList();
         }
 
-        private void save_project_discipline(PROJECT entity)
+        private void saveProjectDiscipline(PROJECT entity)
         {
-            List<PROJECT_DISCIPLINE> remove_project_disciplines = new List<PROJECT_DISCIPLINE>();
+            List<PROJECT_DISCIPLINE> removeProjectDisciplines = new List<PROJECT_DISCIPLINE>();
 
             if (entity.Disciplines != null)
             {
                 foreach (PROJECT_DISCIPLINE assignment in PROJECT_DISCIPLINECollection.Where(x => x.GUID_PROJECT == entity.GUID))
                 {
                     if (!entity.Project_Disciplines.Any(x => x.GUID == assignment.GUID_DISCIPLINE))
-                        remove_project_disciplines.Add(assignment);
+                        removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(remove_project_disciplines);
-                List<PROJECT_DISCIPLINE> add_project_disciplines = new List<PROJECT_DISCIPLINE>();
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
+                List<PROJECT_DISCIPLINE> addProjectDisciplines = new List<PROJECT_DISCIPLINE>();
                 foreach (DISCIPLINE project_discipline in entity.Project_Disciplines)
                 {
                     if (!PROJECT_DISCIPLINECollection.Any(x => x.GUID_DISCIPLINE == project_discipline.GUID && x.GUID_PROJECT == entity.GUID))
-                        add_project_disciplines.Add(new PROJECT_DISCIPLINE() { GUID_DISCIPLINE = project_discipline.GUID, GUID_PROJECT = entity.GUID });
+                        addProjectDisciplines.Add(new PROJECT_DISCIPLINE() { GUID_DISCIPLINE = project_discipline.GUID, GUID_PROJECT = entity.GUID });
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BulkSave(add_project_disciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BulkSave(addProjectDisciplines);
             }
             else
             {
                 foreach (PROJECT_DISCIPLINE assignment in PROJECT_DISCIPLINECollection.Where(x => x.GUID_PROJECT == entity.GUID))
                 {
-                    remove_project_disciplines.Add(assignment);
+                    removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(remove_project_disciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
             }
         }
 
         private void onAfterEntitySaved(PROJECT entity, PROJECT projection, bool isNewEntity)
         {
-            save_project_discipline(entity);
+            saveProjectDiscipline(entity);
             PostSave(entity, projection, isNewEntity);
         }
 
@@ -224,9 +224,9 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeletedIsContinueCallBack;
             MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
-            MainViewModel.OnBeforeEntitiesDeleteCallBack = onBeforeEntitiesDeleted;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -246,14 +246,14 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private void onBeforeEntitiesDeleted(IEnumerable<PROJECT> deletedPROJECTs)
+        private DeleteInterceptMode onBeforeEntityDeletedIsContinueCallBack(PROJECT project)
         {
-            foreach(PROJECT project in deletedPROJECTs)
-            {
+            //Avoid EF exception on PROJECT_DISCIPLINE foreign key: The relationship could not be changed because one or more of the foreign-key properties is non-nullable
+            saveProjectDiscipline(project);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
+            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            }
+            return DeleteInterceptMode.Continue;
         }
 
         private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)

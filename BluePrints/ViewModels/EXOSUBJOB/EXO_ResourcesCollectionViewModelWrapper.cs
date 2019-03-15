@@ -94,10 +94,10 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        protected bool onBeforeEntityDeleted(ExoResourceProjection projection)
+        protected DeleteInterceptMode onBeforeEntityDeleted(ExoResourceProjection projection)
         {
             delete(projection);
-            return false;
+            return DeleteInterceptMode.Discontinue;
         }
 
         /// <summary>

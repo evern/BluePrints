@@ -14,20 +14,6 @@ namespace BluePrints.Data
     public partial class RA_STUDY_DATA : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }
@@ -40,7 +26,7 @@ namespace BluePrints.Data
             get { return GUID_GUIDE_SUBPROMPT; }
             set
             {
-                if (value == null || GuideSubPrompts.Any(x => x.EntityKey.ToString().ToUpper() == value.ToString().ToUpper()))
+                if (value == null || GuideSubPrompts.Any(x => x.GUID.ToString().ToUpper() == value.ToString().ToUpper()))
                     GUID_GUIDE_SUBPROMPT = value;
             }
         }

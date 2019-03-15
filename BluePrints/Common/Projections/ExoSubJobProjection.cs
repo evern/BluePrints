@@ -196,8 +196,6 @@ namespace BluePrints.Common.Projections
         public Guid guid { get; set; }
 
         public Guid GUID { get => guid; set => guid = value; }
-
-        public Guid EntityKey { get => guid; set => guid = value; }
         #endregion
     }
 
@@ -223,7 +221,7 @@ namespace BluePrints.Common.Projections
         //public bool IsLineExistsInExo => SubJob.Id != null;
 
         //used to trick view model
-        public Guid EntityKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid GUID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public List<P6_ASSIGNMENT> P6_Assignments => throw new NotImplementedException();
 
@@ -259,6 +257,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Units => throw new NotImplementedException();
 
+        public decimal Variation_Costs => throw new NotImplementedException();
+
         decimal IHaveHours.Budget_Quantity => throw new NotImplementedException();
 
         public decimal Total_Quantity => throw new NotImplementedException();
@@ -276,13 +276,15 @@ namespace BluePrints.Common.Projections
         public decimal ExoForecastRate { get; set; }
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }
-        public Guid guid { get; set; }
-        public Guid GUID { get => guid; set => guid = value; }
         public DateTime CREATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? UPDATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? DELETED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public decimal Earned_Units_ToDate => throw new NotImplementedException();
+
+        public decimal Variation_Quantity => throw new NotImplementedException();
+
+        public decimal Total_Costs => throw new NotImplementedException();
     }
 
     public static class ExoMethods
@@ -973,12 +975,12 @@ namespace BluePrints.Common.Projections
             Data.PROJECT PROJECT,
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
+            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<VARIATION> VARIATIONS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
         {
-            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, null, true, null).ToList();
+            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, true, null).ToList();
 
             var groupedDeliverables = baseline_item_progresses.GroupBy(x => new { SubJob = x.Entity.Entity.SUBJOB, DisciplineCode = x.Discipline_Code, Commodity = x.Entity.Entity.DOCTYPE })
-                                      .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, DisciplineName = group.Select(x => x.Entity.Entity.Discipline_Name), group.Key.Commodity, TotalCosts = group.Sum(x => x.Total_Costs) });
+                                      .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.Commodity, TotalCosts = group.Sum(x => x.Total_Costs) });
 
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
@@ -1499,7 +1501,7 @@ namespace BluePrints.Common.Projections
                             select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO };
 
             //EntityKey is used to prevent duplicate error message
-            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { EntityKey = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false })).AsQueryable();
+            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false })).AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)

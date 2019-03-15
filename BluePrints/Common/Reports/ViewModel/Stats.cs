@@ -237,7 +237,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     decimal qtyPerUnit = TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
                     //Budgeted units are always used because variation adjustment will be added on if alwaysBenchmarkAgainstBudgeted is false and rawVariationAdjustments is not null
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
+                    
+                    //variation adjustment implementation
+                    //cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
+
+                    //total units at start
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
                 }
 
                 return cumulativeDataPoints;

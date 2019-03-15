@@ -121,7 +121,7 @@ namespace BluePrints.Common.Base
 
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.APPROVED != null && x.TYPE == VariationType.External && x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.APPROVED != null && x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
@@ -206,7 +206,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
             MainViewModel.DisablePasteRowLevel = true;
-            MainViewModel.AlwaysSkipMessage = true;
+            //MainViewModel.AlwaysSkipMessage = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
 
             MainViewModel.SetParentViewModel(this);
@@ -240,15 +240,15 @@ namespace BluePrints.Common.Base
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
-        protected abstract bool have_group_entity { get; }
+        protected abstract bool haveGroupEntity { get; }
         /// <summary>
         /// Save progress item during BASELINE_ITEM Undo/Redo operation
         /// </summary>
         /// <param name="projectionEntity"></param>
         /// <param name="isNewEntity"></param>
-        protected void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
+        protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
         {
-            if (!have_group_entity && projectionEntity.ShouldSaveProgress)
+            if (!haveGroupEntity && projectionEntity.ShouldSaveProgress)
             {
                 IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());

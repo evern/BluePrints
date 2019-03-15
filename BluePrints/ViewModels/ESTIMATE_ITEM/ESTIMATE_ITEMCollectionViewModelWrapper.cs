@@ -32,7 +32,7 @@ namespace BluePrints.ViewModels
 {
     public class ESTIMATE_ITEMCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IDeliverableCollectionViewModelWrapper<ESTIMATE_ITEMProgress, ESTIMATE_ITEM>
+        <ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATE_ITEM_ITEMSViewModelWrapper as a POCO view model.
@@ -813,7 +813,7 @@ namespace BluePrints.ViewModels
                 {
                     var newProjection = new ESTIMATE_ITEMProgress();
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.Entity.GUID = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
 
                     //because this function is used in variation, let ApplyProjection handle this

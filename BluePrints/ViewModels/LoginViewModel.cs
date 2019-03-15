@@ -104,12 +104,12 @@ namespace BluePrints.ViewModels
                 {
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
-                    ActiveDirectory.ExchangeLogin(LoginCredentials.CurrentUser.NAME, "NEWpass14.");
+                    Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else
                 {
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
-                    ActiveDirectory.ExchangeLogin(LoginCredentials.CurrentUser.NAME, UserPassword);
+                    Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, UserPassword));
                 }
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();

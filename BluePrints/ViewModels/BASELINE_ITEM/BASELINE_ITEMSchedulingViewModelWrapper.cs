@@ -77,10 +77,16 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
 
             base.addEntitiesLoader();
         }
-        
+
+        protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.CLIENT_APPROVED != null && x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             if (isFromPROGRESS)
@@ -94,7 +100,7 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.EntityKey);
+                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -163,7 +169,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, false, P6_ASSIGNMENTS);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -399,7 +405,7 @@ namespace BluePrints.ViewModels
                 {
                     var newProjection = new BASELINE_ITEMProgress();
                     DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.EntityKey = Guid.Empty;
+                    newProjection.Entity.GUID = Guid.Empty;
                     newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
                     newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
                     newProjection.Entity.Entity.DC_HOURS = 0;
@@ -596,7 +602,7 @@ namespace BluePrints.ViewModels
             DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
             DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
             var internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT,
-                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.EntityKey);
+                MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.GUID);
 
             return internalNum;
         }
@@ -674,6 +680,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<Data.PHASE>();
+            }
+        }
+
+        public IEnumerable<VARIATION> VARIATIONCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION>();
             }
         }
 

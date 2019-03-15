@@ -146,7 +146,6 @@ namespace BluePrints.ViewModels
             useProductivityFactorOnRemaining = true; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = false;
-            shouldSeparateVariation = true;
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
             hiddenColumnFieldNames.Add(columnCalculation);
@@ -1242,11 +1241,6 @@ namespace BluePrints.ViewModels
             //}
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
-        }
-
-        private DevExpress.Mvvm.IDialogService BulkColumnEditDialogService
-        {
-            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BulkColumnEditService"); }
         }
 
         /// <summary>

@@ -91,7 +91,7 @@ namespace BluePrints.Common.Projections
         {
             return ROLES.ToArray().Select(x => new ROLEProjection()
             {
-                EntityKey = x.GUID,
+                GUID = x.GUID,
                 Entity = x,
                 ROLE_PERMISSIONS = new ObservableCollection<ROLE_PERMISSION>(AllROLE_PERMISSIONS.Where(z => z.GUID_ROLE == x.GUID)),
                 ROLE_COMMODITIES = new ObservableCollection<ROLE_COMMODITY>(AllROLE_COMMODITIES.Where(y => y.GUID_ROLE == x.GUID))

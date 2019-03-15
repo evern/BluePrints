@@ -13,7 +13,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Study Type">
+                        <dxr:RibbonPage Caption="{Binding ViewName}">
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup>
                                 <dxb:BarStaticItem Content="To perform Undo/Redo and Copy/Paste, please click on the desired grid and use keyboard shortcuts or right click menu" />

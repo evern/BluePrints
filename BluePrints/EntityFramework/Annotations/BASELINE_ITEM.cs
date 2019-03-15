@@ -15,185 +15,18 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
-    public partial class BASELINE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IOriginalGuidEntityKey, IHaveCreatedDate, IDeliverable, ISupportByDuration, IHaveDBProductivityOverride, ISupportVariationRevision, IEntityNumber
+    public partial class BASELINE_ITEM : EntityBase, ICanSync, IDeliverable, IEntityNumber, IHaveCreatedDate, IHaveDBProductivityOverride, IHaveDeliverableStatus, IOriginalGuidEntityKey, ISupportVariationRevision, IGuidEntityKey
+
     {
         public BASELINE_ITEM()
         {
             DISCIPLINE_NUM = 1;
             DELIVERABLE_TYPE = DeliverableType.Deliverable;
+            ExperimentalSubAreaGuid = new TokenProperty<Guid?>(() => GUID_SUBAREA, x => this.GUID_SUBAREA = x, () => AREA == null ? null : this.AREA.AREA1.Select(x => (Guid?)x.GUID));
         }
 
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
-        public Guid OriginalEntityKey
-        {
-            get
-            {
-                return GUID_ORIGINAL;
-            }
-        }
-
-        public void SetOriginalEntityKey(Guid newGuid)
-        {
-            GUID_ORIGINAL = newGuid;
-        }
-
-        [NotMapped]
-        public string Discipline_Code
-        {
-            get
-            {
-                if (DISCIPLINE == null)
-                    return string.Empty;
-
-                if (DISCIPLINE_NUM < 10)
-                    return DISCIPLINE.CODE + "0" + DISCIPLINE_NUM.ToString();
-                else
-                    return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString();
-            }
-        }
-
-        [NotMapped]
-        public string Department_Code
-        {
-            get
-            {
-                if (DEPARTMENT == null)
-                    return string.Empty;
-
-                return DEPARTMENT.CODE;
-            }
-        }
-
-        [NotMapped]
-        public string Department_Name
-        {
-            get
-            {
-                if (DEPARTMENT == null)
-                    return string.Empty;
-
-                return DEPARTMENT.NAME;
-            }
-        }
-
-        [NotMapped]
-        public string Phase_Code => PHASE == null ? string.Empty : PHASE.INTERNAL_NUM;
-
-        [NotMapped]
-        public string Variation_Code => string.Empty;
-
-        [NotMapped]
-        public string Commodity_Code
-        {
-            get
-            {
-                if (DOCTYPE == null)
-                    return string.Empty;
-
-                return DOCTYPE.CODE;
-            }
-        }
-
-        public string Commodity_Display_Code => Commodity_Code;
-
-        [NotMapped]
-        public DateTime EntityCreatedDate
-        {
-            get { return CREATED; }
-            set { CREATED = value; }
-        }
-
-        [NotMapped]
-        public string Subjob_Name
-        {
-            get
-            {
-                if (SUBJOB == null)
-                    return string.Empty;
-
-                return SUBJOB.INTERNAL_NAME1;
-            }
-        }
-
-        public string Workpack_Name
-        {
-            get
-            {
-                if (WORKPACK == null)
-                    return string.Empty;
-
-                return WORKPACK.NAME;
-            }
-        }
-
-        public string Workpack_Title
-        {
-            get
-            {
-                if (WORKPACK == null)
-                    return string.Empty;
-
-                return WORKPACK.TITLE;
-            }
-        }
-
-        public string Area_Name
-        {
-            get
-            {
-                if (AREA == null)
-                    return string.Empty;
-
-                return AREA.INTERNAL_NUM;
-            }
-        }
-
-        public string SubArea_Name
-        {
-            get
-            {
-                if (AREA1 == null)
-                    return string.Empty;
-
-                return AREA1.INTERNAL_NUM;
-            }
-        }
-
-        public string DocType_Name
-        {
-            get
-            {
-                if (DOCTYPE == null)
-                    return string.Empty;
-
-                return DOCTYPE.NAME;
-            }
-        }
-
-        public string Discipline_Name
-        {
-            get
-            {
-                if (DISCIPLINE == null)
-                    return string.Empty;
-
-                return DISCIPLINE.NAME;
-            }
-        }
+        TokenProperty<Guid?> ExperimentalSubAreaGuid;
 
         //Used for direct property access validation in fill/undo-redo
         [NotMapped]
@@ -286,9 +119,9 @@ namespace BluePrints.Data
             {
                 if (GUID_DEPARTMENT != null && GUID_DISCIPLINE != null)
                     return CriteriaOperator.Parse("[GUID_DEPARTMENT] In ({" + GUID_DEPARTMENT.ToString() + "}) And [GUID_DISCIPLINE] In ({" + GUID_DISCIPLINE.ToString() + "})");
-                else if(GUID_DISCIPLINE != null)
+                else if (GUID_DISCIPLINE != null)
                     return CriteriaOperator.Parse("[GUID_DISCIPLINE] In ({" + GUID_DISCIPLINE.ToString() + "})");
-                else if(GUID_DEPARTMENT != null)
+                else if (GUID_DEPARTMENT != null)
                     return CriteriaOperator.Parse("[GUID_DEPARTMENT] In ({" + GUID_DEPARTMENT.ToString() + "})");
 
                 return null;
@@ -299,100 +132,11 @@ namespace BluePrints.Data
         public IEnumerable<DELIVERABLES_STATUS> DeliverableStatusCollection { get; set; }
 
         [NotMapped]
-        public string Deliverable_Name
-        {
-            get { return INTERNAL_NUM; }
-        }
-
-        [NotMapped]
-        public Guid? Subjob_Guid
-        {
-            get { return GUID_SUBJOB; }
-            set { GUID_SUBJOB = value; }
-        }
-
-        [NotMapped]
-        public decimal Budget_Units
-        {
-            get
-            {
-                if (IsByDuration)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                return BUDGET_HOURS;
-            }
-        }
-
-        [NotMapped]
-        public decimal Total_Units
-        {
-            get
-            {
-                if (IsByDuration)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                return BUDGET_HOURS + DC_HOURS;
-            }
-        }
-
-        [NotMapped]
-        public Guid? Area_Guid => GUID_AREA;
-
-        [NotMapped]
-        public Guid? SubArea_Guid => GUID_SUBAREA;
-
-        [NotMapped]
-        public decimal Variation_Units => DC_HOURS;
-
-        [NotMapped]
-        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
-
-        [NotMapped]
-        public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }
-
-        [NotMapped]
-        public Guid? Variation_Guid { get => GUID_VARIATION; set => GUID_VARIATION = value; }
-
-        [NotMapped]
-        public Guid? Baseline_Guid { get => GUID_BASELINE; set => GUID_BASELINE = value; } 
-
-        [NotMapped]
-        public decimal Estimated_Value { get => BUDGET_HOURS; set => BUDGET_HOURS = value; }
-
-        [NotMapped]
-        public decimal DC_Value { get => DC_HOURS; set => DC_HOURS = value; }
-
-        [NotMapped]
-        public string EntityNumber { get => INTERNAL_NUM; set => INTERNAL_NUM = value; }
-
-        [NotMapped]
-        public string EntityGroup => string.Empty;
-
-        [NotMapped]
-        public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
-
-        public Guid? Discipline_Guid => GUID_DISCIPLINE;
-
-        public decimal Discipline_Number => DISCIPLINE_NUM;
-
-        [NotMapped]
-        public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
-
-        public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
-
-        [NotMapped]
-        public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
-
-        [NotMapped]
         public string Holds { get; set; }
-
-        public decimal Budget_Quantity => Budget_Units;
-
-        public decimal Total_Quantity => Total_Units;
 
         public void SetHolds(IEnumerable<REGISTER_HOLD_REF> holds)
         {
-            List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.OriginalEntityKey && x.REGISTER_HOLD != null).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
+            List<string> deliverable_holds = holds.Where(x => x.GUID_BASELINE_ITEM == this.GUID_ORIGINAL && x.REGISTER_HOLD != null).Select(x => x.REGISTER_HOLD.NUMBER).ToList();
             if (deliverable_holds.Count == 0)
                 return;
 
@@ -429,6 +173,89 @@ namespace BluePrints.Data
 
                 return string.Empty;
             }
+        }
+
+        public string Subjob_Name
+        {
+            get
+            {
+                if (SUBJOB == null)
+                    return string.Empty;
+
+                return SUBJOB.INTERNAL_NAME1;
+            }
+        }
+
+        public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
+
+        public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;
+
+        public string Phase_Code => PHASE == null ? string.Empty : PHASE.INTERNAL_NUM;
+
+        public string Department_Code => DEPARTMENT == null ? string.Empty : DEPARTMENT.CODE;
+
+        public string Discipline_Code
+        {
+            get
+            {
+                if (DISCIPLINE == null)
+                    return string.Empty;
+
+                return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
+            }
+        }
+
+        public string Deliverable_Name => INTERNAL_NUM;
+
+        [NotMapped]
+        public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
+
+        [NotMapped]
+        public Guid? Subjob_Guid { get => GUID_SUBJOB; set => GUID_SUBJOB = value; }
+
+        public Guid? Area_Guid => GUID_AREA;
+
+        public Guid? SubArea_Guid => GUID_SUBAREA;
+
+        public Guid? Discipline_Guid => GUID_DISCIPLINE;
+
+        public decimal Discipline_Number => DISCIPLINE_NUM;
+
+        [NotMapped]
+        public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
+
+        [NotMapped]
+        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
+
+        public Guid OriginalEntityKey => GUID_ORIGINAL;
+
+        public string Commodity_Code => DOCTYPE == null ? string.Empty : DOCTYPE.CODE;
+
+        public decimal Budget_Units => BUDGET_HOURS;
+
+        public decimal Budget_Quantity => BUDGET_HOURS;
+
+        public decimal Total_Quantity => BUDGET_HOURS;
+
+        [NotMapped]
+        public string EntityNumber { get => INTERNAL_NUM; set => INTERNAL_NUM = value; }
+
+        public string EntityGroup => string.Empty;
+
+        [NotMapped]
+        public DateTime EntityCreatedDate { get => CREATED; set => CREATED = value; }
+
+        [NotMapped]
+        public decimal? DB_Productivity_Override { get => PRODUCTIVITY_OVERRIDE; set => PRODUCTIVITY_OVERRIDE = value; }
+
+        public DELIVERABLES_STATUS Deliverable_Status => DELIVERABLES_STATUS;
+
+        [NotMapped]
+        public Guid? Variation_Guid { get => GUID_VARIATION; set => GUID_VARIATION = value; }
+
+        public void SetOriginalEntityKey(Guid newGuid)
+        {
+            GUID_ORIGINAL = newGuid;
         }
     }
 }

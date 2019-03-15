@@ -15,20 +15,6 @@ namespace BluePrints.Data
     public partial class RA_GUIDE_SUBPROMPT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }

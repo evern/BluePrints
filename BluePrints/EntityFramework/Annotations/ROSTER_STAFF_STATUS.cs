@@ -11,20 +11,6 @@
     public partial class ROSTER_STAFF_STATUS : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
-        public Guid EntityKey
-        {
-            get
-            {
-                return GUID;
-            }
-
-            set
-            {
-                GUID = value;
-            }
-        }
-
-        [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }
@@ -37,10 +23,10 @@
         {
             get
             {
-                if (EntityKey == Guid.Empty)
+                if (GUID == Guid.Empty)
                     return null;
 
-                return EntityKey;
+                return GUID;
             }
         }
 

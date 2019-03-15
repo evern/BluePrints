@@ -15,8 +15,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public class ReportablesDisplay : EntityBase, IGuidEntityKey, IReportable
     {
-        public Guid GUID { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
-        public Guid EntityKey { get => ProgressItem.EntityKey; set => ProgressItem.EntityKey = value; }
+        public Guid GUID { get => ProgressItem.GUID; set => ProgressItem.GUID = value; }
         public DisplayQuantityReportable ProgressItem { get; set; }
 
         public IEnumerable<DisplayQuantityReportable> Reportables
@@ -103,8 +102,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Phase_Code => ((IReportable)ProgressItem).Phase_Code;
 
-        public string Variation_Code => ((IReportable)ProgressItem).Variation_Code;
-
         public string Commodity_Code => ((IReportable)ProgressItem).Commodity_Code;
 
         public Guid? Area_Guid => ((IReportable)ProgressItem).Area_Guid;
@@ -114,8 +111,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Budget_Units => ((IReportable)ProgressItem).Budget_Units;
 
         public decimal Total_Units => ((IReportable)ProgressItem).Total_Units;
-
-        public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
 
         public decimal Budget_ItemRate => ((IReportable)ProgressItem).Budget_ItemRate;
 
@@ -205,7 +200,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public IEnumerable<PROGRESS_ITEM> Progresses => throw new NotImplementedException();
 
-        public Guid DeliverableKey => ((IReportable)ProgressItem).EntityKey;
+        public Guid DeliverableKey => ((IReportable)ProgressItem).GUID;
 
         public bool IsByDuration { get => ((IReportable)ProgressItem).IsByDuration; set => ((IReportable)ProgressItem).IsByDuration = value; }
 
@@ -217,6 +212,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => ((IReportable)ProgressItem).Total_Quantity;
 
         public string Project_Number => ((IReportable)ProgressItem).Project_Number;
+
+        public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
 
         public override void Update()
         {
@@ -312,8 +309,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Phase_Code => Reportable.Phase_Code;
 
-        public string Variation_Code => Reportable.Variation_Code;
-
         public string Commodity_Code => Reportable.Commodity_Code;
 
         public Guid? Subjob_Guid => Reportable.Subjob_Guid;
@@ -356,7 +351,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Estimate_UOM => Reportable.Estimate_UOM;
 
-        public Guid EntityKey { get => Reportable.EntityKey; set => Reportable.EntityKey = value; }
+        public Guid GUID { get => Reportable.GUID; set => Reportable.GUID = value; }
 
         public decimal QuantityPerUnit
         {
