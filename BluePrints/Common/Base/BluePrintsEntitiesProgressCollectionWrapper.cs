@@ -216,27 +216,41 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
-        List<string> narratives = new List<string>();
+        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
+        List<string> narratives = null;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
+            Task.Run(() => loadExoData());
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void loadExoData()
+        {
+            if (exoAuthorisations != null && narratives != null)
+                return;
+
             HashSet<string> projectNumbers = new HashSet<string>();
             foreach (var entity in MainViewModel.Entities)
             {
                 projectNumbers.Add(entity.Project_Number);
             }
 
-            foreach(var projectNumber in projectNumbers)
+            List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
+            List<string> cacheNarratives = new List<string>();
+            foreach (var projectNumber in projectNumbers)
             {
                 List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
                 List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
 
-                exoAuthorisations.AddRange(projectExoTimeAuths);
-                narratives.AddRange(projectNarratives);
+                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
+
+                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
+                cacheNarratives.AddRange(projectNarratives);
             }
 
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+            exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
+            narratives = new List<string>(cacheNarratives);
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
@@ -1697,7 +1711,10 @@ namespace BluePrints.Common.Base
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            if (exoAuthorisations == null || narratives == null)
+                MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
+            else
+                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
         #endregion
     }

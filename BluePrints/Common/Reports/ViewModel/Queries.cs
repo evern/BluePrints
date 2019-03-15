@@ -258,12 +258,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                     baseline_item_progress.BuildStats();
 
-                if (exoAuthorisation != null)
-                {
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisation.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == baseline_item_progress.Subjob_Name && x.DisciplineCode == baseline_item_progress.Discipline_Code && x.CommodityCode == baseline_item_progress.Commodity_Code);
-                    baseline_item_progress.CanBook = findAuthorisation != null;
-                }
-
                 if(deliverables_statuses != null)
                 {
                     IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_deliverable_type;

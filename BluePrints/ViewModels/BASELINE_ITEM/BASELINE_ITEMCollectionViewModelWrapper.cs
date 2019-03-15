@@ -476,15 +476,28 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
-        protected List<ExoTimeAuthorisation> exoAuthorisations = new List<ExoTimeAuthorisation>();
-        List<string> narratives = new List<string>();
+        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
+        List<string> narratives = null;
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false);
-            narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
-            
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+        }
+
+        bool isExoDataLoaded = false;
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            System.Threading.Tasks.Task.Run(() => loadExoData());
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void loadExoData()
+        {
+            if(exoAuthorisations == null)
+                exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false); 
+
+            if(narratives == null)
+                narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
@@ -2088,7 +2101,10 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            if (exoAuthorisations == null || narratives == null)
+                MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
+            else
+                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
         }
 
         protected override string ExportFilename()
