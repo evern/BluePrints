@@ -484,7 +484,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        bool isExoDataLoaded = false;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             System.Threading.Tasks.Task.Run(() => loadExoData());
@@ -493,17 +492,16 @@ namespace BluePrints.ViewModels
 
         private void loadExoData()
         {
-            if(exoAuthorisations == null)
-                exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER, false); 
+            HashSet<string> projectNumbers = new HashSet<string>();
+            projectNumbers.Add(loadPROJECT.NUMBER);
 
-            if(narratives == null)
-                narratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, loadPROJECT.NUMBER);
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, exoAuthorisations, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -1715,46 +1713,7 @@ namespace BluePrints.ViewModels
             set
             {
                 showBookable = value;
-                if (GridControlService != null)
-                {
-                    if(value)
-                    {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
-                        CriteriaOperator newCriteriaOperator;
-                        if (!ReferenceEquals(criteriaOperator, null))
-                        {
-                            string filterCriteria = criteriaOperator.ToString() + " And [CanBook] In (True)";
-                            newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
-                        }
-                        else
-                        {
-                            newCriteriaOperator = CriteriaOperator.Parse("[CanBook] In (True)");
-                        }
-
-                        GridControlService.SetFilterCriteria(newCriteriaOperator);
-                    }
-                    else
-                    {
-                        CriteriaOperator criteriaOperator = GridControlService.GetFilterCriteria();
-                        if (!ReferenceEquals(criteriaOperator, null))
-                        {
-                            CriteriaOperator newCriteriaOperator;
-                            string currentFilterCriteria = criteriaOperator.ToString();
-                            string newfilterCriteria = currentFilterCriteria.Replace("And [CanBook] In (True)", "");
-                            newfilterCriteria = newfilterCriteria.Replace("[CanBook] In (True)", "");
-                            if (newfilterCriteria.Length >= 5)
-                            {
-                                string firstFiveChar = newfilterCriteria.Substring(0, 5);
-                                if(firstFiveChar.ToUpper().Contains("AND"))
-                                    newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
-                            }
-
-
-                            newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
-                            GridControlService.SetFilterCriteria(newCriteriaOperator);
-                        }
-                    }
-                }
+                BluePrintsUtils.ApplyShowBookableFilter(GridControlService, value);
             }
         }
 

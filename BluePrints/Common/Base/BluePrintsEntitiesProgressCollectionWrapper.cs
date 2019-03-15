@@ -38,7 +38,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
         where TMainEntity : class, IGuidEntityKey, IDeliverable, new()
-        where TMainProjectionEntity : class, IGuidEntityKey, IReportable, new()
+        where TMainProjectionEntity : class, IGuidEntityKey, IReportable, IBookable, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         #region Initialization
@@ -227,30 +227,13 @@ namespace BluePrints.Common.Base
 
         private void loadExoData()
         {
-            if (exoAuthorisations != null && narratives != null)
-                return;
-
             HashSet<string> projectNumbers = new HashSet<string>();
             foreach (var entity in MainViewModel.Entities)
             {
                 projectNumbers.Add(entity.Project_Number);
             }
 
-            List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
-            List<string> cacheNarratives = new List<string>();
-            foreach (var projectNumber in projectNumbers)
-            {
-                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
-                List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
-
-                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
-
-                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
-                cacheNarratives.AddRange(projectNarratives);
-            }
-
-            exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
-            narratives = new List<string>(cacheNarratives);
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
@@ -522,6 +505,30 @@ namespace BluePrints.Common.Base
             if (updateEntity.PROGRESS_ITEM_Current == null)
             {
                 updateEntity.AppendProgressItem(newPROGRESS_ITEM);
+            }
+        }
+        #endregion
+
+        #region Book Time
+        public bool CanShowBookable()
+        {
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
+                return false;
+
+            return true;
+        }
+
+        bool showBookable;
+        public bool ShowBookable
+        {
+            get
+            {
+                return showBookable;
+            }
+            set
+            {
+                showBookable = value;
+                BluePrintsUtils.ApplyShowBookableFilter(GridControlService, value);
             }
         }
         #endregion
@@ -1094,7 +1101,6 @@ namespace BluePrints.Common.Base
 
             return interpolationDate.OrderBy(x => x.Date).ToList();
         }
-
 
         bool isPushingToP6;
         protected abstract IEntitiesSchedulingCollectionWrapper scheduling_view_model { get; }

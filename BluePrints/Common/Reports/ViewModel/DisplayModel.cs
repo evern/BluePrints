@@ -13,7 +13,7 @@ using BaseModel.DataModel;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ReportablesDisplay : EntityBase, IGuidEntityKey, IReportable
+    public class ReportablesDisplay : EntityBase, IGuidEntityKey, IReportable, IBookable
     {
         public Guid GUID { get => ProgressItem.GUID; set => ProgressItem.GUID = value; }
         public DisplayQuantityReportable ProgressItem { get; set; }
@@ -214,6 +214,25 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Project_Number => ((IReportable)ProgressItem).Project_Number;
 
         public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
+
+        public bool CanBook
+        {
+            get
+            {
+                IBookable bookableProjection = ProgressItem as IBookable;
+                if (bookableProjection != null)
+                    return bookableProjection.CanBook;
+
+                return false;
+            }
+            set
+            {
+                IBookable bookableProjection = ProgressItem as IBookable;
+                if (bookableProjection != null)
+                    bookableProjection.CanBook = value;
+
+            }
+        }
 
         public override void Update()
         {

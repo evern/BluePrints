@@ -3,6 +3,7 @@ using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Misc;
@@ -12,6 +13,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Xpf.Grid;
 using System;
@@ -22,6 +24,87 @@ namespace BluePrints.Common.ViewModel.Utils
 {
     public static class BluePrintsUtils
     {
+        public static void ApplyShowBookableFilter(IGridControlService gridControlService, bool bookableToggleValue)
+        {
+            if (gridControlService != null)
+            {
+                if (bookableToggleValue)
+                {
+                    CriteriaOperator criteriaOperator = gridControlService.FilterCriteria;
+                    CriteriaOperator newCriteriaOperator;
+                    if (!ReferenceEquals(criteriaOperator, null))
+                    {
+                        string filterCriteria = criteriaOperator.ToString() + " And [CanBook] In (True)";
+                        newCriteriaOperator = CriteriaOperator.Parse(filterCriteria);
+                    }
+                    else
+                    {
+                        newCriteriaOperator = CriteriaOperator.Parse("[CanBook] In (True)");
+                    }
+
+                    gridControlService.FilterCriteria = newCriteriaOperator;
+                }
+                else
+                {
+                    CriteriaOperator criteriaOperator = gridControlService.FilterCriteria;
+                    if (!ReferenceEquals(criteriaOperator, null))
+                    {
+                        CriteriaOperator newCriteriaOperator;
+                        string currentFilterCriteria = criteriaOperator.ToString();
+                        string newfilterCriteria = currentFilterCriteria.Replace("And [CanBook] In (True)", "");
+                        newfilterCriteria = newfilterCriteria.Replace("[CanBook] In (True)", "");
+                        if (newfilterCriteria.Length >= 5)
+                        {
+                            string firstFiveChar = newfilterCriteria.Substring(0, 5);
+                            if (firstFiveChar.ToUpper().Contains("AND"))
+                                newfilterCriteria = newfilterCriteria.Substring(5, newfilterCriteria.Length - 5);
+                        }
+
+
+                        newCriteriaOperator = CriteriaOperator.Parse(newfilterCriteria);
+                        gridControlService.FilterCriteria = newCriteriaOperator;
+                    }
+                }
+            }
+        }
+
+        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, ref List<string> narratives, HashSet<string> projectNumbers, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+            where TProjection : IReportable, IBookable
+        {
+            if (exoAuthorisations != null && narratives != null)
+                return;
+
+            List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
+            List<string> cacheNarratives = new List<string>();
+            foreach (var projectNumber in projectNumbers)
+            {
+                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
+                List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
+
+                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
+
+                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
+                cacheNarratives.AddRange(projectNarratives);
+            }
+
+            exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
+            narratives = new List<string>(cacheNarratives);
+
+            //view can be closed if this is a async task and projection can be disposed
+            if(projections != null)
+                foreach (var deliverable in projections)
+                {
+                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
+                    deliverable.CanBook = findAuthorisation != null;
+                    deliverable.Update();
+                }
+            else
+            {
+                cacheExoAuthorisations.Clear();
+                cacheNarratives.Clear();
+            }
+        }
+
         public static void BookTime(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
         {
             var bookTimeViewModel = BookTimeSheetViewModel.Create(project, deliverable, primeroUnitOfWork, exoAuthorisations, narratives);
