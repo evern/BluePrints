@@ -1697,7 +1697,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null || narratives == null)
                 return false;
 
             return true;
