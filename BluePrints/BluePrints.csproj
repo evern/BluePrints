@@ -33,8 +33,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <AssemblyName>BluePrints DEBUG</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>
-    </PublishUrl>
+    <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
