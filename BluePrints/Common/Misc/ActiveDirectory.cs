@@ -49,7 +49,7 @@ namespace BluePrints.Common
             }
             catch(Exception ex)
             {
-
+                string s = ex.ToString();
             }
 #endif
 

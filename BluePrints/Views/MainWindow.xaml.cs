@@ -19,19 +19,16 @@ namespace BluePrints
 #if RELEASE
             this.Title = "BluePrints";
             Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));
-#else
-    #if MONTREAL_RELEASE
-                this.Title = "BluePrints";
-                Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));
-    #else
-                #if PERTH_RELEASE
-                    this.Title = "BluePrints";
-                    Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/Logo.ico", UriKind.Absolute));
-                #else
-                    this.Title = "BluePrints BETA";
-                    Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/LogoBeta.ico", UriKind.Absolute));
-                #endif
-    #endif
+#endif
+
+#if DEBUG
+            this.Title = "BluePrints DEBUG";
+            Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/LogoBeta.ico", UriKind.Absolute));
+#endif
+
+#if BETA
+            this.Title = "BluePrints BETA";
+            Icon = new BitmapImage(new Uri(@"pack://application:,,,/" + Assembly.GetExecutingAssembly().GetName().Name + ";component/" + "Common/Images/LogoBeta.ico", UriKind.Absolute));
 #endif
         }
     }
