@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1521</MinimumRequiredVersion>
-    <ApplicationRevision>1521</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.1.1526</MinimumRequiredVersion>
+    <ApplicationRevision>1527</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -33,7 +33,8 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <AssemblyName>BluePrints DEBUG</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl></PublishUrl>
+    <PublishUrl>
+    </PublishUrl>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -47,7 +48,8 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
-    <PublishUrl></PublishUrl>
+    <PublishUrl>
+    </PublishUrl>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -73,7 +75,7 @@
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
     <OutputPath>bin\Montreal_Beta\</OutputPath>
     <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE;BETA</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -86,7 +88,7 @@
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
     <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA_LIVE\</PublishUrl>
     <OutputPath>bin\Perth_Beta\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE;BETA</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -123,7 +125,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Perth_Debug'">
     <AssemblyName>BluePrints DEBUG</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl></PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA_LIVE\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
@@ -137,7 +139,8 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Montreal_Debug'">
     <AssemblyName>BluePrints DEBUG</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl></PublishUrl>
+    <PublishUrl>
+    </PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Montreal_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
