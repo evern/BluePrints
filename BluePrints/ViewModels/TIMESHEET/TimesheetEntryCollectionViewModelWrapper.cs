@@ -668,7 +668,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
-        protected override string ViewName
+        public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
             get { return "TimesheetEntryViewModelWrapper_v1" + view_project_specific_affix; }

@@ -31,7 +31,7 @@
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="{Binding ViewName}">
+                        <dxr:RibbonPage Caption="{Binding DataContext.ViewName, ElementName=userControl}">
                             <dxr:RibbonPageGroup Caption="INDIRECT_TYPE Tasks">
                                 <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"

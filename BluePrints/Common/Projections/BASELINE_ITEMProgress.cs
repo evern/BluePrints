@@ -70,10 +70,12 @@ namespace BluePrints.Common.Projections
         private decimal committedVariationUnits => VARIATION_ITEM == null ? 0 : VARIATION_ITEM.VARIATION_UNITS;
 
         private VariationAction uncommittedVariationAction;
+
         public VariationAction DisplayVariationAction { get => committedVariationAction != null ? (VariationAction)committedVariationAction : uncommittedVariationAction; set => uncommittedVariationAction = value; }
+
         private VariationAction? committedVariationAction => VARIATION_ITEM == null ? (VariationAction?)null : VARIATION_ITEM.ACTION;
 
-        public bool AdjustUnitsReadOnly => (IsSubmitted || IsByDuration);
+        public bool AdjustUnitsReadOnly => DisplayVariationAction == VariationAction.Cancel || (IsSubmitted || IsByDuration);
 
         public bool IsSubmitted => SubmittedDate != null;
 

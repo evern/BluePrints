@@ -32,7 +32,7 @@
                 <dxr:RibbonControl RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False"
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="{Binding ViewName}">
+                        <dxr:RibbonPage Caption="{Binding DataContext.ViewName, ElementName=userControl}">
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                                 <dxb:BarButtonItem x:Name="biCheckUnits" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Units" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" ToolTip="S-Curve shows by units" />
                                 <dxb:BarButtonItem x:Name="biCheckCosts" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Costs" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" ToolTip="S-Curve shows by costs" />

@@ -54,7 +54,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="{Binding ViewName}">
+                        <dxr:RibbonPage Caption="{Binding DataContext.ViewName, ElementName=userControl}">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                             <dxr:RibbonPageGroup Caption="Internal Number Mode">
@@ -243,6 +243,15 @@
                                             <ColumnDefinition Width="15" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
+                                        <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinEstimateUnits}">
+                                            <dxe:SpinEdit.MaxValue>
+                                                <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
+                                                    <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
+                                                    <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
+                                                    <Binding Path="RowData.Row" />
+                                                </MultiBinding>
+                                            </dxe:SpinEdit.MaxValue>
+                                        </dxe:SpinEdit>
                                         <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Cannot reduce anymore because these units has already been earned">
                                             <Image.Visibility>
                                                 <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
@@ -265,15 +274,6 @@
                                                 </MultiBinding>
                                             </Image.Visibility>
                                         </Image>
-                                        <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinEstimateUnits}">
-                                            <dxe:SpinEdit.MaxValue>
-                                                <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
-                                                    <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
-                                                    <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
-                                                    <Binding Path="RowData.Row" />
-                                                </MultiBinding>
-                                            </dxe:SpinEdit.MaxValue>
-                                        </dxe:SpinEdit>
                                     </Grid>
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
@@ -282,7 +282,7 @@
                         <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
                         <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <!--<dxg:GridColumn FieldName="StartDate" FilterPopupMode="CheckedList" Header="Start Date" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
@@ -373,15 +373,15 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" ShowGridMenu="tableView_ShowGridMenu" Style="{StaticResource DefaultTableViewTemplate}">

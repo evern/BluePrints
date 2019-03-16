@@ -320,7 +320,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override string ViewName
+        public override string ViewName
         {
             get
             {

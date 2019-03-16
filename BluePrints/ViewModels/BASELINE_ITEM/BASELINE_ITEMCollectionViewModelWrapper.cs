@@ -1697,7 +1697,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null || narratives == null)
                 return false;
 
             return true;
@@ -1730,7 +1730,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
-        protected override string ViewName
+        public override string ViewName
         {
             get
             {

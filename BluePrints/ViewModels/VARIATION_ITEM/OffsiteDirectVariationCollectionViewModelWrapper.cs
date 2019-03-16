@@ -60,7 +60,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID);
         }
 
-        protected override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v3" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
+        public override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v3" + loadPROJECT == null ? Guid.Empty.ToString() : loadPROJECT.GUID.ToString();
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> specifyMainViewModelProjection()
         {

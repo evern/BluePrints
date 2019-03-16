@@ -12,7 +12,7 @@
             <DockPanel>
                 <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="{Binding ViewName}">
+                        <dxr:RibbonPage Caption="{Binding DataContext.ViewName, ElementName=userControl}">
                             <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarButtonItem Command="{Binding DataContext.StandardizeLinesCommand, ElementName=userControl}" Content="Standadize Subjobs" Glyph="{dxc:DXImage Image=EditDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditDataSource_32x32.png}" ToolTip="Edit all associating subjobs to match master job's Status, Category, Job Type etc" />
                             </dxr:RibbonPageGroup>

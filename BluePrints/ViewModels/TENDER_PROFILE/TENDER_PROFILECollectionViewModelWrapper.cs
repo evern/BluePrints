@@ -118,7 +118,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
-        protected override string ViewName
+        public override string ViewName
         {
             get { return "TENDER_PROFILECollectionViewModelWrapper"; }
         }
