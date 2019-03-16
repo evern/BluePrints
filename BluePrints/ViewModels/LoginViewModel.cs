@@ -57,7 +57,11 @@ namespace BluePrints.ViewModels
             delayedConnectDispatcher.Tick += DelayedConnectDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-#if DEBUG
+#if PERTH_DEBUG
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#endif
+
+#if MONTREAL_DEBUG
             Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
 #endif
         }
