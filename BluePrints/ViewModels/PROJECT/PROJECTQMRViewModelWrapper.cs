@@ -113,5 +113,7 @@ namespace BluePrints.ViewModels
             progressReport.CreateDocument(true);
             previewWindow.Show();
         }
+
+        public override string ViewName => "PROJECTQMRView";
     }
 }
