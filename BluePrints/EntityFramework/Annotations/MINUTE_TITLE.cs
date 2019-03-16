@@ -20,6 +20,7 @@ namespace BluePrints.Data
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();
             MINUTE_TITLE1 = new HashSet<MINUTE_TITLE>();
         }
+
         [NotMapped]
         public DateTime EntityCreatedDate
         {
@@ -96,6 +97,7 @@ namespace BluePrints.Data
         [NotMapped]
         public string NewEntityName { get => NAME; set => NAME = value; }
 
+        [NotMapped]
         public Guid? ParentEntityKey { get => GUID_PARENT; set => GUID_PARENT = value; }
     }
 }
