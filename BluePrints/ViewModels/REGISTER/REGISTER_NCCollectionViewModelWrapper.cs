@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
-        protected override string ViewName
+        public override string ViewName
         {
             //get { return "REGISTER_NCCollectionViewModelWrapper" + view_project_specific_affix; }
             get { return "REGISTER_NCCollectionViewModelWrapper_v1"; }

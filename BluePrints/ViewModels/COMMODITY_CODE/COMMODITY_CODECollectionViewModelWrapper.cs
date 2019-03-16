@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
-        protected override string ViewName
+        public override string ViewName
         {
             //get { return "COMMODITY_CODECollectionViewModelWrapper" + view_project_specific_affix; }
             get { return "COMMODITY_CODECollectionViewModelWrapper_v1" + view_project_specific_affix; }
