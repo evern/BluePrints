@@ -255,10 +255,10 @@ namespace BluePrints.ViewModels
             IsLoadingForecast = false;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
 
-            post_loaded_dispatcher_timer = new Timer();
-            post_loaded_dispatcher_timer.Interval = 1500;
-            post_loaded_dispatcher_timer.Elapsed += post_loaded_dispatcher_timer_tick;
-            post_loaded_dispatcher_timer.Start();
+            postLoadedDispatcherTimer = new Timer();
+            postLoadedDispatcherTimer.Interval = 1500;
+            postLoadedDispatcherTimer.Elapsed += post_loaded_dispatcher_timer_tick;
+            postLoadedDispatcherTimer.Start();
 
             base.onSummaryCalculateComplete();
         }
