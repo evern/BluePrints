@@ -176,7 +176,7 @@ namespace BluePrints.Common
         private void updateQueue()
         {
             qtPriorityCompletionCount += 1;
-            if (qtPriority < 6)
+            if (qtPriority < 25)
             {
                 IEnumerable <ThreadPriority> threadPriorities = qt.Where(x => x.Priority == qtPriority);
 
