@@ -931,6 +931,8 @@ namespace BluePrints.ViewModels
         //        e.Handled = true;
         //    }
         //}
+
+        //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
@@ -996,6 +998,7 @@ namespace BluePrints.ViewModels
         //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
+            string fieldName = formatFieldName(field_name);
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
             {
                 if ((bool)new_value)
@@ -1054,7 +1057,6 @@ namespace BluePrints.ViewModels
             {
                 if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
                 {
-                    string fieldName = formatFieldName(field_name);
                     //commit the latest value for internal number generation
                     DataUtils.SetNestedValue(fieldName, projection, new_value);
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
@@ -1066,7 +1068,7 @@ namespace BluePrints.ViewModels
                     if(!isNew)
                     {
                         PauseUndoRedo();
-                        AddUndo(projection, formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM)), oldValue, newValue, EntityMessageType.Changed);
+                        AddUndo(projection, fieldName, oldValue, newValue, EntityMessageType.Changed);
                     }
 
                     projection.Update();
@@ -1084,7 +1086,7 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.GUID_STATUS = newValue;
 
                     PauseUndoRedo();
-                    AddUndo(projection, formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_STATUS)), oldValue, newValue, EntityMessageType.Changed);
+                    AddUndo(projection, fieldName, oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
             }
@@ -1167,7 +1169,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         /// <param name="newEntities">Entities to be saved.</param>
         /// <returns></returns>
-        private List<BASELINE_ITEMProgress> concatenateNewEntitiesWithExistingRenameEntities(List<BASELINE_ITEMProgress> newEntities, IEnumerable<BASELINE_ITEMProgress> existing_entities)
+        private List<BASELINE_ITEMProgress> concatenateNewEntitiesWithExistingRenameEntities(List<BASELINE_ITEMProgress> newEntities, IEnumerable<BASELINE_ITEMProgress> existingEntities)
         {
             List<BASELINE_ITEMProgress> concatenatedEntities = new List<BASELINE_ITEMProgress>();
             concatenatedEntities.AddRange(newEntities);
@@ -1198,7 +1200,7 @@ namespace BluePrints.ViewModels
                 if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
                 {
                     processedValueToFillStringOnly.Add(valueToFillStringOnly);
-                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existing_entities);
+                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existingEntities, formatFieldName);
                     concatenatedEntities.AddRange(renameEntities);
                 }
             }
@@ -1235,11 +1237,11 @@ namespace BluePrints.ViewModels
         /// <param name="startNumber">Start of internal number to be named</param>
         /// <param name="endNumber">End if internal number to be named</param>
         /// <returns></returns>
-        private List<BASELINE_ITEMProgress> getRenameExistingEntities(string renameStringOnly, long startNumber, long endNumber, IEnumerable<BASELINE_ITEMProgress> existing_editable_entities)
+        private List<BASELINE_ITEMProgress> getRenameExistingEntities(string renameStringOnly, long startNumber, long endNumber, IEnumerable<BASELINE_ITEMProgress> existingEditableEntities, Func<string, string>formatFieldNameFunc)
         {
             long valueToAdd = (endNumber - startNumber) + 1;
             List<BASELINE_ITEMProgress> renameEntities = new List<BASELINE_ITEMProgress>();
-            foreach (BASELINE_ITEMProgress entity in existing_editable_entities)
+            foreach (BASELINE_ITEMProgress entity in existingEditableEntities)
             {
                 string stringValueToFill = entity.Entity.Entity.INTERNAL_NUM;
                 if (stringValueToFill == null)
@@ -1256,9 +1258,13 @@ namespace BluePrints.ViewModels
                 {
                     long increasedNumber = valueToFillNumberOnly + valueToAdd;
                     string oldInternalNum = entity.Entity.Entity.INTERNAL_NUM;
-                    string internal_number_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM);
+                    string internal_number_fieldname = formatFieldNameFunc(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
                     entity.Entity.Entity.INTERNAL_NUM = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, increasedNumber, numericFieldLength);
-                    AddUndo(entity, internal_number_fieldname, oldInternalNum, entity.Entity.Entity.INTERNAL_NUM, EntityMessageType.Changed);
+
+                    //only add undo if it's an existing entities
+                    if(entity.Entity.Entity.INTERNAL_NUM != oldInternalNum)
+                        AddUndo(entity, internal_number_fieldname, oldInternalNum, entity.Entity.Entity.INTERNAL_NUM, EntityMessageType.Changed);
+
                     renameEntities.Add(entity);
                 }
             }
