@@ -555,7 +555,7 @@ namespace BluePrints.ViewModels
             bool showErrorMessage = false;
             foreach(BASELINE_ITEMProgress entity in entities)
             {
-                IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => y.GUID_ORIBASEITEM == entity.GUID_ORIGINAL && y.ACTION != VariationAction.NoAction));
+                IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => canDeleteDeliverable(y, entity)));
 
                 //when there are variations that relates to this deliverable
                 if (attachedVARIATIONS.Count() > 0)
@@ -593,6 +593,14 @@ namespace BluePrints.ViewModels
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Because this class can be inherited by variation deliverable, allow deletion of deliverable if variation item exists only in the current variation deliverable's list
+        /// </summary>
+        protected virtual bool canDeleteDeliverable(VARIATION_ITEM variation_item, BASELINE_ITEMProgress deliverable)
+        {
+            return variation_item.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL && variation_item.ACTION != VariationAction.NoAction;
         }
 
         private void save_deliverable_users(BASELINE_ITEMProgress entity)

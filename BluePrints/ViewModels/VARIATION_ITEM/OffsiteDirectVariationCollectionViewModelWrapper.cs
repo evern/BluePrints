@@ -260,6 +260,11 @@ namespace BluePrints.ViewModels
             base.onBeforeEntitiesDuplicated(copyEntity, newEntity);
         }
 
+        protected override bool canDeleteDeliverable(VARIATION_ITEM variation_item, BASELINE_ITEMProgress deliverable)
+        {
+            return variation_item.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL && variation_item.ACTION != VariationAction.NoAction && variation_item.GUID_VARIATION != loadVARIATION.GUID;
+        }
+
         /// <summary>
         /// Delete variation item before entity is deleted
         /// </summary>
