@@ -184,6 +184,14 @@ namespace BluePrints.ViewModels
         }
 
         #region CallBacks
+        protected override void OnSelectedEntitiesChanged()
+        {
+            this.RaisePropertyChanged(x => x.IsSubmitted);
+            this.RaisePropertyChanged(x => x.IsApproved);
+            this.RaisePropertyChanged(x => x.IsClientApproved);
+            base.OnSelectedEntitiesChanged();
+        }
+
         public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
         {
             if (LiveBASELINE == null && LiveESTIMATE == null)

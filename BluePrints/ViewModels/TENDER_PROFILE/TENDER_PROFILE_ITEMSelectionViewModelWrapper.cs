@@ -398,7 +398,15 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "TENDER_PROFILE_ITEMSelectionViewModelWrapper"; }
+            get { return "[" + getTenderProfileProjectName() + "] Tender Profile"; }
+        }
+
+        private string getTenderProfileProjectName()
+        {
+            if (loadPROJECT == null)
+                return string.Empty;
+
+            return loadPROJECT.NUMBER;
         }
 
         #endregion

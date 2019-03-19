@@ -644,11 +644,13 @@ namespace BluePrints.ViewModels
                 MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
                 return false;
             }
-            else if(projections.Any(x => !x.IsCommodityCodeValid))
-            {
-                MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code and phase", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return false;
-            }
+
+            //Commodity code doesn't have to be valid for now
+            //else if(projections.Any(x => !x.IsCommodityCodeValid))
+            //{
+            //    MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code and phase", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+            //    return false;
+            //}
 
             int updatedLineCount = 0;
             List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
