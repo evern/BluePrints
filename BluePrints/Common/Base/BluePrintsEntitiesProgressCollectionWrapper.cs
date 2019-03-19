@@ -268,9 +268,9 @@ namespace BluePrints.Common.Base
             {
                 var newPercentage = (decimal)new_value;
                 if (newPercentage > projection.MaxPercentage)
-                    return "Percentage cannot exceed " + projection.MaxPercentage.ToString();
+                    return "Percentage on " + projection.Deliverable_Name + " cannot exceed " + projection.MaxPercentage.ToString();
                 else if (newPercentage < projection.MinPercentage)
-                    return "Percentage cannot be less than " + projection.MinPercentage.ToString();
+                    return "Percentage on " + projection.Deliverable_Name + " cannot be less than " + projection.MinPercentage.ToString();
             }
 
             return string.Empty;

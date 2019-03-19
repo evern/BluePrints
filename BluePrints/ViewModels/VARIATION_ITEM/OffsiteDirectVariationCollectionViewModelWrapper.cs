@@ -214,7 +214,7 @@ namespace BluePrints.ViewModels
 
             if (!DisplaySelectedEntities.Any(x => x.DisplayVariationAction == VariationAction.Add))
             {
-                MessageBoxService.ShowMessage("Selection contains deliverable(s) that aren't variation, you can only delete deliverable that is added through variation", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                MessageBoxService.ShowMessage("Selection contains deliverable(s) that aren't variation, you can only delete deliverables that are added through variation", "Warning", MessageButton.OK, MessageIcon.Exclamation);
                 return;
             }
 
