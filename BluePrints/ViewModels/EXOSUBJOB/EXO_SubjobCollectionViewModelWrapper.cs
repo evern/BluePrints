@@ -170,8 +170,20 @@ namespace BluePrints.ViewModels
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
             MainViewModel.SetParentViewModel(this);
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => filterUser()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+
+        //filter out user's that have default security profile
+        private void filterUser()
+        {
+            CriteriaOperator newCriteriaOperator = CriteriaOperator.Parse("[User.SecurityProfileID] <> 4");
+            UserFilterCriteria = newCriteriaOperator;
+            this.RaisePropertyChanged(x => x.UserFilterCriteria);
+        }
+
+        public CriteriaOperator UserFilterCriteria { get; set; }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
@@ -862,9 +874,13 @@ namespace BluePrints.ViewModels
                 List<USER> returnSTAFF = new List<USER>();
                 foreach(USER user in collection)
                 {
+                    STAFF staff = exoSTAFFS.FirstOrDefault(x => x.STAFFNO == user.EXO_STAFF_ID);
                     //don't return any user that is disabled in EXO
-                    if (exoSTAFFS.Any(x => x.STAFFNO == user.EXO_STAFF_ID))
+                    if (staff != null)
+                    {
+                        //if(staff.SECURITYPROFILEID != 4)
                         returnSTAFF.Add(user);
+                    }
                 }
                 
                 return returnSTAFF.OrderBy(x => x.NAME);
