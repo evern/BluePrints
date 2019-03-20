@@ -119,12 +119,15 @@ namespace BluePrints.ViewModels
                 if (DisplaySelectedEntity == null)
                     return null;
 
-                permissions.AddRange(DisplaySelectedEntity.ROLE_PERMISSIONS.Select(x => new RolePermissionAssignment() { PermissionKey = x.PERMISSION, IsAssigned = true }).ToList());
                 foreach (System.Collections.DictionaryEntry permission in resourceSet)
                 {
-                    RolePermissionAssignment findPermission = permissions.FirstOrDefault(x => x.PermissionKey == permission.Key.ToString());
-                    if(findPermission == null)
-                        permissions.Add(new RolePermissionAssignment() { PermissionKey = permission.Key.ToString(), IsAssigned = false });
+                    //don't allow current user to set permission to him/herself
+                    bool isCurrentUserHavePermission = LoginCredentials.CurrentUserPermission.Any(x => x.PERMISSION == permission.Key.ToString());
+                    if (!isCurrentUserHavePermission)
+                        continue;
+
+                    bool isPermissionExistsInSelectedEntity = DisplaySelectedEntity.ROLE_PERMISSIONS.Any(x => x.PERMISSION == permission.Key.ToString());
+                    permissions.Add(new RolePermissionAssignment() { PermissionKey = permission.Key.ToString(), IsAssigned = isPermissionExistsInSelectedEntity });
                 }
 
                 return permissions.OrderBy(x => x.PermissionKey);

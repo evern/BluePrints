@@ -252,7 +252,7 @@
                                                 </MultiBinding>
                                             </dxe:SpinEdit.MaxValue>
                                         </dxe:SpinEdit>
-                                        <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Cannot reduce anymore because these units has already been earned">
+                                        <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Cannot further reduce units because it has been earned or zero">
                                             <Image.Visibility>
                                                 <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                     <MultiBinding.ConverterParameter>
@@ -263,7 +263,7 @@
                                                 </MultiBinding>
                                             </Image.Visibility>
                                         </Image>
-                                        <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum possible units, please reduce other deliverable units to increase this">
+                                        <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Cannot further increase because baseline is limiting total units">
                                             <Image.Visibility>
                                                 <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
                                                     <MultiBinding.ConverterParameter>

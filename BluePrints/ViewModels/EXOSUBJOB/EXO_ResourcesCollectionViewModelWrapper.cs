@@ -56,6 +56,9 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription<GLACCS, GLACCS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.GLACCS);
+            loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<PROFILE, PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
         }
         #endregion
@@ -153,6 +156,7 @@ namespace BluePrints.ViewModels
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
                     resource.SHORTCODE = addedResource.SHORTCODE;
 
+                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.DEFAULT_STOCKCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
                 }
 
                 resource.Update();
@@ -182,6 +186,7 @@ namespace BluePrints.ViewModels
         {
             ExoMethods.RemoveStaff(primeroUnitOfWork, projections);
             ExoMethods.RemoveResources(primeroUnitOfWork, projections);
+            ExoMethods.RemoveStockItem(primeroUnitOfWork, projections);
             primeroUnitOfWork.SaveChanges();
 
             List<ExoResourceProjection> removeProjections = projections.ToList();
@@ -249,6 +254,39 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<PROFILE>();
                 if (collection != null)
                     collection = collection.Where(x => x.PROFILETYPE == 2).OrderBy(x => x.PROFILENAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<GLACCS> GLACCSCollection
+        {
+            get
+            {
+                var collection = GetEntities<GLACCS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.COSTDESC);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTTYPES>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.COSTDESC);
                 return collection;
             }
         }

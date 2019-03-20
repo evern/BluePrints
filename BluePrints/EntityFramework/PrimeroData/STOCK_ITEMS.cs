@@ -205,6 +205,12 @@ namespace BluePrints.PrimeroData
 
         public int COSTGROUP { get; set; }
 
+        public char? LOOKUP_RECOVERABLE { get; set; }
+        
+        public char? X_PAYTYPE { get; set; }
+
+        public int? X_ALLOWNO { get; set; }
+
         public virtual ICollection<CRM_BUDGET_LINE> CRM_BUDGET_LINE { get; set; }
 
         public virtual ICollection<CRM_BUDGET> CRM_BUDGET { get; set; }

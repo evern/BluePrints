@@ -138,7 +138,7 @@
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" FilterCriteria="{Binding UserFilterCriteria, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" SortOrder="1" />
+                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" SortIndex="1" />
                                     <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Security Profile" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />

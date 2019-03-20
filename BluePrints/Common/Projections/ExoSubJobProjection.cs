@@ -455,6 +455,29 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public static STOCK_ITEMS FindExistingOrAddStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, string shortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType)
+        {
+            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, shortCode);
+            if (stock_item != null)
+            {
+                stock_item.ISACTIVE = "Y";
+                stock_item.SELLPRICE1 = sellPrice;
+                stock_item.SALES_GL_CODE = salesGLCode;
+                stock_item.PURCH_GL_CODE = purchGLCode;
+                stock_item.COS_GL_CODE = cosGLCode;
+                stock_item.STDCOST = stdCost;
+                stock_item.COSTGROUP = costGroup;
+                stock_item.COSTTYPE = costType;
+                return stock_item;
+            }
+            else
+            {
+                STOCK_ITEMS newSTOCK_ITEM = createNewStockItem(shortCode, description, sellPrice, salesGLCode, purchGLCode, cosGLCode, stdCost, costGroup, costType);
+                pUnitOfWork.STOCK_ITEMS.Add(newSTOCK_ITEM);
+                return newSTOCK_ITEM;
+            }
+        }
+
         public static JOBCOST_RESOURCE FindExistingOrAddResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffId, int? seqNo, string name, string title, string defaultStockCode, string shortCode)
         {
             string uppercaseName = name.ToUpper();
@@ -522,6 +545,16 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public static void RemoveStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
+        {
+            foreach (ExoResourceProjection projection in projections)
+            {
+                STOCK_ITEMS stockItem = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, projection.DEFAULT_STOCKCODE);
+                if (stockItem != null)
+                    stockItem.ISACTIVE = "N";
+            }
+        }
+
         public static void RemoveResources(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
         {
             foreach(ExoResourceProjection projection in projections)
@@ -568,6 +601,87 @@ namespace BluePrints.Common.Projections
             newJOBCOST_RESOURCE.DEFAULT_STOCKCODE = defaultStockCode == string.Empty ? generatedShortCode : defaultStockCode;
 
             return newJOBCOST_RESOURCE;
+        }
+
+        private static STOCK_ITEMS createNewStockItem(string shortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType)
+        {
+            STOCK_ITEMS newSTOCK_ITEM = new STOCK_ITEMS();
+            newSTOCK_ITEM.STOCKCODE = shortCode;
+            newSTOCK_ITEM.DESCRIPTION = description;
+            newSTOCK_ITEM.STOCKGROUP = 2;
+            newSTOCK_ITEM.STATUS = "L";
+            newSTOCK_ITEM.SELLPRICE1 = sellPrice;
+            newSTOCK_ITEM.SELLPRICE2 = 0;
+            newSTOCK_ITEM.SELLPRICE3 = 0;
+            newSTOCK_ITEM.SELLPRICE4 = 0;
+            newSTOCK_ITEM.SELLPRICE5 = 0;
+            newSTOCK_ITEM.SELLPRICE6 = 0;
+            newSTOCK_ITEM.SELLPRICE7 = 0;
+            newSTOCK_ITEM.SELLPRICE8 = 0;
+            newSTOCK_ITEM.SELLPRICE9 = 0;
+            newSTOCK_ITEM.SELLPRICE10 = 0;
+            newSTOCK_ITEM.LATESTCOST = 0;
+            newSTOCK_ITEM.AVECOST = 0;
+            newSTOCK_ITEM.MINSTOCK = 0;
+            newSTOCK_ITEM.MAXSTOCK = 0;
+            newSTOCK_ITEM.SUPPLIERNO = 0;
+            newSTOCK_ITEM.MONTHUNITS = 0;
+            newSTOCK_ITEM.YEARUNITS = 0;
+            newSTOCK_ITEM.LASTYEARUNITS = 0;
+            newSTOCK_ITEM.MONTHVALUE = 0;
+            newSTOCK_ITEM.YEARVALUE = 0;
+            newSTOCK_ITEM.LASTYEARVALUE = 0;
+            newSTOCK_ITEM.DISCOUNTLEVEL = 0;
+            newSTOCK_ITEM.DEFDAYS = 0;
+            newSTOCK_ITEM.LASTMONTHVALUE = 0;
+            newSTOCK_ITEM.LASTMONTHUNITS = 0;
+            newSTOCK_ITEM.SALES_GL_CODE = salesGLCode;
+            newSTOCK_ITEM.PURCH_GL_CODE = purchGLCode;
+            newSTOCK_ITEM.WEB_SHOW = "N";
+            newSTOCK_ITEM.ISACTIVE = "Y";
+            newSTOCK_ITEM.WEIGHT = 0;
+            newSTOCK_ITEM.CUBIC = 0;
+            newSTOCK_ITEM.PQTY = 1;
+            newSTOCK_ITEM.HAS_SN = "N";
+            newSTOCK_ITEM.STDCOST = stdCost;
+            newSTOCK_ITEM.SALES_GLSUBCODE = 0;
+            newSTOCK_ITEM.PURCH_GLSUBCODE = 0;
+            newSTOCK_ITEM.BRANCHNO = 0;
+            newSTOCK_ITEM.SALESTAXRATE = -1;
+            newSTOCK_ITEM.PURCHTAXRATE = -1;
+            newSTOCK_ITEM.LAST_UPDATED = DateTime.Now;
+            newSTOCK_ITEM.UPDATEITEM_QTY = 0;
+            newSTOCK_ITEM.COS_GL_CODE = cosGLCode;
+            newSTOCK_ITEM.COS_GLSUBCODE = 0;
+            newSTOCK_ITEM.STOCKPRICEGROUP = 0;
+            newSTOCK_ITEM.SUPPLIERCOST = 0;
+            newSTOCK_ITEM.ECONORDERQTY = 1;
+            newSTOCK_ITEM.STOCK_CLASSIFICATION = 0;
+            newSTOCK_ITEM.STOCKGROUP2 = 0;
+            newSTOCK_ITEM.TOTALSTOCK = 0;
+            newSTOCK_ITEM.HAS_BN = "N";
+            newSTOCK_ITEM.HAS_EXPIRY = "N";
+            newSTOCK_ITEM.EXPIRY_DAYS = 1;
+            newSTOCK_ITEM.DUTY = 0;
+            newSTOCK_ITEM.SERIALNO_TYPE = 0;
+            newSTOCK_ITEM.LABEL_QTY = 1;
+            newSTOCK_ITEM.IS_DISCOUNTABLE = "Y";
+            newSTOCK_ITEM.RESTRICTED_ITEM = "N";
+            newSTOCK_ITEM.NUMDECIMALS = -1;
+            newSTOCK_ITEM.COGSMETHOD = 0;
+            newSTOCK_ITEM.DEFAULTWARRANTYNO = -2;
+            newSTOCK_ITEM.DIMENSIONS = 0;
+            newSTOCK_ITEM.AUTO_NARRATIVE = 0;
+            newSTOCK_ITEM.X_SIZEID = 0;
+            newSTOCK_ITEM.X_COLOURID = 0;
+            newSTOCK_ITEM.VARIABLECOST = "N";
+            newSTOCK_ITEM.COSTTYPE = costType;
+            newSTOCK_ITEM.COSTGROUP = costGroup;
+            newSTOCK_ITEM.LOOKUP_RECOVERABLE = 'Y';
+            newSTOCK_ITEM.X_PAYTYPE = 'H';
+            newSTOCK_ITEM.X_ALLOWNO = 0;
+
+            return newSTOCK_ITEM;
         }
 
         private static STAFF createNewStaff(string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
@@ -1289,6 +1403,17 @@ namespace BluePrints.Common.Projections
             return null;
         }
 
+        public static STOCK_ITEMS FindSTOCK_ITEM(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string shortCode)
+        {
+            IQueryable<STOCK_ITEMS> stock_item = (from STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                             where STOCK_ITEMS.STOCKCODE == shortCode
+                             select STOCK_ITEMS);
+
+            if (stock_item.Count() > 0)
+                return stock_item.First();
+
+            return null;
+        }
 
         public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name)
         {
@@ -1497,11 +1622,13 @@ namespace BluePrints.Common.Projections
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                                     join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                                     on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                      where JOBCOST_RESOURCE.ISACTIVE == "Y"
-                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO };
+                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP };
 
             //EntityKey is used to prevent duplicate error message
-            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false })).AsQueryable();
+            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE })).AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)
