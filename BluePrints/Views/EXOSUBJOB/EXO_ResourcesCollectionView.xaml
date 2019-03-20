@@ -54,19 +54,64 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.UserPROFILECollection, ElementName=userControl}" ValueMember="ID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="STDCOST" Header="Cost" HeaderToolTip="Hourly rate for this resource">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="SELLPRICE1" Header="Sell Price" HeaderToolTip="Charge out rate for this resource">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="COSTGROUP" Header="Cost Group" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="COSTTYPE" Header="Cost Type" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="SALES_GL_CODE" Header="Sales GL" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.GLACCSCollection, ElementName=userControl}" ValueMember="ACCNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="PURCH_GL_CODE" Header="Purchase GL" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.GLACCSCollection, ElementName=userControl}" ValueMember="ACCNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="COS_GL_CODE" Header="Cost GL" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.GLACCSCollection, ElementName=userControl}" ValueMember="ACCNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="RESOURCE_STAFFNO" Header="Linked to Staff" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                    <dxg:GridColumn.HeaderStyle>
+                                        <Style TargetType="Control">
+                                            <Setter Property="Background" Value="Salmon" />
+                                        </Style>
+                                    </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
+                                            <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" AllowDrop="{Binding RowData.Row.IsNewRow}" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                    <dxg:GridColumn.HeaderStyle>
+                                        <Style TargetType="Control">
+                                            <Setter Property="Background" Value="Salmon" />
+                                        </Style>
+                                    </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
@@ -74,6 +119,11 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="SHORTCODE" Header="Short Code" HeaderToolTip="Cannot be changed once entered, please double check">
+                                    <dxg:GridColumn.HeaderStyle>
+                                        <Style TargetType="Control">
+                                            <Setter Property="Background" Value="Salmon" />
+                                        </Style>
+                                    </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>

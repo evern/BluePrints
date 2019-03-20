@@ -219,4 +219,7 @@
   <data name="ApproveInternalNumbers" xml:space="preserve">
     <value>Allow user to approve internal and client numbers</value>
   </data>
+  <data name="ManageEXOUsers" xml:space="preserve">
+    <value>Allow user to manage exo users (Confidential Information)</value>
+  </data>
 </root>

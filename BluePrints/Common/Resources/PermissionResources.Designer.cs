@@ -169,6 +169,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage exo users (Confidential Information).
+        /// </summary>
+        internal static string ManageEXOUsers {
+            get {
+                return ResourceManager.GetString("ManageEXOUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage forecast.
         /// </summary>
         internal static string ManageForecast {
