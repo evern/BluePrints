@@ -493,13 +493,19 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
                 else if (value)
                 {
-                    isApproving = true;
-                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
+                    if (MessageBoxService.ShowMessage("Are you sure you want to approve " + DisplaySelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+                    {
+                        isApproving = true;
+                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
+                    }
                 }
                 else if(!value)
                 {
-                    isApproving = true;
-                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
+                    if (MessageBoxService.ShowMessage("Are you sure you want to unapprove " + DisplaySelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+                    {
+                        isApproving = true;
+                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
+                    }
                 }
             }
         }
