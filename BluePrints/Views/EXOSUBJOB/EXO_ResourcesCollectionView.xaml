@@ -56,12 +56,12 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="STDCOST" Header="Cost" HeaderToolTip="Hourly rate for this resource">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="SELLPRICE1" Header="Sell Price" HeaderToolTip="Charge out rate for this resource">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="COSTGROUP" Header="Cost Group" >
