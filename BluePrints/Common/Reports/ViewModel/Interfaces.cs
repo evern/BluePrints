@@ -73,9 +73,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         
     }
 
-    public interface IDeliverable_Rates_Group : IDeliverable_Rates
+    public interface IDeliverable_Rates_Group : IReportable
     {
-        IEnumerable<IDeliverable_Rates> DeliverableRates { get; }
+        IEnumerable<IReportable> DeliverableRates { get; }
     }
 
     public interface IDeliverable_Rates : IDeliverable, IHaveCosts
