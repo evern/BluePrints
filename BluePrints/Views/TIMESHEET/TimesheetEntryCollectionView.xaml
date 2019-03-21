@@ -59,8 +59,9 @@
                 </dxlc:LayoutControl>
                 <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                     <dxlc:LayoutGroup>
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
                             <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
@@ -94,6 +95,12 @@
                                         <dxe:TextEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Left" />
+                                <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />
@@ -112,9 +119,14 @@
                                         <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                         <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
                                     </dxg:TableView.RowCellMenuCustomizations>
+                                    <dxg:TableView.FormatConditions>
+                                        <dxg:UniqueDuplicateRuleFormatCondition FieldName="UniqueCode" ApplyToRow="True">
+                                            <dxc:Format Background="#FFFF9B98" />
+                                        </dxg:UniqueDuplicateRuleFormatCondition>
+                                    </dxg:TableView.FormatConditions>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>

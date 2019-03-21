@@ -75,6 +75,8 @@ namespace BluePrints.ViewModels
         string columnCostType = "CostType";
         string columnVariationCode = "VariationCode";
         string columnNarrative = "Narrative";
+        string columnUniqueCode = "UniqueCode";
+        string columnDuplicate = "Duplicate";
         string valueNotFoundError = "Value not found";
 
         public DateTime DateFrom { get; set; }
@@ -94,6 +96,7 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnCostType);
             defaultColumnFieldNames.Add(columnVariationCode);
             defaultColumnFieldNames.Add(columnNarrative);
+            defaultColumnFieldNames.Add(columnUniqueCode);
 
             systemColumnFieldNames.Add(columnResourceSeqNo);
             systemColumnFieldNames.Add(columnJobNo);
@@ -101,6 +104,7 @@ namespace BluePrints.ViewModels
             systemColumnFieldNames.Add(columnCostType);
             systemColumnFieldNames.Add(columnVariationCode);
             systemColumnFieldNames.Add(columnNarrative);
+            systemColumnFieldNames.Add(columnUniqueCode);
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -242,6 +246,7 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnCostType, typeof(int));
                     dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
                     dataPointsTable.Columns.Add(columnNarrative, typeof(string));
+                    dataPointsTable.Columns.Add(columnUniqueCode, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -405,6 +410,9 @@ namespace BluePrints.ViewModels
                 validateUserAuth(newRow);
                 DataPointsTable.Rows.Add(newRow);
             }
+            
+            //generate unique signature for each row
+            isRowsUnique();
 
             GridControlService.RefreshData();
 
@@ -423,6 +431,12 @@ namespace BluePrints.ViewModels
                 return;
 
             int committedRow = 0;
+            if(!isRowsUnique())
+            {
+                MessageBoxService.ShowMessage("Rows that are not unique are highlighted in red, please delete the one's you don't want and try again later");
+                return;
+            }
+
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (DataRow row in DataPointsTable.Rows)
@@ -441,8 +455,8 @@ namespace BluePrints.ViewModels
 
                     string narrative = row[columnNarrative].ToString();
 
-                    ExoTimeAuthorisation findUserAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
-                    ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
+                    ExoTimeAuthorisation findUserAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == variationCode);
+                    ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == variationCode);
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
                     string stockCode = string.Empty;
@@ -490,7 +504,7 @@ namespace BluePrints.ViewModels
 
                                 decimal bookTime = (decimal)row[dataColumn];
                                 bool isReadOnly = false;
-                                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.X_VARIATIONCODE == variationCode && x.X_NARRATIVE == narrative && x.WEEK_START_DATE == timesheetDate.WeekStartDate);
+                                JOB_TIMESHEETS timesheet = findNullOrEmptyVariationJobTimesheets(primeroUnitOfWork, resourceSeqNo, subJobNo, stockCode, costGroupNo, costTypeNo, variationCode, narrative, timesheetDate.WeekStartDate);
                                 if (timesheet != null)
                                 {
                                     AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
@@ -543,6 +557,54 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
+        }
+
+        //populate unique code for each row and checks whether all of them are unique
+        private bool isRowsUnique()
+        {
+            List<string> scannedUniqueCode = new List<string>();
+            foreach (DataRow row in DataPointsTable.Rows)
+            {
+                if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
+                {
+                    int resourceSeqNo = (int)row[columnResourceSeqNo];
+                    int subJobNo = (int)row[columnJobNo];
+                    int costGroupNo = (int)row[columnCostGroup];
+                    int costTypeNo = (int)row[columnCostType];
+                    string variationCode = row[columnVariationCode].ToString();
+
+                    //makes up the unique signature of each row by these attribute so we can see if other rows contain the same attribute and flag it as duplicate
+                    string uniqueCode = resourceSeqNo.ToString() + subJobNo.ToString() + costGroupNo.ToString() + costTypeNo.ToString() + variationCode;
+                    row[columnUniqueCode] = uniqueCode;
+                    scannedUniqueCode.Add(uniqueCode);
+                }
+            }
+
+            var uniqueCodeGrouped = scannedUniqueCode.GroupBy(x => x);
+            if (uniqueCodeGrouped.Any(x => x.Count() > 1))
+                return false;
+
+            return true;
+        }
+
+        //because timesheet with variation code can be string.empty or null, do double checking here
+        private JOB_TIMESHEETS findNullOrEmptyVariationJobTimesheets(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, int resourceSeqNo, int subJobNo, string stockCode, int costGroupNo, int costTypeNo, string variationCode, string narrative, DateTime timesheetWeekStartDate)
+        {
+            bool isVariationCodeNull = variationCode == null;
+            IEnumerable<JOB_TIMESHEETS> baseJOB_TIMESHEETSQuery = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.X_NARRATIVE == narrative && x.WEEK_START_DATE == timesheetWeekStartDate);
+            JOB_TIMESHEETS timesheet = baseJOB_TIMESHEETSQuery.FirstOrDefault(x => x.X_VARIATIONCODE == variationCode);
+            //when trying to query for an actual variation code we can simply return the result
+            if (variationCode != string.Empty && variationCode != null)
+                return timesheet;
+            //do another check of timesheet when variation code is null
+            else if (timesheet == null)
+            {
+                string secondPassCheckVariationCode = isVariationCodeNull ? string.Empty : variationCode;
+                timesheet = baseJOB_TIMESHEETSQuery.FirstOrDefault(x => x.X_VARIATIONCODE == secondPassCheckVariationCode);
+                return timesheet;
+            }
+            else
+                return timesheet;
         }
 
         public TimesheetDate GetTimesheetDate(DateTime bookDate)
@@ -736,6 +798,7 @@ namespace BluePrints.ViewModels
             else
                 pasteCellData(gridControl, gridTableView, RowData);
 
+            isRowsUnique();
             gridControl.RefreshData();
             e.Handled = true;
         }
@@ -950,6 +1013,7 @@ namespace BluePrints.ViewModels
 
         public void BulkDelete()
         {
+            GridControlService.BeginDataUpdate();
             int[] selectedRowHandles = GridControlService.GetSelectedRowHandles();
             EntitiesUndoRedoManager.PauseActionId();
             foreach (int selectedRowHandle in selectedRowHandles.OrderByDescending(x => x))
@@ -963,10 +1027,36 @@ namespace BluePrints.ViewModels
                 }
                 EntitiesUndoRedoManager.AddUndo(deleteRow, null, null, null, EntityMessageType.Deleted);
 
-                DataPointsTable.Rows.Remove(deleteRow);
+                //GridControlService.RemoveSelectedRows(GridControlService.GetSelectedRowHandles());
+                dataPointsTable.Rows.Remove(deleteRow);
             }
+
             EntitiesUndoRedoManager.UnpauseActionId();
-            //GridControlService.RemoveSelectedRows(GridControlService.GetSelectedRowHandles());
+
+            //devexpress issue
+            try
+            {
+                GridControlService.EndDataUpdate();
+            }
+            catch
+            {
+
+            }
+        }
+
+        public void CustomUnboundColumnData(GridColumnDataEventArgs e)
+        {
+            if(e.Column.FieldName == columnDuplicate)
+            {
+                DataRow row = dataPointsTable.Rows[e.ListSourceRowIndex];
+                object uniqueCodeObj = row[columnUniqueCode];
+                string uniqueCodeStr = uniqueCodeObj == null ? string.Empty : uniqueCodeObj.ToString();
+
+                IEnumerable<DataRow> dataRowCollection = from DataRow dr in dataPointsTable.Rows
+                                                         select dr;
+                
+                e.Value = (dataRowCollection.Where(x => dataPointsTable.Rows.IndexOf(x) != e.ListSourceRowIndex).Any(x => x[columnUniqueCode] != null && x[columnUniqueCode].ToString() == uniqueCodeStr));
+            }
         }
 
         public void ValidateCell(GridCellValidationEventArgs e)
