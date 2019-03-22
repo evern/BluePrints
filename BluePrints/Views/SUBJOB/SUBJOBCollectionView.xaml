@@ -89,9 +89,9 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Estimated_Units" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Budget_Units" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Total_Units" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="Estimated_Costs" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Budget_Costs" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>

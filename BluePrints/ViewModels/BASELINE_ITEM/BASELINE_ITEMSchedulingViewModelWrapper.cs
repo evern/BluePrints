@@ -755,7 +755,7 @@ namespace BluePrints.ViewModels
             PopulateNavigationalProperties();
             IEnumerable<BASELINE_ITEMProgress> gridVisibleRows = GetGridVisibleRows();
 
-            baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows.Select(x => x.Entity));
+            baselineReport.AssignProperties(loadPROJECT, loadBASELINE, gridVisibleRows);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = baselineReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;

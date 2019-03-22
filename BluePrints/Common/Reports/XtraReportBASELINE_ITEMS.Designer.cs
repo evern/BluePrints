@@ -108,7 +108,7 @@
             // 
             this.xrlblDataDeliverableType.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataDeliverableType.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.DELIVERABLE_TYPE]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.Entity.DELIVERABLE_TYPE]")});
             this.xrlblDataDeliverableType.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataDeliverableType.LocationFloat = new DevExpress.Utils.PointFloat(506F, 0F);
             this.xrlblDataDeliverableType.Name = "xrlblDataDeliverableType";
@@ -140,7 +140,7 @@
             this.xrlblDataNumber.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataNumber.CanGrow = false;
             this.xrlblDataNumber.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.INTERNAL_NUM]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.Entity.INTERNAL_NUM]")});
             this.xrlblDataNumber.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataNumber.LocationFloat = new DevExpress.Utils.PointFloat(356F, 0F);
             this.xrlblDataNumber.Name = "xrlblDataNumber";
@@ -155,7 +155,7 @@
             this.xrlblDataTitle.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataTitle.CanGrow = false;
             this.xrlblDataTitle.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.PRIMARY_TITLE]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.Entity.PRIMARY_TITLE]")});
             this.xrlblDataTitle.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataTitle.LocationFloat = new DevExpress.Utils.PointFloat(606F, 0F);
             this.xrlblDataTitle.Name = "xrlblDataTitle";
@@ -171,7 +171,7 @@
             this.xrlblDataHours.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataHours.CanGrow = false;
             this.xrlblDataHours.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity].[Total_Units]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Total_Units]")});
             this.xrlblDataHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataHours.LocationFloat = new DevExpress.Utils.PointFloat(805.0632F, 0F);
             this.xrlblDataHours.Name = "xrlblDataHours";
@@ -187,7 +187,7 @@
             this.xrlblDataDepartment.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataDepartment.CanGrow = false;
             this.xrlblDataDepartment.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.DEPARTMENT.NAME]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.Entity.DEPARTMENT.NAME]")});
             this.xrlblDataDepartment.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataDepartment.LocationFloat = new DevExpress.Utils.PointFloat(110F, 0F);
             this.xrlblDataDepartment.Name = "xrlblDataDepartment";
@@ -204,7 +204,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataArea.CanGrow = false;
             this.xrlblDataArea.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.AREA.INTERNAL_NUM]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity].[Entity].[AREA].[INTERNAL_NUM]")});
             this.xrlblDataArea.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataArea.LocationFloat = new DevExpress.Utils.PointFloat(9.99987F, 0F);
             this.xrlblDataArea.Name = "xrlblDataArea";
@@ -220,7 +220,7 @@
             this.xrlblDataType.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblDataType.CanGrow = false;
             this.xrlblDataType.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.DOCTYPE.NAME]")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Entity.Entity.DOCTYPE.NAME]")});
             this.xrlblDataType.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblDataType.LocationFloat = new DevExpress.Utils.PointFloat(260F, 0F);
             this.xrlblDataType.Name = "xrlblDataType";
@@ -309,7 +309,7 @@
             // 
             // xrPictureBox1
             // 
-            this.xrPictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("xrPictureBox1.Image")));
+            this.xrPictureBox1.ImageSource = new DevExpress.XtraPrinting.Drawing.ImageSource("img", resources.GetString("xrPictureBox1.ImageSource"));
             this.xrPictureBox1.LocationFloat = new DevExpress.Utils.PointFloat(6.00001F, 10.00001F);
             this.xrPictureBox1.Name = "xrPictureBox1";
             this.xrPictureBox1.SizeF = new System.Drawing.SizeF(286.4583F, 56.33334F);
@@ -611,7 +611,7 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrlblTotalHours.CanGrow = false;
             this.xrlblTotalHours.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Entity].[Total_Units])")});
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "sumSum([Total_Units])")});
             this.xrlblTotalHours.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrlblTotalHours.LocationFloat = new DevExpress.Utils.PointFloat(804.0634F, 0F);
             this.xrlblTotalHours.Name = "xrlblTotalHours";
@@ -640,7 +640,7 @@
             // 
             // objectDataSource1
             // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.Projections.BASELINE_ITEMProjection);
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.Projections.BASELINE_ITEMProgress);
             this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportBASELINE_ITEMS
@@ -676,7 +676,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "18.1";
+            this.Version = "18.2";
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 

@@ -180,14 +180,52 @@ namespace BluePrints.Common.Projections
             //           where baseline_item.GUID_VARIATION == null || (baseline_item.GUID_VARIATION != null && variation_defaultIfEmpty != null)
             //           select baseline_item;
 
-            return
-                BASELINE_ITEMS.ToArray()
-                    .Select(x => new BASELINE_ITEMProjection()
+            //easier to debug doing it this way
+            IEnumerable<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToArray();
+            List<BASELINE_ITEMProjection> returnBASELINE_ITEMProjection = new List<BASELINE_ITEMProjection>();
+            foreach(BASELINE_ITEM baseline_item in baseline_items)
+            {
+                BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
+                newBASELINE_ITEM.Entity = baseline_item;
+
+                //find exact
+                RATE exactRATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == baseline_item.GUID_DEPARTMENT) && (y.GUID_DISCIPLINE == baseline_item.GUID_DISCIPLINE) && (y.GUID_COMMODITY == baseline_item.GUID_DOCTYPE));
+                if (exactRATE != null)
+                    newBASELINE_ITEM.RATE = exactRATE;
+                else
+                {
+                    //find by discipline
+                    RATE RATEByDiscipline = RATES.FirstOrDefault(y => (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == baseline_item.GUID_DEPARTMENT) && (y.GUID_DISCIPLINE == baseline_item.GUID_DISCIPLINE) && (y.GUID_COMMODITY == null));
+                    if(RATEByDiscipline != null)
+                        newBASELINE_ITEM.RATE = RATEByDiscipline;
+                    else
                     {
-                        GUID = x.GUID,
-                        Entity = x,
-                        RATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == x.Phase) && (y.CHARGE_TYPE == x.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == x.GUID_DEPARTMENT || y.GUID_DEPARTMENT == null) && (y.GUID_DISCIPLINE == x.GUID_DISCIPLINE || y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == x.GUID_DOCTYPE || y.GUID_COMMODITY == null))
-                    }).AsQueryable();
+                        //find by department
+                        RATE RATEByDepartment = RATES.FirstOrDefault(y => (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == baseline_item.GUID_DEPARTMENT) && (y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == null));
+                        if (RATEByDepartment != null)
+                            newBASELINE_ITEM.RATE = RATEByDepartment;
+                        else
+                        {
+                            //find any
+                            RATE AnyRATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == null) && (y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == null));
+                            newBASELINE_ITEM.RATE = AnyRATE;
+                        }
+                    }
+                }
+
+                returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
+            }
+
+            return returnBASELINE_ITEMProjection.AsQueryable();
+
+            //return
+            //    BASELINE_ITEMS.ToArray()
+            //        .Select(x => new BASELINE_ITEMProjection()
+            //        {
+            //            GUID = x.GUID,
+            //            Entity = x,
+            //            RATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == x.Phase) && (y.CHARGE_TYPE == x.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == x.GUID_DEPARTMENT || y.GUID_DEPARTMENT == null) && (y.GUID_DISCIPLINE == x.GUID_DISCIPLINE || y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == x.GUID_DOCTYPE || y.GUID_COMMODITY == null))
+            //        }).AsQueryable();
         }
     }
 }
