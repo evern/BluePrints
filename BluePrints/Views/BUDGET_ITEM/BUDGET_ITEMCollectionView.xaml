@@ -165,6 +165,18 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.IsByDuration" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
                             </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Stock Code Customization">
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.RATE_SUPPLY" FilterPopupMode="CheckedList" Header="Supply Rate" HeaderToolTip="Supply rate per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.HOURS_INSTALL" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Progress Specifications">
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_STOCK_GROUP" FilterPopupMode="CheckedList" Header="Stock Group" HeaderToolTip="Grouping specification so that progress can be done on a single group instead of per stock item">
                                     <dxg:GridColumn.EditSettings>
@@ -201,18 +213,6 @@
                                 <dxg:GridColumn FieldName="Total_Budget_Cost" FilterPopupMode="CheckedList" Header="Total Cost" HeaderToolTip="Total cost includes freight, supply and install" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControlBand>
-                            <dxg:GridControlBand Header="Stock Code Customization">
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.RATE_SUPPLY" FilterPopupMode="CheckedList" Header="Supply Rate" HeaderToolTip="Supply rate per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.HOURS_INSTALL" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
