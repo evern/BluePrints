@@ -1189,7 +1189,7 @@ namespace BluePrints.Common.Base
                     //current activity full assignment units to calculate remaining units
                     decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
 
-                    if (isDeliverableCancelled && MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units.ToString("n2") + " units before it was cancelled\n\nDo you want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                    if (isDeliverableCancelled && MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units.ToString("n2") + " units but there are no budget units in P6 task " + p6_assignment.P6_ACTIVITYID + "\nThis can happen when variation is not client approved\nDo you still want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                         continue;
 
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
@@ -1301,7 +1301,6 @@ namespace BluePrints.Common.Base
                                 IReportable reportable = deliverable as IReportable;
                                 if (P6TASK.target_drtn_hr_cnt != null && P6TASK.target_work_qty > 0 && P6TASK.remain_work_qty > 0)
                                 {
-
                                     //in the first progress current productivity will be null and if user doesn't override the productivity, we will have 0 productivity
                                     //decimal override_productivity;
                                     //if (reportable.Current_Productivity == 0 && reportable.Override_Productivity == 0)

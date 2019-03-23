@@ -51,9 +51,9 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <!--  For Filtering  -->
-                                    <dxg:GridColumn.EditSettings>
+                                    <!--<dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn.EditSettings>-->
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" HeaderToolTip="Default value can be populated by document type selection">
                                     <dxg:GridColumn.EditSettings>

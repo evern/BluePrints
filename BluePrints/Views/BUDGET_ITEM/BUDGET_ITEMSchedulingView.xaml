@@ -247,10 +247,6 @@
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
-                                    <!--  For Filtering  -->
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
@@ -297,10 +293,6 @@
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.StockCodeCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
-                                    <!--  For Filtering  -->
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.ProjectSTOCK_CODECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Total_Units" Header="Total Units" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>

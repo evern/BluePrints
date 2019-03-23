@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.SiteDirectProgressCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.SiteDirectProgressCollectionView" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -66,7 +66,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.SubArea_Guid" Header="Sub-Area" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" AllowDrop="False" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.Stock_Group_Guid" Header="Stock Group" IsEnabled="False" ReadOnly="True">
@@ -103,7 +103,7 @@
                                 <dxg:GridColumn FieldName="ProgressItem.Budget_UOM" Header="UOM" HeaderToolTip="Unit of measure" IsEnabled="False" ReadOnly="True" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Period">
-                                <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodInstalledQuantity" Header="Intalled Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
+                                <dxg:GridColumn FieldName="ProgressItem.CurrentPeriodInstalledQuantity" Header="Installed Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.ProgressItem.MaxCurrentQuantity}" MinValue="0" />
@@ -189,6 +189,9 @@
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Reportables}">
                                 <dxg:GridControl x:Name="gridControlChild">
+                                    <i:Interaction.Behaviors>
+                                        <behavior:DetailSyncBehavior />
+                                    </i:Interaction.Behaviors>
                                     <dxg:GridControl.Bands>
                                         <dxg:GridControlBand Header="General">
                                             <dxg:GridColumn Binding="{Binding Area_Guid}" Header="Area" ReadOnly="True">
@@ -226,11 +229,7 @@
                                                     <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding IsByDuration}" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" ReadOnly="True">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:CheckEditSettings />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
+                                            <dxg:GridColumn Binding="{Binding IsByDuration}" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" ReadOnly="True"/>
                                             <dxg:GridColumn Binding="{Binding Trackable_Total_Quantity}" Header="Total Trackable Qty" HeaderToolTip="Only estimate items marked as trackable will be summed up here" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -239,7 +238,7 @@
                                             <dxg:GridColumn Binding="{Binding Budget_UOM}" Header="UOM" HeaderToolTip="Unit of measure" IsEnabled="False" ReadOnly="True" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Period">
-                                            <dxg:GridColumn FieldName="CurrentPeriodInstalledQuantity" Header="Installed Qty" HeaderToolTip="Installed quantity for this period">
+                                            <dxg:GridColumn FieldName="CurrentPeriodInstalledQuantity" Header="Installed Qty" HeaderToolTip="Installed quantity for this period" IsEnabled="False">
                                                 <dxg:GridColumn.HeaderStyle>
                                                     <Style TargetType="Control">
                                                         <Setter Property="Background" Value="LightCyan" />
@@ -288,7 +287,7 @@
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding Earned_Units_ToDate}" Header="Total Installed Hours" IsEnabled="False" ReadOnly="True">
+                                            <dxg:GridColumn Binding="{Binding Earned_Units_ToDate}" Header="Total Installed Hours" HeaderToolTip="Total earned installation hours to date" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

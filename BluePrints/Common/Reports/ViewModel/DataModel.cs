@@ -333,7 +333,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public virtual decimal MaxCurrentQuantity => Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity;
+        public virtual decimal MaxCurrentQuantity => Math.Round(Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity, 2);
 
         public EstimateProgressType Progress_Type
         {
