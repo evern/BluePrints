@@ -179,7 +179,7 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Tag="" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource">
+                        <dxg:GridColumn Tag="" FieldName="Entity.Entity.GUID_USER" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList" Header="Resource">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="Full_Name" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="GUID">
@@ -211,6 +211,9 @@
                                     </dxg:LookUpEdit>
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <!--<dxg:GridColumn FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
                             <dxg:GridColumn.EditSettings>

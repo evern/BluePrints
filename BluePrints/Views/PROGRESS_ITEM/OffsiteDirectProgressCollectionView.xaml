@@ -132,6 +132,11 @@
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" ReadOnly="True" />
+                            <dxg:GridColumn Header="Resource" FieldName="Entity.Entity.GUID_USER" ColumnFilterMode="DisplayText" FilterPopupMode="CheckedList">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Budgeted">
                             <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
@@ -162,11 +167,6 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <!--<dxg:GridColumn Header="Resource" FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>-->
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Cumulative To Date">
                             <dxg:GridColumn FieldName="Baseline_Percentage" FilterPopupMode="CheckedList" Header="Baseline %" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
@@ -300,7 +300,7 @@
                                     <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FilterPopupMode="CheckedList" Header="All Progress" HeaderToolTip="Progresses along the entire timeline" ReadOnly="True">
+                            <dxg:GridColumn AllowSearchPanel="False" FilterPopupMode="CheckedList" Visible="False" Header="All Progress" HeaderToolTip="Progresses along the entire timeline" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.EarnedPercentages}" NullText="Expand to View" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
