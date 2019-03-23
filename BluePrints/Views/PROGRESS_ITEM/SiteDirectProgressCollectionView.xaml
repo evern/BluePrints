@@ -66,7 +66,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.SubArea_Guid" Header="Sub-Area" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" AllowDrop="False" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="ProgressItem.Stock_Group_Guid" Header="Stock Group" IsEnabled="False" ReadOnly="True">
