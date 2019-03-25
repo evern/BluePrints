@@ -730,13 +730,14 @@ namespace BluePrints.ViewModels
                 revisedBaseline.Revision = getNewRevisionNumber(liveBASELINE.Revision);
                 revisedBaseline.Baseline_Status = BaselineStatus.Live;
                 collectionViewModel.Save(revisedBaseline);
-                liveBASELINE.GUID = revisedBaseline.GUID;
 
                 DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
                 DisplaySelectedEntity.Entity.APPROVEDBY = LoginCredentials.CurrentUserGuid;
                 DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
                 DisplaySelectedEntity.Entity.GUID_BASELINE = revisedBaseline.GUID;
                 MainViewModel.Save(DisplaySelectedEntity);
+
+                liveBASELINE.GUID = revisedBaseline.GUID;
             }
 
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
@@ -1019,6 +1020,9 @@ namespace BluePrints.ViewModels
             {
                 if(exoInteraction == VariationStages.Submit)
                 {
+#if DEBUG
+                    SubmitSelectedEntity();
+#else
                     if (exoJobCollectionViewModel.CommitToExo(exoVariationJobs))
                     {
                         SubmitSelectedEntity();
@@ -1028,6 +1032,7 @@ namespace BluePrints.ViewModels
                     {
                         MessageBoxService.ShowMessage("Pushed to exo failed, variation is not submitted");
                     }
+#endif
                 }
                 else
                 {
@@ -1105,6 +1110,6 @@ namespace BluePrints.ViewModels
             public BASELINE_ITEM BASELINE_ITEM { get; set; }
             public VARIATION VARIATION { get; set; }
         }
-        #endregion
+#endregion
     }
 }
