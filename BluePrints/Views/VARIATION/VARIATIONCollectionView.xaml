@@ -62,7 +62,7 @@
                                     <dxe:TextEditSettings  />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" Visible="False" FilterPopupMode="CheckedList" VisibleIndex="20">
+                            <dxg:GridColumn Header="Type" FieldName="Entity.TYPE" FilterPopupMode="CheckedList" VisibleIndex="20" HeaderToolTip="Only design change will trigger variation code submission to exo">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationType}}" />
                                 </dxg:GridColumn.EditSettings>

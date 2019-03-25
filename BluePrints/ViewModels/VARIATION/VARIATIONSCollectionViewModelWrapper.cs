@@ -911,20 +911,6 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        ////tracking entities are attached to a baseline where snapshot was taken at the time of approval
-                        ////it is used for future reference on variation changes, so that current changes to deliverable's via other variation won't affect how it was recognised
-                        //List<TEntity> historianDeliverables = repository.Where(x => x.GUID_BASELINE == DisplaySelectedEntity.Entity.GUID_BASELINE && x.GUID_VARIATION == DisplaySelectedEntity.GUID).ToList();
-                        //foreach (TEntity historianDeliverable in historianDeliverables)
-                        //{
-                        //    repository.Remove(historianDeliverable);
-                        //}
-
-                        //TBaseline historianBaseline = collectionViewModel.Entities.FirstOrDefault(x => x.GUID == DisplaySelectedEntity.Entity.GUID_BASELINE);
-                        //if (historianBaseline != null)
-                        //{
-                        //    collectionViewModel.Delete(historianBaseline);
-                        //}
-
                         DisplaySelectedEntity.Entity.APPROVED = null;
                         DisplaySelectedEntity.Entity.APPROVEDBY = null;
                         DisplaySelectedEntity.Entity.GUID_ORIBASELINE = null;
