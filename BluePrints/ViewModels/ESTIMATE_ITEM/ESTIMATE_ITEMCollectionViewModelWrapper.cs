@@ -1247,7 +1247,7 @@ namespace BluePrints.ViewModels
                             newCOMMODITY_CODE.CODE = stockCode.CODE;
                             newCOMMODITY_CODE.DESCRIPTION = "Auto Populate";
                             newCOMMODITY_CODE.UOM = entity.Entity.BUDGET_STOCK_CODE.UOM;
-                            newCOMMODITY_CODE.PHASE_TYPE = findCOMMODITY_CODE.PHASE_TYPE;
+                            newCOMMODITY_CODE.PHASE_TYPE = viewType == DeliverablesViewType.Direct ? PhaseType.Construct : PhaseType.Indirect;
                             COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
                             entity.Entity.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
                             entitiesToSave.Add(entity);
