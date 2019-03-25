@@ -170,6 +170,14 @@ namespace BluePrints.Common.Misc
                         exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodPlannedUnits, dataPoint.PeriodPlannedPrice));
                     }
                 }
+                else if (statsType == StatsType.Current)
+                {
+                    List<StoredProcedure_PlannedDataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(projectNumber);
+                    foreach (StoredProcedure_PlannedDataPoint dataPoint in currentDataPoints)
+                    {
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodPlannedUnits, dataPoint.PeriodPlannedPrice));
+                    }
+                }
             }
 
             return exports;

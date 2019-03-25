@@ -354,6 +354,16 @@ namespace BluePrints.ViewModels
             export(StatsType.Planned);
         }
 
+        public bool CanExportCurrent()
+        {
+            return CanExportToExcel();
+        }
+
+        public void ExportCurrent()
+        {
+            export(StatsType.Current);
+        }
+
         private void export(StatsType statsType)
         {
             if (hierarchicalDashboard == null)
