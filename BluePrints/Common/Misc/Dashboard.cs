@@ -199,7 +199,7 @@ namespace BluePrints.Common.Misc
                 string s = string.Empty;
             }
 
-            new_export.Type = StatsType.Remaining;
+            new_export.Type = statsType;
             new_export.Data_Date = dataDate;
 
             if(units.GetType() == typeof(double))
