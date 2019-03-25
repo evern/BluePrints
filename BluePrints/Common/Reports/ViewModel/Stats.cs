@@ -150,11 +150,25 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.StatsBuilt = true;
         }
 
+        //used to collect stock override productivity and earned units for weighted productivity calculation at commodity level
+        //because burned units cannot be retrieved at stock level
+        //use stock level productivity if deliverable has earned but not burned
+        public class StockProductivity
+        {
+            public decimal StockLevelProductivity { get; set; }
+            public bool IsOverrideProductivity { get; set; }
+            public decimal EarnedUnits { get; set; }
+            public decimal TotalUnits { get; set; }
+        }
+
         public void SetRemainingActualData(IEnumerable<IReportable> groupedReportables, IEnumerable<DataPoint> burnedDataPoints)
         {
             //establish remaining data points
             DateTime? lastBurnedDate = burnedDataPoints.Count() == 0 ? (DateTime?)null : burnedDataPoints.Max(x => x.ProgressDate);
             List<DataPoint> remainingDataPoints = new List<DataPoint>();
+
+            List<StockProductivity> stockProductivities = new List<StockProductivity>();
+            //gather stock productivities
             foreach(IReportable reportable in groupedReportables)
             {
                 if (reportable.Stats == null)
@@ -163,9 +177,47 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (reportable.Stats.Remaining == null)
                     continue;
 
-                decimal productivity = BluePrintsDataUtils.GetReportableProductivity(reportable);
-                if (productivity == 0)
-                    productivity = 1;
+                IEnumerable<DataPoint> earnedDataPoints = reportable.Stats.Earned.GetData();
+                decimal earnedUnits = earnedDataPoints.Count() == 0 ? 0 : earnedDataPoints.Sum(x => x.Units);
+                bool isOverride = false;
+                decimal stockLevelProductivity = BluePrintsDataUtils.GetStockLevelProductivity(reportable, ref isOverride);
+                StockProductivity stockProductivity = new StockProductivity() { EarnedUnits = earnedUnits, StockLevelProductivity = stockLevelProductivity, TotalUnits = reportable.Total_Units, IsOverrideProductivity = isOverride };
+                stockProductivities.Add(stockProductivity);
+            }
+
+            decimal totalBurnedUnits = burnedDataPoints.Count() == 0 ? 0 : burnedDataPoints.Sum(x => x.Units);
+            decimal totalEarnedUnits = stockProductivities.Sum(x => x.EarnedUnits);
+            decimal groupLevelProductivity = totalEarnedUnits == 0 ? 0 : totalBurnedUnits / totalEarnedUnits;
+            decimal totalStockUnits = stockProductivities.Sum(x => x.TotalUnits);
+            decimal totalWeightedProductivity = 0;
+
+            //use default remaining units if productivity is 0
+            if (totalStockUnits == 0)
+                totalWeightedProductivity = 1;
+            else
+            {
+                foreach (StockProductivity stockProductivity in stockProductivities)
+                {
+                    decimal productivity = 0;
+                    decimal weightProRate = stockProductivity.TotalUnits / totalStockUnits;
+                    //when group level productivity is zero fallback on stock level productivity, also applies when user inputs an override
+                    if (groupLevelProductivity == 0 || stockProductivity.IsOverrideProductivity)
+                        productivity = stockProductivity.StockLevelProductivity;
+                    else
+                        productivity = groupLevelProductivity;
+
+                    totalWeightedProductivity += productivity * weightProRate;
+                }
+            }
+
+            //adjust remaining data points by weighted productivity
+            foreach (IReportable reportable in groupedReportables)
+            {
+                if (reportable.Stats == null)
+                    continue;
+
+                if (reportable.Stats.Remaining == null)
+                    continue;
 
                 List<DataPoint> baselineRemainingDataPoints = reportable.Stats.Remaining.GetData().Where(x => x.IsRemaining).ToList();
                 if (lastBurnedDate != null)
@@ -176,17 +228,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     DataPoint remainingAdjustDataPoint = new DataPoint();
                     DataUtils.ShallowCopy(remainingAdjustDataPoint, remainingDataPoint);
-                    remainingAdjustDataPoint.Units = remainingAdjustDataPoint.Units / productivity;
-                    remainingAdjustDataPoint.Costs = remainingAdjustDataPoint.Costs / productivity;
+                    remainingAdjustDataPoint.Units = remainingAdjustDataPoint.Units / totalWeightedProductivity;
+                    remainingAdjustDataPoint.Costs = remainingAdjustDataPoint.Costs / totalWeightedProductivity;
                     remainingAdjustDataPoint.IsProductivityInflated = true;
                     remainingAdjustDataPoints.Add(remainingAdjustDataPoint);
                 }
-
 
                 decimal totalRemaining = remainingAdjustDataPoints.Sum(x => x.Units);
                 remainingDataPoints.AddRange(remainingAdjustDataPoints);
             }
 
+            //burned data points will be plotted before the data date
             if (burnedDataPoints != null)
                 remainingDataPoints.AddRange(burnedDataPoints.ToList());
 

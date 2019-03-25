@@ -391,7 +391,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         List<StoredProcedure_RemainingDataPoint> storedProcedure_RemainingDataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
                         if (useProductivity)
                         {
-                            decimal productivity = BluePrintsDataUtils.GetReportableProductivity(reportableObject);
+                            //not using this here but ref is required
+                            bool isOverride = false;
+                            decimal productivity = BluePrintsDataUtils.GetStockLevelProductivity(reportableObject, ref isOverride);
                             storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, productivity));
                         }
 

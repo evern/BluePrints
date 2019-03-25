@@ -238,12 +238,13 @@ namespace BluePrints.Common.ViewModel.Utils
             return x.GUID == y.GUID;
         }
 
-        public static decimal GetReportableProductivity(IReportable reportable)
+        public static decimal GetStockLevelProductivity(IReportable reportable, ref bool isOverride)
         {
             decimal reportableProductivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
             if (reportableProductivity == 0)
                 reportableProductivity = 1;
 
+            isOverride = reportable.Override_Productivity != null;
             return reportableProductivity;
         }
 
