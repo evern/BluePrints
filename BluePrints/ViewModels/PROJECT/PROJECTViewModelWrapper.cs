@@ -1200,7 +1200,17 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTViewModelWrapper_v1.01"; }
+            get { return "PROJECTViewModelWrapper_v1.01" + view_project_specific_affix; }
+        }
+
+        private string view_project_specific_affix
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return string.Empty;
+                return loadPROJECT.GUID.ToString();
+            }
         }
 
         public void EditArea()
