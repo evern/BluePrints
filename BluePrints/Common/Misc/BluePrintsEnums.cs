@@ -304,7 +304,9 @@ namespace BluePrints.Common
 
     public enum VariationType
     {
+        [Display(Name = "Estimate Variation Post Award")]
         Internal = 0,
+        [Display(Name = "Design Change")]
         External = 1
     }
 

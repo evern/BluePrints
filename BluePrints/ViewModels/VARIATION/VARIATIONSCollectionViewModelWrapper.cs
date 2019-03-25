@@ -873,7 +873,7 @@ namespace BluePrints.ViewModels
                     }
                 }
                 //if its purely a scan to determine variation
-                else if (variationStage != VariationStages.Approve && (deliverable.DisplayVariationAction == VariationAction.Add || deliverable.DisplayVariationAction == VariationAction.Append) && variationCode != string.Empty)
+                else if (variationStage != VariationStages.Approve && DisplaySelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
                 {
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
@@ -897,7 +897,7 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.Progress();
             }
 
-            if (variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit)
+            if ((variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit) && DisplaySelectedEntity.Entity.TYPE == VariationType.External)
                 addVariationJobToExo(exoVariations, variationStage);
             else
             {
