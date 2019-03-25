@@ -86,6 +86,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Loading Operations
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("[Is Assigned] been changed to [Can Book] and moved to the first column", null, null, null);
+
+            GlobalVariables.IsNotificationShown = true;
+            notification1.ShowAsync();
+        }
+
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;

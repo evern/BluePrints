@@ -572,9 +572,10 @@ namespace BluePrints.ViewModels
                     int costGroupNo = (int)row[columnCostGroup];
                     int costTypeNo = (int)row[columnCostType];
                     string variationCode = row[columnVariationCode].ToString();
+                    string narrative = row[columnNarrative].ToString();
 
                     //makes up the unique signature of each row by these attribute so we can see if other rows contain the same attribute and flag it as duplicate
-                    string uniqueCode = resourceSeqNo.ToString() + subJobNo.ToString() + costGroupNo.ToString() + costTypeNo.ToString() + variationCode;
+                    string uniqueCode = resourceSeqNo.ToString() + subJobNo.ToString() + costGroupNo.ToString() + costTypeNo.ToString() + variationCode + narrative;
                     row[columnUniqueCode] = uniqueCode;
                     scannedUniqueCode.Add(uniqueCode);
                 }

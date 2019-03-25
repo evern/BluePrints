@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.EXO_SubJobCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXO_SubjobCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.EXO_SubJobCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="1600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXO_SubjobCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,7 +31,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="750" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
@@ -138,21 +138,21 @@
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" FilterCriteria="{Binding UserFilterCriteria, Mode=TwoWay}" SelectionMode="Cell">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" SortIndex="1" />
-                                    <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Security Profile" ReadOnly="True">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
-                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                    <dxg:GridColumn FieldName="IsAssigned" Width="90" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" SortIndex="1" />
+                                    <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Profile" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
@@ -161,7 +161,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" ShowAutoFilterRow="True" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" AutoWidth="True" ShowAutoFilterRow="True" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>

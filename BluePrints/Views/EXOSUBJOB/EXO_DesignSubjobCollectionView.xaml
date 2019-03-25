@@ -33,7 +33,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="750" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
@@ -75,14 +75,14 @@
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                             <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn MinWidth="150" AllowEditing="False" FieldName="User.Full_Name" FilterPopupMode="CheckedList" Header="User" />
-                                    <dxg:GridColumn MinWidth="200" AllowEditing="False" FieldName="User.ROLE.NAME" FilterPopupMode="CheckedList" Header="Role" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" FilterPopupMode="CheckedList" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
+                                    <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" Width="90" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsAssigned" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" FilterPopupMode="CheckedList" Header="User" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" FilterPopupMode="CheckedList" Header="Role" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" FilterPopupMode="CheckedList" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
@@ -95,7 +95,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView1" MouseUp="tableView1_MouseUp">
+                                    <dxg:TableView x:Name="tableView1" AutoWidth="True" MouseUp="tableView1_MouseUp">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>

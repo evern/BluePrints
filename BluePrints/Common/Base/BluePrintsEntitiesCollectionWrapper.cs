@@ -32,7 +32,7 @@ namespace BluePrints.Common.Base
             //SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
         }
 
-        public void ShowNotification()
+        public virtual void ShowNotification()
         {
             //if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
             //    return;
