@@ -20,7 +20,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Current_Productivity => throw new NotImplementedException();
 
-        public decimal? Override_Productivity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public decimal? Override_Productivity { get => 0; set => throw new NotImplementedException(); }
 
         public decimal? Remaining_Productivity => throw new NotImplementedException();
 
@@ -44,86 +44,86 @@ namespace BluePrints.Common.Projections
 
         public Guid? Phase_Guid { get => Entity.GUID_DPHASE; set => Entity.GUID_DPHASE = value; }
 
-        public Guid? Subjob_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid? Subjob_Guid { get; set; }
 
-        public Guid? Area_Guid => throw new NotImplementedException();
+        public Guid? Area_Guid => Entity.GUID_DAREA;
 
-        public Guid? SubArea_Guid => throw new NotImplementedException();
+        public Guid? SubArea_Guid => Entity.GUID_DSUBAREA;
 
-        public Guid? Discipline_Guid => throw new NotImplementedException();
+        public Guid? Discipline_Guid => Guid.Empty;
 
-        public decimal Discipline_Number => throw new NotImplementedException();
+        public decimal Discipline_Number => 0;
 
-        public Guid? Workpack_Guid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsByDuration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Guid? Workpack_Guid { get; set; }
+        public bool IsByDuration { get; set; }
 
-        public Guid OriginalEntityKey => throw new NotImplementedException();
+        public Guid OriginalEntityKey => Guid.Empty;
 
-        public string Commodity_Code => throw new NotImplementedException();
+        public string Commodity_Code => string.Empty;
 
         public decimal Budget_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_Units);
 
-        public decimal Budget_Quantity => throw new NotImplementedException();
+        public decimal Budget_Quantity => 0;
 
-        public decimal Total_Quantity => throw new NotImplementedException();
+        public decimal Total_Quantity => 0;
 
         public decimal Budget_ItemRate => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_ItemRate);
 
         public decimal Budget_Costs => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_Costs);
 
-        public ProgressStats Stats { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ProgressStats Stats { get; set; }
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => throw new NotImplementedException();
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => null;
 
-        public PROGRESS_ITEM PROGRESS_ITEM_Current => throw new NotImplementedException();
+        public PROGRESS_ITEM PROGRESS_ITEM_Current => null;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => throw new NotImplementedException();
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => null;
 
-        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => throw new NotImplementedException();
+        public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => null;
 
-        public DateTime ReportingDataDate => throw new NotImplementedException();
+        public DateTime ReportingDataDate => DateTime.Now;
 
-        public List<PROGRESS_ITEM> PROGRESS_ITEMS => throw new NotImplementedException();
+        public List<PROGRESS_ITEM> PROGRESS_ITEMS => null;
 
-        public decimal Earned_Units_Total => throw new NotImplementedException();
+        public decimal Earned_Units_Total => 0;
 
-        public decimal Earned_Costs_Total => throw new NotImplementedException();
+        public decimal Earned_Costs_Total => 0;
 
-        public decimal Earned_Units_BeforeDataDate => throw new NotImplementedException();
+        public decimal Earned_Units_BeforeDataDate => 0;
 
-        public decimal Earned_Units_OnDataDate => throw new NotImplementedException();
+        public decimal Earned_Units_OnDataDate => 0;
 
-        public decimal Earned_Units_ToDate => throw new NotImplementedException();
+        public decimal Earned_Units_ToDate => 0;
 
-        public decimal Earned_Costs_ToDate => throw new NotImplementedException();
+        public decimal Earned_Costs_ToDate => 0;
 
-        public decimal Earned_Costs_OnDataDate => throw new NotImplementedException();
+        public decimal Earned_Costs_OnDataDate => 0;
 
-        public decimal Earned_Units_AfterDataDate => throw new NotImplementedException();
+        public decimal Earned_Units_AfterDataDate => 0;
 
-        public decimal Total_Earned_Percentage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public decimal Total_Earned_Percentage { get; set; }
 
-        public decimal Total_Percentage => throw new NotImplementedException();
+        public decimal Total_Percentage => 0;
 
-        public decimal Total_Percentage_ToDate => throw new NotImplementedException();
+        public decimal Total_Percentage_ToDate => 0;
 
-        public decimal Baseline_Percentage => throw new NotImplementedException();
+        public decimal Baseline_Percentage => 0;
 
-        public decimal SchedulePercentage => throw new NotImplementedException();
+        public decimal SchedulePercentage => 0;
 
-        public decimal ScheduleCurrentPeriodPercentage => throw new NotImplementedException();
+        public decimal ScheduleCurrentPeriodPercentage => 0;
 
-        public decimal MinPercentage => throw new NotImplementedException();
+        public decimal MinPercentage => 0;
 
-        public decimal MaxPercentage => throw new NotImplementedException();
+        public decimal MaxPercentage => 0;
 
-        public bool ShouldSaveProgress => throw new NotImplementedException();
+        public bool ShouldSaveProgress => false;
 
-        public decimal MinEstimateUnits => throw new NotImplementedException();
+        public decimal MinEstimateUnits => 0;
 
-        public decimal Variation_Units => throw new NotImplementedException();
+        public decimal Variation_Units => 0;
 
-        public decimal Variation_Costs => throw new NotImplementedException();
+        public decimal Variation_Costs => 0;
 
         public decimal Total_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Total_Units);
 
