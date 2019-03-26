@@ -6,6 +6,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -114,6 +115,17 @@ namespace BluePrints.ViewModels
             if (IsProjectSpecific)
                 entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
             return true;
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, COMMODITY_CODEProjection projection, bool isNew)
+        {
+            if(isNew && field_name.Contains(BindableBase.GetPropertyName(() => new COMMODITY_CODEProjection().Entity.CODE)))
+            {
+                if (projection.Entity.DEFAULT_STOCKCODE == string.Empty)
+                    projection.Entity.DEFAULT_STOCKCODE = projection.Entity.CODE;
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
         public override string UnifiedRowValidation(COMMODITY_CODEProjection projection)

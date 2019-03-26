@@ -44,6 +44,11 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
                             <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure" />
+                            <dxg:GridColumn FieldName="Entity.DEFAULT_STOCKCODE" Header="Stock Code" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings NullText="Leave empty to autogenerate" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

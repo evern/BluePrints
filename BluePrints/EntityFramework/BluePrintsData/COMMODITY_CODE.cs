@@ -28,6 +28,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string CODE { get; set; }
 
+        [StringLength(23)]
+        public string DEFAULT_STOCKCODE { get; set; }
+
         [StringLength(500)]
         public string NAME { get; set; }
 

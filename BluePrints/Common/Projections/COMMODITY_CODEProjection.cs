@@ -17,6 +17,12 @@ namespace BluePrints.Common.Projections
             : base()
         {
         }
+
+        public int? EXO_COSTTYPE_SEQNO { get; set; }
+        public int? EXO_COSTGROUP_SEQNO { get; set; }
+
+        public bool IsCostTypeInExo => EXO_COSTTYPE_SEQNO != null;
+        public bool IsCostGroupInExo => EXO_COSTGROUP_SEQNO != null;
     }
 
     public static class COMMODITY_CODEProjectionQueries
