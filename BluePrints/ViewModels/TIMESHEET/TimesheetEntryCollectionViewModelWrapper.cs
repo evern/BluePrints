@@ -1047,16 +1047,19 @@ namespace BluePrints.ViewModels
 
         public void CustomUnboundColumnData(GridColumnDataEventArgs e)
         {
-            if(e.Column.FieldName == columnDuplicate)
+            if(dataPointsTable.Rows.Count > 0)
             {
-                DataRow row = dataPointsTable.Rows[e.ListSourceRowIndex];
-                object uniqueCodeObj = row[columnUniqueCode];
-                string uniqueCodeStr = uniqueCodeObj == null ? string.Empty : uniqueCodeObj.ToString();
+                if (e.Column.FieldName == columnDuplicate)
+                {
+                    DataRow row = dataPointsTable.Rows[e.ListSourceRowIndex];
+                    object uniqueCodeObj = row[columnUniqueCode];
+                    string uniqueCodeStr = uniqueCodeObj == null ? string.Empty : uniqueCodeObj.ToString();
 
-                IEnumerable<DataRow> dataRowCollection = from DataRow dr in dataPointsTable.Rows
-                                                         select dr;
-                
-                e.Value = (dataRowCollection.Where(x => dataPointsTable.Rows.IndexOf(x) != e.ListSourceRowIndex).Any(x => x[columnUniqueCode] != null && x[columnUniqueCode].ToString() == uniqueCodeStr));
+                    IEnumerable<DataRow> dataRowCollection = from DataRow dr in dataPointsTable.Rows
+                                                             select dr;
+
+                    e.Value = (dataRowCollection.Where(x => dataPointsTable.Rows.IndexOf(x) != e.ListSourceRowIndex).Any(x => x[columnUniqueCode] != null && x[columnUniqueCode].ToString() == uniqueCodeStr));
+                }
             }
         }
 
