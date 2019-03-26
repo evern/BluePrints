@@ -457,6 +457,13 @@ namespace BluePrints.ViewModels
 
                     ExoTimeAuthorisation findUserAuthorisation = exoAuthorisations.Where(x => x.ResourceSeqNo == resourceSeqNo).FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == variationCode);
                     ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == variationCode);
+
+                    //try harder to find exo line
+                    if (findExoLine == null && variationCode == null)
+                    {
+                        findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == string.Empty);
+                    }
+                    
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
                     string stockCode = string.Empty;
