@@ -286,6 +286,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 01.
+        /// </summary>
+        internal static string DefaultCostGroupAffix {
+            get {
+                return ResourceManager.GetString("DefaultCostGroupAffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @primero.com.au.
         /// </summary>
         internal static string DefaultMailDomain {

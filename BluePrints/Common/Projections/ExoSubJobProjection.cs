@@ -428,55 +428,55 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static bool CommitJOB_COSTTYPES(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IDialogService BulkColumnEditDialogService, COMMODITY_CODEProjection projection)
-        {
-            if (projection.Entity.CODE == string.Empty || projection.EXO_COSTGROUP_SEQNO == null)
-                return false;
+        //public static bool CommitJOB_COSTTYPES(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IDialogService BulkColumnEditDialogService, COMMODITY_CODEProjection projection)
+        //{
+        //    if (projection.Entity.CODE == string.Empty || projection.EXO_COSTGROUP_SEQNO == null)
+        //        return false;
 
-            JOB_COSTTYPES costType = ExoQueries.GetJOB_COSTTYPES(primeroUnitOfWork, projection.Entity.CODE);
-            if (costType == null)
-            {
-                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.Entity.CODE + " Description:");
-                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input description", "BulkEditStrings", bulkEditStringsViewModel) != MessageResult.OK)
-                    return false;
+        //    JOB_COSTTYPES costType = ExoQueries.GetJOB_COSTTYPES(primeroUnitOfWork, projection.Entity.CODE);
+        //    if (costType == null)
+        //    {
+        //        var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.Entity.CODE + " Description:");
+        //        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input description", "BulkEditStrings", bulkEditStringsViewModel) != MessageResult.OK)
+        //            return false;
 
-                costType = CreateNewJOB_COSTTYPE(projection.Entity.CODE, bulkEditStringsViewModel.EditValue, (int)projection.EXO_COSTGROUP_SEQNO);
-                primeroUnitOfWork.JOB_COSTTYPES.Add(costType);
-                primeroUnitOfWork.SaveChanges();
-                return true;
-            }
-            else
-            {
-                costType.DEF_COSTGROUP = (int)projection.EXO_COSTGROUP_SEQNO;
-                primeroUnitOfWork.SaveChanges();
-                return true;
-            }
-        }
+        //        costType = CreateNewJOB_COSTTYPE(projection.Entity.CODE, bulkEditStringsViewModel.EditValue, (int)projection.EXO_COSTGROUP_SEQNO);
+        //        primeroUnitOfWork.JOB_COSTTYPES.Add(costType);
+        //        primeroUnitOfWork.SaveChanges();
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        costType.DEF_COSTGROUP = (int)projection.EXO_COSTGROUP_SEQNO;
+        //        primeroUnitOfWork.SaveChanges();
+        //        return true;
+        //    }
+        //}
 
-        public static bool CommitJOB_COSTGROUPS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IDialogService BulkColumnEditDialogService, COMMODITY_CODEProjection projection)
-        {
-            if (projection.Entity.CODE == string.Empty || projection.EXO_COSTGROUP_SEQNO == null)
-                return false;
+        //public static bool CommitJOB_COSTGROUPS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IDialogService BulkColumnEditDialogService, COMMODITY_CODEProjection projection)
+        //{
+        //    if (projection.Entity.CODE == string.Empty || projection.EXO_COSTGROUP_SEQNO == null)
+        //        return false;
 
-            JOB_COSTTYPES costType = ExoQueries.GetJOB_COSTTYPES(primeroUnitOfWork, projection.Entity.CODE);
-            if (costType == null)
-            {
-                var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.Entity.CODE + " Description:");
-                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input description", "BulkEditStrings", bulkEditStringsViewModel) != MessageResult.OK)
-                    return false;
+        //    JOB_COSTTYPES costType = ExoQueries.GetJOB_COSTTYPES(primeroUnitOfWork, projection.Entity.CODE);
+        //    if (costType == null)
+        //    {
+        //        var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.Entity.CODE + " Description:");
+        //        if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input description", "BulkEditStrings", bulkEditStringsViewModel) != MessageResult.OK)
+        //            return false;
 
-                costType = CreateNewJOB_COSTTYPE(projection.Entity.CODE, bulkEditStringsViewModel.EditValue, (int)projection.EXO_COSTGROUP_SEQNO);
-                primeroUnitOfWork.JOB_COSTTYPES.Add(costType);
-                primeroUnitOfWork.SaveChanges();
-                return true;
-            }
-            else
-            {
-                costType.DEF_COSTGROUP = (int)projection.EXO_COSTGROUP_SEQNO;
-                primeroUnitOfWork.SaveChanges();
-                return true;
-            }
-        }
+        //        costType = CreateNewJOB_COSTTYPE(projection.Entity.CODE, bulkEditStringsViewModel.EditValue, (int)projection.EXO_COSTGROUP_SEQNO);
+        //        primeroUnitOfWork.JOB_COSTTYPES.Add(costType);
+        //        primeroUnitOfWork.SaveChanges();
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        costType.DEF_COSTGROUP = (int)projection.EXO_COSTGROUP_SEQNO;
+        //        primeroUnitOfWork.SaveChanges();
+        //        return true;
+        //    }
+        //}
 
         public static JOBCOST_LINES findExistingOrAddLine(ExoSubJobEditableProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
         {

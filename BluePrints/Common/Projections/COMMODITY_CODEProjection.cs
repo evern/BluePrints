@@ -2,8 +2,11 @@
 using BaseModel.Data.Helpers;
 using BaseModel.Misc;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,26 +21,28 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public int? EXO_COSTTYPE_SEQNO { get; set; }
-        public int? EXO_COSTGROUP_SEQNO { get; set; }
-
-        public bool IsCostTypeInExo => EXO_COSTTYPE_SEQNO != null;
-        public bool IsCostGroupInExo => EXO_COSTGROUP_SEQNO != null;
+        public JOB_COSTTYPES EXO_COSTTYPE { get; set; }
+        public STOCK_ITEMS EXO_STOCKITEM { get; set; }
     }
 
     public static class COMMODITY_CODEProjectionQueries
     {
         public static IQueryable<COMMODITY_CODEProjection> COMMODITY_CODE_Transformation(
-            IQueryable<COMMODITY_CODE> COMMODITY_CODES)
+            IQueryable<COMMODITY_CODE> COMMODITY_CODES, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
-            return
-                COMMODITY_CODES.OrderBy(x => x.CODE).ToArray()
-                    .Select(
-                        COMMODITY_CODE =>
-                            new COMMODITY_CODEProjection()
-                            {
-                                Entity = COMMODITY_CODE
-                            }).AsQueryable();
+            List<COMMODITY_CODEProjection> returnCOMMODITY_CODEProjection = new List<COMMODITY_CODEProjection>();
+            foreach (COMMODITY_CODE COMMODITY_CODE in COMMODITY_CODES)
+            {
+                COMMODITY_CODEProjection newCOMMODITY_CODE = new COMMODITY_CODEProjection();
+                newCOMMODITY_CODE.Entity = COMMODITY_CODE;
+
+                newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE);
+                newCOMMODITY_CODE.EXO_STOCKITEM = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == COMMODITY_CODE.DEFAULT_STOCKCODE);
+
+                returnCOMMODITY_CODEProjection.Add(newCOMMODITY_CODE);
+            }
+
+            return returnCOMMODITY_CODEProjection.AsQueryable();
         }
     }
 }

@@ -5,9 +5,13 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,13 +47,16 @@ namespace BluePrints.ViewModels
 
         private PROJECT loadPROJECT;
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         public bool IsProjectSpecific
         {
             get { return loadPROJECT != null; }
         }
 
+        public List<STOCK_ITEMS> STOCK_ITEMS { get; set; }
+        public List<JOB_COSTTYPES> JOB_COSTTYPES { get; set; }
+        public List<JOB_COSTGROUPS> JOB_COSTGROUPS { get; set; }
         protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
@@ -57,6 +64,10 @@ namespace BluePrints.ViewModels
                 var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
                 loadPROJECT = PROJECTParameter.GetEntity();
             }
+
+            STOCK_ITEMS = primeroUnitOfWork.STOCK_ITEMS.Where(x => !x.DESCRIPTION.ToUpper().Contains("VARIATION")).OrderBy(x => x.STOCKCODE).ToList();
+            JOB_COSTTYPES = primeroUnitOfWork.JOB_COSTTYPES.Where(x => !x.COSTDESC.ToUpper().Contains("VARIATION")).OrderBy(x => x.SHORTCODE).ToList();
+            JOB_COSTGROUPS = primeroUnitOfWork.JOB_COSTGROUPS.OrderBy(x => x.SHORTCODE).ToList();
         }
 
         protected override void addEntitiesLoader()
@@ -94,9 +105,9 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODEProjection>> specifyMainViewModelProjection()
         {
             if(IsProjectSpecific)
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), primeroUnitOfWork);
             else
-                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == null));
+                return query => COMMODITY_CODEProjectionQueries.COMMODITY_CODE_Transformation(query.Where(x => x.GUID_PROJECT == null), primeroUnitOfWork);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODEProjection> entities)
@@ -114,6 +125,13 @@ namespace BluePrints.ViewModels
         {
             if (IsProjectSpecific)
                 entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
+
+            if (entity.GUID == Guid.Empty)
+            {
+                if (entity.Entity.DEFAULT_STOCKCODE == null || entity.Entity.DEFAULT_STOCKCODE == string.Empty)
+                    entity.Entity.DEFAULT_STOCKCODE = entity.Entity.CODE;
+            }
+
             return true;
         }
 
@@ -137,11 +155,80 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
-        #endregion
 
-        #endregion
+        public void CustomUnboundColumnData(GridColumnDataEventArgs e)
+        {
+            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            {
+                if (e.Column.FieldName == "IsValid")
+                {
+                    COMMODITY_CODEProjection row = DisplayEntities[e.ListSourceRowIndex];
+                    if (row.EXO_COSTTYPE == null || row.EXO_STOCKITEM == null)
+                        e.Value = false;
+                    else
+                    {
+                        //all discipline applies so we don't need to validate
+                        if (row.Entity.GUID_DISCIPLINE == null)
+                            e.Value = true;
+                        else
+                        {
+                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == row.Entity.GUID_DISCIPLINE);
+                            if (findDISCIPLINE == null)
+                                e.Value = true;
+                            else
+                            {
+                                string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
+                                JOB_COSTGROUPS costGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == row.EXO_COSTTYPE.DEF_COSTGROUP);
+                                if (costGroup == null)
+                                    e.Value = false;
+                                else
+                                {
+                                    if (costGroup.SHORTCODE == validDisciplineCode)
+                                        e.Value = true;
+                                    else
+                                        e.Value = false;
+                                }
+                            }
+                        }
 
-        #region View Commands
+                        if (row.Entity.DEFAULT_STOCKCODE == null || row.Entity.DEFAULT_STOCKCODE == string.Empty)
+                            e.Value = false;
+                        else
+                        {
+                            STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == row.Entity.DEFAULT_STOCKCODE);
+                            if (findSTOCK_ITEM == null)
+                                e.Value = false;
+                            else
+                            {
+                                if (findSTOCK_ITEM.COSTTYPE != row.EXO_COSTTYPE.SEQNO)
+                                    e.Value = false;
+                                else
+                                {
+                                    if (row.Entity.GUID_DISCIPLINE == null)
+                                        e.Value = true;
+                                    else
+                                    {
+                                        DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == row.Entity.GUID_DISCIPLINE);
+                                        string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
+                                        JOB_COSTGROUPS costGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == row.EXO_STOCKITEM.COSTGROUP);
+                                        if (costGroup == null)
+                                            e.Value = false;
+                                        else
+                                        {
+                                            if (costGroup.SHORTCODE == validDisciplineCode)
+                                                e.Value = true;
+                                            else
+                                                e.Value = false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
 
         #endregion
 
@@ -207,6 +294,22 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
+        {
+            get
+            {
+                return JOB_COSTGROUPS;
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_TYPECollection
+        {
+            get
+            {
+                return JOB_COSTTYPES;
             }
         }
 
