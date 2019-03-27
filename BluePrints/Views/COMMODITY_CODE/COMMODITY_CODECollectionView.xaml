@@ -55,21 +55,27 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Exo Data">
-                                <dxg:GridColumn FieldName="EXO_COSTTYPE.DEF_COSTGROUP" Header="CostType Linked CostGroup" HeaderToolTip="If this is empty it means that cost type doesn't exists" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="EXO_STOCKITEM.COSTGROUP" Header="Stock Linked Cost Group" HeaderToolTip="If this is empty it means that stock item doesn't exists" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="EXO_STOCKITEM.COSTTYPE" Header="Stock Linked Cost Type" HeaderToolTip="If this is empty it means that stock item doesn't exists" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_TYPECollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                <dxg:GridControlBand.Bands>
+                                    <dxg:GridControlBand Header="Cost Type">
+                                        <dxg:GridColumn FieldName="EXO_COSTTYPE.DEF_COSTGROUP" Header="Linked CostGroup" HeaderToolTip="If this is empty it means that cost type doesn't exists" ReadOnly="True">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Stock Item">
+                                        <dxg:GridColumn FieldName="EXO_STOCKITEM.COSTGROUP" Header="Linked Cost Group" HeaderToolTip="If this is empty it means that stock item doesn't exists" ReadOnly="True">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="EXO_STOCKITEM.COSTTYPE" Header="Linked Cost Type" HeaderToolTip="If this is empty it means that stock item doesn't exists" ReadOnly="True">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_TYPECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                </dxg:GridControlBand.Bands>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Validation">
                                 <dxg:GridColumn FieldName="IsValid" UnboundType="Boolean" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left">
