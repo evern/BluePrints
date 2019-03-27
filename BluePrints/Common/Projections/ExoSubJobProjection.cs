@@ -1620,6 +1620,20 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
+        public static List<ExoTimeAuthorisation> GetProjectLinesWithoutCostInfo(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE = JOBCOST_LINES.STOCKCODE, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST, FORECAST_RATE = JOBCOST_LINES.QUOTE_UNITPR };
+
+            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoLineWithoutCostInfo(x)).ToList();
+            return exoTimes;
+        }
+
         public static dynamic GetProjectRevenue(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
@@ -1747,6 +1761,25 @@ namespace BluePrints.Common.Projections
             exoTime.CommodityId = dbTime.COMMODITY_ID;
             exoTime.CommodityCode = dbTime.COMMODITY_CODE;
             exoTime.CommodityName = dbTime.COMMODITY_NAME;
+            exoTime.VariationCode = dbTime.VARIATION_CODE;
+            exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
+            exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
+            exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);
+            exoTime.ForecastRate = Convert.ToDecimal(dbTime.FORECAST_RATE);
+
+            return exoTime;
+        }
+
+        private static ExoTimeAuthorisation populateExoLineWithoutCostInfo(dynamic dbTime)
+        {
+            ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();
+            exoTime.LineSeqNo = dbTime.LINEID;
+            exoTime.MasterJobNo = dbTime.MASTERJOBNO;
+            exoTime.SubJobNo = dbTime.SUBJOBNO;
+            exoTime.SubJobCode = dbTime.SUBJOBNAME;
+            exoTime.SubJobTitle = dbTime.SUBJOBTITLE;
+            exoTime.DisciplineId = dbTime.DISCIPLINE_ID;
+            exoTime.CommodityId = dbTime.COMMODITY_ID;
             exoTime.VariationCode = dbTime.VARIATION_CODE;
             exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
             exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
