@@ -598,21 +598,19 @@ namespace BluePrints.ViewModels
         //because timesheet with variation code can be string.empty or null, do double checking here
         private JOB_TIMESHEETS findNullOrEmptyVariationJobTimesheets(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, int resourceSeqNo, int subJobNo, string stockCode, int costGroupNo, int costTypeNo, string variationCode, string narrative, DateTime timesheetWeekStartDate)
         {
-            bool isVariationCodeNull = variationCode == null;
-            IEnumerable<JOB_TIMESHEETS> baseJOB_TIMESHEETSQuery = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.X_NARRATIVE == narrative && x.WEEK_START_DATE == timesheetWeekStartDate);
-            JOB_TIMESHEETS timesheet = baseJOB_TIMESHEETSQuery.FirstOrDefault(x => x.X_VARIATIONCODE == variationCode);
-            //when trying to query for an actual variation code we can simply return the result
-            if (variationCode != string.Empty && variationCode != null)
-                return timesheet;
-            //do another check of timesheet when variation code is null
-            else if (timesheet == null)
-            {
-                string secondPassCheckVariationCode = isVariationCodeNull ? string.Empty : variationCode;
-                timesheet = baseJOB_TIMESHEETSQuery.FirstOrDefault(x => x.X_VARIATIONCODE == secondPassCheckVariationCode);
-                return timesheet;
-            }
+            bool isVariationCodeNull = variationCode == null || variationCode == string.Empty;
+            bool isNarrativeNull = narrative == null || narrative == string.Empty;
+
+            if(!isNarrativeNull && !isVariationCodeNull)
+                return primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetWeekStartDate && x.X_NARRATIVE == narrative && x.X_VARIATIONCODE == variationCode);
+            else if(isNarrativeNull && !isVariationCodeNull)
+                return primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetWeekStartDate && (x.X_NARRATIVE == string.Empty || x.X_NARRATIVE == null) && x.X_VARIATIONCODE == variationCode);
+            else if (!isNarrativeNull && isVariationCodeNull)
+                return primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetWeekStartDate && x.X_NARRATIVE == narrative && (x.X_VARIATIONCODE == null || x.X_VARIATIONCODE == string.Empty));
+            //(isNarrativeNull && isVariationCodeNull)
             else
-                return timesheet;
+                return primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == resourceSeqNo && x.JOBNO == subJobNo && x.STOCKCODE == stockCode && x.COST_GROUP == costGroupNo && x.COST_TYPE == costTypeNo && x.WEEK_START_DATE == timesheetWeekStartDate && (x.X_NARRATIVE == string.Empty || x.X_NARRATIVE == null) && (x.X_VARIATIONCODE == null || x.X_VARIATIONCODE == string.Empty));
+
         }
 
         public TimesheetDate GetTimesheetDate(DateTime bookDate)
