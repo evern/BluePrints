@@ -128,7 +128,6 @@ namespace BluePrints.ViewModels
             {
                 if(!addedFromView)
                 {
-                    projection.IsNewRow = false;
                     DisplayEntities.Insert(0, projection);
                 }
 
@@ -156,9 +155,11 @@ namespace BluePrints.ViewModels
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
                     resource.SHORTCODE = addedResource.SHORTCODE;
 
-                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.DEFAULT_STOCKCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.OLD_DEFAULT_STOCKCODE, resource.DEFAULT_STOCKCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+                    resource.OLD_DEFAULT_STOCKCODE = string.Empty;
                 }
 
+                resource.IsNewRow = false;
                 resource.Update();
             }
 
@@ -228,11 +229,17 @@ namespace BluePrints.ViewModels
 
             if (!projection.IsNewRow)
             {
-                if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) ||
-                   field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
-                if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?\n\nThis might cause fragmentation with timesheet(s)", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                    return "User cancel";
+                if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                {
+                    if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                        return "User cancel";
+                    else
+                    {
+                        projection.OLD_DEFAULT_STOCKCODE = projection.DEFAULT_STOCKCODE;
+                    }
+                }
             }
+
             return string.Empty;
         }
 

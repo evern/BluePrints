@@ -40,6 +40,7 @@ namespace BluePrints.Common.Projections
         [Required]
         public string RESOURCENAME { get; set; }
         public string TITLE { get; set; }
+        public string OLD_DEFAULT_STOCKCODE { get; set; }
         public string DEFAULT_STOCKCODE { get; set; }
         public string SHORTCODE { get; set; }
 

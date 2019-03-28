@@ -122,9 +122,13 @@ namespace BluePrints.ViewModels
         }
 
         List<ExoTimeAuthorisation> preloadedExoLines = new List<ExoTimeAuthorisation>();
+        List<ExoTimeAuthorisation> preloadedExoLinesWithCostInfo = new List<ExoTimeAuthorisation>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             preloadedExoLines = ExoQueries.GetProjectLinesWithoutCostInfo(primeroUnitOfWork, loadPROJECT.NUMBER);
+
+            //used to validate cost type against cost group
+            preloadedExoLinesWithCostInfo = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             VariationCodes = new ObservableCollection<string>(preloadedExoLines.Select(x => x.VariationCode).Distinct().OrderBy(x => x));
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
@@ -443,7 +447,6 @@ namespace BluePrints.ViewModels
             }
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLinesWithoutCostInfo(primeroUnitOfWork, loadPROJECT.NUMBER);
             foreach (DataRow row in DataPointsTable.Rows)
             {
                 if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
@@ -464,17 +467,12 @@ namespace BluePrints.ViewModels
                     //ExoTimeAuthorisation findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && x.VariationCode == variationCode);
 
                     bool isVariationCodeNull = variationCode == string.Empty || variationCode == null;
-                    ExoTimeAuthorisation findExoLine;
-                    if(isVariationCodeNull)
-                        findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && (x.VariationCode == string.Empty || x.VariationCode == null));
-                    else
-                        findExoLine = exoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
-
+                    bool isValidJobCode = IsValidJobCode(subJobNo, costGroupNo, costTypeNo, variationCode);
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
                     string stockCode = string.Empty;
                     string stockCodeDescription = string.Empty;
-                    if (findExoLine != null)
+                    if (isValidJobCode)
                     {
                         JOBCOST_HDR subJob = primeroUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == subJobNo);
                         if(subJob != null)
@@ -562,6 +560,29 @@ namespace BluePrints.ViewModels
             }
 
             MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
+        }
+
+        private bool IsValidJobCode(int subJobNo, int costGroupNo, int costTypeNo, string variationCode)
+        {
+            bool isVariationCodeNull = variationCode == string.Empty || variationCode == null;
+            ExoTimeAuthorisation findExoLine = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && (x.VariationCode == string.Empty || x.VariationCode == null));
+            if (isVariationCodeNull)
+            {
+                if (findExoLine != null)
+                    return true;
+            }
+            //for codes with variation, we want to validate against main job code first then against variation code
+            else
+            {
+                if(findExoLine != null)
+                {
+                    ExoTimeAuthorisation findExoVariationLine = preloadedExoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
+                    if (findExoVariationLine != null)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         //populate unique code for each row and checks whether all of them are unique
@@ -837,6 +858,7 @@ namespace BluePrints.ViewModels
                     DataRow editing_row = editing_row_view.Row;
                     DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.VisibleIndex];
                     basePasteData(editing_row, editing_column, selected_cell.Column, string.Empty, false);
+                    tryFixCommodityCode(editing_row);
                     validateUserAuth(editing_row);
                 }
             }
@@ -898,6 +920,7 @@ namespace BluePrints.ViewModels
                             pasteValueColumnOffset = 0;
 
                         basePasteData(editing_row, editing_column, current_column, columnValue, false);
+                        tryFixCommodityCode(editing_row);
                         validateUserAuth(editing_row);
                     }
 
@@ -1238,6 +1261,33 @@ namespace BluePrints.ViewModels
             }
         }
 
+        /// <summary>
+        /// some commodity code can be associated to multiple cost group so the commodity code assigned should be the same cost group
+        /// </summary>
+        private void tryFixCommodityCode(DataRow dataRow)
+        {
+            int? costTypeSeqNo = dataRow[columnCostType] == DBNull.Value ? null : (int?)dataRow[columnCostType];
+            int? costGroupSeqNo = dataRow[columnCostGroup] == DBNull.Value ? null : (int?)dataRow[columnCostGroup];
+
+
+            bool isCostTypeValidToCostGroup = preloadedExoLinesWithCostInfo.Any(x => x.DisciplineId == costGroupSeqNo && x.CommodityId == costTypeSeqNo);
+            if(!isCostTypeValidToCostGroup)
+            {
+                JOB_COSTTYPES findCOSTTYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SEQNO == costTypeSeqNo);
+                if (findCOSTTYPE != null)
+                {
+                    //when we cannot find the cost type to cost group association, attempt to find id on the same code
+                    //because the same code can have different id in the database, dictated by the assigned cost group
+                    string costTypeCode = findCOSTTYPE.SHORTCODE;
+                    ExoTimeAuthorisation findExoLineWithGroupSeqNoAndCostTypeCode = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.DisciplineId == costGroupSeqNo && x.CommodityCode == costTypeCode);
+                    if(findExoLineWithGroupSeqNoAndCostTypeCode != null)
+                    {
+                        dataRow[columnCostType] = findExoLineWithGroupSeqNoAndCostTypeCode.CommodityId;
+                    }
+                }
+            }
+        }
+
         private void validateUserAuth(DataRow validateRow)
         {
             //if (validateRow[columnResourceSeqNo].ToString() != string.Empty && validateRow[columnJobNo].ToString() != string.Empty && validateRow[columnCostGroup].ToString() != string.Empty && validateRow[columnCostType].ToString() != string.Empty)
@@ -1254,9 +1304,10 @@ namespace BluePrints.ViewModels
                 IEnumerable<ExoTimeAuthorisation> findJobLine = preloadedExoLines.Where(x => x.SubJobNo == (int)validateRow[columnJobNo]);
                 
                 if (findJobLine.Count() == 0)
-                    validateRow.SetColumnError(columnJobNo, "Invalid, please check whether a job no exists");
+                    validateRow.SetColumnError(columnJobNo, "Invalid, please check whether the job exists");
                 else
                 {
+                    //validate variation coe
                     if (validateRow[columnVariationCode].ToString() != string.Empty)
                     {
                         string variationCode = validateRow[columnVariationCode].ToString();
@@ -1265,13 +1316,28 @@ namespace BluePrints.ViewModels
                             List<ExoTimeAuthorisation> jobWithVariationCode = findJobLine.Where(x => x.VariationCode.Length > 0).ToList();
                             IEnumerable<ExoTimeAuthorisation> findAuthorisationByVariationCode = findJobLine.Where(x => x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
                             if (findAuthorisationByVariationCode.Count() == 0)
-                                validateRow.SetColumnError(columnJobNo, "Invalid, please check whether variation code exists on job no");
+                                validateRow.SetColumnError(columnVariationCode, "Invalid, please check whether variation code exists on job");
                             else
-                                validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
+                                validateRow.SetColumnError(columnVariationCode, string.Empty);
                         }
                         else
-                            validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
+                            validateRow.SetColumnError(columnVariationCode, string.Empty);
                     }
+
+                    //validate subjob, cost group and cost type
+                    int subJobNo = (int)validateRow[columnJobNo];
+                    int costGroupNo = (int)validateRow[columnCostGroup];
+                    int costTypeNo = (int)validateRow[columnCostType];
+                    IEnumerable<ExoTimeAuthorisation> findJobLineByCostGroupType = preloadedExoLinesWithCostInfo.Where(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && (x.VariationCode == string.Empty || x.VariationCode == null));
+                    if (findJobLineByCostGroupType.Count() == 0)
+                        validateRow.SetColumnError(columnCostGroup, "Invalid, please check whether cost group and cost type exists on job");
+                    else
+                    {
+                        validateRow.SetColumnError(columnJobNo, string.Empty);
+                        validateRow.SetColumnError(columnCostGroup, string.Empty);
+                        validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
+                    }
+
 
                     //IEnumerable<ExoTimeAuthorisation> findAuthorisationByDisciplineId = findJobLine.Where(x => x.DisciplineId == (int)validateRow[columnCostGroup]);
                     //if (findAuthorisationByDisciplineId.Count() == 0)
