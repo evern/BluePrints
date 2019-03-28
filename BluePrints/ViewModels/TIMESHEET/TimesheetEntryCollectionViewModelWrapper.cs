@@ -110,7 +110,7 @@ namespace BluePrints.ViewModels
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE, JOBCOST_RESOURCEQuery);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
@@ -133,6 +133,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> specifyMainViewModelProjection()
         {
             return query => new List<BASELINE_ITEM>().AsQueryable();
+        }
+
+        protected Func<IRepositoryQuery<JOBCOST_RESOURCE>, IQueryable<JOBCOST_RESOURCE>> JOBCOST_RESOURCEQuery()
+        {
+            return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEM> entities)
