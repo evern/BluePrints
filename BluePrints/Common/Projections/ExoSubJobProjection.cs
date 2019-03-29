@@ -505,19 +505,11 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static STOCK_ITEMS FindExistingOrAddStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, string oldShortCode, string newShortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType)
+        public static STOCK_ITEMS FindExistingOrAddStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, string shortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType)
         {
-            bool isOldStockCodeEmptyOrNull = oldShortCode == string.Empty || oldShortCode == null;
-
-            STOCK_ITEMS stock_item;
-            if(isOldStockCodeEmptyOrNull)
-                stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, newShortCode);
-            else
-                stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, oldShortCode);
-
+            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, shortCode);
             if (stock_item != null)
             {
-                stock_item.STOCKCODE = newShortCode;
                 stock_item.ISACTIVE = "Y";
                 stock_item.SELLPRICE1 = sellPrice;
                 stock_item.SALES_GL_CODE = salesGLCode;
@@ -530,7 +522,7 @@ namespace BluePrints.Common.Projections
             }
             else
             {
-                STOCK_ITEMS newSTOCK_ITEM = createNewStockItem(newShortCode, description, sellPrice, salesGLCode, purchGLCode, cosGLCode, stdCost, costGroup, costType);
+                STOCK_ITEMS newSTOCK_ITEM = createNewStockItem(shortCode, description, sellPrice, salesGLCode, purchGLCode, cosGLCode, stdCost, costGroup, costType);
                 pUnitOfWork.STOCK_ITEMS.Add(newSTOCK_ITEM);
                 return newSTOCK_ITEM;
             }

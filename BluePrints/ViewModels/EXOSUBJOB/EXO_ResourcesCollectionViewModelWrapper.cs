@@ -155,8 +155,7 @@ namespace BluePrints.ViewModels
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
                     resource.SHORTCODE = addedResource.SHORTCODE;
 
-                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.OLD_DEFAULT_STOCKCODE, resource.DEFAULT_STOCKCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
-                    resource.OLD_DEFAULT_STOCKCODE = string.Empty;
+                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
                 }
 
                 resource.IsNewRow = false;
@@ -233,10 +232,6 @@ namespace BluePrints.ViewModels
                 {
                     if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                         return "User cancel";
-                    else
-                    {
-                        projection.OLD_DEFAULT_STOCKCODE = projection.DEFAULT_STOCKCODE;
-                    }
                 }
             }
 

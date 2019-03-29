@@ -106,15 +106,10 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" HeaderToolTip="Cannot be changed once entered, please double check" >
-                                    <dxg:GridColumn.HeaderStyle>
-                                        <Style TargetType="Control">
-                                            <Setter Property="Background" Value="Salmon" />
-                                        </Style>
-                                    </dxg:GridColumn.HeaderStyle>
+                                <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
+                                            <dxe:TextEdit Name="PART_Editor" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
