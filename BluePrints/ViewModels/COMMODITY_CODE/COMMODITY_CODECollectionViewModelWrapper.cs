@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
@@ -156,75 +157,138 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public void CustomUnboundColumnData(GridColumnDataEventArgs e)
+        public void AlignExoData()
         {
-            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            if(DisplaySelectedEntities.Count == 0)
             {
-                if (e.Column.FieldName == "IsValid")
+                MessageBoxService.ShowMessage("Please select row(s) to fix", "Error", MessageButton.OK, MessageIcon.Information);
+                return;
+            }
+
+            List<COMMODITY_CODEProjection> fixedProjections = new List<COMMODITY_CODEProjection>();
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            foreach (COMMODITY_CODEProjection projection in DisplaySelectedEntities)
+            {
+                string errorMessage = validateProjection(projection, true);
+                if (errorMessage != string.Empty)
+                    errorMessages.Add(new ErrorMessage(projection.Entity.CODE, errorMessage));
+                else
+                    fixedProjections.Add(projection);
+            }
+
+            primeroUnitOfWork.SaveChanges();
+
+            //use this to trigger message sending and refresh
+            MainViewModel.BulkSave(fixedProjections);
+
+            if(errorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot fix commodity code(s) due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+            }
+        }
+
+        private string validateProjection(COMMODITY_CODEProjection projection, bool isFix)
+        {
+            string message = string.Empty;
+            if (projection.EXO_COSTTYPE == null)
+                message += "Cost Type and ";
+            if (projection.EXO_STOCKITEM == null)
+                message += "Stock Code and ";
+
+            if (message != string.Empty)
+            {
+                message = string.Concat(message.Substring(0, message.Length - 4), " doesn't exist in exo");
+                return message; 
+            }
+
+            if (projection.Entity.GUID_DISCIPLINE != null)
+            {
+                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
+                if (findDISCIPLINE != null)
                 {
-                    COMMODITY_CODEProjection row = DisplayEntities[e.ListSourceRowIndex];
-                    if (row.EXO_COSTTYPE == null || row.EXO_STOCKITEM == null)
-                        e.Value = false;
+                    string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
+                    JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
+                    if (validCostGroup == null)
+                        return "Cost Group:" + validDisciplineCode + " doesn't exists in exo";
+                    else if(projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
+                    {
+                        if(isFix)
+                            projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
+                    }
+                }
+                else
+                {
+                    if(projection.EXO_COSTTYPE.DEF_COSTGROUP != null)
+                    {
+                        if (isFix)
+                            projection.EXO_COSTTYPE.DEF_COSTGROUP = null;
+                        else
+                            return "Cost Group on " + projection.EXO_COSTTYPE.SHORTCODE + " should be set to none since discipline is not defined on this commodity";
+                    }
+                }
+            }
+
+            if (projection.Entity.DEFAULT_STOCKCODE == null || projection.Entity.DEFAULT_STOCKCODE == string.Empty)
+                return "Stock code doesn't exists in Exo";
+            else
+            {
+                STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == projection.Entity.DEFAULT_STOCKCODE);
+                if (findSTOCK_ITEM == null)
+                    return "Stock code doesn't exists in Exo";
+                else
+                {
+                    if (findSTOCK_ITEM.COSTTYPE != projection.EXO_COSTTYPE.SEQNO)
+                    {
+                        JOB_COSTTYPES validCOST_TYPE = JOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == projection.EXO_COSTTYPE.SEQNO);
+                        if(validCOST_TYPE == null)
+                            return "Cost type: " + projection.Entity.CODE + " doesn't exists in exo";
+                        else
+                        {
+                            if(isFix)
+                                findSTOCK_ITEM.COSTTYPE = validCOST_TYPE.SEQNO;
+                            else
+                                return "Cost type on stock item is not linked to commodity code " + projection.Entity.CODE;
+                        }
+                    }
                     else
                     {
-                        //all discipline applies so we don't need to validate
-                        if (row.Entity.GUID_DISCIPLINE == null)
-                            e.Value = true;
-                        else
+                        if (projection.Entity.GUID_DISCIPLINE != null)
                         {
-                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == row.Entity.GUID_DISCIPLINE);
-                            if (findDISCIPLINE == null)
-                                e.Value = true;
-                            else
+                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
+                            if(findDISCIPLINE != null)
                             {
                                 string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
-                                JOB_COSTGROUPS costGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == row.EXO_COSTTYPE.DEF_COSTGROUP);
-                                if (costGroup == null)
-                                    e.Value = false;
+                                JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == projection.EXO_STOCKITEM.COSTGROUP);
+                                if (validCostGroup == null)
+                                    return "Cost Group: " + validDisciplineCode + " doesn't exists in exo";
                                 else
                                 {
-                                    if (costGroup.SHORTCODE == validDisciplineCode)
-                                        e.Value = true;
-                                    else
-                                        e.Value = false;
-                                }
-                            }
-                        }
-
-                        if (row.Entity.DEFAULT_STOCKCODE == null || row.Entity.DEFAULT_STOCKCODE == string.Empty)
-                            e.Value = false;
-                        else
-                        {
-                            STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == row.Entity.DEFAULT_STOCKCODE);
-                            if (findSTOCK_ITEM == null)
-                                e.Value = false;
-                            else
-                            {
-                                if (findSTOCK_ITEM.COSTTYPE != row.EXO_COSTTYPE.SEQNO)
-                                    e.Value = false;
-                                else
-                                {
-                                    if (row.Entity.GUID_DISCIPLINE == null)
-                                        e.Value = true;
-                                    else
+                                    if (projection.EXO_STOCKITEM.COSTGROUP != validCostGroup.SEQNO)
                                     {
-                                        DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == row.Entity.GUID_DISCIPLINE);
-                                        string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
-                                        JOB_COSTGROUPS costGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == row.EXO_STOCKITEM.COSTGROUP);
-                                        if (costGroup == null)
-                                            e.Value = false;
+                                        if (isFix)
+                                            projection.EXO_STOCKITEM.COSTGROUP = validCostGroup.SEQNO;
                                         else
-                                        {
-                                            if (costGroup.SHORTCODE == validDisciplineCode)
-                                                e.Value = true;
-                                            else
-                                                e.Value = false;
-                                        }
+                                            return "Cost group is incorrect on cost type";
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public void CustomUnboundColumnData(GridColumnDataEventArgs e)
+        {
+            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            {
+                if (e.Column.FieldName == "ErrorMessage")
+                {
+                    COMMODITY_CODEProjection row = DisplayEntities[e.ListSourceRowIndex];
+                    e.Value = validateProjection(row, false);
                 }
             }
         }

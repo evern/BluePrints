@@ -78,11 +78,7 @@
                                 </dxg:GridControlBand.Bands>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Validation">
-                                <dxg:GridColumn FieldName="IsValid" UnboundType="Boolean" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="ErrorMessage" UnboundType="String" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left" />
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
                         <dxg:GridControl.TotalSummary>
@@ -94,11 +90,13 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Command="{Binding DataContext.AlignExoDataCommand, ElementName=userControl}" Content="Align Exo" Glyph="{dxc:DXImage Image=MergeAcross_32x32.png}" ToolTip="Align EXO cost type, cost group and stock item" />
+                                    <dxb:BarItemLinkSeparator />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                                 <dxg:TableView.FormatConditions>
-                                    <dxg:FormatCondition Expression="[IsValid] = 'false'" ApplyToRow="True">
+                                    <dxg:FormatCondition Expression="Not IsNullOrEmpty([ErrorMessage])" ApplyToRow="True" FieldName="Entity.PHASE_TYPE">
                                         <dxc:Format Background="#FFFF9B98" />
                                     </dxg:FormatCondition>
                                 </dxg:TableView.FormatConditions>
