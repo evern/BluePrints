@@ -234,6 +234,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public string Variation_Code => ((IReportable)ProgressItem).Variation_Code;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -563,6 +565,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public ChargeType? Charge => Reportable.Charge;
 
         public string Project_Number => Reportable.Project_Number;
+
+        public string Variation_Code => Reportable.Variation_Code;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

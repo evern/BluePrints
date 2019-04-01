@@ -236,7 +236,7 @@ namespace BluePrints.ViewModels
 
             //DisplaySelectedEntities_CollectionChanged(null, null);
 
-            if(entities.Count() > 0)
+            if (entities.Count() > 0)
             {
                 this.DisplaySelectedEntity = entities.First();
                 BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
@@ -254,8 +254,8 @@ namespace BluePrints.ViewModels
         {
             var argumentObject = (object[])e.Argument;
             var project = (PROJECT_Dashboard)argumentObject[0];
-            
-            if(project != null)
+
+            if (project != null)
             {
                 project.BuildStats(false, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining);
                 project.RecalculateStats(false);
@@ -276,7 +276,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, shouldSeparateVariation);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

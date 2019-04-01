@@ -51,6 +51,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Current_Productivity { get; }
         decimal? Override_Productivity { get; set; }
         decimal? Remaining_Productivity { get; }
+        string Variation_Code { get; }
     }
 
     public interface IBookable

@@ -72,6 +72,8 @@
 
         public DateTime? FORECAST_END_DATE { get; set; }
 
+        public bool FORECAST_VARIATION_GROUP { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

@@ -24,6 +24,7 @@ namespace BluePrints.Common.Projections
         }
 
         BASELINE_ITEM ISupportVariation<BASELINE_ITEM>.Entity => this.Entity.Entity;
+
         public Guid GUID_ORIGINAL { get => Entity.GUID_ORIGINAL; set => Entity.GUID_ORIGINAL = value; }
 
         public VARIATION_ITEM VARIATION_ITEM { get; private set; }

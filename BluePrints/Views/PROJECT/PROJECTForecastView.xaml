@@ -63,6 +63,7 @@
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
+                                <dxb:BarCheckItem Content="Separate Variation" Glyph="{dxc:DXImage Image=Clip_16x16.png}" IsChecked="{Binding DataContext.IsGroupByVariationCode, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Clip_32x32.png}" ToolTip="Separate jobs with variation code into additional lines" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -193,7 +194,7 @@
                                                     <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                                     <dxg:GridColumn FieldName="Entity.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
                                                     <dxg:GridColumn FieldName="Entity.Commodity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
-                                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
+                                                    <dxg:GridColumn FieldName="Entity.Variation_Code" Visible="{Binding DataContext.IsGroupByVariationCode, ElementName=userControl}" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                                     <dxg:GridColumn FieldName="Calculation.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                                         <dxg:GridColumn.CellTemplate>
                                                             <DataTemplate>
@@ -365,7 +366,7 @@
                                             <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
                                             <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
                                             <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="False" VisibleIndex="40" />
+                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" VisibleIndex="40" />
                                             <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="50" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">

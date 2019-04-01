@@ -1041,6 +1041,16 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+
+        string variation_code { get; set; }
+        public string Variation_Code { get => variation_code; }
+
+        //this will be used in ProjectDashboardHierarchicalBuilder if we want to have variation units separated out and shown in S-Curve
+        //also requires database procedure to extrapolate out deliverable planned stats based on variation code
+        public void SetVariationCode(string variationCode)
+        {
+            variation_code = variationCode;
+        }
     }
 
     public class DeliverableEarnedPercentages

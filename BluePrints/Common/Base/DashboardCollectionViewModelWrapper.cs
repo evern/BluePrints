@@ -45,6 +45,8 @@ namespace BluePrints.Common.ViewModel
         private bool isChartLoading { get; set; }
         private bool isSummaryLoading { get; set; }
 
+        protected virtual bool shouldSeparateVariation => false;
+
         public bool IsChartLoading
         {
             get => isChartLoading;
