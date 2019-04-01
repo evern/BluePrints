@@ -103,7 +103,7 @@
                     </Style>
                 </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home" MergeOrder="0">
+                    <dxr:RibbonPage Caption="Home" MergeOrder="0" MergeType="Remove">
                         <dxr:RibbonPageGroup Caption="Appearance" MergeOrder="1002">
                             <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
                                 <dxmvvm:Interaction.Behaviors>

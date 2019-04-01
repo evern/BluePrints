@@ -33,7 +33,7 @@
                 <dxr:RibbonControl RibbonStyle="OfficeSlim" DockPanel.Dock="Top" AllowCustomization="False"
                                    MDIMergeStyle="Always">
                     <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="{Binding DataContext.ViewName, ElementName=userControl}">
+                        <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="PROJECT Tasks">
                                 <dxb:BarButtonItem Content="Subjobs"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"
