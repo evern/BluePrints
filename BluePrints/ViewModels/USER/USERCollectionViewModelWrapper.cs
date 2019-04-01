@@ -305,8 +305,14 @@ namespace BluePrints.ViewModels
 
         public void MatchExoStaffId()
         {
+            if(DisplaySelectedEntities.Count == 0)
+            {
+                MessageBoxService.ShowMessage("Please select user(s) to update", "Error", MessageButton.OK, MessageIcon.Information);
+                return;
+            }
+
             List<USER> userToSave = new List<USER>();
-            foreach(USER entity in MainViewModel.Entities)
+            foreach(USER entity in DisplaySelectedEntities)
             {
                 int? exoId = getExoStaffId(entity);
                 if(exoId != null)
@@ -413,9 +419,15 @@ namespace BluePrints.ViewModels
 
         public void Update_User()
         {
+            if (DisplaySelectedEntities.Count == 0)
+            {
+                MessageBoxService.ShowMessage("Please select user(s) to update", "Error", MessageButton.OK, MessageIcon.Information);
+                return;
+            }
+
             IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
             List<USER> update_users = new List<USER>();
-            foreach(USER user in MainViewModel.Entities)
+            foreach(USER user in DisplaySelectedEntities)
             {
                 USER active_directory_user = activeDirectoryUSERS.FirstOrDefault(x => x.NAME == user.NAME);
                 if(active_directory_user != null)
