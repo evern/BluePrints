@@ -561,7 +561,7 @@ namespace BluePrints.Common.Projections
         }
 
 
-        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
+        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId)
         {
             string uppercaseName = name.ToUpper();
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
@@ -575,12 +575,13 @@ namespace BluePrints.Common.Projections
                 staff.SECURITYPROFILEID = securityProfileId;
                 staff.USERPROFILEID = userProfileId;
                 staff.REPORTS_TO_STAFFNO = reportToStaffId == null ? staff.STAFFNO : reportToStaffId;
+                staff.PAYROLL_ID = payrollId;
 
                 return staff;
             }
             else
             {
-                STAFF newSTAFF = createNewStaff(uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId);
+                STAFF newSTAFF = createNewStaff(uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId, payrollId);
                 pUnitOfWork.STAFF.Add(newSTAFF);
 
                 //need to save changes here to get new staff id;
@@ -734,7 +735,7 @@ namespace BluePrints.Common.Projections
             return newSTOCK_ITEM;
         }
 
-        private static STAFF createNewStaff(string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId)
+        private static STAFF createNewStaff(string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId)
         {
             //use new unit of work to prevent concurrency issues
             var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -760,6 +761,7 @@ namespace BluePrints.Common.Projections
             newSTAFF.MOBILE_ACCESS = "N";
             newSTAFF.LAST_ACKNOWLEDGED_VERSION = 0;
             newSTAFF.ISACTIVE = "Y";
+            newSTAFF.PAYROLL_ID = payrollId;
 
             return newSTAFF;
         }
@@ -1732,10 +1734,10 @@ namespace BluePrints.Common.Projections
                                      join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                      on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                      where JOBCOST_RESOURCE.ISACTIVE == "Y"
-                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP };
+                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, STAFF.PAYROLL_ID, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP };
 
             //EntityKey is used to prevent duplicate error message
-            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE })).AsQueryable();
+            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, RESOURCE_STAFFNO = x.JOBCOST_STAFFNO, IsNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE })).AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)

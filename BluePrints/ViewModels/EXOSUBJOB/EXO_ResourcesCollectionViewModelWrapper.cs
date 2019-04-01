@@ -141,7 +141,7 @@ namespace BluePrints.ViewModels
         {
             foreach(ExoResourceProjection resource in projections)
             {
-                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUnitOfWork, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO);
+                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUnitOfWork, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID);
                 if(addedStaff != null)
                 {
                     resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;

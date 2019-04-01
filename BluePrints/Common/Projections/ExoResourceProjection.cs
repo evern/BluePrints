@@ -46,6 +46,8 @@ namespace BluePrints.Common.Projections
         [Required]
         public int SECURITYPROFILEID { get; set; }
 
+        public string PAYROLL_ID { get; set; }
+
         [Required]
         public int USERPROFILEID { get; set; }
         public int? REPORTS_TO_STAFFNO { get; set; }
