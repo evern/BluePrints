@@ -517,7 +517,7 @@ namespace BluePrints.Common.Misc
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
             hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, shouldSeparateVariation);
-
+            //hierarchicalDashboards = new List<DashboardTreeStructure>();
             IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
             IEnumerable<SUBJOB> all_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.ToList();

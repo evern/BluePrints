@@ -173,8 +173,18 @@ namespace BluePrints.ViewModels
             if (revenueLine != null)
                 ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
 
+            dynamic variationRevenueLine = ExoQueries.GetProjectVariationRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if (variationRevenueLine != null)
+                ForecastSummary.Variation = Convert.ToDecimal(variationRevenueLine.BUDGETED_REV);
+
             ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroUnitOfWork, loadPROJECT.NUMBER);
+
+            IEnumerable<ExoTimeAuthorisation> validJobLines = jobLines.Where(x => x.SubJobCode != string.Empty && x.DisciplineCode != string.Empty && x.CommodityCode != string.Empty);
+            ForecastSummary.Variation_Costs = validJobLines.Where(x => x.VariationCode != string.Empty && x.VariationCode != null).Sum(x => x.BudgetCosts);
+            ForecastSummary.Budget_Costs = validJobLines.Where(x => x.VariationCode == string.Empty || x.VariationCode == null).Sum(x => x.BudgetCosts);
         }
+
+        public int VariationCodeVisibleIndex => IsGroupByVariationCode ? 70 : 999;
 
         public bool IsGroupByVariationCode
         {
@@ -193,6 +203,7 @@ namespace BluePrints.ViewModels
                     loadPROJECT.FORECAST_VARIATION_GROUP = value;
                     PROJECTCollectionViewModel.Save(loadPROJECT);
                     this.RaisePropertyChanged(x => x.IsGroupByVariationCode);
+                    this.RaisePropertyChanged(x => x.VariationCodeVisibleIndex);
                 }
             }
         }
@@ -299,6 +310,7 @@ namespace BluePrints.ViewModels
         protected string columnCalculation = "Calculation";
         protected string columnCompare = "CompareEntities";
         protected string columnChild = "ChildEntities";
+        protected string columnVariation = "Entity.Variation_Code";
         DataTable dataPointsTable = null;
         DateTime firstAlignedDataDate;
 
@@ -410,6 +422,7 @@ namespace BluePrints.ViewModels
                     //lastDataDate = lastDataDate.AddDays(10 * interval.Days);
                     alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection(firstAlignedDataDate, (DateTime)FixedEndDate);
                     dataPointsTable.Columns.Add(columnEntity, typeof(ExoSubJobProjection));
+                    dataPointsTable.Columns.Add(columnVariation, typeof(string));
                     dataPointsTable.Columns.Add(columnCalculation, typeof(ForecastCalculation));
                     dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
                     dataPointsTable.Columns.Add(columnChild, typeof(DataTable));
@@ -578,7 +591,7 @@ namespace BluePrints.ViewModels
                 initializeDataRow(cloneRow, groupedSubjob.SubJob.Code, groupedSubjob.SubJob.Title, groupedSubjob.Discipline.Code, groupedSubjob.Discipline.Name, groupedSubjob.Commodity.Code, groupedSubjob.Commodity.Name, groupedSubjob.Commodity.Description, groupedSubjob.Commodity.UOM, groupedSubjob.Variation_Code);
                 IEnumerable<DashboardFlatStructure> commodityDashboards;
                 if(IsGroupByVariationCode)
-                    commodityDashboards = AllProjectDashboards.Where(x => x.SubjobCode == groupedSubjob.SubJob.Code && x.DisciplineCode == groupedSubjob.Discipline.Code && x.CommodityCode == groupedSubjob.Commodity.Code && x.Variation_Code == groupedSubjob.Variation_Code);
+                    commodityDashboards = AllProjectDashboards.Where(x => x.SubjobCode == groupedSubjob.SubJob.Code && x.DisciplineCode == groupedSubjob.Discipline.Code && x.CommodityCode == groupedSubjob.Commodity.Code && variationCodeMatch(x.Variation_Code, groupedSubjob.Variation_Code));
                 else
                     commodityDashboards = AllProjectDashboards.Where(x => x.SubjobCode == groupedSubjob.SubJob.Code && x.DisciplineCode == groupedSubjob.Discipline.Code && x.CommodityCode == groupedSubjob.Commodity.Code);
 
@@ -591,7 +604,7 @@ namespace BluePrints.ViewModels
             disciplineDataRow[columnChild] = childDataTable;
             IEnumerable<DashboardFlatStructure> disciplineDashboards;
             if(IsGroupByVariationCode)
-                disciplineDashboards = AllProjectDashboards.Where(x => x.SubjobCode == firstSubJob.SubJob.Code && x.DisciplineCode == firstSubJob.Discipline.Code && x.Variation_Code == firstSubJob.Variation_Code);
+                disciplineDashboards = AllProjectDashboards.Where(x => x.SubjobCode == firstSubJob.SubJob.Code && x.DisciplineCode == firstSubJob.Discipline.Code && variationCodeMatch(x.Variation_Code,  firstSubJob.Variation_Code));
             else
                 disciplineDashboards = AllProjectDashboards.Where(x => x.SubjobCode == firstSubJob.SubJob.Code && x.DisciplineCode == firstSubJob.Discipline.Code);
 
@@ -600,7 +613,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.Actuals += forecastCalculation.Actuals;
             ForecastSummary.Commitments += forecastCalculation.Outstanding;
             ForecastSummary.EstimateAtCompletion += forecastCalculation.EstimateAtCompletion;
-
+            
             //effectively override remaining
             updateForecast(disciplineDataRow, (ExoSubJobProjection)disciplineDataRow[columnEntity], false);
             calculateUncommitted(disciplineDataRow);
@@ -622,33 +635,29 @@ namespace BluePrints.ViewModels
             ForecastCalculation calculation = new ForecastCalculation();
             dataRow[columnEntity] = entity;
             dataRow[columnCalculation] = calculation;
+            if (IsGroupByVariationCode)
+                dataRow[columnVariation] = entity.Variation_Code;
 
             IEnumerable<ExoTimeAuthorisation> relevantJobLines;
             if (entity.Commodity.Code == string.Empty)
             {
                 calculation.IsBudgetReadOnly = true;
                 if(IsGroupByVariationCode)
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.VariationCode == entity.Variation_Code);
+                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
                 else
                     relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
             }
             else
             {
                 if(IsGroupByVariationCode)
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && x.VariationCode == entity.Variation_Code);
+                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
                 else
                     relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
             }
 
-            ExoTimeAuthorisation revenueJobLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
             entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
             entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
             entity.ExoForecastRate = relevantJobLines.Sum(x => x.ForecastRate);
-
-            if (entity.Commodity.Code == string.Empty)
-            {
-                ForecastSummary.Costs += entity.ExoBudgetCosts;
-            }
 
             ////populate revenue
             //ExoTimeAuthorisation revenueLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
@@ -672,6 +681,15 @@ namespace BluePrints.ViewModels
             }
 
             setDateFieldsEmpty(dataRow, false);
+        }
+
+        private bool variationCodeMatch(string jobLineVariationCode, string variationCode)
+        {
+            bool isVariationCodeNullOrEmpty = variationCode == null || variationCode == string.Empty;
+            if (isVariationCodeNullOrEmpty)
+                return jobLineVariationCode == null || jobLineVariationCode == string.Empty;
+            else
+                return jobLineVariationCode == variationCode;
         }
 
         /// <summary>
@@ -973,7 +991,12 @@ namespace BluePrints.ViewModels
 
         public void HideColumns(AutoGeneratingColumnEventArgs e)
         {
-            if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
+            if(e.Column.FieldName.ToUpper().Contains("VARIATION"))
+            {
+                if (!IsGroupByVariationCode)
+                    e.Cancel = true;
+            }
+            else if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
                 e.Cancel = true;
             }
@@ -994,7 +1017,19 @@ namespace BluePrints.ViewModels
 
         public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
         {
-            if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
+            if (e.Column.FieldName.ToUpper().Contains("VARIATION"))
+            {
+                if (!IsGroupByVariationCode)
+                    e.Cancel = true;
+                else
+                {
+                    e.Column.Header = "Variation";
+                    e.Column.VisibleIndex = 70;
+                    e.Column.ReadOnly = true;
+                    e.Column.Fixed = FixedStyle.Left;
+                }
+            }
+            else if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
                 GridControl gridControl = (GridControl)e.Source;
                 DateTime parsedate;
@@ -2323,7 +2358,9 @@ namespace BluePrints.ViewModels
         public void Reset()
         {
             Revenue = 0;
-            Costs = 0;
+            Variation = 0;
+            Budget_Costs = 0;
+            Variation_Costs = 0;
             TotalClaims = 0;
             Actuals = 0;
             Commitments = 0;
@@ -2331,8 +2368,14 @@ namespace BluePrints.ViewModels
         }
 
         public decimal Revenue { get; set; }
-        public decimal Costs { get; set; }
-        public decimal Margin => Revenue - Costs;
+        public decimal Variation { get; set; }
+        public decimal Current_Revenue => Revenue + Variation;
+        public decimal Current_Margin => Current_Revenue - EstimateAtCompletion;
+        public decimal Current_Margin_Percent => Current_Revenue == 0 ? 0 : Current_Margin / Current_Revenue;
+        public decimal Budget_Costs { get; set; }
+        public decimal Variation_Costs { get; set; }
+        public decimal Current_Costs => Budget_Costs + Variation_Costs;
+        public decimal Margin => Revenue - Budget_Costs;
         public decimal Margin_Percent => Revenue == 0 ? 0 : Margin / Revenue;
         public decimal TotalClaims { get; set; }
         public decimal Actuals { get; set; }
