@@ -95,12 +95,12 @@
                                         <dxe:TextEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left" VisibleIndex="7">
+                                <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Right" VisibleIndex="80" />
+                                <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left" VisibleIndex="99">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Right" VisibleIndex="80" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />

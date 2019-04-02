@@ -255,7 +255,6 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnCostType, typeof(int));
                     dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
                     dataPointsTable.Columns.Add(columnNarrative, typeof(string));
-                    dataPointsTable.Columns.Add(columnUniqueCode, typeof(string));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -263,6 +262,8 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
+                    //unique code must be added to the end, because it is invisible, so it won't interfere with copy paste
+                    dataPointsTable.Columns.Add(columnUniqueCode, typeof(string));
                     TableViewService.ScrollToLast();
                 }
 
