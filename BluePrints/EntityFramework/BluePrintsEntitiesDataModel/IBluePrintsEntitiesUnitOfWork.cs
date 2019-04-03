@@ -325,6 +325,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<VARIATION_ITEM, Guid> VARIATION_ITEMS { get; }
 
         /// <summary>
+        /// The VARIATION_CONS entities repository.
+        /// </summary>
+        IRepository<VARIATION_CONS, Guid> VARIATION_CONS { get; }
+
+        /// <summary>
+        /// The VARIATION_CONS_ITEMS entities repository.
+        /// </summary>
+        IRepository<VARIATION_CONS_ITEM, Guid> VARIATION_CONS_ITEMS { get; }
+
+        /// <summary>
         /// The VARIATION_REGISTER entities repository.
         /// </summary>
         IRepository<VARIATION_REGISTER, Guid> VARIATION_REGISTERS { get; }

@@ -84,6 +84,8 @@ namespace BluePrints.Data
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
         public virtual DbSet<VARIATION_ITEM> VARIATION_ITEM { get; set; }
+        public virtual DbSet<VARIATION_CONS> VARIATION_CONS { get; set; }
+        public virtual DbSet<VARIATION_CONS_ITEM> VARIATION_CONS_ITEM { get; set; }
         public virtual DbSet<SUBJOB> SUBJOB { get; set; }
         public virtual DbSet<SUBJOB_ASSIGNMENT> SUBJOB_ASSIGNMENT { get; set; }
         public virtual DbSet<VARIATION_REGISTER> VARIATION_REGISTER { get; set; }
@@ -889,6 +891,17 @@ namespace BluePrints.Data
                 .HasMany(e => e.VARIATION_ITEM)
                 .WithRequired(e => e.VARIATION)
                 .HasForeignKey(e => e.GUID_VARIATION)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<VARIATION_CONS>()
+                .HasMany(e => e.VARIATION_CONS_ITEM)
+                .WithRequired(e => e.VARIATION_CONS)
+                .HasForeignKey(e => e.GUID_VARIATION);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.VARIATION_CONS)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<WORKPACK>()

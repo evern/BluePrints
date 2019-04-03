@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="BluePrints.Views.ConstructionVariationCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:ConstructionVariationCollectionViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <Grid DataContext="{Binding MainViewModel}">
+            <DockPanel>
+                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home">
+                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                    <dxr:RibbonStatusBarControl.LeftItems>
+                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                    </dxr:RibbonStatusBarControl.LeftItems>
+                </dxr:RibbonStatusBarControl>
+                <Grid>
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:LayoutSerializationService />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:GridControl x:Name="GridControl" AutoExpandAllGroups="True" dxc:DXSerializer.SerializationID="GridControlConstructionVariationItems" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="TYPE" Header="Type" GroupIndex="0" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ConstructionVariationItemType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ITEM_ID" Header="Item" SortIndex="0" />
+                            <dxg:GridColumn FieldName="STOCKCODE" Header="Cost Code" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_ITEMCollection, ElementName=userControl}" ValueMember="STOCKCODE" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COSTTYPE_SEQNO" Header="Commodity" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COST_TYPECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="COSTGROUP_SEQNO" Header="Discipline" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COST_GROUPCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="SUBJOB_JOBNO" Header="Sub Job" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                            <dxg:GridColumn FieldName="NOTES" Header="Notes" />
+                            <dxg:GridColumn FieldName="COMMENTS" Header="Comments" />
+                            <dxg:GridColumn FieldName="HOURS" FilterPopupMode="CheckedList" Header="Hours / Qty" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RATE" FilterPopupMode="CheckedList" Header="Rate / Price" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Total" FilterPopupMode="CheckedList" Header="Total" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" AllowEditing="{Binding DataContext.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="{Binding DataContext.NewItemRowPosition, ElementName=userControl}" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

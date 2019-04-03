@@ -337,6 +337,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((VARIATION x) => x.GUID); }
         }
 
+        IRepository<VARIATION_CONS_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONS_ITEMS
+        {
+            get { return GetRepository((VARIATION_CONS_ITEM x) => x.GUID); }
+        }
+
+        IRepository<VARIATION_CONS, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONS
+        {
+            get { return GetRepository((VARIATION_CONS x) => x.GUID); }
+        }
+
         IRepository<SUBJOB_ASSIGNMENT, Guid> IBluePrintsEntitiesUnitOfWork.SUBJOB_ASSIGNMENTS
         {
             get { return GetRepository((SUBJOB_ASSIGNMENT x) => x.GUID); }

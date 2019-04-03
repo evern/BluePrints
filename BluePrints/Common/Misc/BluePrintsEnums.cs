@@ -24,6 +24,53 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum ConstructionVariationItemType
+    {
+        [Display(Name = "1.Indirects")]
+        Indirect = 0,
+        [Display(Name = "2.Engineering")]
+        Engineering = 1,
+        [Display(Name = "3.Trades & Labour")]
+        Trade = 2,
+        [Display(Name = "4.Equipment")]
+        Equipment = 3,
+        [Display(Name = "5.Materials & Other")]
+        Material = 4
+    }
+
+    public enum ConstructionVariationType
+    {
+        [Display(Name = "UoM Qty Increase")]
+        UOM_QTY_Increase = 0,
+        [Display(Name = "Site Instruction / RFQ")]
+        Site_Instruction = 1,
+        [Display(Name = "Client Variation")]
+        Client = 2,
+        [Display(Name = "Dayworks")]
+        DayWorks = 3,
+        [Display(Name = "Primero VAR")]
+        Primero = 4,
+        [Display(Name = "Reworks")]
+        Rework = 5,
+        [Display(Name = "EOT/Delay")]
+        EOT = 6,
+        [Display(Name = "NCR")]
+        NCR = 7,
+        [Display(Name = "TQ")]
+        TQ = 8,
+        [Display(Name = "Budget Transfer")]
+        Budget = 9
+    }
+
+    public enum ConstructionVariationStatus
+    {
+        Approved = 0,
+        Submitted = 1,
+        Pending = 2,
+        Rejected = 3,
+        Cancelled = 4
+    }
+
     public enum StaticSummaryRowTypes
     {
         [Display(Name = "Hours (manhour indirect)")]

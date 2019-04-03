@@ -5,9 +5,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class OffsiteDirectVariationCollectionView : UserControl
+    public partial class DesignVariationCollectionView : UserControl
     {
-        public OffsiteDirectVariationCollectionView()
+        public DesignVariationCollectionView()
         {
             InitializeComponent();
         }

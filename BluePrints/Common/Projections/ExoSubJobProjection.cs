@@ -1685,6 +1685,32 @@ namespace BluePrints.Common.Projections
                 return 0;
         }
 
+        public static List<JOBCOST_HDR> GetJOBCOST_HDR(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var jobLines = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                           join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                           on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                           where MAINJOB.JOBCODE == projectNumber
+                           select SUBJOB;
+
+            return jobLines.ToList();
+        }
+
+        public static List<STOCK_ITEMS> GetSTOCK_ITEMS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            return primeroUnitOfWork.STOCK_ITEMS.ToList();
+        }
+
+        public static List<JOB_COSTGROUPS> GetJOB_COSTGROUPS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            return primeroUnitOfWork.JOB_COSTGROUPS.ToList();
+        }
+
+        public static List<JOB_COSTTYPES> GetJOB_COSTTYPES(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            return primeroUnitOfWork.JOB_COSTTYPES.ToList();
+        }
+
         public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, bool byUser = true, bool showDisabledUsers = false)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES

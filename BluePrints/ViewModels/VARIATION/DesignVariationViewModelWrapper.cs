@@ -27,7 +27,7 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class VARIATIONSCollectionViewModelWrapper :
+    public class DesignVariationViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <VARIATION, VARIATIONProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -35,9 +35,9 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static VARIATIONSCollectionViewModelWrapper Create()
+        public static DesignVariationViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new VARIATIONSCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new DesignVariationViewModelWrapper());
         }
 
         BackgroundWorker variationSummaryBackgroundWorker;
@@ -45,7 +45,7 @@ namespace BluePrints.ViewModels
         /// Initializes a new instance of the PROJECTViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
         /// </summary>
-        protected VARIATIONSCollectionViewModelWrapper()
+        protected DesignVariationViewModelWrapper()
         {
             DoNotAutoRefresh = true;
             variationSummaryBackgroundWorker = new BackgroundWorker();
@@ -278,7 +278,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "VARIATIONSViewModelWrapper" + view_project_specific_affix; }
-            get { return "VARIATIONSViewModelWrapper_v1"; }
+            get { return "DesignVariationViewModelWrapper_v1"; }
         }
 
         private string view_project_specific_affix
@@ -432,7 +432,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null)
                 return;
 
-            string view_name = "OffsiteDirectVariationCollectionView";
+            string view_name = "DesignVariationCollectionView";
             string tab_title = "Design Variation";
 
             DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity), view_name, "[" + loadPROJECT.NUMBER + "] " + "[" + DisplaySelectedEntity.Entity.NAME + "] " + tab_title);
@@ -554,7 +554,7 @@ namespace BluePrints.ViewModels
         {
             if (loadPROJECT != null)
             {
-                ICollectionViewModelsWrapper<TMainProjectionEntity> variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)OffsiteDirectVariationCollectionViewModelWrapper.Create();
+                ICollectionViewModelsWrapper<TMainProjectionEntity> variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)DesignVariationCollectionViewModelWrapper.Create();
 
                 variation_itemsViewModelWrapper.SetParentViewModel(this);
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = onLoadedAction;

@@ -699,6 +699,8 @@
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\DSTATUS_DOCTYPE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONS.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONS_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\VARIATION_REGISTER.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
@@ -821,6 +823,8 @@
     <Compile Include="EntityFramework\BluePrintsData\UOM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONS.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONS_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SUBJOB.cs" />
     <Compile Include="EntityFramework\BluePrintsData\P6_ASSIGNMENT.cs" />
@@ -905,8 +909,10 @@
     <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\ConstructVariationViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\ConstructionVariationCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\DesignVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMRATECollectionView.xaml.cs">
@@ -1607,7 +1613,7 @@
     <Compile Include="ViewModels\ROLE\ROLECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\UOM\UOMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION\VARIATIONSCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\DesignVariationViewModelWrapper.cs" />
     <Compile Include="ViewModels\SUBJOB\SUBJOBCollectionViewModelWrapper.cs" />
     <Compile Include="Common\View\BulkEditEnums.xaml.cs">
       <DependentUpon>BulkEditEnums.xaml</DependentUpon>
@@ -1705,11 +1711,14 @@
     <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
       <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VARIATION\ConstructVariationView.xaml.cs">
+      <DependentUpon>ConstructVariationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml.cs">
       <DependentUpon>VARIATION_REGISTERCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
-      <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\VARIATION\DesignVariationView.xaml.cs">
+      <DependentUpon>DesignVariationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SUBJOB\SUBJOBCollectionView.xaml.cs">
       <DependentUpon>SUBJOBCollectionView.xaml</DependentUpon>
@@ -1723,8 +1732,11 @@
     <Compile Include="Views\USER\USERCollectionView.xaml.cs">
       <DependentUpon>USERCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
-      <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\VARIATION_ITEM\ConstructionVariationCollectionView.xaml.cs">
+      <DependentUpon>ConstructionVariationCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VARIATION_ITEM\DesignVariationCollectionView.xaml.cs">
+      <DependentUpon>DesignVariationCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SUBJOB\SUBJOBDashboardView.xaml.cs">
       <DependentUpon>SUBJOBDashboardView.xaml</DependentUpon>
@@ -2144,11 +2156,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\VARIATION\ConstructVariationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VARIATION\VARIATIONCollectionView.xaml">
+    <Page Include="Views\VARIATION\DesignVariationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -2168,7 +2184,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml">
+    <Page Include="Views\VARIATION_ITEM\ConstructionVariationCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VARIATION_ITEM\DesignVariationCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

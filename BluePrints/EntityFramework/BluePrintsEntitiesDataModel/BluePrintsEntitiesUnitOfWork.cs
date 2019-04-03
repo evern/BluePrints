@@ -326,6 +326,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<USER>(), (USER x) => x.GUID); }
         }
 
+        IRepository<VARIATION_CONS_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONS_ITEMS
+        {
+            get { return GetRepository(x => x.Set<VARIATION_CONS_ITEM>(), (VARIATION_CONS_ITEM x) => x.GUID); }
+        }
+
+        IRepository<VARIATION_CONS, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONS
+        {
+            get { return GetRepository(x => x.Set<VARIATION_CONS>(), (VARIATION_CONS x) => x.GUID); }
+        }
+
         IRepository<VARIATION_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_ITEMS
         {
             get { return GetRepository(x => x.Set<VARIATION_ITEM>(), (VARIATION_ITEM x) => x.GUID); }

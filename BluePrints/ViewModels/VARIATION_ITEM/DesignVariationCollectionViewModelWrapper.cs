@@ -27,15 +27,15 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single VARIATION object view model.
     /// </summary>
-    public partial class OffsiteDirectVariationCollectionViewModelWrapper : BASELINE_ITEMCollectionViewModelWrapper
+    public partial class DesignVariationCollectionViewModelWrapper : BASELINE_ITEMCollectionViewModelWrapper
     {
         /// <summary>
         /// Creates a new instance of VARIATION_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static OffsiteDirectVariationCollectionViewModelWrapper Create()
+        public static DesignVariationCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new OffsiteDirectVariationCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new DesignVariationCollectionViewModelWrapper());
         }
 
         protected VARIATION loadVARIATION;
@@ -60,7 +60,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID);
         }
 
-        public override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v3" + getUniqueViewId();
+        public override string ViewName => "DesignVariationItemsViewModelWrapper_v3" + getUniqueViewId();
 
         private string getUniqueViewId()
         {
@@ -78,7 +78,7 @@ namespace BluePrints.ViewModels
                 VARIATION_ITEMS = loaderCollection.GetCollection<VARIATION_ITEM>();
             }
             
-            return query => ProgressQueries.OffsiteDirectVariationItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, VARIATIONCollection, loadVARIATION, VARIATION_ITEMS, RATECollection);
+            return query => ProgressQueries.DesignVariationItemQuery(baseQueryFilter(query), loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, loadBASELINE, VARIATIONCollection, loadVARIATION, VARIATION_ITEMS, RATECollection);
         }
 
         protected override IQueryable<BASELINE_ITEM> baseQueryFilter(IRepositoryQuery<BASELINE_ITEM> query)

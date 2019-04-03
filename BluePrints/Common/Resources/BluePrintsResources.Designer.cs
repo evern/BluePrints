@@ -187,6 +187,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I1.
+        /// </summary>
+        internal static string Default_Indirect_Phase {
+            get {
+                return ResourceManager.GetString("Default_Indirect_Phase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Engineering.
         /// </summary>
         internal static string Default_New_Project_Department {
@@ -219,6 +228,15 @@ namespace BluePrints.Common.Resources {
         internal static string Default_Procurement_Department {
             get {
                 return ResourceManager.GetString("Default_Procurement_Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to P1.
+        /// </summary>
+        internal static string Default_Procurement_Phase {
+            get {
+                return ResourceManager.GetString("Default_Procurement_Phase", resourceCulture);
             }
         }
         

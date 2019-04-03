@@ -156,7 +156,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectVariationItemTransformation(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, BASELINE BASELINE, IEnumerable<VARIATION> VARIATIONS, VARIATION VARIATION, IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES)
+        public static IQueryable<BASELINE_ITEMProgress> DesignVariationItemQuery(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, BASELINE BASELINE, IEnumerable<VARIATION> VARIATIONS, VARIATION VARIATION, IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES)
         {
             //when either live progress or variation doesn't exists don't return anything
             IQueryable<BASELINE_ITEMProgress> Baseline_ItemProgresses;

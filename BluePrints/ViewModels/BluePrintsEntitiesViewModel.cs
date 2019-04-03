@@ -514,10 +514,10 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(construct_category_description);
             projectModuleDescription.ChildModules.Add(exo_category_description);
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
-            {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_VariationRegister" + keyString, projectKey, childTitlePrefix + "Variation Register", "VARIATION_REGISTERCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variation Register", false, false, @"Reports\GroupFieldCollection_16x16.png"));
-            }
+            //if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
+            //{
+            //    projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_VariationRegister" + keyString, projectKey, childTitlePrefix + "Variation Register", "VARIATION_REGISTERCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variation Register", false, false, @"Reports\GroupFieldCollection_16x16.png"));
+            //}
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageArea))
@@ -564,8 +564,8 @@ namespace BluePrints.ViewModels
             {
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
+                //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
+                //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution))
@@ -575,7 +575,8 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new DualEntitiesParameter<PROJECT, PhaseTypeClass>(entity, new PhaseTypeClass(PhaseType.Design)), null, "Variations", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
+                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, projectKey, childTitlePrefix + "Variations", "DesignVariationView", new DualEntitiesParameter<PROJECT, PhaseTypeClass>(entity, new PhaseTypeClass(PhaseType.Design)), null, "Variations", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
+                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, projectKey, childTitlePrefix + "Variations", "ConstructVariationView", new EntitiesParameter<PROJECT>(entity), null, "Variations", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))

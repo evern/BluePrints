@@ -288,4 +288,10 @@
   <data name="DefaultCostGroupAffix" xml:space="preserve">
     <value>01</value>
   </data>
+  <data name="Default_Indirect_Phase" xml:space="preserve">
+    <value>I1</value>
+  </data>
+  <data name="Default_Procurement_Phase" xml:space="preserve">
+    <value>P1</value>
+  </data>
 </root>
