@@ -1003,16 +1003,17 @@ namespace BluePrints.ViewModels
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
+        public override void UnifiedNewRowInitialization(BASELINE_ITEMProgress projection)
+        {
+            projection.Entity.Entity.NewItemRowSubAREACollection = SUBAREACollection;
+            base.UnifiedNewRowInitialization(projection);
+        }
+
         //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             string fieldName = formatFieldName(field_name);
-
-            if (isNew && field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA)))
-            {
-                projection.Entity.Entity.NewItemRowSubAREACollection = SUBAREACollection;
-            }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
             {
                 if ((bool)new_value)
                 {

@@ -246,6 +246,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             dynamic progress_item_by_originalguid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
 
             IEnumerable<DELIVERABLES_STATUS> deliverables_statuses = null;
+            //when we do it in user deliverable's list the DELIVERABLE_STATUSCollection is everything in the system and have to be filtered by specific project, don't use native project because it should be filtered before hand and filtering again will impact performance
             if (ProjectGuidForDeliverablesStatus == null)
                 deliverables_statuses = DELIVERABLES_STATUSCollection;
             else if(DELIVERABLES_STATUSCollection != null)
