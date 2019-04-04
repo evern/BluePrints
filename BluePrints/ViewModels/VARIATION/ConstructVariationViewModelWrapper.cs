@@ -17,6 +17,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -55,8 +56,8 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            var project_phasetype_parameter = (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = project_phasetype_parameter.GetEntity();
+            var projectParameter = (EntitiesParameter<PROJECT>) parameter;
+            loadPROJECT = projectParameter.GetEntity();
         }
 
         protected override void addEntitiesLoader()
@@ -83,10 +84,22 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONS> entities)
         {
+            MainViewModel.OnAfterEntitySavedCallBack = entityChangedNotifyChanges;
+            MainViewModel.OnAfterNewRowAdded = newRowAddedNotifyChanges;
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        private void newRowAddedNotifyChanges(VARIATION_CONS variation)
+        {
+            this.RaisePropertyChanged(x => x.DisplayEntities);
+        }
+
+        private void entityChangedNotifyChanges(VARIATION_CONS projection, VARIATION_CONS entity, bool isNewRow)
+        {
+            projection.Update();
         }
 
         #region CallBacks
@@ -235,6 +248,109 @@ namespace BluePrints.ViewModels
 
                 return constructionVariationTypes;
             }
+        }
+
+        public void ClearFilter()
+        {
+            constructionTypeFilter = null;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GridControlService.ClearGrouping();
+        }
+
+        public void FilterByUOM_QTY_Increase()
+        {
+            constructionTypeFilter = ConstructionVariationType.UOM_QTY_Increase;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterBySite_Instruction()
+        {
+            constructionTypeFilter = ConstructionVariationType.Site_Instruction;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByClient()
+        {
+            constructionTypeFilter = ConstructionVariationType.Client;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByDayWorks()
+        {
+            constructionTypeFilter = ConstructionVariationType.DayWorks;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByPrimero()
+        {
+            constructionTypeFilter = ConstructionVariationType.Primero;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByRework()
+        {
+            constructionTypeFilter = ConstructionVariationType.Rework;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByEOT()
+        {
+            constructionTypeFilter = ConstructionVariationType.EOT;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByNCR()
+        {
+            constructionTypeFilter = ConstructionVariationType.NCR;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByTQ()
+        {
+            constructionTypeFilter = ConstructionVariationType.TQ;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        public void FilterByBudget()
+        {
+            constructionTypeFilter = ConstructionVariationType.Budget;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            GroupGridByType();
+        }
+
+        ConstructionVariationType? constructionTypeFilter = null;
+        CriteriaOperator filterCriteria = null;
+        public CriteriaOperator FilterCriteria
+        {
+            get
+            {
+                if (!ReferenceEquals(filterCriteria, null))
+                    return filterCriteria;
+
+                if (constructionTypeFilter != null)
+                    return CriteriaOperator.Parse("[TYPE] In ('" + EnumHelper<ConstructionVariationType>.GetDisplayValue((ConstructionVariationType)constructionTypeFilter) + "')");
+                else
+                    return null;
+            }
+            set
+            {
+                filterCriteria = value;
+            }
+        }
+
+        public void GroupGridByType()
+        {
+            GridControlService.ClearGrouping();
+            GridControlService.GroupBy(BindableBase.GetPropertyName(() => new VARIATION_CONS().STATUS));
         }
 
         /// <summary>

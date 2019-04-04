@@ -14,6 +14,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
@@ -113,6 +114,7 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
+
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONS_ITEM projection, bool isNew)
         {
