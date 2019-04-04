@@ -51,12 +51,18 @@ namespace BluePrints.Data
         {
             get
             {
-                if (AREA == null)
+                //when it's in read only mode we can use navigational properties to get sub areas
+                if (AREA != null)
+                    return AREA.AREA1;
+
+                if (GUID_AREA == null || NewItemRowSubAREACollection == null)
                     return null;
 
-                return AREA.AREA1;
+                return NewItemRowSubAREACollection.Where(x => x.GUID_PARENT == GUID_AREA);
             }
         }
+
+        public IEnumerable<AREA> NewItemRowSubAREACollection { get; set; }
 
         public bool IsSubAreaValid(Guid? subAreaGuid)
         {

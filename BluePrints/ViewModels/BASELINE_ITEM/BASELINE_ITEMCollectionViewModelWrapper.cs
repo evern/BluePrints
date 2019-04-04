@@ -950,7 +950,7 @@ namespace BluePrints.ViewModels
             }
 
             //only new row will change department according to doc type selection
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE)))
             {
                 var chosenDOCTYPE = DOCTYPECollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
                 if (isNew)
@@ -976,7 +976,7 @@ namespace BluePrints.ViewModels
             }
 
             //only new row will change area and subarea according to subjob selection
-            if (isNew && field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB))
+            if (isNew && field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB)))
             {
                 var chosenSUBJOB = SUBJOBCollection.FirstOrDefault(entity => entity.GUID == (Guid)new_value);
                 if (chosenSUBJOB != null)
@@ -1007,7 +1007,12 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             string fieldName = formatFieldName(field_name);
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
+
+            if (isNew && field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA)))
+            {
+                projection.Entity.Entity.NewItemRowSubAREACollection = SUBAREACollection;
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
             {
                 if ((bool)new_value)
                 {
@@ -1023,7 +1028,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA)))
             {
                 Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
                 Guid? newValue = (Guid?)null;
@@ -1043,7 +1048,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE) || field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE)) || field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE)))
             {
                 Guid? oldValue = projection.Entity.Entity.GUID_STATUS;
                 Guid? newValue = (Guid?)null;

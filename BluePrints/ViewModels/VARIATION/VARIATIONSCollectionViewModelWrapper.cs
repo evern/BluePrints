@@ -166,6 +166,13 @@ namespace BluePrints.ViewModels
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
             projection.Update();
             isApproving = false;
+            refreshTotalsSummary();
+        }
+
+        private void refreshTotalsSummary()
+        {
+            if(GridControlService != null)
+                mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService.RefreshSummary()));
         }
 
         public override bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)

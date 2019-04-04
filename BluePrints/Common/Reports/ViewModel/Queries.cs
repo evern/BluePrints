@@ -163,7 +163,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (PROGRESS == null || VARIATION == null)
                 Baseline_ItemProgresses = new List<BASELINE_ITEMProgress>().AsQueryable();
             else
-                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS);
+                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, false, null, DeliverableInternalNumberMode.Default);
 
             foreach (var baseline_item in Baseline_ItemProgresses)
             {

@@ -86,12 +86,12 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="REVISION" IsTextEditable="True" ItemsSource="{Binding DataContext.IAmBaselineCollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Total Units" FieldName="TOTAL_UNITS" HeaderToolTip="Total units of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
+                            <dxg:GridColumn Header="Total Units" FieldName="TOTAL_UNITS" FixedWidth="True" Width="100" HeaderToolTip="Total units of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Total Costs" FieldName="TOTAL_COSTS" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
+                            <dxg:GridColumn Header="Total Costs" FieldName="TOTAL_COSTS" FixedWidth="True" Width="100" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
