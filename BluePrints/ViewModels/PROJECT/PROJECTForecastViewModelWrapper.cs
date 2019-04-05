@@ -666,10 +666,10 @@ namespace BluePrints.ViewModels
             calculation.Rate = entity.ExoForecastRate;
 
             //variation is only calculated on discipline code lines
-            if (commodityCode == string.Empty)
-                calculation.Variation = VARIATION_REGISTERCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.STATUS == VariationRegisterStatus.Approved).Sum(x => x.COST);
-            else
-                calculation.Variation = 0.00m;
+            //if (commodityCode == string.Empty)
+            //    calculation.Variation = VARIATION_REGISTERCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.STATUS == VariationRegisterStatus.Approved).Sum(x => x.COST);
+            //else
+            //    calculation.Variation = 0.00m;
 
             //populate previous estimate to completion
             IEnumerable<FORECAST> previousEAC = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && x.IS_EAC && x.FORECAST_DATE < FixedDataDate).OrderBy(x => x.FORECAST_DATE);

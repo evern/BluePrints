@@ -416,30 +416,33 @@
                                     <dxlc:LayoutGroup Header="Project Details" Orientation="Vertical" View="GroupBox">
                                         <dxlc:LayoutGroup Header="Budget" Orientation="Vertical" View="GroupBox">
                                             <dxlc:LayoutItem Label="Budget Revenue" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revenue, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Data From Exo: Stock Code 41000" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revenue, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Budget Costs" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Budget_Costs, ElementName=userControl, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="Budget" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Data From Exo: Job Lines" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Budget_Costs, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Budget Margin" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Budget Revenue - Budget Costs" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Budget Margin %" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" ToolTip="Budget Margin / Budget Revenue" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Header="Current" Orientation="Vertical" View="GroupBox">
                                             <dxlc:LayoutItem Label="Current Revenue" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Revenue, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Data From Exo: Budget Revenue + Variation Revenue" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Revenue, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Current Costs" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Costs, ElementName=userControl, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="Estimate At Completion" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.EstimateAtCompletion, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
+                                            <!--<dxlc:LayoutItem Label="Current Budget" LabelPosition="Left" >
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Data From Exo: Budget Cost + Variation Cost" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Costs, ElementName=userControl, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>-->
                                             <dxlc:LayoutItem Label="Current Margin" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Margin, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="Cashflow Amount: Current Revenue - EAC" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Margin, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Current Margin %" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" ToolTip="Current Margin / Current Revenue" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
@@ -450,9 +453,6 @@
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Claims" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.TotalClaims, ElementName=userControl, Mode=OneWay}" />
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Estimate At Completion" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.EstimateAtCompletion, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutControl>

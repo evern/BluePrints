@@ -85,24 +85,27 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="LayoutRoot" Orientation="Vertical" Background="Transparent">
-                    <dxlc:LayoutGroup Orientation="Horizontal">
-                        <!--<dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Header="Variation Summary">
+                    <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}" Orientation="Horizontal">
+                        <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Header="Variation Summary">
                             <dxlc:LayoutItem Label="Original Contract Sum:">
-                                <dxe:TextEdit />
+                                <dxe:TextEdit EditValue="{Binding OriginalContractSum, Mode=TwoWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Variations Approved:">
-                                <dxe:TextEdit EditValue="{Binding Selected_Resource, Mode=TwoWay}" MaskType="Numeric" Mask="c2"/>
+                                <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.VariationsApproved, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Revised Contract Sum:">
-                                <dxe:TextEdit EditValue="{Binding Selected_Resource, Mode=TwoWay}" MaskType="Numeric" Mask="c2"/>
+                                <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.RevisedContractSum, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Changes Pending Approval:">
-                                <dxe:TextEdit EditValue="{Binding Selected_Resource, Mode=TwoWay}" MaskType="Numeric" Mask="c2"/>
+                                <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.ChangesPendingApproval, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Changes Cancelled / Rejected:">
-                                <dxe:TextEdit EditValue="{Binding Selected_Resource, Mode=TwoWay}" MaskType="Numeric" Mask="c2"/>
+                                <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.ChangesCancelled, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
                             </dxlc:LayoutItem>
-                        </dxlc:LayoutGroup>-->
+                            <dxlc:LayoutItem Label="Total Potential Contract Sum  (inc. Approved/Un-approved exc. Cancelled/Rejected):">
+                                <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.PotentialContractSum, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
+                            </dxlc:LayoutItem>
+                        </dxlc:LayoutGroup>
                         <!--<dxlc:LayoutGroup Orientation="Vertical" Height="200" View="Group">
                             <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" MaxHeight="3000" Header="Site Instruction / RFQ Summary" >
                                 <dxg:GridControl dx:DXSerializer.StoreLayoutMode="All" ColumnsSource="{StaticResource GridColumns}" GroupSummarySource="{StaticResource GridSummaries}" TotalSummarySource="{StaticResource GridSummaries}" Style="{StaticResource DefaultGridControlTemplate}">

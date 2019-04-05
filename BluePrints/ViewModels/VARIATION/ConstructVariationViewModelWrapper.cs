@@ -84,9 +84,9 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONS> entities)
         {
+            VariationSummary = ViewModelSource.Create(() => new ConstructionVariationSummary(loadPROJECT, entities));
             MainViewModel.OnAfterEntitySavedCallBack = entityChangedNotifyChanges;
             MainViewModel.OnAfterNewRowAdded = newRowAddedNotifyChanges;
-            MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -226,6 +226,30 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ConfirmationDialogService"); }
         }
 
+        public ConstructionVariationSummary VariationSummary { get; set; }
+        protected override void OnPersistentAfterAuxiliaryEntitiesChanges(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (changedType == typeof(VARIATION_CONS))
+                VariationSummary.Update();
+
+            base.OnPersistentAfterAuxiliaryEntitiesChanges(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
+        public decimal OriginalContractSum
+        {
+            get
+            {
+                return loadPROJECT == null ? 0 : loadPROJECT.CONSTRUCT_ORI_SUM == null ? 0 : (decimal)loadPROJECT.CONSTRUCT_ORI_SUM;
+            }
+            set
+            {
+                loadPROJECT.CONSTRUCT_ORI_SUM = value;
+                PROJECTViewModel.Save(loadPROJECT);
+                this.RaisePropertyChanged(x => x.OriginalContractSum);
+                VariationSummary.Update();
+            }
+        }
+
         List<ConstructionVariationTypeDesc> constructionVariationTypes;
         public IEnumerable<ConstructionVariationTypeDesc> ConstructionVariationTypes
         {
@@ -353,6 +377,14 @@ namespace BluePrints.ViewModels
             GridControlService.GroupBy(BindableBase.GetPropertyName(() => new VARIATION_CONS().STATUS));
         }
 
+        public CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTViewModel
+        {
+            get
+            {
+                return (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
         /// <summary>
         /// Construction variation type with description
         /// </summary>
@@ -368,6 +400,34 @@ namespace BluePrints.ViewModels
             public string Name => EnumHelper<ConstructionVariationType>.GetDisplayValue(Type);
             public string Description { get; set; }
         }
-#endregion
+
+        public class ConstructionVariationSummary
+        {
+            private PROJECT project;
+            private IEnumerable<VARIATION_CONS> variation_cons;
+            public ConstructionVariationSummary(PROJECT project, IEnumerable<VARIATION_CONS> variation_cons)
+            {
+                this.project = project;
+                this.variation_cons = variation_cons;
+            }
+
+            public decimal OriginalContractSum => project.CONSTRUCT_ORI_SUM == null ? 0 : (decimal)project.CONSTRUCT_ORI_SUM;
+
+            public decimal VariationsApproved => variation_cons.Where(x => x.APPROVED_VALUE != null).Sum(x => (decimal)x.APPROVED_VALUE);
+
+            public decimal RevisedContractSum => OriginalContractSum + VariationsApproved;
+
+            public decimal ChangesPendingApproval => variation_cons.Where(x => x.OUTSTANDING_VALUE != null && (x.STATUS == ConstructionVariationStatus.Pending || x.STATUS == ConstructionVariationStatus.Submitted)).Sum(x => (decimal)x.OUTSTANDING_VALUE);
+
+            public decimal ChangesCancelled => variation_cons.Where(x => x.OUTSTANDING_VALUE != null && (x.STATUS == ConstructionVariationStatus.Rejected || x.STATUS == ConstructionVariationStatus.Cancelled)).Sum(x => (decimal)x.OUTSTANDING_VALUE);
+
+            public decimal PotentialContractSum => RevisedContractSum + ChangesPendingApproval;
+
+            public void Update()
+            {
+                this.RaisePropertiesChanged();
+            }
+        }
+        #endregion
     }
 }

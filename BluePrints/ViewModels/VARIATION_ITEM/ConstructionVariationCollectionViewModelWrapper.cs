@@ -115,7 +115,6 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONS_ITEM projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new VARIATION_CONS_ITEM().TYPE))

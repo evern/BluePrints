@@ -34,7 +34,9 @@
 
         public DateTime? SUBMITTED { get; set; }
 
-        public decimal APPROVED_VALUE { get; set; }
+        public decimal? APPROVED_VALUE { get; set; }
+
+        public decimal? OUTSTANDING_VALUE { get; set; }
 
         [StringLength(500)]
         public string CLIENT_REF { get; set; }
