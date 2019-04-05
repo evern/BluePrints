@@ -638,26 +638,49 @@ namespace BluePrints.ViewModels
             if (IsGroupByVariationCode)
                 dataRow[columnVariation] = entity.Variation_Code;
 
-            IEnumerable<ExoTimeAuthorisation> relevantJobLines;
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByDisciplineWithVariation = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByDisciplineVariationOnly = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && (x.VariationCode != string.Empty && x.VariationCode != null));
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByDiscipline = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && (x.VariationCode == string.Empty || x.VariationCode == null));
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByCommodityWithVariation = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByCommodityVariationOnly = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && (x.VariationCode != string.Empty && x.VariationCode != null));
+            IEnumerable<ExoTimeAuthorisation> relevantJobLinesByCommodity = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && (x.VariationCode == string.Empty || x.VariationCode == null));
+
             if (entity.Commodity.Code == string.Empty)
             {
                 calculation.IsBudgetReadOnly = true;
                 if(IsGroupByVariationCode)
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
+                {
+                    //entity.ExoBudgetQty = relevantJobLinesByDiscipline.Sum(x => x.BudgetQty);
+                    entity.ExoBudgetCosts = relevantJobLinesByDisciplineWithVariation.Sum(x => x.BudgetCosts);
+                    entity.ExoForecastRate = relevantJobLinesByDisciplineWithVariation.Sum(x => x.ForecastRate);
+                    calculation.Variation = relevantJobLinesByDisciplineVariationOnly.Sum(x => x.BudgetCosts);
+                }
                 else
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code);
+                {
+                    entity.ExoBudgetCosts = relevantJobLinesByDiscipline.Sum(x => x.BudgetCosts);
+                    entity.ExoForecastRate = relevantJobLinesByDiscipline.Sum(x => x.ForecastRate);
+                    calculation.Variation = relevantJobLinesByDisciplineVariationOnly.Sum(x => x.BudgetCosts);
+                }
             }
             else
             {
-                if(IsGroupByVariationCode)
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && variationCodeMatch(x.VariationCode, entity.Variation_Code));
+                if (IsGroupByVariationCode)
+                {
+                    entity.ExoBudgetCosts = relevantJobLinesByCommodityWithVariation.Sum(x => x.BudgetCosts);
+                    entity.ExoForecastRate = relevantJobLinesByCommodityWithVariation.Sum(x => x.ForecastRate);
+                    calculation.Variation = relevantJobLinesByCommodityVariationOnly.Sum(x => x.BudgetCosts);
+                }
                 else
-                    relevantJobLines = jobLines.Where(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code);
+                {
+                    entity.ExoBudgetCosts = relevantJobLinesByCommodity.Sum(x => x.BudgetCosts);
+                    entity.ExoForecastRate = relevantJobLinesByCommodity.Sum(x => x.ForecastRate);
+                    calculation.Variation = relevantJobLinesByCommodityVariationOnly.Sum(x => x.BudgetCosts);
+                }
             }
 
-            entity.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
-            entity.ExoBudgetCosts = relevantJobLines.Sum(x => x.BudgetCosts);
-            entity.ExoForecastRate = relevantJobLines.Sum(x => x.ForecastRate);
+            //entity.ExoBudgetQty = relevantJobLinesByDisciplineWithVariation.Sum(x => x.BudgetQty);
+            //entity.ExoBudgetCosts = relevantJobLinesByDiscipline.Sum(x => x.BudgetCosts);
+            //entity.ExoForecastRate = relevantJobLinesByDiscipline.Sum(x => x.ForecastRate);
 
             ////populate revenue
             //ExoTimeAuthorisation revenueLine = jobLines.FirstOrDefault(x => x.SubJobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.StockCode == BluePrintsResources.Default_Revenue_StockCode);
