@@ -218,6 +218,10 @@
                                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="GUIDE_SUBPROMPT" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.GuideSubPrompts}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
+                                            <!--  For Filtering  -->
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_SUBPROMPT" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_GUIDE_SUBPROMPTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                            </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="GUID_ACTION_BY" Header="Action By">
                                             <dxg:GridColumn.EditSettings>
