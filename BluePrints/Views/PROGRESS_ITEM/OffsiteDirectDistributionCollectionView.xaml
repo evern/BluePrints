@@ -124,6 +124,10 @@
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <!--  For Filtering  -->
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Fixed="Left" Header="Subjob" ReadOnly="True" Visible="False">
                                     <dxg:GridColumn.EditSettings>

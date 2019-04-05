@@ -126,6 +126,10 @@
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="Description" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.CommodityCodes}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Key" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <!--  For Filtering  -->
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Description" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
                                     <dxg:GridColumn.EditSettings>
