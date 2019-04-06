@@ -8,14 +8,18 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
@@ -68,6 +72,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CHANGE, REGISTER_CHANGEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD, REGISTER_HOLDProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
         }
@@ -111,9 +116,17 @@ namespace BluePrints.ViewModels
             return registerIssue.AsQueryable();
         }
 
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Issues_Register.ToString());
+        }
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_ISSUE> entities)
         {
             MainViewModel.SetParentViewModel(this);
+            if (showReport)
+                mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -317,6 +330,54 @@ namespace BluePrints.ViewModels
             base.ExportToExcel();
             IsActionedOnDrawingVisibility = false;
             this.RaisePropertyChanged(x => x.IsActionedOnDrawingVisibility);
+        }
+
+
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Issues_Register);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        bool showReport = false;
+        XtraReportIssuesRegister issuesRegisterReport;
+        public void ViewReport()
+        {
+            showReport = true;
+            //to make sure all navigational properties are loaded
+            FullRefresh();
+        }
+
+        private void previewReport(IEnumerable<REGISTER_ISSUE> issues)
+        {
+            showReport = false;
+            issuesRegisterReport = new XtraReportIssuesRegister();
+            PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    issuesRegisterReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            issuesRegisterReport.AssignProperties(issues);
+            DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = issuesRegisterReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            issuesRegisterReport.RequestParameters = false;
+            issuesRegisterReport.CreateDocument(true);
+            previewWindow.Show();
         }
 
         /// <summary>

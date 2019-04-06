@@ -16,6 +16,7 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                             <dxr:RibbonPageGroup Caption="Send To">
                                 <dxb:BarButtonItem Content="Change Register" ToolTip="Send selected issue to change register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
                                 <dxb:BarButtonItem Content="Hold Register" ToolTip="Send selected issue to hold register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToHoldRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dx:DXImage Image=BORules_16x16.png}" />

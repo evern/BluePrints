@@ -103,6 +103,11 @@ namespace BluePrints.Common.Reports
                 returnReport = new XtraReportProjectSummary();
                 reportDesigner1.OpenReport(returnReport);
             }
+            else if (currentReportType == ReportType.Issues_Register)
+            {
+                returnReport = new XtraReportIssuesRegister();
+                reportDesigner1.OpenReport(returnReport);
+            }
 
             return returnReport;
         }
