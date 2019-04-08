@@ -42,6 +42,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new ConstructVariationViewModelWrapper());
         }
 
+        BackgroundWorker variationSummaryBackgroundWorker;
         /// <summary>
         /// Initializes a new instance of the PROJECTViewModel class.
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
@@ -49,7 +50,79 @@ namespace BluePrints.ViewModels
         protected ConstructVariationViewModelWrapper()
         {
             DoNotAutoRefresh = true;
+            variationSummaryBackgroundWorker = new BackgroundWorker();
+            variationSummaryBackgroundWorker.DoWork += variationSummaryBackgroundWorker_DoWork;
+            variationSummaryBackgroundWorker.WorkerSupportsCancellation = true;
         }
+
+        private void refreshSummary()
+        {
+            if (DisplaySelectedEntity != null)
+                selectedEntityKey = DisplaySelectedEntity.GUID;
+
+            variationSummaryBackgroundWorker.RunWorkerAsync(DisplayEntities);
+        }
+
+        private void variationSummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IEnumerable<VARIATION_CONS> entities = (IEnumerable<VARIATION_CONS>)e.Argument;
+            if (variationSummaryBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            foreach (var entity in entities)
+            {
+                CreateVARIATION_ITEMSViewModelWrapper<VARIATION_CONS_ITEM>(entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
+            }
+        }
+
+        #region Variation_Item revision
+        bool isApproving = false;
+        private void AssignVariationSummary(IEnumerable<VARIATION_CONS_ITEM> variation_projections, object parent_id)
+        {
+            //When refresh button is pushed too fast, MainViewModel may not be initialized
+            if (MainViewModel == null)
+                return;
+
+            VARIATION_CONS projection = MainViewModel.Entities.First(x => x.GUID == (Guid)parent_id);
+            List<ISupportVariation<IDeliverable>> variations = new List<ISupportVariation<IDeliverable>>();
+            foreach (var variationProjection in variation_projections)
+            {
+                ISupportVariation<IDeliverable> supportVariation = variationProjection as ISupportVariation<IDeliverable>;
+                if (supportVariation != null)
+                    variations.Add(supportVariation);
+            }
+
+            projection.DetailEntities = new ObservableCollection<VARIATION_CONS_ITEM>(variation_projections);
+            projection.Update();
+            isApproving = false;
+        }
+
+        public ICollectionViewModelsWrapper<TMainProjectionEntity> CreateVARIATION_ITEMSViewModelWrapper<TMainProjectionEntity>(VARIATION_CONS loadVARIATION, Action<IEnumerable<TMainProjectionEntity>, object> onLoadedAction, Func<object> getParentIdFunc, bool supressCompulsoryEntityNotFoundMessage)
+            where TMainProjectionEntity : class, IGuidEntityKey, new()
+        {
+            if (loadPROJECT != null)
+            {
+                ICollectionViewModelsWrapper<TMainProjectionEntity> variation_itemsViewModelWrapper = (ICollectionViewModelsWrapper<TMainProjectionEntity>)ConstructionVariationCollectionViewModelWrapper.Create();
+
+                variation_itemsViewModelWrapper.SetParentViewModel(this);
+                variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = onLoadedAction;
+                variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = getParentIdFunc;
+                variation_itemsViewModelWrapper.SuppressNotification = true;
+                variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
+                variation_itemsViewModelWrapper.InViewModelOnlyMode = true;
+                variation_itemsViewModelWrapper.AlwaysSkipMessage = true;
+                var baselineSupportParameterObj = variation_itemsViewModelWrapper as ISupportParameter;
+                baselineSupportParameterObj.Parameter = new DualEntitiesParameter<PROJECT, VARIATION_CONS>(loadPROJECT, loadVARIATION);
+
+                return variation_itemsViewModelWrapper;
+            }
+
+            return null;
+        }
+        #endregion
         #region Database Operation
 
         private PROJECT loadPROJECT;
@@ -86,11 +159,15 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONS> entities)
         {
             VariationSummary = ViewModelSource.Create(() => new ConstructionVariationSummary(entities));
-            VariationSummary.OriginalContractSum = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            if (revenueLine != null)
+                VariationSummary.OriginalContractSum = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+
             MainViewModel.OnAfterEntitySavedCallBack = entityChangedNotifyChanges;
             MainViewModel.OnAfterNewRowAdded = newRowAddedNotifyChanges;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
+            variationSummaryBackgroundWorker.RunWorkerAsync(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -237,20 +314,20 @@ namespace BluePrints.ViewModels
             base.OnPersistentAfterAuxiliaryEntitiesChanges(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        public decimal OriginalContractSum
-        {
-            get
-            {
-                return loadPROJECT == null ? 0 : loadPROJECT.CONSTRUCT_ORI_SUM == null ? 0 : (decimal)loadPROJECT.CONSTRUCT_ORI_SUM;
-            }
-            set
-            {
-                loadPROJECT.CONSTRUCT_ORI_SUM = value;
-                PROJECTViewModel.Save(loadPROJECT);
-                this.RaisePropertyChanged(x => x.OriginalContractSum);
-                VariationSummary.Update();
-            }
-        }
+        //public decimal OriginalContractSum
+        //{
+        //    get
+        //    {
+        //        return loadPROJECT == null ? 0 : loadPROJECT.CONSTRUCT_ORI_SUM == null ? 0 : (decimal)loadPROJECT.CONSTRUCT_ORI_SUM;
+        //    }
+        //    set
+        //    {
+        //        loadPROJECT.CONSTRUCT_ORI_SUM = value;
+        //        PROJECTViewModel.Save(loadPROJECT);
+        //        this.RaisePropertyChanged(x => x.OriginalContractSum);
+        //        VariationSummary.Update();
+        //    }
+        //}
 
         List<ConstructionVariationTypeDesc> constructionVariationTypes;
         public IEnumerable<ConstructionVariationTypeDesc> ConstructionVariationTypes
@@ -413,13 +490,13 @@ namespace BluePrints.ViewModels
 
             public decimal OriginalContractSum { get; set; }
 
-            public decimal VariationsApproved => variation_cons.Where(x => x.APPROVED_VALUE != null).Sum(x => (decimal)x.APPROVED_VALUE);
+            public decimal VariationsApproved => variation_cons.Where(x => x.STATUS == ConstructionVariationStatus.Approved).Where(x => x.APPROVED_VALUE != null).Sum(x => (decimal)x.APPROVED_VALUE);
 
             public decimal RevisedContractSum => OriginalContractSum + VariationsApproved;
 
-            public decimal ChangesPendingApproval => variation_cons.Where(x => x.OUTSTANDING_VALUE != null && (x.STATUS == ConstructionVariationStatus.Pending || x.STATUS == ConstructionVariationStatus.Submitted)).Sum(x => (decimal)x.OUTSTANDING_VALUE);
+            public decimal ChangesPendingApproval => variation_cons.Where(x => (x.STATUS == ConstructionVariationStatus.Pending || x.STATUS == ConstructionVariationStatus.Submitted)).Sum(x => x.Total_Costs);
 
-            public decimal ChangesCancelled => variation_cons.Where(x => x.OUTSTANDING_VALUE != null && (x.STATUS == ConstructionVariationStatus.Rejected || x.STATUS == ConstructionVariationStatus.Cancelled)).Sum(x => (decimal)x.OUTSTANDING_VALUE);
+            public decimal ChangesCancelled => variation_cons.Where(x => (x.STATUS == ConstructionVariationStatus.Rejected || x.STATUS == ConstructionVariationStatus.Cancelled)).Sum(x => x.Total_Costs);
 
             public decimal PotentialContractSum => RevisedContractSum + ChangesPendingApproval;
 
