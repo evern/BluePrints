@@ -54,6 +54,7 @@ namespace BluePrints.ViewModels
 
         private PROJECT loadPROJECT;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         protected override void resolveParameters(object parameter)
         {
             var projectParameter = (EntitiesParameter<PROJECT>) parameter;
@@ -84,7 +85,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONS> entities)
         {
-            VariationSummary = ViewModelSource.Create(() => new ConstructionVariationSummary(loadPROJECT, entities));
+            VariationSummary = ViewModelSource.Create(() => new ConstructionVariationSummary(entities));
+            VariationSummary.OriginalContractSum = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
             MainViewModel.OnAfterEntitySavedCallBack = entityChangedNotifyChanges;
             MainViewModel.OnAfterNewRowAdded = newRowAddedNotifyChanges;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
@@ -403,15 +405,13 @@ namespace BluePrints.ViewModels
 
         public class ConstructionVariationSummary
         {
-            private PROJECT project;
             private IEnumerable<VARIATION_CONS> variation_cons;
-            public ConstructionVariationSummary(PROJECT project, IEnumerable<VARIATION_CONS> variation_cons)
+            public ConstructionVariationSummary(IEnumerable<VARIATION_CONS> variation_cons)
             {
-                this.project = project;
                 this.variation_cons = variation_cons;
             }
 
-            public decimal OriginalContractSum => project.CONSTRUCT_ORI_SUM == null ? 0 : (decimal)project.CONSTRUCT_ORI_SUM;
+            public decimal OriginalContractSum { get; set; }
 
             public decimal VariationsApproved => variation_cons.Where(x => x.APPROVED_VALUE != null).Sum(x => (decimal)x.APPROVED_VALUE);
 
