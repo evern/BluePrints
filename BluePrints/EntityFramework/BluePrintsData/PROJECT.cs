@@ -41,8 +41,6 @@
 
         public decimal REVIEWPERIOD { get; set; }
 
-        public decimal? CONSTRUCT_ORI_SUM { get; set; }
-
         public bool USE_WORKPACKS { get; set; }
 
         public ProjectDocumentStatus? DOC_KICKOFF { get; set; }
