@@ -125,7 +125,10 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentViewModel(this);
             if (showReport)
+            {
                 mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
+                showReport = false;
+            }
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -369,6 +372,12 @@ namespace BluePrints.ViewModels
                     issuesRegisterReport.LoadLayout(sw.BaseStream);
                 }
             }
+
+//set paperkind depending on project location
+            if(loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
+                issuesRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.A3;
+            else
+                issuesRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
 
             issuesRegisterReport.AssignProperties(issues);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
