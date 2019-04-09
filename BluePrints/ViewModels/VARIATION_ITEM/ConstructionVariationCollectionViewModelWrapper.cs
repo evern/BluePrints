@@ -56,7 +56,6 @@ namespace BluePrints.ViewModels
             var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION_CONS>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadVARIATION = receiveParameter.GetSecondEntity();
-            
         }
 
         protected override void addEntitiesLoader()
@@ -97,6 +96,13 @@ namespace BluePrints.ViewModels
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySavedIsContinue;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        protected override void OnAfterNewRowAdded(VARIATION_CONS_ITEM entity)
+        {
+            //need to refresh so that new row will be added into the correct group
+            GridControlService.RefreshData();
+            base.OnAfterNewRowAdded(entity);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()

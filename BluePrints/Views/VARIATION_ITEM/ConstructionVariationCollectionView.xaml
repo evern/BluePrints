@@ -30,7 +30,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl x:Name="GridControl" AutoExpandAllGroups="True" dxc:DXSerializer.SerializationID="GridControlConstructionVariationItems" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="TYPE" Header="Type" GroupIndex="0" >
+                            <dxg:GridColumn FieldName="TYPE" Header="Type" SortMode="DisplayText" GroupIndex="0" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ConstructionVariationItemType}}" />
                                 </dxg:GridColumn.EditSettings>
@@ -86,7 +86,7 @@
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
