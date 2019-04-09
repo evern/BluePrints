@@ -333,6 +333,8 @@
                                             <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
                                             <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variation" ShowInColumn="Calculation.Variation" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.CurrentBudget" ShowInColumn="Calculation.CurrentBudget" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
@@ -347,6 +349,8 @@
                                             <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.SubJob.Code" ShowInColumn="Entity.SubJob.Code" SummaryType="Count" />
                                             <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.ExoBudgetQty" ShowInColumn="Entity.ExoBudgetQty" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Budget" ShowInColumn="Calculation.Budget" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Variation" ShowInColumn="Calculation.Variation" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.CurrentBudget" ShowInColumn="Calculation.CurrentBudget" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Outstanding" ShowInColumn="Calculation.Outstanding" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Actuals" ShowInColumn="Calculation.Actuals" SummaryType="Sum" />
                                             <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Calculation.Uncommitted" ShowInColumn="Calculation.Uncommitted" SummaryType="Sum" />
