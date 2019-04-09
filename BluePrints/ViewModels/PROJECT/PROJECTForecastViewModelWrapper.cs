@@ -169,9 +169,9 @@ namespace BluePrints.ViewModels
         {
             jobLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             exoSubJobs = ExoQueries.GetNativeExoSubJobProjection(primeroUnitOfWork, loadPROJECT);
-            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            JOBCOST_LINES revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
             if (revenueLine != null)
-                ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+                ForecastSummary.Revenue = Convert.ToDecimal(revenueLine.LINETOTAL);
 
             dynamic variationRevenueLine = ExoQueries.GetProjectVariationRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
             if (variationRevenueLine != null)

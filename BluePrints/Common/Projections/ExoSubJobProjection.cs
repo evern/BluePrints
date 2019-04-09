@@ -1634,7 +1634,7 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
-        public static dynamic GetProjectRevenue(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        public static JOBCOST_LINES GetProjectRevenue(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
@@ -1642,11 +1642,10 @@ namespace BluePrints.Common.Projections
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
                                  where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.STOCKCODE == BluePrintsResources.Default_Revenue_StockCode && (JOBCOST_LINES.X_VARIATION_CODE == string.Empty || JOBCOST_LINES.X_VARIATION_CODE == null)
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE = JOBCOST_LINES.STOCKCODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST };
+                                 select JOBCOST_LINES;
 
-            IEnumerable<dynamic> dbTimes = availableLines.ToList();
-            if (dbTimes.Count() > 0)
-                return dbTimes.First();
+            if (availableLines.Count() > 0)
+                return availableLines.First();
             else
                 return null;
         }

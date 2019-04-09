@@ -128,7 +128,11 @@
                     <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}" Orientation="Horizontal">
                         <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Header="Variation Summary">
                             <dxlc:LayoutItem Label="Original Contract Sum:">
-                                <dxe:TextEdit EditValue="{Binding VariationSummary.OriginalContractSum, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>
+                                <dxe:SpinEdit HorizontalAlignment="Left" EditValue="{Binding VariationSummary.OriginalContractSum, Mode=OneWay}" Increment="100" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.OriginalContractEditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxe:SpinEdit>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Variations Approved:">
                                 <dxe:TextEdit IsReadOnly="True" Text="{Binding VariationSummary.VariationsApproved, Mode=OneWay}" MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c2"/>

@@ -159,9 +159,9 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONS> entities)
         {
             VariationSummary = ViewModelSource.Create(() => new ConstructionVariationSummary(entities));
-            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+            JOBCOST_LINES revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
             if (revenueLine != null)
-                VariationSummary.OriginalContractSum = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+                VariationSummary.OriginalContractSum = Convert.ToDecimal(revenueLine.LINETOTAL);
 
             MainViewModel.OnAfterEntitySavedCallBack = entityChangedNotifyChanges;
             MainViewModel.OnAfterNewRowAdded = newRowAddedNotifyChanges;
@@ -179,6 +179,17 @@ namespace BluePrints.ViewModels
         private void entityChangedNotifyChanges(VARIATION_CONS projection, VARIATION_CONS entity, bool isNewRow)
         {
             projection.Update();
+        }
+
+        public void OriginalContractEditValueChanged(DevExpress.Xpf.Editors.EditValueChangedEventArgs e)
+        {
+            if (e.NewValue != null)
+            {
+                JOBCOST_LINES revenueLine = ExoQueries.GetProjectRevenue(primeroUnitOfWork, loadPROJECT.NUMBER);
+                //cannot do it on linetotal because that's a calculated field in exo
+                revenueLine.QUOTE_UNITPR = Convert.ToDouble(e.NewValue.ToString());
+                primeroUnitOfWork.SaveChanges();
+            }
         }
 
         #region CallBacks
