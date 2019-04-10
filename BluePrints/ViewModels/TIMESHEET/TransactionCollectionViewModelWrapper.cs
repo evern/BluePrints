@@ -101,6 +101,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<JOB_TRANSACTIONS> entities)
         {
+            MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.IsPasteCellLevel = true;
             //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySavedIsContinue;
             MainViewModel.SetParentViewModel(this);
