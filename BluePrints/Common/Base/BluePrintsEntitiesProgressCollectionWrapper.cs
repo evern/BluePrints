@@ -66,10 +66,6 @@ namespace BluePrints.Common.Base
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
             onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
-            calculatePlannedBackgroundWorker = new BackgroundWorker();
-            calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
-            calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
-            calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected override void resolveParameters(object parameter)
@@ -293,6 +289,10 @@ namespace BluePrints.Common.Base
             if(!statsCalculatedOnProjection)
                 InitializeSummarizer();
 
+            calculatePlannedBackgroundWorker = new BackgroundWorker();
+            calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
+            calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
+            calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
             calculatePlannedBackgroundWorker.RunWorkerAsync();
         }
 
