@@ -1078,12 +1078,12 @@ namespace BluePrints.ViewModels
                     string errorMessage = string.Empty;
                     string newValue = generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
-
+                    string internalNumberFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM));
                     //when it's new this entity will be added as EntityMessageType.Added later
                     if(!isNew)
                     {
                         PauseUndoRedo();
-                        AddUndo(projection, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                        AddUndo(projection, internalNumberFieldName, oldValue, newValue, EntityMessageType.Changed);
                     }
 
                     projection.Update();
