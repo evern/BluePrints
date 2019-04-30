@@ -282,7 +282,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     }
 
                     IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_document_type = deliverables_status_by_deliverable_type.Where(x => DSTATUS_DOCTYPECollection.Any(y => y.GUID_STATUS == x.GUID && y.GUID_DOCTYPE == baseline_item_progress.Entity.Entity.GUID_DOCTYPE));
-                    baseline_item_progress.Entity.Entity.DeliverableStatusCollection = deliverables_status_by_document_type.OrderBy(x => x.AUTO_PERCENTAGE);
+                    baseline_item_progress.Entity.Entity.DeliverableStatusCollection = deliverables_status_by_document_type.OrderBy(x => x.AUTO_PERCENTAGE).ThenBy(x => x.NAME);
                 }
             }
 
