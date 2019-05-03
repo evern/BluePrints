@@ -82,6 +82,7 @@ namespace BluePrints.Common.Misc
 
         //This is for dashboard that only have material and po stats
         public bool ShouldHide { get; set; }
+        public bool IsManaged { get; set; }
     }
 
     public class Dashboard_Export_Data_Point
