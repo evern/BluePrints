@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetNativeExoSubJobEditableProjection(primeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, exoSTAFFS);
+            return query => ExoQueries.GetNativeExoSubJobEditableProjection(primeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
@@ -236,6 +236,7 @@ namespace BluePrints.ViewModels
             KeyValuePair<ColumnBase, string> disciplineCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)));
             KeyValuePair<ColumnBase, string> disciplineNameData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineName)));
             KeyValuePair<ColumnBase, string> commodityCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)));
+            KeyValuePair<ColumnBase, string> stockCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)));
             KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
             KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)));
 
@@ -244,6 +245,7 @@ namespace BluePrints.ViewModels
             pasteEntity.DisciplineCode = disciplineCodeData.Value;
             pasteEntity.DisciplineName = disciplineNameData.Value;
             pasteEntity.CommodityCode = commodityCodeData.Value;
+            pasteEntity.StockCode = stockCodeData.Value;
             pasteEntity.VariationCode = variationCodeData.Value;
 
             decimal budgetValue = 0;
@@ -253,23 +255,31 @@ namespace BluePrints.ViewModels
             }
 
             pasteEntity.PopulateCommodityCodes(COMMODITY_CODECollection);
+            pasteEntity.PopulateStockCodes(STOCK_ITEMSCollection);
             pasteEntity.PopulateLineAuthUsers(DisplayEntities);
 
             string errorMessage = string.Empty;
             if (MainViewModel.IsValidEntity(pasteEntity, null, ref errorMessage))
             {
-                if (pasteEntity.IsCommodityCodeValid)
+                if (commitToExo(pasteEntity))
                 {
-                    if(commitToExo(pasteEntity))
-                    {
-                        MainViewModel.Entities.Insert(0, pasteEntity);
-                        this.RaisePropertyChanged(x => x.DisplayEntities);
-                    }
+                    MainViewModel.Entities.Insert(0, pasteEntity);
+                    this.RaisePropertyChanged(x => x.DisplayEntities);
                 }
-                else
-                {
-                    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + " and phase type " + pasteEntity.PhaseTypeStr + "\nCurrent row will be skipped";
-                }
+
+                //remove restriction atm because user isn't familiar with system yet
+                //if (pasteEntity.IsCommodityCodeValid)
+                //{
+                //    if(commitToExo(pasteEntity))
+                //    {
+                //        MainViewModel.Entities.Insert(0, pasteEntity);
+                //        this.RaisePropertyChanged(x => x.DisplayEntities);
+                //    }
+                //}
+                //else
+                //{
+                //    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + " and phase type " + pasteEntity.PhaseTypeStr + "\nCurrent row will be skipped";
+                //}
             }
 
             if(errorMessage != string.Empty)
@@ -291,6 +301,7 @@ namespace BluePrints.ViewModels
                 if (isNew)
                 {
                     projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+                    projection.PopulateStockCodes(STOCK_ITEMSCollection);
                     projection.Update();
                 }
             }
@@ -318,10 +329,11 @@ namespace BluePrints.ViewModels
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
                 {                            
                     //stock item cannot be added, so it must exists before commodity can be added using it
-                    string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                    string stockCode = projection.GetStockCode();
                     STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
                     if(stock_item != null)
                     {
+                        projection.StockName = stock_item.DESCRIPTION;
                         if (ExoMethods.CommitLineCommodity(projection, stock_item, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                             this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
                     }
@@ -487,6 +499,18 @@ namespace BluePrints.ViewModels
                         e.DisplayText = e.Value.ToString();
                     else
                         e.DisplayText = projection.CommodityCode;
+                }
+            }
+            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && e.Row != null)
+            {
+                ExoSubJobEditableProjection projection = (ExoSubJobEditableProjection)e.Row;
+                if (!projection.IsStockCodeValid)
+                {
+                    //in new row this is called before property has been changed
+                    if (e.Value != null)
+                        e.DisplayText = e.Value.ToString();
+                    else
+                        e.DisplayText = projection.StockCode;
                 }
             }
         }
@@ -705,10 +729,11 @@ namespace BluePrints.ViewModels
                         if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                         {
                             //stock item cannot be added, so it must exists before commodity can be added using it
-                            string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                            string stockCode = projection.GetStockCode();
                             STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
-                            if(stock_item != null)
+                            if (stock_item != null)
                             {
+                                projection.StockName = stock_item.DESCRIPTION;
                                 if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                 {
                                     JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
@@ -928,6 +953,7 @@ namespace BluePrints.ViewModels
                     allCommodityCodes.AddRange(collection.OrderBy(x => x.CODE).Distinct().Select(x => x.CODE).Distinct());
                 }
 
+                //add commodity code from entities so that even commodity code that isn't valid will be displayed
                 if(DisplayEntities != null && DisplayEntities.Count > 0)
                 {
                     allCommodityCodes.AddRange(DisplayEntities.Select(x => x.CommodityCode));
@@ -956,6 +982,27 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.STOCKCODE);
                 return collection;
+            }
+        }
+
+        public IEnumerable<string> STOCK_CODEStringCollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.STOCK_ITEMS>();
+                List<string> allStockCodeRanges = new List<string>();
+                if (collection != null)
+                {
+                    allStockCodeRanges.AddRange(collection.OrderBy(x => x.STOCKCODE).Distinct().Select(x => x.STOCKCODE).Distinct());
+                }
+
+                //add commodity code from entities so that even commodity code that isn't valid will be displayed
+                if (DisplayEntities != null && DisplayEntities.Count > 0)
+                {
+                    allStockCodeRanges.AddRange(DisplayEntities.Select(x => x.StockCode));
+                }
+
+                return allStockCodeRanges.OrderBy(x => x);
             }
         }
 

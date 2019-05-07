@@ -92,6 +92,17 @@ namespace BluePrints.Common.Projections
         public string CommodityName { get; set; }
         public string StockCode { get; set; }
         public string StockName { get; set; }
+
+        public string GetStockCode()
+        {
+            if(StockCode == null || StockCode == string.Empty)
+            {
+                StockCode = CommodityCode;
+            }
+
+            return StockCode;
+        }
+
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
         public decimal Budget { get; set; }
@@ -176,6 +187,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public IEnumerable<STOCK_ITEMS> ValidStockItemsCollection
+        {
+            get
+            {
+                List<string> validStockCodes = ValidStockCodes.ToList();
+                return STOCK_ITEMS.Where(x => ValidStockCodes.Any(y => x.STOCKCODE == y));
+            }
+        }
+
         public bool IsSubJobExistsInExo => SubJobCode != string.Empty;
         public bool IsDisciplineExistsInExo => DisciplineCode != string.Empty;
         public bool IsCommodityExistsInExo => CommodityCode != string.Empty;
@@ -186,6 +206,12 @@ namespace BluePrints.Common.Projections
         public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
         {
             COMMODITY_CODES = COMMODITY_CODECollection;
+        }
+
+        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
+        public void PopulateStockCodes(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
+        {
+            STOCK_ITEMS = STOCK_ITEMSCollection;
         }
 
 
@@ -807,8 +833,8 @@ namespace BluePrints.Common.Projections
             newLINE.DISCOUNT = 0;
             newLINE.UNITPRICE_INCTAX = 0;
             newLINE.JOBNO = (int)projection.SubJobId;
-            newLINE.STOCKCODE = projection.CommodityCode.ToUpper();
-            newLINE.DESCRIPTION = projection.CommodityName;
+            newLINE.STOCKCODE = projection.StockCode.ToUpper();
+            newLINE.DESCRIPTION = projection.StockName;
             newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
             newLINE.COST_CENTRE = projection.CommodityId;
             newLINE.COST_CENTRE2 = projection.DisciplineId;
@@ -831,7 +857,7 @@ namespace BluePrints.Common.Projections
             newLINE.KITSEQNO = -1;
             newLINE.KITCODE = string.Empty;
             newLINE.PRICE_OVERRIDDEN = "N";
-            newLINE.LINKED_STOCKCODE = projection.CommodityCode.ToUpper();
+            newLINE.LINKED_STOCKCODE = projection.StockCode.ToUpper();
             newLINE.LINKED_QTY = 1;
             newLINE.HIDDEN_COST = 0;
             newLINE.HIDDEN_SELL = 0;
@@ -1145,7 +1171,7 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<ExoSubJobEditableProjection> GetNativeExoSubJobEditableProjection(
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STAFF> ExoSTAFFS = null)
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS = null)
         {
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
@@ -1168,6 +1194,7 @@ namespace BluePrints.Common.Projections
                 projection.VariationCode = exoLine.VariationCode;
                 projection.Budget = exoLine.BudgetCosts;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+                projection.PopulateStockCodes(STOCK_ITEMSCollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode && x.VariationCode == exoLine.VariationCode);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
@@ -1603,6 +1630,8 @@ namespace BluePrints.Common.Projections
             if (line.SubJobCode == null || line.SubJobCode == string.Empty || line.DisciplineCode == null || line.DisciplineCode == string.Empty || line.CommodityCode == null || line.CommodityCode == string.Empty)
                 return null;
 
+            string stockCode = line.StockCode == null || line.StockCode == string.Empty ? line.CommodityCode : line.StockCode;
+
             IQueryable<JOBCOST_LINES> projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
                                  on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
@@ -1612,7 +1641,7 @@ namespace BluePrints.Common.Projections
                                  on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
-                                 where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
+                                 where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == stockCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                  select JOBCOST_LINES;
 
             List<JOBCOST_LINES> listProjectLines = projectLines.ToList();

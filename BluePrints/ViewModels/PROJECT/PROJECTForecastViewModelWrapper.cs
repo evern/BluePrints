@@ -1293,11 +1293,13 @@ namespace BluePrints.ViewModels
                         else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                         {
                             if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                            {                            //stock item cannot be added, so it must exists before commodity can be added using it
-                                string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                            {
+                                //stock item cannot be added, so it must exists before commodity can be added using it
+                                string stockCode = projection.GetStockCode();
                                 STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
-                                if(stock_item != null)
+                                if (stock_item != null)
                                 {
+                                    projection.StockName = stock_item.DESCRIPTION;
                                     if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                     {
                                         int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
