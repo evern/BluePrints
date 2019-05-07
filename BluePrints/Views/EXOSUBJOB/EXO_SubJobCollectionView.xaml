@@ -89,6 +89,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="StockCode" Header="Stock Code" HeaderToolTip="Select from combobox">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_ITEMSCollection, ElementName=userControl}" ValidateOnTextInput="False" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="VariationCode" Header="Variation" HeaderToolTip="Select from combobox or type in new">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />

@@ -90,6 +90,8 @@ namespace BluePrints.Common.Projections
         [Required]
         public string CommodityCode { get; set; }
         public string CommodityName { get; set; }
+        public string StockCode { get; set; }
+        public string StockName { get; set; }
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
         public decimal Budget { get; set; }
@@ -139,6 +141,17 @@ namespace BluePrints.Common.Projections
                 return ValidCommodityCodes.Any(x => x.CODE == CommodityCode);
             }
         }
+        public bool IsStockCodeValid
+        {
+            get
+            {
+                if (CommodityCode == null || ValidStockCodes.Count() == 0)
+                    return false;
+
+                string stockCode = StockCode == string.Empty ? CommodityCode : StockCode;
+                return ValidStockCodes.Any(x => x == stockCode);
+            }
+        }
 
         public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
         {
@@ -149,6 +162,17 @@ namespace BluePrints.Common.Projections
 
                 string disciplineCode = DisciplineCode.Substring(0, 2);
                 return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+            }
+        }
+        public IEnumerable<string> ValidStockCodes
+        {
+            get
+            {
+                if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null || CommodityCode == null)
+                    return new List<string>();
+
+                string disciplineCode = DisciplineCode.Substring(0, 2);
+                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
             }
         }
 
@@ -184,6 +208,11 @@ namespace BluePrints.Common.Projections
             if(propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
             {
                 info.ErrorText = "Invalid commodity code, please check phase and discipline";
+            }
+
+            if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
+            {
+                info.ErrorText = "Invalid stock code, please check commodity code";
             }
         }
 
@@ -395,7 +424,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static bool CommitLineCommodity(ExoSubJobEditableProjection projection, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static bool CommitLineCommodity(ExoSubJobEditableProjection projection, STOCK_ITEMS stock_item, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             if (projection.CommodityCode == null || projection.CommodityCode == string.Empty || projection.DisciplineId == null)
                 return false;
@@ -412,7 +441,8 @@ namespace BluePrints.Common.Projections
                         if (line != null)
                         {
                             line.COST_CENTRE = commodity.SEQNO;
-                            line.STOCKCODE = commodity.SHORTCODE.ToUpper();
+                            line.STOCKCODE = stock_item.STOCKCODE;
+                            line.DESCRIPTION = stock_item.DESCRIPTION;
 
                             primeroUnitOfWork.SaveChanges();
                             return true;
@@ -1133,6 +1163,8 @@ namespace BluePrints.Common.Projections
                 projection.CommodityId = exoLine.CommodityId;
                 projection.CommodityCode = exoLine.CommodityCode;
                 projection.CommodityName = exoLine.CommodityName;
+                projection.StockCode = exoLine.StockCode;
+                projection.StockName = exoLine.StockName;
                 projection.VariationCode = exoLine.VariationCode;
                 projection.Budget = exoLine.BudgetCosts;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
@@ -1615,8 +1647,10 @@ namespace BluePrints.Common.Projections
                                  on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                                 on JOBCOST_LINES.STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST, FORECAST_RATE = JOBCOST_LINES.QUOTE_UNITPR };
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, STOCK_CODE = STOCK_ITEMS.STOCKCODE, STOCK_NAME = STOCK_ITEMS.DESCRIPTION, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, VARIATION_CODE = JOBCOST_LINES.X_VARIATION_CODE, BUDGETED_QTY = JOBCOST_LINES.QUOTE_QTY, BUDGETED_REV = JOBCOST_LINES.LINETOTAL, BUDGETED_RATE = JOBCOST_LINES.ACTUAL_UNITCOST, FORECAST_RATE = JOBCOST_LINES.QUOTE_UNITPR };
 
             List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoLine(x)).ToList();
             return exoTimes;
@@ -1763,6 +1797,8 @@ namespace BluePrints.Common.Projections
             exoTime.CommodityId = dbTime.COMMODITY_ID;
             exoTime.CommodityCode = dbTime.COMMODITY_CODE;
             exoTime.CommodityName = dbTime.COMMODITY_NAME;
+            exoTime.StockCode = dbTime.STOCK_CODE;
+            exoTime.StockName = dbTime.STOCK_NAME;
             exoTime.VariationCode = dbTime.VARIATION_CODE;
             exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
             exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
@@ -1809,8 +1845,8 @@ namespace BluePrints.Common.Projections
             exoTime.ResourceStaffId = dbTime.RESOURCE_STAFF_ID;
             exoTime.ResourceName = dbTime.RESOURCENAME;
             exoTime.ResourceEndDate = dbTime.END_DATE;
-            exoTime.StockCode = dbTime.DEFAULT_STOCKCODE;
-            exoTime.StockCodeDescription = dbTime.STOCK_CODE_DESC;
+            exoTime.StockCode = dbTime.DEFAULT_STOCKCODE; //when this projection is used in timesheet, the stock code will be resources instead of stock code in jobcost_lines because time booking is only to commodity level
+            exoTime.StockName = dbTime.STOCK_CODE_DESC;
             exoTime.VariationCode = dbTime.VARIATIONCODE;
             return exoTime;
         }
@@ -1834,7 +1870,7 @@ namespace BluePrints.Common.Projections
         public string ResourceName { get; set; }
         public DateTime ResourceEndDate { get; set; }
         public string StockCode { get; set; }
-        public string StockCodeDescription { get; set; }
+        public string StockName { get; set; }
         public string VariationCode { get; set; }
         public decimal BudgetQty { get; set; }
         public decimal BudgetRev { get; set; }

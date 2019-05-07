@@ -288,7 +288,7 @@ namespace BaseModel.ViewModel.Dialogs
                     newCommodity.Code = availableLine.CommodityCode;
                     newCommodity.SubJobNo = availableLine.SubJobNo;
                     newCommodity.StockCode = availableLine.StockCode;
-                    newCommodity.StockDescription = availableLine.StockCodeDescription;
+                    newCommodity.StockDescription = availableLine.StockName;
                     pCommodityCollection.Add(newCommodity);
                 }
             }

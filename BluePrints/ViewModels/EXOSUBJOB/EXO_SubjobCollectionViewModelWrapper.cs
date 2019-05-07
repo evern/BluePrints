@@ -117,6 +117,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
+            loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -315,9 +316,15 @@ namespace BluePrints.ViewModels
                     ExoMethods.CommitLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
-                {
-                    if (ExoMethods.CommitLineCommodity(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                        this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
+                {                            
+                    //stock item cannot be added, so it must exists before commodity can be added using it
+                    string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                    STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                    if(stock_item != null)
+                    {
+                        if (ExoMethods.CommitLineCommodity(projection, stock_item, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                            this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
+                    }
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)))
                 {
@@ -697,34 +704,40 @@ namespace BluePrints.ViewModels
                     {
                         if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                         {
-                            if (ExoMethods.CommitLineCommodity(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                            //stock item cannot be added, so it must exists before commodity can be added using it
+                            string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                            if(stock_item != null)
                             {
-                                JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
-                                projection.LineId = findExistingOrAddLine.SEQNO;
-                                if (projection.LineId != null)
+                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                 {
-                                    ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobId == projection.SubJobId);
-                                    if (existingSameSubJobLine != null)
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
+                                    projection.LineId = findExistingOrAddLine.SEQNO;
+                                    if (projection.LineId != null)
                                     {
-                                        foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                                        ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobId == projection.SubJobId);
+                                        if (existingSameSubJobLine != null)
                                         {
-                                            ExoSubJobAuth newUser = new ExoSubJobAuth();
-                                            DataUtils.ShallowCopy(newUser, authUser);
-                                            projection.AuthUsers.Add(newUser);
+                                            foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                                            {
+                                                ExoSubJobAuth newUser = new ExoSubJobAuth();
+                                                DataUtils.ShallowCopy(newUser, authUser);
+                                                projection.AuthUsers.Add(newUser);
+                                            }
                                         }
+
+                                        refreshPermissions();
+                                        addedProjections.Add(projection);
+                                        updatedLineCount += 1;
                                     }
 
-                                    refreshPermissions();
-                                    addedProjections.Add(projection);
-                                    updatedLineCount += 1;
+                                    projection.Update();
                                 }
-
-                                projection.Update();
-                            }
-                            else
-                            {
-                                MessageBoxService.ShowMessage(projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
-                                continue;
+                                else
+                                {
+                                    MessageBoxService.ShowMessage(projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -931,6 +944,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<PrimeroData.PROFILE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.PROFILENAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<PrimeroData.STOCK_ITEMS> STOCK_ITEMSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
                 return collection;
             }
         }

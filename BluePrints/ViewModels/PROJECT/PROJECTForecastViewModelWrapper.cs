@@ -1293,18 +1293,28 @@ namespace BluePrints.ViewModels
                         else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                         {
                             if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
-                            {
-                                if (ExoMethods.CommitLineCommodity(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                            {                            //stock item cannot be added, so it must exists before commodity can be added using it
+                                string stockCode = projection.StockCode == string.Empty ? projection.CommodityCode : projection.StockCode;
+                                STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                                if(stock_item != null)
                                 {
-                                    int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
-                                    JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
-                                    primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
-                                    primeroUnitOfWork.SaveChanges();
-                                    entity.LineId = newLine.SEQNO;
+                                    if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                                    {
+                                        int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
+                                        JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
+                                        primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
+                                        primeroUnitOfWork.SaveChanges();
+                                        entity.LineId = newLine.SEQNO;
+                                    }
+                                    else
+                                    {
+                                        MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                        isError = true;
+                                    }
                                 }
                                 else
                                 {
-                                    MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                    MessageBoxService.ShowMessage("Cannot change budget because stock code " + stockCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
                                     isError = true;
                                 }
                             }
