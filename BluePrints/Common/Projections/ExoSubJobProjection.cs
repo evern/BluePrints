@@ -43,7 +43,7 @@ namespace BluePrints.Common.Projections
         }
     }
 
-    [ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, VariationCode")]
+    [ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, StockCode, VariationCode")]
     //ExoSubJobProjection is not flat so this is created
     public class ExoSubJobEditableProjection : EntityBase, IGuidEntityKey, IDXDataErrorInfo
     {
@@ -159,7 +159,7 @@ namespace BluePrints.Common.Projections
                 if (CommodityCode == null || ValidStockCodes.Count() == 0)
                     return false;
 
-                string stockCode = StockCode == string.Empty ? CommodityCode : StockCode;
+                string stockCode = StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
                 return ValidStockCodes.Any(x => x == stockCode);
             }
         }
@@ -191,6 +191,9 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (STOCK_ITEMS == null)
+                    return new List<STOCK_ITEMS>();
+
                 List<string> validStockCodes = ValidStockCodes.ToList();
                 return STOCK_ITEMS.Where(x => ValidStockCodes.Any(y => x.STOCKCODE == y));
             }

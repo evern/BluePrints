@@ -301,6 +301,14 @@ namespace BluePrints.ViewModels
                 if (isNew)
                 {
                     projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+                    projection.Update();
+                }
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
+            {
+                //need to raise property changed for valid stock code collection
+                if (isNew)
+                {
                     projection.PopulateStockCodes(STOCK_ITEMSCollection);
                     projection.Update();
                 }
