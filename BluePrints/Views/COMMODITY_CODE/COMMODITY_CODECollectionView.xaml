@@ -48,6 +48,11 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
                                 <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure" />
+                                <dxg:GridColumn FieldName="Entity.DEFAULT_COSTGROUP" Header="Cost Group" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings NullText="Leave empty to autogenerate" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.DEFAULT_STOCKCODE" Header="Stock Code" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings NullText="Leave empty to autogenerate" />

@@ -131,6 +131,11 @@ namespace BluePrints.ViewModels
             {
                 if (entity.Entity.DEFAULT_STOCKCODE == null || entity.Entity.DEFAULT_STOCKCODE == string.Empty)
                     entity.Entity.DEFAULT_STOCKCODE = entity.Entity.CODE;
+
+                if (entity.Entity.DEFAULT_COSTGROUP == null || entity.Entity.DEFAULT_COSTGROUP == string.Empty)
+                {
+                    entity.Entity.DEFAULT_COSTGROUP = getCostGroupCode(entity.Entity.GUID_DISCIPLINE);
+                }
             }
 
             return true;
@@ -143,8 +148,25 @@ namespace BluePrints.ViewModels
                 if (projection.Entity.DEFAULT_STOCKCODE == string.Empty)
                     projection.Entity.DEFAULT_STOCKCODE = projection.Entity.CODE;
             }
+            else if (isNew && field_name.Contains(BindableBase.GetPropertyName(() => new COMMODITY_CODEProjection().Entity.GUID_DISCIPLINE)))
+            {
+                if (projection.Entity.DEFAULT_COSTGROUP == string.Empty)
+                    projection.Entity.DEFAULT_COSTGROUP = getCostGroupCode((Guid?)new_value);
+            }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        private string getCostGroupCode(Guid? guid_discipline)
+        {
+            if (guid_discipline == null)
+                return string.Empty;
+
+            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == guid_discipline);
+            if (findDISCIPLINE != null)
+                return string.Concat(findDISCIPLINE.CODE, "01");
+
+            return string.Empty;
         }
 
         public override string UnifiedRowValidation(COMMODITY_CODEProjection projection)
@@ -191,8 +213,16 @@ namespace BluePrints.ViewModels
         private string validateProjection(COMMODITY_CODEProjection projection, bool isFix)
         {
             string message = string.Empty;
+            if (projection.EXO_COSTTYPES_COSTGROUP_NOTFOUND)
+                message += "Cost group named " + projection.Entity.DEFAULT_COSTGROUP + " and ";
+
             if (projection.EXO_COSTTYPE == null)
-                message += "Cost Type and ";
+            {
+                if (projection.Entity.DEFAULT_COSTGROUP == null || projection.Entity.DEFAULT_COSTGROUP == string.Empty)
+                    message += "Cost Type with empty cost group and ";
+                else
+                    message += "Cost Type with " + projection.Entity.DEFAULT_COSTGROUP + " and ";
+            }
             if (projection.EXO_STOCKITEM == null)
                 message += "Stock Code and ";
 

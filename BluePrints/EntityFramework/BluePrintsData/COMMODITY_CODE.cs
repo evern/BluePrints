@@ -31,6 +31,9 @@ namespace BluePrints.Data
         [StringLength(23)]
         public string DEFAULT_STOCKCODE { get; set; }
 
+        [StringLength(4)]
+        public string DEFAULT_COSTGROUP { get; set; }
+
         [StringLength(500)]
         public string NAME { get; set; }
 
