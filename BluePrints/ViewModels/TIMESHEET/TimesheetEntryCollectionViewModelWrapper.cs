@@ -1314,8 +1314,8 @@ namespace BluePrints.ViewModels
                         string variationCode = validateRow[columnVariationCode].ToString();
                         if (variationCode != string.Empty)
                         {
-                            List<ExoTimeAuthorisation> jobWithVariationCode = findJobLine.Where(x => x.VariationCode.Length > 0).ToList();
-                            IEnumerable<ExoTimeAuthorisation> findAuthorisationByVariationCode = findJobLine.Where(x => x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
+                            List<ExoTimeAuthorisation> jobWithVariationCode = findJobLine.Where(x => x.VariationCode != null).Where(x => x.VariationCode.Length > 0).ToList();
+                            IEnumerable<ExoTimeAuthorisation> findAuthorisationByVariationCode = findJobLine.Where(x => x.VariationCode != null).Where(x => x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
                             if (findAuthorisationByVariationCode.Count() == 0)
                                 validateRow.SetColumnError(columnVariationCode, "Invalid, please check whether variation code exists on job");
                             else
