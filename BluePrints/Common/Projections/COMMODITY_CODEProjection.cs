@@ -39,16 +39,23 @@ namespace BluePrints.Common.Projections
                 COMMODITY_CODEProjection newCOMMODITY_CODE = new COMMODITY_CODEProjection();
                 newCOMMODITY_CODE.Entity = COMMODITY_CODE;
 
-                if(COMMODITY_CODE.DEFAULT_COSTGROUP == null || COMMODITY_CODE.DEFAULT_COSTGROUP == string.Empty)
-                    newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE && x.DEF_COSTGROUP == null);
-                else
-                {
-                    JOB_COSTGROUPS costGroup = primeroUnitOfWork.JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.DEFAULT_COSTGROUP);
-                    if (costGroup != null)
-                        newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE && x.DEF_COSTGROUP == costGroup.SEQNO);
-                    else
-                        newCOMMODITY_CODE.EXO_COSTTYPES_COSTGROUP_NOTFOUND = true;
-                }
+                newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE);
+
+                    //Cost group for stock code and commodity code shouldn't be validated in EXO
+                    //if (COMMODITY_CODE.DEFAULT_COSTGROUP == null || COMMODITY_CODE.DEFAULT_COSTGROUP == string.Empty)
+                    //{
+                    //    newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE && x.DEF_COSTGROUP == 0);
+                    //}
+                    //else
+                    //{
+                    //    JOB_COSTGROUPS costGroup = primeroUnitOfWork.JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.DEFAULT_COSTGROUP);
+                    //    if (costGroup != null)
+                    //    {
+                    //        newCOMMODITY_CODE.EXO_COSTTYPE = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == COMMODITY_CODE.CODE && x.DEF_COSTGROUP == costGroup.SEQNO);
+                    //    }
+                    //    else
+                    //        newCOMMODITY_CODE.EXO_COSTTYPES_COSTGROUP_NOTFOUND = true;
+                    //}
 
                 newCOMMODITY_CODE.EXO_STOCKITEM = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == COMMODITY_CODE.DEFAULT_STOCKCODE);
                 returnCOMMODITY_CODEProjection.Add(newCOMMODITY_CODE);

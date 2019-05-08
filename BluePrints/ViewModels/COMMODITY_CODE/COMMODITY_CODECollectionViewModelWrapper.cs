@@ -213,22 +213,17 @@ namespace BluePrints.ViewModels
         private string validateProjection(COMMODITY_CODEProjection projection, bool isFix)
         {
             string message = string.Empty;
-            if (projection.EXO_COSTTYPES_COSTGROUP_NOTFOUND)
-                message += "Cost group named " + projection.Entity.DEFAULT_COSTGROUP + " and ";
+            //if (projection.EXO_COSTTYPES_COSTGROUP_NOTFOUND)
+            //    message += "Cost group: " + projection.Entity.DEFAULT_COSTGROUP + " and ";
 
             if (projection.EXO_COSTTYPE == null)
-            {
-                if (projection.Entity.DEFAULT_COSTGROUP == null || projection.Entity.DEFAULT_COSTGROUP == string.Empty)
-                    message += "Cost Type with empty cost group and ";
-                else
-                    message += "Cost Type with " + projection.Entity.DEFAULT_COSTGROUP + " and ";
-            }
+                message += "Cost Type: " + projection.Entity.CODE + " and ";
             if (projection.EXO_STOCKITEM == null)
-                message += "Stock Code and ";
+                message += "Stock Code: " + projection.Entity.DEFAULT_STOCKCODE + " and ";
 
             if (message != string.Empty)
             {
-                message = string.Concat(message.Substring(0, message.Length - 4), " doesn't exist in exo");
+                message = string.Concat(message.Substring(0, message.Length - 4), "doesn't exist in exo");
                 return message; 
             }
 
@@ -241,72 +236,84 @@ namespace BluePrints.ViewModels
                     JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
                     if (validCostGroup == null)
                         return "Cost Group:" + validDisciplineCode + " doesn't exists in exo";
-                    else if(projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
-                    {
-                        if(isFix)
-                            projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
-                    }
+                    //else if(projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
+                    //{
+                    //    if(isFix)
+                    //        projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
+                    //}
                 }
-                else
-                {
-                    if(projection.EXO_COSTTYPE.DEF_COSTGROUP != null)
-                    {
-                        if (isFix)
-                            projection.EXO_COSTTYPE.DEF_COSTGROUP = null;
-                        else
-                            return "Cost Group on " + projection.EXO_COSTTYPE.SHORTCODE + " should be set to none since discipline is not defined on this commodity";
-                    }
-                }
+                //else
+                //{
+                //    if(projection.EXO_COSTTYPE.DEF_COSTGROUP != null)
+                //    {
+                //        if (isFix)
+                //            projection.EXO_COSTTYPE.DEF_COSTGROUP = null;
+                //        else
+                //            return "Cost Group on " + projection.EXO_COSTTYPE.SHORTCODE + " should be set to none since discipline is not defined on this commodity";
+                //    }
+                //}
             }
 
-            if (projection.Entity.DEFAULT_STOCKCODE == null || projection.Entity.DEFAULT_STOCKCODE == string.Empty)
-                return "Stock code doesn't exists in Exo";
-            else
-            {
-                STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == projection.Entity.DEFAULT_STOCKCODE);
-                if (findSTOCK_ITEM == null)
-                    return "Stock code doesn't exists in Exo";
-                else
-                {
-                    if (findSTOCK_ITEM.COSTTYPE != projection.EXO_COSTTYPE.SEQNO)
-                    {
-                        JOB_COSTTYPES validCOST_TYPE = JOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == projection.EXO_COSTTYPE.SEQNO);
-                        if(validCOST_TYPE == null)
-                            return "Cost type: " + projection.Entity.CODE + " doesn't exists in exo";
-                        else
-                        {
-                            if(isFix)
-                                findSTOCK_ITEM.COSTTYPE = validCOST_TYPE.SEQNO;
-                            else
-                                return "Cost type on stock item is not linked to commodity code " + projection.Entity.CODE;
-                        }
-                    }
-                    else
-                    {
-                        if (projection.Entity.GUID_DISCIPLINE != null)
-                        {
-                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
-                            if(findDISCIPLINE != null)
-                            {
-                                string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
-                                JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == projection.EXO_STOCKITEM.COSTGROUP);
-                                if (validCostGroup == null)
-                                    return "Cost Group: " + validDisciplineCode + " doesn't exists in exo";
-                                else
-                                {
-                                    if (projection.EXO_STOCKITEM.COSTGROUP != validCostGroup.SEQNO)
-                                    {
-                                        if (isFix)
-                                            projection.EXO_STOCKITEM.COSTGROUP = validCostGroup.SEQNO;
-                                        else
-                                            return "Cost group is incorrect on cost type";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            //if (projection.Entity.DEFAULT_STOCKCODE == null || projection.Entity.DEFAULT_STOCKCODE == string.Empty)
+            //    return "Stock code doesn't exists in Exo";
+            //else
+            //{
+            //    STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == projection.Entity.DEFAULT_STOCKCODE);
+            //    if (findSTOCK_ITEM == null)
+            //        return "Stock code doesn't exists in Exo";
+            //    else
+            //    {
+            //        if (findSTOCK_ITEM.COSTTYPE != projection.EXO_COSTTYPE.SEQNO)
+            //        {
+            //            JOB_COSTTYPES validCOST_TYPE = JOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == projection.EXO_COSTTYPE.SEQNO);
+            //            if(validCOST_TYPE == null)
+            //                return "Cost type: " + projection.Entity.CODE + " doesn't exists in exo";
+            //            else
+            //            {
+            //                if(isFix)
+            //                    findSTOCK_ITEM.COSTTYPE = validCOST_TYPE.SEQNO;
+            //                else
+            //                    return "Cost type on stock item is not linked to commodity code " + projection.Entity.CODE;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (projection.Entity.GUID_DISCIPLINE != null)
+            //            {
+            //                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
+            //                if(findDISCIPLINE != null)
+            //                {
+            //                    string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
+            //                    JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
+            //                    if (validCostGroup == null)
+            //                        return "Cost Group: " + validDisciplineCode + " on stock code doesn't exists in exo";
+            //                    else
+            //                    {
+            //                        //Commodity and stock code's cost group shouldn't be validated
+            //                        //if (projection.EXO_STOCKITEM.COSTGROUP != validCostGroup.SEQNO)
+            //                        //{
+            //                        //    if (isFix)
+            //                        //        projection.EXO_STOCKITEM.COSTGROUP = validCostGroup.SEQNO;
+            //                        //    else
+            //                        //        return "Cost group is incorrect on stock code";
+            //                        //}
+
+            //                        //if (projection.EXO_COSTTYPE != null)
+            //                        //{
+            //                        //    if (projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
+            //                        //    {
+            //                        //        if (isFix)
+            //                        //            projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
+            //                        //        else
+            //                        //            return "Cost group is incorrect on cost type";
+            //                        //    }
+            //                        //}
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             return string.Empty;
         }

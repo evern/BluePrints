@@ -234,14 +234,24 @@ namespace BluePrints.Common.Projections
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
-            if(propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
+            if(SubJobCode.Length == 15)
             {
-                info.ErrorText = "Invalid commodity code, please check phase and discipline";
-            }
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
+                {
+                    info.ErrorText = "Invalid commodity code, please check phase and discipline";
+                }
 
-            if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
+                {
+                    info.ErrorText = "Invalid stock code, please check commodity code";
+                }
+            }
+            else
             {
-                info.ErrorText = "Invalid stock code, please check commodity code";
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode))
+                {
+                    info.ErrorText = "Cannot validate commodity and stock code because phase in subjob cannot be determined";
+                }
             }
         }
 
