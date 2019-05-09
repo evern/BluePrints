@@ -259,6 +259,33 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to G00.
+        /// </summary>
+        internal static string Default_TenderCommodityCode {
+            get {
+                return ResourceManager.GetString("Default_TenderCommodityCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CO01.
+        /// </summary>
+        internal static string Default_TenderDisciplineCode {
+            get {
+                return ResourceManager.GetString("Default_TenderDisciplineCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to G00.
+        /// </summary>
+        internal static string Default_TenderStockCode {
+            get {
+                return ResourceManager.GetString("Default_TenderStockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BluePrints.
         /// </summary>
         internal static string Default_XML_Directory {

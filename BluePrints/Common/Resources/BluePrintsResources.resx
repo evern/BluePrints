@@ -288,4 +288,13 @@
   <data name="DefaultCostGroupAffix" xml:space="preserve">
     <value>01</value>
   </data>
+  <data name="Default_TenderCommodityCode" xml:space="preserve">
+    <value>G00</value>
+  </data>
+  <data name="Default_TenderDisciplineCode" xml:space="preserve">
+    <value>CO01</value>
+  </data>
+  <data name="Default_TenderStockCode" xml:space="preserve">
+    <value>G00</value>
+  </data>
 </root>

@@ -375,7 +375,9 @@ namespace BluePrints.Common
         [Display(Name = "Construct")]
         Construct = 1,
         [Display(Name = "Indirect")]
-        Indirect = 2
+        Indirect = 2,
+        [Display(Name = "Tender")]
+        Tender = 3
     }
 
     public enum ChargeType

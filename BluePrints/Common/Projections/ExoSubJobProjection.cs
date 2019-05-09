@@ -125,8 +125,11 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (SubJobCode == null || SubJobCode.Length < 15)
+                if (SubJobCode == null)
                     return null;
+
+                if (SubJobCode.Length < 15)
+                    return Common.PhaseType.Tender;
 
                 string phaseTypeString = SubJobCode.Substring(13, 1).ToUpper();
                 if (phaseTypeString == "I")
@@ -149,6 +152,14 @@ namespace BluePrints.Common.Projections
                 if (CommodityCode == null || ValidCommodityCodes.Count() == 0)
                     return false;
 
+                if (PhaseType == Common.PhaseType.Tender)
+                {
+                    if (CommodityCode == BluePrintsResources.Default_TenderCommodityCode)
+                        return true;
+                    else
+                        return false;
+                }
+
                 return ValidCommodityCodes.Any(x => x.CODE == CommodityCode);
             }
         }
@@ -160,6 +171,14 @@ namespace BluePrints.Common.Projections
                     return false;
 
                 string stockCode = StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
+                if (PhaseType == Common.PhaseType.Tender)
+                {
+                    if (stockCode == BluePrintsResources.Default_TenderStockCode)
+                        return true;
+                    else
+                        return false;
+                }
+
                 return ValidStockCodes.Any(x => x == stockCode);
             }
         }
@@ -170,6 +189,9 @@ namespace BluePrints.Common.Projections
             {
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null)
                     return new List<COMMODITY_CODE>();
+
+                if(PhaseType == Common.PhaseType.Tender)
+                    return COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
 
                 string disciplineCode = DisciplineCode.Substring(0, 2);
                 return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
@@ -182,6 +204,9 @@ namespace BluePrints.Common.Projections
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null || CommodityCode == null)
                     return new List<string>();
 
+                if (PhaseType == Common.PhaseType.Tender)
+                    return COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+
                 string disciplineCode = DisciplineCode.Substring(0, 2);
                 return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
             }
@@ -193,6 +218,9 @@ namespace BluePrints.Common.Projections
             {
                 if (STOCK_ITEMS == null)
                     return new List<STOCK_ITEMS>();
+
+                if (PhaseType == Common.PhaseType.Tender)
+                    return STOCK_ITEMS.Where(x => x.STOCKCODE == BluePrintsResources.Default_TenderStockCode);
 
                 List<string> validStockCodes = ValidStockCodes.ToList();
                 return STOCK_ITEMS.Where(x => ValidStockCodes.Any(y => x.STOCKCODE == y));
@@ -248,9 +276,19 @@ namespace BluePrints.Common.Projections
             }
             else
             {
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode))
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode) && DisciplineCode != BluePrintsResources.Default_TenderDisciplineCode)
                 {
-                    info.ErrorText = "Cannot validate commodity and stock code because phase in subjob cannot be determined";
+                    info.ErrorText = "Discipline code must be " + BluePrintsResources.Default_TenderDisciplineCode;
+                }
+
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
+                {
+                    info.ErrorText = "Commodity code must be " + BluePrintsResources.Default_TenderCommodityCode;
+                }
+
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
+                {
+                    info.ErrorText = "Stock code must be " + BluePrintsResources.Default_TenderStockCode;
                 }
             }
         }
