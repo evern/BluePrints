@@ -78,7 +78,7 @@ namespace BluePrints.Common.Projections
             string group3 = "3. NON INJURY INCIDENTS";
             string group4 = "4. HSE KPI's";
             //string group5 = "5. HSE TRAINING";
-            string group6 = "6. TOTALS";
+            string group6 = "5. TOTALS";
 
             HSEReportProjection INJURIES_REC_LTI = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group1 };
             INJURIES_REC_LTI.StatsName = "1.1 Lost Time Injuries (LTI)";
@@ -118,13 +118,13 @@ namespace BluePrints.Common.Projections
             Total_Recordable_Injuries.StatsFormat = hseProjection.Total_Recordable_Injuries_Format;
             Total_Recordable_Injuries.StatsMask = "N0";
             Total_Recordable_Injuries.StatsType = HSEStatsType.Total_Recordable_Injuries;
-            Stats.Add(Total_Recordable_Injuries);
+            //Stats.Add(Total_Recordable_Injuries);
 
             HSEReportProjection Total_Recordable_Injuries_Freq = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group1 };
-            Total_Recordable_Injuries_Freq.StatsName = "1.5 Total Recordable Injury Frequency Rate (TRIFR)";
+            Total_Recordable_Injuries_Freq.StatsName = "1.4 Total Recordable Injury Frequency Rate (TRIFR)";
             Total_Recordable_Injuries_Freq.StatsValue = hseProjection.Total_Recordable_Injuries_Freq;
             Total_Recordable_Injuries_Freq.StatsTarget = hseProjection.Total_Recordable_Injuries_Freq_Target;
-            Total_Recordable_Injuries_Freq.StatsCriteria = "< 10 Per Million Manhours";
+            Total_Recordable_Injuries_Freq.StatsCriteria = "< 3.5 Per Million Manhours";
             Total_Recordable_Injuries_Freq.StatsFormat = hseProjection.Total_Recordable_Injuries_Freq_Format;
             Total_Recordable_Injuries_Freq.StatsMask = "N0";
             Total_Recordable_Injuries_Freq.StatsType = HSEStatsType.Total_Recordable_Injuries_Freq;
@@ -148,10 +148,10 @@ namespace BluePrints.Common.Projections
             All_Injuries.StatsFormat = hseProjection.All_Injuries_Format;
             All_Injuries.StatsMask = "N0";
             All_Injuries.StatsType = HSEStatsType.All_Injuries;
-            Stats.Add(All_Injuries);
+            //Stats.Add(All_Injuries);
 
             HSEReportProjection INJURIES_OTH_NWR = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group2 };
-            INJURIES_OTH_NWR.StatsName = "2.3 Non-Work Related Injuries or Illness (NWR)";
+            INJURIES_OTH_NWR.StatsName = "2.2 Non-Work Related Injuries or Illness (NWR)";
             INJURIES_OTH_NWR.StatsValue = hseProjection.Entity.INJURIES_OTH_NWR;
             INJURIES_OTH_NWR.StatsTarget = 0;
             INJURIES_OTH_NWR.StatsCriteria = "";
@@ -371,30 +371,32 @@ namespace BluePrints.Common.Projections
             Stats.Add(KPI_RISK_REGISTER);
 
             HSEReportProjection TRAIN_COMPLIANCE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            TRAIN_COMPLIANCE.StatsName = "Compliance with training matrix";
+            TRAIN_COMPLIANCE.StatsName = "4.16 Compliance with training matrix";
             TRAIN_COMPLIANCE.StatsValue = hseProjection.Entity.TRAIN_COMPLIANCE;
             TRAIN_COMPLIANCE.StatsTarget = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? 0 : 1;
             TRAIN_COMPLIANCE.StatsCriteria = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? "Not Applicable" : ">= 1/Month (or >= 1/Project)";
             TRAIN_COMPLIANCE.StatsFormat = hseProjection.TRAIN_COMPLIANCE_Format;
             TRAIN_COMPLIANCE.StatsMask = "N0";
+            TRAIN_COMPLIANCE.StatsType = HSEStatsType.TRAIN_COMPLIANCE;
             Stats.Add(TRAIN_COMPLIANCE);
 
             HSEReportProjection TRAIN_VOC = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
-            TRAIN_VOC.StatsName = "Employee Verification of Competency (VOC's)";
+            TRAIN_VOC.StatsName = "4.17 Employee Verification of Competency (VOC's)";
             TRAIN_VOC.StatsValue = hseProjection.Entity.TRAIN_VOC;
             TRAIN_VOC.StatsTarget = 1;
             TRAIN_VOC.StatsCriteria = "= 100%";
             TRAIN_VOC.StatsFormat = hseProjection.TRAIN_VOC_Format;
             TRAIN_VOC.StatsMask = "P0";
+            TRAIN_VOC.StatsType = HSEStatsType.TRAIN_VOC;
             Stats.Add(TRAIN_VOC);
 
             HSEReportProjection Total_ManHours = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group6 };
-            Total_ManHours.StatsName = "5.3 Total Man Hours";
+            Total_ManHours.StatsName = "5.1 Total Man Hours";
             Total_ManHours.StatsValue = hseProjection.Total_ManHours;
             Total_ManHours.StatsTarget = 0;
             Total_ManHours.StatsCriteria = "";
             Total_ManHours.StatsFormat = true;
-            Total_ManHours.StatsMask = "N0";
+            Total_ManHours.StatsMask = "N2";
             Total_ManHours.StatsType = HSEStatsType.Total_ManHours;
             Stats.Add(Total_ManHours);
 

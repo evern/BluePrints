@@ -64,7 +64,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return Total_Recordable_Injuries / (Total_ManHours / 100000);
+                return Total_Recordable_Injuries / (Total_ManHours / 1000000);
             }
         }
 
@@ -98,7 +98,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return 5.5m;
+                return 3.5m;
                 //return Total_ManHours / 100000;
             }
         }
@@ -122,7 +122,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return 5.5m;
+                return 3.5m;
                 //return ((Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI) * 1000000) / Total_ManHours; 
             }
         }
@@ -395,7 +395,7 @@ namespace BluePrints.Common.Projections
         public bool INJURIES_REC_RWI_Format => Entity == null ? false : Entity.INJURIES_REC_RWI == 0 ? true : false;
         public bool INJURIES_REC_MTI_Format => Entity == null ? false : Entity.INJURIES_REC_MTI == 0 ? true : false;
         public bool Total_Recordable_Injuries_Format => Entity == null ? false : Total_Recordable_Injuries <= Total_Recordable_Injuries_Target ? true : false;
-        public bool Total_Recordable_Injuries_Freq_Format => Entity == null ? false : Total_Recordable_Injuries_Freq <= Total_Recordable_Injuries_Freq_Target ? true : false;
+        public bool Total_Recordable_Injuries_Freq_Format => Entity == null ? false : Total_Recordable_Injuries_Frequency_Rate <= Total_Recordable_Injuries_Freq_Target ? true : false;
         public bool All_Injuries_Format => Entity == null ? false : All_Injuries <= All_Injuries_Target ? true : false;
 
         public bool INCIDENT_ENV_Format => Entity == null ? false : Entity.INCIDENT_ENV <= Incident_Target ? true : false;

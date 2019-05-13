@@ -228,7 +228,7 @@
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Recordable Injury Frequency Rate (TRIFR)" Style="{StaticResource layoutFirstColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Frequency_Rate, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding Total_Recordable_Injuries_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n2" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Frequency_Rate, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding Total_Recordable_Injuries_Freq_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n2" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
                                         <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
@@ -239,21 +239,6 @@
                                         <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
                                         <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
                                             <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_TOTAL_COMMENT}" Tag="Entity.INJURIES_REC_TOTAL_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
-                                        </dxlc:LayoutItem>
-                                    </ExtraLayout:ExtraLayoutGroup>
-                                    <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}" Visibility="Collapsed">
-                                        <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Recordable Injury Frequency Rate (TRIFR)" Style="{StaticResource layoutFirstColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Freq, Mode=OneWay}" HorizontalAlignment="Left" Background="{Binding Total_Recordable_Injuries_Freq_Background}" EditMode="InplaceInactive" Foreground="Black" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                        <dxlc:LayoutItem Style="{StaticResource layoutSecondColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Total_Recordable_Injuries_Freq_Target, Mode=OneWay}" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n2" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                        <dxlc:LayoutItem Label="Less Than 10 Per Million Manhours" Style="{StaticResource layoutThirdColumnStyle}" />
-                                        <dxlc:LayerSeparator Style="{StaticResource layoutSeparatorStyle}" />
-                                        <dxlc:LayoutItem Style="{StaticResource layoutFourthColumnStyle}">
-                                            <dxe:TextEdit EditValue="{Binding Entity.INJURIES_REC_FREQ_COMMENT}" Tag="Entity.INJURIES_REC_FREQ_COMMENT" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">

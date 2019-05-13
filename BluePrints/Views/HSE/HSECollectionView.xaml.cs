@@ -107,13 +107,13 @@ namespace BluePrints.Views
                                         injurySum += valueSum;
                                     }
 
-                                    e.CustomValue = (injurySum * 1000000) / totalManHours;
+                                    e.CustomValue = injurySum / (totalManHours / 1000000);
                                 }
                                 else
                                     e.CustomValue = 0;
                             }
                             else
-                                e.CustomValue = 5.5m;
+                                e.CustomValue = 3.5m;
                         }
                         else
                             e.CustomValue = e.SummaryValue.Summary;
@@ -213,7 +213,7 @@ namespace BluePrints.Views
                 else
                 {
                     if (statsType == HSEStatsType.Total_Recordable_Injuries_Freq || statsType == HSEStatsType.All_Injuries)
-                        return createProgressBarEdit(statsType.ToString(), 0, 5.5m, false, "n2");
+                        return createProgressBarEdit(statsType.ToString(), 0, 3.5m, false, "n2");
                     else if (cell.IsTotalAppearance)
                     {
                         object grandTotalTargetObj = pivotGridControl.GetCellValue(cell.ColumnIndex + 1, cell.RowIndex);
@@ -246,7 +246,8 @@ namespace BluePrints.Views
                 progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "p0");
             else
                 progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "n0");
-            progressBarEdit.SetValue(ProgressBarEdit.ContentDisplayModeProperty, ContentDisplayMode.Value);
+
+            //progressBarEdit.SetValue(ProgressBarEdit.ContentDisplayModeProperty, ContentDisplayMode.Value);
             progressBarEdit.SetValue(ProgressBarEdit.EditModeProperty, EditMode.InplaceInactive);
             progressBarEdit.SetValue(ProgressBarEdit.ForegroundProperty, new SolidColorBrush(Colors.Black));
             progressBarEdit.SetValue(ProgressBarEdit.AdditionalForegroundProperty, new SolidColorBrush(Colors.Black));
@@ -272,7 +273,7 @@ namespace BluePrints.Views
                     progressBarEdit.SetValue(ProgressBarEdit.DisplayFormatStringProperty, "n0");
             }
 
-            progressBarEdit.SetValue(ProgressBarEdit.ContentDisplayModeProperty, ContentDisplayMode.Value);
+            //progressBarEdit.SetValue(ProgressBarEdit.ContentDisplayModeProperty, ContentDisplayMode.Value);
             progressBarEdit.SetValue(ProgressBarEdit.EditModeProperty, EditMode.InplaceInactive);
             progressBarEdit.SetValue(ProgressBarEdit.ForegroundProperty, new SolidColorBrush(Colors.Black));
             progressBarEdit.SetValue(ProgressBarEdit.AdditionalForegroundProperty, new SolidColorBrush(Colors.Black));

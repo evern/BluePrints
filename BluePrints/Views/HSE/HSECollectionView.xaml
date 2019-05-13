@@ -89,7 +89,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxpg:PivotGridControl Name="pivotGridControl1" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowFilterHeaders="False" ShowLoadingPanel="{Binding IsLoading}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
+                    <dxpg:PivotGridControl Name="pivotGridControl1" AutoExpandGroups="True" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowFilterHeaders="False" ShowLoadingPanel="{Binding IsLoading}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
                         <dxpg:PivotGridControl.FormatConditions>
                             <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
                         </dxpg:PivotGridControl.FormatConditions>
@@ -97,7 +97,7 @@
                             <dxpg:PivotGridField Area="RowArea" Caption="Group" FieldName="Group" GroupIndex="0" />
                             <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="2" />
                             <dxpg:PivotGridField Area="ColumnArea" Caption="Project" FieldName="Project.NUMBER" />
-                            <dxpg:PivotGridField Name="fieldHSEDate" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
+                            <dxpg:PivotGridField Name="fieldHSEDate" ExpandedInFieldsGroup="False" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
                             <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n2" FieldName="StatsValue" SummaryType="Custom" />
                             <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n2" FieldName="StatsTarget" SummaryType="Custom" />
                         </dxpg:PivotGridControl.Fields>
