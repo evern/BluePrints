@@ -376,6 +376,17 @@ namespace BluePrints.Common.Projections
                 return Entity.KPI_RISK_REGISTER_CRITERIA == 0 ? ">= 1/Month" : notApplicableTarget;
             }
         }
+
+        public string TRAIN_COMPLIANCE_Target
+        {
+            get
+            {
+                if (Entity == null)
+                    return string.Empty;
+
+                return Entity.TRAIN_COMPLIANCE_CRITERIA == 0 ? ">= 1/Month (or >= 1/Project)" : notApplicableTarget;
+            }
+        }
         #endregion
 
 
@@ -432,7 +443,8 @@ namespace BluePrints.Common.Projections
         public SolidColorBrush KPI_CORRECTIVE_ACT_CLOSED_Background => KPI_CORRECTIVE_ACT_CLOSED_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
         public SolidColorBrush KPI_HSE_RECOGNITION_Background => KPI_HSE_RECOGNITION_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
         public SolidColorBrush KPI_RISK_REGISTER_Background => KPI_RISK_REGISTER_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
-
+        public SolidColorBrush TRAIN_COMPLIANCE_Background => TRAIN_COMPLIANCE_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush TRAIN_VOC_Background => TRAIN_VOC_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
         #endregion
     }
 }

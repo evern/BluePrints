@@ -744,13 +744,13 @@
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                        <dxlc:LayoutItem Label="Compliance with training matrix" Style="{StaticResource layoutFirstColumnStyle}">
+                                        <dxlc:LayoutItem Label="Training Matrix Review" Style="{StaticResource layoutFirstColumnStyle}">
                                             <Grid>
                                                 <dxe:FlyoutControl IsOpen="{Binding ElementName=spinTRAIN_COMPLIANCE, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinTRAIN_COMPLIANCE}" StaysOpen="False">
                                                     <dxe:FlyoutControl.Settings>
                                                         <dxe:FlyoutSettings Placement="Right" />
                                                     </dxe:FlyoutControl.Settings>
-                                                    <TextBlock Text="Training Matrix to be reviewed monthly by Mgr/HSE for license/ticket expiry and training gaps." />
+                                                    <TextBlock Text="Site Management of Primero onboarding to update matrix once per month." />
                                                 </dxe:FlyoutControl>
                                                 <dxe:SpinEdit Name="spinTRAIN_COMPLIANCE" EditValue="{Binding Entity.TRAIN_COMPLIANCE}" Tag="Entity.TRAIN_COMPLIANCE" Background="{Binding TRAIN_COMPLIANCE_Background}" Foreground="Black" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                             </Grid>
@@ -767,13 +767,13 @@
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Style="{StaticResource layoutControlLine}">
-                                        <dxlc:LayoutItem Label="Employee Verification of Competency (VOC's)" Style="{StaticResource layoutFirstColumnStyle}">
+                                        <dxlc:LayoutItem Label="Employee Verification of Competency (VOC)" Style="{StaticResource layoutFirstColumnStyle}">
                                             <Grid>
                                                 <dxe:FlyoutControl IsOpen="{Binding ElementName=spinTRAIN_VOC, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=spinTRAIN_VOC}" StaysOpen="False">
                                                     <dxe:FlyoutControl.Settings>
                                                         <dxe:FlyoutSettings Placement="Right" />
                                                     </dxe:FlyoutControl.Settings>
-                                                    <TextBlock Text="All new and existing employees must be VOC'd prior to mobilising to site and updated annually." />
+                                                    <TextBlock Text="All site employees VOC'd for specific Plant and Equipment." />
                                                 </dxe:FlyoutControl>
                                                 <dxe:SpinEdit Name="spinTRAIN_VOC" EditValue="{Binding Entity.TRAIN_VOC}" Tag="Entity.TRAIN_VOC" Background="{Binding TRAIN_VOC_Background}" Foreground="Black" Increment="0.1" Mask="p0" MaskUseAsDisplayFormat="True" MaxValue="1" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                             </Grid>
@@ -849,10 +849,51 @@
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="CLASSIFICATION" Header="Classification">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:IncidentClassification}}" NullValueButtonPlacement="Popup" />
-                                                    </dxg:GridColumn.EditSettings>
+                                                <dxg:GridColumn FieldName="CLASSIFICATION" MinWidth="150" Header="Classification">
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <dxe:FlyoutControl IsOpen="{Binding ElementName=PART_Editor, Path=IsKeyboardFocusWithin}" PlacementTarget="{Binding ElementName=PART_Editor}" StaysOpen="False">
+                                                                    <dxe:FlyoutControl.Settings>
+                                                                        <dxe:FlyoutSettings Placement="Right" />
+                                                                    </dxe:FlyoutControl.Settings>
+                                                                    <TextBlock>
+                                                                        <Bold>CLASSIFICATION</Bold>
+                                                                        <LineBreak />
+                                                                        <Italic>Injuries</Italic>
+                                                                        <LineBreak />
+                                                                        <Bold>LTI:</Bold> Lost Time Injury
+                                                                        <LineBreak />
+                                                                        <Bold>RWI:</Bold> Restricted Work Injury
+                                                                        <LineBreak />
+                                                                        <Bold>MTI:</Bold> Medical Treatment Injury
+                                                                        <LineBreak />
+                                                                        <Bold>FAI:</Bold> First Aid (or no-treatment required) Injury
+                                                                        <LineBreak />
+                                                                        <Bold>NWR:</Bold> Non-Work Related Injury or Illness
+                                                                        <LineBreak />
+                                                                        <LineBreak />
+                                                                        <Italic>Incidents</Italic>
+                                                                        <LineBreak />
+                                                                        <Bold>MVA:</Bold> Motor Vehical Accident
+                                                                        <LineBreak />
+                                                                        <Bold>DAM:</Bold> Property, Plant, Equipment Damage
+                                                                        <LineBreak />
+                                                                        <Bold>SEC:</Bold> Security, Theft, Public Disturbance
+                                                                        <LineBreak />
+                                                                        <Bold>ENV:</Bold> Environmental Spill, Damage
+                                                                        <LineBreak />
+                                                                        <Bold>FIRE:</Bold> Fire
+                                                                        <LineBreak />
+                                                                        <Bold>NM:</Bold> Near Miss
+                                                                        <LineBreak />
+                                                                        <Bold>OTH:</Bold> Other
+                                                                    </TextBlock>
+                                                                </dxe:FlyoutControl>
+                                                                <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:IncidentClassification}}" NullValueButtonPlacement="Popup" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.TotalSummary>
@@ -978,17 +1019,17 @@
                                 <ExtraLayout:ExtraLayoutControl Padding="0" VerticalAlignment="Top" ItemSpace="0" Orientation="Vertical" View="Group">
                                     <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="7. Number of Working Days on Site" Style="{StaticResource layoutSideColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_DAYSONSITE}" Tag="Entity.QTY_DAYSONSITE" FontWeight="Normal" MaxValue="31" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_DAYSONSITE}" Tag="Entity.QTY_DAYSONSITE" Mask="n2" MaskUseAsDisplayFormat="True" FontWeight="Normal" MaxValue="31" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="8. Working Hours a Day" Style="{StaticResource layoutSideColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_HRSADAY}" Tag="Entity.QTY_HRSADAY" FontWeight="Normal" MaxValue="24" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
+                                            <dxe:SpinEdit EditValue="{Binding Entity.QTY_HRSADAY}" Tag="Entity.QTY_HRSADAY" Mask="n2" MaskUseAsDisplayFormat="True" FontWeight="Normal" MaxValue="24" Style="{StaticResource SingleObjectView.SpinEditControlContainer}" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                     <ExtraLayout:ExtraLayoutGroup Background="AliceBlue" Style="{StaticResource layoutControlLine}">
                                         <dxlc:LayoutItem FontWeight="Bold" Foreground="Black" Label="Total Man Hours" Style="{StaticResource layoutSideColumnStyle}">
-                                            <dxe:SpinEdit EditValue="{Binding Total_ManHours, Mode=OneWay}" Margin="0,-6,0,0" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n0" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
+                                            <dxe:SpinEdit EditValue="{Binding Total_ManHours, Mode=OneWay}" Margin="0,-6,0,0" HorizontalAlignment="Left" EditMode="InplaceInactive" IsReadOnly="True" Mask="n2" MaskUseAsDisplayFormat="True" ShowEditorButtons="False" />
                                         </dxlc:LayoutItem>
                                     </ExtraLayout:ExtraLayoutGroup>
                                 </ExtraLayout:ExtraLayoutControl>
