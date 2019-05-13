@@ -214,6 +214,18 @@
         [StringLength(500)]
         public string KPI_RISK_REGISTER_COMMENT { get; set; }
 
+        public decimal TRAIN_COMPLIANCE { get; set; }
+
+        public int TRAIN_COMPLIANCE_CRITERIA { get; set; }
+
+        [StringLength(500)]
+        public string TRAIN_COMPLIANCE_COMMENT { get; set; }
+
+        public decimal TRAIN_VOC { get; set; }
+
+        [StringLength(500)]
+        public string TRAIN_VOC_COMMENT { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

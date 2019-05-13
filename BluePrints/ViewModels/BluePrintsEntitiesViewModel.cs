@@ -632,7 +632,7 @@ namespace BluePrints.ViewModels
             design_category_description.ChildModules.Add(queries_category_description);
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"));
             projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectKey, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"));
+            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "Monthly HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Monthly HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"));
         }
 
     }

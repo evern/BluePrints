@@ -370,6 +370,24 @@ namespace BluePrints.Common.Projections
             KPI_RISK_REGISTER.StatsType = HSEStatsType.KPI_RISK_REGISTER;
             Stats.Add(KPI_RISK_REGISTER);
 
+            HSEReportProjection TRAIN_COMPLIANCE = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
+            TRAIN_COMPLIANCE.StatsName = "Compliance with training matrix";
+            TRAIN_COMPLIANCE.StatsValue = hseProjection.Entity.TRAIN_COMPLIANCE;
+            TRAIN_COMPLIANCE.StatsTarget = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? 0 : 1;
+            TRAIN_COMPLIANCE.StatsCriteria = hseProjection.Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? "Not Applicable" : ">= 1/Month (or >= 1/Project)";
+            TRAIN_COMPLIANCE.StatsFormat = hseProjection.TRAIN_COMPLIANCE_Format;
+            TRAIN_COMPLIANCE.StatsMask = "N0";
+            Stats.Add(TRAIN_COMPLIANCE);
+
+            HSEReportProjection TRAIN_VOC = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group4 };
+            TRAIN_VOC.StatsName = "Employee Verification of Competency (VOC's)";
+            TRAIN_VOC.StatsValue = hseProjection.Entity.TRAIN_VOC;
+            TRAIN_VOC.StatsTarget = 1;
+            TRAIN_VOC.StatsCriteria = "= 100%";
+            TRAIN_VOC.StatsFormat = hseProjection.TRAIN_VOC_Format;
+            TRAIN_VOC.StatsMask = "P0";
+            Stats.Add(TRAIN_VOC);
+
             HSEReportProjection Total_ManHours = new HSEReportProjection() { Project = hseProjection.Entity.PROJECT, HSEDate = hseProjection.Entity.HSE_DATE, Group = group6 };
             Total_ManHours.StatsName = "5.3 Total Man Hours";
             Total_ManHours.StatsValue = hseProjection.Total_ManHours;

@@ -238,10 +238,16 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Data Date
-        private DateTime _dataDate;
+        private DateTime? _dataDate;
         public DateTime DataDate
         {
-            get => _dataDate;
+            get
+            {
+                if(_dataDate == null)
+                    _dataDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+                return (DateTime)_dataDate;
+            }
             set
             {
                 var firstDayOfMonth = new DateTime(value.Year, value.Month, 1);

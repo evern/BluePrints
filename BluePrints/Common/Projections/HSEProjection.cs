@@ -57,14 +57,26 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal Total_Recordable_Injuries_Target
+        public decimal Total_Recordable_Injuries_Frequency_Rate
         {
             get
             {
                 if (Entity == null || Total_ManHours == 0)
                     return 0;
 
-                return Total_ManHours / 100000;
+                return Total_Recordable_Injuries / (Total_ManHours / 100000);
+            }
+        }
+
+        public decimal Total_Recordable_Injuries_Target
+        {
+            get
+            {
+                return 3.5m;
+                //if (Entity == null || Total_ManHours == 0)
+                //    return 0;
+
+                //return Total_Recordable_Injuries / (Total_ManHours / 100000);
             }
         }
 
@@ -144,7 +156,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Math.Round(DaysOnSite / 6.5m);
+                return Math.Round(DaysOnSite / 7.0m);
             }
         }
 
@@ -162,7 +174,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal KPI_PRESTART_TargetNumber => WeeksOnSite;
+        public decimal KPI_PRESTART_TargetNumber => DaysOnSite;
 
         public string KPI_TOOLBOX_Target
         {
@@ -206,7 +218,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Math.Round((Entity.QTY_MGMT + Entity.QTY_HSE) * WeeksOnSite, 0);
+                return Math.Round((Entity.QTY_MGMT + Entity.QTY_HSE) * DaysOnSite, 0);
             }
         }
 
@@ -393,7 +405,8 @@ namespace BluePrints.Common.Projections
         public bool KPI_CORRECTIVE_ACT_CLOSED_Format => Entity == null ? false : Entity.KPI_CORRECTIVE_ACT_CLOSED_CRITERIA == 1 ? true : Entity.KPI_CORRECTIVE_ACT_CLOSED >= KPI_CORRECTIVE_ACT_CLOSED_TargetNumber ? true : false;
         public bool KPI_HSE_RECOGNITION_Format => Entity == null ? false : Entity.KPI_HSE_RECOGNITION_CRITERIA == 1 ? true : Entity.KPI_HSE_RECOGNITION >= KPI_HSE_RECOGNITION_TargetNumber ? true : false;
         public bool KPI_RISK_REGISTER_Format => Entity == null ? false : Entity.KPI_RISK_REGISTER_CRITERIA == 1 ? true : Entity.KPI_RISK_REGISTER >= 1 ? true : false;
-
+        public bool TRAIN_COMPLIANCE_Format => Entity == null ? false : Entity.TRAIN_COMPLIANCE_CRITERIA == 1 ? true : Entity.TRAIN_COMPLIANCE >= 1 ? true : false;
+        public bool TRAIN_VOC_Format => Entity == null ? false : Entity.TRAIN_VOC == 1 ? true : false;
 
         public SolidColorBrush INJURIES_REC_LTI_Background => INJURIES_REC_LTI_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
         public SolidColorBrush INJURIES_REC_RWI_Background => INJURIES_REC_RWI_Format ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
