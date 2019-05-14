@@ -164,6 +164,16 @@ namespace BluePrints.Common.Projections
                 if (live_estimation_direct != null && live_estimation_direct_progress != null)
                 {
                     IEnumerable<ESTIMATE_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATE_ITEM;
+                    //prefetch attributes so that parallel operation won't attempt to retrieve from a db with closed connection for navigational properties
+                    string preloadCode = string.Empty;
+                    foreach (ESTIMATE_ITEM liveEstimateItem in live_estimation_direct_items)
+                    {
+                        preloadCode = liveEstimateItem.Discipline_Code;
+                        preloadCode = liveEstimateItem.Subjob_Name;
+                        preloadCode = liveEstimateItem.Commodity_Code;
+                        preloadCode = liveEstimateItem.Phase_Code;
+                    }
+
                     IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
                     ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, STOCKCODECollection, null, approved_project_variations);
                     reportables.AddRange(project_estimation_direct_item_progresses);
