@@ -12,7 +12,7 @@
     xmlns:view="clr-namespace:BluePrints.Views"
     xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
     x:Class="BluePrints.Views.LoginWindow" Topmost="False"
-    Height="330" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="None"
+    Height="360" Width="600" WindowStartupLocation="CenterScreen" WindowStyle="None"
     DataContext="{dxmvvm:ViewModelSource viewmodel:LoginViewModel}">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
@@ -20,7 +20,7 @@
         <dxmvvm:EventToCommand EventName="Initialized" Command="{Binding OnLoadedCommand}" />
         <dxmvvm:EventToCommand EventName="KeyUp" Command="{Binding Window_KeyUpCommand}" PassEventArgsToCommand="True" />
     </dxmvvm:Interaction.Behaviors>
-    <dxlc:LayoutControl Orientation="Vertical" MinHeight="320" MaxHeight="320" MaxWidth="600" MinWidth="550">
+    <dxlc:LayoutControl Orientation="Vertical" MinHeight="360" MaxHeight="360" MaxWidth="600" MinWidth="550">
         <dxlc:LayoutGroup x:Name="LayoutGroupSubjobSelection" View="Group" Orientation="Vertical">
             <dxlc:LayoutItem x:Name="layoutItemLogo">
                 <dxe:ImageEdit x:Name="imagePrimeroIcon" IsReadOnly="True" />
@@ -34,6 +34,10 @@
                 <dxe:PasswordBoxEdit x:Name="txtPassword"
                                      EditValue="{Binding UserPassword, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                      MaxLength="100" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem HorizontalAlignment="Right" Label="Remember" IsRequired="True" x:Name="layoutItemRemember" Height="30" Margin="10">
+                <dxe:CheckEdit x:Name="chkRemember"
+                                     EditValue="{Binding RememberPassword, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup x:Name="LayoutGroupButtons" View="Group" Height="50">

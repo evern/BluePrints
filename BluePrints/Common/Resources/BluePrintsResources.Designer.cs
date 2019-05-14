@@ -574,6 +574,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to p4y57zcvp.
+        /// </summary>
+        internal static string SecurityKey {
+            get {
+                return ResourceManager.GetString("SecurityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uncategorised.
         /// </summary>
         internal static string UncategorisedStockCode {

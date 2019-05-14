@@ -297,4 +297,7 @@
   <data name="Default_TenderStockCode" xml:space="preserve">
     <value>G00</value>
   </data>
+  <data name="SecurityKey" xml:space="preserve">
+    <value>p4y57zcvp</value>
+  </data>
 </root>

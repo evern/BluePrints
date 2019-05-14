@@ -4,6 +4,7 @@ using BluePrints.Common;
 using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.LookAndFeel;
 using DevExpress.Mvvm;
@@ -26,6 +27,7 @@ namespace BluePrints.ViewModels
     {
         public string UserName { get; set; }
         public string UserPassword { get; set; }
+        public bool RememberPassword { get; set; }
         enum UserAuthenticationResult
         {
             UsernameNotAdded,
@@ -57,9 +59,15 @@ namespace BluePrints.ViewModels
             delayedConnectDispatcher.Tick += DelayedConnectDispatcher_Tick;
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
-
+            UserPassword = XMLHelpers.GetSettings_Password();
 #if DEBUG
             Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#else
+            if (UserName != string.Empty && UserPassword != string.Empty)
+            {
+                RememberPassword = true;
+                Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
+            }
 #endif
         }
 
@@ -172,12 +180,19 @@ namespace BluePrints.ViewModels
 
                         if (((bool)result))
                         {
-                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = UserName.Trim() });
+                            XMLSettings newXMLSettings = new XMLSettings();
+                            if (RememberPassword)
+                                newXMLSettings.Password = BluePrintsUtils.Encrypt(UserPassword.Trim(), true);
+                            else
+                                newXMLSettings.Password = string.Empty;
+
+                            newXMLSettings.Username = UserName.Trim();
+                            XMLHelpers.UpdateSettingsXML(newXMLSettings);
                             return UserAuthenticationResult.Authenticated;
                         }
                         else
                         {
-                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = string.Empty });
+                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = string.Empty, Password = string.Empty });
                             return UserAuthenticationResult.InvalidUsernameOrPassword;
                         }
                     }
@@ -239,8 +254,16 @@ namespace BluePrints.ViewModels
             if(mainWindow != null)
                 mainWindow.Hide();
 
-            MessageBoxService.ShowMessage(message);
-            Environment.Exit(1);
+            UserName = string.Empty;
+            UserPassword = string.Empty;
+            RememberPassword = false;
+
+            this.RaisePropertiesChanged();
+            if (message != string.Empty)
+            {
+                MessageBoxService.ShowMessage(message);
+                Environment.Exit(1);
+            }
         }
 
         public void Window_KeyUp(KeyEventArgs e)

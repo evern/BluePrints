@@ -27,6 +27,7 @@ using BaseModel.Data.Helpers;
 using BaseModel.ViewModel.Dialogs;
 using System.Threading;
 using BluePrints.View;
+using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels
 {
@@ -223,6 +224,16 @@ namespace BluePrints.ViewModels
 
             clearAllProjectModules();
             CreateProjectModules(_projectCollectionViewModel.Entities);
+        }
+
+        public void LogOut()
+        {
+            XMLHelpers.ClearSettings();
+            Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
+            if (active_window == null)
+                return;
+
+            ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(string.Empty);
         }
 
         private void RemoveProjectModule(Guid primaryKey)
