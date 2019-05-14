@@ -144,6 +144,17 @@ namespace BluePrints.Common.Projections
                 {
                     //IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                     IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM;
+
+                    //prefetch attributes so that parallel operation won't attempt to retrieve from a db with closed connection for navigational properties
+                    string preloadCode = string.Empty;
+                    foreach(BASELINE_ITEM liveBaselineItem in live_baseline_items)
+                    {
+                        preloadCode = liveBaselineItem.Discipline_Code;
+                        preloadCode = liveBaselineItem.Subjob_Name;
+                        preloadCode = liveBaselineItem.Commodity_Code;
+                        preloadCode = liveBaselineItem.Phase_Code;
+                    }
+
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
                     live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);

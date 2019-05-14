@@ -290,8 +290,10 @@ namespace BluePrints.ViewModels
 
             dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(dashboardCategoryId, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
             bluePrintsEntitiesModuleDescriptions.Add(dashboardCategoryDescription);
-            if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
-                dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView", null, null, null, true, false, @"Chart\Chart_16x16.png"));
+
+            //failure to load in multithreaded environment
+            //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
+            //    dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView", null, null, null, true, false, @"Chart\Chart_16x16.png"));
 
             dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UserDashboard", dashboardCategoryId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"));
             myDeliverablesDescription = new BluePrintsEntitiesModuleDescription("View_UserDeliverables", dashboardCategoryId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");

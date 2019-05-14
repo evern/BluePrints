@@ -177,7 +177,8 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            //need to preload phase so that parallel for each won't throw exception
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).Include(x => x.PHASE);
         }
 
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()

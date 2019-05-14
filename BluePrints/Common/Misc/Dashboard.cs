@@ -5,6 +5,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -473,21 +474,25 @@ namespace BluePrints.Common.Misc
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
             LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
             //child dashboards are now subdivided into subjob dashboard
-            foreach (DashboardTreeStructure subjob_dashboard in project_dashboard.Child_Dashboards)
+            Parallel.ForEach(
+            project_dashboard.Child_Dashboards,
+            subjob_dashboard =>
             {
                 string loadingScreenMessage = "Processing " + subjob_dashboard.Code;
                 LoadingScreenManager.SetMessage(loadingScreenMessage);
                 LoadingScreenManager.SetMessage(loadingScreenMessage + ".");
                 subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
-                foreach (DashboardTreeStructure discipline_dashboard in subjob_dashboard.Child_Dashboards)
+                Parallel.ForEach(
+                subjob_dashboard.Child_Dashboards,
+                discipline_dashboard =>
                 {
                     LoadingScreenManager.SetMessage(loadingScreenMessage + "..");
                     //child dashboards are now subdivided into discipline dashboard
                     discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code);
-                }
+                });
 
                 LoadingScreenManager.Progress();
-            }
+            });
 
             LoadingScreenManager.CloseLoadingScreen();
             return project_dashboard.Child_Dashboards;
@@ -501,14 +506,17 @@ namespace BluePrints.Common.Misc
             IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
             IEnumerable<SUBJOB> all_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.ToList();
-
-            foreach (DashboardTreeStructure subjob_dashboard in hierarchicalDashboards.OrderBy(x => x.Code))
+            Parallel.ForEach(
+            hierarchicalDashboards.OrderBy(x => x.Code),
+            subjob_dashboard =>
             {
                 if (subjob_dashboard.Child_Dashboards == null || subjob_dashboard.Child_Dashboards.Count == 0)
                     populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, string.Empty, string.Empty, subjob_dashboard.Stats, design_subjobs, construction_subjobs);
                 else
                 {
-                    foreach (DashboardTreeStructure discipline_dashboard in subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                    Parallel.ForEach(
+                    subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code),
+                    discipline_dashboard =>
                     {
                         if (discipline_dashboard.Child_Dashboards == null || discipline_dashboard.Child_Dashboards.Count == 0)
                             populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, string.Empty, discipline_dashboard.Stats, design_subjobs, construction_subjobs);
@@ -519,9 +527,9 @@ namespace BluePrints.Common.Misc
                                 populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, commodity_dashboard.Code, commodity_dashboard.Stats, design_subjobs, construction_subjobs);
                             }
                         }
-                    }
+                    });
                 }
-            }
+            });
 
             return flatDashboards;
         }

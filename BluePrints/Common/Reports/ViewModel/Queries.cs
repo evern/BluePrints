@@ -253,38 +253,39 @@ namespace BluePrints.Common.ViewModel.Reporting
                 deliverables_statuses = DELIVERABLES_STATUSCollection.Where(x => x.GUID_PROJECT == ProjectGuidForDeliverablesStatus);
 
             //post processing
-            foreach (BASELINE_ITEMProgress baseline_item_progress in progresses)
-            {
-                SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
-                if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
-                    baseline_item_progress.BuildStats();
-
-                if(deliverables_statuses != null)
+            Parallel.ForEach(progresses,
+                baseline_item_progress =>
                 {
-                    IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_deliverable_type;
-                    switch(baseline_item_progress.Entity.Entity.DELIVERABLE_TYPE)
-                    {
-                        case DeliverableType.Deliverable:
-                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NCR);
-                            break;
-                        case DeliverableType.DeliverableICR:
-                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_DELIVERABLE);
-                            break;
-                        case DeliverableType.NonDeliverable:
-                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NONDELIVERABLE);
-                            break;
-                        case DeliverableType.Task:
-                            deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_TASK);
-                            break;
-                        default:
-                            deliverables_status_by_deliverable_type = new List<DELIVERABLES_STATUS>();
-                            break;
-                    }
+                    SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
+                    if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
+                        baseline_item_progress.BuildStats();
 
-                    IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_document_type = deliverables_status_by_deliverable_type.Where(x => DSTATUS_DOCTYPECollection.Any(y => y.GUID_STATUS == x.GUID && y.GUID_DOCTYPE == baseline_item_progress.Entity.Entity.GUID_DOCTYPE));
-                    baseline_item_progress.Entity.Entity.DeliverableStatusCollection = deliverables_status_by_document_type.OrderBy(x => x.AUTO_PERCENTAGE).ThenBy(x => x.NAME);
-                }
-            }
+                    if (deliverables_statuses != null)
+                    {
+                        IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_deliverable_type;
+                        switch (baseline_item_progress.Entity.Entity.DELIVERABLE_TYPE)
+                        {
+                            case DeliverableType.Deliverable:
+                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NCR);
+                                break;
+                            case DeliverableType.DeliverableICR:
+                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_DELIVERABLE);
+                                break;
+                            case DeliverableType.NonDeliverable:
+                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NONDELIVERABLE);
+                                break;
+                            case DeliverableType.Task:
+                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_TASK);
+                                break;
+                            default:
+                                deliverables_status_by_deliverable_type = new List<DELIVERABLES_STATUS>();
+                                break;
+                        }
+
+                        IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_document_type = deliverables_status_by_deliverable_type.Where(x => DSTATUS_DOCTYPECollection.Any(y => y.GUID_STATUS == x.GUID && y.GUID_DOCTYPE == baseline_item_progress.Entity.Entity.GUID_DOCTYPE));
+                        baseline_item_progress.Entity.Entity.DeliverableStatusCollection = deliverables_status_by_document_type.OrderBy(x => x.AUTO_PERCENTAGE).ThenBy(x => x.NAME);
+                    }
+                });
 
             return progresses.AsQueryable();
         }
