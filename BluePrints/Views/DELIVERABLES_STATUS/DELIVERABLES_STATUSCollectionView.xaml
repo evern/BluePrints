@@ -33,11 +33,6 @@
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the status" />
-                            <!--<dxg:GridColumn Header="Document Type" FieldName="GUID_DOCTYPE" HeaderToolTip="Document type which status can be chosen from" SortIndex="1">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>-->
                             <dxg:GridColumn Header="Document Types" ColumnFilterMode="DisplayText" SortMode="DisplayText" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings

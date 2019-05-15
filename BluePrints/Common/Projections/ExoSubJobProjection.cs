@@ -163,6 +163,7 @@ namespace BluePrints.Common.Projections
                 return ValidCommodityCodes.Any(x => x.CODE == CommodityCode);
             }
         }
+
         public bool IsStockCodeValid
         {
             get
@@ -197,6 +198,7 @@ namespace BluePrints.Common.Projections
                 return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
             }
         }
+
         public IEnumerable<string> ValidStockCodes
         {
             get

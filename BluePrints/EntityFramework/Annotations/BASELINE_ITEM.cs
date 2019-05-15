@@ -9,6 +9,7 @@ namespace BluePrints.Data
     using BluePrints.Common.ViewModel.Reporting;
     using DevExpress.Data.Filtering;
     using DevExpress.Mvvm;
+    using DevExpress.XtraEditors.DXErrorProvider;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -116,6 +117,60 @@ namespace BluePrints.Data
                 return false;
 
             return DeliverableStatusCollection.Any(x => x.GUID == DeliverableStatusGuid);
+        }
+
+
+        [NotMapped]
+        private IEnumerable<DOCTYPE> DOC_TYPES { get; set; }
+        public void PopulateDocumentTypes(IEnumerable<DOCTYPE> DOC_TYPECollection)
+        {
+            DOC_TYPES = DOC_TYPECollection;
+        }
+
+        public bool IsDocumentTypeValid
+        {
+            get
+            {
+                //in some view DOC_TYPES weren't populated so it isn't necessary to validate it and flag it as invalid
+                if (DOC_TYPES == null)
+                    return true;
+
+                if (GUID_DOCTYPE == null)
+                    return true;
+
+                return ValidDOCTYPES.Any(x => x.GUID == GUID_DOCTYPE);
+            }
+        }
+
+        public IEnumerable<DOCTYPE> ValidDOCTYPES
+        {
+            get
+            {
+                IEnumerable<DOCTYPE> documentTypeByDeliverableType;
+                if (DOC_TYPES == null)
+                    return new List<DOCTYPE>();
+
+                switch (DELIVERABLE_TYPE)
+                {
+                    case DeliverableType.Deliverable:
+                        documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_NCR);
+                        break;
+                    case DeliverableType.DeliverableICR:
+                        documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_DELIVERABLE);
+                        break;
+                    case DeliverableType.NonDeliverable:
+                        documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_NONDELIVERABLE);
+                        break;
+                    case DeliverableType.Task:
+                        documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_TASK);
+                        break;
+                    default:
+                        documentTypeByDeliverableType = new List<DOCTYPE>();
+                        break;
+                }
+
+                return documentTypeByDeliverableType;
+            }
         }
 
         [NotMapped]

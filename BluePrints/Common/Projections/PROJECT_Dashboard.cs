@@ -164,6 +164,7 @@ namespace BluePrints.Common.Projections
                 if (live_estimation_direct != null && live_estimation_direct_progress != null)
                 {
                     IEnumerable<ESTIMATE_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATE_ITEM;
+
                     //prefetch attributes so that parallel operation won't attempt to retrieve from a db with closed connection for navigational properties
                     string preloadCode = string.Empty;
                     foreach (ESTIMATE_ITEM liveEstimateItem in live_estimation_direct_items)

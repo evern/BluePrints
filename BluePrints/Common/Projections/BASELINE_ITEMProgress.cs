@@ -2,6 +2,8 @@
 using BaseModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using DevExpress.Mvvm;
+using DevExpress.XtraEditors.DXErrorProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 namespace BluePrints.Common.Projections
 {
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable, IDXDataErrorInfo
     {
         public BASELINE_ITEMProgress()
         {
@@ -326,6 +328,18 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public void GetPropertyError(string propertyName, ErrorInfo info)
+        {
+            if (propertyName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DOCTYPE)))
+            {
+                if(!Entity.Entity.IsDocumentTypeValid)
+                    info.ErrorText = "Document type is not valid for deliverable type of " + Entity.Entity.DELIVERABLE_TYPE.ToString();
+            }
+        }
+
+        public void GetError(ErrorInfo info)
+        {
+        }
         #region User Report
         public string User_Name { get; set; }
         public string User_Role { get; set; }

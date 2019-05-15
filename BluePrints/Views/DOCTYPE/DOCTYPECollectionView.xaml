@@ -25,7 +25,7 @@
                     </dxr:RibbonStatusBarControl.LeftItems>
                 </dxr:RibbonStatusBarControl>
                 <Grid>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDOCTYPE" dx:DXSerializer.StoreLayoutMode="All" MouseUp="GridControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDOCTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Department" FieldName="GUID_DDEPARTMENT">
                                 <dxg:GridColumn.EditSettings>
@@ -44,6 +44,10 @@
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="Deliverable" FieldName="FOR_NCR" HeaderToolTip="Can this this document type be chosen for deliverable type of 'Deliverable'?" />
+                            <dxg:GridColumn Header="Deliverable ICR" FieldName="FOR_DELIVERABLE" HeaderToolTip="Can this this document type be chosen for deliverable type of 'Deliverable ICR'?" />
+                            <dxg:GridColumn Header="Task" FieldName="FOR_TASK" HeaderToolTip="Can this this document type be chosen for deliverable type of 'Task'?" />
+                            <dxg:GridColumn Header="Non Deliverable" FieldName="FOR_NONDELIVERABLE" HeaderToolTip="Can this this document type be chosen for deliverable type of 'Non Deliverable'?" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

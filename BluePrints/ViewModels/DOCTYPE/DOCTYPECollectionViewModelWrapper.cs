@@ -96,7 +96,6 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-
         #endregion
     }
 }

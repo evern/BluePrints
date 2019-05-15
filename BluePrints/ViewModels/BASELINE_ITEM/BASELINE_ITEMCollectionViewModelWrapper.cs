@@ -501,7 +501,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, DOCTYPECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -653,6 +653,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        /// <summary>
+        /// Show document type even when it is not valid
+        /// </summary>
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE)) && e.Row != null)
+            {
+                BASELINE_ITEMProgress projection = (BASELINE_ITEMProgress)e.Row;
+                if(projection.Entity.Entity.DOCTYPE != null)
+                    e.DisplayText = projection.Entity.Entity.DOCTYPE.NAME;
+            }
+        }
         /// <summary>
         /// this view model can be used in variation or default collection view, only default collection view specific properties are set here
         /// </summary>
@@ -948,6 +960,7 @@ namespace BluePrints.ViewModels
             if (isNew)
             {
                 projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
+                projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection);
             }
 
             //only new row will change department according to doc type selection

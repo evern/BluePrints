@@ -35,7 +35,7 @@
                                      EditValue="{Binding UserPassword, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                      MaxLength="100" />
             </dxlc:LayoutItem>
-            <dxlc:LayoutItem HorizontalAlignment="Right" Label="Remember" IsRequired="True" x:Name="layoutItemRemember" Height="30" Margin="10">
+            <dxlc:LayoutItem HorizontalAlignment="Right" Label="Remember Me" IsRequired="True" x:Name="layoutItemRemember" Height="30" Margin="10">
                 <dxe:CheckEdit x:Name="chkRemember"
                                      EditValue="{Binding RememberPassword, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
             </dxlc:LayoutItem>

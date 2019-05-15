@@ -103,11 +103,11 @@
                     </Style>
                 </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home" MergeOrder="0" MergeType="Replace">
+                    <dxr:RibbonPage Caption="Home" MergeOrder="0" MergeType="Add">
                         <dxr:RibbonPageGroup Caption="Navigation" MergeType="Remove" MergeOrder="1001">
                             <dxb:BarButtonItem Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                         </dxr:RibbonPageGroup>
-                        <dxr:RibbonPageGroup Caption="System" MergeType="Replace" MergeOrder="1002">
+                        <dxr:RibbonPageGroup Caption="System" MergeType="Add" MergeOrder="1002">
                             <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxr:RibbonGalleryItemThemeSelectorBehavior />

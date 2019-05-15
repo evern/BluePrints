@@ -12,16 +12,5 @@ namespace BluePrints.Views
         {
             InitializeComponent();
         }
-
-        private void GridControl_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            InplaceBaseEdit inplaceEdit = e.OriginalSource as InplaceBaseEdit;
-            if (inplaceEdit != null)
-            {
-                CheckEditSettings checkEdit = inplaceEdit.Settings as CheckEditSettings;
-                if (checkEdit != null)
-                    SendKeys.SendWait(" ");
-            }
-        }
     }
 }

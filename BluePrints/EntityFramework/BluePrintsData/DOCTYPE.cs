@@ -34,6 +34,14 @@ namespace BluePrints.Data
 
         public bool IS_INDIRECT_ONLY { get; set; }
 
+        public bool FOR_DELIVERABLE { get; set; }
+
+        public bool FOR_TASK { get; set; }
+
+        public bool FOR_NCR { get; set; }
+
+        public bool FOR_NONDELIVERABLE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
