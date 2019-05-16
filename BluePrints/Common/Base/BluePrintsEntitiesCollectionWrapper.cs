@@ -1,7 +1,12 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
+using BluePrints.Common.Helpers;
+using BluePrints.ViewModels;
+using BluePrints.Views;
 using DevExpress.Mvvm;
+using System.Linq;
+using System.Windows;
 
 namespace BluePrints.Common.Base
 {
@@ -30,6 +35,16 @@ namespace BluePrints.Common.Base
         public override void OnAfterSavedSendMessage(string entityName, string key, string messageType, string sender)
         {
             //SignalR.HubSendMessage(entityName, key, messageType, sender, LoginCredentials.CurrentHWID);
+        }
+
+        public void LogOut()
+        {
+            XMLHelpers.ClearSettings();
+            Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
+            if (active_window == null)
+                return;
+
+            ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(string.Empty);
         }
 
         public virtual void ShowNotification()

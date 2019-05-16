@@ -225,7 +225,6 @@ namespace BluePrints.ViewModels
             clearAllProjectModules();
             CreateProjectModules(_projectCollectionViewModel.Entities);
         }
-
         public void LogOut()
         {
             XMLHelpers.ClearSettings();

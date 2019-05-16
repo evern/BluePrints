@@ -522,10 +522,11 @@ namespace BluePrints.Common.Misc
                             populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, string.Empty, discipline_dashboard.Stats, design_subjobs, construction_subjobs);
                         else
                         {
-                            foreach (DashboardTreeStructure commodity_dashboard in discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code))
+                            Parallel.ForEach(discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code),
+                            commodity_dashboard =>
                             {
                                 populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, commodity_dashboard.Code, commodity_dashboard.Stats, design_subjobs, construction_subjobs);
-                            }
+                            });
                         }
                     });
                 }
