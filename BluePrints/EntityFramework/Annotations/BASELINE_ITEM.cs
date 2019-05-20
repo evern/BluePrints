@@ -169,7 +169,7 @@ namespace BluePrints.Data
                         break;
                 }
 
-                return documentTypeByDeliverableType;
+                return documentTypeByDeliverableType.OrderBy(x => x.NAME);
             }
         }
 

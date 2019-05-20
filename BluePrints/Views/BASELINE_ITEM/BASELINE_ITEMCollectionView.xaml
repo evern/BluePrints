@@ -144,7 +144,7 @@
                         <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="Document Type" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
-                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.ValidDOCTYPES}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" AutoComplete="True" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.ValidDOCTYPES}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                             <!--  For Filtering  -->
