@@ -46,11 +46,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
-                if (estimate != null)
-                    return estimate.ReadOnlyEstimate.Entity.Entity.NAME;
+                STOCK_GROUPProgress stockGroup = ProgressItem.Reportable as STOCK_GROUPProgress;
+                if (stockGroup != null && stockGroup.Entity.TrackableEstimateItem != null)
+                    return stockGroup.Entity.TrackableEstimateItem.Entity.NAME;
                 else
-                    return string.Empty;
+                {
+                    IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                    if (estimate != null)
+                        return estimate.ReadOnlyEstimate.Entity.Entity.NAME;
+                    else
+                        return string.Empty;
+                }
             }
         }
 
@@ -58,11 +64,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
-                if (estimate != null)
-                    return estimate.ReadOnlyEstimate.Entity.Entity.COMMENTS;
+                STOCK_GROUPProgress stockGroup = ProgressItem.Reportable as STOCK_GROUPProgress;
+                if (stockGroup != null && stockGroup.Entity.TrackableEstimateItem != null)
+                    return stockGroup.Entity.TrackableEstimateItem.Entity.COMMENTS;
                 else
-                    return string.Empty;
+                {
+                    IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                    if (estimate != null)
+                        return estimate.ReadOnlyEstimate.Entity.Entity.COMMENTS;
+                    else
+                        return string.Empty;
+                }
             }
         }
         
@@ -70,11 +82,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
-                if (estimate != null)
-                    return estimate.ReadOnlyEstimate.Entity.Entity.DESCRIPTION;
+                STOCK_GROUPProgress stockGroup = ProgressItem.Reportable as STOCK_GROUPProgress;
+                if (stockGroup != null && stockGroup.Entity.TrackableEstimateItem != null)
+                    return stockGroup.Entity.TrackableEstimateItem.Entity.DESCRIPTION;
                 else
-                    return string.Empty;
+                {
+                    IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                    if (estimate != null)
+                        return estimate.ReadOnlyEstimate.Entity.Entity.DESCRIPTION;
+                    else
+                        return string.Empty;
+                }
             }
         }
 
@@ -82,11 +100,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
-                if (estimate != null)
-                    return estimate.ReadOnlyEstimate.Entity.Entity.SEQNO;
+                STOCK_GROUPProgress stockGroup = ProgressItem.Reportable as STOCK_GROUPProgress;
+                if (stockGroup != null && stockGroup.Entity.TrackableEstimateItem != null)
+                    return stockGroup.Entity.TrackableEstimateItem.Entity.SEQNO;
                 else
-                    return string.Empty;
+                {
+                    IEstimateItem estimate = ProgressItem.Reportable as IEstimateItem;
+                    if (estimate != null)
+                        return estimate.ReadOnlyEstimate.Entity.Entity.SEQNO;
+                    else
+                        return string.Empty;
+                }
             }
         }
 

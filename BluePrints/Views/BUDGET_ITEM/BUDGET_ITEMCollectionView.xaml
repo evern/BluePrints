@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="BluePrints.Views.BUDGET_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converters="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:helper="clr-namespace:BluePrints.Common.Helpers" xmlns:local="clr-namespace:BluePrints.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="300" d:DesignWidth="300" DataContext="{dxmvvm:ViewModelSource viewmodel:ESTIMATE_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <common:RowNameConverter x:Key="RowNameConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
@@ -182,16 +183,21 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Progress Specifications">
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_STOCK_GROUP" FilterPopupMode="CheckedList" Header="Stock Group" HeaderToolTip="Grouping specification so that progress can be done on a single group instead of per stock item">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" FilterPopupMode="CheckedList" Header="Progress Type" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
+                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" FilterPopupMode="CheckedList" Header="Progress Type" ReadOnly="True" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PARENT" FilterPopupMode="CheckedList" Header="Parent" HeaderToolTip="Progress will follow parent, drag row(s) into parent row to assign" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings DisplayMember="Entity.Entity.NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <!--<dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" FilterPopupMode="CheckedList" Header="Progress Type" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>-->
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Totals">
                                 <dxg:GridColumn FieldName="Budget_Install_Hours" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="Budgetd install hours required" ReadOnly="True">
@@ -395,6 +401,37 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
+                        <dxmvvm:Interaction.Behaviors>
+                            <common:CustomTableViewDragDropManager AllowDrag="True" AllowScrolling="True">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.TableView_DropCommand, ElementName=userControl}" EventName="Drop" PassEventArgsToCommand="True" />
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.TableView_DroppedCommand, ElementName=userControl}" EventName="Dropped" PassEventArgsToCommand="True" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridDragDropManager.DragElementTemplate>
+                                    <DataTemplate>
+                                        <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
+                                            <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
+                                                <StackPanel Margin="5" Background="White" Orientation="Vertical">
+                                                    <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                        <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <Separator />
+                                                <StackPanel Margin="5" Orientation="Horizontal">
+                                                    <!--<StackPanel.Background>
+                                                                <Binding Path="." Converter="{StaticResource RowColorConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                                                            </StackPanel.Background>-->
+                                                    <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                    <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </dxg:GridDragDropManager.DragElementTemplate>
+                            </common:CustomTableViewDragDropManager>
+                        </dxmvvm:Interaction.Behaviors>
                     </custom:GridControlEx>
                 </Grid>
             </DockPanel>

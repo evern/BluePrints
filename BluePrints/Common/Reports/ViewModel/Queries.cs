@@ -312,36 +312,30 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses =
                 ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS, false, 
-                                                                                                projectSTOCK_CODES,
-                                                                                                STOCK_GROUPS).AsEnumerable();
+                                                                                    projectSTOCK_CODES,
+                                                                                    STOCK_GROUPS).AsEnumerable();
 
-            var estimation_direct_progress_by_stockgroupguid = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != EstimateProgressType.Standalone)
-                .GroupBy(x => x.Entity.Entity.GUID_STOCK_GROUP).Select(group => new { StockGroupGuid = group.Key, DeliverablesByStockGroup = group.ToList() });
+            var estimationItemsByParent = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != EstimateProgressType.Standalone)
+                .GroupBy(x => x.Entity.Entity.GUID_PARENT).Select(group => new { ParentGuid = group.Key, deliverables = group.ToList() });
 
-            foreach (STOCK_GROUP STOCK_GROUP in STOCK_GROUPS)
+            DateTime reportDateToUse = useReportDate ? PROGRESS.REPORT_DATE != null ? (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE : PROGRESS.DATA_DATE;
+            foreach (var estimationItemByParent in estimationItemsByParent)
             {
-                STOCK_GROUPProgress new_stock_group = new STOCK_GROUPProgress();
-                new_stock_group.Entity.Entity = STOCK_GROUP;
-                new_stock_group.Live_PROGRESS = PROGRESS;
-
-                var deliverables_byStockGroup = estimation_direct_progress_by_stockgroupguid.FirstOrDefault(x => x.StockGroupGuid == STOCK_GROUP.GUID);
-                if (deliverables_byStockGroup != null)
+                ESTIMATE_ITEMProgress parentEstimate = estimation_direct_item_progresses.FirstOrDefault(x => x.OriginalEntityKey == estimationItemByParent.ParentGuid);
+                if(parentEstimate != null)
                 {
-                    var deliverables_byStockGroupByAreas = deliverables_byStockGroup.DeliverablesByStockGroup.GroupBy(x => x.Area_Guid).Select(group => new { AreaGuid = group.Key, DeliverablesByStockGroupByArea = group.ToList() });
-                    foreach (var deliverables_byStockGroupByArea in deliverables_byStockGroupByAreas)
-                    {
-                        var deliverables_byStockGroupByAreaBySubAreas = deliverables_byStockGroupByArea.DeliverablesByStockGroupByArea.GroupBy(x => x.SubArea_Guid).Select(group => new { SubAreaGuid = group.Key, DeliverablesByStockGroupByAreaBySubArea = group.ToList() });
-                        foreach (var deliverables_ByStockGroupByAreaBySubArea in deliverables_byStockGroupByAreaBySubAreas)
-                        {
-                            DateTime reportDateToUse = useReportDate ? PROGRESS.REPORT_DATE != null ? (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE : PROGRESS.DATA_DATE;
-                            new_stock_group.Reportables = deliverables_ByStockGroupByAreaBySubArea.DeliverablesByStockGroupByAreaBySubArea;
-                            new_stock_group.Entity.Deliverables = deliverables_ByStockGroupByAreaBySubArea.DeliverablesByStockGroupByAreaBySubArea.Select(x => x.Entity);
-                            new_stock_group.SetReportingDataDate(reportDateToUse);
-                            ReportablesDisplay newProgressDisplay = new ReportablesDisplay();
-                            newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(new_stock_group);
-                            display_items.Add(newProgressDisplay);
-                        }
-                    }
+                    List<ESTIMATE_ITEMProgress> estimate_items = new List<ESTIMATE_ITEMProgress>();
+                    estimate_items.AddRange(estimationItemByParent.deliverables);
+                    estimate_items.Add(parentEstimate);
+
+                    STOCK_GROUPProgress newStockGroup = new STOCK_GROUPProgress();
+                    newStockGroup.Live_PROGRESS = PROGRESS;
+                    newStockGroup.Reportables = estimate_items;
+                    newStockGroup.Entity.Deliverables = estimate_items.Select(x => x.Entity);
+                    newStockGroup.SetReportingDataDate(reportDateToUse);
+                    ReportablesDisplay newProgressDisplay = new ReportablesDisplay();
+                    newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(newStockGroup);
+                    display_items.Add(newProgressDisplay);
                 }
             }
 

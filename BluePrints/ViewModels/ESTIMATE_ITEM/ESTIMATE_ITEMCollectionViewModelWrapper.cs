@@ -20,6 +20,7 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Grid.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -728,8 +729,9 @@ namespace BluePrints.ViewModels
                         }
                     }
                 }
-                else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
-                    updateSTOCK_CODE(editingSTOCK_CODE);
+                //improve performance, don't need to update stock code when nothing is changed
+                //else if (commodityCodeStatus == projectStock_CodeStatus.Exists)
+                //    updateSTOCK_CODE(editingSTOCK_CODE);
             }
         }
 
@@ -1262,6 +1264,48 @@ namespace BluePrints.ViewModels
             UnpauseUndoRedo();
             BackgroundRefresh();
         }
+
+
+        #region DragDrop
+        public void TableView_Drop(GridDropEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        public void TableView_Dropped(GridDroppedEventArgs e)
+        {
+            IEnumerable<ESTIMATE_ITEMProgress> sources = ((IEnumerable<object>)e.DraggedRows).Select(x => (ESTIMATE_ITEMProgress)x).AsEnumerable();
+            ESTIMATE_ITEMProgress target = (ESTIMATE_ITEMProgress)e.TargetRow;
+
+            if (target.Entity.Entity.PROGRESS_TYPE == EstimateProgressType.Auto)
+                return;
+
+            PauseUndoRedo();
+            List<ESTIMATE_ITEMProgress> saveItems = new List<ESTIMATE_ITEMProgress>();
+            string parentFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_PARENT);
+            string progressTypeFieldName = BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE);
+            if (sources.Count() > 0 && target != null)
+            {
+                Guid newValue = target.OriginalEntityKey;
+                foreach (var source in sources)
+                {
+                    Guid? oldValue = source.Entity.Entity.GUID_PARENT;
+                    source.Entity.Entity.GUID_PARENT = newValue;
+                    source.Entity.Entity.PROGRESS_TYPE = EstimateProgressType.Auto;
+                    AddUndo(source, parentFieldName, oldValue, newValue, EntityMessageType.Changed);
+                    AddUndo(source, progressTypeFieldName, EstimateProgressType.Standalone, EstimateProgressType.Auto, EntityMessageType.Changed);
+                    saveItems.Add(source);
+                }
+
+                target.Entity.Entity.PROGRESS_TYPE = EstimateProgressType.Trackable;
+                AddUndo(target, progressTypeFieldName, EstimateProgressType.Standalone, EstimateProgressType.Trackable, EntityMessageType.Changed);
+                saveItems.Add(target);
+            }
+
+            UnpauseUndoRedo();
+            MainViewModel.BulkSave(saveItems);
+        }
+        #endregion
 
         public bool CanFindReplace(object button)
         {

@@ -14,6 +14,8 @@ namespace BluePrints.Data
 
         public Guid GUID_ORIGINAL { get; set; }
 
+        public Guid? GUID_PARENT { get; set; }
+
         public Guid? GUID_PSUBJOB { get; set; }
 
         public Guid? GUID_SUBJOB { get; set; }

@@ -50,9 +50,23 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Costs => Deliverables == null ? 0 : Deliverables.Sum(x => x.Variation_Costs);
 
+        private IDeliverable_Quantity trackable_reportable => Deliverables.FirstOrDefault(x => x.Progress_Type == EstimateProgressType.Trackable);
+
+        private ESTIMATE_ITEMProjection trackableEstimateItem { get; set; }
+        public ESTIMATE_ITEMProjection TrackableEstimateItem
+        {
+            get
+            {
+                if (trackableEstimateItem == null)
+                    trackableEstimateItem = trackable_reportable as ESTIMATE_ITEMProjection;
+
+                return trackableEstimateItem;
+            }
+        }
+
         public string Discipline_Code => string.Empty;
 
-        public string Deliverable_Name => string.Empty;
+        public string Deliverable_Name => trackable_reportable == null ? string.Empty : trackable_reportable.Deliverable_Name;
 
         public Guid? Subjob_Guid => Guid.Empty;
 
@@ -70,11 +84,11 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Quantity => Deliverables == null ? 0 : Deliverables.Sum(x => x.Variation_Quantity);
 
-        public Guid? Area_Guid => Deliverables == null || Deliverables.Count() == 0 ? Guid.Empty : Deliverables.First().Area_Guid;
+        public Guid? Area_Guid => trackable_reportable == null ? null : trackable_reportable.Area_Guid;
 
-        public Guid? SubArea_Guid => Deliverables == null || Deliverables.Count() == 0 ? Guid.Empty : Deliverables.First().SubArea_Guid;
+        public Guid? SubArea_Guid => trackable_reportable == null ? null : trackable_reportable.SubArea_Guid;
 
-        public Guid? Stock_Group_Guid => Entity.GUID;
+        public Guid? Stock_Group_Guid => null;
 
         public decimal Budget_FreightRate => Deliverables == null || Deliverables.Count() == 0 ? 0 : Deliverables.Sum(x => x.Budget_FreightRate);
 

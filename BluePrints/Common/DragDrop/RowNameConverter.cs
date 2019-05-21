@@ -26,6 +26,12 @@ namespace BluePrints.Common
                 return deliverable.Deliverable_Name;
             }
 
+            if(value is ESTIMATE_ITEMProgress)
+            {
+                var estimateItem = value as ESTIMATE_ITEMProgress;
+                return estimateItem.Entity.Entity.NAME;
+            }
+
             if (value is ROLEProjection)
             {
                 var role = value as ROLEProjection;

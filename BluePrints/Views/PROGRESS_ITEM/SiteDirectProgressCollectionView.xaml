@@ -69,11 +69,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" AllowDrop="False" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.Stock_Group_Guid" Header="Stock Group" IsEnabled="False" ReadOnly="True">
+                                <!--<dxg:GridColumn FieldName="ProgressItem.Stock_Group_Guid" Header="Stock Group" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_GROUPCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn FieldName="ProgressItem.Deliverable_Name" Header="Stock Code" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Name" Header="Name" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Comments" Header="Comments" IsEnabled="False" ReadOnly="True" />
