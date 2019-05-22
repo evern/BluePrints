@@ -37,6 +37,7 @@ namespace BluePrints.Data
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual DbSet<FORECAST_PO> FORECAST_PO { get; set; }
         public virtual DbSet<FORECAST> FORECAST { get; set; }
         public virtual DbSet<HSE> HSE { get; set; }
         public virtual DbSet<HSE_INCIDENT> HSE_INCIDENT { get; set; }
@@ -48,6 +49,7 @@ namespace BluePrints.Data
         public virtual DbSet<MINUTE_TITLE> MINUTE_TITLE { get; set; }
         public virtual DbSet<P6_ASSIGNMENT> P6_ASSIGNMENT { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
+        public virtual DbSet<PO_CUSTOMDATE> PO_CUSTOMDATE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
@@ -333,6 +335,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.ESTIMATE)
                 .HasForeignKey(e => e.GUID_ESTIMATE);
+
+            modelBuilder.Entity<FORECAST_PO>()
+                .HasMany(e => e.PO_CUSTOMDATE)
+                .WithRequired(e => e.FORECAST_PO)
+                .HasForeignKey(e => e.FORECAST_PO_GUID)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<HSE>()
                 .HasMany(e => e.HSE_INCIDENT)
@@ -663,6 +671,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.PROJECT_SUMMARY_SETTINGS)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.FORECAST_PO)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
