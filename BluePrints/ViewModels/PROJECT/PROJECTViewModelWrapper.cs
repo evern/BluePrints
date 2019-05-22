@@ -32,6 +32,7 @@ using BluePrints.Common.Resources;
 using BaseModel.ViewModel.Services;
 using DevExpress.Mvvm.DataAnnotations;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.Common.ViewModel.Utils;
 
 namespace BluePrints.ViewModels
 {
@@ -92,10 +93,29 @@ namespace BluePrints.ViewModels
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
-
             HealthCheckIconName = "Apply";
             FixedStartDate = null;
             FixedDataDate = null;
+
+            adjustDataDate();
+        }
+
+        private void adjustDataDate()
+        {
+            IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            PROGRESS liveDesignProgress = unitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
+            if(liveDesignProgress != null)
+            {
+                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveDesignProgress))
+                    unitOfWork.SaveChanges();
+            }
+
+            PROGRESS liveConstructProgress = unitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
+            if (liveConstructProgress != null)
+            {
+                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveConstructProgress))
+                    unitOfWork.SaveChanges();
+            }
         }
 
         public virtual DateTime? FixedStartDate { get; set; }
@@ -234,10 +254,8 @@ namespace BluePrints.ViewModels
 
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
-
-            //DisplaySelectedEntities_CollectionChanged(null, null);
-
-            if(entities.Count() > 0)
+            
+            if (entities.Count() > 0)
             {
                 this.DisplaySelectedEntity = entities.First();
                 BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
@@ -265,9 +283,10 @@ namespace BluePrints.ViewModels
 
                 foreach(var subjobDashboard in project.Subjob_Dashboards)
                 {
-                    subjobDashboard.IsManaged = false;
-                    if (SUBJOBCollection.Any(x => x.INTERNAL_NAME1 == subjobDashboard.SubjobCode))
-                        subjobDashboard.IsManaged = true;
+                    if(subjobDashboard != null)
+                        subjobDashboard.IsManaged = false;
+                        if (SUBJOBCollection.Any(x => x.INTERNAL_NAME1 == subjobDashboard.SubjobCode))
+                            subjobDashboard.IsManaged = true;
                 }
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));

@@ -361,9 +361,7 @@ namespace BluePrints.Common.Base
         protected void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
         {
             delayedPROGRESSSavingDispatcher.Stop();
-            var PROGRESSCollectionViewModel =
-                (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROGRESS>();
+            var PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
             mainThreadDispatcher.BeginInvoke(new Action(() => PROGRESSCollectionViewModel.Save(loadPROGRESS)));
             FullRefresh();
         }
@@ -433,37 +431,8 @@ namespace BluePrints.Common.Base
             if (isBusy)
                 return;
 
-            var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            int multiplier;
-            if (navigationType == DateNavigationType.Current)
-            {
-                var timeDifferenceFromCurrent = loadPROGRESS.DATA_DATE - DateTime.Now;
-
-                if (timeDifferenceFromCurrent.TotalSeconds > interval.TotalSeconds)
-                {
-                    do
-                    {
-                        loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
-                    } while (loadPROGRESS.DATA_DATE > DateTime.Now);
-                }
-                else if (timeDifferenceFromCurrent.TotalSeconds < interval.TotalSeconds)
-                {
-                    if (timeDifferenceFromCurrent.TotalSeconds < -1 * interval.TotalSeconds)
-                        do
-                        {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE < DateTime.Now - interval);
-                    else
-                        return;
-                }
-            }
-            else
-            {
-                multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
-                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
-            }
-
-            delayedPROGRESSSavingDispatcher.Start();
+            if(BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS))
+                delayedPROGRESSSavingDispatcher.Start();
         }
         #endregion
 

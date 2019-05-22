@@ -121,6 +121,54 @@ namespace BluePrints.Common.ViewModel.Utils
             return UTF8Encoding.UTF8.GetString(resultArray);
         }
 
+        /// <summary>
+        /// Change the progress data date
+        /// </summary>
+        /// <param name="navigationType">Forward, backward or last week ending</param>
+        /// <param name="loadPROGRESS">Progress to change</param>
+        /// <returns>Whether should save</returns>
+        public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS)
+        {
+            var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            int multiplier;
+            if (navigationType == DateNavigationType.Current)
+            {
+                var timeDifferenceFromCurrent = loadPROGRESS.DATA_DATE - DateTime.Now;
+
+                if (timeDifferenceFromCurrent.TotalSeconds > interval.TotalSeconds)
+                {
+                    do
+                    {
+                        loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
+                    } while (loadPROGRESS.DATA_DATE > DateTime.Now);
+
+                    return true;
+                }
+                else if (timeDifferenceFromCurrent.TotalSeconds < interval.TotalSeconds)
+                {
+                    if (timeDifferenceFromCurrent.TotalSeconds < -1 * interval.TotalSeconds)
+                    {
+                        do
+                        {
+                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                        } while (loadPROGRESS.DATA_DATE < DateTime.Now - interval);
+
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
+                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
+                return true;
+            }
+        }
+
         public static void ApplyShowBookableFilter(IGridControlService gridControlService, bool bookableToggleValue)
         {
             if (gridControlService != null)
