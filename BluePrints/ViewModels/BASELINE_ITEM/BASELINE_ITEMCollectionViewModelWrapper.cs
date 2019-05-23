@@ -492,6 +492,10 @@ namespace BluePrints.ViewModels
 
         private void loadExoData()
         {
+            //when loading from document control module this will be null
+            if (loadPROJECT == null)
+                return;
+
             HashSet<string> projectNumbers = new HashSet<string>();
             projectNumbers.Add(loadPROJECT.NUMBER);
 

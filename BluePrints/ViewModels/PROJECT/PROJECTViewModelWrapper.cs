@@ -284,9 +284,11 @@ namespace BluePrints.ViewModels
                 foreach(var subjobDashboard in project.Subjob_Dashboards)
                 {
                     if(subjobDashboard != null)
+                    {
                         subjobDashboard.IsManaged = false;
                         if (SUBJOBCollection.Any(x => x.INTERNAL_NAME1 == subjobDashboard.SubjobCode))
                             subjobDashboard.IsManaged = true;
+                    }
                 }
 
                 mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SingleProjectDashboards)));

@@ -616,6 +616,7 @@ namespace BluePrints.ViewModels
             {
                 exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"));
                 exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_POForecast" + keyString, projectKey, childTitlePrefix + "PO Forecast", "PROJECTPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png"));
                 exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSummary" + keyString, projectKey, childTitlePrefix + "Summary", "PROJECTSummaryView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Summary", false, false, @"Programming\ProjectDirectory_16x16.png"));
             }
 

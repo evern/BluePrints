@@ -102,6 +102,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             return dataDate;
         }
 
+        /// <summary>
+        /// Rewind the data date backwards to get the first aligned data date as per the project start date
+        /// </summary>
+        public static DateTime ForecastDataDate(DateTime invoiceDate, DateTime dataDate, TimeSpan periodInterval)
+        {
+            while (invoiceDate < dataDate.Date)
+                invoiceDate = invoiceDate.AddDays(1 * periodInterval.Days);
+
+            return invoiceDate;
+        }
+
         public static TimeSpan ConvertProgressIntervalToPeriod(PROGRESS PROGRESS)
         {
             int intervalCount = PROGRESS.INTERVAL_COUNT;

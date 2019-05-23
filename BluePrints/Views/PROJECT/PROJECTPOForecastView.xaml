@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTPOForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTPOForecastViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECTPOForecastView" xmlns:common="clr-namespace:BluePrints.Common" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTPOForecastViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -28,10 +28,27 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" AutoGenerateColumns="AddNew" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}" >
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                        </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Code" FieldName="CODE" HeaderToolTip="An identifier for the discipline. Must be unique" />
-                            <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the discipline" />
+                            <dxg:GridColumn FieldName="Entity.PONO" Fixed="Left" Header="PO Number" ReadOnly="True" VisibleIndex="10" />
+                            <dxg:GridColumn FieldName="Entity.InvoiceDate" Fixed="Left" Header="Invoiced" ReadOnly="True" VisibleIndex="20" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.PO_RemainingPrice" Fixed="Left" Header="Remaining" ReadOnly="True" VisibleIndex="50" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.PaymentTerms" Fixed="Left" Header="Terms" VisibleIndex="60" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:POPaymentTerms}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
@@ -40,15 +57,15 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.ModeCellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </Grid>

@@ -24,6 +24,20 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum POPaymentTerms
+    {
+        [Display(Name = "None")]
+        None = 0,
+        [Display(Name = "30 Days")]
+        Thirty_Days = 1,
+        [Display(Name = "60 Days")]
+        Sixty_Days = 2,
+        [Display(Name = "90 Days")]
+        Ninety_Days = 3,
+        [Display(Name = "Custom")]
+        Custom = 4
+    }
+
     public enum StaticSummaryRowTypes
     {
         [Display(Name = "Hours (manhour indirect)")]

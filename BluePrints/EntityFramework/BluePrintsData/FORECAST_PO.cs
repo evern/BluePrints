@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -24,7 +25,7 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PONO { get; set; }
 
-        public bool MODE { get; set; }
+        public POPaymentTerms MODE { get; set; }
 
         public DateTime CREATED { get; set; }
 
