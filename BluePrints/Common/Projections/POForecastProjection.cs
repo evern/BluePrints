@@ -13,6 +13,7 @@ namespace BluePrints.Common.Projections
     public class POForecastProjection
     {
         public string PONO { get; set; }
+        public string Description { get; set; }
         public FORECAST_PO ForecastConfig { get; private set; }
         public List<ExoDataPoint> ExoPOs { get; set; }
         public List<ExoDataPoint> ExoActuals { get; set; }
