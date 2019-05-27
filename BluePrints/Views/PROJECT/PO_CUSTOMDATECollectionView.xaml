@@ -30,7 +30,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDISCIPLINE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Payment Date" FieldName="PAYMENT_DATE" HeaderToolTip="Date of payment" />
+                            <dxg:GridColumn Header="Payment Date" FieldName="PAYMENT_DATE" HeaderToolTip="Date of payment" SortIndex="1"/>
                             <dxg:GridColumn Header="Payment %" FieldName="PAYMENT_PERCENT" HeaderToolTip="% of payment on date" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" MinValue="0" MaxValue="1" />

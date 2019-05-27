@@ -1,4 +1,5 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.Misc;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -195,7 +196,7 @@ namespace BluePrints.Common.Projections
                 if (ForecastConfig == null)
                     return 1;
 
-                decimal remainingPeriod = ForecastConfig.REMAINING_PERIOD;
+                decimal remainingPeriod = PaymentTerms == POPaymentTerms.Custom ? CustomPaymentDates.Count : ForecastConfig.REMAINING_PERIOD;
                 decimal elapsedPeriodSinceRecordCreated = 0;
 
                 DateTime loopDate = DateTime.Now;

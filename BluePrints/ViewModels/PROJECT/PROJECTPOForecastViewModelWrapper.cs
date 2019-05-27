@@ -131,9 +131,9 @@ namespace BluePrints.ViewModels
                     var groupedPOs = exoPOs.GroupBy(x => x.PONumber).Select(group => new { PONumber = group.Key, DataPoints = group.ToList() });
 
                     List<POForecastProjection> projections = new List<POForecastProjection>();
-                    foreach(var groupedPO in groupedPOs.OrderBy(x => x.PONumber))
+                    foreach (var groupedPO in groupedPOs.OrderBy(x => x.PONumber))
                     {
-                        POForecastProjection newForecast = new POForecastProjection();
+                        POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
                         newForecast.PONO = groupedPO.PONumber;
                         ExoDataPoint dataPoint = groupedPO.DataPoints.FirstOrDefault();
                         if (dataPoint != null)
@@ -143,7 +143,7 @@ namespace BluePrints.ViewModels
                         //newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
 
                         FORECAST_PO forecastConfig = DisplayEntities.FirstOrDefault(x => x.PONO == groupedPO.PONumber);
-                        if(forecastConfig != null)
+                        if (forecastConfig != null)
                         {
                             newForecast.SetForecastConfig(forecastConfig);
                             if (forecastConfig.MODE == POPaymentTerms.Custom)
@@ -219,22 +219,12 @@ namespace BluePrints.ViewModels
 
         public void ValidateCell(GridCellValidationEventArgs e)
         {
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)) 
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
              || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
-                //create empty entry so that custom payment date have something to attach to
-                if (projection.ForecastConfig == null)
-                {
-                    FORECAST_PO newFORECAST_PO = new FORECAST_PO();
-                    newFORECAST_PO.PONO = projection.PONO;
-                    newFORECAST_PO.MODE = POPaymentTerms.Thirty_Days;
-                    newFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
-                    newFORECAST_PO.REMAINING_PERIOD = 1;
-                    projection.SetForecastConfig(newFORECAST_PO);
-                    MainViewModel.Save(projection.ForecastConfig);
-                }
+                initializeForecastConfig(projection);
 
                 if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)))
                 {
@@ -255,7 +245,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     decimal newValue = (decimal)e.Value;
-                    if(newValue > 0)
+                    if (newValue > 0)
                         projection.ForecastConfig.REMAINING_PERIOD = (decimal)e.Value;
                     else
                     {
@@ -265,7 +255,7 @@ namespace BluePrints.ViewModels
                 }
 
 
-                if(e.IsValid)
+                if (e.IsValid)
                 {
                     MainViewModel.Save(projection.ForecastConfig);
                     generatePOForecast(projection, alignedDataDateCollection);
@@ -275,6 +265,44 @@ namespace BluePrints.ViewModels
 
                     //projection.SaveForecastPaymentDates(bluePrintsUnitOfWork);
                 }
+            }
+        }
+
+        public bool CanShowCustomPaymentDialog
+        {
+            get
+            {
+                return SelectedDataRow != null;
+            }
+        }
+
+        public void ShowCustomPaymentDialog()
+        {
+            POForecastProjection projection = (POForecastProjection)SelectedDataRow[columnEntity];
+            initializeForecastConfig(projection);
+            if (showCustomPaymentDialog(projection))
+            {
+                projection.ForecastConfig.MODE = POPaymentTerms.Custom;
+                projection.PaymentTerms = POPaymentTerms.Custom;
+                MainViewModel.Save(projection.ForecastConfig);
+                generatePOForecast(projection, alignedDataDateCollection);
+
+                GridControlService.RefreshData();
+            }
+        }
+
+        private void initializeForecastConfig(POForecastProjection projection)
+        {
+            //create empty entry so that custom payment date have something to attach to
+            if (projection.ForecastConfig == null)
+            {
+                FORECAST_PO newFORECAST_PO = new FORECAST_PO();
+                newFORECAST_PO.PONO = projection.PONO;
+                newFORECAST_PO.MODE = POPaymentTerms.Thirty_Days;
+                newFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
+                newFORECAST_PO.REMAINING_PERIOD = 1;
+                projection.SetForecastConfig(newFORECAST_PO);
+                MainViewModel.Save(projection.ForecastConfig);
             }
         }
 
@@ -309,7 +337,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void generatePOForecast(POForecastProjection forecast, List<DateTime> alignedDates, DataRow PORow = null)
+        private void generatePOForecast(POForecastProjection forecast, List<DateTime> alignedDates, DataRow PORow = null, bool refreshRow = false)
         {
             if(PORow == null)
                 PORow = findPORow(forecast.PONO);
@@ -318,7 +346,7 @@ namespace BluePrints.ViewModels
             {
                 forecast.ResetPaymentDates();
                 //reset datarow dates
-                foreach(DateTime alignedDate in alignedDataDateCollection)
+                foreach (DateTime alignedDate in alignedDataDateCollection)
                 {
                     PORow[alignedDate.ToShortDateString()] = 0;
                 }
@@ -372,6 +400,9 @@ namespace BluePrints.ViewModels
             dataPointsTable = null;
             base.FullRefresh();
         }
+
+
+        public DataRowView SelectedDataRow { get; set; }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedDataRows
