@@ -66,8 +66,7 @@ namespace BluePrints.Common.Projections
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                             forecastPaymentPoint.Costs = PO_RemainingPrice;
                             TimeSpan forwardTimeSpan = new TimeSpan((int)daysForward, 0, 0, 0);
-                            DateTime forcastDate = ((DateTime)InvoiceDate).AddDays(forwardTimeSpan.Days);
-                            forecastPaymentPoint.ActualDate = forcastDate;
+                            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
                             forecastPayments.Add(forecastPaymentPoint);
                         }
                         else

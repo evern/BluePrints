@@ -42,6 +42,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
         /// <summary>
+        /// Rewind the data date backwards to get the first aligned data date as per the project start date
+        /// </summary>
+        public static DateTime ForecastDataDate(DateTime invoiceDate, DateTime dataDate, TimeSpan periodInterval)
+        {
+            while (invoiceDate < dataDate.Date)
+                invoiceDate = invoiceDate.AddDays(1 * periodInterval.Days);
+
+            return invoiceDate;
+        }
+
+        /// <summary>
         /// Default exception periods, may be replaced by calendar settings
         /// </summary>
         public static List<Period> NonWorkingPeriods
