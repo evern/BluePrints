@@ -63,11 +63,68 @@ namespace BluePrints.Common.Projections
 
                         if(daysForward != null)
                         {
-                            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
-                            forecastPaymentPoint.Costs = PO_RemainingPrice;
-                            TimeSpan forwardTimeSpan = new TimeSpan((int)daysForward, 0, 0, 0);
-                            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
-                            forecastPayments.Add(forecastPaymentPoint);
+                            if(ExoActuals == null || ExoActuals.Count() == 0 || PaymentTerms == POPaymentTerms.None)
+                            {
+                                forecastPayments.Add(simpleForecastPayment((int)daysForward));
+                            }
+                            else
+                            {
+                                List<ExoDataPoint> forecastTemp = new List<ExoDataPoint>();
+                                var groupedActuals = ExoActuals.GroupBy(x => x.CostType).Select(group => new { CostType = group.Key, DataPoints = group.ToList() });
+
+                                foreach (ExoDataPoint exoPO in ExoPOs)
+                                {
+                                    var groupedActual = groupedActuals.FirstOrDefault(x => x.CostType == exoPO.CostType);
+                                    if(groupedActual == null)
+                                    {
+                                        forecastTemp.Add(simpleForecastPayment((int)daysForward));
+                                    }
+                                    else
+                                    {
+                                        decimal totalSuppliedQuantity = groupedActual.DataPoints.Sum(x => x.Quantity);
+                                        decimal suppliedOverPeriod = groupedActual.DataPoints.Count();
+
+                                        decimal forecastPeriod = 0;
+                                        decimal qtyPerPeriod = 0;
+                                        decimal costPerPeriod = 0;
+                                        if (suppliedOverPeriod == 1)
+                                        {
+                                            qtyPerPeriod = totalSuppliedQuantity;
+                                            forecastPeriod = exoPO.Units / totalSuppliedQuantity;
+                                        }
+                                        else
+                                        {
+                                            qtyPerPeriod = totalSuppliedQuantity / suppliedOverPeriod;
+                                            forecastPeriod = exoPO.Units / qtyPerPeriod;
+                                        }
+
+                                        costPerPeriod = qtyPerPeriod * exoPO.CostPerQty;
+                                        TimeSpan forwardTimeSpan = new TimeSpan((int)daysForward, 0, 0, 0);
+                                        DateTime loopDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
+
+                                        do
+                                        {
+                                            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
+                                            forecastPaymentPoint.Costs = forecastPeriod >= 1 ? costPerPeriod : forecastPeriod * costPerPeriod;
+                                            forecastPaymentPoint.ActualDate = loopDate;
+                                            forecastTemp.Add(forecastPaymentPoint);
+
+                                            loopDate = loopDate.AddDays(forwardTimeSpan.Days);
+                                            forecastPeriod -= 1;
+
+                                        } while (forecastPeriod > 0);
+                                    }
+                                }
+
+                                var groupedForecastTemp = forecastTemp.GroupBy(x => x.ActualDate).Select(group => new { ForecastDate = group.Key, DataPoints = group.ToList() });
+                                foreach(var groupedForecast in groupedForecastTemp)
+                                {
+                                    ExoDataPoint groupedForecastPaymentPoint = new ExoDataPoint();
+                                    groupedForecastPaymentPoint.Costs = groupedForecast.DataPoints.Sum(x => x.Costs);
+                                    groupedForecastPaymentPoint.ActualDate = groupedForecast.ForecastDate;
+                                    forecastPayments.Add(groupedForecastPaymentPoint);
+                                }
+                            }
                         }
                         else
                         {
@@ -84,6 +141,15 @@ namespace BluePrints.Common.Projections
 
                 return forecastPayments;
             }
+        }
+
+        private ExoDataPoint simpleForecastPayment(int daysForward)
+        {
+            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
+            forecastPaymentPoint.Costs = PO_RemainingPrice;
+            TimeSpan forwardTimeSpan = new TimeSpan(daysForward, 0, 0, 0);
+            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
+            return forecastPaymentPoint;
         }
 
         public void SaveForecastPaymentDates(IBluePrintsEntitiesUnitOfWork unitOfWork)

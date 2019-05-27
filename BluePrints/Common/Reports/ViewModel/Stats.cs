@@ -398,6 +398,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Role { get; set; }
         public string CostGroup { get; set; }
         public string CostType { get; set; }
+        public decimal CostPerQty { get; set; }
         public string Description { get; set; }
         public string Supplier { get; set; }
         public string InvoiceNo { get; set; }

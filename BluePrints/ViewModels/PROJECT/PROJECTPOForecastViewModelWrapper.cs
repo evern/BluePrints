@@ -54,7 +54,7 @@ namespace BluePrints.ViewModels
         protected PROJECT loadPROJECT;
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> exoPOs = new List<ExoDataPoint>();
-        //List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
+        List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
@@ -99,7 +99,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
             exoPOs = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER);
-            //exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
+            exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
                             newForecast.Description = dataPoint.Description;
 
                         newForecast.ExoPOs = groupedPO.DataPoints;
-                        //newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
+                        newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
 
                         FORECAST_PO forecastConfig = DisplayEntities.FirstOrDefault(x => x.PONO == groupedPO.PONumber);
                         if(forecastConfig != null)
