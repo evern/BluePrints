@@ -118,12 +118,12 @@
                                 </dxg:GridControl.Bands>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                    <dxg:GridSummaryItem DisplayFormat="n" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.View>
