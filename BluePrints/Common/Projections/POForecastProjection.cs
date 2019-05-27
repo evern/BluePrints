@@ -51,85 +51,45 @@ namespace BluePrints.Common.Projections
                     forecastPayments = new List<ExoDataPoint>();
                     if (InvoiceDate != null)
                     {
-                        int? daysForward = null;
-                        if (PaymentTerms == POPaymentTerms.Thirty_Days)
-                            daysForward = 30;
-                        else if (PaymentTerms == POPaymentTerms.Sixty_Days)
-                            daysForward = 60;
-                        else if (PaymentTerms == POPaymentTerms.Ninety_Days)
-                            daysForward = 90;
-                        else if (PaymentTerms == POPaymentTerms.None)
-                            daysForward = 1;
-
-                        if(daysForward != null)
+                        if(ForecastConfig == null)
                         {
-                            if(ExoActuals == null || ExoActuals.Count() == 0 || PaymentTerms == POPaymentTerms.None)
-                            {
-                                forecastPayments.Add(simpleForecastPayment((int)daysForward));
-                            }
-                            else
-                            {
-                                List<ExoDataPoint> forecastTemp = new List<ExoDataPoint>();
-                                var groupedActuals = ExoActuals.GroupBy(x => x.CostType).Select(group => new { CostType = group.Key, DataPoints = group.ToList() });
+                            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
+                            forecastPaymentPoint.Costs = PO_RemainingPrice;
+                            forecastPaymentPoint.ActualDate = DateTime.Now.Date.AddMonths(1);
+                            forecastPayments.Add(forecastPaymentPoint);
+                        }
+                        else if(ForecastConfig.MODE != POPaymentTerms.Custom)
+                        {
+                            decimal remainingPeriod = RemainingPeriod;
 
-                                foreach (ExoDataPoint exoPO in ExoPOs)
+                            decimal costPerPeriod = PO_RemainingPrice / remainingPeriod;
+                            DateTime forecastDate = LastActionDate;
+                            forecastDate = forecastDate.AddMonths(monthsForward);
+
+                            do
+                            {
+                                if (forecastDate.Month < DateTime.Now.Month)
                                 {
-                                    var groupedActual = groupedActuals.FirstOrDefault(x => x.CostType == exoPO.CostType);
-                                    if(groupedActual == null)
-                                    {
-                                        forecastTemp.Add(simpleForecastPayment((int)daysForward));
-                                    }
-                                    else
-                                    {
-                                        decimal totalSuppliedQuantity = groupedActual.DataPoints.Sum(x => x.Quantity);
-                                        decimal suppliedOverPeriod = groupedActual.DataPoints.Count();
-
-                                        decimal forecastPeriod = 0;
-                                        decimal qtyPerPeriod = 0;
-                                        decimal costPerPeriod = 0;
-                                        if (suppliedOverPeriod == 1)
-                                        {
-                                            qtyPerPeriod = totalSuppliedQuantity;
-                                            forecastPeriod = exoPO.Units / totalSuppliedQuantity;
-                                        }
-                                        else
-                                        {
-                                            qtyPerPeriod = totalSuppliedQuantity / suppliedOverPeriod;
-                                            forecastPeriod = exoPO.Units / qtyPerPeriod;
-                                        }
-
-                                        costPerPeriod = qtyPerPeriod * exoPO.CostPerQty;
-                                        TimeSpan forwardTimeSpan = new TimeSpan((int)daysForward, 0, 0, 0);
-                                        DateTime loopDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
-
-                                        do
-                                        {
-                                            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
-                                            forecastPaymentPoint.Costs = forecastPeriod >= 1 ? costPerPeriod : forecastPeriod * costPerPeriod;
-                                            forecastPaymentPoint.ActualDate = loopDate;
-                                            forecastTemp.Add(forecastPaymentPoint);
-
-                                            loopDate = loopDate.AddDays(forwardTimeSpan.Days);
-                                            forecastPeriod -= 1;
-
-                                        } while (forecastPeriod > 0);
-                                    }
+                                    forecastDate = forecastDate.AddMonths(monthsForward);
+                                    continue;
                                 }
 
-                                var groupedForecastTemp = forecastTemp.GroupBy(x => x.ActualDate).Select(group => new { ForecastDate = group.Key, DataPoints = group.ToList() });
-                                foreach(var groupedForecast in groupedForecastTemp)
-                                {
-                                    ExoDataPoint groupedForecastPaymentPoint = new ExoDataPoint();
-                                    groupedForecastPaymentPoint.Costs = groupedForecast.DataPoints.Sum(x => x.Costs);
-                                    groupedForecastPaymentPoint.ActualDate = groupedForecast.ForecastDate;
-                                    forecastPayments.Add(groupedForecastPaymentPoint);
-                                }
-                            }
+                                ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
+                                forecastPaymentPoint.Costs = costPerPeriod;
+                                forecastPaymentPoint.ActualDate = forecastDate;
+                                forecastPayments.Add(forecastPaymentPoint);
+
+                                forecastDate = forecastDate.AddMonths(monthsForward);
+                                remainingPeriod -= 1;
+                            } while (remainingPeriod > 0);
                         }
                         else
                         {
                             foreach(PO_CUSTOMDATE customPaymentDate in CustomPaymentDates)
                             {
+                                if (customPaymentDate.PAYMENT_DATE.Month < DateTime.Now.Month)
+                                    continue;
+
                                 ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                                 forecastPaymentPoint.Costs = PO_RemainingPrice * customPaymentDate.PAYMENT_PERCENT;
                                 forecastPaymentPoint.ActualDate = customPaymentDate.PAYMENT_DATE.Date;
@@ -137,19 +97,19 @@ namespace BluePrints.Common.Projections
                             }
                         }
                     }
+
+                    if(forecastPayments.Count == 0)
+                    {
+                        //fallback when there are nothing added
+                        ExoDataPoint fallbackPaymentPoint = new ExoDataPoint();
+                        fallbackPaymentPoint.Costs = PO_RemainingPrice;
+                        fallbackPaymentPoint.ActualDate = DateTime.Now.Date.AddMonths(1);
+                        forecastPayments.Add(fallbackPaymentPoint);
+                    }
                 }
 
                 return forecastPayments;
             }
-        }
-
-        private ExoDataPoint simpleForecastPayment(int daysForward)
-        {
-            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
-            forecastPaymentPoint.Costs = PO_RemainingPrice;
-            TimeSpan forwardTimeSpan = new TimeSpan(daysForward, 0, 0, 0);
-            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
-            return forecastPaymentPoint;
         }
 
         public void SaveForecastPaymentDates(IBluePrintsEntitiesUnitOfWork unitOfWork)
@@ -189,6 +149,80 @@ namespace BluePrints.Common.Projections
                 }
 
                 unitOfWork.SaveChanges();
+            }
+        }
+
+        private int monthsForward
+        {
+            get
+            {
+                if (PaymentTerms == POPaymentTerms.Thirty_Days)
+                    return 1;
+                else if (PaymentTerms == POPaymentTerms.Sixty_Days)
+                    return 2;
+                else if (PaymentTerms == POPaymentTerms.Ninety_Days)
+                    return 3;
+                else
+                    return 1;
+            }
+        }
+
+        public bool IsCustom
+        {
+            get
+            {
+                return ForecastConfig != null && ForecastConfig.MODE == POPaymentTerms.Custom;
+            }
+        }
+
+        public decimal RemainingPeriodEdit
+        {
+            get
+            {
+                return RemainingPeriod;
+            }
+            set
+            {
+                if(ForecastConfig != null)
+                    ForecastConfig.REMAINING_PERIOD = value;
+            }
+        }
+
+        public decimal RemainingPeriod
+        {
+            get
+            {
+                if (ForecastConfig == null)
+                    return 1;
+
+                decimal remainingPeriod = ForecastConfig.REMAINING_PERIOD;
+                decimal elapsedPeriodSinceRecordCreated = 0;
+
+                DateTime loopDate = DateTime.Now;
+                loopDate = loopDate.Date.AddMonths(-1 * (monthsForward));
+
+                while (loopDate.Date > LastActionDate.Date)
+                {
+                    elapsedPeriodSinceRecordCreated += 1;
+                    loopDate = loopDate.Date.AddMonths(-1 * (monthsForward));
+                };
+
+                remainingPeriod -= elapsedPeriodSinceRecordCreated;
+                if (remainingPeriod <= 0)
+                    remainingPeriod = 1;
+
+                return remainingPeriod;
+            }
+        }
+
+        public DateTime LastActionDate
+        {
+            get
+            {
+                if (ForecastConfig == null)
+                    return DateTime.Now.Date;
+
+                return ForecastConfig.UPDATED == null ? ForecastConfig.CREATED : (DateTime)ForecastConfig.UPDATED;
             }
         }
 

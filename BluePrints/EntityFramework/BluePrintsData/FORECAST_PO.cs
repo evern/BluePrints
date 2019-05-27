@@ -28,6 +28,8 @@ namespace BluePrints.Data
 
         public POPaymentTerms MODE { get; set; }
 
+        public decimal REMAINING_PERIOD { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

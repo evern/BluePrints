@@ -26,16 +26,14 @@ namespace BluePrints.Common
 
     public enum POPaymentTerms
     {
-        [Display(Name = "None")]
-        None = 0,
         [Display(Name = "30 Days")]
-        Thirty_Days = 1,
+        Thirty_Days = 0,
         [Display(Name = "60 Days")]
-        Sixty_Days = 2,
+        Sixty_Days = 1,
         [Display(Name = "90 Days")]
-        Ninety_Days = 3,
+        Ninety_Days = 2,
         [Display(Name = "Custom")]
-        Custom = 4
+        Custom = 3
     }
 
     public enum StaticSummaryRowTypes

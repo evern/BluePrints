@@ -54,7 +54,7 @@ namespace BluePrints.ViewModels
         protected PROJECT loadPROJECT;
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> exoPOs = new List<ExoDataPoint>();
-        List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
+        //List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
@@ -99,7 +99,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
             exoPOs = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER);
-            exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
+            //exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
                             newForecast.Description = dataPoint.Description;
 
                         newForecast.ExoPOs = groupedPO.DataPoints;
-                        newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
+                        //newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
 
                         FORECAST_PO forecastConfig = DisplayEntities.FirstOrDefault(x => x.PONO == groupedPO.PONumber);
                         if(forecastConfig != null)
@@ -159,7 +159,11 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoDataPoint> forecastPayments = projections.SelectMany(x => x.ForecastPayments);
                     DateTime latestDate = earliestDate;
                     if (forecastPayments.Count() > 0)
+                    {
+                        //earliestDate = forecastPayments.Min(x => x.ActualDate);
                         latestDate = forecastPayments.Max(x => x.ActualDate);
+                    }
+
 
                     DateTime earliestDateBeginningOfMonth = new DateTime(earliestDate.Year, earliestDate.Month, 1);
                     alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection(earliestDateBeginningOfMonth, latestDate);
@@ -215,43 +219,62 @@ namespace BluePrints.ViewModels
 
         public void ValidateCell(GridCellValidationEventArgs e)
         {
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)))
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)) 
+             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
-
                 //create empty entry so that custom payment date have something to attach to
                 if (projection.ForecastConfig == null)
                 {
                     FORECAST_PO newFORECAST_PO = new FORECAST_PO();
                     newFORECAST_PO.PONO = projection.PONO;
-                    newFORECAST_PO.MODE = POPaymentTerms.None;
+                    newFORECAST_PO.MODE = POPaymentTerms.Thirty_Days;
                     newFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
+                    newFORECAST_PO.REMAINING_PERIOD = 1;
                     projection.SetForecastConfig(newFORECAST_PO);
                     MainViewModel.Save(projection.ForecastConfig);
                 }
 
-                if (((POPaymentTerms)e.Value) == POPaymentTerms.Custom)
+                if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)))
                 {
-                    //don't change the value if custom payment isn't populated
-                    if (!showCustomPaymentDialog(projection))
+                    if (((POPaymentTerms)e.Value) == POPaymentTerms.Custom)
                     {
+                        //don't change the value if custom payment isn't populated
+                        if (!showCustomPaymentDialog(projection))
+                        {
+                            e.IsValid = false;
+                            e.ErrorContent = "Edit payment cancelled";
+                            return;
+                        }
+                    }
+
+                    projection.ForecastConfig.MODE = (POPaymentTerms)e.Value;
+                    projection.PaymentTerms = (POPaymentTerms)e.Value;
+                }
+                else
+                {
+                    decimal newValue = (decimal)e.Value;
+                    if(newValue > 0)
+                        projection.ForecastConfig.REMAINING_PERIOD = (decimal)e.Value;
+                    else
+                    {
+                        e.ErrorContent = "Remaining period cannot be zero or less";
                         e.IsValid = false;
-                        e.ErrorContent = "Edit payment cancelled";
-                        return;
                     }
                 }
 
-                projection.ForecastConfig.MODE = (POPaymentTerms)e.Value;
-                projection.PaymentTerms = (POPaymentTerms)e.Value;
 
-                MainViewModel.Save(projection.ForecastConfig);
-                generatePOForecast(projection, alignedDataDateCollection);
-                GridControlService.RefreshData();
-                TableView tableView = e.Source as TableView;
-                tableView.CloseEditor();
+                if(e.IsValid)
+                {
+                    MainViewModel.Save(projection.ForecastConfig);
+                    generatePOForecast(projection, alignedDataDateCollection);
+                    GridControlService.RefreshData();
+                    TableView tableView = e.Source as TableView;
+                    tableView.CloseEditor();
 
-                projection.SaveForecastPaymentDates(bluePrintsUnitOfWork);
+                    //projection.SaveForecastPaymentDates(bluePrintsUnitOfWork);
+                }
             }
         }
 
@@ -304,7 +327,10 @@ namespace BluePrints.ViewModels
                 {
                     DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= forecastPayment.ActualDate);
                     if (alignedDataDate == null || ((DateTime)alignedDataDate).Year == 1)
+                    {
                         refreshDataTable();
+                        return;
+                    }
                     else
                     {
                         string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
