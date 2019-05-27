@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public FORECAST_PO()
         {
             PO_CUSTOMDATE = new HashSet<PO_CUSTOMDATE>();
+            FORECAST_PO_RESULT = new HashSet<FORECAST_PO_RESULT>();
         }
 
         [Key]
@@ -43,5 +44,8 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PO_CUSTOMDATE> PO_CUSTOMDATE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FORECAST_PO_RESULT> FORECAST_PO_RESULT { get; set; }
     }
 }

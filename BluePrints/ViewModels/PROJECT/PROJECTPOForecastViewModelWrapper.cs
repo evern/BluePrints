@@ -50,6 +50,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected PROJECT loadPROJECT;
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> exoPOs = new List<ExoDataPoint>();
@@ -65,6 +66,7 @@ namespace BluePrints.ViewModels
 
             selectedItemsChangedDispatcher = new DispatcherTimer();
             selectedItemsChangedDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()
@@ -248,6 +250,8 @@ namespace BluePrints.ViewModels
                 GridControlService.RefreshData();
                 TableView tableView = e.Source as TableView;
                 tableView.CloseEditor();
+
+                projection.SaveForecastPaymentDates(bluePrintsUnitOfWork);
             }
         }
 

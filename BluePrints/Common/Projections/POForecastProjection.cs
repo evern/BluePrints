@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel.Reporting;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
@@ -65,7 +66,7 @@ namespace BluePrints.Common.Projections
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                             forecastPaymentPoint.Costs = PO_RemainingPrice;
                             TimeSpan forwardTimeSpan = new TimeSpan((int)daysForward, 0, 0, 0);
-                            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now, forwardTimeSpan);
+                            forecastPaymentPoint.ActualDate = ChronologicalHelpers.ForecastDataDate((DateTime)InvoiceDate, DateTime.Now.Date, forwardTimeSpan);
                             forecastPayments.Add(forecastPaymentPoint);
                         }
                         else
@@ -74,7 +75,7 @@ namespace BluePrints.Common.Projections
                             {
                                 ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                                 forecastPaymentPoint.Costs = PO_RemainingPrice * customPaymentDate.PAYMENT_PERCENT;
-                                forecastPaymentPoint.ActualDate = customPaymentDate.PAYMENT_DATE;
+                                forecastPaymentPoint.ActualDate = customPaymentDate.PAYMENT_DATE.Date;
                                 forecastPayments.Add(forecastPaymentPoint);
                             }
                         }
@@ -82,6 +83,46 @@ namespace BluePrints.Common.Projections
                 }
 
                 return forecastPayments;
+            }
+        }
+
+        public void SaveForecastPaymentDates(IBluePrintsEntitiesUnitOfWork unitOfWork)
+        {
+            if (ForecastConfig != null)
+            {
+                IQueryable<FORECAST_PO_RESULT> results = unitOfWork.FORECAST_PO_RESULTS.Where(x => x.GUID_FORECAST_PO == ForecastConfig.GUID);
+                List<FORECAST_PO_RESULT> removeResults = new List<FORECAST_PO_RESULT>();
+                foreach (FORECAST_PO_RESULT result in results)
+                {
+                    ExoDataPoint payment = ForecastPayments.FirstOrDefault(x => x.PONumber == PONO && x.ActualDate.Date == result.FORECAST_DATE.Date);
+                    if (payment == null)
+                        removeResults.Add(result);
+                }
+
+                foreach(FORECAST_PO_RESULT removeResult in removeResults)
+                {
+                    unitOfWork.FORECAST_PO_RESULTS.Remove(removeResult);
+                }
+
+                foreach(ExoDataPoint payment in ForecastPayments)
+                {
+                    FORECAST_PO_RESULT result = results.FirstOrDefault(x => x.PONO == PONO && x.FORECAST_DATE == payment.ActualDate);
+                    if(result != null)
+                    {
+                        result.FORECAST_AMOUNT = payment.Costs;
+                    }
+                    else
+                    {
+                        FORECAST_PO_RESULT newResult = new FORECAST_PO_RESULT();
+                        newResult.PONO = PONO;
+                        newResult.FORECAST_AMOUNT = payment.Costs;
+                        newResult.FORECAST_DATE = payment.ActualDate.Date;
+                        newResult.GUID_FORECAST_PO = ForecastConfig.GUID;
+                        unitOfWork.FORECAST_PO_RESULTS.Add(newResult);
+                    }
+                }
+
+                unitOfWork.SaveChanges();
             }
         }
 

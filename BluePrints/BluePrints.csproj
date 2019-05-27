@@ -701,6 +701,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\FORECAST_PO_RESULT.cs" />
     <Compile Include="EntityFramework\Annotations\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY_SETTING.cs" />
@@ -759,6 +760,7 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO_RESULT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
