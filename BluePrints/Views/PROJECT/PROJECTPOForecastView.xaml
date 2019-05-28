@@ -64,16 +64,31 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="Entity.FirstForecastDate" Fixed="Left" Header="First Forecast Date" VisibleIndex="55" >
+                                        <dxg:GridColumn.HeaderStyle>
+                                            <Style TargetType="Control">
+                                                <Setter Property="Background" Value="LightCyan" />
+                                            </Style>
+                                        </dxg:GridColumn.HeaderStyle>
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:DateEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.PaymentTerms" Fixed="Left" Header="Terms" VisibleIndex="60" >
+                                    <dxg:GridColumn FieldName="Entity.PaymentTerms" Fixed="Left" Header="Recurring" VisibleIndex="60" >
+                                        <dxg:GridColumn.HeaderStyle>
+                                            <Style TargetType="Control">
+                                                <Setter Property="Background" Value="LightCyan" />
+                                            </Style>
+                                        </dxg:GridColumn.HeaderStyle>
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:POPaymentTerms}}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="Entity.RemainingPeriodEdit" Fixed="Left" Header="Remaining Period" VisibleIndex="70" >
+                                        <dxg:GridColumn.HeaderStyle>
+                                            <Style TargetType="Control">
+                                                <Setter Property="Background" Value="LightCyan" />
+                                            </Style>
+                                        </dxg:GridColumn.HeaderStyle>
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxe:SpinEdit Name="PART_Editor" Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

@@ -49,14 +49,15 @@ namespace BluePrints.Common.Projections
             {
                 if(forecastPayments == null)
                 {
+                    DateTime firstDayOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                     forecastPayments = new List<ExoDataPoint>();
                     if (InvoiceDate != null)
                     {
-                        if(ForecastConfig == null)
+                        if (ForecastConfig == null)
                         {
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                             forecastPaymentPoint.Costs = PO_RemainingPrice;
-                            forecastPaymentPoint.ActualDate = DateTime.Now.Date;
+                            forecastPaymentPoint.ActualDate = firstDayOfCurrentMonth;
                             forecastPayments.Add(forecastPaymentPoint);
                         }
                         else if(ForecastConfig.MODE != POPaymentTerms.Custom)
@@ -68,7 +69,7 @@ namespace BluePrints.Common.Projections
 
                             do
                             {
-                                if (forecastDate.Date < DateTime.Now.Date)
+                                if (forecastDate.Date < firstDayOfCurrentMonth)
                                 {
                                     forecastDate = forecastDate.AddMonths(monthsForward);
                                     continue;
@@ -103,7 +104,7 @@ namespace BluePrints.Common.Projections
                         //fallback when there are nothing added
                         ExoDataPoint fallbackPaymentPoint = new ExoDataPoint();
                         fallbackPaymentPoint.Costs = PO_RemainingPrice;
-                        fallbackPaymentPoint.ActualDate = DateTime.Now.Date;
+                        fallbackPaymentPoint.ActualDate = firstDayOfCurrentMonth;
                         forecastPayments.Add(fallbackPaymentPoint);
                     }
                 }
