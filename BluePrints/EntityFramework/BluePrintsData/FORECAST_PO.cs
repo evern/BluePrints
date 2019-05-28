@@ -30,6 +30,8 @@ namespace BluePrints.Data
 
         public decimal REMAINING_PERIOD { get; set; }
 
+        public DateTime FIRST_FORECAST { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

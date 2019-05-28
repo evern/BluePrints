@@ -56,7 +56,7 @@ namespace BluePrints.Common.Projections
                         {
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
                             forecastPaymentPoint.Costs = PO_RemainingPrice;
-                            forecastPaymentPoint.ActualDate = DateTime.Now.Date.AddMonths(1);
+                            forecastPaymentPoint.ActualDate = DateTime.Now.Date;
                             forecastPayments.Add(forecastPaymentPoint);
                         }
                         else if(ForecastConfig.MODE != POPaymentTerms.Custom)
@@ -64,12 +64,11 @@ namespace BluePrints.Common.Projections
                             decimal remainingPeriod = RemainingPeriod;
 
                             decimal costPerPeriod = PO_RemainingPrice / remainingPeriod;
-                            DateTime forecastDate = LastActionDate;
-                            forecastDate = forecastDate.AddMonths(monthsForward);
+                            DateTime forecastDate = FirstForecastDate;
 
                             do
                             {
-                                if (forecastDate.Month < DateTime.Now.Month)
+                                if (forecastDate.Date < DateTime.Now.Date)
                                 {
                                     forecastDate = forecastDate.AddMonths(monthsForward);
                                     continue;
@@ -104,7 +103,7 @@ namespace BluePrints.Common.Projections
                         //fallback when there are nothing added
                         ExoDataPoint fallbackPaymentPoint = new ExoDataPoint();
                         fallbackPaymentPoint.Costs = PO_RemainingPrice;
-                        fallbackPaymentPoint.ActualDate = DateTime.Now.Date.AddMonths(1);
+                        fallbackPaymentPoint.ActualDate = DateTime.Now.Date;
                         forecastPayments.Add(fallbackPaymentPoint);
                     }
                 }
@@ -202,7 +201,7 @@ namespace BluePrints.Common.Projections
                 DateTime loopDate = DateTime.Now;
                 loopDate = loopDate.Date.AddMonths(-1 * (monthsForward));
 
-                while (loopDate.Date > LastActionDate.Date)
+                while (loopDate.Date > FirstForecastDate.Date)
                 {
                     elapsedPeriodSinceRecordCreated += 1;
                     loopDate = loopDate.Date.AddMonths(-1 * (monthsForward));
@@ -216,14 +215,19 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public DateTime LastActionDate
+        public DateTime FirstForecastDate
         {
             get
             {
                 if (ForecastConfig == null)
                     return DateTime.Now.Date;
 
-                return ForecastConfig.UPDATED == null ? ForecastConfig.CREATED : (DateTime)ForecastConfig.UPDATED;
+                return ForecastConfig.FIRST_FORECAST;
+            }
+            set
+            {
+                if (ForecastConfig != null)
+                    ForecastConfig.FIRST_FORECAST = value;
             }
         }
 

@@ -201,9 +201,12 @@ namespace BluePrints.ViewModels
                 DateTime parsedate;
                 if (DateTime.TryParse(e.Column.FieldName, out parsedate))
                 {
-                    e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
+                    e.Column.CellTemplate = Application.Current.Resources["POForecastTemplate"] as DataTemplate;
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
                     e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    e.Column.ReadOnly = true;
+                    e.Column.FixedWidth = true;
+                    e.Column.Width = 75;
                 }
             }
         }
@@ -220,7 +223,8 @@ namespace BluePrints.ViewModels
         public void ValidateCell(GridCellValidationEventArgs e)
         {
             if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
-             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit)))
+             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit))
+             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstPaymentDate)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
@@ -242,7 +246,7 @@ namespace BluePrints.ViewModels
                     projection.ForecastConfig.MODE = (POPaymentTerms)e.Value;
                     projection.PaymentTerms = (POPaymentTerms)e.Value;
                 }
-                else
+                else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit)))
                 {
                     decimal newValue = (decimal)e.Value;
                     if (newValue > 0)
@@ -252,6 +256,10 @@ namespace BluePrints.ViewModels
                         e.ErrorContent = "Remaining period cannot be zero or less";
                         e.IsValid = false;
                     }
+                }
+                else
+                {
+                    projection.FirstPaymentDate = (DateTime)e.Value;
                 }
 
 
@@ -301,6 +309,7 @@ namespace BluePrints.ViewModels
                 newFORECAST_PO.MODE = POPaymentTerms.Thirty_Days;
                 newFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
                 newFORECAST_PO.REMAINING_PERIOD = 1;
+                newFORECAST_PO.FIRST_FORECAST = DateTime.Now.Date;
                 projection.SetForecastConfig(newFORECAST_PO);
                 MainViewModel.Save(projection.ForecastConfig);
             }
@@ -345,6 +354,7 @@ namespace BluePrints.ViewModels
             if (PORow != null)
             {
                 forecast.ResetPaymentDates();
+
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
                 {

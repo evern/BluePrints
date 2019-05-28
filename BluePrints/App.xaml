@@ -129,6 +129,9 @@
                 </dxe:SpinEdit.Background>
             </dxe:SpinEdit>
         </DataTemplate>
+        <DataTemplate x:Key="POForecastTemplate">
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c0" MaskType="Numeric" IsReadOnly="True" MaskUseAsDisplayFormat="True" MinValue="0" />
+        </DataTemplate>
         <DataTemplate x:Key="invisibleCellTemplate">
             <dxe:TextEdit Name="PART_Editor" Width="0" Margin="0" Padding="0" />
         </DataTemplate>
