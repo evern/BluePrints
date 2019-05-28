@@ -224,7 +224,7 @@ namespace BluePrints.ViewModels
         {
             if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
              || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit))
-             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstPaymentDate)))
+             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstForecastDate)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
@@ -259,7 +259,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    projection.FirstPaymentDate = (DateTime)e.Value;
+                    projection.FirstForecastDate = (DateTime)e.Value;
                 }
 
 
