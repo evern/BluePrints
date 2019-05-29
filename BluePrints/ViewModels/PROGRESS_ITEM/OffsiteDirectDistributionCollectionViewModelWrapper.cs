@@ -28,6 +28,7 @@ using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
+using DevExpress.XtraGrid.Views.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -65,6 +66,7 @@ namespace BluePrints.ViewModels
         List<string> hiddenColumnFieldNames = new List<string>();
         List<string> systemColumnFieldNames = new List<string>();
 
+        string unboundProgressIdFieldname = "ProgressId";
         string columnEntity = "Entity";
         string columnPrimaryTitle = "Entity.Entity.Entity.PRIMARY_TITLE";
         string columnDeliverableStatus = "Entity.DeliverableStatusProgressGuid";
@@ -369,6 +371,103 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
         }
 
+        public bool CanFillDown(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            return !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && info.Column.FieldName.Contains(unboundProgressIdFieldname) && SelectedDataRows.Count > 1;
+        }
+
+        public bool CanFillUp(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            return !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && info.Column.FieldName.Contains(unboundProgressIdFieldname) && SelectedDataRows.Count > 1;
+        }
+
+        public void FillDown(object button)
+        {
+            Fill(button, false);
+        }
+
+        public void FillUp(object button)
+        {
+            Fill(button, true);
+        }
+
+        public void Fill(object button, bool isUp)
+        {
+            GridMenuInfo info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            Guid? valueToFill;
+
+            DataRowView copyRow;
+            if (isUp)
+                copyRow = SelectedDataRows[SelectedDataRows.Count - 1];
+            else
+                copyRow = SelectedDataRows[0];
+
+            BASELINE_ITEMProgress copyEntity = (BASELINE_ITEMProgress)(copyRow[columnEntity]);
+            valueToFill = copyEntity.DeliverableStatusProgressGuid;
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            var bulkSaveEntities = new List<BASELINE_ITEMProgress>();
+
+            for (int i = 0; i < SelectedDataRows.Count; i++)
+            {
+                BASELINE_ITEMProgress selectedEntity = (BASELINE_ITEMProgress)((SelectedDataRows[i])[columnEntity]);
+
+                Guid? oldValue = selectedEntity.DeliverableStatusProgressGuid;
+                string newValueString = string.Empty;
+                if (valueToFill != null)
+                {
+                    DELIVERABLES_STATUS currentDELIVERABLE_STATUS = DELIVERABLES_STATUSCollection.FirstOrDefault(x => x.GUID == (Guid)valueToFill);
+                    if (currentDELIVERABLE_STATUS != null)
+                        newValueString = currentDELIVERABLE_STATUS.NAME;
+
+                    selectedEntity.Entity.Entity.SetDeliverableStatusByName(newValueString);
+                }
+                else
+                    selectedEntity.DeliverableStatusProgressGuid = null;
+
+                updateAutoPercentage(selectedEntity);
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(selectedEntity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid), oldValue, selectedEntity.DeliverableStatusProgressGuid, EntityMessageType.Changed);
+                MainViewModel.Save(selectedEntity);
+            }
+
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        public void CustomUnboundColumnData(GridColumnDataEventArgs e)
+        {
+            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            {
+                if(DataPointsTable.Rows.Count > 0)
+                {
+                    if (e.Column.FieldName == unboundProgressIdFieldname)
+                    {
+                        BASELINE_ITEMProgress selectedEntity = (BASELINE_ITEMProgress)(DataPointsTable.Rows[e.ListSourceRowIndex])[columnEntity];
+                        if (e.IsGetData)
+                            e.Value = selectedEntity.DeliverableStatusProgressGuid;
+                        else if (e.IsSetData)
+                        {
+                            if (e.Value == DBNull.Value)
+                            {
+                                MainViewModel.EntitiesUndoRedoManager.AddUndo(selectedEntity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid), selectedEntity.DeliverableStatusProgressGuid, null, EntityMessageType.Changed);
+                                selectedEntity.DeliverableStatusProgressGuid = null;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ClearDeliverableStatus()
+        {
+            foreach(var selectedDataRow in SelectedDataRows)
+            {
+                BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)(selectedDataRow[columnEntity]);
+                entity.DeliverableStatusProgressGuid = null;
+                MainViewModel.Save(entity);
+            }
+        }
+
         public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
@@ -393,26 +492,21 @@ namespace BluePrints.ViewModels
             {
                 DataRowView editing_row = (DataRowView)gridControl.GetRow(selected_cell.RowHandle);
                 BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)editing_row[columnEntity];
-                if (DataUtils.FormatColumnFieldname(selected_cell.Column.FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
+                if (DataUtils.FormatColumnFieldname(selected_cell.Column.FieldName) == unboundProgressIdFieldname)
                 {
                     Guid? oldValue = entity.Entity.Entity.GUID_STATUS;
-                    if (entity.Entity.Entity.SetDeliverableStatusByName(newValueString))
+                    if (newValueString == string.Empty)
+                    {
+                        entity.Entity.Entity.GUID_STATUS = null;
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, selected_cell.Column.FieldName, oldValue, null, EntityMessageType.Changed);
+                        MainViewModel.Save(entity);
+                    }
+                    else if (entity.Entity.Entity.SetDeliverableStatusByName(newValueString))
                     {
                         Guid? newValue = entity.Entity.Entity.GUID_STATUS;
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, selected_cell.Column.FieldName, oldValue, newValue, EntityMessageType.Changed);
 
-                        DELIVERABLES_STATUS currentDELIVERABLE_STATUS = entity.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_STATUS);
-                        if(currentDELIVERABLE_STATUS != null && currentDELIVERABLE_STATUS.AUTO_PERCENTAGE != null)
-                        {
-                            decimal oldTotalPercentage = entity.Total_Percentage;
-                            decimal auto_percentage = (decimal)currentDELIVERABLE_STATUS.AUTO_PERCENTAGE;
-                            if (auto_percentage > entity.Total_Percentage)
-                            {
-                                entity.Total_Earned_Percentage = auto_percentage;
-                                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage), oldTotalPercentage, auto_percentage, EntityMessageType.Changed);
-                            }
-                        }
-
+                        updateAutoPercentage(entity);
                         MainViewModel.Save(entity);
                         //do this so that deliverable goes through the projection refresh
                         //Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
@@ -482,6 +576,21 @@ namespace BluePrints.ViewModels
             uow.SaveChanges();
             FullRefresh();
             MessageBoxService.ShowMessage(fixedCount + " progress fixed");
+        }
+
+        private void updateAutoPercentage(BASELINE_ITEMProgress entity)
+        {
+            DELIVERABLES_STATUS currentDELIVERABLE_STATUS = entity.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_STATUS);
+            if (currentDELIVERABLE_STATUS != null && currentDELIVERABLE_STATUS.AUTO_PERCENTAGE != null)
+            {
+                decimal oldTotalPercentage = entity.Total_Percentage;
+                decimal auto_percentage = (decimal)currentDELIVERABLE_STATUS.AUTO_PERCENTAGE;
+                if (auto_percentage > entity.Total_Percentage)
+                {
+                    entity.Total_Earned_Percentage = auto_percentage;
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage), oldTotalPercentage, auto_percentage, EntityMessageType.Changed);
+                }
+            }
         }
 
         private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue)
@@ -612,7 +721,28 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>
-        public void CellValueChangedProgressUpdate(CellValueChangedEventArgs e)
+        public virtual void FixedCellValueChanging(DevExpress.Xpf.Grid.CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            if (!e.Handled)
+            {
+                if(e.Column.FieldName.Contains(unboundProgressIdFieldname))
+                {
+                    DataRowView dataRowView = (DataRowView)e.Row;
+                    BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
+                    entity.DeliverableStatusProgressGuid = (Guid?)e.Value;
+                    if (entity.DeliverableStatusProgressGuid != null)
+                        updateAutoPercentage(entity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChangedProgressUpdate(DevExpress.Xpf.Grid.CellValueChangedEventArgs e)
         {
             if (e.RowHandle == GridControl.AutoFilterRowHandle)
                 return;
@@ -620,7 +750,7 @@ namespace BluePrints.ViewModels
             DataRowView dataRowView = (DataRowView)e.Row;
             BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
 
-            if(e.Column.FieldName.ToUpper().Contains("ENTITY"))
+            if(e.Column.FieldName.ToUpper().Contains("ENTITY") || e.Column.FieldName == unboundProgressIdFieldname)
             {
                 //entity.Entity.Entity.PRIMARY_TITLE = e.Value.ToString();
                 ///MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, columnPrimaryTitle, e.OldValue, e.Value, EntityMessageType.Changed);
@@ -680,6 +810,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (selectedDataRows == null)
+                    selectedDataRows = new ObservableCollection<DataRowView>();
+
                 return selectedDataRows;
             }
             set

@@ -77,6 +77,7 @@
                     <dxlc:LayoutGroup>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectDistribution" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentColumn="{Binding DataContext.LastColumn, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsCalculating, ElementName=userControl}">
                             <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
@@ -103,7 +104,7 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Primary Title" IsEnabled="False" />
-                                <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
@@ -118,10 +119,10 @@
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.DeliverableStatusProgressGuid" FilterPopupMode="Custom" Fixed="Left" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %">
+                                <dxg:GridColumn ColumnFilterMode="DisplayText" UnboundType="Object" FieldName="ProgressId" FilterPopupMode="Custom" Fixed="Left" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.DeliverableStatusCollection}" ValidateOnEnterKeyPressed="True" NullValueButtonPlacement="Popup" ValidateOnTextInput="True" ValueMember="GUID" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <!--  For Filtering  -->
@@ -163,9 +164,15 @@
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                     <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
+                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
+                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
+                                        <dxb:BarButtonItem Name="contextMenuBulkEdit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Change column values for selected rows" />
+                                        <dxb:BarButtonItem Name="contextMenuFillUp" Command="{Binding DataContext.FillUpCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from last selection" />
+                                        <dxb:BarButtonItem Name="contextMenuFillDown" Command="{Binding DataContext.FillDownCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from first selection" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                     <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.FixedCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedProgressUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
