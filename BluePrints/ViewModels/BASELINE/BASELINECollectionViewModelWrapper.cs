@@ -156,6 +156,11 @@ namespace BluePrints.ViewModels
             get { return this.GetService<IDocumentManagerService>(); }
         }
 
+        public bool CanBackup()
+        {
+            return CanEdit();
+        }
+
         public void Backup()
         {
             if (MessageBoxService.ShowMessage("This will created a backup of your selected baseline, do you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)

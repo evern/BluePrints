@@ -10,7 +10,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
 
-    [ConstraintAttributes("REVISION")]
+    //[ConstraintAttributes("REVISION")]
     [BulkEditDisabledAttributes("P6BASELINE_NAME, P6MODBASELINE_NAME")]
     public partial class BASELINE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveP6Baselines, IAmBaseline
     {
