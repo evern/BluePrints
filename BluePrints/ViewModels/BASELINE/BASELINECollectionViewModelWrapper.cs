@@ -1,10 +1,12 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
@@ -152,6 +154,50 @@ namespace BluePrints.ViewModels
         protected IDocumentManagerService DocumentManagerService
         {
             get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        public void Backup()
+        {
+            if (MessageBoxService.ShowMessage("This will created a backup of your selected baseline, do you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            BASELINE selectedBASELINE = DisplaySelectedEntity;
+            if (selectedBASELINE == null)
+                return;
+
+            BASELINE backupBASELINE = new BASELINE();
+            DataUtils.ShallowCopy(backupBASELINE, selectedBASELINE);
+            backupBASELINE.GUID = Guid.Empty;
+            backupBASELINE.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
+            backupBASELINE.STATUS = BaselineStatus.Superseded;
+            backupBASELINE.REVISION = selectedBASELINE.REVISION;
+            bluePrintsUOW.BASELINES.Add(backupBASELINE);
+            //need to save progress to get GUID
+            bluePrintsUOW.SaveChanges();
+
+            LoadingScreenManager.ShowLoadingScreen(selectedBASELINE.BASELINE_ITEM.Count());
+            decimal totalDeliverables = 0;
+            if (selectedBASELINE.BASELINE_ITEM != null)
+                foreach (BASELINE_ITEM baseline_item in selectedBASELINE.BASELINE_ITEM)
+                {
+                    totalDeliverables += 1;
+                    LoadingScreenManager.SetMessage("Total backed up deliverable(s): " + totalDeliverables);
+
+                    BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
+                    DataUtils.ShallowCopy(newBASELINE_ITEM, baseline_item);
+                    newBASELINE_ITEM.GUID = Guid.Empty;
+                    newBASELINE_ITEM.GUID_BASELINE = backupBASELINE.GUID;
+                    bluePrintsUOW.BASELINE_ITEMS.Add(newBASELINE_ITEM);
+                    LoadingScreenManager.Progress();
+                }
+
+            bluePrintsUOW.SaveChanges();
+            LoadingScreenManager.CloseLoadingScreen();
+
+            FullRefresh();
         }
 
         public void Edit()
