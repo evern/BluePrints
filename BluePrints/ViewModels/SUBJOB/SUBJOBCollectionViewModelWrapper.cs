@@ -339,40 +339,54 @@ namespace BluePrints.ViewModels
 
                 if (field_name == BindableBase.GetPropertyName(() => new SUBJOBProjection().Entity) + "." + BindableBase.GetPropertyName(() => new SUBJOB().STARTDATE))
                 {
-                    startDate = (DateTime)new_value;
-                    endDate = (DateTime)projection.Entity.ENDDATE;
-                    if (endDate < startDate)
+                    if(projection.Entity.ENDDATE != null && new_value != null)
                     {
-                        endDate = BluePrintsDataUtils.SUBJOB_Calculate_EndDate(startDate, loadPROJECT);
-                        projection.Entity.ENDDATE = endDate;
+                        startDate = (DateTime)new_value;
+                        endDate = (DateTime)projection.Entity.ENDDATE;
+                        if (endDate < startDate)
+                        {
+                            endDate = BluePrintsDataUtils.SUBJOB_Calculate_EndDate(startDate, loadPROJECT);
+                            projection.Entity.ENDDATE = endDate;
+                        }
+
+                        calculateReviewStartEndDate(projection, startDate, endDate);
                     }
                 }
                 else
                 {
-                    endDate = (DateTime)new_value;
-                    startDate = (DateTime)projection.Entity.STARTDATE;
-                    if (endDate < startDate)
+                    if(new_value != null)
                     {
-                        startDate = BluePrintsDataUtils.SUBJOB_Calculate_StartDate(endDate, loadPROJECT);
-                        projection.Entity.STARTDATE = startDate;
+                        endDate = (DateTime)new_value;
+                        if (projection.Entity.STARTDATE != null)
+                        {
+                            startDate = (DateTime)projection.Entity.STARTDATE;
+                            if (endDate < startDate)
+                            {
+                                startDate = BluePrintsDataUtils.SUBJOB_Calculate_StartDate(endDate, loadPROJECT);
+                                projection.Entity.STARTDATE = startDate;
+                            }
+
+                            calculateReviewStartEndDate(projection, startDate, endDate);
+                        }
                     }
                 }
-
-                var reviewStartDate = startDate;
-                var reviewEndDate = endDate;
-
-                BluePrintsDataUtils.SUBJOB_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT, false);
-                projection.Entity.REVIEWSTARTDATE = reviewStartDate;
-
-                if (reviewEndDate >= endDate)
-                    projection.Entity.REVIEWENDDATE = endDate;
-                else
-                    projection.Entity.REVIEWENDDATE = reviewEndDate;
-
-                projection.Update();
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+
+        private void calculateReviewStartEndDate(SUBJOBProjection subjob, DateTime reviewStartDate, DateTime reviewEndDate)
+        {
+            DateTime endDate = reviewEndDate;
+            BluePrintsDataUtils.SUBJOB_Calculate_ReviewPeriod(ref reviewStartDate, ref reviewEndDate, loadPROJECT, false);
+            subjob.Entity.REVIEWSTARTDATE = reviewStartDate;
+
+            if (reviewEndDate >= endDate)
+                subjob.Entity.REVIEWENDDATE = endDate;
+            else
+                subjob.Entity.REVIEWENDDATE = reviewEndDate;
+
+            subjob.Update();
         }
         #endregion
 
