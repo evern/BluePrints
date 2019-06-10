@@ -1805,7 +1805,7 @@ namespace BluePrints.Common.Projections
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where MAINJOB.JOBCODE == projectNumber
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE };
+                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOBCOST_LINES.STOCKCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
 
             List<ExoTimeAuthorisation> exoTimes;
             if (byUser)
@@ -1930,6 +1930,8 @@ namespace BluePrints.Common.Projections
             exoTime.StockCode = dbTime.DEFAULT_STOCKCODE; //when this projection is used in timesheet, the stock code will be resources instead of stock code in jobcost_lines because time booking is only to commodity level
             exoTime.StockName = dbTime.STOCK_CODE_DESC;
             exoTime.VariationCode = dbTime.VARIATIONCODE;
+            exoTime.JobStatus = dbTime.JOBSTATUS;
+
             return exoTime;
         }
     }
@@ -1954,6 +1956,7 @@ namespace BluePrints.Common.Projections
         public string StockCode { get; set; }
         public string StockName { get; set; }
         public string VariationCode { get; set; }
+        public string JobStatus { get; set; }
         public decimal BudgetQty { get; set; }
         public decimal BudgetRev { get; set; }
         public decimal BudgetRate { get; set; }
@@ -1983,6 +1986,7 @@ namespace BluePrints.Common.Projections
         public int? DebtorId { get; set; }
         public int JobCategory { get; set; }
         public int JobType { get; set; }
+        public string JobStatus { get; set; }
         public ChargeType? ChargeType { get; set; }
 
         public string AreaCode => Code.Length < 9 ? string.Empty : Code.Substring(6, 3);

@@ -265,6 +265,7 @@ namespace BaseModel.ViewModel.Dialogs
                     newSubJob.ResourceSeqNo = availableLine.ResourceSeqNo;
                     newSubJob.Code = availableLine.SubJobCode;
                     newSubJob.Title = availableLine.SubJobTitle;
+                    newSubJob.JobStatus = availableLine.JobStatus;
                     pSubJobCollection.Add(newSubJob);
                 }
 

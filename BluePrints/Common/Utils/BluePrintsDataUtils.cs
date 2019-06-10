@@ -261,10 +261,15 @@ namespace BluePrints.Common.ViewModel.Utils
             {
                 MessageBoxService.ShowMessage("You do not have \nSub Job: " + deliverable.Subjob_Name + "\nCost Group: " + deliverable.Discipline_Code + "\nCost Type: " + deliverable.Commodity_Code + "\nAdded in exo, please contact the project manager for assistance");
             }
+
+            PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
+            if(subJob != null && subJob.JobStatus.ToUpper() == "C")
+            {
+                MessageBoxService.ShowMessage("Job " + subJob.Code + " has already been closed, please contact cost control to open the job");
+            }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {
                 string narrative = bookTimeViewModel.GetNarratives();
-                PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
                 PrimeroResource bookResource = bookTimeViewModel.GetResource();
                 TimesheetDate bookDate = bookTimeViewModel.GetTimesheetDate();
                 PrimeroDiscipline bookCostGroup = bookTimeViewModel.GetCostGroup();
