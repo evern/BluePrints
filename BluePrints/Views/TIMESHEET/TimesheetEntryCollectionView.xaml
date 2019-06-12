@@ -87,7 +87,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="StockCode" FilterPopupMode="CheckedList" Fixed="Left" Header="StockCode" VisibleIndex="5">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
+                                        <dxe:TextEditSettings NullText="Leave empty to autopopulate with rsc code" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="6">

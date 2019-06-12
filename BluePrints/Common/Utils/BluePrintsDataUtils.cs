@@ -263,7 +263,7 @@ namespace BluePrints.Common.ViewModel.Utils
             }
 
             PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
-            if(subJob != null && subJob.JobStatus.ToUpper() == "C")
+            if(subJob != null && subJob.JobStatus.ToUpper() == "G")
             {
                 MessageBoxService.ShowMessage("Job " + subJob.Code + " has already been closed, please contact cost control to open the job");
             }
