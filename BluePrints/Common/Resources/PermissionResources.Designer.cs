@@ -304,6 +304,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage transactions.
+        /// </summary>
+        internal static string ManageTransactions {
+            get {
+                return ResourceManager.GetString("ManageTransactions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage other users.
         /// </summary>
         internal static string ManageUser {

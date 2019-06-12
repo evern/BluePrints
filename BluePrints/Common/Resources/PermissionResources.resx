@@ -222,4 +222,7 @@
   <data name="ManageEXOUsers" xml:space="preserve">
     <value>Allow user to manage exo users (Confidential Information)</value>
   </data>
+  <data name="ManageTransactions" xml:space="preserve">
+    <value>Allow user to manage transactions</value>
+  </data>
 </root>
