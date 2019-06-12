@@ -85,12 +85,17 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="5">
+                                <dxg:GridColumn FieldName="StockCode" FilterPopupMode="CheckedList" Fixed="Left" Header="StockCode" VisibleIndex="5">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="6">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodes, ElementName=userControl}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative" VisibleIndex="6">
+                                <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative" VisibleIndex="7">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings />
                                     </dxg:GridColumn.EditSettings>
@@ -110,6 +115,7 @@
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.TimeSheetCellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                     </dxmvvm:Interaction.Behaviors>

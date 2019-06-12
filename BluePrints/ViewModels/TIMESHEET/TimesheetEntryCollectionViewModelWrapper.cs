@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
         string columnJobNo = "JobNo";
         string columnCostGroup = "CostGroup";
         string columnCostType = "CostType";
+        string columnStockCode = "StockCode";
         string columnVariationCode = "VariationCode";
         string columnNarrative = "Narrative";
         string columnUniqueCode = "UniqueCode";
@@ -94,6 +95,7 @@ namespace BluePrints.ViewModels
             defaultColumnFieldNames.Add(columnJobNo);
             defaultColumnFieldNames.Add(columnCostGroup);
             defaultColumnFieldNames.Add(columnCostType);
+            defaultColumnFieldNames.Add(columnStockCode);
             defaultColumnFieldNames.Add(columnVariationCode);
             defaultColumnFieldNames.Add(columnNarrative);
             defaultColumnFieldNames.Add(columnUniqueCode);
@@ -102,6 +104,7 @@ namespace BluePrints.ViewModels
             systemColumnFieldNames.Add(columnJobNo);
             systemColumnFieldNames.Add(columnCostGroup);
             systemColumnFieldNames.Add(columnCostType);
+            systemColumnFieldNames.Add(columnStockCode);
             systemColumnFieldNames.Add(columnVariationCode);
             systemColumnFieldNames.Add(columnNarrative);
             systemColumnFieldNames.Add(columnUniqueCode);
@@ -253,6 +256,7 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnJobNo, typeof(int));
                     dataPointsTable.Columns.Add(columnCostGroup, typeof(int));
                     dataPointsTable.Columns.Add(columnCostType, typeof(int));
+                    dataPointsTable.Columns.Add(columnStockCode, typeof(string));
                     dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
                     dataPointsTable.Columns.Add(columnNarrative, typeof(string));
 
@@ -290,6 +294,7 @@ namespace BluePrints.ViewModels
                 newRow[columnJobNo] = populateAuthorisation.SubJobNo;
                 newRow[columnCostGroup] = populateAuthorisation.DisciplineId;
                 newRow[columnCostType] = populateAuthorisation.CommodityId;
+                newRow[columnStockCode] = populateAuthorisation.StockCode;
                 DataPointsTable.Rows.Add(newRow);
             }
 
@@ -383,6 +388,8 @@ namespace BluePrints.ViewModels
                             else
                                 newRow[columnCostType] = (int)timeSheet.COST_TYPE;
 
+                            newRow[columnStockCode] = timeSheet.STOCKCODE;
+
                             newRows.Add(newRow);
                             validateUserAuth(newRow);
                         }
@@ -461,7 +468,7 @@ namespace BluePrints.ViewModels
                         variationCode = variationCode.Substring(0, 50);
                     else if (variationCode == string.Empty)
                         variationCode = null;
-
+                    
                     string narrative = row[columnNarrative].ToString();
 
                     //not validating against cost group and cost type
@@ -471,7 +478,7 @@ namespace BluePrints.ViewModels
                     bool isValidJobCode = IsValidJobCode(subJobNo, costGroupNo, costTypeNo, variationCode);
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
-                    string stockCode = string.Empty;
+                    string stockCode = row[columnStockCode].ToString();
                     string stockCodeDescription = string.Empty;
                     if (isValidJobCode)
                     {
@@ -482,15 +489,17 @@ namespace BluePrints.ViewModels
                             subJobTitle = subJob.TITLE;
                         }
 
-                        JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.SEQNO == resourceSeqNo);
-                        if(resource != null)
+                        if (stockCode.Trim() == string.Empty)
                         {
-                            STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == resource.DEFAULT_STOCKCODE);
-                            if(stockItem != null)
-                            {
-                                stockCode = stockItem.STOCKCODE;
-                                stockCodeDescription = stockItem.DESCRIPTION;
-                            }
+                            JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.SEQNO == resourceSeqNo);
+                            stockCode = resource.DEFAULT_STOCKCODE;
+                        }
+
+                        STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == stockCode);
+                        if (stockItem != null)
+                        {
+                            stockCode = stockItem.STOCKCODE;
+                            stockCodeDescription = stockItem.DESCRIPTION;
                         }
                     }
                     
@@ -592,20 +601,9 @@ namespace BluePrints.ViewModels
             List<string> scannedUniqueCode = new List<string>();
             foreach (DataRow row in DataPointsTable.Rows)
             {
-                if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
-                {
-                    int resourceSeqNo = (int)row[columnResourceSeqNo];
-                    int subJobNo = (int)row[columnJobNo];
-                    int costGroupNo = (int)row[columnCostGroup];
-                    int costTypeNo = (int)row[columnCostType];
-                    string variationCode = row[columnVariationCode].ToString();
-                    string narrative = row[columnNarrative].ToString();
-
-                    //makes up the unique signature of each row by these attribute so we can see if other rows contain the same attribute and flag it as duplicate
-                    string uniqueCode = resourceSeqNo.ToString() + subJobNo.ToString() + costGroupNo.ToString() + costTypeNo.ToString() + variationCode + narrative;
-                    row[columnUniqueCode] = uniqueCode;
+                string uniqueCode = populateRowUniqueCode(row);
+                if(uniqueCode != string.Empty)
                     scannedUniqueCode.Add(uniqueCode);
-                }
             }
 
             var uniqueCodeGrouped = scannedUniqueCode.GroupBy(x => x);
@@ -613,6 +611,27 @@ namespace BluePrints.ViewModels
                 return false;
 
             return true;
+        }
+
+        private string populateRowUniqueCode(DataRow row)
+        {
+            if (row[columnResourceSeqNo].ToString() != string.Empty && row[columnJobNo].ToString() != string.Empty && row[columnCostGroup].ToString() != string.Empty && row[columnCostType].ToString() != string.Empty)
+            {
+                int resourceSeqNo = (int)row[columnResourceSeqNo];
+                int subJobNo = (int)row[columnJobNo];
+                int costGroupNo = (int)row[columnCostGroup];
+                int costTypeNo = (int)row[columnCostType];
+                string stockCode = row[columnStockCode].ToString();
+                string variationCode = row[columnVariationCode].ToString();
+                string narrative = row[columnNarrative].ToString();
+
+                //makes up the unique signature of each row by these attribute so we can see if other rows contain the same attribute and flag it as duplicate
+                string uniqueCode = resourceSeqNo.ToString() + subJobNo.ToString() + costGroupNo.ToString() + costTypeNo.ToString() + stockCode + variationCode + narrative;
+                row[columnUniqueCode] = uniqueCode;
+                return uniqueCode;
+            }
+            else
+                return string.Empty;
         }
 
         //because timesheet with variation code can be string.empty or null, do double checking here
@@ -1086,7 +1105,7 @@ namespace BluePrints.ViewModels
 
         public void CustomUnboundColumnData(GridColumnDataEventArgs e)
         {
-            if(dataPointsTable.Rows.Count > 0)
+            if(dataPointsTable != null && dataPointsTable.Rows.Count > 0)
             {
                 if (e.Column.FieldName == columnDuplicate)
                 {
@@ -1099,6 +1118,18 @@ namespace BluePrints.ViewModels
 
                     e.Value = (dataRowCollection.Where(x => dataPointsTable.Rows.IndexOf(x) != e.ListSourceRowIndex).Any(x => x[columnUniqueCode] != null && x[columnUniqueCode].ToString() == uniqueCodeStr));
                 }
+            }
+        }
+
+        public virtual void TimeSheetCellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            if (!e.Handled)
+            {
+                DataRowView dataRowView = (DataRowView)e.Row;
+                populateRowUniqueCode(dataRowView.Row);
             }
         }
 
@@ -1270,7 +1301,6 @@ namespace BluePrints.ViewModels
             int? costTypeSeqNo = dataRow[columnCostType] == DBNull.Value ? null : (int?)dataRow[columnCostType];
             int? costGroupSeqNo = dataRow[columnCostGroup] == DBNull.Value ? null : (int?)dataRow[columnCostGroup];
 
-
             bool isCostTypeValidToCostGroup = preloadedExoLinesWithCostInfo.Any(x => x.DisciplineId == costGroupSeqNo && x.CommodityId == costTypeSeqNo);
             if(!isCostTypeValidToCostGroup)
             {
@@ -1300,7 +1330,20 @@ namespace BluePrints.ViewModels
             //        validateRow.SetColumnError(columnResourceSeqNo, string.Empty);
             //}
 
-            if (validateRow[columnJobNo].ToString() != string.Empty && validateRow[columnCostGroup].ToString() != string.Empty && validateRow[columnCostType].ToString() != string.Empty)
+
+            bool isValidStockCode = true;
+            if (validateRow[columnStockCode].ToString() != string.Empty)
+            {
+                string stockCode = validateRow[columnStockCode].ToString();
+                STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == stockCode);
+                if (stockItem == null)
+                {
+                    isValidStockCode = false;
+                    validateRow.SetColumnError(columnStockCode, "Invalid stock code");
+                }
+            }
+
+            if (isValidStockCode && validateRow[columnJobNo].ToString() != string.Empty && validateRow[columnCostGroup].ToString() != string.Empty && validateRow[columnCostType].ToString() != string.Empty)
             {
                 IEnumerable<ExoTimeAuthorisation> findJobLine = preloadedExoLines.Where(x => x.SubJobNo == (int)validateRow[columnJobNo]);
                 
