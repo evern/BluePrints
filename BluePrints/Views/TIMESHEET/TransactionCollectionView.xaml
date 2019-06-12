@@ -78,7 +78,7 @@
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
                                         <dxg:GridColumn FieldName="QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
-                                        <dxg:GridColumn FieldName="LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />
+                                        <!--<dxg:GridColumn FieldName="LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />-->
                                         <dxg:GridColumn FieldName="LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.GroupSummary>
