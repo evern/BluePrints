@@ -1421,15 +1421,15 @@ namespace BluePrints.ViewModels
                 FORECASTCollectionViewModel.Save(findFORECAST);
             }
 
-            //only do this on discipline level so we don't add new forecasted units twice
-            if(entity.Commodity.Code == string.Empty)
-            {
-                decimal? newValue = 0.00m;
-                //used to ensure child row is set
-                if (forecastUnits != null)
-                    newValue = forecastUnits;
+            decimal? newValue = 0.00m;
+            //used to ensure child row is set
+            if (forecastUnits != null)
+                newValue = forecastUnits;
 
-                dataRow[forecastDate.ToShortDateString()] = newValue;
+            dataRow[forecastDate.ToShortDateString()] = newValue;
+            //only do this on discipline level so we don't add new forecasted units twice
+            if (entity.Commodity.Code == string.Empty)
+            {
                 updateEstimateAtComplete(oldValue, newValue);
             }
 
