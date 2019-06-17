@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
                 foreach (BASELINE_ITEM baseline_item in selectedBASELINE.BASELINE_ITEM)
                 {
                     totalDeliverables += 1;
-                    LoadingScreenManager.SetMessage("Total backed up deliverable(s): " + totalDeliverables);
+                    LoadingScreenManager.SetMessage("Total Backed Up Deliverable(s): " + totalDeliverables);
 
                     BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
                     DataUtils.ShallowCopy(newBASELINE_ITEM, baseline_item);

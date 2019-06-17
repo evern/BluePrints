@@ -239,6 +239,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variation_Units => ((IReportable)ProgressItem).Variation_Units;
 
+        public string Variation_Code => ((IReportable)ProgressItem).Variation_Code;
+
         public bool CanBook
         {
             get
@@ -427,6 +429,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => Reportable.PROGRESS_ITEM_AfterDataDate;
 
         public ProgressStats Stats { get => Reportable.Stats; set => Reportable.Stats = value; }
+
+        public string Variation_Code => Reportable.Variation_Code;
 
         public decimal Variation_Units => Reportable.Variation_Units;
 

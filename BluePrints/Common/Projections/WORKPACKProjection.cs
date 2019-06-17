@@ -83,6 +83,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Units);
 
+        public string Variation_Code => string.Empty;
+
         public decimal Variation_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Variation_Units);
 
         public Guid? P6_WorkpackGuid => Entity.GUID;

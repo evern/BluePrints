@@ -5,6 +5,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Objects;
@@ -35,7 +36,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
 
-        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false)
+        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false, bool showLoadingScreen = false)
         {
             try
             {
@@ -43,10 +44,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (projectSummaryStats == null)
                     return;
 
-                ObservableCollection<ExoDataPoint> burnedDataPoints = new ObservableCollection<ExoDataPoint>();
-                ObservableCollection<ExoDataPoint> actualDataPoints = new ObservableCollection<ExoDataPoint>();
-                ObservableCollection<ExoDataPoint> materialDataPoints = new ObservableCollection<ExoDataPoint>();
-                ObservableCollection<ExoDataPoint> poDataPoints;
+                ConcurrentBag<ExoDataPoint> tempBurnedDataPoints = new ConcurrentBag<ExoDataPoint>();
+                ConcurrentBag<ExoDataPoint> tempActualDataPoints = new ConcurrentBag<ExoDataPoint>();
+                List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+                List<ExoDataPoint> poDataPoints;
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
@@ -58,6 +59,12 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
+                }
+
+                if(showLoadingScreen)
+                {
+                    LoadingScreenManager.ShowLoadingScreen(1);
+                    LoadingScreenManager.SetMessage("Loading Actuals...");
                 }
 
                 var PrimeroUnitOfWork = PrimeroUOW;
@@ -84,6 +91,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 HashSet<string> missingSubJobs = new HashSet<string>();
+
+                LoadingScreenManager.CloseLoadingScreen();
+                if (showLoadingScreen)
+                {
+                    LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count);
+                    LoadingScreenManager.SetMessage("Loading Actuals...");
+                }
+
                 foreach (var jobTransaction in jobTransactionsList)
                 {
                     if (forceRetrieveAllBurned || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
@@ -108,20 +123,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
                             burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
 
-                            burnedDataPoints.Add(burnedDataPoint);
+                            tempBurnedDataPoints.Add(burnedDataPoint);
 
                             ExoDataPoint actualDataPoint = new ExoDataPoint();
                             DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
                             actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
-                            actualDataPoints.Add(actualDataPoint);
+                            tempActualDataPoints.Add(actualDataPoint);
                         }
                     }
                     else
                         missingSubJobs.Add(jobTransaction.JOBCODE);
+
+                    if(showLoadingScreen)
+                        LoadingScreenManager.Progress();
                 }
 
-                materialDataPoints = new ObservableCollection<ExoDataPoint>(BluePrintsDataUtils.GetMaterials(projectNumber, alignedDataDates, CurrencyConversion));
-                poDataPoints = new ObservableCollection<ExoDataPoint>(BluePrintsDataUtils.GetEXOPO(projectNumber, alignedDataDates));
+                materialDataPoints = BluePrintsDataUtils.GetMaterials(projectNumber, alignedDataDates, CurrencyConversion, showLoadingScreen);
+                poDataPoints = BluePrintsDataUtils.GetEXOPO(projectNumber, alignedDataDates, showLoadingScreen);
 
                 foreach (string missingSubJob in missingSubJobs)
                 {
@@ -137,13 +155,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.PO = new Stats(summaryObject);
                 projectSummaryStats.RemainingActual = new Stats(summaryObject, true);
 
-                projectSummaryStats.Burned.SetData(burnedDataPoints);
-                projectSummaryStats.Actual.SetData(actualDataPoints);
+                projectSummaryStats.Burned.SetData(tempBurnedDataPoints);
+                projectSummaryStats.Actual.SetData(tempActualDataPoints);
                 projectSummaryStats.Material.SetData(materialDataPoints);
                 projectSummaryStats.PO.SetData(poDataPoints);
 
                 projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
-                //LoadingScreenManager.Progress();
+
+                if(showLoadingScreen)
+                    LoadingScreenManager.CloseLoadingScreen();
             }
             catch (Exception e)
             {

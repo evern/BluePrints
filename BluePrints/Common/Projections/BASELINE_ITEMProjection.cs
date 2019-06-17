@@ -165,8 +165,8 @@ namespace BluePrints.Common.Projections
     public static class BASELINE_ITEMProjectionQueries
     {
         public static IQueryable<BASELINE_ITEMProjection> IDeliverable_Rates_Transformation(
-            IQueryable<BASELINE_ITEM> BASELINE_ITEMS, 
-            IEnumerable<RATE> RATES)
+            IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
+            IEnumerable<RATE> RATES, bool showLoadingScreen = false)
         {
             //List<VARIATION_ITEM> variation_items = VARIATIONS.SelectMany(x => x.VARIATION_ITEM).ToList();
             //List<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToList();
@@ -183,6 +183,13 @@ namespace BluePrints.Common.Projections
             //easier to debug doing it this way
             IEnumerable<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToArray();
             List<BASELINE_ITEMProjection> returnBASELINE_ITEMProjection = new List<BASELINE_ITEMProjection>();
+
+            if(showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(baseline_items.Count());
+                LoadingScreenManager.SetMessage("Loading Design Deliverables...");
+            }
+
             foreach(BASELINE_ITEM baseline_item in baseline_items)
             {
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
@@ -198,6 +205,8 @@ namespace BluePrints.Common.Projections
                     newBASELINE_ITEM.RATE = rateByDepartment.First();
 
                 returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
+
+                LoadingScreenManager.Progress();
             }
 
             return returnBASELINE_ITEMProjection.AsQueryable();

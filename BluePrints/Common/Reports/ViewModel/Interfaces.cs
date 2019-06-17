@@ -258,6 +258,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveVariation
     {
+        string Variation_Code { get; }
         decimal Variation_Units { get; }
         decimal Variation_Costs { get; }
         decimal Total_Units { get; }

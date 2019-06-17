@@ -798,6 +798,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return Current_Productivity;
         }
 
+        public string Variation_Code => string.Empty;
+
         public decimal Variation_Units => ApprovedVariations == null ? 0 : ApprovedVariations.Sum(x => x.AdjustmentUnits);
 
         public string Discipline_Code => Entity.Discipline_Code;

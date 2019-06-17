@@ -1164,9 +1164,9 @@ namespace BluePrints.Common.Projections
     public static class ExoQueries
     {
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS = null)
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, ref List<ExoTimeAuthorisation> exoLines, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
+            exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER, false);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
@@ -1196,10 +1196,10 @@ namespace BluePrints.Common.Projections
 
                 newSubJobProjection.Variation_Code = exoLine.VariationCode;
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
-                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 if(ExoSTAFFS != null)
                 {
+                    IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode);
                     foreach (ExoTimeAuthorisation exoAuth in exoAuths)
                     {
                         STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);

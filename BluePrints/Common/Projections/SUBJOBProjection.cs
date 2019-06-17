@@ -121,6 +121,8 @@ namespace BluePrints.Common.Projections
 
         public decimal MinEstimateUnits => 0;
 
+        public string Variation_Code => string.Empty;
+
         public decimal Variation_Units => 0;
 
         public decimal Variation_Costs => 0;

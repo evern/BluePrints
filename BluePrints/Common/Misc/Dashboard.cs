@@ -422,19 +422,40 @@ namespace BluePrints.Common.Misc
             IEnumerable<ExoDataPoint> poDataPoints = dashboard.Summary.PO.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<string> po_codes = poDataPoints.Select(exo_selector);
 
-            List<string> loop_codes = new List<string>(reportable_codes);
-            loop_codes.AddRange(exo_codes);
-            loop_codes.AddRange(material_codes);
-            loop_codes.AddRange(po_codes);
-            HashSet<string> unique_codes = new HashSet<string>(loop_codes);
+            ConcurrentBag<string> loop_codes = new ConcurrentBag<string>(reportable_codes);
+            foreach(string reportableCode in reportable_codes)
+            {
+                loop_codes.Add(reportableCode);
+            }
 
-            List<DashboardTreeStructure> child_dashboard = new List<DashboardTreeStructure>();
-            foreach (string unique_code in unique_codes.OrderBy(x => x))
+            foreach(string exoCodes in exo_codes)
+            {
+                loop_codes.Add(exoCodes);
+            }
+
+            foreach(string materialCodes in material_codes)
+            {
+                loop_codes.Add(materialCodes);
+            }
+
+            foreach (string poCodes in po_codes)
+            {
+                loop_codes.Add(poCodes);
+            }
+
+            HashSet<string> unique_codes = new HashSet<string>(loop_codes);
+            ConcurrentBag<DashboardTreeStructure> child_dashboard = new ConcurrentBag<DashboardTreeStructure>();
+            Parallel.ForEach(unique_codes.OrderBy(x => x), unique_code =>
             {
                 DashboardTreeStructure new_dashboard = create_dashboard(dashboard, unique_code, dashboard.Summary, x => reportable_selector(x) == unique_code, x => exo_selector(x) == unique_code);
-                if(new_dashboard != null)
+                if (new_dashboard != null)
                     child_dashboard.Add(new_dashboard);
-            }
+            });
+
+            //foreach (string unique_code in unique_codes.OrderBy(x => x))
+            //{
+
+            //}
 
             dashboard.Child_Dashboards = child_dashboard.Where(x => x.Stats != null).ToList();
         }
@@ -459,9 +480,9 @@ namespace BluePrints.Common.Misc
         /// Separate variation out from data points
         /// </summary>
         /// <param name="project_summary_stats">The summary stats to subdivide</param>
-        /// <param name="shouldSeparateVariation">Whether to separater variation</param>
+        /// <param name="isVariationSeparated">Whether to separater variation</param>
         /// <returns></returns>
-        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats)
+        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats, bool isVariationSeparated = false)
         {
             if (project_summary_stats == null)
                 return new List<DashboardTreeStructure>();
@@ -474,19 +495,51 @@ namespace BluePrints.Common.Misc
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
             LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
             //child dashboards are now subdivided into subjob dashboard
+
             Parallel.ForEach(
             project_dashboard.Child_Dashboards,
             subjob_dashboard =>
             {
-                string loadingScreenMessage = "Processing " + subjob_dashboard.Code;
-                LoadingScreenManager.SetMessage(loadingScreenMessage);
-                LoadingScreenManager.SetMessage(loadingScreenMessage + ".");
-                subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
+                string loadingScreenMessage = string.Empty;
+                ConcurrentBag<DashboardTreeStructure> disciplineDashboards = new ConcurrentBag<DashboardTreeStructure>();
+                if (isVariationSeparated)
+                {
+                    loadingScreenMessage = "Dividing Variation from SubJob: " + subjob_dashboard.Code;
+                    LoadingScreenManager.SetMessage(loadingScreenMessage);
+                    subjob_dashboard.SubDivideDashboardStats(x => x.Variation_Code, x => x.Variation_Code);
+
+                    Parallel.ForEach(
+                    subjob_dashboard.Child_Dashboards,
+                    variation_dashboard =>
+                    {
+                        loadingScreenMessage = "Dividing Discipline from Variation: " + variation_dashboard.Code;
+                        LoadingScreenManager.SetMessage(loadingScreenMessage);
+                        variation_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
+
+                        foreach(var childDashboard in variation_dashboard.Child_Dashboards)
+                        {
+                            disciplineDashboards.Add(childDashboard);
+                        }
+                    });
+                }
+                else
+                {
+                    loadingScreenMessage = "Dividing Discipline from SubJob: " + subjob_dashboard.Code;
+                    LoadingScreenManager.SetMessage(loadingScreenMessage);
+                    subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
+
+                    foreach (var childDashboard in subjob_dashboard.Child_Dashboards)
+                    {
+                        disciplineDashboards.Add(childDashboard);
+                    }
+                }
+
                 Parallel.ForEach(
-                subjob_dashboard.Child_Dashboards,
+                disciplineDashboards,
                 discipline_dashboard =>
                 {
-                    LoadingScreenManager.SetMessage(loadingScreenMessage + "..");
+                    loadingScreenMessage = "Dividing Commodity from Discipline: " + discipline_dashboard.Code;
+                    LoadingScreenManager.SetMessage(loadingScreenMessage);
                     //child dashboards are now subdivided into discipline dashboard
                     discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code);
                 });
@@ -498,39 +551,51 @@ namespace BluePrints.Common.Misc
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool isVariationSeparated = false)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
-            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats);
+            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, isVariationSeparated);
 
-            IEnumerable<SUBJOB> design_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
-            IEnumerable<SUBJOB> construction_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
+            IEnumerable<SUBJOB> designSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
+            IEnumerable<SUBJOB> constructionSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
             IEnumerable<SUBJOB> all_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.ToList();
-            Parallel.ForEach(
-            hierarchicalDashboards.OrderBy(x => x.Code),
-            subjob_dashboard =>
+
+            foreach(DashboardTreeStructure subJobDashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
-                if (subjob_dashboard.Child_Dashboards == null || subjob_dashboard.Child_Dashboards.Count == 0)
-                    populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, string.Empty, string.Empty, subjob_dashboard.Stats, design_subjobs, construction_subjobs);
+                List<DashboardTreeStructure> disciplineDashboards = new List<DashboardTreeStructure>();
+                if (subJobDashboard.Child_Dashboards == null || subJobDashboard.Child_Dashboards.Count == 0)
+                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, string.Empty, string.Empty, subJobDashboard.Stats, designSubjobs, constructionSubjobs);
                 else
                 {
-                    Parallel.ForEach(
-                    subjob_dashboard.Child_Dashboards.OrderBy(x => x.Code),
-                    discipline_dashboard =>
+                    if (isVariationSeparated)
                     {
-                        if (discipline_dashboard.Child_Dashboards == null || discipline_dashboard.Child_Dashboards.Count == 0)
-                            populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, string.Empty, discipline_dashboard.Stats, design_subjobs, construction_subjobs);
+                        foreach (DashboardTreeStructure variationDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                        {
+                            if (variationDashboard.Child_Dashboards == null || variationDashboard.Child_Dashboards.Count == 0)
+                                populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, string.Empty, string.Empty, variationDashboard.Stats, designSubjobs, constructionSubjobs);
+                            else
+                            {
+                                disciplineDashboards.AddRange(variationDashboard.Child_Dashboards);
+                            }
+                        };
+                    }
+                    else
+                        disciplineDashboards.AddRange(subJobDashboard.Child_Dashboards);
+
+                    foreach (DashboardTreeStructure disciplineDashboard in disciplineDashboards.OrderBy(x => x.Code))
+                    {
+                        if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
+                            populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
                         else
                         {
-                            Parallel.ForEach(discipline_dashboard.Child_Dashboards.OrderBy(x => x.Code),
-                            commodity_dashboard =>
+                            foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
                             {
-                                populateFlatDashboards(flatDashboards, subjob_dashboard, string.Empty, discipline_dashboard.Code, commodity_dashboard.Code, commodity_dashboard.Stats, design_subjobs, construction_subjobs);
-                            });
+                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
+                            };
                         }
-                    });
+                    };
                 }
-            });
+            };
 
             return flatDashboards;
         }

@@ -83,6 +83,7 @@ namespace BluePrints.ViewModels
         protected bool isCompletelyLoaded { get; set; }
         protected bool forceRetrieveAllBurned { get; set; }
         protected bool useProductivityFactorOnRemaining { get; set; }
+        protected bool isVariationSeparated { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
@@ -269,6 +270,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        protected bool showStatsBuildingLoadingScreen = false;
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var argumentObject = (object[])e.Argument;
@@ -276,9 +278,9 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(false, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining);
-                project.RecalculateStats(false);
-                project.Subjob_Dashboards = getDashboardStructure(project);
+                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining);
+                project.RecalculateStats(false, true);
+                project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated);
                 project.Update();
 
                 foreach(var subjobDashboard in project.Subjob_Dashboards)
@@ -303,9 +305,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project)
+        protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, isVariationSeparated);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -181,7 +181,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, bool showLoadingScreen = false)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -189,7 +189,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (PROGRESS == null)
                 baseline_item_queryable = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                baseline_item_queryable = BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(BASELINE_ITEMS, RATES);
+                baseline_item_queryable = BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(BASELINE_ITEMS, RATES, showLoadingScreen);
 
             //commented out because multiple resources and weighting isn't used
             //need to cast to list if not AssignUserObject won't stick

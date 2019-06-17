@@ -198,7 +198,7 @@ namespace BluePrints.Common.ViewModel
 
             IHaveSummary IHaveSummary = SummaryEntity as IHaveSummary;
             if (IHaveSummary != null)
-                IHaveSummary.RecalculateStats(viewType == DashboardViewType.Costs);
+                IHaveSummary.RecalculateStats(viewType == DashboardViewType.Costs, false);
         }
 
         public virtual void ChangeStatsPercentageType(object checkButton)

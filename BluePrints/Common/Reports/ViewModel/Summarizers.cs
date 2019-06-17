@@ -33,14 +33,25 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             if(!earnOnly)
             {
+                if (showLoadingScreen)
+                    LoadingScreenManager.SetMessage("Retrieving Planned Data...");
+
                 SetBudgetDataPoints(weightingPortion);
                 SetCurrentDataPoints(weightingPortion);
             }
 
+            if (showLoadingScreen)
+                LoadingScreenManager.SetMessage("Retrieving Earned Data...");
+
             SetEarnedDataPoints(weightingPortion);
 
             if(!earnOnly)
+            {
+                if (showLoadingScreen)
+                    LoadingScreenManager.SetMessage("Retrieving Remaining Data...");
+
                 SetRemainingDataPoints(weightingPortion, useProductivity);
+            }
 
             Summarize();
 
@@ -432,11 +443,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(bool forceRetrieveAllBurned)
+        public void BuildBurnedDataPoints(bool forceRetrieveAllBurned, bool showLoadingScreen = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, forceRetrieveAllBurned);
+                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, forceRetrieveAllBurned, showLoadingScreen);
         }
 
         public void RecalculateStats(bool isCosts)

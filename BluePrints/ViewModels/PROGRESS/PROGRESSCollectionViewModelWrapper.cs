@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
                 foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
                 {
                     totalBackupUnits += progress_item.EARNED_UNITS;
-                    LoadingScreenManager.SetMessage("Total backed up units: " + totalBackupUnits);
+                    LoadingScreenManager.SetMessage("Total Backed Up Units: " + totalBackupUnits);
 
                     PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
                     DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);

@@ -232,7 +232,7 @@ namespace BluePrints.ViewModels
                     break;
             }
 
-            IEnumerable<ForecastCalculation> filteredForecastCalculaton = filteredDataRows.Select(x => (ForecastCalculation)x[columnCalculation]);
+            IEnumerable<ForecastJobData> filteredForecastCalculaton = filteredDataRows.Select(x => ((ForecastJobData)x[columnEntity]));
             IEnumerable<ExoSubJobProjection> filteredSubJobs = filteredDataRows.Select(x => (ExoSubJobProjection)x[columnEntity]);
             PROJECT_SUMMARY PROJECT_SUMMARY = PROJECT_SUMMARYCollection.FirstOrDefault(x => x.PHASE_TYPE == rowType);
 
