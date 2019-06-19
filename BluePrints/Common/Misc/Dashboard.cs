@@ -516,10 +516,8 @@ namespace BluePrints.Common.Misc
                         LoadingScreenManager.SetMessage(loadingScreenMessage);
                         variation_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
 
-                        foreach(var childDashboard in variation_dashboard.Child_Dashboards)
-                        {
+                        foreach (var childDashboard in variation_dashboard.Child_Dashboards)
                             disciplineDashboards.Add(childDashboard);
-                        }
                     });
                 }
                 else
@@ -529,9 +527,7 @@ namespace BluePrints.Common.Misc
                     subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code);
 
                     foreach (var childDashboard in subjob_dashboard.Child_Dashboards)
-                    {
                         disciplineDashboards.Add(childDashboard);
-                    }
                 }
 
                 Parallel.ForEach(
@@ -562,7 +558,6 @@ namespace BluePrints.Common.Misc
 
             foreach(DashboardTreeStructure subJobDashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
-                List<DashboardTreeStructure> disciplineDashboards = new List<DashboardTreeStructure>();
                 if (subJobDashboard.Child_Dashboards == null || subJobDashboard.Child_Dashboards.Count == 0)
                     populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, string.Empty, string.Empty, subJobDashboard.Stats, designSubjobs, constructionSubjobs);
                 else
@@ -575,25 +570,36 @@ namespace BluePrints.Common.Misc
                                 populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, string.Empty, string.Empty, variationDashboard.Stats, designSubjobs, constructionSubjobs);
                             else
                             {
-                                disciplineDashboards.AddRange(variationDashboard.Child_Dashboards);
+                                foreach (DashboardTreeStructure disciplineDashboard in variationDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                {
+                                    if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
+                                        populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
+                                    else
+                                    {
+                                        foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                        {
+                                            populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
+                                        };
+                                    }
+                                };
                             }
                         };
                     }
                     else
-                        disciplineDashboards.AddRange(subJobDashboard.Child_Dashboards);
-
-                    foreach (DashboardTreeStructure disciplineDashboard in disciplineDashboards.OrderBy(x => x.Code))
                     {
-                        if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
-                            populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
-                        else
+                        foreach (DashboardTreeStructure disciplineDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
                         {
-                            foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                            if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
+                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
+                            else
                             {
-                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
-                            };
-                        }
-                    };
+                                foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                {
+                                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
+                                };
+                            }
+                        };
+                    }
                 }
             };
 

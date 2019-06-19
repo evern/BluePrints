@@ -30,12 +30,31 @@ namespace BluePrints.Common.Projections
         }
 
         public ExoSubJobProjection Projection { get; set; }
+
         public List<ForecastDateCost> DateCosts { get; set; }
 
         public List<ForecastJobData> CommodityJobs { get; set; }
 
-        public decimal Budget => Projection == null ? 0 : Projection.ExoBudgetCosts;
-        public decimal Rate => Projection == null ? 0 : Projection.ExoForecastRate;
+        public void SetBudgetCost(decimal budgetCost)
+        {
+            if(Projection == null)
+                throw new NotImplementedException();
+
+            Budget = budgetCost;
+            Projection.ExoBudgetCosts = budgetCost;
+        }
+
+        public void SetForecastRate(decimal forecastRate)
+        {
+            if (Projection == null)
+                throw new NotImplementedException();
+
+            Rate = forecastRate;
+            Projection.ExoForecastRate = forecastRate;
+        }
+
+        public decimal Budget { get; set; }
+        public decimal Rate { get; set; }
         public decimal Revenue { get; set; }
         public decimal CurrentBudget => Budget + Variation;
         public decimal Variation { get; set; }
