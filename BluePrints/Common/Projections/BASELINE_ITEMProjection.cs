@@ -195,10 +195,10 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE));
+                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => y.COST_TYPE == CostType.Charge && (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE));
 
                 //order by descending places null GUID's at the end, so First() won't pick it up
-                IEnumerable <RATE> rateByCommodities = rateByPhaseCharge.Where(y => (y.GUID_COMMODITY == baseline_item.GUID_DOCTYPE) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
+                IEnumerable <RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == baseline_item.GUID_DOCTYPE) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
                 IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == baseline_item.GUID_DISCIPLINE) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
                 IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == baseline_item.GUID_DEPARTMENT) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
                 if (rateByDepartment.Count() > 0)

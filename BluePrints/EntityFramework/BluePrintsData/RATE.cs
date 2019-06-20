@@ -15,6 +15,8 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        public CostType COST_TYPE { get; set; }
+
         public PhaseType PHASE_TYPE { get; set; }
 
         public ChargeType CHARGE_TYPE { get; set; }

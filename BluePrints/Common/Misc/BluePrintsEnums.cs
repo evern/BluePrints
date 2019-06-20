@@ -392,6 +392,14 @@ namespace BluePrints.Common
         Tender = 3
     }
 
+    public enum CostType
+    {
+        [Display(Name = "Charge")]
+        Charge = 0,
+        [Display(Name = "Cost")]
+        Cost = 1
+    }
+
     public enum ChargeType
     {
         [Display(Name = "Direct")]
