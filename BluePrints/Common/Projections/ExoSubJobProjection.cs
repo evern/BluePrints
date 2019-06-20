@@ -264,7 +264,7 @@ namespace BluePrints.Common.Projections
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
-            if(SubJobCode.Length == 15)
+            if(SubJobCode != null && SubJobCode.Length == 15)
             {
                 if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
                 {
