@@ -1043,7 +1043,7 @@ namespace BluePrints.ViewModels
                 List<DashboardFlatStructure> dashboards = DisplayEntities.First().Subjob_Dashboards;
                 IEnumerable<DashboardFlatStructure> singleProjectDashboard = null;
                 if (dashboards != null)
-                    singleProjectDashboard = dashboards.Where(x => !x.ShouldHide);
+                    singleProjectDashboard = dashboards.Where(x => x != null).Where(x => !x.ShouldHide);
 
                 return singleProjectDashboard;
             }
