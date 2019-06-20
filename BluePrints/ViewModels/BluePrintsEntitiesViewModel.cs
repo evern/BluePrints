@@ -519,7 +519,7 @@ namespace BluePrints.ViewModels
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription("Category_Design" + keyString, null, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
             BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription("Category_Construct" + keyString, null, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
-            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription("Category_EXO" + keyString, null, "EXO", null, null, null, null, false, false, @"Function Library\Financial_16x16.png");
+            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription("Category_EXO" + keyString, null, "EXO", null, null, null, null, false, false, @"/Common/Images/Aha-Soft-Universal-Shop-Cash-register.ico");
             BluePrintsEntitiesModuleDescription forecast_category_description = new BluePrintsEntitiesModuleDescription("Category_Forecast" + keyString, null, "Forecast", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
 
             //BluePrintsEntitiesModuleDescription queries_category_description = new BluePrintsEntitiesModuleDescription("Category_Queries" + keyString, null, "Queries", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
@@ -527,6 +527,7 @@ namespace BluePrints.ViewModels
             projectModuleDescription.ChildModules.Add(design_category_description);
             projectModuleDescription.ChildModules.Add(construct_category_description);
             projectModuleDescription.ChildModules.Add(exo_category_description);
+            projectModuleDescription.ChildModules.Add(forecast_category_description);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
             {
@@ -621,8 +622,9 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
             {
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
+                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCostRates" + keyString, projectKey, childTitlePrefix + "Rates", "CostRATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates", false, false, @"/Common/Images/total-plan-cost-icon.png"));
                 forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_POForecast" + keyString, projectKey, childTitlePrefix + "PO Forecast", "PROJECTPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png"));
+                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
                 //exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSummary" + keyString, projectKey, childTitlePrefix + "Summary", "PROJECTSummaryView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Summary", false, false, @"Programming\ProjectDirectory_16x16.png"));
             }
 
@@ -671,8 +673,14 @@ namespace BluePrints.Common.ViewModel
             this.navigateAction = navigateAction;
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
             this.Animate = showAnimation;
+            //common paths are local images
             if(imagePath != string.Empty)
-                Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v18.2;component/Images/" + imagePath));
+            {
+                if (!imagePath.ToUpper().Contains("COMMON"))
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v18.2;component/Images/" + imagePath));
+                else
+                    Image = new BitmapImage(new Uri(imagePath, UriKind.Relative));
+            }
             else
             {
                 if (!CanNavigate)

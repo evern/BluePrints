@@ -42,9 +42,9 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private PROJECT loadPROJECT;
-        private ChargeType loadChargeType;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
+        protected PROJECT loadPROJECT;
+        protected ChargeType loadChargeType;
+        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
         protected override void resolveParameters(object parameter)
@@ -84,7 +84,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null) && x.PHASE_TYPE != PhaseType.Design);
         }
 
-        private IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
+        protected virtual IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
             List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType).ToList();
             rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
@@ -101,21 +101,25 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeEntitySaved(RATE entity)
+        public virtual bool OnBeforeEntitySaved(RATE entity)
+        {
+            compulsoryOnBeforeEntitySaved(entity);
+            entity.COST_TYPE = CostType.Charge;
+
+            return true;
+        }
+
+        protected void compulsoryOnBeforeEntitySaved(RATE entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.CHARGE_TYPE = loadChargeType;
-
-            if(entity.IsGangRateCalculatable)
+            if (entity.IsGangRateCalculatable)
             {
                 entity.RATE1 = entity.GangRate;
             }
-
-            return true;
         }
 
         /// <summary>
