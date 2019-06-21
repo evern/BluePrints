@@ -112,14 +112,22 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
                 {
+                    DateTime cutOffFloorDate = new DateTime(dateCost.Date.Year, dateCost.Date.Month, 1);
+                    //format cutOffCeilingDate to end of month
+                    DateTime cutOffCeilingDate = cutOffFloorDate.AddMonths(1).AddDays(-1);
+
+                    //override floor date to the beginning of time because we want to get everything
+                    if (dateCost.Date == dates.First())
+                        cutOffFloorDate = new DateTime(1);
+
                     if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0)
                     {
-                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate.Month == dateCost.Date.Month && x.ActualDate.Year == dateCost.Date.Year).Sum(x => x.Costs);
-                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate.Month == dateCost.Date.Month && x.ActualDate.Year == dateCost.Date.Year).Sum(x => x.Costs);
+                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         dateCost.Cost = materialCosts + actualCosts;
                     }
                     else if (remainingDataPoints.Count() > 0)
-                        dateCost.Cost = remainingDataPoints.Where(x => x.ProgressDate.Month == dateCost.Date.Month && x.ProgressDate.Year == dateCost.Date.Year).Sum(x => x.Costs);
+                        dateCost.Cost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
                     else
                         dateCost.Cost = 0.00m;
                 }

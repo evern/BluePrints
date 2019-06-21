@@ -2,20 +2,15 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
-using BaseModel.ViewModel.Document;
-using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -23,26 +18,16 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
-using BluePrints.Reports;
 using System.IO;
-using BluePrints.Common.Reports;
 using BaseModel.ViewModel.Dialogs;
 using BluePrints.Common.Resources;
 using BaseModel.ViewModel.Services;
-using DevExpress.Mvvm.DataAnnotations;
-using BluePrints.P6EntitiesDataModel;
-using DevExpress.Xpf.Core.ConditionalFormatting;
 using System.Data;
-using System.Windows.Media;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
-using DevExpress.Xpf.Editors.Settings;
-using DevExpress.Xpf.Editors;
 using DevExpress.Utils.Filtering;
 using System.ComponentModel.DataAnnotations;
 using DevExpress.Data.Filtering;
-using DevExpress.Xpf.Docking.Base;
 using BaseModel.ViewModel.UndoRedo;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
@@ -194,7 +179,8 @@ namespace BluePrints.ViewModels
                 if (liveDesignProgress == null || loadPROJECT == null)
                     return DateTime.Now;
 
-                return loadPROJECT.FORECAST_START_DATE == null ? liveDesignProgress.PROGRESS_START : (DateTime)loadPROJECT.FORECAST_START_DATE;
+                return loadPROJECT.FORECAST_DATA_DATE == null ? liveDesignProgress.DATA_DATE : (DateTime)loadPROJECT.FORECAST_DATA_DATE;
+                //return loadPROJECT.FORECAST_START_DATE == null ? liveDesignProgress.PROGRESS_START : (DateTime)loadPROJECT.FORECAST_START_DATE;
             }
             set
             {
@@ -214,10 +200,10 @@ namespace BluePrints.ViewModels
             get
             {
                 //do this to prevent binding errors
-                if (liveDesignProgress == null || loadPROJECT == null)
+                if (liveDesignProgress == null || loadPROJECT == null || loadPROJECT.FORECAST_DATA_DATE == null)
                     return DateTime.Now;
 
-                return loadPROJECT.FORECAST_DATA_DATE == null ? liveDesignProgress.DATA_DATE : (DateTime)loadPROJECT.FORECAST_DATA_DATE;
+                return loadPROJECT.FORECAST_DATA_DATE;
             }
             set
             {
@@ -235,10 +221,10 @@ namespace BluePrints.ViewModels
             get
             {
                 //do this to prevent binding errors
-                if (liveDesignProgress == null || loadPROJECT == null)
+                if (liveDesignProgress == null || loadPROJECT == null || loadPROJECT.FORECAST_END_DATE == null)
                     return DateTime.Now;
 
-                return loadPROJECT.FORECAST_END_DATE == null ? DateTime.Now : (DateTime)loadPROJECT.FORECAST_END_DATE;
+                return (DateTime)loadPROJECT.FORECAST_END_DATE;
             }
             set
             {
@@ -638,7 +624,7 @@ namespace BluePrints.ViewModels
                     parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
                     EndSelectionDate = parseEndDate;
                     StartSelectionDate = new DateTime(EndSelectionDate.Year, EndSelectionDate.Month, 1);
-                    if(parseEndDate == alignedDataDateCollection.First())
+                    if(parseEndDate.Date == alignedDataDateCollection.First().Date)
                     {
                         if(entity.Commodity.Code != string.Empty)
                             FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
@@ -1817,180 +1803,6 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Information);
             }
         }
-
-        //public bool CanImportSheet()
-        //{
-        //    return ExportTable != null && FixedDataDate != null;
-        //}
-
-        //public void ImportSheet()
-        //{
-        //    string ResultPath = string.Empty;
-        //    FileBrowserDialogService.Filter = "Excel Files (.xlsx)|*.xlsx|All Files (*.*)|*.*";
-        //    FileBrowserDialogService.FilterIndex = 1;
-        //    FileBrowserDialogService.Title = "Import forecast sheet";
-        //    if (FileBrowserDialogService.ShowDialog())
-        //    {
-        //        ResultPath = FileBrowserDialogService.GetFullFileName();
-
-        //        bool speedMode = false;
-        //        if (MessageBoxService.ShowMessage("Do you want to skip rows that have 0 rate to speed things up?", "Info", MessageButton.YesNo, MessageIcon.Question) == MessageResult.Yes)
-        //            speedMode = true;
-
-        //        List<FORECAST> addOrEditForecast = new List<FORECAST>();
-        //        using (SpreadsheetControl spreadsheetControl = new SpreadsheetControl())
-        //        {
-        //            spreadsheetControl.LoadDocument(ResultPath);
-        //            Worksheet ws = spreadsheetControl.Document.Worksheets[0];
-        //            DevExpress.Spreadsheet.Range usedRange = ws.GetUsedRange();
-        //            IEnumerable<DataTable> childTables = from DataRow dr in dataPointsTable.Rows
-        //                                                 select (DataTable)dr[columnChild];
-
-        //            IEnumerable<DataRow> childRowsCollection = childTables.SelectMany(x => x.Rows.Cast<DataRow>().ToArray());
-        //            EntitiesUndoRedoManager.PauseActionId();
-        //            LoadingScreenManager.ShowLoadingScreen(usedRange.RowCount, false);
-        //            for (int rowIndex = 0; rowIndex < usedRange.RowCount; rowIndex++)
-        //            {
-        //                LoadingScreenManager.Progress();
-        //                Cell subJobCell = usedRange[rowIndex, spreadSheetSubJobIndex];
-        //                if (subJobCell.Value.IsEmpty)
-        //                    continue;
-
-        //                string loadingMessage = string.Empty;
-        //                string subJobCode = subJobCell.Value.TextValue;
-        //                loadingMessage += subJobCode;
-
-
-        //                Cell disciplineCell = usedRange[rowIndex, spreadSheetDisciplineIndex];
-        //                if (disciplineCell.Value.IsEmpty)
-        //                    continue;
-
-        //                string disciplineCode = disciplineCell.Value.TextValue;
-        //                if(disciplineCode != string.Empty)
-        //                    loadingMessage += "-" + disciplineCode;
-
-        //                Cell commodityCell = usedRange[rowIndex, spreadSheetCommodityIndex];
-        //                if (commodityCell.Value.IsEmpty)
-        //                    continue;
-
-        //                string commodityCode = commodityCell.Value.TextValue;
-        //                if (commodityCode != string.Empty)
-        //                    loadingMessage += "-" + commodityCode;
-
-        //                Cell variationCell = usedRange[rowIndex, spreadSheetVariationIndex];
-        //                if (variationCell.Value.IsEmpty)
-        //                    continue;
-
-        //                string variationCode = variationCell.Value.TextValue;
-        //                if (variationCode != string.Empty)
-        //                    loadingMessage += "-" + variationCode;
-
-        //                LoadingScreenManager.SetMessage("Processing " + loadingMessage);
-        //                Cell budgetCell = usedRange[rowIndex, spreadSheetBudgetIndex];
-        //                decimal budget = 0;
-        //                if (!budgetCell.Value.IsEmpty && budgetCell.Value.IsNumeric)
-        //                    budget = Convert.ToDecimal(budgetCell.Value.NumericValue);
-
-        //                Cell rateCell = usedRange[rowIndex, spreadSheetRateIndex];
-        //                decimal rate = 0;
-        //                if (!rateCell.Value.IsEmpty && rateCell.Value.IsNumeric)
-        //                    rate = Convert.ToDecimal(rateCell.Value.NumericValue);
-
-        //                if (speedMode && rate == 0)
-        //                    continue;
-
-        //                DataRow dataRow = (from DataRow dr in childRowsCollection
-        //                        where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == subJobCode && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == disciplineCode && ((ExoSubJobProjection)dr[columnEntity]).Commodity.Code == commodityCode && ((ExoSubJobProjection)dr[columnEntity]).Variation_Code == variationCode
-        //                        select dr).FirstOrDefault();
-                        
-        //                if (dataRow == null)
-        //                    continue;
-
-        //                ForecastCalculation forecastCalculation = (ForecastCalculation)dataRow[columnCalculation];
-        //                commitCellValue("CALCULATION.BUDGET", dataRow, forecastCalculation.Budget, budget);
-        //                commitCellValue("ENTITY.RATE", dataRow, forecastCalculation.Rate, rate);
-        //                forecastCalculation.Budget = budget;
-        //                forecastCalculation.Rate = rate;
-
-        //                for (int columnIndex = spreadSheetDateStartIndex; columnIndex < usedRange.ColumnCount; columnIndex++)
-        //                {
-        //                    DateTime columnDate;
-        //                    Cell dateCell = usedRange[0, columnIndex];
-        //                    if (!DateTime.TryParse(dateCell.Value.TextValue, out columnDate))
-        //                        continue;
-
-        //                    Cell currentCell = usedRange[rowIndex, columnIndex];
-        //                    if (!currentCell.Value.IsEmpty)
-        //                    {
-        //                        // numeric values
-        //                        if (currentCell.Value.IsNumeric)
-        //                        {
-        //                            double newValue = currentCell.Value.NumericValue;
-        //                            decimal newCost = rate * Convert.ToDecimal(newValue);
-        //                            string dateFieldName = columnDate.ToShortDateString();
-        //                            if(DataPointsTable.Columns.Contains(dateFieldName))
-        //                            {
-        //                                object oldValue = dataRow[dateFieldName];
-        //                                EntitiesUndoRedoManager.AddUndo(dataRow, dateFieldName, oldValue, newCost, EntityMessageType.Changed);
-        //                                ExoSubJobProjection entity = (ExoSubJobProjection)dataRow[columnEntity];
-        //                                FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == columnDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
-        //                                if (findFORECAST == null)
-        //                                {
-        //                                    FORECAST findFORECASTHarder = addOrEditForecast.FirstOrDefault(x => x.FORECAST_DATE == columnDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
-        //                                    if (findFORECASTHarder == null)
-        //                                    {
-        //                                        FORECAST newFORECAST = new FORECAST();
-        //                                        newFORECAST.GUID = Guid.Empty;
-        //                                        newFORECAST.GUID_PROJECT = loadPROJECT.GUID;
-        //                                        newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
-        //                                        newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
-        //                                        newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
-        //                                        newFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
-        //                                        newFORECAST.FORECAST_DATE = columnDate.Date;
-        //                                        newFORECAST.FORECAST_UNITS = newCost;
-        //                                        addOrEditForecast.Add(newFORECAST);
-        //                                    }
-        //                                    else
-        //                                        findFORECASTHarder.FORECAST_UNITS = newCost;
-        //                                }
-        //                                else
-        //                                {
-        //                                    findFORECAST.FORECAST_UNITS = newCost;
-        //                                    addOrEditForecast.Add(findFORECAST);
-        //                                }
-
-        //                                //used to ensure child row is set
-        //                                if (newCost == 0)
-        //                                    dataRow[dateFieldName] = 0.00m;
-        //                                else
-        //                                    dataRow[dateFieldName] = newCost;
-
-        //                                //commitCellValue(dateFieldName, dataRow, oldValue, newCost);
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //            FORECASTCollectionViewModel.BulkSave(addOrEditForecast);
-        //            LoadingScreenManager.CloseLoadingScreen();
-        //            EntitiesUndoRedoManager.UnpauseActionId();
-        //        }
-
-        //        exportTable = null;
-        //        dataPointsTable = null;
-        //        initializeSummaryStats();
-
-        //        LoadingScreenManager.ShowLoadingScreen(1);
-        //        LoadingScreenManager.SetMessage("Reloading data");
-        //        //this will raise changes for Export Table as well
-        //        this.RaisePropertyChanged(x => x.DataPointsTable);
-        //        LoadingScreenManager.SetMessage("Resizing column");
-        //        TableViewService.ApplyBestFit();
-        //        LoadingScreenManager.CloseLoadingScreen();
-        //        MessageBoxService.ShowMessage("Import completed", "Success!", MessageButton.OK, MessageIcon.Information);
-        //    }
-        //}
         #endregion
 
         #region Entity Wrapper Properties
@@ -2033,31 +1845,6 @@ namespace BluePrints.ViewModels
             PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewName);
         }
         #endregion
-
-        //#region Custom Summary
-        //private decimal cumulative_total_units = 0;
-        //private decimal cumulative_baseline_units = 0;
-        //private decimal cumulative_current_units = 0;
-        //public void CustomCommoditySummary(CustomSummaryEventArgs e)
-        //{
-        //    if (e.IsTotalSummary || e.IsGroupSummary)
-        //    {
-        //        if (e.SummaryProcess == CustomSummaryProcess.Start)
-        //        {
-        //            cumulative_total_units = 0;
-        //        }
-        //        if (e.SummaryProcess == CustomSummaryProcess.Calculate)
-        //        {
-        //            ExoDataPoint dataPoint = ((ExoDataPoint)e.Row);
-        //            ExoTimeAuthorisation exoTime = jobLines.FirstOrDefault(x => x.SubJobCode == dataPoint.Subjob_Name && x.CommodityCode == dataPoint.Commodity_Code);
-        //            if(exoTime != null)
-        //                cumulative_total_units = exoTime.BudgetCosts;
-
-        //            e.TotalValue = cumulative_total_units;
-        //        }
-        //    }
-        //}
-        //#endregion
     }
 
     /// <summary>
