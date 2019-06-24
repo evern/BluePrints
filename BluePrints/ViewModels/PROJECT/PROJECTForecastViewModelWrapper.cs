@@ -36,6 +36,8 @@ using DevExpress.Xpf.Spreadsheet;
 using DevExpress.Spreadsheet;
 using BluePrints.Common.ViewModel.Misc;
 using System.Threading.Tasks;
+using BluePrints.P6EntitiesDataModel;
+using BluePrints.P6Data;
 
 namespace BluePrints.ViewModels
 {
@@ -65,10 +67,17 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             base.addEntitiesLoader();
+            //need to reassign project because forecast dates information on project might changed since navigation is loaded since loadPROJECT comes from navigation
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.proj_node_flag == "Y" && x.wbs_short_name.Contains(loadPROJECT.NUMBER)).OrderBy(proj => proj.wbs_short_name);
         }
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
@@ -76,7 +85,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
@@ -102,6 +111,7 @@ namespace BluePrints.ViewModels
         protected JOBCOST_HDR masterJob;
         protected JOBCOST_LINES copyLine;
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
         List<DateTime> alignedDataDateCollection;
@@ -171,6 +181,14 @@ namespace BluePrints.ViewModels
             ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
         }
 
+        protected override List<StatsCalculationType> getForecastTypes()
+        {
+            List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+            calcTypes.Add(StatsCalculationType.Forecast);
+
+            return calcTypes;
+        }
+
         public override DateTime? FixedStartDate
         {
             get
@@ -235,6 +253,51 @@ namespace BluePrints.ViewModels
                     this.RaisePropertyChanged(x => x.FixedDataDate);
                 }
             }
+        }
+
+        public string P6ForecastProject
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return string.Empty;
+
+                return loadPROJECT.P6FORECAST_NAME;
+            }
+            set
+            {
+                loadPROJECT.P6FORECAST_NAME = value;
+                PROJECTCollectionViewModel.Save(loadPROJECT);
+            }
+        }
+
+        public DateTime? P6DataDate
+        {
+            get
+            {
+                if (loadPROJECT == null)
+                    return null;
+
+                return loadPROJECT.P6FORECAST_DATADATE;
+            }
+        }
+
+        public bool CanReloadP6Forecast()
+        {
+            return !IsLoadingForecast;
+        }
+
+        public async void ReloadP6Forecast()
+        {
+            IsLoadingForecast = true;
+            this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            if (summaryBackgroundWorker != null)
+                summaryBackgroundWorker.CancelAsync();
+
+            //LoadingScreenManager.ShowLoadingScreen(1);
+            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(loadPROJECT.NUMBER, true);
+            //LoadingScreenManager.Progress();
+            FullRefresh();
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -411,7 +474,6 @@ namespace BluePrints.ViewModels
                         ForecastSummary.Actuals += disciplineJob.Actuals;
                         ForecastSummary.Commitments += disciplineJob.Outstanding;
 
-                        Debug.Print(disciplineJob.Projection.SubJob.Code + ";" + disciplineJob.Projection.Discipline.Code + ";" + disciplineJob.EstimateAtCompletion.ToString());
                         ForecastSummary.EstimateAtCompletion += disciplineJob.EstimateAtCompletion;
                         dataPointsTable.Rows.Add(disciplineRow);
 
@@ -1806,6 +1868,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Entity Wrapper Properties
+        public IEnumerable<PROJWBS> P6PROJECTSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJWBS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.wbs_short_name);
+                return collection;
+            }
+        }
+
         public CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork> FORECASTCollectionViewModel
         {
             get

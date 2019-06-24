@@ -4,6 +4,7 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
@@ -51,12 +52,15 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, bool earnOnly = false, bool useProductivityFactorOnRemaining = false)
+        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
         {
             if (projectSummarizer == null)
                 return;
 
-            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion, false, useProductivityFactorOnRemaining);
+            if (calcTypes == null)
+                calcTypes = BluePrintsDataUtils.AllCalcTypes;
+
+            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion, calcTypes, useProductivityFactorOnRemaining);
             //Build burned must come after build so that remaining can be retrieved for remaining actual
             projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllBurned, showLoadingScreen);
 

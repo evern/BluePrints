@@ -3,6 +3,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BluePrints.Common
@@ -22,6 +23,18 @@ namespace BluePrints.Common
         public static DateTime DefaultStartTime = new DateTime(1899, 1, 1, 0, 0, 0);
         public static DateTime DefaultFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
+    }
+
+    public enum StatsCalculationType
+    {
+        [Display(Name = "Planned")]
+        Planned,
+        [Display(Name = "Earned")]
+        Earned,
+        [Display(Name = "Remaining")]
+        Remaining,
+        [Display(Name = "Forecast")]
+        Forecast
     }
 
     public enum POPaymentTerms

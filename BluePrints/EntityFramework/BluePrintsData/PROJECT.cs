@@ -72,6 +72,10 @@
 
         public DateTime? FORECAST_END_DATE { get; set; }
 
+        public string P6FORECAST_NAME { get; set; }
+
+        public DateTime? P6FORECAST_DATADATE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

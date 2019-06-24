@@ -213,11 +213,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public void BuildRemainingDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
+        public void BuildRemainingDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID);
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
                 foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
                 {

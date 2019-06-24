@@ -13,7 +13,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false, bool useProductivity = false);
+        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false);
         void Summarize();
     }
 
@@ -26,12 +26,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool earnOnly = false, bool useProductivity = false)
+        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
 
-            if(!earnOnly)
+            if (calcTypes == null)
+                calcTypes = BluePrintsDataUtils.AllCalcTypes;
+
+            if(calcTypes.Contains(StatsCalculationType.Planned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Planned Data...");
@@ -40,17 +43,28 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetCurrentDataPoints(weightingPortion);
             }
 
-            if (showLoadingScreen)
-                LoadingScreenManager.SetMessage("Retrieving Earned Data...");
+            if(calcTypes.Contains(StatsCalculationType.Earned))
+            {
+                if (showLoadingScreen)
+                    LoadingScreenManager.SetMessage("Retrieving Earned Data...");
 
-            SetEarnedDataPoints(weightingPortion);
+                SetEarnedDataPoints(weightingPortion);
+            }
 
-            if(!earnOnly)
+            if (calcTypes.Contains(StatsCalculationType.Remaining))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Remaining Data...");
 
                 SetRemainingDataPoints(weightingPortion, useProductivity);
+            }
+
+            if (calcTypes.Contains(StatsCalculationType.Forecast))
+            {
+                if (showLoadingScreen)
+                    LoadingScreenManager.SetMessage("Retrieving Forecast Data...");
+
+                SetRemainingDataPoints(weightingPortion, useProductivity, true);
             }
 
             Summarize();
@@ -80,7 +94,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public abstract void SetEarnedDataPoints(decimal weightingPortion = 1);
 
         public abstract int SetRemainingDataPointsProgress();
-        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false);
+        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false);
 
         public virtual void Summarize()
         {
@@ -102,17 +116,20 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectNumber = projectNumber;
         }
 
-        public void BuildBudgetedOnly(decimal weightingPortion = 1, decimal unitsPerQty = 1)
+        public void BuildBudgeted(decimal weightingPortion = 1, decimal unitsPerQty = 1)
         {
             SetBudgetDataPoints(weightingPortion);
             SetCurrentDataPoints(weightingPortion);
         }
 
-        public void BuildEarnedAndRemaining(decimal weightingPortion = 1)
+        public void BuildEarned(decimal weightingPortion = 1)
         {
             SetEarnedDataPoints(weightingPortion);
-            SetRemainingDataPoints(weightingPortion);
-            Summarize();
+        }
+
+        public void BuildRemaining(decimal weightingPortion = 1, bool isForecast = false)
+        {
+            SetRemainingDataPoints(weightingPortion, isForecast);
         }
 
         public override int SetBudgetDataPointsProgress()
@@ -339,11 +356,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber);
+                List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
                 //List<StoredProcedure_RemainingDataPoint> remainingLateDataPoints = bluePrintDataContext.QueryDeliverableRemainingLateDataPointsByProject(this.projectNumber);
                 //double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
                 //string s = sumRemaining.ToString();
@@ -512,9 +529,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false)
         {
-            PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion);
+            PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();
         }
     }

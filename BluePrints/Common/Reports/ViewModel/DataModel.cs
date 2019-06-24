@@ -3,6 +3,7 @@ using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using System;
@@ -463,12 +464,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
-        public void BuildStats(decimal weightingPortion = 1, bool earnOnly = false)
+        public void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null)
         {
             if (StatSummarizer == null || Stats == null)
                 return;
 
-            StatSummarizer.Build(false, false, weightingPortion, earnOnly);
+            if(calcTypes == null)
+            {
+                calcTypes = BluePrintsDataUtils.AllCalcTypes;
+            }
+
+            StatSummarizer.Build(false, false, weightingPortion, calcTypes);
         }
 
         public void BuildBudgetedStats(decimal weightingPortion = 1)

@@ -384,6 +384,19 @@ namespace BluePrints.Common.ViewModel.Utils
 
     public static class BluePrintsDataUtils
     {
+        public static List<StatsCalculationType> AllCalcTypes
+        {
+            get
+            {
+                List<StatsCalculationType> allCalcTypes = new List<StatsCalculationType>();
+                allCalcTypes.Add(StatsCalculationType.Earned);
+                allCalcTypes.Add(StatsCalculationType.Planned);
+                allCalcTypes.Add(StatsCalculationType.Remaining);
+
+                return allCalcTypes;
+            }
+        }
+
         public static List<ExoDataPoint> GetMaterials(string projectNumber, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             ConcurrentBag<ExoDataPoint> materialDataPoints = new ConcurrentBag<ExoDataPoint>();

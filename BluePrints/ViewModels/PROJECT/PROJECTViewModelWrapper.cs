@@ -247,6 +247,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => SelectAll()));
         }
 
+        protected BackgroundWorker summaryBackgroundWorker;
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
             MainViewModel =
@@ -259,7 +260,7 @@ namespace BluePrints.ViewModels
             if (entities.Count() > 0)
             {
                 this.DisplaySelectedEntity = entities.First();
-                BackgroundWorker summaryBackgroundWorker = new BackgroundWorker();
+                summaryBackgroundWorker = new BackgroundWorker();
                 summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
                 summaryBackgroundWorker.RunWorkerCompleted += summaryBackgroundWorker_RunWorkerCompleted;
                 summaryBackgroundWorker.WorkerSupportsCancellation = true;
@@ -270,6 +271,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        protected virtual List<StatsCalculationType> getForecastTypes()
+        {
+            return null;
+        }
+
         protected bool showStatsBuildingLoadingScreen = false;
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -278,7 +284,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllBurned, false, useProductivityFactorOnRemaining);
+                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllBurned, getForecastTypes(), useProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated);
                 project.Update();

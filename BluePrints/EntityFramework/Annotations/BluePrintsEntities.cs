@@ -86,9 +86,9 @@ namespace BluePrints.Data
                 }).ToList();
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid)
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid, bool isForecast = false)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == false && x.IsLate == false).ToList()
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == false && x.IsLate == false && x.IsForecast == isForecast).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -150,9 +150,9 @@ namespace BluePrints.Data
                 }).ToList();
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber)
+        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber, bool isForecast = false)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == false && x.IsCurrent == false).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -215,13 +215,13 @@ namespace BluePrints.Data
         public static void AsyncRefreshDeliverablesDataPointsByProject(string projectNumber)
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber));
+            Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber, false));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
         {
-            await Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber));
+            await Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber), RefreshDeliverablesRemainingDataPointsByProject(projectNumber, false));
         }
 
         public static async Task RefreshAllDataPoints()
@@ -245,13 +245,14 @@ namespace BluePrints.Data
             }
         }
 
-        public static async Task RefreshDeliverablesRemainingDataPointsByProject(string projectNumber)
+        public static async Task RefreshDeliverablesRemainingDataPointsByProject(string projectNumber, bool isForecast)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
                 dbContext.Database.CommandTimeout = 5000;
                 var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER", projectNumberParameter);
+                SqlParameter isForecastParameter = new SqlParameter("ISFORECAST", isForecast ? 1 : 0);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
                 var i = await returnTask;
             }
         }

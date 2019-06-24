@@ -330,8 +330,10 @@ namespace BluePrints.Common.Base
         {
             if(fullSummarizer != null)
             {
-                fullSummarizer.BuildBudgetedOnly();
-                fullSummarizer.BuildEarnedAndRemaining();
+                fullSummarizer.BuildBudgeted();
+                fullSummarizer.BuildEarned();
+                fullSummarizer.BuildRemaining();
+                fullSummarizer.Summarize();
             }
         }
 

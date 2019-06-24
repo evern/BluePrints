@@ -16,6 +16,8 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string ProjectNumber { get; set; }
 
+        public bool IsForecast { get; set; }
+
         public bool IsPlanned { get; set; }
 
         public Guid Deliverable_Guid { get; set; }
