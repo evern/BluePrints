@@ -70,11 +70,6 @@ namespace BluePrints.ViewModels
             compulsoryOnBeforeEntitySaved(entity);
             entity.COST_TYPE = CostType.Cost;
 
-            if (entity.PHASE_TYPE == PhaseType.Indirect)
-                entity.CHARGE_TYPE = ChargeType.Indirect;
-            else
-                entity.CHARGE_TYPE = ChargeType.Direct;
-
             return true;
         }
 

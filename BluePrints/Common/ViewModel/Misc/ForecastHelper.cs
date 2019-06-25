@@ -120,14 +120,14 @@ namespace BluePrints.Common.ViewModel.Misc
                     if (dateCost.Date == dates.First())
                         cutOffFloorDate = new DateTime(1);
 
-                    if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0)
+                    if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0)
                     {
                         decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        dateCost.Cost = materialCosts + actualCosts;
+                        decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
+
+                        dateCost.Cost = materialCosts + actualCosts + remainingCost;
                     }
-                    else if (remainingDataPoints.Count() > 0)
-                        dateCost.Cost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
                     else
                         dateCost.Cost = 0.00m;
                 }

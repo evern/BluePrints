@@ -34,7 +34,9 @@ namespace BluePrints.Common
         [Display(Name = "Remaining")]
         Remaining,
         [Display(Name = "Forecast")]
-        Forecast
+        Forecast,
+        [Display(Name = "Burned")]
+        Burned
     }
 
     public enum POPaymentTerms
@@ -399,10 +401,18 @@ namespace BluePrints.Common
         Design = 0,
         [Display(Name = "Construct")]
         Construct = 1,
-        [Display(Name = "Indirect")]
-        Indirect = 2,
+        [Display(Name = "Procurement")]
+        Procurement = 2,
         [Display(Name = "Tender")]
         Tender = 3
+    }
+
+    public enum ChargeType
+    {
+        [Display(Name = "Direct")]
+        Direct = 0,
+        [Display(Name = "Indirect")]
+        Indirect = 1
     }
 
     public enum CostType
@@ -413,13 +423,6 @@ namespace BluePrints.Common
         Cost = 1
     }
 
-    public enum ChargeType
-    {
-        [Display(Name = "Direct")]
-        Direct = 0,
-        [Display(Name = "Indirect")]
-        Indirect = 1
-    }
     public enum ProgressType
     {
         [Display(Name = "Design")]

@@ -83,7 +83,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CHARGE_TYPE" Header="Charge Type" HeaderToolTip="Indicate whether rate will be used for direct or indirect" Visible="False">
+                                <dxg:GridColumn FieldName="CHARGE_TYPE" Header="Charge Type" HeaderToolTip="Indicate whether rate will be used for direct or indirect">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" />
                                     </dxg:GridColumn.EditSettings>

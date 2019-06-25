@@ -133,9 +133,9 @@ namespace BluePrints.Common.Projections
 
                 string phaseTypeString = SubJobCode.Substring(13, 1).ToUpper();
                 if (phaseTypeString == "I")
-                    return Common.PhaseType.Indirect;
+                    return Common.PhaseType.Procurement;
                 else if (phaseTypeString == "P")
-                    return Common.PhaseType.Indirect;
+                    return Common.PhaseType.Procurement;
                 else if (phaseTypeString == "D")
                     return Common.PhaseType.Design;
                 else if (phaseTypeString == "C")

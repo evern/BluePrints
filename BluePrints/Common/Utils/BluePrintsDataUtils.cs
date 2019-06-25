@@ -392,6 +392,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 allCalcTypes.Add(StatsCalculationType.Earned);
                 allCalcTypes.Add(StatsCalculationType.Planned);
                 allCalcTypes.Add(StatsCalculationType.Remaining);
+                AllCalcTypes.Add(StatsCalculationType.Burned);
 
                 return allCalcTypes;
             }
