@@ -126,6 +126,10 @@ namespace BluePrints.Common.ViewModel.Misc
                         decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
 
+                        string s;
+                        if (remainingCost > 0)
+                            s = string.Empty;
+
                         dateCost.Cost = materialCosts + actualCosts + remainingCost;
                     }
                     else
