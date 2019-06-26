@@ -19,7 +19,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateDisciplineProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<DateTime> dates)
+        public static List<ForecastJobData> CreateDisciplineProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> projectForecasts, IEnumerable<DateTime> dates, DateTime dataDate)
         {
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
@@ -36,7 +36,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 ForecastJobData disciplineJobForecastSummary = createJobForecastSummary(DisciplineJob.SubJob.Code, DisciplineJob.SubJob.Title, DisciplineJob.Discipline.Code, DisciplineJob.Discipline.Name, string.Empty, string.Empty, string.Empty, string.Empty, DisciplineJob.Variation_Code, queryJobLines);
                 List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
                 populateProjection(disciplineJobForecastSummary, disciplineDashboards, dates);
-
+                PopulateEAC(disciplineJobForecastSummary, projectForecasts, dataDate);
                 ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
                 disciplineJobForecastSummary.CommodityJobs = new List<ForecastJobData>();
 
@@ -46,7 +46,7 @@ namespace BluePrints.Common.ViewModel.Misc
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.SubjobCode == commodityJob.SubJob.Code && x.DisciplineCode == commodityJob.Discipline.Code && x.CommodityCode == commodityJob.Commodity.Code && x.Variation_Code == commodityJob.Variation_Code);
                     populateProjection(commodityJobForecastSummary, commodityDashboards, dates);
-
+                    PopulateEAC(commodityJobForecastSummary, projectForecasts, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
                 });
 
@@ -125,10 +125,6 @@ namespace BluePrints.Common.ViewModel.Misc
                         decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
-
-                        string s;
-                        if (remainingCost > 0)
-                            s = string.Empty;
 
                         dateCost.Cost = materialCosts + actualCosts + remainingCost;
                     }

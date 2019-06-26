@@ -347,7 +347,8 @@
                                         <dxg:GridControl.View>
                                             <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                                 <dxg:TableView.FormatConditions>
-                                                    <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="0" ValueRule="Less">
+                                                    <!--Less than -1 to avoid any anomalies on formatting-->
+                                                    <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                         <dxc:Format Background="#FFFF9B98"/>
                                                     </dxg:FormatCondition>
                                                 </dxg:TableView.FormatConditions>

@@ -214,7 +214,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public DateTime FixedDataDateMonthEnd => ((DateTime)FixedDataDate).AddMonths(1).AddDays(-1);
+        public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
 
         public override DateTime? FixedDataDate
         {
@@ -445,7 +445,7 @@ namespace BluePrints.ViewModels
                         endDateToGenerate = FixedEndDate;
 
                     alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedStartDate, endDateToGenerate);
-                    disciplineJobs = ForecastHelper.CreateDisciplineProjections(unifiedJobList, queryJobLines, AllProjectDashboards, alignedDataDateCollection);
+                    disciplineJobs = ForecastHelper.CreateDisciplineProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, alignedDataDateCollection, (DateTime)FixedDataDate);
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
