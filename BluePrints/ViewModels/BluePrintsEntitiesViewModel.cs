@@ -59,6 +59,14 @@ namespace BluePrints.ViewModels
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesLoadedCallBack;
             _projectCollectionViewModel.OnAfterEntitiesChangedCallBack = OnAfterEntitiesChanged;
             _projectCollectionViewModel.Entities.ToList();
+            GlobalMethods.SetAccordionExpandedState = CollapseExpandAccordion;
+            AccordionExpanded = true;
+        }
+
+        public void CollapseExpandAccordion(bool isExpand)
+        {
+            AccordionExpanded = isExpand;
+            this.RaisePropertyChanged(x => x.AccordionExpanded);
         }
 
         private void clearAllProjectModules()

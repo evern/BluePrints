@@ -120,13 +120,13 @@
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                             <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" KeyGesture="Delete" />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.PhaseCode" Fixed="Left" GroupIndex="0" Header="Phase" ReadOnly="True" VisibleIndex="10" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
+                                        <dxg:GridColumn MaxWidth="55" AllowBestFit="False" FieldName="Entity.Projection.SubJob.PhaseCode" Fixed="Left" GroupIndex="0" Header="Phase" ReadOnly="True" VisibleIndex="10" />
+                                        <!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
+                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
                                         <dxg:GridColumn FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                         <dxg:GridColumn FieldName="Entity.Projection.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
+                                        <dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
+                                        <dxg:GridColumn Width="60" MaxWidth="150" FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="Entity.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
@@ -180,7 +180,7 @@
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Entity.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous EAC" ReadOnly="True" VisibleIndex="115">
+                                        <dxg:GridColumn FieldName="Entity.PeriodMovement" Fixed="Left" Header="Period Move" HeaderToolTip="Difference from previous EAC" ReadOnly="True" VisibleIndex="115">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
@@ -196,8 +196,8 @@
                                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=gridControlChild}" KeyGesture="Delete" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                     <dxg:GridColumn FieldName="Entity.Projection.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="10" />
-                                                    <dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
-                                                    <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />
+                                                    <!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
+                                                    <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
                                                     <dxg:GridColumn FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                                     <dxg:GridColumn FieldName="Entity.Projection.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
                                                     <dxg:GridColumn FieldName="Entity.Projection.Commodity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
@@ -254,7 +254,7 @@
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
-                                                    <dxg:GridColumn FieldName="Entity.PeriodMovement" Fixed="Left" Header="Period Movement" HeaderToolTip="Difference from previous EAC" ReadOnly="True" VisibleIndex="115">
+                                                    <dxg:GridColumn FieldName="Entity.PeriodMovement" Fixed="Left" Header="Period Move" HeaderToolTip="Difference from previous EAC" ReadOnly="True" VisibleIndex="115">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>

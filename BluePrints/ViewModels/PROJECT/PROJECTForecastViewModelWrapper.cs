@@ -157,6 +157,8 @@ namespace BluePrints.ViewModels
             //isExcelExportDataAware = false;
             isVariationSeparated = true;
             showStatsBuildingLoadingScreen = true;
+
+            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
             this.RaisePropertiesChanged();
         }
 
@@ -1889,6 +1891,12 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
 
         #region Entity Wrapper Properties
         public IEnumerable<PROJWBS> P6PROJECTSCollection
