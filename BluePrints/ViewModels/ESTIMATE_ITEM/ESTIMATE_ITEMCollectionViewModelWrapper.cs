@@ -395,10 +395,21 @@ namespace BluePrints.ViewModels
                 entity.Phase_Guid = defaultPHASE.GUID;
             }
 
+            entity.Entity.Entity.BUDGET_QUANTITY = 1;
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
             if (chargeType != ChargeType.Indirect)
                 //by passing in only procurement phase type, the first occurence of procurement PHASE will be retrieved
                 BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
+
+            //need to populate subjob for deliverable_name to be present
+            if (entity.Entity.Entity.SUBJOB == null && entity.Entity.Entity.GUID_SUBJOB != null)
+                entity.Entity.Entity.SUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
+
+            if (entity.Entity.Entity.SUBJOB1 == null && entity.Entity.Entity.GUID_PSUBJOB != null)
+                entity.Entity.Entity.SUBJOB1 = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_PSUBJOB);
+
+            if (entity.Entity.Entity.DISCIPLINE == null && entity.Entity.Entity.GUID_DISCIPLINE != null)
+                entity.Entity.Entity.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE);
         }
 
         public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
@@ -907,6 +918,9 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
         {
+            if (MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.GUID_AREA == projection.Entity.Entity.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == projection.Entity.Entity.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == projection.Entity.Entity.GUID_DISCIPLINE && x.Discipline_Number == projection.Discipline_Number))
+                return "Duplicate job name";
+
             return string.Empty;
         }
 
