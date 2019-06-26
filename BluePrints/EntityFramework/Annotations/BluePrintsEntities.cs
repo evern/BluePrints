@@ -251,7 +251,7 @@ namespace BluePrints.Data
             {
                 dbContext.Database.CommandTimeout = 5000;
                 var projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
-                SqlParameter isForecastParameter = new SqlParameter("ISFORECAST", isForecast ? 1 : 0);
+                SqlParameter isForecastParameter = new SqlParameter("@ISFORECAST", isForecast ? 1 : 0);
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
                 var i = await returnTask;
             }

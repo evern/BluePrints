@@ -127,6 +127,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            disableMultipleDeliverablesToOneActivityAssignment = true;
             MainViewModel.AlwaysSkipMessage = true;
             P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = true;
             P6_ASSIGNMENTSCollectionViewModel.AfterBulkOperationRefreshCallBack = onAfterBulkOperationRefresh;
@@ -167,9 +168,6 @@ namespace BluePrints.ViewModels
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
-                if (activity_id.Length < 16)
-                    continue;
-
                 //Map by actual area, subarea and commodity
                 //string areaNumber = activity_id.Substring(6, 3);
                 //string subAreaNumber = activity_id.Substring(10, 2);

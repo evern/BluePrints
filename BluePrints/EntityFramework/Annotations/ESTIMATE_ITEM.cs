@@ -81,7 +81,22 @@ namespace BluePrints.Data
         }
 
         //public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
-        public string Deliverable_Name => NAME;
+        //for scheduling view use
+        public string Deliverable_Name
+        {
+            get
+            {
+                string name = string.Empty;
+                name += Subjob_Name + "-";
+                name += Discipline_Code + "-";
+                name += NAME;
+
+                if (name.Length > 1)
+                    return name.Substring(0, name.Length - 1);
+                else
+                    return name;
+            }
+        }
 
         [NotMapped]
         public Guid? Subjob_Guid
@@ -98,7 +113,7 @@ namespace BluePrints.Data
                 if (DISCIPLINE == null)
                     return string.Empty;
 
-                return DISCIPLINE.CODE + DISCIPLINE_NUM;
+                return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
             }
         }
 
@@ -119,13 +134,16 @@ namespace BluePrints.Data
                 //if (IsByDuration)
                 //    return BluePrintsConstants.DurationBasedTotalUnits;
 
-                if (STOCK_CODE == null)
-                    return 0;
+                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
+                //if (STOCK_CODE == null)
+                //    return 0;
 
                 if (BUDGET_QUANTITY == null)
                     return 0;
 
-                return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
+                //return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                return (decimal)BUDGET_QUANTITY;
             }
         }
 

@@ -582,13 +582,14 @@ namespace BluePrints.Common.Base
         }
 
         public Action<P6_ASSIGNMENTProjection> Set_SelectedItem_CallBack { get; set; }
-
+        protected bool disableMultipleDeliverablesToOneActivityAssignment = false;
         public void Add_Assignments()
         {
             if (Selected_Deliverable == null)
                 return;
 
             bool show_already_assigned_message = false;
+            bool show_multiple_deliverable_assignment_message = false;
 
             IEnumerable<ICanAssignP6> active_deliverables;
             active_deliverables = Selected_Deliverables;
@@ -599,6 +600,16 @@ namespace BluePrints.Common.Base
                 {
                     show_already_assigned_message = true;
                     continue;
+                }
+
+                //because when multiple deliverable's are assigned to a single activity the remaining units cannot be reliably pro-rated into jobs
+                if(disableMultipleDeliverablesToOneActivityAssignment)
+                {
+                    if (P6_ASSIGNMENTSCollectionViewModel.Entities.Any(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID))
+                    {
+                        show_multiple_deliverable_assignment_message = true;
+                        continue;
+                    }
                 }
 
                 deliverable.P6_Assignments.Add(new P6_ASSIGNMENT()
@@ -614,8 +625,10 @@ namespace BluePrints.Common.Base
                 });
             }
 
-            if(show_already_assigned_message)
-                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity");
+            if(show_multiple_deliverable_assignment_message)
+                MessageBoxService.ShowMessage("Cannot assign multiple job to a single activity for construction", "Error", MessageButton.OK, MessageIcon.Warning);
+            else if(show_already_assigned_message)
+                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity", "Error", MessageButton.OK, MessageIcon.Warning);
 
             summarize_wbs_parent_unit(Selected_Activity);
 

@@ -175,23 +175,26 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimate_Units => Entity.STOCK_CODE == null ? ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY : Entity.STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY;
 
-        public decimal Budget_Units
-        {
-            get
-            {
-                if (Entity.BUDGET_QUANTITY == null)
-                    return 0;
+        //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
+        //public decimal Budget_Units
+        //{
+        //    get
+        //    {
+        //        if (Entity.BUDGET_QUANTITY == null)
+        //            return 0;
 
-                if (Entity.STOCK_CODE != null)
-                    return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
+        //        if (Entity.STOCK_CODE != null)
+        //            return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
 
-                if (BUDGET_STOCK_CODE != null)
-                    return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
+        //        if (BUDGET_STOCK_CODE != null)
+        //            return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
 
-                return 0;
-            }
-        }
-            
+        //        return 0;
+        //    }
+        //}
+
+        public decimal Budget_Units => Entity.Budget_Units;
+
         public decimal Total_Units => Entity.Total_Units;
 
         public Guid OriginalEntityKey { get => Entity.GUID_ORIGINAL; }
@@ -302,7 +305,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Budget_Supply_Cost => Budget_Quantity * Estimate_Stock_Code_Supply_Rate;
 
-        public decimal Total_Budget_Cost => Total_Budget_Install_Cost + Total_Budget_Supply_Cost + Total_Budget_Freight_Cost;
+        //public decimal Total_Budget_Cost => Total_Budget_Install_Cost + Total_Budget_Supply_Cost + Total_Budget_Freight_Cost;
+        //fallback to forecast phase 1 implementation because user's aren't ready to put full budget in
+        public decimal Total_Budget_Cost => Budget_ItemRate;
 
         public decimal Budget_Freight_Cost => Budget_Quantity * Budget_FreightRate;
 

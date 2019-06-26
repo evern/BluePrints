@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -348,6 +349,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (changedType == typeof(SUBJOB))
+            {
+                this.RaisePropertyChanged(x => x.SUBJOBCollection);
+                this.RaisePropertyChanged(x => x.ConstructionPHASECollection);
+                this.RaisePropertyChanged(x => x.ProcurementSUBJOBCollection);
+            }
+
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
         /// <summary>
         /// Each estimation entity will need to be assigned to a construction phased subjob and a procurement phased subjob
         /// </summary>
@@ -368,7 +381,7 @@ namespace BluePrints.ViewModels
                 if (defaultPHASE != null)
                     entity.Phase_Guid = defaultPHASE.GUID;
             }
-            else if(viewType == DeliverablesViewType.Indirect)
+            else if (viewType == DeliverablesViewType.Indirect)
             {
                 phaseType = PhaseType.Construct;
                 chargeType = ChargeType.Indirect;
@@ -383,7 +396,7 @@ namespace BluePrints.ViewModels
             }
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
-            if(chargeType != ChargeType.Indirect)
+            if (chargeType != ChargeType.Indirect)
                 //by passing in only procurement phase type, the first occurence of procurement PHASE will be retrieved
                 BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
         }

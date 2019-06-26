@@ -1459,16 +1459,16 @@ namespace BluePrints.ViewModels
                 string columnName = dataColumn.ColumnName;
                 DateTime parseDateTime;
                 if (DateTime.TryParse(columnName, out parseDateTime))
-                    if(parseDateTime > FixedDataDateMonthEnd)
-                        if(dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
-                            if(((decimal)dataRow[columnName]) > 0)
+                    if (parseDateTime > FixedDataDateMonthEnd)
+                        if (dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
+                            if (((decimal)dataRow[columnName]) > 0)
                                 uncommittedRecalculation += (decimal)dataRow[columnName];
             }
 
             ExoSubJobProjection entity = ((ForecastJobData)dataRow[columnEntity]).Projection;
             if (entity.Commodity.Code == string.Empty)
             {
-                if(dataRow[columnChild] != DBNull.Value)
+                if (dataRow[columnChild] != DBNull.Value)
                 {
                     DataTable childTable = (DataTable)dataRow[columnChild];
                     for (int i = 0; i < dataRow.ItemArray.Count(); i++)
