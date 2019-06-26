@@ -85,6 +85,9 @@ namespace BluePrints.Data
             get
             {
                 string constraint = string.Empty;
+                constraint += PHASE_TYPE.ToString();
+                constraint += CHARGE_TYPE.ToString();
+
                 if (GUID_DEPARTMENT != null)
                     constraint += GUID_DEPARTMENT.ToString();
                 if (GUID_DISCIPLINE != null)
