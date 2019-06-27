@@ -465,7 +465,7 @@
                                         <dxlc:LayoutItem Label="Budget Margin" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Budget Margin %" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Budget %" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
