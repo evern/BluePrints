@@ -275,7 +275,7 @@
                                         </dxg:LookUpEditSettings>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Name" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
+                                <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -395,7 +395,7 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Install_Cost" ShowInColumn="Install_Cost" SummaryType="Sum" />-->
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView x:Name="tableView" AutoWidth="True" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
                                     <dxg:TableView.FormatConditions>
                                         <dxg:DataBarFormatCondition FieldName="Assigned_Percentage" MaxValue="1" MinValue="0">
                                             <dxc:DataBarFormat BorderBrush="#FF63C384" BorderBrushNegative="#FFFF555A">

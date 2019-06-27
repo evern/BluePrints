@@ -446,8 +446,8 @@
                                 </dxg:GridControl>
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
-                        <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="250" Orientation="Vertical">
-                            <dxdo:LayoutPanel AutoHidden="False" ItemWidth="300" ShowHideButton="True">
+                        <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="275" Orientation="Vertical">
+                            <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
                                 <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
                                     <dxlc:LayoutGroup Orientation="Vertical" Header="Budget" View="GroupBox">
                                         <dxlc:LayoutItem Label="Original Revenue Budget" LabelPosition="Left">
