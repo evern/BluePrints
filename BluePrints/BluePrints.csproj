@@ -124,7 +124,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Perth_Debug'">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
+    <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
@@ -878,6 +878,7 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORK_STAFF_ROLECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_MasterJobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_SubjobCollectionViewModelWrapper.cs" />
@@ -953,6 +954,9 @@
     </Compile>
     <Compile Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml.cs">
       <DependentUpon>DAYWORK_STAFF_ROLECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml.cs">
+      <DependentUpon>EXO_ConstructionSubjobCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml.cs">
       <DependentUpon>EXO_ResourcesCollectionView.xaml</DependentUpon>
@@ -1884,6 +1888,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

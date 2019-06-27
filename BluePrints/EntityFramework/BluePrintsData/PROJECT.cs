@@ -76,6 +76,12 @@
 
         public DateTime? P6FORECAST_DATADATE { get; set; }
 
+        public decimal? ORI_REVENUE { get; set; }
+
+        public decimal? VAR_REVENUE { get; set; }
+
+        public decimal? EAC_REVENUE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

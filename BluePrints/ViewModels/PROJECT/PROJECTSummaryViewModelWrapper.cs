@@ -80,27 +80,27 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
         }
 
         private Func<IRepositoryQuery<PROJECT_SUMMARY>, IQueryable<PROJECT_SUMMARY>> PROJECT_SUMMARYProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT_SUMMARY_SETTING>, IQueryable<PROJECT_SUMMARY_SETTING>> PROJECT_SUMMARY_SETTINGProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Project_Summary.ToString());
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.REPORT_TYPE == ReportType.Project_Summary.ToString());
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -438,7 +438,7 @@ namespace BluePrints.ViewModels
             {
                 findPROJECT_SUMMARY = new PROJECT_SUMMARY();
                 findPROJECT_SUMMARY.GUID = Guid.Empty;
-                findPROJECT_SUMMARY.GUID_PROJECT = loadPROJECT.GUID;
+                findPROJECT_SUMMARY.GUID_PROJECT = LoadPROJECT.GUID;
                 findPROJECT_SUMMARY.PHASE_TYPE = rowType;
             }
 
@@ -450,12 +450,12 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddPROJECT_SUMMARY_SETTINGS()
         {
-            PROJECT_SUMMARY_SETTING findPROJECT_SUMMARY_SETTING = PROJECT_SUMMARY_SETTINGCollection.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            PROJECT_SUMMARY_SETTING findPROJECT_SUMMARY_SETTING = PROJECT_SUMMARY_SETTINGCollection.FirstOrDefault(x => x.GUID_PROJECT == LoadPROJECT.GUID);
             if (findPROJECT_SUMMARY_SETTING == null)
             {
                 findPROJECT_SUMMARY_SETTING = new PROJECT_SUMMARY_SETTING();
                 findPROJECT_SUMMARY_SETTING.GUID = Guid.Empty;
-                findPROJECT_SUMMARY_SETTING.GUID_PROJECT = loadPROJECT.GUID;
+                findPROJECT_SUMMARY_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
             }
 
             findPROJECT_SUMMARY_SETTING.UNAPPROVED_EOT_DAYS = loadProject_Summary_Setting.UNAPPROVED_EOT_DAYS;
@@ -757,7 +757,7 @@ namespace BluePrints.ViewModels
 
         public override void EditReport()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Project_Summary);
+            var reportDesigner = new UserReportDesigner(LoadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Project_Summary);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else
@@ -794,7 +794,7 @@ namespace BluePrints.ViewModels
                 projectSummaries.Add(rowSummary);
             }
 
-            summaryReport.AssignProperties(projectSummaries, loadPROJECT.NUMBER, FixedDataDate);
+            summaryReport.AssignProperties(projectSummaries, LoadPROJECT.NUMBER, FixedDataDate);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = summaryReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
