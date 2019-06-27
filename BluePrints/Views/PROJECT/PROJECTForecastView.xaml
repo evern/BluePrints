@@ -161,11 +161,11 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
 
-                                        <dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
+                                        <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
+                                        </dxg:GridColumn>-->
                                         <dxg:GridColumn FieldName="Entity.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="Actuals / (Actuals + Outstanding + Uncommitted)" ReadOnly="True" VisibleIndex="87">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -235,11 +235,11 @@
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
-                                                    <dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
+                                                    <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
-                                                    </dxg:GridColumn>
+                                                    </dxg:GridColumn>-->
                                                     <dxg:GridColumn FieldName="Entity.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="Actuals / (Actuals + Outstanding + Uncommitted)" ReadOnly="True" VisibleIndex="87">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -411,7 +411,11 @@
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Costs">
                                             <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
-                                            <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" />
+                                            <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Details">
                                             <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="110" />
