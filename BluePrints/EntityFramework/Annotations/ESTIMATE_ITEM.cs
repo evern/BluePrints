@@ -10,6 +10,7 @@ using DevExpress.Mvvm;
 using BluePrints.Common.Base;
 using BluePrints.Common;
 using BaseModel.DataModel;
+using DevExpress.XtraEditors.DXErrorProvider;
 
 namespace BluePrints.Data
 {
@@ -80,6 +81,38 @@ namespace BluePrints.Data
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
 
+        public PhaseType? PhaseType = null;
+        public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
+        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null)
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+            }
+        }
+
+        public bool IsCommodityCodeValid
+        {
+            get
+            {
+                if(PhaseType != null && GUID_COMMODITY_CODE != null)
+                {
+                    if (CommodityCodeCollection == null || CommodityCodeCollection.Count() == 0)
+                        return false;
+
+                    return CommodityCodeCollection.Any(x => x.GUID == GUID_COMMODITY_CODE);
+                }
+                //when phase type is not set, don't show any error
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         //public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
         //for scheduling view use
         public string Deliverable_Name
@@ -89,12 +122,8 @@ namespace BluePrints.Data
                 string name = string.Empty;
                 name += Subjob_Name + "-";
                 name += Discipline_Code + "-";
-                name += NAME;
-
-                if (name.Length > 1)
-                    return name.Substring(0, name.Length - 1);
-                else
-                    return name;
+                name += Commodity_Code;
+                return name;
             }
         }
 

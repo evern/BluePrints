@@ -70,7 +70,7 @@ namespace BluePrints.ViewModels
         protected Data.PROJECT loadPROJECT;
         protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
@@ -866,7 +866,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null)
+                if (MainViewModel == null || !IsPermissionGridEnabled)
                     return null;
 
                 var permissions = new List<ExoSubJobAuth>();

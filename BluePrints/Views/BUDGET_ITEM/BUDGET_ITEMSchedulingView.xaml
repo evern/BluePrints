@@ -251,6 +251,31 @@
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxg:LookUpEditSettings Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="GUID">
+                                            <dxg:LookUpEditSettings.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEditSettings.StyleSettings>
+                                            <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn Width="55" FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="NAME" Header="Description" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                            <dxg:GridColumn Width="55" FieldName="UOM" Header="UOM" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEditSettings.PopupContentTemplate>
+                                        </dxg:LookUpEditSettings>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Name" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

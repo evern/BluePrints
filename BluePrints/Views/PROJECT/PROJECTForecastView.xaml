@@ -1,7 +1,23 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
+            <Style x:Key="SingleObjectView.SpinEditControlContainer" TargetType="dxe:SpinEdit">
+                <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <ItemsControl>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                <!--<dxmvvm:EventToCommand Command="{Binding DataContext.EditControlPreviewMouseDownCommand, ElementName=userControl}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />-->
+                            </ItemsControl>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="MaskType" Value="Numeric" />
+                <Setter Property="Mask" Value="c0" />
+                <Setter Property="MaskUseAsDisplayFormat" Value="True" />
+                <Setter Property="MinValue" Value="0" />
+            </Style>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -126,7 +142,7 @@
                                         <dxg:GridColumn FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                         <dxg:GridColumn FieldName="Entity.Projection.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
                                         <dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
-                                        <dxg:GridColumn Width="60" MaxWidth="150" FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
+                                        <dxg:GridColumn Width="60" AllowBestFit="False" FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="Entity.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
@@ -431,32 +447,57 @@
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
                         <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="250" Orientation="Vertical">
-                            <dxdo:LayoutPanel AutoHidden="True" ItemWidth="250" ShowHideButton="True">
+                            <dxdo:LayoutPanel AutoHidden="False" ItemWidth="300" ShowHideButton="True">
                                 <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
-                                    <dxlc:LayoutGroup Header="Project Details" Orientation="Vertical" View="GroupBox">
-                                        <dxlc:LayoutItem Label="Budget Revenue" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revenue, ElementName=userControl, Mode=OneWay}" />
+                                    <dxlc:LayoutGroup Orientation="Vertical" Header="Budget" View="GroupBox">
+                                        <dxlc:LayoutItem Label="Original Revenue Budget" LabelPosition="Left">
+                                            <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding DataContext.LoadPROJECT.ORI_REVENUE, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Approved Variation Budget" LabelPosition="Left">
+                                            <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding DataContext.LoadPROJECT.VAR_REVENUE, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Revised Revenue Budget" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revised_Revenue, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Budget Costs" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Costs, ElementName=userControl, Mode=OneWay}" />
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Budget_Cost, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Budget Margin" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin, ElementName=userControl, Mode=OneWay}" />
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Budget Margin %" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                            <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Orientation="Vertical" Header="Current" View="GroupBox" >
+                                        <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left">
+                                            <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="EAC_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding DataContext.LoadPROJECT.EAC_REVENUE, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Actuals, ElementName=userControl, Mode=OneWay}" />
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Current_Cost, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Commitments" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Commitments, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Claims" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Uncommitted Forecast" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Uncommitted_Forecast, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.EstimateAtCompletion, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.EAC_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.EAC_Margin, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.EAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.EAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Orientation="Vertical" Header="Claims" View="GroupBox">
+                                        <dxlc:LayoutItem Label="Claimed to Date" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.TotalClaims, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Estimate At Completion" LabelPosition="Left">
-                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.EstimateAtCompletion, ElementName=userControl, Mode=OneWay}" />
+                                        <dxlc:LayoutItem Label="Under/(Over) Claim" LabelPosition="Left">
+                                            <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.UnderOverClaim_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.UnderOverClaim, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutControl>

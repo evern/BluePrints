@@ -231,7 +231,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(base_entity_query(query), loadPROJECT, loaderCollection.GetCollection<RATE>(), livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>());
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(base_entity_query(query), loadPROJECT, loaderCollection.GetCollection<RATE>(), livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, null, false, COMMODITY_CODECollection, getPhaseType());
         }
 
         public Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -861,6 +861,30 @@ namespace BluePrints.ViewModels
 
             return unsavedEntities;
         }
+
+        /// <summary>
+        /// Show commodity code even when it is not valid
+        /// </summary>
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE)) && e.Row != null)
+            {
+                ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)e.Row;
+                if (!projection.Entity.Entity.IsCommodityCodeValid)
+                {
+                    COMMODITY_CODE commodity_code;
+                    if (projection.Entity.Entity.COMMODITY_CODE != null)
+                        commodity_code = projection.Entity.Entity.COMMODITY_CODE;
+                    else
+                        commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_COMMODITY_CODE);
+
+                    if (commodity_code != null)
+                        e.DisplayText = commodity_code.CODE;
+                    else
+                        e.DisplayText = string.Empty;
+                }
+            }
+        }
         #endregion
 
         ///// <summary>
@@ -918,7 +942,7 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
         {
-            if (MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.GUID_AREA == projection.Entity.Entity.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == projection.Entity.Entity.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == projection.Entity.Entity.GUID_DISCIPLINE && x.Discipline_Number == projection.Discipline_Number))
+            if (MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.GUID_AREA == projection.Entity.Entity.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == projection.Entity.Entity.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == projection.Entity.Entity.GUID_DISCIPLINE && x.Discipline_Number == projection.Discipline_Number && x.Entity.Entity.GUID_COMMODITY_CODE == projection.Entity.Entity.GUID_COMMODITY_CODE))
                 return "Duplicate job name";
 
             return string.Empty;
@@ -991,6 +1015,11 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        private PhaseType getPhaseType()
+        {
+            return viewType == DeliverablesViewType.Direct ? PhaseType.Construct : PhaseType.Procurement;
+        }
+
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
@@ -1019,6 +1048,10 @@ namespace BluePrints.ViewModels
             }
             else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
             {
+                //discipline and commodity code collection is required immediately for subarea selection
+                projection.Entity.Entity.GUID_DISCIPLINE = (Guid?)new_value;
+                projection.Entity.Entity.PhaseType = getPhaseType();
+                projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
                 updateProjectionStockCodeCollection(projection, (Guid?)new_value);
                 projection.Update();
             }
@@ -1054,7 +1087,8 @@ namespace BluePrints.ViewModels
                         Guid? oldValue = projection.Entity.Entity.GUID_DISCIPLINE;
                         Guid? newValue = entity_commodity_code.GUID_DISCIPLINE;
                         projection.Entity.Entity.GUID_DISCIPLINE = newValue;
-
+                        //need to set immediately for new row to display selection due to CustomColumnDisplayText event
+                        projection.Entity.Entity.GUID_COMMODITY_CODE = (Guid?)new_value;
                         if (!isNew)
                         {
                             string discipline_field_name = Base_Entity_String + BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE);
@@ -1511,7 +1545,6 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-
 
         public IEnumerable<WORKPACK> WORKPACKCollection
         {
