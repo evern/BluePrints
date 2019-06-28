@@ -14,6 +14,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,6 +97,10 @@ namespace BluePrints.ViewModels
             HSE_INJURYViewModel.OnBeforeEntitySavedIsContinueCallBack = HSE_INJURYOnBeforeEntitySaved;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
+            HSE_INCIDENTViewModel.FuncManualRowPastingIsContinue = ManualRowPasteAction;
+            HSE_INCIDENTViewModel.SetParentViewModel(this);
+            HSE_INJURYViewModel.SetParentViewModel(this);
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -143,6 +148,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, HSE_INCIDENT pasteEntity)
+        {
+            KeyValuePair<ColumnBase, string> incidentData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new HSE_INCIDENT().CLASSIFICATION)));
+            if(incidentData.Value != string.Empty)
+            {
+                IncidentClassification incidentClassification;
+                if (Enum.TryParse<IncidentClassification>(incidentData.Value, out incidentClassification))
+                    pasteEntity.CLASSIFICATION = incidentClassification;
+            }
+            
+            return true;
+        }
 
         public CollectionViewModel<HSE_INCIDENT, HSE_INCIDENT, Guid, IBluePrintsEntitiesUnitOfWork> HSE_INCIDENTViewModel
         {

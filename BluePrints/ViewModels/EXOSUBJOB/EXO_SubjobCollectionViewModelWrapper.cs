@@ -555,8 +555,6 @@ namespace BluePrints.ViewModels
                     primeroUnitOfWork.JOBCOST_LINES.Remove(line);
                     primeroUnitOfWork.SaveChanges();
                 }
-
-
                 viewRemoveProjections.Add(removeProjection);
             }
 
