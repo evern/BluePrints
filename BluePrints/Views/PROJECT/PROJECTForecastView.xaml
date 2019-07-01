@@ -141,7 +141,9 @@
                                         <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
                                         <dxg:GridColumn FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                         <dxg:GridColumn FieldName="Entity.Projection.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
-                                        <dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
+                                        <dxg:GridColumn FieldName="Entity.Projection.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="21" />
+                                        <dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Commodity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="22" />
+                                        <!--<dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="25" />-->
                                         <dxg:GridColumn Width="60" AllowBestFit="False" FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="Entity.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
                                             <dxg:GridColumn.CellTemplate>
@@ -160,7 +162,6 @@
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-
                                         <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -201,7 +202,7 @@
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridControl.DetailDescriptor>
+                                        <!--<dxg:GridControl.DetailDescriptor>
                                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding ChildEntities}">
                                                 <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
                                                     <i:Interaction.Behaviors>
@@ -212,8 +213,8 @@
                                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=gridControlChild}" KeyGesture="Delete" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                     <dxg:GridColumn FieldName="Entity.Projection.SubJob.PhaseCode" Fixed="Left" Header="Phase" ReadOnly="True" VisibleIndex="10" />
-                                                    <!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
-                                                    <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
+                                                    --><!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="11" />
+                                                    <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />--><!--
                                                     <dxg:GridColumn FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" />
                                                     <dxg:GridColumn FieldName="Entity.Projection.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="20" />
                                                     <dxg:GridColumn FieldName="Entity.Projection.Commodity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="21" />
@@ -235,11 +236,11 @@
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
                                                     </dxg:GridColumn>
-                                                    <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
+                                                    --><!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                         </dxg:GridColumn.EditSettings>
-                                                    </dxg:GridColumn>-->
+                                                    </dxg:GridColumn>--><!--
                                                     <dxg:GridColumn FieldName="Entity.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="Actuals / (Actuals + Outstanding + Uncommitted)" ReadOnly="True" VisibleIndex="87">
                                                         <dxg:GridColumn.EditSettings>
                                                             <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -331,7 +332,7 @@
                                                     </dxg:GridControl.TotalSummary>
                                                 </dxg:GridControl>
                                             </dxg:DataControlDetailDescriptor>
-                                        </dxg:GridControl.DetailDescriptor>
+                                        </dxg:GridControl.DetailDescriptor>-->
                                         <dxg:GridControl.GroupSummary>
                                             <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Projection.SubJob.Code" ShowInColumn="Entity.Projection.SubJob.Code" SummaryType="Count" />
                                             <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.Projection.ExoBudgetQty" ShowInColumn="Entity.Projection.ExoBudgetQty" SummaryType="Sum" />

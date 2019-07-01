@@ -427,7 +427,7 @@ namespace BluePrints.ViewModels
         }
 
         DataTable dataPointsTable = null;
-        List<ForecastJobData> disciplineJobs;
+        List<ForecastJobData> commodityJobs;
         public virtual DataTable DataPointsTable
         {
             get
@@ -460,7 +460,7 @@ namespace BluePrints.ViewModels
                         endDateToGenerate = FixedEndDate;
 
                     alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedStartDate, endDateToGenerate);
-                    disciplineJobs = ForecastHelper.CreateDisciplineProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, alignedDataDateCollection, (DateTime)FixedDataDate);
+                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, alignedDataDateCollection, (DateTime)FixedDataDate);
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
@@ -471,47 +471,26 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
-                    LoadingScreenManager.ShowLoadingScreen(disciplineJobs.Count);
+                    LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
                     LoadingScreenManager.SetMessage("Preparing View...");
-                    foreach(ForecastJobData disciplineJob in disciplineJobs)
+                    foreach (ForecastJobData commodityJob in commodityJobs)
                     {
-                        DataRow disciplineRow = dataPointsTable.NewRow();
-                        disciplineRow[columnEntity] = disciplineJob;
-
-                        foreach (ForecastDateCost dateCost in disciplineJob.DateCosts)
+                        DataRow commodityRow = dataPointsTable.NewRow();
+                        commodityRow[columnEntity] = commodityJob;
+                        foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
                         {
-                            disciplineRow[dateCost.Date.ToShortDateString()] = dateCost.Cost;
+                            commodityRow[dateCost.Date.ToShortDateString()] = dateCost.Cost;
                         }
-
-                        DataTable commodityDataTable = dataPointsTable.Clone();
-                        foreach (ForecastJobData commodityJob in disciplineJob.CommodityJobs)
-                        {
-                            DataRow commodityRow = commodityDataTable.NewRow();
-                            commodityRow[columnEntity] = commodityJob;
-                            foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
-                            {
-                                commodityRow[dateCost.Date.ToShortDateString()] = dateCost.Cost;
-                            }
-
-                            ForecastSummary.Budget_Cost += commodityJob.Budget;
-                            updateUncommitted(commodityRow);
-                            updateTotalUncommittedOnJob(commodityRow);
-                            commodityDataTable.Rows.Add(commodityRow);
-                        }
-
-                        disciplineRow[columnChild] = commodityDataTable;
-                        recurseCalculateBudget(disciplineRow);
-
-                        updateUncommitted(disciplineRow);
-                        updateTotalUncommittedOnJob(disciplineRow);
 
                         //calculate project summary
-                        ForecastSummary.Current_Cost += disciplineJob.Actuals;
-                        ForecastSummary.Commitments += disciplineJob.Outstanding;
-                        ForecastSummary.Uncommitted_Forecast += disciplineJob.Uncommitted;
-                        ForecastSummary.EstimateAtCompletion += disciplineJob.EstimateAtCompletion;
-                        dataPointsTable.Rows.Add(disciplineRow);
-
+                        ForecastSummary.Budget_Cost += commodityJob.Budget;
+                        ForecastSummary.Current_Cost += commodityJob.Actuals;
+                        ForecastSummary.Commitments += commodityJob.Outstanding;
+                        ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
+                        ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
+                        updateUncommitted(commodityRow);
+                        updateTotalUncommittedOnJob(commodityRow);
+                        dataPointsTable.Rows.Add(commodityRow);
                         LoadingScreenManager.Progress();
                     }
 
@@ -1062,7 +1041,7 @@ namespace BluePrints.ViewModels
                     DateTime columnDateTime;
                     if(DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
                     {
-                        findExistingOrAddNewForecast(newRow, entity, columnDateTime, decimal_value, false);
+                        findExistingOrAddNewForecast(newRow, entity, columnDateTime, decimal_value);
                     }
                 }
                 else
@@ -1119,7 +1098,7 @@ namespace BluePrints.ViewModels
                 {
                     EntitiesUndoRedoManager.AddUndo(editing_row, columnFieldName, editing_row[columnFieldName], null, EntityMessageType.Changed);
                     updateRemainingOnJob(editing_row, entity, columnFieldName);
-                    findExistingOrAddNewForecast(editing_row, entity, deleteCellDate, null, false);
+                    findExistingOrAddNewForecast(editing_row, entity, deleteCellDate, null);
                     //editing_row[columnFieldName] = 0.00m;
                 }
             }
@@ -1283,7 +1262,7 @@ namespace BluePrints.ViewModels
                         forecastUnits = convertUnits;
 
                     EntitiesUndoRedoManager.AddUndo(row, fieldName, oldValue, forecastUnits, EntityMessageType.Changed);
-                    findExistingOrAddNewForecast(row, entity, dateTime, forecastUnits, false);
+                    findExistingOrAddNewForecast(row, entity, dateTime, forecastUnits);
                 }
             }
         }
@@ -1306,7 +1285,7 @@ namespace BluePrints.ViewModels
             job.SetForecastRate(totalRate);
         }
 
-        private void findExistingOrAddNewForecast(DataRow dataRow, ExoSubJobProjection entity, DateTime forecastDate, decimal? forecastUnits, bool isRecursive = false)
+        private void findExistingOrAddNewForecast(DataRow dataRow, ExoSubJobProjection entity, DateTime forecastDate, decimal? forecastUnits)
         {
             decimal? oldValue = 0.00m;
             FORECAST findFORECAST = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && !x.IS_EAC);
@@ -1342,61 +1321,25 @@ namespace BluePrints.ViewModels
                 updateFloatingSummaryMembers(oldValue, newValue);
             }
 
-            if (!isRecursive)
+            string dateFieldName = forecastDate.ToShortDateString();
+            //need to set child forecast empty
+            if (entity.Commodity.Code == string.Empty)
             {
-                string dateFieldName = forecastDate.ToShortDateString();
-                //need to set child forecast empty
-                if (entity.Commodity.Code == string.Empty)
+                DataTable childTable = (DataTable)dataRow[columnChild];
+                foreach (DataRow childRow in childTable.Rows)
                 {
-                    DataTable childTable = (DataTable)dataRow[columnChild];
-                    foreach (DataRow childRow in childTable.Rows)
+                    ExoSubJobProjection childEntity = ((ForecastJobData)childRow[columnEntity]).Projection;
+                    if (childTable.Columns.Contains(dateFieldName))
                     {
-                        ExoSubJobProjection childEntity = ((ForecastJobData)childRow[columnEntity]).Projection;
-                        if (childTable.Columns.Contains(dateFieldName))
-                        {
-                            if(!isBackgroundEdit)
-                                EntitiesUndoRedoManager.AddUndo(childRow, dateFieldName, childRow[dateFieldName], 0.00m, EntityMessageType.Changed);
+                        if(!isBackgroundEdit)
+                            EntitiesUndoRedoManager.AddUndo(childRow, dateFieldName, childRow[dateFieldName], 0.00m, EntityMessageType.Changed);
 
-                            findExistingOrAddNewForecast(childRow, childEntity, forecastDate.Date, 0.00m, true);
-                            //setForecastCellNull(childRow, (ExoSubJobProjection)childRow[columnEntity], dateFieldName);
-                        }
+                        findExistingOrAddNewForecast(childRow, childEntity, forecastDate.Date, 0.00m);
+                        //setForecastCellNull(childRow, (ExoSubJobProjection)childRow[columnEntity], dateFieldName);
                     }
-
-                    updateTotalUncommittedOnJob(dataRow);
-                }
-                //set parent forecast empty
-                else
-                {
-                    DataRow disciplineRow = findDisciplineRow(entity);
-                    if (disciplineRow != null)
-                    {
-                        if (dataPointsTable.Columns.Contains(dateFieldName))
-                        {
-                            decimal cumulativeCosts = 0;
-                            DataTable childTable = (DataTable)disciplineRow[columnChild];
-                            foreach (DataRow childRow in childTable.Rows)
-                            {
-                                ExoSubJobProjection childEntity = ((ForecastJobData)childRow[columnEntity]).Projection;
-                                decimal childCostOnDate = 0;
-                                if(childRow[dateFieldName] != DBNull.Value)
-                                    childCostOnDate = (decimal)childRow[dateFieldName];
-                                cumulativeCosts += childCostOnDate;
-                            }
-
-                            if (!isBackgroundEdit)
-                                //only visually represents the costs but stores null in the database
-                                EntitiesUndoRedoManager.AddUndo(disciplineRow, dateFieldName, disciplineRow[dateFieldName], cumulativeCosts, EntityMessageType.Changed);
-
-                            findExistingOrAddNewForecast(disciplineRow, ((ForecastJobData)disciplineRow[columnEntity]).Projection, forecastDate.Date, cumulativeCosts, true);
-                            disciplineRow[dateFieldName] = cumulativeCosts;
-                        }
-                    }
-
-                    updateTotalUncommittedOnJob(dataRow);
-                    updateTotalUncommittedOnJob(disciplineRow);
                 }
 
-
+                updateTotalUncommittedOnJob(dataRow);
             }
         }
 
@@ -1679,7 +1622,7 @@ namespace BluePrints.ViewModels
                     decimal? oldValueDecimal = null;
                     if (entityProperty.OldValue != null)
                         oldValueDecimal = (decimal)entityProperty.OldValue;
-                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, oldValueDecimal, true);
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, oldValueDecimal);
                 }
             }
 
@@ -1719,7 +1662,7 @@ namespace BluePrints.ViewModels
                     decimal? newValueDecimal = null;
                     if (entityProperty.NewValue != DBNull.Value && entityProperty.NewValue != null)
                         newValueDecimal = (decimal)entityProperty.NewValue;
-                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, newValueDecimal, true);
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, exoSubJob, parseDateTime, newValueDecimal);
                 }
             }
 

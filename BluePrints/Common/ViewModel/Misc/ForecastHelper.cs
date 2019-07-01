@@ -61,6 +61,49 @@ namespace BluePrints.Common.ViewModel.Misc
         }
 
         /// <summary>
+        /// Creates the discipline job forecast and also commodity job forecast within
+        /// </summary>
+        /// <returns></returns>
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> projectForecasts, IEnumerable<DateTime> dates, DateTime dataDate)
+        {
+            ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
+            var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
+
+            LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
+            LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+            Parallel.ForEach(groupedDisciplineJobs,
+            groupedDisciplineJob =>
+            {
+                //retrive the discipline subjob, any member in the collection will do
+                ExoSubJobProjection DisciplineJob = groupedDisciplineJob.DisciplineJob;
+
+                //create the discipline level forecast summary
+                List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
+                ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
+
+                Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
+                commodityJob =>
+                {
+                    ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
+                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.SubjobCode == commodityJob.SubJob.Code && x.DisciplineCode == commodityJob.Discipline.Code && x.CommodityCode == commodityJob.Commodity.Code && x.Variation_Code == commodityJob.Variation_Code);
+                    populateProjection(commodityJobForecastSummary, commodityDashboards, dates);
+                    PopulateEAC(commodityJobForecastSummary, projectForecasts, dataDate);
+                    commodityJobs.Add(commodityJobForecastSummary);
+                });
+
+                foreach(ForecastJobData commodityJob in commodityJobs)
+                {
+                    forecastProjections.Add(commodityJob);
+                }
+
+                LoadingScreenManager.Progress();
+            });
+
+            LoadingScreenManager.CloseLoadingScreen();
+            return forecastProjections.ToList();
+        }
+
+        /// <summary>
         /// Populates data row with dashboards summary
         /// </summary>
         private static void populateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> relevantDashboards, IEnumerable<DateTime> dates)

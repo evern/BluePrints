@@ -65,7 +65,7 @@ namespace BluePrints.Common.Projections
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => Actuals + Outstanding + Uncommitted;
-        public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+        public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
         public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal Variance => Budget - EstimateAtCompletion;
         public bool IsBudgetReadOnly { get; set; }
