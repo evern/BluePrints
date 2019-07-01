@@ -62,7 +62,7 @@ namespace BaseModel.ViewModel.Dialogs
             }
 
             SimulationTable = new DataTable();
-            SimulationTable.Columns.Add("Entity", typeof(ExoSubJobProjection));
+            SimulationTable.Columns.Add("Entity", typeof(ForecastJobData));
             columnDates = columnDates.OrderBy(x => x).ToList();
             foreach(DateTime columnDate in columnDates)
             {
@@ -75,11 +75,11 @@ namespace BaseModel.ViewModel.Dialogs
             {
                 DataRowView editing_row_view = (DataRowView)gridControl.GetRow(groupedCells.RowIndex);
                 DataRow editing_row = editing_row_view.Row;
-                ExoSubJobProjection entity = (ExoSubJobProjection)editing_row[columnEntity];
+                ForecastJobData job = (ForecastJobData)editing_row[columnEntity];
 
                 foreach(var column in groupedCells.Cells)
                 {
-                    BuildRowStats(entity, column.Column.FieldName, editing_row[column.Column.FieldName]);
+                    BuildRowStats(job, column.Column.FieldName, editing_row[column.Column.FieldName]);
                 }
             }
 
@@ -189,19 +189,19 @@ namespace BaseModel.ViewModel.Dialogs
             return columnDictionary;
         }
 
-        private DataRow BuildRowStats(ExoSubJobProjection entity, string fieldName, object value)
+        private DataRow BuildRowStats(ForecastJobData job, string fieldName, object value)
         {
             if (SimulationTable == null)
                 return null;
 
             DataRow findExistingOrNewDataRow = (from DataRow dr in SimulationTable.Rows
-                                                where ((ExoSubJobProjection)dr[columnEntity]).SubJob.Code == entity.SubJob.Code && ((ExoSubJobProjection)dr[columnEntity]).Discipline.Code == entity.Discipline.Code
+                                                where (((ForecastJobData)dr[columnEntity])).Projection.SubJob.Code == job.Projection.SubJob.Code && ((ForecastJobData)dr[columnEntity]).Projection.Discipline.Code == job.Projection.Discipline.Code
                                                 select dr).FirstOrDefault();
             
             if (findExistingOrNewDataRow == null)
             {
                 findExistingOrNewDataRow = SimulationTable.NewRow();
-                findExistingOrNewDataRow[columnEntity] = entity;
+                findExistingOrNewDataRow[columnEntity] = job;
 
                 SimulationTable.Rows.Add(findExistingOrNewDataRow);
             }
