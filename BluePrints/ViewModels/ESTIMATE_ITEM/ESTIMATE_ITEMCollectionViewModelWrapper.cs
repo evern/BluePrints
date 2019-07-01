@@ -347,6 +347,12 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+
+            //update CachedCOMMODITY_CODE for deliverable_name to be updated
+            if(entity.Entity.Entity.Commodity_Code == string.Empty && entity.Entity.Entity.GUID_COMMODITY_CODE != null)
+            {
+                entity.Entity.Entity.CachedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_COMMODITY_CODE);
+            }
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -402,14 +408,11 @@ namespace BluePrints.ViewModels
                 BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, procurementPhaseType, null, true);
 
             //need to populate subjob for deliverable_name to be present
-            if (entity.Entity.Entity.SUBJOB == null && entity.Entity.Entity.GUID_SUBJOB != null)
-                entity.Entity.Entity.SUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
+            if (entity.Entity.Entity.Subjob_Name == string.Empty && entity.Entity.Entity.GUID_SUBJOB != null)
+                entity.Entity.Entity.CachedSUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
 
-            if (entity.Entity.Entity.SUBJOB1 == null && entity.Entity.Entity.GUID_PSUBJOB != null)
-                entity.Entity.Entity.SUBJOB1 = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_PSUBJOB);
-
-            if (entity.Entity.Entity.DISCIPLINE == null && entity.Entity.Entity.GUID_DISCIPLINE != null)
-                entity.Entity.Entity.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE);
+            if (entity.Entity.Entity.Discipline_Code == string.Empty && entity.Entity.Entity.GUID_DISCIPLINE != null)
+                entity.Entity.Entity.CachedDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE);
         }
 
         public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
@@ -1042,7 +1045,8 @@ namespace BluePrints.ViewModels
                 else
                 {
                     //Area is required immediately for subarea selection
-                    projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    if(projection.Entity.Entity.AREA == null)
+                        projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
                     projection.Update();
                 }
             }

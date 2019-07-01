@@ -81,7 +81,10 @@ namespace BluePrints.Data
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
 
+        [NotMapped]
         public PhaseType? PhaseType = null;
+
+        [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
         public IEnumerable<COMMODITY_CODE> CommodityCodeCollection
         {
@@ -139,16 +142,37 @@ namespace BluePrints.Data
         {
             get
             {
-                if (DISCIPLINE == null)
+                if (DISCIPLINE != null)
+                    return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
+                else if (CachedDISCIPLINE != null)
+                    return CachedDISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
+                else
                     return string.Empty;
-
-                return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
             }
         }
 
+        //used for storing newly added entity so that we don't change the context of the existing DISCIPLINE for newly added rows for Discipline_Code
+        [NotMapped]
+        public DISCIPLINE CachedDISCIPLINE { get; set; }
+
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
-        public string Commodity_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.CODE;
+        public string Commodity_Code
+        {
+            get
+            {
+                if (COMMODITY_CODE != null)
+                    return COMMODITY_CODE.CODE;
+                else if (CachedCOMMODITY_CODE != null)
+                    return CachedCOMMODITY_CODE.CODE;
+                else
+                    return string.Empty;
+            }
+        }
+
+        //used for storing newly added entity so that we don't change the context of the existing COMMODITY_CODE for newly added rows for Commodity_Code
+        [NotMapped]
+        public COMMODITY_CODE CachedCOMMODITY_CODE { get; set; }
 
         public Guid? Area_Guid => GUID_AREA;
 
@@ -219,12 +243,18 @@ namespace BluePrints.Data
         {
             get
             {
-                if (SUBJOB == null)
+                if (SUBJOB != null)
+                    return SUBJOB.INTERNAL_NAME1;
+                else if (CachedSUBJOB != null)
+                    return CachedSUBJOB.INTERNAL_NAME1;
+                else
                     return string.Empty;
-
-                return SUBJOB.INTERNAL_NAME1;
             }
         }
+
+        //used for storing newly added SUBJOB so that we don't change the context of the existing SUBJOB for newly added rows for Subjob_Name
+        [NotMapped]
+        public SUBJOB CachedSUBJOB { get; set; }
 
         [NotMapped]
         public string Department_Code

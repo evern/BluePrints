@@ -1083,7 +1083,7 @@ namespace BluePrints.Common.Base
 
         public void Remap_P6_Ids()
         {
-            List<P6_AssignmentProjection> missing_activities = get_missing_p6_activities(true);
+            List<P6_AssignmentProjection> missing_activities = getMissingP6Activities(true);
             List<P6ActivityRemap> p6_remap_activities = new List<P6ActivityRemap>();
 
             if (missing_activities.Count > 0)
@@ -1136,7 +1136,16 @@ namespace BluePrints.Common.Base
 
         public void Check_Assignments()
         {
-            List<P6_AssignmentProjection> missing_activities = get_missing_p6_activities();
+            List<P6_AssignmentProjection> missing_activities = getMissingP6Activities();
+            List<P6_ASSIGNMENT> missingAssignments = getMissingDeliverablesAssignments();
+
+            int deletedDeliverablesAssignmentCount = 0;
+            if(missingAssignments.Count > 0)
+            {
+                deletedDeliverablesAssignmentCount = missingAssignments.Count;
+                P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingAssignments);
+            }
+
             if (missing_activities.Count > 0)
             {
                 DialogCollectionViewModel<P6_AssignmentProjection> missing_activities_viewmodel = DialogCollectionViewModel<P6_AssignmentProjection>.Create(missing_activities);
@@ -1148,11 +1157,13 @@ namespace BluePrints.Common.Base
                     FullRefresh();
                 }
             }
+            else if(deletedDeliverablesAssignmentCount > 0)
+                MessageBoxService.ShowMessage(deletedDeliverablesAssignmentCount + " invalid assignment(s) has been removed", "Information", MessageButton.OK, MessageIcon.Information);
             else
-                MessageBoxService.ShowMessage("All Assignments Valid");
+                MessageBoxService.ShowMessage("All Assignments Valid", "Information", MessageButton.OK, MessageIcon.Information);
         }
 
-        private List<P6_AssignmentProjection> get_missing_p6_activities(bool getAllActivities = false)
+        private List<P6_AssignmentProjection> getMissingP6Activities(bool getAllActivities = false)
         {
             var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -1182,6 +1193,18 @@ namespace BluePrints.Common.Base
             }
 
             return missing_activities;
+        }
+
+        private List<P6_ASSIGNMENT> getMissingDeliverablesAssignments()
+        {
+            List<P6_ASSIGNMENT> missingDeliverablesAssignments = new List<P6_ASSIGNMENT>();
+            foreach (P6_ASSIGNMENT assignment in P6_ASSIGNMENTSCollectionViewModel.Entities)
+            {
+                if (!DisplayEntities.Any(x => x.OriginalEntityKey == assignment.GUID_ORIGINAL))
+                    missingDeliverablesAssignments.Add(assignment);
+            }
+
+            return missingDeliverablesAssignments;
         }
 
         public void Save_Task(TASK task)

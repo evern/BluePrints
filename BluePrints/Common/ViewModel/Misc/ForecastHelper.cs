@@ -19,51 +19,6 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateDisciplineProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> projectForecasts, IEnumerable<DateTime> dates, DateTime dataDate)
-        {
-            ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
-            var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
-
-            LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
-            LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
-            Parallel.ForEach(groupedDisciplineJobs,
-            groupedDisciplineJob =>
-            {
-                //retrive the discipline subjob, any member in the collection will do
-                ExoSubJobProjection DisciplineJob = groupedDisciplineJob.DisciplineJob;
-
-                //create the discipline level forecast summary
-                ForecastJobData disciplineJobForecastSummary = createJobForecastSummary(DisciplineJob.SubJob.Code, DisciplineJob.SubJob.Title, DisciplineJob.Discipline.Code, DisciplineJob.Discipline.Name, string.Empty, string.Empty, string.Empty, string.Empty, DisciplineJob.Variation_Code, queryJobLines);
-                List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
-                populateProjection(disciplineJobForecastSummary, disciplineDashboards, dates);
-                PopulateEAC(disciplineJobForecastSummary, projectForecasts, dataDate);
-                ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
-                disciplineJobForecastSummary.CommodityJobs = new List<ForecastJobData>();
-
-                Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
-                commodityJob =>
-                {
-                    ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
-                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.SubjobCode == commodityJob.SubJob.Code && x.DisciplineCode == commodityJob.Discipline.Code && x.CommodityCode == commodityJob.Commodity.Code && x.Variation_Code == commodityJob.Variation_Code);
-                    populateProjection(commodityJobForecastSummary, commodityDashboards, dates);
-                    PopulateEAC(commodityJobForecastSummary, projectForecasts, dataDate);
-                    commodityJobs.Add(commodityJobForecastSummary);
-                });
-
-                disciplineJobForecastSummary.CommodityJobs.AddRange(commodityJobs);
-                forecastProjections.Add(disciplineJobForecastSummary);
-
-                LoadingScreenManager.Progress();
-            });
-
-            LoadingScreenManager.CloseLoadingScreen();
-            return forecastProjections.ToList();
-        }
-
-        /// <summary>
-        /// Creates the discipline job forecast and also commodity job forecast within
-        /// </summary>
-        /// <returns></returns>
         public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> projectForecasts, IEnumerable<DateTime> dates, DateTime dataDate)
         {
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
@@ -85,7 +40,11 @@ namespace BluePrints.Common.ViewModel.Misc
                 commodityJob =>
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
-                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.SubjobCode == commodityJob.SubJob.Code && x.DisciplineCode == commodityJob.Discipline.Code && x.CommodityCode == commodityJob.Commodity.Code && x.Variation_Code == commodityJob.Variation_Code);
+                    string s;
+                    if (commodityJob.Commodity.Code == "E99")
+                        s = string.Empty;
+
+                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
                     populateProjection(commodityJobForecastSummary, commodityDashboards, dates);
                     PopulateEAC(commodityJobForecastSummary, projectForecasts, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
@@ -153,21 +112,30 @@ namespace BluePrints.Common.ViewModel.Misc
                     jobForecastSummary.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
+                DateTime firstActualDate = dates.First();
+
+                //the first remaining date will be the second month in the view because data date will end on the first month
+                DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
+
                 foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
                 {
-                    DateTime cutOffFloorDate = new DateTime(dateCost.Date.Year, dateCost.Date.Month, 1);
+                    DateTime cutOffActualFloorDate = new DateTime(dateCost.Date.Year, dateCost.Date.Month, 1);
+                    DateTime cutOffRemainingFloorDate = new DateTime(dateCost.Date.Year, dateCost.Date.Month, 1);
                     //format cutOffCeilingDate to end of month
-                    DateTime cutOffCeilingDate = cutOffFloorDate.AddMonths(1).AddDays(-1);
+                    DateTime cutOffCeilingDate = cutOffActualFloorDate.AddMonths(1).AddDays(-1);
 
                     //override floor date to the beginning of time because we want to get everything
-                    if (dateCost.Date == dates.First())
-                        cutOffFloorDate = new DateTime(1);
+                    if (dateCost.Date == firstActualDate)
+                        cutOffActualFloorDate = new DateTime(1);
+
+                    if (dateCost.Date == firstRemainingDate)
+                        cutOffRemainingFloorDate = new DateTime(1);
 
                     if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0)
                     {
-                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
 
                         dateCost.Cost = materialCosts + actualCosts + remainingCost;
                     }

@@ -601,7 +601,7 @@ namespace BluePrints.Common.ViewModel.Utils
             if (entity.Subjob_Guid != null)
             {
                 SUBJOB subjob = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Subjob_Guid);
-                if (subjob != null &&subjob.INTERNAL_NAME1 == internalNumber)
+                if (subjob != null && subjob.INTERNAL_NAME1 == internalNumber)
                     return;
             }
 

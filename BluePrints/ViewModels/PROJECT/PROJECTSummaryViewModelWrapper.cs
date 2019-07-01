@@ -536,7 +536,6 @@ namespace BluePrints.ViewModels
 
         public override void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
         {
-            isBackgroundEdit = true;
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
@@ -557,12 +556,10 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.RefreshData();
-            isBackgroundEdit = false;
         }
 
         public override void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
         {
-            isBackgroundEdit = true;
             IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
@@ -583,7 +580,6 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.RefreshData();
-            isBackgroundEdit = false;
         }
 
         public override void FullRefresh()

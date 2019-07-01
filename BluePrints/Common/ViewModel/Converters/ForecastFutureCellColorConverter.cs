@@ -26,19 +26,18 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
-                    DataTable childEntity = (DataTable)dataRow["CompareEntities"];
-                    if (childEntity.Rows.Count > 0)
+                    DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
+                    if (compareEntity.Rows.Count > 0)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal previousValue = (decimal)childEntity.Rows[0][fieldname];
+                            decimal compareValue = (decimal)compareEntity.Rows[0][fieldname];
                             decimal currentValue = (decimal)values[2];
 
-                            if(currentValue != 0 && currentValue == previousValue)
-                                return new System.Windows.Media.SolidColorBrush(Colors.AliceBlue);
-
+                            if(currentValue != 0 && currentValue != compareValue)
+                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
                         }
                     }
                 }
