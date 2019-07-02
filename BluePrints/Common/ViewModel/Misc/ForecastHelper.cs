@@ -159,10 +159,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //discipline lines processing
             if (commodityCode == string.Empty)
-            {
-                forecastProjection.IsBudgetReadOnly = true;
                 relevantJobLines = jobLines.Where(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.VariationCode == variationCode);
-            }
             //commodity lines processing
             else
                 relevantJobLines = jobLines.Where(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);

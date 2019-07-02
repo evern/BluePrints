@@ -68,7 +68,9 @@ namespace BluePrints.Common.Projections
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
         public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal Variance => Budget - EstimateAtCompletion;
-        public bool IsBudgetReadOnly { get; set; }
+        public bool IsBudgetReadOnly => true;
+        public bool IsPOError { get; set; }
+        public decimal ErrorImageWidth => IsPOError ? 15 : 0;
     }
 
     public class ForecastDateCost

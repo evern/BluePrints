@@ -1093,6 +1093,7 @@ namespace BluePrints.ViewModels
                     ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
                     JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
                     bool isError = false;
+
                     if (isRate)
                         projection.Rate = newDecimalValue;
                     else
@@ -1174,7 +1175,6 @@ namespace BluePrints.ViewModels
                             findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
 
                         primeroUnitOfWork.SaveChanges();
-
                         DataRow disciplineRow = findCommodityRow(entity);
                         if (disciplineRow != null)
                         {
@@ -1288,7 +1288,7 @@ namespace BluePrints.ViewModels
         {
             delayedUpdateFloatingProjectSummaryTimer.Stop();
 
-            IEnumerable<ForecastJobData> jobs = from DataRow dr in dataPointsTable.Rows select (ForecastJobData)dr[columnEntity];
+            List<ForecastJobData> jobs = getJobDataFromDatatable();
             ForecastSummary.EstimateAtCompletion = 0;
             ForecastSummary.Uncommitted_Forecast = 0;
 
@@ -1300,6 +1300,20 @@ namespace BluePrints.ViewModels
             }
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
+        }
+
+        private List<ForecastJobData> getJobDataFromDatatable()
+        {
+            List<ForecastJobData> forecastJobs = new List<ForecastJobData>();
+            if (dataPointsTable == null)
+                return forecastJobs;
+            else
+            {
+                IEnumerable<ForecastJobData> enumerableJobs = from DataRow dr in dataPointsTable.Rows select (ForecastJobData)dr[columnEntity];
+                forecastJobs = enumerableJobs.ToList();
+            }
+
+            return forecastJobs;
         }
 
         private DataRow findCommodityRow(ExoSubJobProjection entity)
@@ -1373,6 +1387,15 @@ namespace BluePrints.ViewModels
                         if (dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
                             if (((decimal)dataRow[columnName]) > 0)
                                 uncommittedRecalculation += (decimal)dataRow[columnName];
+            }
+
+            //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
+            if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
+            {
+                if (Math.Round(job.Outstanding, 0) > Math.Round(uncommittedRecalculation, 0))
+                    job.IsPOError = true;
+                else
+                    job.IsPOError = false;
             }
 
             job.Uncommitted = uncommittedRecalculation;
@@ -1465,8 +1488,6 @@ namespace BluePrints.ViewModels
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
         }
-
-
 
         private void savePROJECT()
         {
