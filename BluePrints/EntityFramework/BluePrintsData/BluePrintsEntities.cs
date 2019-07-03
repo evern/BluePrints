@@ -50,7 +50,6 @@ namespace BluePrints.Data
         public virtual DbSet<MINUTE_TITLE> MINUTE_TITLE { get; set; }
         public virtual DbSet<P6_ASSIGNMENT> P6_ASSIGNMENT { get; set; }
         public virtual DbSet<PHASE> PHASE { get; set; }
-        public virtual DbSet<PO_CUSTOMDATE> PO_CUSTOMDATE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
@@ -336,18 +335,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.ESTIMATE)
                 .HasForeignKey(e => e.GUID_ESTIMATE);
-
-            modelBuilder.Entity<FORECAST_PO>()
-                .HasMany(e => e.PO_CUSTOMDATE)
-                .WithRequired(e => e.FORECAST_PO)
-                .HasForeignKey(e => e.FORECAST_PO_GUID)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FORECAST_PO>()
-                .HasMany(e => e.FORECAST_PO_RESULT)
-                .WithRequired(e => e.FORECAST_PO)
-                .HasForeignKey(e => e.GUID_FORECAST_PO)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<HSE>()
                 .HasMany(e => e.HSE_INCIDENT)

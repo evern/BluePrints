@@ -1,7 +1,9 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -16,8 +18,10 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -48,7 +52,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected PROJECT loadPROJECT;
@@ -57,6 +60,8 @@ namespace BluePrints.ViewModels
         //List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
+        protected string columnTotalForecast = "TotalForecast";
+        protected string columnUnforecasted = "Unforecasted";
         DispatcherTimer selectedItemsChangedDispatcher;
         protected override void resolveParameters(object parameter)
         {
@@ -67,20 +72,20 @@ namespace BluePrints.ViewModels
             selectedItemsChangedDispatcher = new DispatcherTimer();
             selectedItemsChangedDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
         }
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PO_CUSTOMDATES, PO_CUSTOMDATEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
         }
 
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            return query => query.Where(x => x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.STATUS);
+            return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<PO_CUSTOMDATE>, IQueryable<PO_CUSTOMDATE>> PO_CUSTOMDATEProjectionFunc()
+        private Func<IRepositoryQuery<FORECAST_PO_DATE>, IQueryable<FORECAST_PO_DATE>> FORECAST_PO_DATEProjectionFunc()
         {
             return query => query.Where(x => x.FORECAST_PO.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -113,6 +118,142 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
+
+        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            GridControl gridControl = (GridControl)e.Source;
+            TableView gridTableView = (TableView)gridControl.View;
+            string newValueString = Clipboard.GetText().ToString();
+
+            //remove tab in front
+            if (newValueString != string.Empty)
+            {
+                if (newValueString.Substring(0, 1) == "\t")
+                {
+                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                }
+
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+                pasteCellData(gridControl, gridTableView, RowData);
+
+                GridControlService.RefreshData();
+                e.Handled = true;
+            }
+
+        }
+
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
+            EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData)
+        {
+            if (copyColumn.FieldType == typeof(decimal))
+            {
+                var rgx = new Regex("[^0-9a-z\\.]");
+                var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                decimal viewDecimalValue;
+
+                DateTime columnDateTime;
+                if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+                {
+                    bool canParse = decimal.TryParse(cleanColumnString, out viewDecimalValue);
+                    if (!canParse)
+                        viewDecimalValue = 0.00m;
+
+                    addUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], viewDecimalValue, EntityMessageType.Changed);
+                    newRow[copyColumn.FieldName] = viewDecimalValue;
+
+                    findExistingOrAddNewFORECAST_PO(newRow, columnDateTime, viewDecimalValue);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (copyColumn.FieldType == typeof(string))
+            {
+                newRow[copyColumn.FieldName] = pasteData;
+            }
+
+            return true;
+        }
+
+        private void addUndo(DataRow changedEntity, string fieldName, object oldValue, object viewNewValue, EntityMessageType entityMessageType)
+        {
+            if(viewNewValue.GetType() == typeof(decimal))
+            {
+                decimal? undoDecimalValue = viewNewValue == null ? (decimal?)null : (decimal)viewNewValue;
+                EntitiesUndoRedoManager.AddUndo(changedEntity, fieldName, oldValue, undoDecimalValue, entityMessageType);
+            }
+        }
+
+        /// <summary>
+        /// Manages all undo and redo operation
+        /// </summary>
+        private EntitiesUndoRedoManager<DataRow> entitiesundoredomanager { get; set; }
+
+        public EntitiesUndoRedoManager<DataRow> EntitiesUndoRedoManager
+        {
+            get
+            {
+                if (entitiesundoredomanager == null)
+                    entitiesundoredomanager = new EntitiesUndoRedoManager<DataRow>(BulkPropertyUndo, BulkPropertyRedo);
+
+                return entitiesundoredomanager;
+            }
+        }
+
+        /// <summary>
+        /// Function to undo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                DateTime parseDateTime;
+                if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
+                {
+                    decimal? oldValueDecimal = null;
+                    if (entityProperty.OldValue != null && entityProperty.OldValue != DBNull.Value)
+                        oldValueDecimal = (decimal)entityProperty.OldValue;
+
+                    findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
+                }
+            }
+
+            GridControlService.RefreshData();
+        }
+
+        /// <summary>
+        /// Function to redo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                DateTime parseDateTime;
+                if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
+                {
+                    decimal? newValueDecimal = null;
+                    if (entityProperty.NewValue != null && entityProperty.NewValue != DBNull.Value)
+                        newValueDecimal = (decimal)entityProperty.NewValue;
+
+                    findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
+                }
+            }
+
+            GridControlService.RefreshData();
+        }
         #endregion
 
         #region View Properties
@@ -126,47 +267,15 @@ namespace BluePrints.ViewModels
 
                 if (dataPointsTable == null)
                 {
+                    //generate aligned dates
+                    if (!generateAlignedDataDates())
+                        return null;
+
+                    //initialize datatable schema
                     dataPointsTable = new DataTable();
                     dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
-                    var groupedPOs = exoPOs.GroupBy(x => x.PONumber).Select(group => new { PONumber = group.Key, DataPoints = group.ToList() });
-
-                    List<POForecastProjection> projections = new List<POForecastProjection>();
-                    foreach (var groupedPO in groupedPOs.OrderBy(x => x.PONumber))
-                    {
-                        POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
-                        newForecast.PONO = groupedPO.PONumber;
-                        ExoDataPoint dataPoint = groupedPO.DataPoints.FirstOrDefault();
-                        if (dataPoint != null)
-                            newForecast.Description = dataPoint.Description;
-
-                        newForecast.ExoPOs = groupedPO.DataPoints;
-                        //newForecast.ExoActuals = exoMaterials.Where(x => x.PONumber == groupedPO.PONumber).ToList();
-
-                        FORECAST_PO forecastConfig = DisplayEntities.FirstOrDefault(x => x.PONO == groupedPO.PONumber);
-                        if (forecastConfig != null)
-                        {
-                            newForecast.SetForecastConfig(forecastConfig);
-                            if (forecastConfig.MODE == POPaymentTerms.Custom)
-                            {
-                                newForecast.CustomPaymentDates = PO_CUSTOMDATECollection.Where(x => x.FORECAST_PO_GUID == forecastConfig.GUID).ToList();
-                            }
-                        }
-
-                        projections.Add(newForecast);
-                    }
-
-                    DateTime earliestDate = DateTime.Now;
-                    IEnumerable<ExoDataPoint> forecastPayments = projections.SelectMany(x => x.ForecastPayments);
-                    DateTime latestDate = earliestDate;
-                    if (forecastPayments.Count() > 0)
-                    {
-                        //earliestDate = forecastPayments.Min(x => x.ActualDate);
-                        latestDate = forecastPayments.Max(x => x.ActualDate);
-                    }
-
-
-                    DateTime earliestDateBeginningOfMonth = new DateTime(earliestDate.Year, earliestDate.Month, 1);
-                    alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection(earliestDateBeginningOfMonth, latestDate);
+                    dataPointsTable.Columns.Add(columnTotalForecast, typeof(decimal));
+                    dataPointsTable.Columns.Add(columnUnforecasted, typeof(decimal));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -174,11 +283,28 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
+                    //construction projection from grouped po lines
+                    List<POLine> poLines = getPOLines();
+                    List<POForecastProjection> projections = new List<POForecastProjection>();
+                    foreach (var poLine in poLines.OrderBy(x => x.PONumber))
+                    {
+                        POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
+                        newForecast.PONO = poLine.PONumber;
+                        //since it's a group it'll always contain at least a single element
+                        ExoDataPoint dataPoint = poLine.DataPoints.First();
+                        newForecast.Description = dataPoint.Description;
+                        newForecast.Supplier = dataPoint.Supplier;
+
+                        newForecast.ExoPOs = poLine.DataPoints;
+                        projections.Add(newForecast);
+                    }
+
+                    //gets the forecasted data into dates bucket in the row and adds to datatable
                     foreach (POForecastProjection projection in projections)
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        generatePOForecast(projection, alignedDataDateCollection, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, projection.PONO, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
@@ -187,6 +313,35 @@ namespace BluePrints.ViewModels
 
                 return dataPointsTable;
             }
+        }
+
+        private bool generateAlignedDataDates()
+        {
+            if (MainViewModel == null)
+                return false;
+
+            //since displayentities comes from mainviewmodel it should be populated by now
+            DateTime latestDate = DisplayEntities.Count == 0 ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1) : DisplayEntities.Max(x => x.FORECAST_DATE);
+            if (latestDate > ForecastEndDate)
+                ForecastEndDate = latestDate;
+
+            DateTime earliestDateBeginningOfMonth = new DateTime(ForecastStartDate.Year, ForecastStartDate.Month, 1);
+            alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection(earliestDateBeginningOfMonth, ForecastEndDate);
+
+            return true;
+        }
+
+        private POLine getPOLine(string poNo)
+        {
+            return getPOLines().FirstOrDefault(x => x.PONumber == poNo);
+        }
+
+        private List<POLine> getPOLines()
+        {
+            if (exoPOs == null)
+                return new List<POLine>();
+
+            return exoPOs.GroupBy(x => x.PONumber).Select(group => new POLine() { PONumber = group.Key, DataPoints = group.ToList() }).ToList();
         }
 
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
@@ -204,76 +359,70 @@ namespace BluePrints.ViewModels
                     e.Column.CellTemplate = Application.Current.Resources["POForecastTemplate"] as DataTemplate;
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
                     e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
-                    e.Column.ReadOnly = true;
+                    e.Column.ReadOnly = false;
                     e.Column.FixedWidth = true;
                     e.Column.Width = 75;
                 }
             }
         }
 
-        public void ModeCellValueChanging(CellValueChangedEventArgs e)
+        public void DatesCellValueChanging(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)))
+            DateTime parseDateTime;
+            if(DateTime.TryParse(e.Column.FieldName, out parseDateTime) && e.Value != null)
             {
-                TableView tableView = e.Source as TableView;
-                tableView.PostEditor();
+                decimal newValue = (decimal)e.Value;
+                DataRowView dataRowView = (DataRowView)e.Row;
+                findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue);
+
+                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, string.Empty, dataRowView.Row);
+                addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
+        }
+
+        private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts)
+        {
+            POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
+            FORECAST_PO findFORECAST_PO = DisplayEntities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == entity.PONO);
+
+            if(findFORECAST_PO == null)
+            {
+                findFORECAST_PO = new FORECAST_PO();
+                findFORECAST_PO.GUID = Guid.Empty;
+            }
+
+            findFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
+            findFORECAST_PO.PONO = entity.PONO;
+            findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
+            if (viewCosts != null && ((decimal)viewCosts) == 0.00m)
+                findFORECAST_PO.FORECAST_PERCENT = null;
+            else
+                findFORECAST_PO.FORECAST_PERCENT = viewCosts == null ? (double?)null : Convert.ToDouble(viewCosts / Math.Round(entity.PO_TotalPrice));
+
+            MainViewModel.Save(findFORECAST_PO);
+
+            updateRowPOForecast(alignedDataDateCollection, DisplayEntities, string.Empty, dataRow);
         }
 
         public void ValidateCell(GridCellValidationEventArgs e)
         {
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
-             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit))
-             || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstForecastDate)))
-            {
-                DataRowView dataRowView = (DataRowView)e.Row;
-                POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
-                initializeForecastConfig(projection);
+            //if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
+            // || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit))
+            // || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstForecastDate)))
+            //{
+            //    DataRowView dataRowView = (DataRowView)e.Row;
+            //    POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
+            //    initializeForecastConfig(projection);
 
-                if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms)))
-                {
-                    if (((POPaymentTerms)e.Value) == POPaymentTerms.Custom)
-                    {
-                        //don't change the value if custom payment isn't populated
-                        if (!showCustomPaymentDialog(projection))
-                        {
-                            e.IsValid = false;
-                            e.ErrorContent = "Edit payment cancelled";
-                            return;
-                        }
-                    }
-
-                    projection.ForecastConfig.MODE = (POPaymentTerms)e.Value;
-                    projection.PaymentTerms = (POPaymentTerms)e.Value;
-                }
-                else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit)))
-                {
-                    decimal newValue = (decimal)e.Value;
-                    if (newValue > 0)
-                        projection.ForecastConfig.REMAINING_PERIOD = (decimal)e.Value;
-                    else
-                    {
-                        e.ErrorContent = "Remaining period cannot be zero or less";
-                        e.IsValid = false;
-                    }
-                }
-                else
-                {
-                    projection.FirstForecastDate = (DateTime)e.Value;
-                }
-
-
-                if (e.IsValid)
-                {
-                    MainViewModel.Save(projection.ForecastConfig);
-                    generatePOForecast(projection, alignedDataDateCollection);
-                    GridControlService.RefreshData();
-                    TableView tableView = e.Source as TableView;
-                    tableView.CloseEditor();
-
-                    //projection.SaveForecastPaymentDates(bluePrintsUnitOfWork);
-                }
-            }
+            //    if (e.IsValid)
+            //    {
+            //        MainViewModel.Save(projection.ForecastConfig);
+            //        generatePOForecast(projection, alignedDataDateCollection);
+            //        GridControlService.RefreshData();
+            //        TableView tableView = e.Source as TableView;
+            //        tableView.CloseEditor();
+            //    }
+            //}
         }
 
         public bool CanShowCustomPaymentDialog
@@ -286,33 +435,17 @@ namespace BluePrints.ViewModels
 
         public void ShowCustomPaymentDialog()
         {
-            POForecastProjection projection = (POForecastProjection)SelectedDataRow[columnEntity];
-            initializeForecastConfig(projection);
-            if (showCustomPaymentDialog(projection))
-            {
-                projection.ForecastConfig.MODE = POPaymentTerms.Custom;
-                projection.PaymentTerms = POPaymentTerms.Custom;
-                MainViewModel.Save(projection.ForecastConfig);
-                generatePOForecast(projection, alignedDataDateCollection);
+            //POForecastProjection projection = (POForecastProjection)SelectedDataRow[columnEntity];
+            //initializeForecastConfig(projection);
+            //if (showCustomPaymentDialog(projection))
+            //{
+            //    projection.ForecastConfig.MODE = POPaymentTerms.Custom;
+            //    projection.PaymentTerms = POPaymentTerms.Custom;
+            //    MainViewModel.Save(projection.ForecastConfig);
+            //    generatePOForecast(projection, alignedDataDateCollection);
 
-                GridControlService.RefreshData();
-            }
-        }
-
-        private void initializeForecastConfig(POForecastProjection projection)
-        {
-            //create empty entry so that custom payment date have something to attach to
-            if (projection.ForecastConfig == null)
-            {
-                FORECAST_PO newFORECAST_PO = new FORECAST_PO();
-                newFORECAST_PO.PONO = projection.PONO;
-                newFORECAST_PO.MODE = POPaymentTerms.Thirty_Days;
-                newFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
-                newFORECAST_PO.REMAINING_PERIOD = 1;
-                newFORECAST_PO.FIRST_FORECAST = DateTime.Now.Date;
-                projection.SetForecastConfig(newFORECAST_PO);
-                MainViewModel.Save(projection.ForecastConfig);
-            }
+            //    GridControlService.RefreshData();
+            //}
         }
 
         /// <summary>
@@ -322,38 +455,41 @@ namespace BluePrints.ViewModels
         /// <returns>User clicks ok</returns>
         private bool showCustomPaymentDialog(POForecastProjection projection)
         {
-            PO_CUSTOMDATECollectionViewModelWrapper POCustomDateViewModel = PO_CUSTOMDATECollectionViewModelWrapper.Create();
-            POCustomDateViewModel.OnParameterChange(projection.ForecastConfig);
-            if (CustomPODialogService.ShowDialog(MessageButton.OKCancel, "Assign payment dates and percentages", "PO_CUSTOMDATECollectionView", POCustomDateViewModel) == MessageResult.OK)
-            {
-                projection.CustomPaymentDates = PO_CUSTOMDATECollection.Where(x => x.FORECAST_PO_GUID == projection.ForecastConfig.GUID).ToList();
-                decimal totalPercent = projection.CustomPaymentDates.Sum(x => x.PAYMENT_PERCENT);
-                if (totalPercent < 1 || totalPercent > 1)
-                {
-                    MessageBoxService.ShowMessage("Please make sure % is 100%");
-                    return showCustomPaymentDialog(projection);
-                }
-                else
-                {
-                    POCustomDateViewModel.Dispose();
-                    return true;
-                }
-            }
-            else
-            {
-                POCustomDateViewModel.Dispose();
-                return false;
-            }
+            //FORECAST_PO_DATECollectionViewModelWrapper POCustomDateViewModel = FORECAST_PO_DATECollectionViewModelWrapper.Create();
+            //POCustomDateViewModel.OnParameterChange(projection.ForecastConfig);
+            //if (CustomPODialogService.ShowDialog(MessageButton.OKCancel, "Assign payment dates and percentages", "FORECAST_PO_DATECollectionView", POCustomDateViewModel) == MessageResult.OK)
+            //{
+            //    projection.FORECAST_POs = FORECAST_PO_DATECollection.Where(x => x.GUID_FORECAST_PO == projection.ForecastConfig.GUID).ToList();
+            //    decimal totalPercent = projection.FORECAST_POs.Sum(x => x.PAYMENT_PERCENT);
+            //    if (totalPercent < 1 || totalPercent > 1)
+            //    {
+            //        MessageBoxService.ShowMessage("Please make sure % is 100%");
+            //        return showCustomPaymentDialog(projection);
+            //    }
+            //    else
+            //    {
+            //        POCustomDateViewModel.Dispose();
+            //        return true;
+            //    }
+            //}
+            //else
+            //{
+            //    POCustomDateViewModel.Dispose();
+            //    return false;
+            //}
+
+            return false;
         }
 
-        private void generatePOForecast(POForecastProjection forecast, List<DateTime> alignedDates, DataRow PORow = null, bool refreshRow = false)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, string POno = "", DataRow PORow = null, bool refreshRow = false)
         {
-            if(PORow == null)
-                PORow = findPORow(forecast.PONO);
+            if(PORow == null && POno != string.Empty)
+                PORow = findPORow(POno);
 
             if (PORow != null)
             {
-                forecast.ResetPaymentDates();
+                POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
+                forecast.UpdateForecastPayments(FORECAST_POCollection);
 
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
@@ -361,6 +497,7 @@ namespace BluePrints.ViewModels
                     PORow[alignedDate.ToShortDateString()] = 0;
                 }
 
+                decimal totalForecast = 0;
                 foreach (ExoDataPoint forecastPayment in forecast.ForecastPayments)
                 {
                     DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= forecastPayment.ActualDate);
@@ -373,8 +510,12 @@ namespace BluePrints.ViewModels
                     {
                         string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
                         PORow[alignedDateField] = forecastPayment.Costs;
+                        totalForecast += forecastPayment.Costs;
                     }
                 }
+
+                PORow[columnUnforecasted] = forecast.PO_RemainingPrice - totalForecast;
+                PORow[columnTotalForecast] = totalForecast;
             }
         }
 
@@ -386,16 +527,16 @@ namespace BluePrints.ViewModels
 
         private DataRow findPORow(string PONumber)
         {
-                return (from DataRow dr in dataPointsTable.Rows
-                        where ((POForecastProjection)dr[columnEntity]).PONO == PONumber
-                        select dr).FirstOrDefault();
+            return (from DataRow dr in dataPointsTable.Rows
+                    where ((POForecastProjection)dr[columnEntity]).PONO == PONumber
+                    select dr).FirstOrDefault();
         }
 
-        public IEnumerable<PO_CUSTOMDATE> PO_CUSTOMDATECollection
+        public IEnumerable<FORECAST_PO_DATE> FORECAST_PO_DATECollection
         {
             get
             {
-                var collection = GetEntities<PO_CUSTOMDATE>();
+                var collection = GetEntities<FORECAST_PO_DATE>();
                 if (collection != null)
                 {
                     collection = collection.OrderBy(x => x.PAYMENT_DATE);
@@ -407,10 +548,56 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            EntitiesUndoRedoManager.Clear();
+
             dataPointsTable = null;
             base.FullRefresh();
         }
 
+        public DateTime ForecastStartDate
+        {
+            get
+            {
+                DateTime dataDate = DateTime.Now;
+
+                //do this to prevent binding errors
+                if (loadPROJECT != null && loadPROJECT.FORECAST_DATA_DATE != null)
+                    dataDate = (DateTime)loadPROJECT.FORECAST_DATA_DATE;
+
+                return new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
+            }
+            set
+            {
+                if (!IsLoading)
+                {
+                    DateTime saveDateTime = value;
+                    loadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddDays(-1);
+                    PROJECTCollectionViewModel.Save(loadPROJECT);
+                    refreshDataTable();
+                }
+            }
+        }
+
+        public DateTime ForecastEndDate
+        {
+            get
+            {
+                //do this to prevent binding errors
+                if (loadPROJECT == null || loadPROJECT.FORECAST_END_DATE == null)
+                    return DateTime.Now;
+
+                return (DateTime)loadPROJECT.FORECAST_END_DATE;
+            }
+            set
+            {
+                if (!IsLoading)
+                {
+                    loadPROJECT.FORECAST_END_DATE = value;
+                    PROJECTCollectionViewModel.Save(loadPROJECT);
+                    refreshDataTable();
+                }
+            }
+        }
 
         public DataRowView SelectedDataRow { get; set; }
 
@@ -441,6 +628,19 @@ namespace BluePrints.ViewModels
             //selectedItemsChangedDispatcher.Start();
         }
 
+        public CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
         private void SelectedItemsChangedDispatcher_Tick(object sender, EventArgs e)
         {
             selectedItemsChangedDispatcher.Stop();
@@ -462,6 +662,42 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool CanUndo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanUndo();
+        }
+
+        public bool CanRedo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanRedo();
+        }
+
+        public void Undo()
+        {
+            EntitiesUndoRedoManager.Undo();
+        }
+
+        public void Redo()
+        {
+            EntitiesUndoRedoManager.Redo();
+        }
+
+        public void KeyboardCopy()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^c");
+        }
+
+        public void KeyboardPaste()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^v");
+        }
+
         protected IDialogService CustomPODialogService
         {
             get { return this.GetRequiredService<IDialogService>("CustomPODialogService"); }
@@ -475,6 +711,17 @@ namespace BluePrints.ViewModels
             get { return "PROJECTPOForecastViewModelWrapper"; }
         }
 
+        protected override void OnClose(CancelEventArgs e)
+        {
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
         #endregion
+
+        public class POLine
+        {
+            public string PONumber { get; set; }
+            public List<ExoDataPoint> DataPoints { get; set; }
+        }
     }
 }

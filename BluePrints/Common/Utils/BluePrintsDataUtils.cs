@@ -529,9 +529,11 @@ namespace BluePrints.Common.ViewModel.Utils
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
                     poDataPoint.BudgetedCosts = 0;
+                    poDataPoint.TotalUnits = ((decimal)po.ORD_QUANT);
                     poDataPoint.Units = ((decimal)po.ORD_QUANT) - ((decimal)po.SUP_QUANT);
                     poDataPoint.Costs = poDataPoint.Units * ((decimal)po.UNITPRICE);
                     poDataPoint.CostPerQty = ((decimal)po.UNITPRICE);
+                    poDataPoint.TotalCosts = poDataPoint.TotalUnits * poDataPoint.CostPerQty;
                     if (alignedDataDates != null)
                         poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
 

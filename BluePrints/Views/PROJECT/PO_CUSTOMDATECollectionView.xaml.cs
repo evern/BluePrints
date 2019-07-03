@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class PO_CUSTOMDATECollectionView : UserControl
+    public partial class FORECAST_PO_DATECollectionView : UserControl
     {
-        public PO_CUSTOMDATECollectionView()
+        public FORECAST_PO_DATECollectionView()
         {
             InitializeComponent();
         }

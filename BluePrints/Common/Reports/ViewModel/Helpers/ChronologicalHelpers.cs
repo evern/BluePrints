@@ -169,12 +169,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             lastEndOfMonthDate = lastEndOfMonthDate.AddMonths(1).AddDays(-1);
             var alignedDataDatesCollection = new List<DateTime>();
 
+            DateTime progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1);
             //forward the first progress date to scan to after the datadate aligned to end day of week
             do
             {
                 lastProgressDate = lastProgressDate.AddMonths(1);
-                alignedDataDatesCollection.Add(lastProgressDate);
-            } while (lastProgressDate < lastEndOfMonthDate);
+                progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1).AddDays(-1);
+                alignedDataDatesCollection.Add(progressEndOfMonth);
+            } while (progressEndOfMonth < lastEndOfMonthDate);
 
             return alignedDataDatesCollection;
         }

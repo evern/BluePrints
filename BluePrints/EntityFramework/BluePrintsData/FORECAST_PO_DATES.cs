@@ -6,13 +6,13 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("PO_CUSTOMDATE")]
-    public partial class PO_CUSTOMDATE
+    [Table("FORECAST_PO_DATE")]
+    public partial class FORECAST_PO_DATE
     {
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid FORECAST_PO_GUID { get; set; }
+        public Guid GUID_FORECAST_PO { get; set; }
 
         public DateTime PAYMENT_DATE { get; set; }
 

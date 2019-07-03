@@ -48,8 +48,8 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup>
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                <!--<dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />-->
+                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.ExpandAllGroupsCommand, ElementName=userControl}" Content="Expand All Groups" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all groups, only works when grid is grouped" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.CollapseAllGroupsCommand, ElementName=userControl}" Content="Collapse All Groups" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=CollapseFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Collapse all groups, only works when grid is grouped" />
                                 <!--<dxb:BarButtonItem Command="{Binding DataContext.ExpandAllMasterRowsCommand, ElementName=userControl}" Content="Expand All Rows" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all rows" />
@@ -77,7 +77,7 @@
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                             </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="P6 Tools">
+                            <dxr:RibbonPageGroup Caption="P6 Tools">
                                 <dxb:BarStaticItem Content="P6 Schedule" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.P6ForecastProject, ElementName=userControl}" ToolTip="P6 Forecast Schedule">
                                     <dxb:BarEditItem.EditSettings>

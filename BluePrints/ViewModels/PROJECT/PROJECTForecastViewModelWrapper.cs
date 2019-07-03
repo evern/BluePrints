@@ -211,28 +211,6 @@ namespace BluePrints.ViewModels
             return calcTypes;
         }
 
-        public override DateTime? FixedStartDate
-        {
-            get
-            {
-                //do this to prevent binding errors
-                if (liveDesignProgress == null || LoadPROJECT == null)
-                    return DateTime.Now;
-
-                return LoadPROJECT.FORECAST_DATA_DATE == null ? liveDesignProgress.DATA_DATE : (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
-                //return loadPROJECT.FORECAST_START_DATE == null ? liveDesignProgress.PROGRESS_START : (DateTime)loadPROJECT.FORECAST_START_DATE;
-            }
-            set
-            {
-                if (isCompletelyLoaded)
-                {
-                    LoadPROJECT.FORECAST_START_DATE = value;
-                    PROJECTCollectionViewModel.Save(LoadPROJECT);
-                    this.RaisePropertyChanged(x => x.FixedStartDate);
-                }
-            }
-        }
-
         public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
 
         public override DateTime? FixedDataDate
@@ -272,7 +250,7 @@ namespace BluePrints.ViewModels
                 {
                     LoadPROJECT.FORECAST_END_DATE = value;
                     PROJECTCollectionViewModel.Save(LoadPROJECT);
-                    this.RaisePropertyChanged(x => x.FixedDataDate);
+                    this.RaisePropertyChanged(x => x.FixedEndDate);
                 }
             }
         }
@@ -362,6 +340,10 @@ namespace BluePrints.ViewModels
 
         protected override void onSummaryCalculateComplete()
         {
+            //indicating that this wrapper is disposed
+            if (FORECASTCollectionViewModel == null)
+                return;
+
             alignedDataDateCollection.Clear();
             DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();
@@ -404,6 +386,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
             ForecastSummary.Reset();
             loadSummaryStats();
@@ -463,7 +446,7 @@ namespace BluePrints.ViewModels
                     else
                         endDateToGenerate = FixedEndDate;
 
-                    alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedStartDate, endDateToGenerate);
+                    alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
                     commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, alignedDataDateCollection, (DateTime)FixedDataDate);
 
                     //construct data points table
@@ -863,125 +846,14 @@ namespace BluePrints.ViewModels
 
         }
 
-
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
         {
-            //EntitiesUndoRedoManager.Clear();
             EntitiesUndoRedoManager.PauseActionId();
-            var selected_cells = gridTableView.GetSelectedCells();
-            if (selected_cells.Count == 0)
-            {
-                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
-                .Select(x => (GridControl)gridControl.GetDetail(x))
-                .Where(x => x != null).
-                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
-
-                if (selected_cells.Count == 0)
-                    return;
-                else
-                {
-                    gridTableView = (TableView)selected_cells.First().Column.View;
-                    gridControl = gridTableView.Grid;
-                }
-            }
-
-            List<List<string>> row_data = new List<List<string>>();
-            foreach (var row in RowData)
-            {
-                string formatRow = row;
-                //remove tab in front
-                if (row.Substring(0, 1) == "\t")
-                {
-                    formatRow = row.Substring(1, row.Length - 1);
-                }
-
-                List<string> column_data = formatRow.Split('\t').ToList();
-                row_data.Add(column_data);
-            }
-
-            var grouped_results = row_data
-            .SelectMany(inner => inner.Select((item, index) => new { item, index }))
-            .GroupBy(i => i.index, i => i.item)
-            .Select(g => g.ToList())
-            .ToList();
-
-            var selected_cells_groupby_columns = selected_cells.GroupBy(x => x.Column.FieldName).Select(group => new { FieldName = group.Key, Cells = group.ToList() });
-            if (grouped_results.Count == 0)
-            {
-                foreach (var selected_cell in selected_cells)
-                {
-                    int row_handle = selected_cell.RowHandle;
-                    DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
-                    DataRow editing_row = editing_row_view.Row;
-                    basePasteData(editing_row, selected_cell.Column, string.Empty, false);
-                }
-            }
-            else
-            {
-                GridCell first_selected_cell = selected_cells.First();
-                GridCell last_selected_cell = selected_cells.Last();
-
-                int first_row_handle = selected_cells.Min(x => x.RowHandle);
-                int last_row_handle = selected_cells.Max(x => x.RowHandle);
-                int first_row_visible_index = gridControl.GetRowVisibleIndexByHandle(first_row_handle);
-                int last_row_visible_index = gridControl.GetRowVisibleIndexByHandle(last_row_handle);
-                int numberOfSelectedRows = (last_row_visible_index - first_row_visible_index) + 1;
-                int numberOfCopiedRows = grouped_results.First().Count;
-
-                List<GridColumn> visible_columns = gridTableView.VisibleColumns.ToList();
-                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
-                int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex;
-
-                int numberOfSelectedColumns = (last_column_visible_index - first_column_visible_index) + 1;
-                int numberOfCopiedColumns = grouped_results.Count;
-
-                //commented out because not accurate during banded view
-                //int first_column_visible_index = first_selected_cell.Column.VisibleIndex;
-
-                int rowOffsetSelection = numberOfSelectedRows > numberOfCopiedRows ? numberOfSelectedRows : numberOfCopiedRows;
-                int columnOffsetSelection = numberOfSelectedColumns > numberOfCopiedColumns ? numberOfSelectedColumns : numberOfCopiedColumns;
-
-                int pasteValueRowOffset = 0;
-                for (int rowOffset = 0; rowOffset < rowOffsetSelection; rowOffset++)
-                {
-                    int pasteValueColumnOffset = 0;
-                    for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset++)
-                    {
-                        if (!visible_columns.Any(x => x.VisibleIndex == (first_column_visible_index + columnOffset)))
-                            continue;
-
-                        GridColumn current_column = visible_columns.First(x => x.VisibleIndex == (first_column_visible_index + columnOffset));
-                        string columnValue = grouped_results[pasteValueColumnOffset][pasteValueRowOffset];
-
-                        int current_row_visible_index = first_row_visible_index + rowOffset;
-                        int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
-
-                        object rowObject = gridControl.GetRow(current_row_handle);
-                        if (rowObject == null)
-                            continue;
-
-                        DataRowView editing_row_view = (DataRowView)rowObject;
-                        DataRow editing_row = editing_row_view.Row;
-                        var gg = from c in editing_row.Table.Columns.Cast<DataColumn>()
-                                select c.ColumnName;
-                        
-                        pasteValueColumnOffset += 1;
-                        if (pasteValueColumnOffset >= grouped_results.Count)
-                            pasteValueColumnOffset = 0;
-
-                        basePasteData(editing_row, current_column, columnValue, false);
-                    }
-
-                    pasteValueRowOffset += 1;
-                    if (pasteValueRowOffset >= grouped_results[pasteValueColumnOffset].Count)
-                        pasteValueRowOffset = 0;
-                }
-            }
-
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isNewRow)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData)
         {
             if (copyColumn.FieldType == typeof(decimal))
             {
@@ -990,8 +862,7 @@ namespace BluePrints.ViewModels
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
                 {
-                    if (!isNewRow)
-                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
+                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
 
                     newRow[copyColumn.FieldName] = decimal_value;
                     DateTime columnDateTime;
@@ -1002,7 +873,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    resetRemainingOnJob(newRow, copyColumn.FieldName, !isNewRow);
+                    resetRemainingOnJob(newRow, copyColumn.FieldName, true);
                     return false;
                 }
             }
@@ -1392,7 +1263,7 @@ namespace BluePrints.ViewModels
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
             if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
             {
-                if (Math.Round(job.Outstanding, 0) > Math.Round(uncommittedRecalculation, 0))
+                if (Math.Round(job.Outstanding) > Math.Round(uncommittedRecalculation))
                     job.IsPOError = true;
                 else
                     job.IsPOError = false;

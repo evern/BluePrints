@@ -13,8 +13,6 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public FORECAST_PO()
         {
-            PO_CUSTOMDATE = new HashSet<PO_CUSTOMDATE>();
-            FORECAST_PO_RESULT = new HashSet<FORECAST_PO_RESULT>();
         }
 
         [Key]
@@ -26,11 +24,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PONO { get; set; }
 
-        public POPaymentTerms MODE { get; set; }
+        public DateTime FORECAST_DATE { get; set; }
 
-        public decimal REMAINING_PERIOD { get; set; }
-
-        public DateTime FIRST_FORECAST { get; set; }
+        public double? FORECAST_PERCENT { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -45,11 +41,5 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PO_CUSTOMDATE> PO_CUSTOMDATE { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<FORECAST_PO_RESULT> FORECAST_PO_RESULT { get; set; }
     }
 }

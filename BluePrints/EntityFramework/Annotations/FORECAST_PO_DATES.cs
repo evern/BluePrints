@@ -9,7 +9,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PO_CUSTOMDATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    public partial class FORECAST_PO_DATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public DateTime EntityCreatedDate

@@ -10,27 +10,27 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class PO_CUSTOMDATECollectionViewModelWrapper :
+    public class FORECAST_PO_DATECollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <PO_CUSTOMDATE, PO_CUSTOMDATE, Guid, IBluePrintsEntitiesUnitOfWork>
+        <FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of PO_CUSTOMDATECollectionViewModelWrapper as a POCO view model.
+        /// Creates a new instance of FORECAST_PO_DATECollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PO_CUSTOMDATECollectionViewModelWrapper Create(
+        public static FORECAST_PO_DATECollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new PO_CUSTOMDATECollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new FORECAST_PO_DATECollectionViewModelWrapper(unitOfWorkFactory));
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the PO_CUSTOMDATECollectionViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PO_CUSTOMDATECollectionViewModelWrapper type without the POCO proxy factory.
+        /// Initializes a new instance of the FORECAST_PO_DATECollectionViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the FORECAST_PO_DATECollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PO_CUSTOMDATECollectionViewModelWrapper(
+        protected FORECAST_PO_DATECollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -52,34 +52,34 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PO_CUSTOMDATES);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<PO_CUSTOMDATE>, IQueryable<PO_CUSTOMDATE>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<FORECAST_PO>, IQueryable<FORECAST_PO>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.FORECAST_PO_GUID == loadFORECAST_PO.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadFORECAST_PO.GUID);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PO_CUSTOMDATE> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public bool onBeforeEntitySaved(PO_CUSTOMDATE entity)
+        public bool onBeforeEntitySaved(FORECAST_PO entity)
         {
-            entity.FORECAST_PO_GUID = loadFORECAST_PO.GUID;
+            entity.GUID_PROJECT = loadFORECAST_PO.GUID;
             return true;
         }
 
-        public override string UnifiedValueValidation(PO_CUSTOMDATE projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(FORECAST_PO projection, string field_name, object new_value)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(PO_CUSTOMDATE projection)
+        public override string UnifiedRowValidation(FORECAST_PO projection)
         {
             return string.Empty;
         }
@@ -92,7 +92,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PO_CUSTOMDATECollectionViewModelWrapper"; }
+            get { return "FORECAST_PO_DATECollectionViewModelWrapper"; }
         }
 
         #endregion
