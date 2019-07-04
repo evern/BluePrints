@@ -18,7 +18,7 @@ namespace BluePrints.Common.Projections
         public string Description { get; set; }
         public string Supplier { get; set; }
         public List<ExoDataPoint> ExoPOs { get; set; }
-        public List<ExoDataPoint> ExoActuals { get; set; }
+        public DateTime ActualCutOffDate { get; set; }
         public List<FORECAST_PO> FORECAST_POs { get; set; }
 
         public POForecastProjection()
@@ -40,14 +40,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public void UpdateForecastPayments(IEnumerable<FORECAST_PO> allFORECAST_POs)
+        public void UpdateForecastPayments(IEnumerable<FORECAST_PO> allFORECAST_POs, DateTime actualCutOffDate)
         {
+            ActualCutOffDate = actualCutOffDate;
             FORECAST_POs.Clear();
             ResetPaymentDates();
-            IEnumerable<FORECAST_PO> currentPOs = allFORECAST_POs.Where(x => x.PONO == this.PONO);
-            foreach(FORECAST_PO currentPO in currentPOs)
+            IEnumerable<FORECAST_PO> currentPOForecasts = allFORECAST_POs.Where(x => x.PONO == this.PONO);
+            foreach(FORECAST_PO currentPOForecast in currentPOForecasts)
             {
-                FORECAST_POs.Add(currentPO);
+                FORECAST_POs.Add(currentPOForecast);
             }
         }
 
@@ -58,19 +59,22 @@ namespace BluePrints.Common.Projections
             {
                 if(forecastPayments == null)
                 {
-                    DateTime lastDayOfPreviousMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddDays(-1);
-                    forecastPayments = new List<ExoDataPoint>();
+                    if (ActualCutOffDate == null)
+                        return null;
 
+                    forecastPayments = new List<ExoDataPoint>();
                     if (InvoiceDate != null)
                     {
-                        foreach(FORECAST_PO FORECAST_PO in FORECAST_POs)
+                        foreach (FORECAST_PO FORECAST_PO in FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
                         {
-                            if (FORECAST_PO.FORECAST_DATE.Date < lastDayOfPreviousMonth || FORECAST_PO.FORECAST_PERCENT == null)
+                            if (FORECAST_PO.FORECAST_DATE.Date <= ActualCutOffDate.Date || FORECAST_PO.FORECAST_VALUE == null)
                                 continue;
 
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
-                            forecastPaymentPoint.Costs = Math.Round(PO_TotalPrice) * (decimal)FORECAST_PO.FORECAST_PERCENT;
+
+                            forecastPaymentPoint.Costs = (decimal)FORECAST_PO.FORECAST_VALUE;
                             forecastPaymentPoint.ActualDate = FORECAST_PO.FORECAST_DATE.Date;
+
                             forecastPayments.Add(forecastPaymentPoint);
                         }
                     }

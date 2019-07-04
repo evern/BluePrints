@@ -1371,7 +1371,10 @@ namespace BluePrints.ViewModels
         private void DelayedProjectSaveTimer_Tick(object sender, EventArgs e)
         {
             delayedProjectSaveTimer.Stop();
-            PROJECTCollectionViewModel.Save(LoadPROJECT);
+
+            //when view is closed halfway
+            if(PROJECTCollectionViewModel != null)
+                PROJECTCollectionViewModel.Save(LoadPROJECT);
         }
 
         /// <summary>

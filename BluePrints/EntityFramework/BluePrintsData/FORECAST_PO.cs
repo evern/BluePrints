@@ -26,7 +26,7 @@ namespace BluePrints.Data
 
         public DateTime FORECAST_DATE { get; set; }
 
-        public double? FORECAST_PERCENT { get; set; }
+        public decimal? FORECAST_VALUE { get; set; }
 
         public DateTime CREATED { get; set; }
 

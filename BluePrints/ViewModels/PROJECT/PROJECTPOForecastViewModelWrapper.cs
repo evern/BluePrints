@@ -118,9 +118,13 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        //List<ExoDataPoint> materialDataPoints;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
-            exoPOs = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER);
+            generateAlignedDataDates();
+            //materialDataPoints = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER, alignedDataDateCollection, 1, true);
+
+            exoPOs = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
             //exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -285,7 +289,7 @@ namespace BluePrints.ViewModels
                 if (dataPointsTable == null)
                 {
                     //generate aligned dates
-                    if (!generateAlignedDataDates())
+                    if (alignedDataDateCollection == null || alignedDataDateCollection.Count == 0)
                         return null;
 
                     IsForecastLoading = true;
@@ -324,7 +328,7 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, projection.PONO, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, projection.PONO, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
@@ -397,7 +401,7 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue);
 
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
         }
@@ -423,14 +427,14 @@ namespace BluePrints.ViewModels
             findFORECAST_PO.PONO = entity.PONO;
             findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
             if (viewCosts != null && ((decimal)viewCosts) == 0.00m)
-                findFORECAST_PO.FORECAST_PERCENT = null;
+                findFORECAST_PO.FORECAST_VALUE = null;
             else
-                findFORECAST_PO.FORECAST_PERCENT = viewCosts == null ? (double?)null : Convert.ToDouble(viewCosts / Math.Round(entity.PO_TotalPrice));
+                findFORECAST_PO.FORECAST_VALUE = viewCosts;
 
             MainViewModel.Save(findFORECAST_PO);
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, dataRow);
         }
 
         public void ValidateCell(GridCellValidationEventArgs e)
@@ -460,21 +464,6 @@ namespace BluePrints.ViewModels
             {
                 return SelectedDataRow != null;
             }
-        }
-
-        public void ShowCustomPaymentDialog()
-        {
-            //POForecastProjection projection = (POForecastProjection)SelectedDataRow[columnEntity];
-            //initializeForecastConfig(projection);
-            //if (showCustomPaymentDialog(projection))
-            //{
-            //    projection.ForecastConfig.MODE = POPaymentTerms.Custom;
-            //    projection.PaymentTerms = POPaymentTerms.Custom;
-            //    MainViewModel.Save(projection.ForecastConfig);
-            //    generatePOForecast(projection, alignedDataDateCollection);
-
-            //    GridControlService.RefreshData();
-            //}
         }
 
         decimal? spreadPeriod = null;
@@ -590,7 +579,7 @@ namespace BluePrints.ViewModels
                     }
 
                     if (!forceRefreshDataTable)
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, string.Empty, editing_row);
+                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, editing_row);
 
                     pasteValueRowOffset += 1;
                 }
@@ -600,7 +589,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, string POno = "", DataRow PORow = null)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, DateTime cutOffDate, string POno = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
                 PORow = findPORow(POno);
@@ -608,7 +597,7 @@ namespace BluePrints.ViewModels
             if (PORow != null)
             {
                 POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
-                forecast.UpdateForecastPayments(FORECAST_POCollection);
+                forecast.UpdateForecastPayments(FORECAST_POCollection, cutOffDate);
 
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
@@ -638,10 +627,65 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void AlignPOsWithActuals()
+        {
+            IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
+                                                            select (POForecastProjection)dr[columnEntity];
+
+            List < FORECAST_PO > saveFORECAST_POs = new List<FORECAST_PO>();
+            foreach(POForecastProjection projection in projections)
+            {
+                decimal viewForecastCosts = projection.FORECAST_POs.Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                decimal costDifferences = projection.PO_RemainingPrice - viewForecastCosts;
+
+                foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
+                {
+                    if (FORECAST_PO.FORECAST_DATE.Date <= ActualsCutOffDate.Date)
+                    {
+                        //store as 0 so that when we rewind and adjust actuals again this point will actually be used
+                        FORECAST_PO.FORECAST_VALUE = 0.00m;
+                        saveFORECAST_POs.Add(FORECAST_PO);
+                        continue;
+                    }
+
+                    //cost adjustment
+                    if (costDifferences > 0)
+                    {
+                        FORECAST_PO.FORECAST_VALUE += costDifferences;
+                        saveFORECAST_POs.Add(FORECAST_PO);
+                        break;
+                    }
+                    else if (costDifferences < 0)
+                    {
+                        decimal postAdjustmentCosts = (decimal)FORECAST_PO.FORECAST_VALUE + costDifferences;
+                        if (postAdjustmentCosts > 0)
+                        {
+                            FORECAST_PO.FORECAST_VALUE += costDifferences;
+                            saveFORECAST_POs.Add(FORECAST_PO);
+                            break;
+                        }
+                        else
+                        {
+                            costDifferences += (decimal)FORECAST_PO.FORECAST_VALUE;
+                            FORECAST_PO.FORECAST_VALUE = 0.00m;
+                            saveFORECAST_POs.Add(FORECAST_PO);
+                        }
+                    }
+                    else if (costDifferences == 0)
+                        break;
+                }
+            }
+
+            LastAlignedDate = DateTime.Now;
+            MainViewModel.BulkSave(saveFORECAST_POs);
+            refreshDataTable();
+        }
+
         bool? isForecastLoading = null;
         public bool IsForecastLoading { get; set; }
         private void refreshDataTable()
         {
+            generateAlignedDataDates();
             dataPointsTable = null;
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
@@ -670,11 +714,13 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             EntitiesUndoRedoManager.Clear();
-
+            //set exoPOs to null to avoid dataPointsTable getting refreshed when DisplayEntities aren't fully loaded yet
+            exoPOs = null;
             dataPointsTable = null;
             base.FullRefresh();
         }
 
+        public DateTime ActualsCutOffDate => new DateTime(ForecastStartDate.Year, ForecastStartDate.Month, 1).AddDays(-1);
         public DateTime ForecastStartDate
         {
             get
@@ -720,6 +766,28 @@ namespace BluePrints.ViewModels
                     refreshDataTable();
 
                     this.RaisePropertyChanged(x => x.ForecastEndDate);
+                }
+            }
+        }
+
+        public DateTime? LastAlignedDate
+        {
+            get
+            {
+                //do this to prevent binding errors
+                if (loadPROJECT != null && loadPROJECT.FORECAST_PO_LAST_ALIGNED != null)
+                    return (DateTime)loadPROJECT.FORECAST_PO_LAST_ALIGNED;
+
+                return null;
+            }
+            set
+            {
+                if (!IsForecastLoading)
+                {
+                    loadPROJECT.FORECAST_PO_LAST_ALIGNED = value;
+                    PROJECTCollectionViewModel.Save(loadPROJECT);
+
+                    this.RaisePropertyChanged(x => x.LastAlignedDate);
                 }
             }
         }

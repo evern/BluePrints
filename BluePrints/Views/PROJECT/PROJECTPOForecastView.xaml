@@ -48,6 +48,13 @@
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
+                                <dxb:BarStaticItem Content="Actuals Last Aligned" Glyph="{dx:DXImage Image=AlignVerticalLeft2_16x16.png}" LargeGlyph="{dx:DXImage Image=AlignVerticalLeft2_32x32.png}" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.LastAlignedDate, ElementName=userControl}" ToolTip="The last time PO values were adjusted with actuals">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:DateEditSettings />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
+                                <dxb:BarButtonItem Command="{Binding DataContext.AlignPOsWithActualsCommand, ElementName=userControl}" Content="Align Actuals" Glyph="{dx:DXImage Image=InitialState_16x16.png}" LargeGlyph="{dx:DXImage Image=InitialState_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Align forecast with actuals" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -71,7 +78,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="Entity.PONO" Fixed="Left" Header="PO Number" ReadOnly="True" VisibleIndex="10" />
-                                    <dxg:GridColumn FieldName="Entity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="11" />
+                                    <!--<dxg:GridColumn FieldName="Entity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="11" />-->
                                     <dxg:GridColumn FieldName="Entity.Supplier" Fixed="Left" Header="Supplier" ReadOnly="True" VisibleIndex="12" />
                                     <dxg:GridColumn FieldName="Entity.InvoiceDate" Fixed="Left" Header="Invoiced" ReadOnly="True" VisibleIndex="20" >
                                         <dxg:GridColumn.EditSettings>
@@ -114,7 +121,7 @@
                                             <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Command="{Binding DataContext.PaymentSpreadCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dx:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dx:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
+                                            <dxb:BarButtonItem Command="{Binding DataContext.PaymentSpreadCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Remaining Costs" Glyph="{dx:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dx:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute remaining costs on months" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.ShowCustomPaymentDialogCommand, ElementName=userControl}" Content="Edit Custom Terms" Glyph="{dx:DXImage Image=KPI_16x16.png}" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
@@ -144,9 +151,9 @@
                                         <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
                                         <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                     </dxg:GridControlBand>
-                                    <dxg:GridControlBand Header="Costs">
-                                        <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
-                                        <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" />
+                                    <dxg:GridControlBand Header="Remaining">
+                                        <dxg:GridColumn FieldName="Remaining Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
+                                        <dxg:GridColumn FieldName="Remaining Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Details">
                                         <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" VisibleIndex="110" />
