@@ -894,7 +894,7 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\PO_CUSTOMDATECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
@@ -1000,8 +1000,8 @@
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml.cs">
-      <DependentUpon>PO_CUSTOMDATECollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROJECT\POSpreadView.xaml.cs">
+      <DependentUpon>POSpreadView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOForecastView.xaml.cs">
       <DependentUpon>PROJECTPOForecastView.xaml</DependentUpon>
@@ -1951,7 +1951,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml">
+    <Page Include="Views\PROJECT\POSpreadView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

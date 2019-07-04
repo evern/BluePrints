@@ -58,14 +58,14 @@ namespace BluePrints.Common.Projections
             {
                 if(forecastPayments == null)
                 {
-                    DateTime lastDayOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+                    DateTime lastDayOfPreviousMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddDays(-1);
                     forecastPayments = new List<ExoDataPoint>();
 
                     if (InvoiceDate != null)
                     {
                         foreach(FORECAST_PO FORECAST_PO in FORECAST_POs)
                         {
-                            if (FORECAST_PO.FORECAST_DATE.Month < DateTime.Now.Month || FORECAST_PO.FORECAST_PERCENT == null)
+                            if (FORECAST_PO.FORECAST_DATE.Date < lastDayOfPreviousMonth || FORECAST_PO.FORECAST_PERCENT == null)
                                 continue;
 
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();

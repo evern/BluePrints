@@ -1,4 +1,7 @@
 ﻿<UserControl x:Class="BluePrints.Views.PROJECTPOForecastView" xmlns:common="clr-namespace:BluePrints.Common" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTPOForecastViewModelWrapper}" mc:Ignorable="d">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding Window_KeyDownCommand}" PassEventArgsToCommand="True" />
+    </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -14,8 +17,8 @@
                 <dx:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                        <Setter Property="MinWidth" Value="600" />
-                        <Setter Property="MinHeight" Value="800" />
+                        <Setter Property="MinWidth" Value="200" />
+                        <Setter Property="MinHeight" Value="200" />
                     </Style>
                 </dx:DialogService.DialogStyle>
             </dx:DialogService>
@@ -61,7 +64,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical" dxlc:LayoutControl.AllowVerticalSizing="True" >
                         <dxdo:LayoutPanel>
-                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" SelectionMode="Cell" ClipboardCopyMode="ExcludeHeader" AutoGenerateColumns="AddNew" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}">
+                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" SelectionMode="Cell" ClipboardCopyMode="ExcludeHeader" AutoGenerateColumns="AddNew" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsForecastLoading, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -111,6 +114,7 @@
                                             <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Command="{Binding DataContext.PaymentSpreadCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dx:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dx:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.ShowCustomPaymentDialogCommand, ElementName=userControl}" Content="Edit Custom Terms" Glyph="{dx:DXImage Image=KPI_16x16.png}" />
                                             <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
