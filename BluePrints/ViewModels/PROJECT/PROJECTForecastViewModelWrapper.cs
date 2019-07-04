@@ -1276,6 +1276,13 @@ namespace BluePrints.ViewModels
 
         public void SaveEAC()
         {
+            List<ForecastJobData> jobs = getJobDataFromDatatable();
+            if(jobs.Any(x => x.IsPOError))
+            {
+                MessageBoxService.ShowMessage("Please ensure that all PO forecasts matches remaining before saving", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
             removeProjectEACOnDate(FixedDataDateMonthEnd);
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);

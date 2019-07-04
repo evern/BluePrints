@@ -62,8 +62,6 @@ namespace BluePrints.ViewModels
         //List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
-        protected string columnTotalForecast = "TotalForecast";
-        protected string columnUnforecasted = "Unforecasted";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         protected override void resolveParameters(object parameter)
@@ -298,8 +296,6 @@ namespace BluePrints.ViewModels
                     //initialize datatable schema
                     dataPointsTable = new DataTable();
                     dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
-                    dataPointsTable.Columns.Add(columnTotalForecast, typeof(decimal));
-                    dataPointsTable.Columns.Add(columnUnforecasted, typeof(decimal));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -579,7 +575,12 @@ namespace BluePrints.ViewModels
                     }
 
                     if (!forceRefreshDataTable)
+                    {
                         updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, editing_row);
+
+                        //because grid doesn't refresh totals
+                        GridControlService.RefreshData();
+                    }
 
                     pasteValueRowOffset += 1;
                 }
@@ -605,7 +606,6 @@ namespace BluePrints.ViewModels
                     PORow[alignedDate.ToShortDateString()] = 0;
                 }
 
-                decimal totalForecast = 0;
                 foreach (ExoDataPoint forecastPayment in forecast.ForecastPayments)
                 {
                     DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= forecastPayment.ActualDate);
@@ -618,12 +618,8 @@ namespace BluePrints.ViewModels
                     {
                         string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
                         PORow[alignedDateField] = forecastPayment.Costs;
-                        totalForecast += forecastPayment.Costs;
                     }
                 }
-
-                PORow[columnUnforecasted] = forecast.PO_RemainingPrice - totalForecast;
-                PORow[columnTotalForecast] = totalForecast;
             }
         }
 

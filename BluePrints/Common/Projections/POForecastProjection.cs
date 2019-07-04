@@ -20,6 +20,11 @@ namespace BluePrints.Common.Projections
         public List<ExoDataPoint> ExoPOs { get; set; }
         public DateTime ActualCutOffDate { get; set; }
         public List<FORECAST_PO> FORECAST_POs { get; set; }
+        public decimal TotalForecast => FORECAST_POs.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+        public decimal Unforecasted => (PO_RemainingPrice - TotalForecast);
+        public bool IsPOError => Math.Round(Unforecasted) != 0;
+
+        public decimal ErrorImageWidth => IsPOError ? 15 : 0;
 
         public POForecastProjection()
         {
@@ -50,6 +55,8 @@ namespace BluePrints.Common.Projections
             {
                 FORECAST_POs.Add(currentPOForecast);
             }
+
+            this.RaisePropertiesChanged();
         }
 
         List<ExoDataPoint> forecastPayments { get; set; }

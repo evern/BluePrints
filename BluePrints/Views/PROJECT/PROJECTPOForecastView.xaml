@@ -85,25 +85,34 @@
                                             <dxe:DateEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.PO_TotalPrice" Fixed="Left" Header="Total Value" ReadOnly="True" VisibleIndex="40" >
+                                    <dxg:GridColumn FieldName="Entity.PO_TotalPrice" Fixed="Left" Header="Total" ReadOnly="True" VisibleIndex="40" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.PO_RemainingPrice" Fixed="Left" Header="Remaining" ReadOnly="True" VisibleIndex="50" >
+                                    <dxg:GridColumn FieldName="Entity.PO_RemainingPrice" Fixed="Left" Header="Outstanding" ReadOnly="True" VisibleIndex="50" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="TotalForecast" Fixed="Left" Header="Total Uncommitted" ReadOnly="True" VisibleIndex="60" >
+                                    <dxg:GridColumn FieldName="Entity.TotalForecast" Fixed="Left" Header="Forecasted" ReadOnly="True" VisibleIndex="60" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Unforecasted" Fixed="Left" Header="Unforecasted" ReadOnly="True" VisibleIndex="60" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn FieldName="Entity.Unforecasted" Fixed="Left" Header="Not Forecasted" ReadOnly="True" VisibleIndex="60" >
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="{Binding RowData.Row.Entity.ErrorImageWidth}" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Image Grid.Column="0" Visibility="{Binding RowData.Row.Entity.IsPOError, Converter={dxmvvm:BooleanToVisibilityConverter}}" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="Amount not forecasted must be zero"/>
+                                                    <dxe:SpinEdit Grid.Column="1" Name="PART_Editor" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
