@@ -27,6 +27,15 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup Caption="P6 Tools">
+                                <dxb:BarStaticItem Content="P6 Schedule" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" />
+                                <dxb:BarEditItem EditValue="{Binding DataContext.P6ForecastProject, ElementName=userControl}" ToolTip="P6 Forecast Schedule">
+                                    <dxb:BarEditItem.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
+                                    </dxb:BarEditItem.EditSettings>
+                                </dxb:BarEditItem>
+                                <dxb:BarButtonItem Content="P6 Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -37,8 +46,12 @@
                 </dxr:RibbonStatusBarControl>
                 <Grid>
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBUDGET_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxg:GridControl.Bands>
-                            <dxg:GridControlBand Header="Manual Entry">
+                        <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
@@ -95,22 +108,22 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" FilterPopupMode="CheckedList" Header="Budget">
+                                <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" FilterPopupMode="CheckedList" Header="Budget">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="True" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
+                                <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" FilterPopupMode="CheckedList" Header="Variation Code"/>
                                 <dxg:GridColumn FieldName="Entity.Entity.P6ACTIVITYMAP" FilterPopupMode="CheckedList" Header="P6 Activity (Optional)"/>
-                            </dxg:GridControlBand>
-                            <dxg:GridControlBand Header="Automatically Generated">
+                            <!--<dxg:GridControlBand Header="Automatically Generated">
                                 <dxg:GridColumn Header="Name" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" />
-                                <!--<dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job" HeaderToolTip="Sub job category for reporting. Automatically assigned field" ReadOnly="False">
+                                --><!--<dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job" HeaderToolTip="Sub job category for reporting. Automatically assigned field" ReadOnly="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>-->
-                            </dxg:GridControlBand>
-                        </dxg:GridControl.Bands>
+                                </dxg:GridColumn>--><!--
+                            </dxg:GridControlBand>-->
+                        </dxg:GridControl.Columns>
                         <!--<dxg:GridControl.Columns>-->
                             <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Visible="False" FilterPopupMode="CheckedList" Header="Budget Hours">
                                 <dxg:GridColumn.EditSettings>

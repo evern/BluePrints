@@ -179,7 +179,7 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
         protected BaselineMappingMode mappingMode;
-
+        protected bool isProject = false;
         protected IDialogService ActivityDetailDialogService
         {
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
@@ -196,6 +196,10 @@ namespace BluePrints.Common.Base
 
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
+
+            if(obj.Count() > 3)
+                isProject = ((bool)obj[3]);
+
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;

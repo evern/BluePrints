@@ -49,7 +49,7 @@ namespace BluePrints.ViewModels
         #region Database Operation
 
         protected override PhaseType phase_type => PhaseType.Construct;
-
+        private ESTIMATE loadESTIMATE;
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
             if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimation not found")));
 
-            p6_baseline_entity = entity;
+            loadESTIMATE = entity;
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -89,7 +89,12 @@ namespace BluePrints.ViewModels
             if (isFromPROGRESS)
                 return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
             else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
+            {
+                if(isProject)
+                    return query => query.Where(x => x.GUID_PROJECT == p6_baseline_entity.project_guid && x.STATUS == BaselineStatus.Live);
+                else
+                    return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
+            }
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
@@ -122,7 +127,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == p6_baseline_entity.GUID), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS, false, COMMODITY_CODECollection);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()

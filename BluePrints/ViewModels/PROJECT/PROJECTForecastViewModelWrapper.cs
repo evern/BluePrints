@@ -1796,7 +1796,7 @@ namespace BluePrints.ViewModels
         public decimal EAC_Margin_Percent => EAC_Revenue == 0 ? 0 : EAC_Margin / EAC_Revenue;
 
         public decimal TotalClaims { get; set; }
-        public decimal UnderOverClaim => Current_Cost - TotalClaims;
+        public decimal UnderOverClaim => TotalClaims - Current_Cost;
 
         public SolidColorBrush Budget_Margin_Background => Budget_Margin > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
         public SolidColorBrush Budget_Margin_Percent_Background => Budget_Margin_Percent > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
