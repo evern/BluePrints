@@ -193,6 +193,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Events
+        public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value)
+        {
+            if (field_name.ToUpper().Contains("BUDGET"))
+            {
+                if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                    return "You do not have authority to change the budget";
+            }
+
+            return base.UnifiedValueValidation(projection, field_name, new_value);
+        }
+
         public void UploadToExo()
         {
             base.CommitToExo(DisplaySelectedEntities);
@@ -205,7 +216,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "ExoDesignSubJobViewModelWrapper";
+                return "ExoConsructionSubJobViewModelWrapper";
             }
         }
 

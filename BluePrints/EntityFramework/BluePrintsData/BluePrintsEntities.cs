@@ -424,6 +424,12 @@ namespace BluePrints.Data
                 .WithOptional(e => e.PHASE)
                 .HasForeignKey(e => e.GUID_DPHASE);
 
+            modelBuilder.Entity<PHASE>()
+                .HasMany(e => e.RATE)
+                .WithOptional(e => e.PHASE)
+                .HasForeignKey(e => e.GUID_PHASE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PROGRESS>()
                 .HasMany(e => e.PROGRESS_ITEM)
                 .WithRequired(e => e.PROGRESS)

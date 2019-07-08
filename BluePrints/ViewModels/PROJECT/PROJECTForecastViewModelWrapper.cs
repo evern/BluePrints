@@ -41,6 +41,7 @@ using BluePrints.P6Data;
 using DevExpress.Xpf.Editors;
 using System.Windows.Threading;
 using System.Windows.Media;
+using DevExpress.Xpf.Core.Serialization;
 
 namespace BluePrints.ViewModels
 {
@@ -69,6 +70,12 @@ namespace BluePrints.ViewModels
 
             delayedUpdateFloatingProjectSummaryTimer = new DispatcherTimer();
             delayedUpdateFloatingProjectSummaryTimer.Interval = new TimeSpan(0, 0, 0, 1);
+
+            delayedGridUpdateTimer = new DispatcherTimer();
+            delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 1);
+
+            delayedDateChangeMessageBoxTimer = new DispatcherTimer();
+            delayedDateChangeMessageBoxTimer.Interval = new TimeSpan(0, 0, 0, 1);
         }
 
         protected override void addEntitiesLoader()
@@ -79,6 +86,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS, FORECAST_POProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
         }
 
@@ -107,6 +115,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
+        protected virtual Func<IRepositoryQuery<FORECAST_PO>, IQueryable<FORECAST_PO>> FORECAST_POProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
         public ForecastSummary ForecastSummary { get; set; }
@@ -128,6 +141,8 @@ namespace BluePrints.ViewModels
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
+        DispatcherTimer delayedGridUpdateTimer;
+        DispatcherTimer delayedDateChangeMessageBoxTimer;
 
         protected int spreadSheetPhaseIndex = 0;
         protected int spreadSheetAreaIndex = 1;
@@ -230,6 +245,7 @@ namespace BluePrints.ViewModels
                     LoadPROJECT.FORECAST_DATA_DATE = value;
                     PROJECTCollectionViewModel.Save(LoadPROJECT);
                     this.RaisePropertyChanged(x => x.FixedDataDate);
+                    //showDateChangeMessage();
                 }
             }
         }
@@ -251,8 +267,22 @@ namespace BluePrints.ViewModels
                     LoadPROJECT.FORECAST_END_DATE = value;
                     PROJECTCollectionViewModel.Save(LoadPROJECT);
                     this.RaisePropertyChanged(x => x.FixedEndDate);
+                    //showDateChangeMessage();
                 }
             }
+        }
+
+        private void showDateChangeMessage()
+        {
+            delayedDateChangeMessageBoxTimer.Tick -= DelayedMessageBoxTimer_Tick;
+            delayedDateChangeMessageBoxTimer.Tick += DelayedMessageBoxTimer_Tick;
+            delayedDateChangeMessageBoxTimer.Start();
+        }
+
+        private void DelayedMessageBoxTimer_Tick(object sender, EventArgs e)
+        {
+            delayedDateChangeMessageBoxTimer.Stop();
+            MessageBoxService.ShowMessage("Please close and re-open this view after changing dates, refresh button doesn't produce an accurate result at the moment", "Info", MessageButton.OK, MessageIcon.Information);
         }
 
         public string P6ForecastProject
@@ -306,9 +336,8 @@ namespace BluePrints.ViewModels
             exoLoadingBackgroundWorker.DoWork += ExoLoadingBackgroundWorker_DoWork; ;
             exoLoadingBackgroundWorker.RunWorkerCompleted += ExoLoadingBackgroundWorker_RunWorkerCompleted;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
-            exoLoadingBackgroundWorker.RunWorkerAsync();  
-
-            LoadingScreenManager.CloseLoadingScreen();
+            exoLoadingBackgroundWorker.RunWorkerAsync();
+             LoadingScreenManager.CloseLoadingScreen();
             return base.OnMainViewModelLoaded(entities);
         }
 
@@ -447,7 +476,7 @@ namespace BluePrints.ViewModels
                         endDateToGenerate = FixedEndDate;
 
                     alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
-                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, alignedDataDateCollection, (DateTime)FixedDataDate);
+                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate);
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
@@ -467,19 +496,36 @@ namespace BluePrints.ViewModels
                         DataRow commodityRow = dataPointsTable.NewRow();
 
                         DataTable compareDataTable = dataPointsTable.Clone();
-                        DataRow compareRow = compareDataTable.NewRow();
+                        DataRow compareActualsRow = compareDataTable.NewRow();
+                        compareActualsRow[columnEntity] = new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" };
+                        DataRow compareMaterialRow = compareDataTable.NewRow();
+                        compareMaterialRow[columnEntity] = new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" };
+                        DataRow comparePOForecastRow = compareDataTable.NewRow();
+                        comparePOForecastRow[columnEntity] = new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" };
+                        DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
+                        compareP6CostsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" };
+                        DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
+                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0" };
 
                         commodityRow[columnEntity] = commodityJob;
                         foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
                         {
-                            compareRow[dateCost.Date.ToShortDateString()] = dateCost.Cost;
-                            commodityRow[dateCost.Date.ToShortDateString()] = dateCost.Cost;
+                            compareActualsRow[dateCost.Date.ToShortDateString()] = dateCost.ActualCosts;
+                            compareMaterialRow[dateCost.Date.ToShortDateString()] = dateCost.MaterialCosts;
+                            comparePOForecastRow[dateCost.Date.ToShortDateString()] = dateCost.POForecastCosts;
+                            compareP6CostsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Costs;
+                            compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
+                            commodityRow[dateCost.Date.ToShortDateString()] = dateCost.TotalCosts;
                         }
 
                         updateUncommittedOnDatesFromDb(commodityRow);
                         updateTotalUncommittedOnJob(commodityRow);
 
-                        compareDataTable.Rows.Add(compareRow);
+                        compareDataTable.Rows.Add(compareActualsRow);
+                        compareDataTable.Rows.Add(compareMaterialRow);
+                        compareDataTable.Rows.Add(comparePOForecastRow);
+                        compareDataTable.Rows.Add(compareP6CostsRemainingRow);
+                        compareDataTable.Rows.Add(compareP6UnitsRemainingRow);
                         commodityRow[columnCompare] = compareDataTable;
 
                         dataPointsTable.Rows.Add(commodityRow);
@@ -497,7 +543,9 @@ namespace BluePrints.ViewModels
                     LoadingScreenManager.CloseLoadingScreen();
                     this.RaisePropertyChanged(x => x.ForecastSummary);
                     this.RaisePropertyChanged(x => x.ExportTable);
-                    TableViewService.ScrollToLast();
+
+                    //refreshGridDataDelayed();
+                    //TableViewService.ScrollToLast();
                 }
 
                 return dataPointsTable;
@@ -546,21 +594,12 @@ namespace BluePrints.ViewModels
             decimal newValue = 0.00m;
             if(compareDataTable.Columns.Contains(fieldName))
             {
-                if(compareDataTable.Rows.Count == 1)
-                {
-                    if (updateRow[fieldName] != DBNull.Value)
-                        oldValue = (decimal)updateRow[fieldName];
-
-                    DataRow compareRow = compareDataTable.Rows[0];
-
-                    if(compareRow[fieldName] != DBNull.Value)
-                        newValue = (decimal)compareRow[fieldName];
-
-                    updateRow[fieldName] = newValue;
-                    EntitiesUndoRedoManager.AddUndo(updateRow, fieldName, oldValue, newValue, EntityMessageType.Changed);
-
-                    updateTotalUncommittedOnJob(updateRow);
-                }
+                decimal resetValue = getMasterRowResetValue(compareDataTable, fieldName);
+                oldValue = (decimal)updateRow[fieldName];
+                newValue = resetValue;
+                updateRow[fieldName] = newValue;
+                EntitiesUndoRedoManager.AddUndo(updateRow, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                updateTotalUncommittedOnJob(updateRow);
             }
         }
 
@@ -637,8 +676,8 @@ namespace BluePrints.ViewModels
             if (gridColumn == null || dataRowView == null)
                 return;
 
-            if (gridColumn.ReadOnly)
-            {
+            //if (gridColumn.ReadOnly)
+            //{
                 DateTime parseEndDate;
                 if (DateTime.TryParse(gridColumn.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
                 {
@@ -709,11 +748,11 @@ namespace BluePrints.ViewModels
                 {
                     IsHidden = true;
                 }
-            }
-            else
-                IsHidden = true;
+            //}
+            //else
+            //    IsHidden = true;
 
-            this.RaisePropertyChanged(x => x.IsHidden);
+            //this.RaisePropertyChanged(x => x.IsHidden);
         }
 
         public void HideColumns(AutoGeneratingColumnEventArgs e)
@@ -737,7 +776,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
+        public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
         {
             if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
@@ -756,6 +795,59 @@ namespace BluePrints.ViewModels
 
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
                     e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    e.Column.Width = 75;
+                    e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
+                }
+                else
+                {
+                    if (e.Column.FieldType == typeof(decimal))
+                        GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, e.Column.FieldName + ": {0:c0}");
+
+                    e.Column.ReadOnly = true;
+                    e.Column.Fixed = FixedStyle.Left;
+                }
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+
+        void column_AllowProperty(object sender, AllowPropertyEventArgs e)
+        {
+            e.Allow = false;
+        }
+
+        //there's a problem here where detaildescriptor autogeneratingcolumn only called once when expanded, so when user clicks refresh the old dates still stays
+        public void AutoGeneratingChildColumns(AutoGeneratingColumnEventArgs e)
+        {
+            if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
+            {
+                GridControl gridControl = (GridControl)e.Source;
+                DateTime parsedate;
+                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
+                {
+                    //even this doesn't fix the problem because it is only called once
+                    if(!alignedDataDateCollection.Any(x => x.Date.Date == parsedate))
+                    {
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        if (parsedate <= FixedDataDateMonthEnd)
+                        {
+                            e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
+                            e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
+                            e.Column.ReadOnly = true;
+                        }
+                        else
+                            e.Column.CellTemplate = Application.Current.Resources["forecastTemplateChild"] as DataTemplate;
+
+                        e.Column.Width = 75;
+                        e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
+                        //GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "n0");
+                        e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    }
                 }
                 else
                 {
@@ -781,36 +873,6 @@ namespace BluePrints.ViewModels
             }
 
             return false;
-        }
-
-        public void AutoGeneratingComparePercentageColumns(AutoGeneratingColumnEventArgs e)
-        {
-            if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
-            {
-                DateTime parsedate;
-                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
-                {
-                    if (parsedate <= FixedDataDateMonthEnd)
-                    {
-                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplateChild"] as DataTemplate;
-                        e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
-                        e.Column.ReadOnly = true;
-                    }
-                    else
-                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplateChild"] as DataTemplate;
-
-                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
-                }
-                else
-                {
-                    e.Column.ReadOnly = true;
-                    e.Column.Fixed = FixedStyle.Left;
-                }
-            }
-            else
-            {
-                e.Cancel = true;
-            }
         }
 
         public void KeyboardCopy()
@@ -855,7 +917,12 @@ namespace BluePrints.ViewModels
 
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData)
         {
-            if (copyColumn.FieldType == typeof(decimal))
+            if(copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
+            {
+                //currently disabled on paste because view doesn't reflect changes
+                //return commitBudget(newRow, pasteData);
+            }
+            else if (copyColumn.FieldType == typeof(decimal))
             {
                 var rgx = new Regex("[^0-9a-z\\.]");
                 var cleanColumnString = rgx.Replace(pasteData, string.Empty);
@@ -954,105 +1021,7 @@ namespace BluePrints.ViewModels
 
             if (fieldName.ToUpper() == "ENTITY.BUDGET" || fieldName.ToUpper().Contains("ENTITY.RATE"))
             {
-                bool isRate = fieldName.ToUpper().Contains("ENTITY.RATE");
-                decimal newDecimalValue = 0;
-                if (newValue != null && decimal.TryParse(newValue.ToString(), out newDecimalValue))
-                {
-                    ForecastSummary.Budget_Cost -= (decimal)oldValue;
-                    ForecastSummary.Budget_Cost += newDecimalValue;
-
-                    ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
-                    JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
-                    bool isError = false;
-
-                    if (isRate)
-                        projection.Rate = newDecimalValue;
-                    else
-                        projection.Budget = newDecimalValue;
-
-                    if (findExistingOrAddLine == null)
-                    {
-                        if (masterJob == null)
-                        {
-                            MessageBoxService.ShowMessage("Cannot change budget because the master job is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                            isError = true;
-                        }
-                        else if (copyLine == null)
-                        {
-                            MessageBoxService.ShowMessage("Cannot change budget because the master line is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                            isError = true;
-                        }
-                        else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                        {
-                            if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                            {
-                                //stock item cannot be added, so it must exists before commodity can be added using it
-                                string stockCode = projection.GetStockCode();
-                                STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
-                                if (stock_item != null)
-                                {
-                                    projection.StockName = stock_item.DESCRIPTION;
-                                    if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                                    {
-                                        int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
-                                        JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
-                                        primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
-                                        primeroUnitOfWork.SaveChanges();
-                                        entity.LineId = newLine.SEQNO;
-                                    }
-                                    else
-                                    {
-                                        MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                        isError = true;
-                                    }
-                                }
-                                else
-                                {
-                                    MessageBoxService.ShowMessage("Cannot change budget because stock code " + stockCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                    isError = true;
-                                }
-                            }
-                            else
-                            {
-                                MessageBoxService.ShowMessage("Cannot change budget because cost group " + projection.DisciplineCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                isError = true;
-                            }
-                        }
-                        else
-                        {
-                            MessageBoxService.ShowMessage("Cannot change budget because subjob " + projection.SubJobCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                            isError = true;
-                        }
-
-                        if (isError)
-                            projection.Budget = 0;
-                        else
-                        {
-                            DataRow disciplineRow = findCommodityRow(entity);
-                            if (disciplineRow != null)
-                            {
-                                recurseCalculateBudget(disciplineRow);
-                            }
-                        }
-
-                        projection.Update();
-                    }
-                    else
-                    {
-                        findExistingOrAddLine.QUOTE_QTY = 1;
-                        if(isRate)
-                            findExistingOrAddLine.QUOTE_UNITPR = Convert.ToDouble(newDecimalValue);
-                        else
-                            findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
-
-                        primeroUnitOfWork.SaveChanges();
-                        DataRow disciplineRow = findCommodityRow(entity);
-                        if (disciplineRow != null)
-                        {
-                            recurseCalculateBudget(disciplineRow);
-                        }
-                    }
-                }
+                commitBudget(row, newValue);
             }
             else
             {
@@ -1070,12 +1039,138 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private bool commitBudget(DataRow dataRow, object newValue)
+        {
+            if(!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                return false;
+
+            ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
+            ExoSubJobProjection entity = job.Projection;
+            decimal newDecimalValue = 0;
+            if (newValue != null && decimal.TryParse(newValue.ToString(), out newDecimalValue))
+            {
+                ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
+                JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
+                bool isError = false;
+                projection.Budget = newDecimalValue;
+
+                if (findExistingOrAddLine == null)
+                {
+                    if (masterJob == null)
+                    {
+                        MessageBoxService.ShowMessage("Cannot change budget because the master job is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
+                        isError = true;
+                    }
+                    else if (copyLine == null)
+                    {
+                        MessageBoxService.ShowMessage("Cannot change budget because the master line is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
+                        isError = true;
+                    }
+                    else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
+                    {
+                        if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
+                        {
+                            //stock item cannot be added, so it must exists before commodity can be added using it
+                            string stockCode = projection.GetStockCode();
+                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                            if (stock_item != null)
+                            {
+                                projection.StockName = stock_item.DESCRIPTION;
+                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
+                                {
+                                    int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
+                                    JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
+                                    primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
+                                    primeroUnitOfWork.SaveChanges();
+                                    entity.LineId = newLine.SEQNO;
+                                }
+                                else
+                                {
+                                    MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                    isError = true;
+                                }
+                            }
+                            else
+                            {
+                                MessageBoxService.ShowMessage("Cannot change budget because stock code " + stockCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                                isError = true;
+                            }
+                        }
+                        else
+                        {
+                            MessageBoxService.ShowMessage("Cannot change budget because cost group " + projection.DisciplineCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                            isError = true;
+                        }
+                    }
+                    else
+                    {
+                        MessageBoxService.ShowMessage("Cannot change budget because subjob " + projection.SubJobCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
+                        isError = true;
+                    }
+
+                    if (isError)
+                        projection.Budget = 0;
+                    else
+                    {
+                        DataRow disciplineRow = findCommodityRow(entity);
+                        if (disciplineRow != null)
+                        {
+                            recurseCalculateBudget(disciplineRow);
+                        }
+                    }
+
+                    projection.Update();
+                }
+                else
+                {
+                    findExistingOrAddLine.QUOTE_QTY = 1;
+                    findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+
+                    primeroUnitOfWork.SaveChanges();
+                    DataRow disciplineRow = findCommodityRow(entity);
+                    if (disciplineRow != null)
+                    {
+                        recurseCalculateBudget(disciplineRow);
+                    }
+                }
+
+                GridControlService.RefreshData();
+                updateFloatingSummaryMembers();
+            }
+
+            return true;
+        }
+
         private void recurseCalculateBudget(DataRow commodityRow)
         {
             ForecastJobData commodityJob = (ForecastJobData)commodityRow[columnEntity];
             ForecastJobData job = (ForecastJobData)commodityRow[columnEntity];
             job.SetBudgetCost(commodityJob.Budget);
             job.SetForecastRate(commodityJob.Rate);
+        }
+
+        private decimal getMasterRowResetValue(DataTable compareDataTable, string dateFieldName)
+        {
+            if (compareDataTable != null && compareDataTable.Rows.Count > 0)
+            {
+                if (compareDataTable.Columns.Contains(dateFieldName))
+                {
+                    DataRow compareActualsRow = compareDataTable.Rows[0];
+                    DataRow compareMaterialRow = compareDataTable.Rows[1];
+                    DataRow comparePOForecastRow = compareDataTable.Rows[2];
+                    DataRow compareP6CostsRemainingRow = compareDataTable.Rows[3];
+
+                    decimal actualValue = compareActualsRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareActualsRow[dateFieldName];
+                    decimal materialValue = compareMaterialRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareMaterialRow[dateFieldName];
+                    decimal poValue = comparePOForecastRow[dateFieldName] == DBNull.Value ? 0 : (decimal)comparePOForecastRow[dateFieldName];
+                    decimal p6Value = compareP6CostsRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareP6CostsRemainingRow[dateFieldName];
+                    decimal totalValue = actualValue + materialValue + poValue + p6Value;
+
+                    return totalValue;
+                }
+            }
+
+            return 0.00m;
         }
 
         /// <summary>
@@ -1096,18 +1191,11 @@ namespace BluePrints.ViewModels
 
             decimal? compareValue = null;
             decimal? saveNewValue = viewNewValue;
-
             DataTable compareDataTable = (DataTable)dataRow[columnCompare];
-            if(compareDataTable != null && compareDataTable.Rows.Count > 0)
+            decimal resetValue = getMasterRowResetValue(compareDataTable, dateFieldName);
+            if (resetValue > 0)
             {
-                if(compareDataTable.Columns.Contains(dateFieldName))
-                {
-                    DataRow compareRow = compareDataTable.Rows[0];
-                    if (compareRow[dateFieldName] != DBNull.Value)
-                    {
-                        compareValue = (decimal)compareRow[dateFieldName];
-                    }
-                }
+                compareValue = resetValue;
             }
 
             if(viewNewValue != null && compareValue != null && viewNewValue == compareValue)
@@ -1148,6 +1236,22 @@ namespace BluePrints.ViewModels
             updateFloatingSummaryMembers();
         }
 
+        private void refreshGridDataDelayed()
+        {
+            delayedGridUpdateTimer.Tick -= DelayedGridUpdateTimer_Tick;
+            delayedGridUpdateTimer.Tick += DelayedGridUpdateTimer_Tick;
+            delayedGridUpdateTimer.Start();
+        }
+
+        private void DelayedGridUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            delayedGridUpdateTimer.Stop();
+            GridControlService.GridControl.RefreshData();
+            DataControlDetailDescriptor gridDetail = (DataControlDetailDescriptor)GridControlService.GridControl.DetailDescriptor;
+            GridControl childGrid = (GridControl)gridDetail.DataControl;
+            childGrid.RefreshData();
+        }
+
         private void updateFloatingSummaryMembers()
         {
             delayedUpdateFloatingProjectSummaryTimer.Tick -= DelayedUpdateFloatingProjectSummaryTimer_Tick;
@@ -1162,10 +1266,11 @@ namespace BluePrints.ViewModels
             List<ForecastJobData> jobs = getJobDataFromDatatable();
             ForecastSummary.EstimateAtCompletion = 0;
             ForecastSummary.Uncommitted_Forecast = 0;
-
+            ForecastSummary.Budget_Cost = 0;
             //cannot use parallel foreach because of inaccuracy
             foreach(ForecastJobData job in jobs)
             {
+                ForecastSummary.Budget_Cost += job.Budget;
                 ForecastSummary.EstimateAtCompletion += job.EstimateAtCompletion;
                 ForecastSummary.Uncommitted_Forecast += job.Uncommitted;
             }
@@ -1516,6 +1621,9 @@ namespace BluePrints.ViewModels
                     return false;
                 else
                 {
+                    if (selected_cells.First().Column == null)
+                        return false;
+
                     tableView = (TableView)selected_cells.First().Column.View;
                     gridControl = tableView.Grid;
                 }
@@ -1718,6 +1826,14 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST>();
+            }
+        }
+
+        public IEnumerable<FORECAST_PO> FORECAST_POCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_PO>();
             }
         }
 

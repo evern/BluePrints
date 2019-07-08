@@ -15,6 +15,8 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        public Guid? GUID_PHASE { get; set; }
+
         public CostType COST_TYPE { get; set; }
 
         public PhaseType PHASE_TYPE { get; set; }
@@ -75,5 +77,7 @@ namespace BluePrints.Data
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        public virtual PHASE PHASE { get; set; }
     }
 }

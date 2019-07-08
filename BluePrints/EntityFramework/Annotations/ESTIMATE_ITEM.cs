@@ -107,7 +107,7 @@ namespace BluePrints.Data
                 if(PhaseType != null && GUID_COMMODITY_CODE != null)
                 {
                     //when commodity code collection is not set, don't show any error
-                    if (CommodityCodeCollection == null || CommodityCodeCollection.Count() == 0)
+                    if (CommodityCodeCollection == null)
                         return true;
 
                     return CommodityCodeCollection.Any(x => x.GUID == GUID_COMMODITY_CODE);

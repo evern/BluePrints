@@ -328,7 +328,7 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Rows.Add(newRow);
                     }
 
-                    TableViewService.ScrollToLast();
+                    //TableViewService.ScrollToLast();
                     IsForecastLoading = false;
                     this.RaisePropertyChanged(x => x.IsForecastLoading);
                 }
@@ -411,23 +411,37 @@ namespace BluePrints.ViewModels
         private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
             POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
-            FORECAST_PO findFORECAST_PO = DisplayEntities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == entity.PONO);
 
-            if(findFORECAST_PO == null)
+            //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
+            decimal proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
+
+            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, VariationCode = g.Variation_Code }).Select(g => new { PONumber = g.Key.PONumber, JobCode = g.Key.JobCode, DisciplineCode = g.Key.DisciplineCode, CommodityCode = g.Key.CommodityCode, VariationCode = g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
+            foreach (var groupByCodesPOItem in groupByCodesPOItems)
             {
-                findFORECAST_PO = new FORECAST_PO();
-                findFORECAST_PO.GUID = Guid.Empty;
+                FORECAST_PO findFORECAST_PO = DisplayEntities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
+
+                if (findFORECAST_PO == null)
+                {
+                    findFORECAST_PO = new FORECAST_PO();
+                    findFORECAST_PO.GUID = Guid.Empty;
+                }
+
+                findFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
+                findFORECAST_PO.PONO = groupByCodesPOItem.PONumber;
+                findFORECAST_PO.JOB_CODE = groupByCodesPOItem.JobCode;
+                findFORECAST_PO.DISCIPLINE_CODE = groupByCodesPOItem.DisciplineCode;
+                findFORECAST_PO.COMMODITY_CODE = groupByCodesPOItem.CommodityCode;
+                findFORECAST_PO.VARIATION_CODE = groupByCodesPOItem.VariationCode;
+                findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
+                if (viewCosts == null || ((decimal)viewCosts) == 0.00m)
+                    findFORECAST_PO.FORECAST_VALUE = null;
+                else
+                {
+                    findFORECAST_PO.FORECAST_VALUE = groupByCodesPOItem.RemainingCosts * proRateOnPOItem;
+                }
+
+                MainViewModel.Save(findFORECAST_PO);
             }
-
-            findFORECAST_PO.GUID_PROJECT = loadPROJECT.GUID;
-            findFORECAST_PO.PONO = entity.PONO;
-            findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
-            if (viewCosts != null && ((decimal)viewCosts) == 0.00m)
-                findFORECAST_PO.FORECAST_VALUE = null;
-            else
-                findFORECAST_PO.FORECAST_VALUE = viewCosts;
-
-            MainViewModel.Save(findFORECAST_PO);
 
             if(!skipUpdating)
                 updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, dataRow);
@@ -507,6 +521,7 @@ namespace BluePrints.ViewModels
                 if (spreadPeriod == null || spreadInterval == null)
                     return;
 
+                EntitiesUndoRedoManager.PauseActionId();
                 var selected_cells_groupby_columns = selected_cells.GroupBy(x => x.Column.FieldName).Select(group => new { FieldName = group.Key, Cells = group.ToList() });
                 GridCell first_selected_cell = selected_cells.First();
                 GridCell last_selected_cell = selected_cells.Last();
@@ -561,13 +576,12 @@ namespace BluePrints.ViewModels
                             current_column = visible_columns.First(x => x.VisibleIndex == (first_column_visible_index + columnOffset));
                             if (parseFieldName == string.Empty)
                                 parseFieldName = current_column.FieldName;
-
-                            oldValue = editing_row[parseFieldName];
                         }
 
                         DateTime parseDateTime;
                         if (DateTime.TryParse(parseFieldName, out parseDateTime))
                         {
+                            oldValue = editing_row[parseFieldName];
                             addUndo(editing_row, parseFieldName, oldValue, costPerPeriod, EntityMessageType.Changed);
                             findExistingOrAddNewFORECAST_PO(editing_row, parseDateTime, costPerPeriod, true);
                             lastProcessedDate = parseDateTime;
@@ -587,6 +601,8 @@ namespace BluePrints.ViewModels
 
                 if (forceRefreshDataTable)
                     refreshDataTable();
+
+                EntitiesUndoRedoManager.UnpauseActionId();
             }
         }
 

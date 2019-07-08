@@ -18,7 +18,6 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
-                                <dxb:BarCheckItem Content="Show Preferred User Only" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" IsChecked="{Binding DataContext.ShowPreferred, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" ToolTip="Show preferred user only (based on role)" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
@@ -33,7 +32,7 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                        <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
                                 <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" />
@@ -58,6 +57,7 @@
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />

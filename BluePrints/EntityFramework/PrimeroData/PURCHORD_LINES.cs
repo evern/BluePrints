@@ -106,6 +106,9 @@ namespace BluePrints.PrimeroData
         [StringLength(1)]
         public string BOMTYPE { get; set; }
 
+        [StringLength(50)]
+        public string X_VARIATIONCODE { get; set; }
+
         [StringLength(1)]
         public string SHOWLINE { get; set; }
 

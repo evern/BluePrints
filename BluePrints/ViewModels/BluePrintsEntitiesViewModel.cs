@@ -576,7 +576,7 @@ namespace BluePrints.ViewModels
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectEstimates" + keyString, projectKey, childTitlePrefix + "Estimates [Indirect]", "ESTIMATE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Estimate)), null, "Estimate [Indirect]", false, false, @"Business Objects\BOCustomer_16x16.png"));
             }
 
-            if (LoginCredentials.hasPermission(PermissionResources.ManageBudget))
+            if (LoginCredentials.hasPermission(PermissionResources.ManageJobSetup))
             {
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectBudgets" + keyString, projectKey, childTitlePrefix + "Job Setup", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)), null, "Job Setup", false, false, @"Business Objects\BOEmployee_16x16.png"));
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectBudgets" + keyString, projectKey, childTitlePrefix + "Indirect Jobs", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Budget)), null, "Indirect Jobs", false, false, @"Business Objects\BOCustomer_16x16.png"));

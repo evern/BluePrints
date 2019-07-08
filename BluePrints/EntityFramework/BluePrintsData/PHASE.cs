@@ -16,6 +16,7 @@ namespace BluePrints.Data
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             SUBJOB = new HashSet<SUBJOB>();
+            RATE = new HashSet<RATE>();
         }
 
         [Key]
@@ -56,5 +57,8 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RATE> RATE { get; set; }
     }
 }
