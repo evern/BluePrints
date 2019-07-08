@@ -78,12 +78,17 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="Default Columns">
-                                <dxg:GridColumn FieldName="Phase_Type" Header="Phase Type" HeaderToolTip="Indicate which phase this rate belongs to">
+                                <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" HeaderToolTip="Indicate which phase this rate belongs to" FilterPopupMode="CheckedList" Fixed="Left" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Phase_Type" Visible="False" Header="Phase Type" HeaderToolTip="Indicate which phase this rate belongs to">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CHARGE_TYPE" Header="Charge Type" HeaderToolTip="Indicate whether rate will be used for direct or indirect" >
+                                <dxg:GridColumn FieldName="CHARGE_TYPE" Visible="False" Header="Charge Type" HeaderToolTip="Indicate whether rate will be used for direct or indirect" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" />
                                     </dxg:GridColumn.EditSettings>

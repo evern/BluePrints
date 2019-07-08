@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to change construction budget.
+        /// </summary>
+        internal static string ChangeBudget {
+            get {
+                return ResourceManager.GetString("ChangeBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to finalise internal and client numbers.
         /// </summary>
         internal static string FinaliseNumbers {
@@ -102,15 +111,6 @@ namespace BluePrints.Common.Resources {
         internal static string ManageBaseline {
             get {
                 return ResourceManager.GetString("ManageBaseline", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage budget.
-        /// </summary>
-        internal static string ManageBudget {
-            get {
-                return ResourceManager.GetString("ManageBudget", resourceCulture);
             }
         }
         
@@ -192,6 +192,15 @@ namespace BluePrints.Common.Resources {
         internal static string ManageHoliday {
             get {
                 return ResourceManager.GetString("ManageHoliday", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage construction job setup.
+        /// </summary>
+        internal static string ManageJobSetup {
+            get {
+                return ResourceManager.GetString("ManageJobSetup", resourceCulture);
             }
         }
         

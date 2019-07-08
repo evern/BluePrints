@@ -72,15 +72,16 @@ namespace BluePrints.Common.Projections
                     forecastPayments = new List<ExoDataPoint>();
                     if (InvoiceDate != null)
                     {
-                        foreach (FORECAST_PO FORECAST_PO in FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
+                        var groupByDateFORECASTS = FORECAST_POs.GroupBy(x => x.FORECAST_DATE).Select(g => new { ForecastDate = g.Key, ForecastCost = g.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE) }).OrderBy(x => x.ForecastDate);
+                        foreach (var groupByDateFORECAST in groupByDateFORECASTS)
                         {
-                            if (FORECAST_PO.FORECAST_DATE.Date <= ActualCutOffDate.Date || FORECAST_PO.FORECAST_VALUE == null)
+                            if (groupByDateFORECAST.ForecastDate <= ActualCutOffDate.Date || groupByDateFORECAST.ForecastCost == 0)
                                 continue;
 
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
 
-                            forecastPaymentPoint.Costs = (decimal)FORECAST_PO.FORECAST_VALUE;
-                            forecastPaymentPoint.ActualDate = FORECAST_PO.FORECAST_DATE.Date;
+                            forecastPaymentPoint.Costs = groupByDateFORECAST.ForecastCost;
+                            forecastPaymentPoint.ActualDate = groupByDateFORECAST.ForecastDate;
 
                             forecastPayments.Add(forecastPaymentPoint);
                         }

@@ -62,6 +62,9 @@ namespace BluePrints.Data
         public string P6ACTIVITYMAP { get; set; }
 
         [StringLength(100)]
+        public string VARIATION_CODE { get; set; }
+
+        [StringLength(100)]
         public string SEQNO { get; set; }
 
         public decimal? BUDGET_TRUCK_PERCENTAGE { get; set; }

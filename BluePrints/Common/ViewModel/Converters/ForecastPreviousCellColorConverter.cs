@@ -27,16 +27,20 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable childEntity = (DataTable)dataRow["CompareEntities"];
-                    if (childEntity.Rows.Count > 0)
+                    if (childEntity.Rows.Count > 3)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal childValue = (decimal)childEntity.Rows[0][fieldname];
+                            decimal actualCosts = (decimal)childEntity.Rows[0][fieldname];
+                            decimal materialCosts = (decimal)childEntity.Rows[1][fieldname];
+                            decimal poForecastCosts = (decimal)childEntity.Rows[2][fieldname];
+                            decimal p6RemainingCosts = (decimal)childEntity.Rows[3][fieldname];
+                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
                             decimal parentValue = (decimal)values[2];
 
-                            if (parentValue <= childValue)
+                            if (parentValue <= totalCosts)
                                 return paleGreenColor;
                             else
                                 return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);

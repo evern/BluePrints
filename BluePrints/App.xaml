@@ -1,5 +1,6 @@
 ﻿<Application x:Class="BluePrints.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/DXSplashScreen/BluePrintsSplashScreen.xaml">
     <Application.Resources>
+        <converter:ForecastChildCellMaskConverter x:Key="ForecastChildCellMaskConverter" />
         <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
         <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
         <converter:ForecastFutureCellColorConverter x:Key="ForecastFutureCellColorConverter" />
@@ -115,11 +116,19 @@
                 </dxe:SpinEdit.Background>
             </dxe:SpinEdit>
         </DataTemplate>
-        <DataTemplate x:Key="forecastTemplateChild">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-        </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
             <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+                <dxe:SpinEdit.Background>
+                    <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
+                        <Binding Path="RowData.Row.Row" />
+                        <Binding Path="Column.FieldName" />
+                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                    </MultiBinding>
+                </dxe:SpinEdit.Background>
+            </dxe:SpinEdit>
+        </DataTemplate>
+        <DataTemplate x:Key="forecastTemplateChild">
+            <dxe:SpinEdit Name="PART_Editor" IsReadOnly="True" Increment="10" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />

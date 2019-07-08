@@ -19,13 +19,13 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> projectForecasts, IEnumerable<DateTime> dates, DateTime dataDate)
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<DateTime> dates, DateTime dataDate)
         {
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
-
             LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
             LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+
             Parallel.ForEach(groupedDisciplineJobs,
             groupedDisciplineJob =>
             {
@@ -40,23 +40,31 @@ namespace BluePrints.Common.ViewModel.Misc
                 commodityJob =>
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
-                    string s;
-                    if (commodityJob.Commodity.Code == "E99")
-                        s = string.Empty;
-
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
-                    populateProjection(commodityJobForecastSummary, commodityDashboards, dates);
-                    PopulateEAC(commodityJobForecastSummary, projectForecasts, dataDate);
+                    populateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, dates);
+                    PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
                 });
 
-                foreach(ForecastJobData commodityJob in commodityJobs)
+                //for debugging
+                //foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
+                //{
+
+                //}
+
+                foreach (ForecastJobData commodityJob in commodityJobs)
                 {
                     forecastProjections.Add(commodityJob);
                 }
 
                 LoadingScreenManager.Progress();
             });
+
+            //for debugging
+            //foreach (var groupedDisciplineJob in groupedDisciplineJobs)
+            //{
+                
+            //}
 
             LoadingScreenManager.CloseLoadingScreen();
             return forecastProjections.ToList();
@@ -65,7 +73,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Populates data row with dashboards summary
         /// </summary>
-        private static void populateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> relevantDashboards, IEnumerable<DateTime> dates)
+        private static void populateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> relevantDashboards, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<DateTime> dates)
         {
             ExoSubJobProjection entity = jobForecastSummary.Projection;
             foreach(DateTime date in dates)
@@ -78,12 +86,19 @@ namespace BluePrints.Common.ViewModel.Misc
                 IEnumerable<SummaryStats> summaryStats = relevantDashboards.Select(x => (SummaryStats)x.Stats);
                 IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
 
-                //sum outstanding commitments
-                //ToDo: get po forecast
+                List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
                 if (poStats != null && poStats.Count() > 0)
                 {
-                    IEnumerable<Common.ViewModel.Reporting.DataPoint> poDataPoints = poStats.SelectMany(x => x.PO.DataPoints);
+                    IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
                     jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
+
+                    //group the pos into PO numbers group to get the total remaining cost
+                    //costs is remaining cost in this case
+                    var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
+                    foreach(var poItem in poItems)
+                    {
+                        currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
+                    }
                 }
 
                 //get remaining data points
@@ -112,7 +127,7 @@ namespace BluePrints.Common.ViewModel.Misc
                     jobForecastSummary.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
-                DateTime firstActualDate = dates.First();
+                DateTime firstForecastDate = dates.First();
 
                 //the first remaining date will be the second month in the view because data date will end on the first month
                 DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
@@ -125,22 +140,34 @@ namespace BluePrints.Common.ViewModel.Misc
                     DateTime cutOffCeilingDate = cutOffActualFloorDate.AddMonths(1).AddDays(-1);
 
                     //override floor date to the beginning of time because we want to get everything
-                    if (dateCost.Date == firstActualDate)
+                    if (dateCost.Date == firstForecastDate)
                         cutOffActualFloorDate = new DateTime(1);
 
                     if (dateCost.Date == firstRemainingDate)
                         cutOffRemainingFloorDate = new DateTime(1);
 
-                    if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0)
+                    if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0 || currentJobPOForecasts.Count > 0)
                     {
                         decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal remainingCost = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Units);
+                        decimal poForecastCosts = 0;
 
-                        dateCost.Cost = materialCosts + actualCosts + remainingCost;
+                        //prevent population of values from PO forecast before forecast date
+                        if(cutOffActualFloorDate > firstForecastDate)
+                            poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE > cutOffActualFloorDate && x.FORECAST_DATE <= cutOffCeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+
+                        dateCost.MaterialCosts = materialCosts;
+                        dateCost.ActualCosts = actualCosts;
+                        dateCost.P6Costs = p6RemainingCosts;
+                        dateCost.P6Hours = p6RemainingHours;
+                        dateCost.POForecastCosts = poForecastCosts;
+
+                        dateCost.TotalCosts = materialCosts + actualCosts + p6RemainingCosts + poForecastCosts;
                     }
                     else
-                        dateCost.Cost = 0.00m;
+                        dateCost.TotalCosts = 0.00m;
                 }
             }
         }
@@ -151,6 +178,7 @@ namespace BluePrints.Common.ViewModel.Misc
         private static ForecastJobData createJobForecastSummary(string subJobCode, string subJobTitle, string disciplineCode, string disciplineName, string commodityCode, string commodityName, string commodityDescription, string commodityUOM, string variationCode, IEnumerable<ExoTimeAuthorisation> jobLines)
         {
             ForecastJobData forecastProjection = new ForecastJobData();
+            forecastProjection.IsBudgetReadOnly = !LoginCredentials.hasPermission(PermissionResources.ChangeBudget);
             variationCode = NormalizeVariationCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityName, Description = commodityDescription, UOM = commodityUOM }, Variation_Code = variationCode };
 
@@ -171,10 +199,10 @@ namespace BluePrints.Common.ViewModel.Misc
             return forecastProjection;
         }
 
-        private static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> projectForecasts, DateTime dataDate)
+        private static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
         {
             //populate previous estimate to completion
-            IEnumerable<FORECAST> previousEAC = projectForecasts.Where(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.IS_EAC && x.FORECAST_DATE < dataDate).OrderBy(x => x.FORECAST_DATE);
+            IEnumerable<FORECAST> previousEAC = FORECASTCollection.Where(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.IS_EAC && x.FORECAST_DATE < dataDate).OrderBy(x => x.FORECAST_DATE);
             if (previousEAC.Count() > 0)
             {
                 FORECAST lastEAC = previousEAC.Last();
@@ -218,7 +246,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             LoadingScreenManager.CloseLoadingScreen();
             LoadingScreenManager.ShowLoadingScreen(1);
-            LoadingScreenManager.SetMessage("Constructing Unique Jbs from Actuals...");
+            LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
             allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
             allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
             allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
@@ -241,6 +269,8 @@ namespace BluePrints.Common.ViewModel.Misc
                 addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs);
                 LoadingScreenManager.Progress();
             });
+
+            int count = combinedSubJobs.Where(x => x.SubJob.Code == "03608-000-00-P1" && x.Discipline.Code == "ME01" && x.Commodity.Code == "M99").Count();
 
             LoadingScreenManager.CloseLoadingScreen();
             return combinedSubJobs.ToList();
@@ -281,11 +311,24 @@ namespace BluePrints.Common.ViewModel.Misc
                 }
             }
 
-            //unique filter -taken out to improve performance
-            if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
+            if (variationCode == null || variationCode == string.Empty)
+            {
+                if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && (x.Variation_Code == null || x.Variation_Code == string.Empty)))
+                {
+                    combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityCodeName, Description = commodityCodeDescription, UOM = commodityCodeUOM }, Variation_Code = NormalizeVariationCode(variationCode) });
+                }
+            }
+            else if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
             {
                 combinedSubJobs.Add(new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityCodeName, Description = commodityCodeDescription, UOM = commodityCodeUOM }, Variation_Code = NormalizeVariationCode(variationCode) });
             }
         }
+    }
+
+    public class PODateRemainingCost
+    {
+        public string PONumber { get; set; }
+        public DateTime ForecastDate { get; set; }
+        public decimal ForecastRemainingCosts { get; set; }
     }
 }

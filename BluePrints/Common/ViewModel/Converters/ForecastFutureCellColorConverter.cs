@@ -27,17 +27,26 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count > 0)
+                    if (compareEntity.Rows.Count > 3)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal compareValue = (decimal)compareEntity.Rows[0][fieldname];
+                            decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
+                            decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
+                            decimal poForecastCosts = (decimal)compareEntity.Rows[2][fieldname];
+                            decimal p6RemainingCosts = (decimal)compareEntity.Rows[3][fieldname];
+                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                            totalCosts = Math.Round(totalCosts);
                             decimal currentValue = (decimal)values[2];
 
-                            if(currentValue != 0 && currentValue != compareValue)
-                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                            if(currentValue != 0)
+                            {
+                                currentValue = Math.Round(currentValue);
+                                if(currentValue != totalCosts)
+                                    return new System.Windows.Media.SolidColorBrush(Colors.GreenYellow);
+                            }
                         }
                     }
                 }

@@ -24,6 +24,21 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PONO { get; set; }
 
+        [Required]
+        [StringLength(50)]
+        public string JOB_CODE { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string DISCIPLINE_CODE { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string COMMODITY_CODE { get; set; }
+
+        [StringLength(50)]
+        public string VARIATION_CODE { get; set; }
+
         public DateTime FORECAST_DATE { get; set; }
 
         public decimal? FORECAST_VALUE { get; set; }
