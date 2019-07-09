@@ -548,8 +548,8 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
             {
                 forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCostRates" + keyString, projectKey, childTitlePrefix + "Cost Rates", "CostRATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Cost Rates", false, false, @"Spreadsheet\FunctionsFinancial_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesDirect" + keyString, projectKey, childTitlePrefix + "Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT,object>(entity, ChargeType.Direct), null, "Rates [Direct]", false, false, @"Business Objects\BOSale_16x16.png"));
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesIndirect" + keyString, projectKey, childTitlePrefix + "Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.Indirect), null, "Rates [Indirect]", false, false, @"Spreadsheet\FunctionsDateAndTime_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesDirect" + keyString, projectKey, childTitlePrefix + "Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT,object>(entity, ChargeType.Chargeable), null, "Rates [Direct]", false, false, @"Business Objects\BOSale_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesIndirect" + keyString, projectKey, childTitlePrefix + "Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.NotChargeable), null, "Rates [Indirect]", false, false, @"Spreadsheet\FunctionsDateAndTime_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
