@@ -85,7 +85,7 @@ namespace BluePrints.Data
         public PHASE CachedPHASE { get; set; }
 
         [NotMapped]
-        public PhaseType? PhaseType => PHASE != null ? PHASE.PHASE_TYPE : CachedPHASE != null ? CachedPHASE.PHASE_TYPE : null;
+        public PhaseType? PhaseType =>  CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
 
         [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
@@ -97,6 +97,38 @@ namespace BluePrints.Data
                     return null;
 
                 return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<DISCIPLINE> DisciplineCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null)
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct();
+            }
+        }
+
+        public bool IsDisciplineCodeValid
+        {
+            get
+            {
+                if (PhaseType != null)
+                {
+                    //when commodity code collection is not set, don't show any error
+                    if (CommodityCodeCollection == null)
+                        return true;
+
+                    return CommodityCodeCollection.Any(x => x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+                }
+                //when phase type is not set, don't show any error
+                else
+                {
+                    return true;
+                }
             }
         }
 

@@ -724,7 +724,7 @@ namespace BluePrints.ViewModels
             List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
             foreach (ExoSubJobEditableProjection projection in projections)
             {
-                if (projection.SubJobChargeType == ChargeType.Direct && projection.CommodityIsIndirectOnly)
+                if (projection.SubJobChargeType == ChargeType.Chargeable && projection.CommodityIsIndirectOnly)
                 {
                     MessageBoxService.ShowMessage("The commodity " + projection.CommodityCode + " can only be assigned to indirect subjobs\nPlease change the subjob or assign a different commodity in the deliverable's list", "Warning", MessageButton.OK, MessageIcon.Exclamation);
                     continue;

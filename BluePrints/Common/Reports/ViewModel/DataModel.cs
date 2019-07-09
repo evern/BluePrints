@@ -220,6 +220,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 info.ErrorText = "Invalid commodity code, please check discipline";
             }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && !Entity.Entity.IsDisciplineCodeValid)
+            {
+                info.ErrorText = "Invalid discipline code, please check phase";
+            }
         }
     }
 

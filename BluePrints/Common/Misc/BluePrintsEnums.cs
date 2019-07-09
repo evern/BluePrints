@@ -401,18 +401,20 @@ namespace BluePrints.Common
         Design = 0,
         [Display(Name = "Construct")]
         Construct = 1,
+        [Display(Name = "Indirect")]
+        Indirect = 2,
         [Display(Name = "Procurement")]
-        Procurement = 2,
+        Procurement = 4, 
         [Display(Name = "Tender")]
-        Tender = 3
+        Tender =4
     }
 
     public enum ChargeType
     {
-        [Display(Name = "Direct")]
-        Direct = 0,
-        [Display(Name = "Indirect")]
-        Indirect = 1
+        [Display(Name = "Chargeable")]
+        Chargeable = 0,
+        [Display(Name = "Non-Chargeable")]
+        NotChargeable = 1
     }
 
     public enum CostType

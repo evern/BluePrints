@@ -226,7 +226,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct || x.PHASE_TYPE == PhaseType.Procurement);
+            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Design);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -891,6 +891,23 @@ namespace BluePrints.ViewModels
                         e.DisplayText = string.Empty;
                 }
             }
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && e.Row != null)
+            {
+                ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)e.Row;
+                if (!projection.Entity.Entity.IsDisciplineCodeValid)
+                {
+                    DISCIPLINE discipineCode;
+                    if (projection.Entity.Entity.DISCIPLINE != null)
+                        discipineCode = projection.Entity.Entity.DISCIPLINE;
+                    else
+                        discipineCode = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_DISCIPLINE);
+
+                    if (discipineCode != null)
+                        e.DisplayText = discipineCode.CODE;
+                    else
+                        e.DisplayText = string.Empty;
+                }
+            }
         }
         #endregion
 
@@ -1022,14 +1039,39 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+
+        public void InitNewRow(InitNewRowEventArgs e)
+        {
+            var gridView = (TableView)e.OriginalSource;
+            var grid = gridView.Grid;
+            ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)grid.GetRow(e.RowHandle);
+            projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
+        {
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_PHASE)))
+            {
+                projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
+                if (projection.Entity.Entity.GUID_PHASE != null)
+                    projection.Entity.Entity.CachedPHASE = PHASECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_PHASE);
+                else
+                    projection.Entity.Entity.CachedPHASE = null;
+
+                projection.Update();
+            }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE)))
+            {
+                projection.Update();
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
         {
             field_name = DataUtils.FormatColumnFieldname(field_name);
-            //if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
-            //{
-            //    resetProjectionCommodityCode(active_progress);
-            //}
-            if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_AREA))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_AREA)))
             {
                 Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
                 Guid? newValue = (Guid?)null;
@@ -1049,16 +1091,15 @@ namespace BluePrints.ViewModels
                     projection.Update();
                 }
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE)))
             {
                 //discipline and commodity code collection is required immediately for subarea selection
                 projection.Entity.Entity.GUID_DISCIPLINE = (Guid?)new_value;
-                projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
                 updateProjectionStockCodeCollection(projection, (Guid?)new_value);
                 projection.Update();
             }
             //set default commodity code when stock code is changed
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Estimate_StockCodeGuid)))
             {
                 if (new_value != null)
                 {
@@ -1079,7 +1120,7 @@ namespace BluePrints.ViewModels
                 }
             }
             //set default discipline when commodity code is changed
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE)))
             {
                 if (new_value != null)
                 {
@@ -1103,7 +1144,7 @@ namespace BluePrints.ViewModels
                 }
             }
             //set stock group to null when progress type is changed
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.PROGRESS_TYPE)))
             {
                 EstimateProgressType progress_Type = (EstimateProgressType)new_value;
                 if (progress_Type == EstimateProgressType.Standalone)
@@ -1118,7 +1159,7 @@ namespace BluePrints.ViewModels
                 }
             }
             //set progress type to standalone when stock group is changed
-            else if (field_name == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_STOCK_GROUP))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_STOCK_GROUP)))
             {
                 if (new_value == null)
                 {
