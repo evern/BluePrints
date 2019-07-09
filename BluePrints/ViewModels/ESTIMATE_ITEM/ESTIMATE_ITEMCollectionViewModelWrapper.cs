@@ -431,6 +431,7 @@ namespace BluePrints.ViewModels
 
             KeyValuePair<ColumnBase, string> area_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_AREA");
             KeyValuePair<ColumnBase, string> subarea_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.SubAreaGuid");
+            KeyValuePair<ColumnBase, string> commodity_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_COMMODITY_CODE");
 
             if(area_data.Key != null && subarea_data.Key != null)
             {
@@ -465,6 +466,16 @@ namespace BluePrints.ViewModels
 
                         pasteEntity.Entity.Entity.GUID_SUBAREA = findSUBAREA.GUID;
                     }
+                }
+            }
+
+            if(commodity_data.Key != null)
+            {
+                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_data.Value.Substring(0, 3));
+                if (findCOMMODITY_CODE != null)
+                {
+                    pasteEntity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
+                    pasteEntity.Entity.Entity.CachedCOMMODITY_CODE = findCOMMODITY_CODE;
                 }
             }
 
@@ -1770,7 +1781,7 @@ namespace BluePrints.ViewModels
 
         public bool CanP6BASELINE_ASSIGN()
         {
-            return DisplaySelectedEntity != null && loadPROJECT != null && loadPROJECT.P6FORECAST_NAME != null && loadPROJECT.P6FORECAST_NAME != string.Empty;
+            return !IsLoading && loadPROJECT != null && loadPROJECT.P6FORECAST_NAME != null && loadPROJECT.P6FORECAST_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN()
