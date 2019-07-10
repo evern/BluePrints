@@ -889,7 +889,7 @@ namespace BluePrints.ViewModels
             {
                 //the itemsource might not have the code so always show the code stored in db
                 ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)e.Row;
-                if (!projection.Entity.Entity.IsCommodityCodeValid)
+                if (!projection.Entity.Entity.IsCommodityCodeValid && e.DisplayText == string.Empty)
                 {
                     e.DisplayText = projection.Entity.Entity.COMMODITY_CODE;
                 }

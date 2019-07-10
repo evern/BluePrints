@@ -42,6 +42,7 @@ using DevExpress.Xpf.Editors;
 using System.Windows.Threading;
 using System.Windows.Media;
 using DevExpress.Xpf.Core.Serialization;
+using System.Windows.Input;
 
 namespace BluePrints.ViewModels
 {
@@ -753,6 +754,23 @@ namespace BluePrints.ViewModels
             //    IsHidden = true;
 
             //this.RaisePropertyChanged(x => x.IsHidden);
+        }
+
+        public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.F)
+                {
+                    clearFilter();
+                }
+            }
+        }
+
+        private void clearFilter()
+        {
+            FilterCriteria = null;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
         }
 
         public void HideColumns(AutoGeneratingColumnEventArgs e)

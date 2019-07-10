@@ -12,6 +12,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Data;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -64,6 +65,7 @@ namespace BluePrints.ViewModels
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
+        public CriteriaOperator FilterCriteria { get; set; }
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -827,10 +829,10 @@ namespace BluePrints.ViewModels
 
         private void SelectedDataRows_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            this.RaisePropertyChanged(x => x.PODetails);
-            //selectedItemsChangedDispatcher.Tick -= SelectedItemsChangedDispatcher_Tick;
-            //selectedItemsChangedDispatcher.Tick += SelectedItemsChangedDispatcher_Tick;
-            //selectedItemsChangedDispatcher.Start();
+            //this.RaisePropertyChanged(x => x.PODetails);
+            selectedItemsChangedDispatcher.Tick -= SelectedItemsChangedDispatcher_Tick;
+            selectedItemsChangedDispatcher.Tick += SelectedItemsChangedDispatcher_Tick;
+            selectedItemsChangedDispatcher.Start();
         }
 
         public CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTCollectionViewModel
@@ -849,22 +851,31 @@ namespace BluePrints.ViewModels
         private void SelectedItemsChangedDispatcher_Tick(object sender, EventArgs e)
         {
             selectedItemsChangedDispatcher.Stop();
-            this.RaisePropertyChanged(x => x.PODetails);
+            setFilter();
+            //this.RaisePropertyChanged(x => x.PODetails);
         }
 
-        public IEnumerable<ExoDataPoint> PODetails
+        public IEnumerable<ExoDataPoint> PODetails => exoPOs;
+
+        public bool IsPOColumnsVisible { get; set; }
+        private void setFilter()
         {
-            get
-            {
-                foreach(var selectedDataRow in SelectedDataRows)
-                {
-                    POForecastProjection projection = (POForecastProjection)selectedDataRow[columnEntity];
-                    foreach(var po in projection.ExoPOs)
-                    {
-                        yield return po;
-                    }
-                }
-            }
+            if (SelectedDataRows == null || SelectedDataRows.Count == 0)
+                return;
+
+            DataRowView dataRowView = selectedDataRows.First();
+            POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+            FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "'");
+
+            IsPOColumnsVisible = false;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+        }
+
+        private void clearFilter()
+        {
+            FilterCriteria = null;
+            this.RaisePropertyChanged(x => x.FilterCriteria);
         }
 
         public bool CanUndo()
@@ -959,6 +970,17 @@ namespace BluePrints.ViewModels
                 {
                     paymentSpread(GridControlService.GridControl, true);
                     closeEditorDispatcher.Start();
+                }
+            }
+        }
+
+        public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.F)
+                {
+                    clearFilter();
                 }
             }
         }

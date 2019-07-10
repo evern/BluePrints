@@ -96,7 +96,7 @@ namespace BluePrints.Data
                 if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null)
                     return null;
 
-                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).OrderBy(x => x.CODE);
             }
         }
 
@@ -108,7 +108,7 @@ namespace BluePrints.Data
                 if (PhaseType == null || FullCOMMODITY_CODECollection == null)
                     return null;
 
-                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct();
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct().OrderBy(x => x.CODE);
             }
         }
 
