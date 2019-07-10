@@ -661,29 +661,53 @@ namespace BluePrints.Common
 
     public enum IncidentClassification
     {
-        [Display(Name = "LTI: Lost Time Injury")]
+        //[Display(Name = "LTI: Lost Time Injury")]
+        //LTI = 0,
+        //[Display(Name = "RWI: Restricted Work Injury")]
+        //RWI = 1,
+        //[Display(Name = "MTI: Medical Treatment Injury")]
+        //MTI = 2,
+        //[Display(Name = "FAI: First Aid (or no-treatment required) Injury")]
+        //FAI = 3,
+        //[Display(Name = "NWR: Non-Work Related Injury or Illness")]
+        //NWR = 4,
+        //[Display(Name = "MVA: Motor Vehicle Accident")]
+        //MVA = 5,
+        //[Display(Name = "DAM: Property, Plant, Equipment Damage")]
+        //DAM = 6,
+        //[Display(Name = "SEC: Security, Theft, Public Disturbance")]
+        //SEC = 7,
+        //[Display(Name = "ENV: Environmental Spill, Damage")]
+        //ENV = 8,
+        //[Display(Name = "FIRE: Fire")]
+        //FIRE = 9,
+        //[Display(Name = "NM: Near Miss")]
+        //NM = 10,
+        //[Display(Name = "OTH: Other")]
+        //OTH = 11
+        [Display(Name = "LTI")]
         LTI = 0,
-        [Display(Name = "RWI: Restricted Work Injury")]
+        [Display(Name = "RWI")]
         RWI = 1,
-        [Display(Name = "MTI: Medical Treatment Injury")]
+        [Display(Name = "MTI")]
         MTI = 2,
-        [Display(Name = "FAI: First Aid (or no-treatment required) Injury")]
+        [Display(Name = "FAI")]
         FAI = 3,
-        [Display(Name = "NWR: Non-Work Related Injury or Illness")]
+        [Display(Name = "NWR")]
         NWR = 4,
-        [Display(Name = "MVA: Motor Vehicle Accident")]
+        [Display(Name = "MVA")]
         MVA = 5,
-        [Display(Name = "DAM: Property, Plant, Equipment Damage")]
+        [Display(Name = "DAM")]
         DAM = 6,
-        [Display(Name = "SEC: Security, Theft, Public Disturbance")]
+        [Display(Name = "SEC")]
         SEC = 7,
-        [Display(Name = "ENV: Environmental Spill, Damage")]
+        [Display(Name = "ENV")]
         ENV = 8,
-        [Display(Name = "FIRE: Fire")]
+        [Display(Name = "FIRE")]
         FIRE = 9,
-        [Display(Name = "NM: Near Miss")]
+        [Display(Name = "NM")]
         NM = 10,
-        [Display(Name = "OTH: Other")]
+        [Display(Name = "OTH")]
         OTH = 11
     }
 

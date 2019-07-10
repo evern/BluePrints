@@ -575,7 +575,7 @@ namespace BluePrints.ViewModels
         private bool IsValidJobCode(int subJobNo, int costGroupNo, int costTypeNo, string variationCode)
         {
             bool isVariationCodeNull = variationCode == string.Empty || variationCode == null;
-            ExoTimeAuthorisation findExoLine = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && (x.VariationCode == string.Empty || x.VariationCode == null));
+            ExoTimeAuthorisation findExoLine = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && (x.VariationCode == null || x.VariationCode == string.Empty));
             if (isVariationCodeNull)
             {
                 if (findExoLine != null)
@@ -586,7 +586,12 @@ namespace BluePrints.ViewModels
             {
                 if(findExoLine != null)
                 {
-                    ExoTimeAuthorisation findExoVariationLine = preloadedExoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && x.VariationCode.ToUpper().Contains(variationCode.ToUpper()));
+                    ExoTimeAuthorisation findExoVariationLine;
+                    if(isVariationCodeNull)
+                        findExoVariationLine = preloadedExoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && (x.VariationCode == null || x.VariationCode == string.Empty));
+                    else
+                        findExoVariationLine = preloadedExoLines.FirstOrDefault(x => x.SubJobNo == subJobNo && (x.VariationCode != null && x.VariationCode.ToUpper().Contains(variationCode.ToUpper())));
+
                     if (findExoVariationLine != null)
                         return true;
                 }

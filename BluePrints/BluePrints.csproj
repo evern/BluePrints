@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1775</MinimumRequiredVersion>
-    <ApplicationRevision>1775</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.1.1734</MinimumRequiredVersion>
+    <ApplicationRevision>1734</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -85,7 +85,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Perth_Beta'">
     <AssemblyName>BluePrints BETA</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA_LIVE\</PublishUrl>
     <OutputPath>bin\Perth_Beta\</OutputPath>
     <DefineConstants>TRACE;BETA</DefineConstants>
     <Optimize>true</Optimize>
@@ -124,7 +124,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Perth_Debug'">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
@@ -622,7 +622,6 @@
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
-    <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
@@ -705,7 +704,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\FORECAST_PO_RESULT.cs" />
-    <Compile Include="EntityFramework\Annotations\FORECAST_PO_DATES.cs" />
+    <Compile Include="EntityFramework\Annotations\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY.cs" />
@@ -764,7 +763,7 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO_RESULT.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO_DATES.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
@@ -879,7 +878,6 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORKCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DAYWORK\DAYWORK_STAFF_ROLECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_MasterJobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_SubjobCollectionViewModelWrapper.cs" />
@@ -895,12 +893,11 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
+    <Compile Include="ViewModels\PROJECT\PO_CUSTOMDATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastViewModelWrapper.cs" />
-    <Compile Include="ViewModels\RATE\CostRATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
@@ -956,9 +953,6 @@
     <Compile Include="Views\DAYWORK\DAYWORK_STAFF_ROLECollectionView.xaml.cs">
       <DependentUpon>DAYWORK_STAFF_ROLECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml.cs">
-      <DependentUpon>EXO_ConstructionSubjobCollectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml.cs">
       <DependentUpon>EXO_ResourcesCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1001,8 +995,8 @@
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROJECT\POSpreadView.xaml.cs">
-      <DependentUpon>POSpreadView.xaml</DependentUpon>
+    <Compile Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml.cs">
+      <DependentUpon>PO_CUSTOMDATECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOForecastView.xaml.cs">
       <DependentUpon>PROJECTPOForecastView.xaml</DependentUpon>
@@ -1021,9 +1015,6 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RATE\CostRATECollectionView.xaml.cs">
-      <DependentUpon>CostRATECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml.cs">
       <DependentUpon>RA_STUDYSingleObjectView.xaml</DependentUpon>
@@ -1892,10 +1883,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1952,7 +1939,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROJECT\POSpreadView.xaml">
+    <Page Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1979,10 +1966,6 @@
     <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RATE\CostRATECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -2329,12 +2312,10 @@
     <None Include="App.Perth_Beta.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
-      <SubType>Designer</SubType>
     </None>
     <None Include="App.Perth_Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
-      <SubType>Designer</SubType>
     </None>
     <None Include="App.Perth_Release.config">
       <DependentUpon>App.config</DependentUpon>
@@ -5051,8 +5032,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Common\BluePrintsSQL.sql" />
-    <Resource Include="Common\Images\Aha-Soft-Universal-Shop-Cash-register.ico" />
-    <Resource Include="Common\Images\total-plan-cost-icon.png" />
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

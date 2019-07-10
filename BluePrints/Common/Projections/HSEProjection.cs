@@ -134,7 +134,7 @@ namespace BluePrints.Common.Projections
                 if (Entity == null)
                     return 0;
 
-                return Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI + Entity.INJURIES_OTH_NWR + Entity.INCIDENT_DAM + Entity.INCIDENT_PDT + Entity.INCIDENT_PDT + Entity.INCIDENT_PDT + Entity.INCIDENT_HSE_BREACH + Entity.INCIDENT_NOTICE;
+                return Total_Recordable_Injuries + Entity.INJURIES_OTH_FAI + Entity.INCIDENT_DAM + Entity.INCIDENT_ENV + Entity.INCIDENT_PDT + Entity.INCIDENT_HSE_BREACH + Entity.INCIDENT_NOTICE;
             }
         }
 

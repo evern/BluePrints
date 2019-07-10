@@ -193,9 +193,9 @@ namespace BluePrints.ViewModels
         //filter out user's that have default security profile
         private void filterUser()
         {
-            CriteriaOperator newCriteriaOperator = CriteriaOperator.Parse("[User.SecurityProfileID] <> 4");
-            UserFilterCriteria = newCriteriaOperator;
-            this.RaisePropertyChanged(x => x.UserFilterCriteria);
+            //CriteriaOperator newCriteriaOperator = CriteriaOperator.Parse("[User.SecurityProfileID] <> 4");
+            //UserFilterCriteria = newCriteriaOperator;
+            //this.RaisePropertyChanged(x => x.UserFilterCriteria);
         }
 
         public CriteriaOperator UserFilterCriteria { get; set; }
@@ -558,8 +558,6 @@ namespace BluePrints.ViewModels
                     primeroUnitOfWork.JOBCOST_LINES.Remove(line);
                     primeroUnitOfWork.SaveChanges();
                 }
-
-
                 viewRemoveProjections.Add(removeProjection);
             }
 
