@@ -102,11 +102,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<FORECAST_PO_DATE>, IQueryable<FORECAST_PO_DATE>> FORECAST_PO_DATEProjectionFunc()
-        {
-            return query => query.Where(x => x.FORECAST_PO.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS);
@@ -709,20 +704,6 @@ namespace BluePrints.ViewModels
             return (from DataRow dr in dataPointsTable.Rows
                     where ((POForecastProjection)dr[columnEntity]).PONO == PONumber
                     select dr).FirstOrDefault();
-        }
-
-        public IEnumerable<FORECAST_PO_DATE> FORECAST_PO_DATECollection
-        {
-            get
-            {
-                var collection = GetEntities<FORECAST_PO_DATE>();
-                if (collection != null)
-                {
-                    collection = collection.OrderBy(x => x.PAYMENT_DATE);
-                }
-
-                return collection;
-            }
         }
 
         public override void FullRefresh()

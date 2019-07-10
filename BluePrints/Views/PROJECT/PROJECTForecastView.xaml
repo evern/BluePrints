@@ -415,7 +415,7 @@
                             </dxdo:LayoutPanel>
                             <!--<dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">-->
                             <dxdo:LayoutPanel AutoHidden="False" ShowHideButton="True">
-                                <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.DetailedData, ElementName=userControl}" SelectionMode="Row">
+                                <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ActualsDetail, ElementName=userControl}" SelectionMode="Row">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DataContext.DetailGridKeyDownCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>

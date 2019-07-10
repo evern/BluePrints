@@ -110,11 +110,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_PO, Guid> FORECAST_POS { get; }
 
         /// <summary>
-        /// The FORECAST_PO_RESULT entities repository.
-        /// </summary>
-        IRepository<FORECAST_PO_RESULT, Guid> FORECAST_PO_RESULTS { get; }
-
-        /// <summary>
         /// The ESTIMATE_ITEM entities repository.
         /// </summary>
         IRepository<ESTIMATE_ITEM, Guid> ESTIMATE_ITEMS { get; }

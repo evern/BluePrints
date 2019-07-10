@@ -374,9 +374,6 @@ namespace BluePrints.ViewModels
             if (FORECASTCollectionViewModel == null)
                 return;
 
-            alignedDataDateCollection.Clear();
-            DetailedData.Clear();
-            EntitiesUndoRedoManager.Clear();
             if(MainViewModel != null)
             {
                 MainViewModel.IsPasteCellLevel = true;
@@ -416,6 +413,8 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            alignedDataDateCollection.Clear();
+            DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
             ForecastSummary.Reset();
@@ -575,6 +574,8 @@ namespace BluePrints.ViewModels
                     dataRow[columnName] = test ? 1000m : 0.00m;
             }
         }
+
+        public IEnumerable<ExoDataPoint> ActualsDetail => DetailedData;
 
         public List<ExoDataPoint> DetailedData { get; set; }
         private void updateDataRowForecast(ExoSubJobProjection disciplineEntity)
@@ -769,8 +770,18 @@ namespace BluePrints.ViewModels
 
         private void clearFilter()
         {
-            FilterCriteria = null;
+            IsHidden = false;
+            IsPOColumnsVisible = false;
+
+            //workaround for when detail grid doesn't show anything when it's first loaded, bug on devexpress
+            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '000'");
             this.RaisePropertyChanged(x => x.FilterCriteria);
+
+            FilterCriteria = CriteriaOperator.Parse("");
+            this.RaisePropertyChanged(x => x.IsHidden);
+            this.RaisePropertyChanged(x => x.FilterCriteria);
+            this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            this.RaisePropertyChanged(x => x.ActualsDetail);
         }
 
         public void HideColumns(AutoGeneratingColumnEventArgs e)

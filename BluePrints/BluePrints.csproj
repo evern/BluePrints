@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1734</MinimumRequiredVersion>
-    <ApplicationRevision>1734</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.1.1736</MinimumRequiredVersion>
+    <ApplicationRevision>1737</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -151,7 +151,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BluePrints BETA</AssemblyName>
+    <AssemblyName>BluePrints</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.Charts.v18.2.Core, Version=18.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
@@ -622,6 +622,7 @@
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
@@ -703,8 +704,6 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EntityFramework\Annotations\FORECAST_PO_RESULT.cs" />
-    <Compile Include="EntityFramework\Annotations\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY.cs" />
@@ -762,8 +761,6 @@
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO_RESULT.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\PO_CUSTOMDATE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
@@ -893,7 +890,7 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\PO_CUSTOMDATECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
@@ -995,8 +992,8 @@
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml.cs">
-      <DependentUpon>PO_CUSTOMDATECollectionView.xaml</DependentUpon>
+    <Compile Include="Views\PROJECT\POSpreadView.xaml.cs">
+      <DependentUpon>POSpreadView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOForecastView.xaml.cs">
       <DependentUpon>PROJECTPOForecastView.xaml</DependentUpon>
@@ -1939,7 +1936,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROJECT\PO_CUSTOMDATECollectionView.xaml">
+    <Page Include="Views\PROJECT\POSpreadView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
