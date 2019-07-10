@@ -72,6 +72,18 @@
 
         public DateTime? FORECAST_END_DATE { get; set; }
 
+        public string P6FORECAST_NAME { get; set; }
+
+        public DateTime? P6FORECAST_DATADATE { get; set; }
+
+        public decimal? ORI_REVENUE { get; set; }
+
+        public decimal? VAR_REVENUE { get; set; }
+
+        public decimal? EAC_REVENUE { get; set; }
+
+        public DateTime? FORECAST_PO_LAST_ALIGNED { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

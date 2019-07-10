@@ -162,18 +162,21 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static List<DateTime> GenerateMonthEndDatesCollection(DateTime firstAlignedDataDate,
             DateTime lastDataPointDate)
         {
-            var lastProgressDate = firstAlignedDataDate;
-            //lastDataPointDate = lastDataPointDate.AddDays(intervalPeriod.Days);
+            DateTime lastProgressDate = new DateTime(firstAlignedDataDate.Year, firstAlignedDataDate.Month, 1);
+            lastProgressDate = lastProgressDate.AddDays(-1);
+            //adjust last datapoint date to end of the month
+            DateTime lastEndOfMonthDate = new DateTime(lastDataPointDate.Year, lastDataPointDate.Month, 1);
+            lastEndOfMonthDate = lastEndOfMonthDate.AddMonths(1).AddDays(-1);
             var alignedDataDatesCollection = new List<DateTime>();
-            //alignedDataDatesCollection.Add(firstAlignedDataDate);
+
+            DateTime progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1);
             //forward the first progress date to scan to after the datadate aligned to end day of week
             do
             {
-                DateTime firstOfNextMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1);
-                DateTime lastOfThisMonth = firstOfNextMonth.AddDays(-1);
                 lastProgressDate = lastProgressDate.AddMonths(1);
-                alignedDataDatesCollection.Add(lastOfThisMonth);
-            } while (lastProgressDate < lastDataPointDate);
+                progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1).AddDays(-1);
+                alignedDataDatesCollection.Add(progressEndOfMonth);
+            } while (progressEndOfMonth < lastEndOfMonthDate);
 
             return alignedDataDatesCollection;
         }

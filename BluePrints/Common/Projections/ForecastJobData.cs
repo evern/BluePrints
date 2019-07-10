@@ -29,6 +29,10 @@ namespace BluePrints.Common.Projections
                 return string.Empty;
         }
 
+        //used for compare data table to show type of cost that adds up to total forecast cost
+        public string DropDownPhase { get; set; }
+        public string CompareMask { get; set; }
+
         public ExoSubJobProjection Projection { get; set; }
 
         public List<ForecastDateCost> DateCosts { get; set; }
@@ -65,10 +69,12 @@ namespace BluePrints.Common.Projections
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => Actuals + Outstanding + Uncommitted;
-        public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+        public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
         public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal Variance => Budget - EstimateAtCompletion;
         public bool IsBudgetReadOnly { get; set; }
+        public bool IsPOError { get; set; }
+        public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
     }
 
     public class ForecastDateCost
@@ -79,6 +85,12 @@ namespace BluePrints.Common.Projections
         }
 
         public DateTime Date { get; set; }
-        public decimal Cost { get; set; }
+        public decimal TotalCosts { get; set; }
+
+        public decimal ActualCosts { get; set; }
+        public decimal MaterialCosts { get; set; }
+        public decimal P6Hours { get; set; }
+        public decimal P6Costs { get; set; }
+        public decimal POForecastCosts { get; set; }
     }
 }

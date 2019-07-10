@@ -103,7 +103,7 @@
                     </Style>
                 </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                 <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home" MergeOrder="0" MergeType="Remove">
+                    <dxr:RibbonPage Caption="Home" MergeOrder="1000" MergeType="Remove">
                         <dxr:RibbonPageGroup Caption="Navigation" MergeType="Remove" MergeOrder="1001">
                             <dxb:BarButtonItem Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                             <dxr:RibbonGalleryBarItem Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
@@ -117,7 +117,7 @@
                     </dxr:RibbonPage>
                 </dxr:RibbonDefaultPageCategory>
             </dxr:RibbonControl>
-            <dxa:AccordionControl x:Name="TreeListControl" dx:DXSerializer.SerializationID="NavigationTree" MaxWidth="400" Background="Transparent" BorderThickness="0" ChildrenPath="ChildModules" CollapsedItemClickAction="ShowItems" ExpandItemOnHeaderClick="False" ExpandMode="Multiple" IsCollapseButtonVisible="True" ItemsSource="{Binding Modules}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedModule}" ShowSearchControl="True">
+            <dxa:AccordionControl x:Name="TreeListControl" dx:DXSerializer.SerializationID="NavigationTree" MaxWidth="400" Background="Transparent" BorderThickness="0" ChildrenPath="ChildModules" CollapsedItemClickAction="ShowItems" ExpandItemOnHeaderClick="False" ExpandMode="Multiple" IsCollapseButtonVisible="True" IsExpanded="{Binding AccordionExpanded}" ItemsSource="{Binding Modules}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedModule}" ShowSearchControl="True">
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:EventToCommand Command="{Binding NavigateCommand}" EventName="MouseDoubleClick" />
                 </dxmvvm:Interaction.Behaviors>

@@ -5,6 +5,7 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using BluePrints.Common.Resources;
+    using BluePrints.Common.ViewModel.Reporting;
     using Common;
     using DevExpress.Mvvm;
     using System;
@@ -13,7 +14,7 @@ namespace BluePrints.Data
     using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
-    public partial class PROJECT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    public partial class PROJECT : EntityBase, IHaveP6Baselines, ICanSync, IHaveCreatedDate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT()
@@ -135,5 +136,11 @@ namespace BluePrints.Data
         }
 
         public string Office => this.NUMBER + " " + this.OfficeName;
+
+        public Guid project_guid => GUID;
+
+        public string P6_Baseline_Name => P6FORECAST_NAME;
+
+        public string P6_Mod_Baseline_Name => throw new NotImplementedException();
     }
 }

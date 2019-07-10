@@ -62,6 +62,12 @@ namespace BluePrints.Data
         public string P6ACTIVITYMAP { get; set; }
 
         [StringLength(100)]
+        public string VARIATION_CODE { get; set; }
+
+        [StringLength(50)]
+        public string COMMODITY_CODE { get; set; }
+
+        [StringLength(100)]
         public string SEQNO { get; set; }
 
         public decimal? BUDGET_TRUCK_PERCENTAGE { get; set; }
@@ -110,7 +116,7 @@ namespace BluePrints.Data
 
         public virtual ESTIMATE ESTIMATE { get; set; }
 
-        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
+        public virtual COMMODITY_CODE COMMODITY_CODES { get; set; }
 
         public virtual STOCK_CODE STOCK_CODE { get; set; }
 

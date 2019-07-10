@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="BluePrints.Views.POSpreadView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="300" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:POSpreadViewModel}" mc:Ignorable="d">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup Height="100" Width="300" Orientation="Horizontal" View="Group">
+            <dxlc:LayoutItem Height="100">
+                <TextBlock TextWrapping="WrapWithOverflow">
+                    Tips: hold shift + [number key] on forecast cells to <LineBreak />automatically spread the remaining cost <LineBreak />across [number key] period with the interval defined here
+                </TextBlock>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup Name="LayoutGroupMain" Header="Edit Value" Orientation="Vertical" View="Group">
+            <dxlc:LayoutGroup Name="LayoutGroupPeriod" Height="50" Orientation="Horizontal" View="Group">
+                <dxlc:LayoutItem Height="50" Label="Period in Months:">
+                    <dxe:SpinEdit EditValue="{Binding Period, Mode=TwoWay}" Increment="1" MinValue="0" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Name="LayoutGroupInterval" Height="50" Orientation="Horizontal" View="Group">
+                <dxlc:LayoutItem Height="50" Label="Months Interval:">
+                    <dxe:SpinEdit EditValue="{Binding Interval, Mode=TwoWay}" Increment="1" MinValue="0" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="50" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />
+    </dxlc:LayoutControl>
+</UserControl>

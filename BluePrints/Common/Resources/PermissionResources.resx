@@ -183,8 +183,8 @@
   <data name="ManageWorkpack" xml:space="preserve">
     <value>Allow user to manage workpack</value>
   </data>
-  <data name="ManageBudget" xml:space="preserve">
-    <value>Allow user to manage budget</value>
+  <data name="ManageJobSetup" xml:space="preserve">
+    <value>Allow user to manage construction job setup</value>
   </data>
   <data name="ManageProgressDistribution" xml:space="preserve">
     <value>Allow user to manage progress distribution</value>
@@ -224,5 +224,8 @@
   </data>
   <data name="ManageTransactions" xml:space="preserve">
     <value>Allow user to manage transactions</value>
+  </data>
+  <data name="ChangeBudget" xml:space="preserve">
+    <value>Allow user to change construction budget</value>
   </data>
 </root>

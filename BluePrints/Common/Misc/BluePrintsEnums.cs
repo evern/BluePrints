@@ -3,6 +3,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BluePrints.Common
@@ -22,6 +23,20 @@ namespace BluePrints.Common
         public static DateTime DefaultStartTime = new DateTime(1899, 1, 1, 0, 0, 0);
         public static DateTime DefaultFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
+    }
+
+    public enum StatsCalculationType
+    {
+        [Display(Name = "Planned")]
+        Planned,
+        [Display(Name = "Earned")]
+        Earned,
+        [Display(Name = "Remaining")]
+        Remaining,
+        [Display(Name = "Forecast")]
+        Forecast,
+        [Display(Name = "Burned")]
+        Burned
     }
 
     public enum POPaymentTerms
@@ -388,17 +403,28 @@ namespace BluePrints.Common
         Construct = 1,
         [Display(Name = "Indirect")]
         Indirect = 2,
+        [Display(Name = "Procurement")]
+        Procurement = 4, 
         [Display(Name = "Tender")]
-        Tender = 3
+        Tender =4
     }
 
     public enum ChargeType
     {
-        [Display(Name = "Direct")]
-        Direct = 0,
-        [Display(Name = "Indirect")]
-        Indirect = 1
+        [Display(Name = "Chargeable")]
+        Chargeable = 0,
+        [Display(Name = "Non-Chargeable")]
+        NotChargeable = 1
     }
+
+    public enum CostType
+    {
+        [Display(Name = "Charge")]
+        Charge = 0,
+        [Display(Name = "Cost")]
+        Cost = 1
+    }
+
     public enum ProgressType
     {
         [Display(Name = "Design")]

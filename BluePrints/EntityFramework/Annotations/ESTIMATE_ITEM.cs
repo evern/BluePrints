@@ -10,6 +10,7 @@ using DevExpress.Mvvm;
 using BluePrints.Common.Base;
 using BluePrints.Common;
 using BaseModel.DataModel;
+using DevExpress.XtraEditors.DXErrorProvider;
 
 namespace BluePrints.Data
 {
@@ -80,8 +81,90 @@ namespace BluePrints.Data
             return SubAreaCollection.Any(x => x.GUID == subAreaGuid);
         }
 
+        [NotMapped]
+        public PHASE CachedPHASE { get; set; }
+
+        [NotMapped]
+        public PhaseType? PhaseType =>  CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
+
+        [NotMapped]
+        public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
+        public IEnumerable<COMMODITY_CODE> CommodityCodeCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null)
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).OrderBy(x => x.CODE);
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<DISCIPLINE> DisciplineCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null)
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct().OrderBy(x => x.CODE);
+            }
+        }
+
+        public bool IsDisciplineCodeValid
+        {
+            get
+            {
+                if (PhaseType != null)
+                {
+                    //when commodity code collection is not set, don't show any error
+                    if (CommodityCodeCollection == null)
+                        return true;
+
+                    return CommodityCodeCollection.Any(x => x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+                }
+                //when phase type is not set, don't show any error
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        public bool IsCommodityCodeValid
+        {
+            get
+            {
+                if(PhaseType != null && COMMODITY_CODE != null)
+                {
+                    //when commodity code collection is not set, don't show any error
+                    if (CommodityCodeCollection == null)
+                        return true;
+
+                    return CommodityCodeCollection.Any(x => x.CODE == COMMODITY_CODE);
+                }
+                //when phase type is not set, don't show any error
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         //public string Deliverable_Name => STOCK_CODE == null ? string.Empty : STOCK_CODE.CODE;
-        public string Deliverable_Name => NAME;
+        //for scheduling view use
+        public string Deliverable_Name
+        {
+            get
+            {
+                string name = string.Empty;
+                name += Subjob_Name + "-";
+                name += Discipline_Code + "-";
+                name += Commodity_Code;
+                return name;
+            }
+        }
 
         [NotMapped]
         public Guid? Subjob_Guid
@@ -95,16 +178,38 @@ namespace BluePrints.Data
         {
             get
             {
-                if (DISCIPLINE == null)
+                if (DISCIPLINE != null)
+                    return DISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
+                else if (CachedDISCIPLINE != null)
+                    return CachedDISCIPLINE.CODE + DISCIPLINE_NUM.ToString("00");
+                else
                     return string.Empty;
-
-                return DISCIPLINE.CODE + DISCIPLINE_NUM;
             }
         }
 
+        //used for storing newly added entity so that we don't change the context of the existing DISCIPLINE for newly added rows for Discipline_Code
+        [NotMapped]
+        public DISCIPLINE CachedDISCIPLINE { get; set; }
+
         public string Phase_Code => BluePrintsResources.Default_Construction_Phase;
 
-        public string Commodity_Code => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE.CODE;
+        public string Commodity_Code
+        {
+            get
+            {
+                return COMMODITY_CODE;
+                //if (COMMODITY_CODES != null)
+                //    return COMMODITY_CODES.CODE;
+                //else if (CachedCOMMODITY_CODE != null)
+                //    return CachedCOMMODITY_CODE.CODE;
+                //else
+                //    return string.Empty;
+            }
+        }
+
+        //used for storing newly added entity so that we don't change the context of the existing COMMODITY_CODE for newly added rows for Commodity_Code
+        [NotMapped]
+        public COMMODITY_CODE CachedCOMMODITY_CODE { get; set; }
 
         public Guid? Area_Guid => GUID_AREA;
 
@@ -119,13 +224,16 @@ namespace BluePrints.Data
                 //if (IsByDuration)
                 //    return BluePrintsConstants.DurationBasedTotalUnits;
 
-                if (STOCK_CODE == null)
-                    return 0;
+                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
+                //if (STOCK_CODE == null)
+                //    return 0;
 
                 if (BUDGET_QUANTITY == null)
                     return 0;
 
-                return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
+                //return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                return (decimal)BUDGET_QUANTITY;
             }
         }
 
@@ -172,12 +280,18 @@ namespace BluePrints.Data
         {
             get
             {
-                if (SUBJOB == null)
+                if (SUBJOB != null)
+                    return SUBJOB.INTERNAL_NAME1;
+                else if (CachedSUBJOB != null)
+                    return CachedSUBJOB.INTERNAL_NAME1;
+                else
                     return string.Empty;
-
-                return SUBJOB.INTERNAL_NAME1;
             }
         }
+
+        //used for storing newly added SUBJOB so that we don't change the context of the existing SUBJOB for newly added rows for Subjob_Name
+        [NotMapped]
+        public SUBJOB CachedSUBJOB { get; set; }
 
         [NotMapped]
         public string Department_Code
@@ -215,7 +329,7 @@ namespace BluePrints.Data
         [NotMapped]
         public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
 
-        public string Variation_Code => string.Empty;
+        public string Variation_Code => VARIATION_CODE;
 
         public string Office
         {

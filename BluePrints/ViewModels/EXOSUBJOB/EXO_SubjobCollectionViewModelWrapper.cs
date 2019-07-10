@@ -70,7 +70,7 @@ namespace BluePrints.ViewModels
         protected Data.PROJECT loadPROJECT;
         protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
@@ -83,6 +83,9 @@ namespace BluePrints.ViewModels
         private int subjobCodeMaxLength = 15;
         private int disciplineCodeMaxLength = 4;
         private int commodityCodeMaxLength = 4;
+
+        //user from exo will do a lookup to get additional details from user's in BluePrints
+        protected bool tryCombineLocalUsers = false;
         #endregion
 
         #region Loading Operations
@@ -722,7 +725,7 @@ namespace BluePrints.ViewModels
             List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
             foreach (ExoSubJobEditableProjection projection in projections)
             {
-                if (projection.SubJobChargeType == ChargeType.Direct && projection.CommodityIsIndirectOnly)
+                if (projection.SubJobChargeType == ChargeType.Chargeable && projection.CommodityIsIndirectOnly)
                 {
                     MessageBoxService.ShowMessage("The commodity " + projection.CommodityCode + " can only be assigned to indirect subjobs\nPlease change the subjob or assign a different commodity in the deliverable's list", "Warning", MessageButton.OK, MessageIcon.Exclamation);
                     continue;
@@ -864,7 +867,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null)
+                if (MainViewModel == null || !IsPermissionGridEnabled)
                     return null;
 
                 var permissions = new List<ExoSubJobAuth>();
@@ -880,7 +883,11 @@ namespace BluePrints.ViewModels
                     foreach (STAFF staff in exoSTAFFS)
                     {
                         ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
-                        USER newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+
+                        USER newUser = null;
+                        if (tryCombineLocalUsers)
+                            newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+
                         if (newUser == null)
                             newUser = new USER();
 

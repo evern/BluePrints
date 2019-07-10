@@ -41,12 +41,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository((CONSTRUCTION_CONFIG x) => x.GUID); }
         }
-
-        IRepository<PO_CUSTOMDATE, Guid> IBluePrintsEntitiesUnitOfWork.PO_CUSTOMDATES
-        {
-            get { return GetRepository((PO_CUSTOMDATE x) => x.GUID); }
-        }
-
+        
         IRepository<STOCK_GROUP, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_GROUPS
         {
             get { return GetRepository((STOCK_GROUP x) => x.GUID); }

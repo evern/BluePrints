@@ -30,11 +30,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<BASELINE, Guid> BASELINES { get; }
 
         /// <summary>
-        /// The PO_CUSTOMDATE entities repository.
-        /// </summary>
-        IRepository<PO_CUSTOMDATE, Guid> PO_CUSTOMDATES { get; }
-
-        /// <summary>
         /// The CONSTRUCTION_CONFIG entities repository.
         /// </summary>
         IRepository<CONSTRUCTION_CONFIG, Guid> CONSTRUCTION_CONFIGS { get; }
