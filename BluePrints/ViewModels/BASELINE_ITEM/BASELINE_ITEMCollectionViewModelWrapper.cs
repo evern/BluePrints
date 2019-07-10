@@ -707,19 +707,19 @@ namespace BluePrints.ViewModels
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
 
-            PHASE defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Direct));
+            PHASE defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
             if (viewType == DeliverablesViewType.Direct)
             {
                 phaseType = PhaseType.Design;
-                chargeType = ChargeType.Direct;
+                chargeType = ChargeType.Chargeable;
                 if (defaultPHASE != null)
                     entity.Phase_Guid = defaultPHASE.GUID;
             }
             else if(viewType == DeliverablesViewType.Indirect)
             {
                 phaseType = PhaseType.Design;
-                chargeType = ChargeType.Indirect;
-                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Indirect));
+                chargeType = ChargeType.NotChargeable;
+                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable));
                 if (indirectPHASE != null)
                     entity.Phase_Guid = indirectPHASE.GUID;
             }
@@ -730,8 +730,8 @@ namespace BluePrints.ViewModels
 
             //if(entity.IsInternalNumberEditable)
             //    entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            //BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
+            //BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             entity.Update();
             //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
             return true;
@@ -921,7 +921,7 @@ namespace BluePrints.ViewModels
                     DOCTYPE doctype = DOCTYPECollection.FirstOrDefault(x => x.GUID == doctypeGuid);
                     if (doctype != null)
                     {
-                        if (doctype.IS_INDIRECT_ONLY && phase.CHARGE_TYPE == ChargeType.Direct)
+                        if (doctype.IS_INDIRECT_ONLY && phase.CHARGE_TYPE == ChargeType.Chargeable)
                             return false;
                     }
                 }
@@ -987,7 +987,7 @@ namespace BluePrints.ViewModels
 
                 if (chosenDOCTYPE.IS_INDIRECT_ONLY)
                 {
-                    PHASE indirectPhase = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Indirect);
+                    PHASE indirectPhase = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.NotChargeable);
                     if (indirectPhase != null)
                         projection.Entity.Entity.GUID_PHASE = indirectPhase.GUID;
                 }

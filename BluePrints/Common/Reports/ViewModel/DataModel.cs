@@ -3,8 +3,10 @@ using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
+using DevExpress.XtraEditors.DXErrorProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,7 +167,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -207,6 +209,22 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
+
+        public void GetError(ErrorInfo info)
+        {
+        }
+
+        public void GetPropertyError(string propertyName, ErrorInfo info)
+        {
+            if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.COMMODITY_CODE)) && !Entity.Entity.IsCommodityCodeValid)
+            {
+                info.ErrorText = "Invalid commodity code, please check phase and discipline";
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && !Entity.Entity.IsDisciplineCodeValid)
+            {
+                info.ErrorText = "Invalid discipline code, please check phase";
+            }
+        }
     }
 
 
@@ -463,12 +481,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
-        public void BuildStats(decimal weightingPortion = 1, bool earnOnly = false)
+        public void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null)
         {
             if (StatSummarizer == null || Stats == null)
                 return;
 
-            StatSummarizer.Build(false, false, weightingPortion, earnOnly);
+            if(calcTypes == null)
+            {
+                calcTypes = BluePrintsDataUtils.AllCalcTypes;
+            }
+
+            StatSummarizer.Build(false, false, weightingPortion, calcTypes);
         }
 
         public void BuildBudgetedStats(decimal weightingPortion = 1)
@@ -1040,6 +1063,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Guid DeliverableKey => Entity.GUID;
 
         public decimal Budget_Quantity => Entity.Budget_Quantity;
+
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;

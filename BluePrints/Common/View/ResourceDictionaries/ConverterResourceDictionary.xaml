@@ -12,4 +12,5 @@
     <dxmvvm:StringToBooleanConverter x:Key="StringToBoolConverter" />
     <converter:HoursToTextConverter x:Key="HoursToTextConverter" />
     <converter:WeeksToTextConverter x:Key="WeeksToTextConverter" />
+    <converter:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
 </ResourceDictionary>

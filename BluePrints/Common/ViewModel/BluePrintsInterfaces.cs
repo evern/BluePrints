@@ -1,10 +1,11 @@
 ﻿using BluePrints.Common.ViewModel.Reporting;
+using System.Collections.Generic;
 
 namespace BluePrints.Common.ViewModel
 {
     public interface IHaveSummary : IHaveStats
     {
-        void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, bool earnOnly = false, bool useProductivityFactorOnRemaining = false);
+        void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false);
         void RecalculateStats(bool isCosts, bool showLoadingScreen);
     }
 

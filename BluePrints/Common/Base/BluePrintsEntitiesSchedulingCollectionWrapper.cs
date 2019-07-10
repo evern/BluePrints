@@ -179,7 +179,7 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
         protected BaselineMappingMode mappingMode;
-
+        protected bool isProject = false;
         protected IDialogService ActivityDetailDialogService
         {
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
@@ -196,6 +196,10 @@ namespace BluePrints.Common.Base
 
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
+
+            if(obj.Count() > 3)
+                isProject = ((bool)obj[3]);
+
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
@@ -582,13 +586,14 @@ namespace BluePrints.Common.Base
         }
 
         public Action<P6_ASSIGNMENTProjection> Set_SelectedItem_CallBack { get; set; }
-
+        protected bool disableMultipleDeliverablesToOneActivityAssignment = false;
         public void Add_Assignments()
         {
             if (Selected_Deliverable == null)
                 return;
 
             bool show_already_assigned_message = false;
+            bool show_multiple_deliverable_assignment_message = false;
 
             IEnumerable<ICanAssignP6> active_deliverables;
             active_deliverables = Selected_Deliverables;
@@ -599,6 +604,16 @@ namespace BluePrints.Common.Base
                 {
                     show_already_assigned_message = true;
                     continue;
+                }
+
+                //because when multiple deliverable's are assigned to a single activity the remaining units cannot be reliably pro-rated into jobs
+                if(disableMultipleDeliverablesToOneActivityAssignment)
+                {
+                    if (P6_ASSIGNMENTSCollectionViewModel.Entities.Any(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID))
+                    {
+                        show_multiple_deliverable_assignment_message = true;
+                        continue;
+                    }
                 }
 
                 deliverable.P6_Assignments.Add(new P6_ASSIGNMENT()
@@ -614,8 +629,10 @@ namespace BluePrints.Common.Base
                 });
             }
 
-            if(show_already_assigned_message)
-                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity");
+            if(show_multiple_deliverable_assignment_message)
+                MessageBoxService.ShowMessage("Cannot assign multiple job to a single activity for construction", "Error", MessageButton.OK, MessageIcon.Warning);
+            else if(show_already_assigned_message)
+                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity", "Error", MessageButton.OK, MessageIcon.Warning);
 
             summarize_wbs_parent_unit(Selected_Activity);
 
@@ -1070,7 +1087,7 @@ namespace BluePrints.Common.Base
 
         public void Remap_P6_Ids()
         {
-            List<P6_AssignmentProjection> missing_activities = get_missing_p6_activities(true);
+            List<P6_AssignmentProjection> missing_activities = getMissingP6Activities(true);
             List<P6ActivityRemap> p6_remap_activities = new List<P6ActivityRemap>();
 
             if (missing_activities.Count > 0)
@@ -1123,7 +1140,16 @@ namespace BluePrints.Common.Base
 
         public void Check_Assignments()
         {
-            List<P6_AssignmentProjection> missing_activities = get_missing_p6_activities();
+            List<P6_AssignmentProjection> missing_activities = getMissingP6Activities();
+            List<P6_ASSIGNMENT> missingAssignments = getMissingDeliverablesAssignments();
+
+            int deletedDeliverablesAssignmentCount = 0;
+            if(missingAssignments.Count > 0)
+            {
+                deletedDeliverablesAssignmentCount = missingAssignments.Count;
+                P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingAssignments);
+            }
+
             if (missing_activities.Count > 0)
             {
                 DialogCollectionViewModel<P6_AssignmentProjection> missing_activities_viewmodel = DialogCollectionViewModel<P6_AssignmentProjection>.Create(missing_activities);
@@ -1135,11 +1161,13 @@ namespace BluePrints.Common.Base
                     FullRefresh();
                 }
             }
+            else if(deletedDeliverablesAssignmentCount > 0)
+                MessageBoxService.ShowMessage(deletedDeliverablesAssignmentCount + " invalid assignment(s) has been removed", "Information", MessageButton.OK, MessageIcon.Information);
             else
-                MessageBoxService.ShowMessage("All Assignments Valid");
+                MessageBoxService.ShowMessage("All Assignments Valid", "Information", MessageButton.OK, MessageIcon.Information);
         }
 
-        private List<P6_AssignmentProjection> get_missing_p6_activities(bool getAllActivities = false)
+        private List<P6_AssignmentProjection> getMissingP6Activities(bool getAllActivities = false)
         {
             var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -1169,6 +1197,18 @@ namespace BluePrints.Common.Base
             }
 
             return missing_activities;
+        }
+
+        private List<P6_ASSIGNMENT> getMissingDeliverablesAssignments()
+        {
+            List<P6_ASSIGNMENT> missingDeliverablesAssignments = new List<P6_ASSIGNMENT>();
+            foreach (P6_ASSIGNMENT assignment in P6_ASSIGNMENTSCollectionViewModel.Entities)
+            {
+                if (!DisplayEntities.Any(x => x.OriginalEntityKey == assignment.GUID_ORIGINAL))
+                    missingDeliverablesAssignments.Add(assignment);
+            }
+
+            return missingDeliverablesAssignments;
         }
 
         public void Save_Task(TASK task)

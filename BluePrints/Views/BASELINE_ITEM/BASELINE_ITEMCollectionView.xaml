@@ -20,7 +20,6 @@
                 </Style.Triggers>
             </Style>
             <common:RowNameConverter x:Key="RowNameConverter" />
-            <converters:IReportableStatsMaximumUnitsConverter x:Key="IReportableStatsMaximumUnitsConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />

@@ -103,7 +103,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     if (forceRetrieveAllBurned || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        if (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010"))))
+                        if (forceRetrieveAllBurned || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
@@ -213,11 +213,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public void BuildRemainingDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
+        public void BuildRemainingDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID);
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
                 foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
                 {

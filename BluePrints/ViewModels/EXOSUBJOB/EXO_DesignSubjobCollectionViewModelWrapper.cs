@@ -76,6 +76,7 @@ namespace BluePrints.ViewModels
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
+            tryCombineLocalUsers = true;
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -144,7 +145,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == ProgressStatus.Live);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
 
         }
 
@@ -177,7 +178,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, primeroUnitOfWork, USERCollection, COMMODITY_CODECollection);
+            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, primeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
@@ -353,6 +354,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<PROGRESS_ITEM>();
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                return GetEntities<DOCTYPE>();
             }
         }
 
