@@ -187,18 +187,31 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
+            MainViewModel.IsPasteCellLevel = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #endregion
 
         #region Events
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, bool isNew)
+        {
+            if (field_name.ToUpper().Contains("BUDGET"))
+            {
+                projection.Update();
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value)
         {
             if (field_name.ToUpper().Contains("BUDGET"))
             {
                 if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
                     return "You do not have authority to change the budget";
+                else if (!projection.IsLineExistsInExo)
+                    return "Budget must be changed on bookable entries only";
             }
 
             return base.UnifiedValueValidation(projection, field_name, new_value);

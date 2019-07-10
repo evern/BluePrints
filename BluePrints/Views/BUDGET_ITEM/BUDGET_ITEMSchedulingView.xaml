@@ -251,148 +251,20 @@
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxg:LookUpEditSettings Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="GUID">
-                                            <dxg:LookUpEditSettings.StyleSettings>
-                                                <dxg:SearchLookUpEditStyleSettings />
-                                            </dxg:LookUpEditSettings.StyleSettings>
-                                            <dxg:LookUpEditSettings.PopupContentTemplate>
-                                                <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                        <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn Width="55" FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                            <dxg:GridColumn FieldName="NAME" Header="Description" ReadOnly="True" />
-                                                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="55" FieldName="UOM" Header="UOM" ReadOnly="True" />
-                                                        </dxg:GridControl.Columns>
-                                                        <dxg:GridControl.View>
-                                                            <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
-                                                        </dxg:GridControl.View>
-                                                    </dxg:GridControl>
-                                                </ControlTemplate>
-                                            </dxg:LookUpEditSettings.PopupContentTemplate>
-                                        </dxg:LookUpEditSettings>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" />
                                 <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" FilterPopupMode="CheckedList" Header="Budget Hours" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings MinValue="0" Increment="1" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>-->
                                 <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.P6ACTIVITYMAP" Header="P6 Map" ReadOnly="True" />
                             </dxg:GridControl.Columns>
-                            <!--<dxg:GridControl.Columns>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.GUID_AREA" Header="Area" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" Header="Sub-Area" ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                    -->
-                            <!--  For Filtering  --><!--
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" HeaderToolTip="Automatically assigned field">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.NAME" Header="Name" ReadOnly="True" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.DESCRIPTION" Header="Description" ReadOnly="True" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.COMMENTS" Header="Comments" ReadOnly="True" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.SEQNO" Header="Seq No" ReadOnly="True" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Entity.P6ACTIVITYMAP" Header="P6 Map" ReadOnly="True" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Total_Quantity" Header="Total Quantity" ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="3" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.RATE_SUPPLY" Header="Supply Rate" HeaderToolTip="Cost per quantity to purchase" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.HOURS_INSTALL" Header="Install Hours" HeaderToolTip="Hours required to install per quantity" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Budget_StockCodeGuid" Header="Stock Code" ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.StockCodeCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                    -->
-                            <!--  For Filtering  --><!--
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.ProjectSTOCK_CODECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Total_Units" Header="Total Units" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="Entity.Total_Costs" Header="Total Cost" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.NAME" FilterPopupMode="CheckedList" Header="Name" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.TYPE" FilterPopupMode="CheckedList" Header="Type" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.SPEC" FilterPopupMode="CheckedList" Header="Specification" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" ReadOnly="True" />
-                            </dxg:GridControl.Columns>-->
                             <dxg:GridControl.GroupSummary>
-                                <!--<dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_QUANTITY" ShowInColumn="Entity.BUDGET_QUANTITY" SummaryType="Sum" />-->
-                                <!--<dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.COMMENTS" ShowInColumn="Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.ESTIMATE_QUANTITY" ShowInColumn="Entity.ESTIMATE_QUANTITY" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Install_Hours" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Supply_Cost" ShowInColumn="Supply_Cost" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Install_Cost" ShowInColumn="Install_Cost" SummaryType="Sum" />-->
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMODITY_CODE" ShowInColumn="Entity.Entity.COMMODITY_CODE" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
-                                <!--<dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_QUANTITY" ShowInColumn="Entity.BUDGET_QUANTITY" SummaryType="Sum" />-->
-                                <!--<dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.COMMENTS" ShowInColumn="Entity.COMMENTS" SummaryType="Count" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.ESTIMATE_QUANTITY" ShowInColumn="Entity.ESTIMATE_QUANTITY" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Install_Hours" ShowInColumn="Total_Install_Hours" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Supply_Cost" ShowInColumn="Supply_Cost" SummaryType="Sum" />
-                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Install_Cost" ShowInColumn="Install_Cost" SummaryType="Sum" />-->
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMODITY_CODE" ShowInColumn="Entity.Entity.COMMODITY_CODE" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView" AutoWidth="True" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">

@@ -136,13 +136,13 @@ namespace BluePrints.Data
         {
             get
             {
-                if(PhaseType != null && GUID_COMMODITY_CODE != null)
+                if(PhaseType != null && COMMODITY_CODE != null)
                 {
                     //when commodity code collection is not set, don't show any error
                     if (CommodityCodeCollection == null)
                         return true;
 
-                    return CommodityCodeCollection.Any(x => x.GUID == GUID_COMMODITY_CODE);
+                    return CommodityCodeCollection.Any(x => x.CODE == COMMODITY_CODE);
                 }
                 //when phase type is not set, don't show any error
                 else
@@ -197,12 +197,13 @@ namespace BluePrints.Data
         {
             get
             {
-                if (COMMODITY_CODE != null)
-                    return COMMODITY_CODE.CODE;
-                else if (CachedCOMMODITY_CODE != null)
-                    return CachedCOMMODITY_CODE.CODE;
-                else
-                    return string.Empty;
+                return COMMODITY_CODE;
+                //if (COMMODITY_CODES != null)
+                //    return COMMODITY_CODES.CODE;
+                //else if (CachedCOMMODITY_CODE != null)
+                //    return CachedCOMMODITY_CODE.CODE;
+                //else
+                //    return string.Empty;
             }
         }
 

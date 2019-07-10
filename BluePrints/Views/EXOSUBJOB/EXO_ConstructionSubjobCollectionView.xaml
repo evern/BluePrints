@@ -15,6 +15,7 @@
                         <dxr:RibbonPage Caption="Home">
                             <dxr:RibbonPageGroup Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                                <dxb:BarCheckItem Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" ToolTip="Change selection to cells instead of row" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
@@ -32,7 +33,10 @@
                 </dxr:RibbonStatusBarControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="{Binding SelectMode}" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
                                 <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" />
@@ -85,10 +89,10 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
+                                    <!--<dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />-->
+                                    <!--<dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />-->
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                    <!--<dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />-->
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
