@@ -198,7 +198,7 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.COMMODITY_CODE)
+                .WithOptional(e => e.COMMODITY_CODES)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
             modelBuilder.Entity<COMMODITY_CODE>()

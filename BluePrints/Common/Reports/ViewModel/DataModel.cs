@@ -216,9 +216,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
-            if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE)) && !Entity.Entity.IsCommodityCodeValid)
+            if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.COMMODITY_CODE)) && !Entity.Entity.IsCommodityCodeValid)
             {
-                info.ErrorText = "Invalid commodity code, please check discipline";
+                info.ErrorText = "Invalid commodity code, please check phase and discipline";
             }
             else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && !Entity.Entity.IsDisciplineCodeValid)
             {

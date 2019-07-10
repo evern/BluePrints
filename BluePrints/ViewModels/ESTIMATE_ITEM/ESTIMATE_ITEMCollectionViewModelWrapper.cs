@@ -346,35 +346,35 @@ namespace BluePrints.ViewModels
 
         private void onBeforeSavedDefaultCommodityCodeAssignment(ESTIMATE_ITEMProgress entity)
         {
-            if(entity.Entity.Entity.GUID_COMMODITY_CODE == null)
-            {
-                if (entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE != null)
-                {
-                    STOCK_CODE estimateStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
-                    if (estimateStockCode != null)
-                    {
-                        COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == estimateStockCode.CODE);
-                        if(defaultCOMMODITY_CODE != null)
-                            entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
-                    }
-                }
-                else if(entity.Entity.Entity.GUID_BUDGET_STOCK_CODE != null)
-                {
-                    STOCK_CODE budgetStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_BUDGET_STOCK_CODE);
-                    if (budgetStockCode != null)
-                    {
-                        COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == budgetStockCode.CODE);
-                        if (defaultCOMMODITY_CODE != null)
-                            entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
-                    }
-                }
-            }
+            //if(entity.Entity.Entity.GUID_COMMODITY_CODE == null)
+            //{
+            //    if (entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE != null)
+            //    {
+            //        STOCK_CODE estimateStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
+            //        if (estimateStockCode != null)
+            //        {
+            //            COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == estimateStockCode.CODE);
+            //            if(defaultCOMMODITY_CODE != null)
+            //                entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
+            //        }
+            //    }
+            //    else if(entity.Entity.Entity.GUID_BUDGET_STOCK_CODE != null)
+            //    {
+            //        STOCK_CODE budgetStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_BUDGET_STOCK_CODE);
+            //        if (budgetStockCode != null)
+            //        {
+            //            COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == budgetStockCode.CODE);
+            //            if (defaultCOMMODITY_CODE != null)
+            //                entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
+            //        }
+            //    }
+            //}
 
             //update CachedCOMMODITY_CODE for deliverable_name to be updated
-            if(entity.Entity.Entity.Commodity_Code == string.Empty && entity.Entity.Entity.GUID_COMMODITY_CODE != null)
-            {
-                entity.Entity.Entity.CachedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_COMMODITY_CODE);
-            }
+            //if(entity.Entity.Entity.Commodity_Code == string.Empty && entity.Entity.Entity.COMMODITY_CODE != null)
+            //{
+            //    entity.Entity.Entity.CachedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == entity.Entity.Entity.COMMODITY_CODE);
+            //}
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -431,7 +431,7 @@ namespace BluePrints.ViewModels
 
             KeyValuePair<ColumnBase, string> area_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_AREA");
             KeyValuePair<ColumnBase, string> subarea_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.SubAreaGuid");
-            KeyValuePair<ColumnBase, string> commodity_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_COMMODITY_CODE");
+            //KeyValuePair<ColumnBase, string> commodity_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_COMMODITY_CODE");
 
             if(area_data.Key != null && subarea_data.Key != null)
             {
@@ -469,15 +469,15 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if(commodity_data.Key != null)
-            {
-                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_data.Value.Substring(0, 3));
-                if (findCOMMODITY_CODE != null)
-                {
-                    pasteEntity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
-                    pasteEntity.Entity.Entity.CachedCOMMODITY_CODE = findCOMMODITY_CODE;
-                }
-            }
+            //if(commodity_data.Key != null)
+            //{
+            //    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_data.Value.Substring(0, 3));
+            //    if (findCOMMODITY_CODE != null)
+            //    {
+            //        pasteEntity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
+            //        pasteEntity.Entity.Entity.CachedCOMMODITY_CODE = findCOMMODITY_CODE;
+            //    }
+            //}
 
             if (stock_code_data.Key != null)
             {
@@ -885,21 +885,13 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
         {
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_COMMODITY_CODE)) && e.Row != null)
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.COMMODITY_CODE)) && e.Row != null)
             {
+                //the itemsource might not have the code so always show the code stored in db
                 ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)e.Row;
-                if (!projection.Entity.Entity.IsCommodityCodeValid)
+                if (!projection.Entity.Entity.IsCommodityCodeValid && e.DisplayText == string.Empty)
                 {
-                    COMMODITY_CODE commodity_code;
-                    if (projection.Entity.Entity.COMMODITY_CODE != null)
-                        commodity_code = projection.Entity.Entity.COMMODITY_CODE;
-                    else
-                        commodity_code = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_COMMODITY_CODE);
-
-                    if (commodity_code != null)
-                        e.DisplayText = commodity_code.CODE;
-                    else
-                        e.DisplayText = string.Empty;
+                    e.DisplayText = projection.Entity.Entity.COMMODITY_CODE;
                 }
             }
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && e.Row != null)
@@ -977,8 +969,8 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
         {
-            if (MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.GUID_AREA == projection.Entity.Entity.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == projection.Entity.Entity.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == projection.Entity.Entity.GUID_DISCIPLINE && x.Discipline_Number == projection.Discipline_Number && x.Entity.Entity.GUID_COMMODITY_CODE == projection.Entity.Entity.GUID_COMMODITY_CODE))
-                return "Duplicate job name";
+            if (MainViewModel != null && MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.Deliverable_Name == projection.Entity.Entity.Deliverable_Name))
+                return "Duplicate entries";
 
             return string.Empty;
         }

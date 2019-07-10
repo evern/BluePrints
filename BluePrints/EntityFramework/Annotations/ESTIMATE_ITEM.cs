@@ -96,7 +96,7 @@ namespace BluePrints.Data
                 if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null)
                     return null;
 
-                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE);
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).OrderBy(x => x.CODE);
             }
         }
 
@@ -108,7 +108,7 @@ namespace BluePrints.Data
                 if (PhaseType == null || FullCOMMODITY_CODECollection == null)
                     return null;
 
-                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct();
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType).Where(x => x.DISCIPLINE != null).Select(x => x.DISCIPLINE).Distinct().OrderBy(x => x.CODE);
             }
         }
 
@@ -136,13 +136,13 @@ namespace BluePrints.Data
         {
             get
             {
-                if(PhaseType != null && GUID_COMMODITY_CODE != null)
+                if(PhaseType != null && COMMODITY_CODE != null)
                 {
                     //when commodity code collection is not set, don't show any error
                     if (CommodityCodeCollection == null)
                         return true;
 
-                    return CommodityCodeCollection.Any(x => x.GUID == GUID_COMMODITY_CODE);
+                    return CommodityCodeCollection.Any(x => x.CODE == COMMODITY_CODE);
                 }
                 //when phase type is not set, don't show any error
                 else
@@ -197,12 +197,13 @@ namespace BluePrints.Data
         {
             get
             {
-                if (COMMODITY_CODE != null)
-                    return COMMODITY_CODE.CODE;
-                else if (CachedCOMMODITY_CODE != null)
-                    return CachedCOMMODITY_CODE.CODE;
-                else
-                    return string.Empty;
+                return COMMODITY_CODE;
+                //if (COMMODITY_CODES != null)
+                //    return COMMODITY_CODES.CODE;
+                //else if (CachedCOMMODITY_CODE != null)
+                //    return CachedCOMMODITY_CODE.CODE;
+                //else
+                //    return string.Empty;
             }
         }
 

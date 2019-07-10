@@ -83,6 +83,9 @@ namespace BluePrints.ViewModels
         private int subjobCodeMaxLength = 15;
         private int disciplineCodeMaxLength = 4;
         private int commodityCodeMaxLength = 4;
+
+        //user from exo will do a lookup to get additional details from user's in BluePrints
+        protected bool tryCombineLocalUsers = false;
         #endregion
 
         #region Loading Operations
@@ -882,7 +885,11 @@ namespace BluePrints.ViewModels
                     foreach (STAFF staff in exoSTAFFS)
                     {
                         ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
-                        USER newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+
+                        USER newUser = null;
+                        if (tryCombineLocalUsers)
+                            newUser = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == staff.STAFFNO);
+
                         if (newUser == null)
                             newUser = new USER();
 

@@ -32,6 +32,8 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" Content="Save Layout" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Save current table filters, sorting, grouping and expanded group" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
                                 <dxb:BarButtonItem Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />
                             </dxr:RibbonPageGroup>
@@ -56,7 +58,6 @@
                                 </dxb:BarEditItem>
                                 <dxb:BarButtonItem Command="{Binding DataContext.AlignPOsWithActualsCommand, ElementName=userControl}" Content="Align Actuals" Glyph="{dx:DXImage Image=InitialState_16x16.png}" LargeGlyph="{dx:DXImage Image=InitialState_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Align forecast with actuals" />
                             </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
@@ -124,6 +125,7 @@
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" >
                                         <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.DatesCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                             <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
@@ -145,24 +147,30 @@
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </dxdo:LayoutPanel>
+                        <dxdo:LayoutPanel ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
+                            <dxlc:LayoutItem Label="Click anywhere on the table below and press CTRL + F to clear filter and search on any PO attributes" LabelPosition="Left" />
+                        </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel>
-                            <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" ItemsSource="{Binding DataContext.PODetails, ElementName=userControl}" SelectionMode="Row">
+                            <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.PODetails, ElementName=userControl}" SelectionMode="Row">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DataContext.DetailGridKeyDownCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
+                                </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Bands>
                                     <dxg:GridControlBand Header="General">
-                                        <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="1" />
-                                        <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
-                                        <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
-                                        <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
-                                        <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" VisibleIndex="40" />
-                                        <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" VisibleIndex="50" />
+                                        <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="1" />
+                                        <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" FilterPopupMode="CheckedList" VisibleIndex="10" />
+                                        <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" FilterPopupMode="CheckedList" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" FilterPopupMode="CheckedList" VisibleIndex="30" />
+                                        <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" FilterPopupMode="CheckedList" VisibleIndex="40" />
+                                        <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" FilterPopupMode="CheckedList" VisibleIndex="50" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Commodity">
-                                        <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
-                                        <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
+                                        <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="70" />
+                                        <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="80" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Remaining">
-                                        <dxg:GridColumn FieldName="Quantity" Header="Remaining Quantity" ReadOnly="True" VisibleIndex="90" />
-                                        <dxg:GridColumn FieldName="Costs" Header="Remaining Costs" ReadOnly="True" VisibleIndex="100" >
+                                        <dxg:GridColumn FieldName="Quantity" Header="Remaining Quantity" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="90" />
+                                        <dxg:GridColumn FieldName="Costs" Header="Remaining Costs" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="100" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>

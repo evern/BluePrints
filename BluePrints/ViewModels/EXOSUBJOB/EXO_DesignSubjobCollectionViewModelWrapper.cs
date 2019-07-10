@@ -76,6 +76,7 @@ namespace BluePrints.ViewModels
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
+            tryCombineLocalUsers = true;
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }

@@ -84,10 +84,10 @@
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" >
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="GUID">
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>
