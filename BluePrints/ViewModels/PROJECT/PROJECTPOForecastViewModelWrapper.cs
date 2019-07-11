@@ -578,7 +578,9 @@ namespace BluePrints.ViewModels
                         DateTime parseDateTime;
                         if (DateTime.TryParse(parseFieldName, out parseDateTime))
                         {
-                            oldValue = editing_row[parseFieldName];
+                            if(dataPointsTable.Columns.Contains(parseFieldName))
+                                oldValue = editing_row[parseFieldName];
+
                             addUndo(editing_row, parseFieldName, oldValue, costPerPeriod, EntityMessageType.Changed);
                             findExistingOrAddNewFORECAST_PO(editing_row, parseDateTime, costPerPeriod, true);
                             lastProcessedDate = parseDateTime;
