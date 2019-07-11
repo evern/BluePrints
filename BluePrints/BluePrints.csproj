@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.1.1737</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.1.1782</MinimumRequiredVersion>
     <ApplicationRevision>1782</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -623,6 +623,7 @@
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellMinValueConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />

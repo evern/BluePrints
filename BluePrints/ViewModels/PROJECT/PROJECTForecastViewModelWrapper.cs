@@ -958,13 +958,25 @@ namespace BluePrints.ViewModels
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
                 {
-                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
-
-                    newRow[copyColumn.FieldName] = decimal_value;
                     DateTime columnDateTime;
-                    if(DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+                    if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
                     {
-                        findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, true);
+                        DataTable compareEntity = (DataTable)newRow["CompareEntities"];
+                        if (compareEntity.Rows.Count > 3)
+                        {
+                            decimal actualCosts = (decimal)compareEntity.Rows[0][copyColumn.FieldName];
+                            decimal materialCosts = (decimal)compareEntity.Rows[1][copyColumn.FieldName];
+                            decimal poForecastCosts = (decimal)compareEntity.Rows[2][copyColumn.FieldName];
+                            decimal p6RemainingCosts = (decimal)compareEntity.Rows[3][copyColumn.FieldName];
+                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                            totalCosts = Math.Round(totalCosts);
+                            if (decimal_value >= totalCosts)
+                            {
+                                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
+                                newRow[copyColumn.FieldName] = decimal_value;
+                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, true);
+                            }
+                        }
                     }
                 }
                 else
