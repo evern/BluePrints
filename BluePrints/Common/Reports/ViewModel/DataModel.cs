@@ -821,7 +821,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return Current_Productivity;
         }
 
-        public string Variation_Code => string.Empty;
+        public string Variation_Code => Entity.Variation_Code;
 
         public decimal Variation_Units => ApprovedVariations == null ? 0 : ApprovedVariations.Sum(x => x.AdjustmentUnits);
 

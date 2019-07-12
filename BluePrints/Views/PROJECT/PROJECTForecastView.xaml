@@ -169,7 +169,7 @@
                                                 </DataTemplate>
                                             </dxg:GridColumn.CellTemplate>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Entity.Outstanding" Fixed="Left" Header="PO" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
+                                        <dxg:GridColumn FieldName="Entity.Outstanding" Fixed="Left" Header="Outstanding" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO)" ReadOnly="True" VisibleIndex="70">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
