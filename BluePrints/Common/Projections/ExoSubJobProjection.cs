@@ -184,6 +184,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public List<COMMODITY_CODE> validCommodityCodes = null;
         public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
         {
             get
@@ -191,19 +192,23 @@ namespace BluePrints.Common.Projections
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null)
                     return new List<COMMODITY_CODE>();
 
-                string s;
-                if (CommodityCode.ToUpper().Contains("G01"))
-                    s = string.Empty;
+                if(validCommodityCodes == null)
+                {
+                    if (PhaseType == Common.PhaseType.Tender)
+                        validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
+                    else
+                    {
+                        string disciplineCode = DisciplineCode.Substring(0, 2);
+                        validCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                    }
 
-                if (PhaseType == Common.PhaseType.Tender)
-                    return COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
+                }
 
-
-                string disciplineCode = DisciplineCode.Substring(0, 2);
-                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                return validCommodityCodes;
             }
         }
 
+        List<string> validStockCodes = null;
         public IEnumerable<string> ValidStockCodes
         {
             get
@@ -211,11 +216,18 @@ namespace BluePrints.Common.Projections
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null || CommodityCode == null)
                     return new List<string>();
 
-                if (PhaseType == Common.PhaseType.Tender)
-                    return COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                if(validStockCodes == null)
+                {
+                    if (PhaseType == Common.PhaseType.Tender)
+                        validStockCodes = COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                    else
+                    {
+                        string disciplineCode = DisciplineCode.Substring(0, 2);
+                        validStockCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                    }
+                }
 
-                string disciplineCode = DisciplineCode.Substring(0, 2);
-                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                return validStockCodes;
             }
         }
 

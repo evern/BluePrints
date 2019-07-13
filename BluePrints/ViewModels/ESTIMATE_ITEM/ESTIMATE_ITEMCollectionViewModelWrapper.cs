@@ -419,6 +419,54 @@ namespace BluePrints.ViewModels
                 entity.Entity.Entity.CachedDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE);
         }
 
+        public Guid FindExistingOrAddNewArea(string areaCode)
+        {
+            AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM == areaCode);
+            if (findAREA == null)
+            {
+                AREA newAREA = new AREA();
+                newAREA.GUID_PROJECT = loadPROJECT.GUID;
+                newAREA.INTERNAL_NUM = areaCode;
+                newAREA.TITLE = "Generated";
+                AREACollectionViewModel.Save(newAREA);
+                findAREA = newAREA;
+            }
+
+            return findAREA.GUID;
+        }
+
+        public Guid FindExistingOrAddNewSubArea(Guid areaGuid, string subAreaCode)
+        {
+            AREA findSUBAREA = SUBAREACollection.FirstOrDefault(x => x.GUID_PARENT == areaGuid && x.INTERNAL_NUM == subAreaCode);
+            if (findSUBAREA == null)
+            {
+                AREA newSUBAREA = new AREA();
+                newSUBAREA.GUID_PROJECT = loadPROJECT.GUID;
+                newSUBAREA.GUID_PARENT = areaGuid;
+                newSUBAREA.INTERNAL_NUM = subAreaCode;
+                newSUBAREA.TITLE = "Generated";
+                AREACollectionViewModel.Save(newSUBAREA);
+                findSUBAREA = newSUBAREA;
+            }
+
+            return findSUBAREA.GUID;
+        }
+
+        public Guid FindExistingOrAddNewDiscipline(string disciplineCode)
+        {
+            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+            if(findDISCIPLINE == null)
+            {
+                findDISCIPLINE = new DISCIPLINE();
+                findDISCIPLINE.GUID = Guid.Empty;
+                findDISCIPLINE.CODE = disciplineCode;
+                findDISCIPLINE.NAME = "Generated";
+                DISCIPLINECollectionViewModel.Save(findDISCIPLINE);
+            }
+
+            return findDISCIPLINE.GUID;
+        }
+
         public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
         {
             string searchStockCodeFieldName;
@@ -431,44 +479,29 @@ namespace BluePrints.ViewModels
 
             KeyValuePair<ColumnBase, string> area_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_AREA");
             KeyValuePair<ColumnBase, string> subarea_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.SubAreaGuid");
+            KeyValuePair<ColumnBase, string> discipline_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_DISCIPLINE");
             //KeyValuePair<ColumnBase, string> commodity_data = pasteData.FirstOrDefault(x => x.Key.FieldName == "Entity.Entity.GUID_COMMODITY_CODE");
 
-            if(area_data.Key != null && subarea_data.Key != null)
+            if (area_data.Key != null && subarea_data.Key != null)
             {
                 if(area_data.Value != string.Empty)
                 {
-                    AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM == area_data.Value);
-                    if (findAREA == null)
-                    {
-                        AREA newAREA = new AREA();
-                        newAREA.GUID_PROJECT = loadPROJECT.GUID;
-                        newAREA.INTERNAL_NUM = area_data.Value;
-                        newAREA.TITLE = "Generated";
-                        AREACollectionViewModel.Save(newAREA);
-                        findAREA = newAREA;
-                    }
+                    Guid areaGuid = FindExistingOrAddNewArea(area_data.Value);
+                    pasteEntity.Entity.Entity.GUID_AREA = areaGuid;
 
-                    pasteEntity.Entity.Entity.GUID_AREA = findAREA.GUID;
-
-                    if (subarea_data.Value != string.Empty)
-                    {
-                        AREA findSUBAREA = SUBAREACollection.FirstOrDefault(x => x.GUID_PARENT == findAREA.GUID && x.INTERNAL_NUM == subarea_data.Value);
-                        if (findSUBAREA == null)
-                        {
-                            AREA newSUBAREA = new AREA();
-                            newSUBAREA.GUID_PROJECT = loadPROJECT.GUID;
-                            newSUBAREA.GUID_PARENT = findAREA.GUID;
-                            newSUBAREA.INTERNAL_NUM = subarea_data.Value;
-                            newSUBAREA.TITLE = "Generated";
-                            AREACollectionViewModel.Save(newSUBAREA);
-                            findSUBAREA = newSUBAREA;
-                        }
-
-                        pasteEntity.Entity.Entity.GUID_SUBAREA = findSUBAREA.GUID;
-                    }
+                    Guid subAreaGuid = FindExistingOrAddNewSubArea(areaGuid, subarea_data.Value);
+                    pasteEntity.Entity.Entity.GUID_SUBAREA = subAreaGuid;
                 }
             }
 
+            if(discipline_data.Key != null)
+            {
+                if(discipline_data.Value != string.Empty)
+                {
+                    Guid disciplineGuid = FindExistingOrAddNewDiscipline(discipline_data.Value);
+                    pasteEntity.Entity.Entity.GUID_DISCIPLINE = disciplineGuid;
+                }
+            }
             //if(commodity_data.Key != null)
             //{
             //    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_data.Value.Substring(0, 3));
@@ -1677,6 +1710,18 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<AREA, AREA, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<AREA>();
+            }
+        }
+
+
+        public CollectionViewModel<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DISCIPLINE>();
             }
         }
 
