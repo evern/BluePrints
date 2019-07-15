@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -24,7 +24,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.2.2</MinimumRequiredVersion>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.0.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -623,6 +623,7 @@
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellMinValueConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
@@ -896,6 +897,7 @@
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastViewModelWrapper.cs" />
+    <Compile Include="ViewModels\RATE\CostRATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
@@ -1016,6 +1018,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
       <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RATE\CostRATECollectionView.xaml.cs">
+      <DependentUpon>CostRATECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml.cs">
       <DependentUpon>RA_STUDYSingleObjectView.xaml</DependentUpon>
@@ -1971,6 +1976,10 @@
     <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RATE\CostRATECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDYSingleObjectView.xaml">
       <Generator>MSBuild:Compile</Generator>
