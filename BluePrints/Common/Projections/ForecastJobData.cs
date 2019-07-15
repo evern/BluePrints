@@ -85,6 +85,8 @@ namespace BluePrints.Common.Projections
         }
 
         public DateTime Date { get; set; }
+
+        //not using this as a measure because user can override it
         public decimal TotalCosts { get; set; }
 
         public decimal ActualCosts { get; set; }
@@ -92,5 +94,7 @@ namespace BluePrints.Common.Projections
         public decimal P6Hours { get; set; }
         public decimal P6Costs { get; set; }
         public decimal POForecastCosts { get; set; }
+
+        public decimal PreloadedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
     }
 }

@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct || x.PHASE_TYPE == PhaseType.Procurement);
+            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Design);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()

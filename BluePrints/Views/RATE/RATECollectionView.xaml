@@ -78,7 +78,7 @@
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="Default Columns">
-                                <dxg:GridColumn FieldName="Phase_Type" Header="Phase Type" HeaderToolTip="Indicate which phase this rate belongs to">
+                                <dxg:GridColumn FieldName="Phase_Type" Header="Phase Type" Visible="False" HeaderToolTip="Indicate which phase this rate belongs to">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                     </dxg:GridColumn.EditSettings>
@@ -98,7 +98,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="CommodityCodeId" Header="Commodity" HeaderToolTip="Which commodity the current rate will be applied to">
+                                <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="CommodityCodeId" Header="Doc Type" HeaderToolTip="Which commodity the current rate will be applied to">
                                     <dxg:GridColumn.EditSettings>
                                         <dxg:LookUpEditSettings Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" DisplayMember="Code" IsTextEditable="true" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" PopupMinWidth="500" ValueMember="Key">
                                             <dxg:LookUpEditSettings.StyleSettings>
@@ -136,9 +136,14 @@
                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Whether rate is derived from gang rate" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase (Autofilled)" HeaderToolTip="Auto generated field to indicate which phase this rate belongs to" FilterPopupMode="CheckedList" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Auto checked field to indicate whether rate is derived from gang rate" ReadOnly="True" />
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Header="Gang Rate Parameters">
+                            <dxg:GridControlBand Header="Gang Rate Parameters (Fill in every columns in this section (Even 0% or 0 Rate) so that gang rate will be used. Is Gang Rate column will be checked if gang rate is successfully applied)">
                                 <dxg:GridColumn FieldName="MANAGER_RATE" Header="Manager Rate" HeaderToolTip="Charge rate for manager per hour" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />

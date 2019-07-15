@@ -855,6 +855,74 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        ESTIMATE_ITEMCollectionViewModelWrapper estimateItemViewModel;
+        public void CopyToJob()
+        {
+            if (MessageBoxService.ShowMessage("This will make a copy of existing jobs in exo (except design) into job setup, do you wish to continue?", "Confirmation", MessageButton.OKCancel, MessageIcon.Information) == MessageResult.OK)
+            {
+                estimateItemViewModel = ESTIMATE_ITEMCollectionViewModelWrapper.Create();
+                estimateItemViewModel.OnEntitiesLoadedCallBack = onEstimateLoaded;
+                estimateItemViewModel.OnEntitiesLoadedCallBackManualDispose = true;
+                estimateItemViewModel.OnParameterChange(new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)));
+
+                LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
+            }
+        }
+
+        private void onEstimateLoaded(IEnumerable<ESTIMATE_ITEMProgress> estimateItems, object parent_id)
+        {
+            mainThreadDispatcher.BeginInvoke(new Action(() => {
+                int saveCount = 0;
+                List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+                foreach (var entity in DisplayEntities)
+                {
+                    if (entity.SubJobCode.Length >= 15 && entity.DisciplineCode.Length >= 4 && entity.CommodityCode != string.Empty)
+                    {
+                        string phaseCode = entity.SubJobCode.Substring(13, 2);
+                        if (!phaseCode.Contains("D"))
+                        {
+                            string disciplineCode = entity.DisciplineCode.Substring(0, 2);
+                            string disciplineNum = entity.DisciplineCode.Substring(2, 2);
+                            string areaName = entity.SubJobCode.Substring(6, 3);
+                            string subAreaName = entity.SubJobCode.Substring(10, 2);
+
+                            ESTIMATE_ITEMProgress findESTIMATE_ITEM = estimateItems.FirstOrDefault(x => x.Phase_Code == phaseCode && x.Discipline_Code == disciplineCode && x.Commodity_Code == entity.CommodityCode);
+                            if (findESTIMATE_ITEM == null)
+                            {
+                                ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
+                                Data.PHASE findPHASE = estimateItemViewModel.PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
+                                DISCIPLINE findDISCIPLINE = estimateItemViewModel.DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                                int disciplineInt = 1;
+                                if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
+                                {
+                                    newESTIMATE_ITEM.GUID = Guid.Empty;
+                                    newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
+                                    newESTIMATE_ITEM.GUID_AREA = estimateItemViewModel.FindExistingOrAddNewArea(areaName);
+                                    newESTIMATE_ITEM.GUID_SUBAREA = estimateItemViewModel.FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
+                                    newESTIMATE_ITEM.GUID_DISCIPLINE = estimateItemViewModel.FindExistingOrAddNewDiscipline(disciplineCode);
+                                    newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
+                                    newESTIMATE_ITEM.COMMODITY_CODE = entity.CommodityCode;
+                                    newESTIMATE_ITEM.VARIATION_CODE = entity.VariationCode;
+
+                                    ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
+                                    projection.Entity = new ESTIMATE_ITEMProjection();
+                                    projection.Entity.Entity = newESTIMATE_ITEM;
+                                    newESTIMATE_ITEMS.Add(projection);
+                                    saveCount += 1;
+                                }
+                            }
+                        }
+                    }
+
+                    LoadingScreenManager.Progress();
+                }
+
+                LoadingScreenManager.CloseLoadingScreen();
+                estimateItemViewModel.BulkSave(newESTIMATE_ITEMS);
+                estimateItemViewModel.Dispose();
+                MessageBoxService.ShowMessage(saveCount + " jobs generated in job setup", "Information", MessageButton.OK, MessageIcon.Information);
+            }));
+        }
 
         protected bool isPermissionLoading;
 

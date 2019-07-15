@@ -69,11 +69,11 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline">
-                                <dxg:GridColumn.CellTemplate>
+                                <!--<dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsTextEditable="true" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DisciplineCollection}" NullValueButtonPlacement="Popup"  ValueMember="GUID" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn.CellTemplate>-->
                                 <!--  For Filtering  -->
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
@@ -87,30 +87,31 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">
-                                                <dxg:LookUpEdit.StyleSettings>
-                                                    <dxg:SearchLookUpEditStyleSettings />
-                                                </dxg:LookUpEdit.StyleSettings>
-                                                <dxg:LookUpEdit.PopupContentTemplate>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                            <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn Width="55" FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="NAME" Header="Description" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
-                                                                <dxg:GridColumn Width="55" FieldName="UOM" Header="UOM" ReadOnly="True" />
-                                                            </dxg:GridControl.Columns>
-                                                            <dxg:GridControl.View>
-                                                                <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
-                                                            </dxg:GridControl.View>
-                                                        </dxg:GridControl>
-                                                    </ControlTemplate>
-                                                </dxg:LookUpEdit.PopupContentTemplate>
-                                            </dxg:LookUpEdit>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">
+                                            <!--<dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">-->
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn Width="55" FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="NAME" AllowSearchPanel="False" Header="Description" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" AllowSearchPanel="False" Header="Description" ReadOnly="True" />
+                                                            <dxg:GridColumn Width="55" FieldName="UOM" AllowSearchPanel="False" Header="UOM" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
                                     <!--  For Filtering  -->
-                                    <dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>

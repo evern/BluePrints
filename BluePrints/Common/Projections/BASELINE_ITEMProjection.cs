@@ -135,6 +135,16 @@ namespace BluePrints.Common.Projections
 
         public Guid GUID_ORIGINAL { get => Entity.GUID_ORIGINAL; set => Entity.GUID_ORIGINAL = value; }
 
+        public string Variation_Code => string.Empty;
+
+        public decimal Variation_Units => Entity.DC_HOURS;
+
+        public decimal Variation_Costs => 0;
+
+        public decimal Total_Units => Entity.Budget_Units + Entity.DC_HOURS;
+
+        public decimal Total_Costs => 0;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             Entity.SetOriginalEntityKey(newGuid);
@@ -195,7 +205,7 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => y.COST_TYPE == CostType.Charge && (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE));
+                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_PHASE == baseline_item.GUID_PHASE));
 
                 //order by descending places null GUID's at the end, so First() won't pick it up
                 IEnumerable <RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == baseline_item.GUID_DOCTYPE) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);

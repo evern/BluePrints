@@ -68,7 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IDeliverable_Quantity> Deliverables { get; }
     }
 
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack, IHaveVariation
+    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack
     {
         
     }
@@ -78,7 +78,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IReportable> DeliverableRates { get; }
     }
 
-    public interface IDeliverable_Rates : IDeliverable, IHaveCosts
+    public interface IDeliverable_Rates : IDeliverable, IHaveCosts, IHaveVariation
     {
         IEnumerable<User_Weight> AssignedUsers { get; }
     }

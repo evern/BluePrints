@@ -133,7 +133,7 @@ namespace BluePrints.Common.Projections
 
                 string phaseTypeString = SubJobCode.Substring(13, 1).ToUpper();
                 if (phaseTypeString == "I")
-                    return Common.PhaseType.Procurement;
+                    return Common.PhaseType.Indirect;
                 else if (phaseTypeString == "P")
                     return Common.PhaseType.Procurement;
                 else if (phaseTypeString == "D")
@@ -184,6 +184,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public List<COMMODITY_CODE> validCommodityCodes = null;
         public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
         {
             get
@@ -191,14 +192,23 @@ namespace BluePrints.Common.Projections
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null)
                     return new List<COMMODITY_CODE>();
 
-                if(PhaseType == Common.PhaseType.Tender)
-                    return COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
+                if(validCommodityCodes == null)
+                {
+                    if (PhaseType == Common.PhaseType.Tender)
+                        validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
+                    else
+                    {
+                        string disciplineCode = DisciplineCode.Substring(0, 2);
+                        validCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                    }
 
-                string disciplineCode = DisciplineCode.Substring(0, 2);
-                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                }
+
+                return validCommodityCodes;
             }
         }
 
+        List<string> validStockCodes = null;
         public IEnumerable<string> ValidStockCodes
         {
             get
@@ -206,11 +216,18 @@ namespace BluePrints.Common.Projections
                 if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null || CommodityCode == null)
                     return new List<string>();
 
-                if (PhaseType == Common.PhaseType.Tender)
-                    return COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                if(validStockCodes == null)
+                {
+                    if (PhaseType == Common.PhaseType.Tender)
+                        validStockCodes = COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                    else
+                    {
+                        string disciplineCode = DisciplineCode.Substring(0, 2);
+                        validStockCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                    }
+                }
 
-                string disciplineCode = DisciplineCode.Substring(0, 2);
-                return COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
+                return validStockCodes;
             }
         }
 
@@ -1347,8 +1364,8 @@ namespace BluePrints.Common.Projections
 
         public static List<ExoSubJobEditableProjection> GetProactiveExoSubJobs(IEnumerable<IReportable> deliverables, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            var groupedDeliverables = deliverables.GroupBy(x => new { ChargeType = x.Charge, SubJob = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code })
-                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, TotalCosts = group.Sum(x => x.Total_Costs) });
+            var groupedDeliverables = deliverables.GroupBy(x => new { ChargeType = x.Charge, SubJob = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, VariationCode = x.Variation_Code })
+                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, TotalCosts = group.Sum(x => x.Total_Costs) });
 
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, project.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, project.NUMBER, false);
@@ -1403,6 +1420,7 @@ namespace BluePrints.Common.Projections
                     newSubJobProjection.CommodityCode = groupedDeliverable.CommodityCode;
                 }
 
+                newSubJobProjection.VariationCode = groupedDeliverable.VariationCode;
                 newSubJobProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 ExoTimeAuthorisation exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.CommodityCode && (x.VariationCode == string.Empty || x.VariationCode == null));

@@ -41,11 +41,12 @@
                                 <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                 <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
+                                <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
+                                <!--<dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>

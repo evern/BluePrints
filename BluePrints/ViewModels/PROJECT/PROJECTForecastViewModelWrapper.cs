@@ -1403,7 +1403,16 @@ namespace BluePrints.ViewModels
                     if (parseDateTime > FixedDataDateMonthEnd)
                         if (dataRow[columnName] != DBNull.Value && dataRow[columnName] != null)
                             if (((decimal)dataRow[columnName]) > 0)
-                                uncommittedRecalculation += (decimal)dataRow[columnName];
+                            {
+                                decimal currentDateCellValue = (decimal)dataRow[columnName];
+                                ForecastDateCost dateCost = job.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                                if (dateCost != null)
+                                {
+                                    uncommittedRecalculation += (currentDateCellValue - Math.Round(dateCost.PreloadedCosts));
+                                }
+                                else
+                                    uncommittedRecalculation += currentDateCellValue;
+                            }
             }
 
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs

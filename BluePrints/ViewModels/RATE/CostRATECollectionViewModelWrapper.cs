@@ -46,15 +46,14 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             base.addEntitiesLoader();
         }
 
-        private Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        protected override Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => !(x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Chargeable));
         }
-       
+
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
             List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
@@ -115,19 +114,6 @@ namespace BluePrints.ViewModels
                 if (loadPROJECT == null)
                     return string.Empty;
                 return loadPROJECT.GUID.ToString();
-            }
-        }
-
-        public IEnumerable<PHASE> PHASECollection
-        {
-            get
-            {
-                var collection = GetEntities<PHASE>();
-
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-
-                return collection;
             }
         }
         #endregion
