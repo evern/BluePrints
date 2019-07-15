@@ -715,10 +715,10 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.PeriodEarnedVsBurned = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodEarnedVsBurned_Units).Replace(units_string, field_selection_string));
                 stats_switch.PeriodPerformanceRatio = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodPerformanceRatio_Units).Replace(units_string, field_selection_string));
 
-                stats_switch.Header_Cumulative_Current_Earned_Percentage = string.Format("{0} Earned % To Date v Current", current_string);
-                stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = string.Format("{0} Earned % To Date v Baseline", planned_string);
-                stats_switch.Header_Period_Current_Earned_Percentage = string.Format("{0} Earned % This Period v Current", current_string);
-                stats_switch.Header_Period_Budgeted_Earned_Percentage = string.Format("{0} Earned % This Period v Baseline", planned_string);
+                stats_switch.Header_Cumulative_Current_Earned_Percentage = "Current Earned % To Date";
+                stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = "Baseline Earned % To Date";
+                stats_switch.Header_Period_Current_Earned_Percentage = "Current Earned % This Period";
+                stats_switch.Header_Period_Budgeted_Earned_Percentage = "Baseline Earned % This Period";
                 stats_switch.Header_Cumulative_Tender_Planned_Percentage = "Baseline Planned % To Date";
                 stats_switch.Header_Cumulative_Current_Planned_Percentage = "Current Planned % To Date";
 
