@@ -158,13 +158,13 @@ namespace BluePrints.Common.ViewModel.Misc
                         if(cutOffActualFloorDate > firstForecastDate)
                             poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE > cutOffActualFloorDate && x.FORECAST_DATE <= cutOffCeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
 
-                        dateCost.MaterialCosts = materialCosts;
-                        dateCost.ActualCosts = actualCosts;
-                        dateCost.P6Costs = p6RemainingCosts;
-                        dateCost.P6Hours = p6RemainingHours;
-                        dateCost.POForecastCosts = poForecastCosts;
+                        dateCost.MaterialCosts = Math.Round(materialCosts);
+                        dateCost.ActualCosts = Math.Round(actualCosts);
+                        dateCost.P6Costs = Math.Round(p6RemainingCosts);
+                        dateCost.P6Hours = Math.Round(p6RemainingHours);
+                        dateCost.POForecastCosts = Math.Round(poForecastCosts);
 
-                        dateCost.TotalCosts = materialCosts + actualCosts + p6RemainingCosts + poForecastCosts;
+                        dateCost.TotalCosts = Math.Round(materialCosts + actualCosts + p6RemainingCosts + poForecastCosts);
                     }
                     else
                         dateCost.TotalCosts = 0.00m;
