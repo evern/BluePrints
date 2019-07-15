@@ -61,6 +61,15 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        {
+            if(loadChargeType == ChargeType.Chargeable)
+                return query => query.Where(x => (x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Chargeable));
+            else
+                return query => query.Where(x => (x.PHASE_TYPE == PhaseType.Indirect && x.CHARGE_TYPE == ChargeType.Chargeable));
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -109,6 +118,19 @@ namespace BluePrints.ViewModels
             compulsoryOnBeforeEntitySaved(entity);
             entity.COST_TYPE = CostType.Charge;
             entity.CHARGE_TYPE = loadChargeType;
+
+            if(loadChargeType == ChargeType.Chargeable)
+            {
+                PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "D1");
+                if (findPHASE != null)
+                    entity.GUID_PHASE = findPHASE.GUID;
+            }
+            else if(loadChargeType == ChargeType.NotChargeable)
+            {
+                PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "I1");
+                if (findPHASE != null)
+                    entity.GUID_PHASE = findPHASE.GUID;
+            }
 
             return true;
         }
@@ -232,7 +254,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "RATECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "RATECollectionViewModelWrapper_v2"; }
+            get { return "RATECollectionViewModelWrapper_v3"; }
         }
 
         private string view_project_specific_affix
@@ -251,7 +273,7 @@ namespace BluePrints.ViewModels
             {
                 List<CombinedCommodityCode> combinedCommodityCodes = new List<CombinedCommodityCode>();
                 if (DOCTYPECollection != null)
-                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Design, Code = x.CODE, Key = x.GUID, Description = x.NAME }));
+                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { Code = x.CODE, Key = x.GUID, Description = x.NAME }));
 
                 //if (COMMODITY_CODECollection != null)
                 //    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Construct, Code = x.CODE, Key = x.GUID, Description = x.DESCRIPTION }));
@@ -313,6 +335,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<PHASE> PHASECollection
+        {
+            get
+            {
+                var collection = GetEntities<PHASE>();
+
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+
+                return collection;
+            }
+        }
         #endregion
     }
 }
