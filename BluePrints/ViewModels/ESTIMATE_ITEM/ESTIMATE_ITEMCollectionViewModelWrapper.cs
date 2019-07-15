@@ -408,7 +408,6 @@ namespace BluePrints.ViewModels
             if (phaseType == null || chargeType == null)
                 return;
 
-            entity.Entity.Entity.BUDGET_QUANTITY = 1;
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
 
             //need to populate subjob for deliverable_name to be present
@@ -1806,8 +1805,11 @@ namespace BluePrints.ViewModels
             }
             set
             {
-                loadPROJECT.P6FORECAST_NAME = value;
-                PROJECTCollectionViewModel.Save(loadPROJECT);
+                if(PROJECTCollectionViewModel != null && loadPROJECT != null)
+                {
+                    loadPROJECT.P6FORECAST_NAME = value;
+                    PROJECTCollectionViewModel.Save(loadPROJECT);
+                }
             }
         }
 

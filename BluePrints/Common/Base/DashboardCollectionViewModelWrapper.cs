@@ -405,6 +405,10 @@ namespace BluePrints.Common.ViewModel
         public string Header_Actual_Period { get; set; }
         public string Header_Cumulative_Earned_Quantity { get; set; }
         public string Header_Period_Earned_Quantity { get; set; }
+        public string Cumulative_Tender_Planned_Percentage { get; set; }
+        public string Cumulative_Current_Planned_Percentage { get; set; }
+        public string Header_Cumulative_Tender_Planned_Percentage { get; set; }
+        public string Header_Cumulative_Current_Planned_Percentage { get; set; }
 
         public void StatsUpdate()
         {
@@ -413,6 +417,8 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.Total_Budgeted);
             this.RaisePropertyChanged(x => x.Cumulative_Current_Earned_Percentage);
             this.RaisePropertyChanged(x => x.Cumulative_Budgeted_Earned_Percentage);
+            this.RaisePropertyChanged(x => x.Cumulative_Tender_Planned_Percentage);
+            this.RaisePropertyChanged(x => x.Cumulative_Current_Planned_Percentage);
             this.RaisePropertyChanged(x => x.Cumulative_Planned_Units);
             this.RaisePropertyChanged(x => x.Cumulative_PlannedLate_Units);
             this.RaisePropertyChanged(x => x.Cumulative_Current_Units);
@@ -490,6 +496,8 @@ namespace BluePrints.Common.ViewModel
 
             this.RaisePropertyChanged(x => x.Header_Cumulative_Current_Earned_Percentage);
             this.RaisePropertyChanged(x => x.Header_Cumulative_Budgeted_Earned_Percentage);
+            this.RaisePropertyChanged(x => x.Header_Cumulative_Tender_Planned_Percentage);
+            this.RaisePropertyChanged(x => x.Header_Cumulative_Current_Planned_Percentage);
             this.RaisePropertyChanged(x => x.Header_Period_Current_Earned_Percentage);
             this.RaisePropertyChanged(x => x.Header_Period_Budgeted_Earned_Percentage);
 
@@ -521,6 +529,8 @@ namespace BluePrints.Common.ViewModel
         string Total_Current_Quantity { get; set; }
         string Cumulative_Current_Earned_Percentage { get; set; }
         string Cumulative_Budgeted_Earned_Percentage { get; set; }
+        string Cumulative_Tender_Planned_Percentage { get; set; }
+        string Cumulative_Current_Planned_Percentage { get; set; }
         string Cumulative_Planned_Units { get; set; }
         string Cumulative_Current_Units { get; set; }
         string Cumulative_PlannedLate_Units { get; set; }
@@ -568,6 +578,8 @@ namespace BluePrints.Common.ViewModel
         string Header_PeriodPerformanceRatio { get; set; }
         string Header_Cumulative_Current_Earned_Percentage { get; set; }
         string Header_Cumulative_Budgeted_Earned_Percentage { get; set; }
+        string Header_Cumulative_Tender_Planned_Percentage { get; set; }
+        string Header_Cumulative_Current_Planned_Percentage { get; set; }
         string Header_Period_Current_Earned_Percentage { get; set; }
         string Header_Period_Budgeted_Earned_Percentage { get; set; }
         string CumulativeEarnedVsBurned { get; set; }
@@ -675,6 +687,8 @@ namespace BluePrints.Common.ViewModel
 
                 stats_switch.Cumulative_Current_Earned_Percentage = String.Format(current_period_cumulative_string, earned_string) + field_percentage_selection_string;
                 stats_switch.Cumulative_Budgeted_Earned_Percentage = String.Format(current_period_cumulative_string, tender_earned_string) + field_percentage_selection_string;
+                stats_switch.Cumulative_Tender_Planned_Percentage = String.Format(current_period_cumulative_string, budgeted_string) + field_percentage_selection_string;
+                stats_switch.Cumulative_Current_Planned_Percentage = String.Format(current_period_cumulative_string, current_string) + field_percentage_selection_string;
                 stats_switch.Cumulative_Planned_Units = String.Format(current_period_cumulative_string, budgeted_string) + field_selection_string;
                 stats_switch.Cumulative_PlannedLate_Units = String.Format(current_period_cumulative_string, budgeted_late_string) + field_selection_string;
                 stats_switch.Cumulative_Current_Units = String.Format(current_period_cumulative_string, current_string) + field_selection_string;
@@ -705,6 +719,8 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = string.Format("{0} Earned % To Date v Baseline", planned_string);
                 stats_switch.Header_Period_Current_Earned_Percentage = string.Format("{0} Earned % This Period v Current", current_string);
                 stats_switch.Header_Period_Budgeted_Earned_Percentage = string.Format("{0} Earned % This Period v Baseline", planned_string);
+                stats_switch.Header_Cumulative_Tender_Planned_Percentage = "Baseline Planned % To Date";
+                stats_switch.Header_Cumulative_Current_Planned_Percentage = "Current Planned % To Date";
 
                 gridControlService.ClearSummary();
                 string summaryPercentageString = "{0:p2}";
@@ -736,6 +752,8 @@ namespace BluePrints.Common.ViewModel
 
                 gridControlService.AddSummary(stats_switch.Cumulative_Current_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
                 gridControlService.AddSummary(stats_switch.Cumulative_Budgeted_Earned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Tender_Planned_Percentage, SummaryItemType.Custom, summaryPercentageString);
+                gridControlService.AddSummary(stats_switch.Cumulative_Current_Planned_Percentage, SummaryItemType.Custom, summaryPercentageString);
                 gridControlService.AddSummary(stats_switch.Cumulative_Planned_Units, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.Cumulative_PlannedLate_Units, SummaryItemType.Sum, summaryDecimalString);
                 gridControlService.AddSummary(stats_switch.Cumulative_Current_Units, SummaryItemType.Sum, summaryDecimalString);
