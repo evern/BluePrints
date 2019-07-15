@@ -715,12 +715,12 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.PeriodEarnedVsBurned = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodEarnedVsBurned_Units).Replace(units_string, field_selection_string));
                 stats_switch.PeriodPerformanceRatio = String.Format(stats_string, BindableBase.GetPropertyName(() => ((SummaryStats)new PROJECT_Dashboard().Stats).PeriodPerformanceRatio_Units).Replace(units_string, field_selection_string));
 
-                stats_switch.Header_Cumulative_Current_Earned_Percentage = "Current Earned % To Date";
-                stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = "Baseline Earned % To Date";
+                stats_switch.Header_Cumulative_Current_Earned_Percentage = "Current Earned % to Date";
+                stats_switch.Header_Cumulative_Budgeted_Earned_Percentage = "Baseline Earned % to Date";
                 stats_switch.Header_Period_Current_Earned_Percentage = "Current Earned % This Period";
                 stats_switch.Header_Period_Budgeted_Earned_Percentage = "Baseline Earned % This Period";
-                stats_switch.Header_Cumulative_Tender_Planned_Percentage = "Baseline Planned % To Date";
-                stats_switch.Header_Cumulative_Current_Planned_Percentage = "Current Planned % To Date";
+                stats_switch.Header_Cumulative_Tender_Planned_Percentage = "Baseline Planned % to Date";
+                stats_switch.Header_Cumulative_Current_Planned_Percentage = "Current Planned % to Date";
 
                 gridControlService.ClearSummary();
                 string summaryPercentageString = "{0:p2}";
@@ -772,8 +772,8 @@ namespace BluePrints.Common.ViewModel
                 gridControlService.AddSummary(stats_switch.Period_Actual_Units, SummaryItemType.Sum, summaryDecimalString);
 
                 string header_convention = "{0} {1}";
-                string toDate_convention = "{0} {1} to date";
-                string period_convention = "{0} {1} this period";
+                string toDate_convention = "{0} {1} to Date";
+                string period_convention = "{0} {1} This Period";
                 string quantity_display_string = "Qty";
                 string units_display_string = "Units";
                 string cost_display_string = "$";
@@ -802,7 +802,7 @@ namespace BluePrints.Common.ViewModel
 
                 stats_switch.Header_RemainingQuantity = String.Format(header_convention, remaining_string, quantity_string);
                 stats_switch.Header_CumulativeEarnedVsBurned = String.Format(header_convention, "To Date Actual vs Earn", display_selection_string);
-                stats_switch.Header_CumulativePerformanceRatio = String.Format(header_convention, "PF To Date", display_selection_string);
+                stats_switch.Header_CumulativePerformanceRatio = String.Format(header_convention, "PF to Date", display_selection_string);
                 stats_switch.Header_AdjustedRemaining = String.Format("Direct {0} adjusted by PF to date", display_selection_string);
                 stats_switch.Header_AdjustedDifference = String.Format("Direct {0} PF Adjust. Vs M/Hrs to Go", display_selection_string);
                 stats_switch.Header_PeriodEarnedVsBurned = String.Format(header_convention, "This Period Actual vs Earn", display_selection_string);

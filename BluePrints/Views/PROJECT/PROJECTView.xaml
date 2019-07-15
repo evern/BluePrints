@@ -153,57 +153,57 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Cumulative">
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Tender_Planned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Tender_Planned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Planned % to date" ReadOnly="True" VisibleIndex="80">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Tender_Planned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Tender_Planned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Planned % to Date" ReadOnly="True" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Planned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Current_Planned_Percentage, ElementName=userControl}" HeaderToolTip="Current Planned % to date" ReadOnly="True" VisibleIndex="90">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Planned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Current_Planned_Percentage, ElementName=userControl}" HeaderToolTip="Current Planned % to Date" ReadOnly="True" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Earned % to date" ReadOnly="True" VisibleIndex="100">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Budgeted_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Budget Earned % to Date" ReadOnly="True" VisibleIndex="100">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Current_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Current Earned % to date" ReadOnly="True" VisibleIndex="110">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Earned_Percentage, ElementName=userControl}" Header="{Binding DataContext.Header_Cumulative_Current_Earned_Percentage, ElementName=userControl}" HeaderToolTip="Current Earned % to Date" ReadOnly="True" VisibleIndex="110">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Budgeted_ToDate, ElementName=userControl}" HeaderToolTip="Planned budget to date" ReadOnly="True" VisibleIndex="120">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Planned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Budgeted_ToDate, ElementName=userControl}" HeaderToolTip="Planned budget to Date" ReadOnly="True" VisibleIndex="120">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Current_ToDate, ElementName=userControl}" HeaderToolTip="Planned current to date" ReadOnly="True" VisibleIndex="130">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Current_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Current_ToDate, ElementName=userControl}" HeaderToolTip="Planned current to Date" ReadOnly="True" VisibleIndex="130">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" Visible="False" FieldName="{Binding DataContext.Cumulative_PlannedLate_Units, ElementName=userControl}" Header="{Binding DataContext.Header_BudgetedLate_ToDate, ElementName=userControl}" HeaderToolTip="Late planned budget to date" ReadOnly="True" VisibleIndex="140">
+                                        <dxg:GridColumn AllowEditing="False" Visible="False" FieldName="{Binding DataContext.Cumulative_PlannedLate_Units, ElementName=userControl}" Header="{Binding DataContext.Header_BudgetedLate_ToDate, ElementName=userControl}" HeaderToolTip="Late planned budget to Date" ReadOnly="True" VisibleIndex="140">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Earned_ToDate, ElementName=userControl}" HeaderToolTip="Earned to date" ReadOnly="True" VisibleIndex="150">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Earned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Earned_ToDate, ElementName=userControl}" HeaderToolTip="Earned to Date" ReadOnly="True" VisibleIndex="150">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Burned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Burned_ToDate, ElementName=userControl}" HeaderToolTip="Burned to date" ReadOnly="True" VisibleIndex="160">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Burned_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Burned_ToDate, ElementName=userControl}" HeaderToolTip="Burned to Date" ReadOnly="True" VisibleIndex="160">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Actual_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Actual_ToDate, ElementName=userControl}" HeaderToolTip="Actual costs to date" ReadOnly="True" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" VisibleIndex="170">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Actual_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Actual_ToDate, ElementName=userControl}" HeaderToolTip="Actual costs to Date" ReadOnly="True" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}" VisibleIndex="170">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Remaining_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Remaining_ToDate, ElementName=userControl}" HeaderToolTip="Remaining to date" ReadOnly="True" VisibleIndex="180">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="{Binding DataContext.Cumulative_Remaining_Units, ElementName=userControl}" Header="{Binding DataContext.Header_Remaining_ToDate, ElementName=userControl}" HeaderToolTip="Remaining to Date" ReadOnly="True" VisibleIndex="180">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="{Binding DataContext.Field_Mask, ElementName=userControl}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
