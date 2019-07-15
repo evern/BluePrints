@@ -412,6 +412,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal POOrderQty { get; set; }
         public decimal POSuppliedQty { get; set; }
 
+        public decimal DisplayActualCost => IsPO ? 0 : Costs;
+        public decimal DisplayRemainingCost => IsPO ? Costs : 0;
+
+        public decimal DisplayActualQty => IsPO ? 0 : Quantity;
+        public decimal DisplayRemainingQty => IsPO ? Quantity : 0;
+
         public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(Subjob_Name);
 
         public string Department_Code

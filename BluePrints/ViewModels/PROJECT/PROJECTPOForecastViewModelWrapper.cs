@@ -59,8 +59,8 @@ namespace BluePrints.ViewModels
         private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected PROJECT loadPROJECT;
         List<DateTime> alignedDataDateCollection;
-        List<ExoDataPoint> exoPOs = new List<ExoDataPoint>();
-        //List<ExoDataPoint> exoMaterials = new List<ExoDataPoint>();
+        List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
+        List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
@@ -117,10 +117,9 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
             generateAlignedDataDates();
-            //materialDataPoints = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER, alignedDataDateCollection, 1, true);
 
-            exoPOs = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
-            //exoMaterials = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
+            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -278,7 +277,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null || exoPOs == null)
+                if (MainViewModel == null || allExoPos == null)
                     return null;
 
                 if (dataPointsTable == null)
@@ -321,12 +320,13 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, projection.PONO, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, projection.PONO, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
                     //TableViewService.ScrollToLast();
                     IsForecastLoading = false;
+                    this.RaisePropertyChanged(x => x.PODetails);
                     this.RaisePropertyChanged(x => x.IsForecastLoading);
                 }
 
@@ -357,10 +357,10 @@ namespace BluePrints.ViewModels
 
         private List<POLine> getPOLines()
         {
-            if (exoPOs == null)
+            if (allExoPos == null)
                 return new List<POLine>();
 
-            return exoPOs.GroupBy(x => x.PONumber).Select(group => new POLine() { PONumber = group.Key, DataPoints = group.ToList() }).ToList();
+            return allExoPos.GroupBy(x => x.PONumber).Select(group => new POLine() { PONumber = group.Key, DataPoints = group.ToList() }).ToList();
         }
 
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
@@ -394,7 +394,7 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue);
 
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
         }
@@ -441,7 +441,7 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, dataRow);
         }
 
         public void ValidateCell(GridCellValidationEventArgs e)
@@ -589,7 +589,7 @@ namespace BluePrints.ViewModels
 
                     if (!forceRefreshDataTable)
                     {
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, ActualsCutOffDate, string.Empty, editing_row);
+                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, editing_row);
 
                         //because grid doesn't refresh totals
                         GridControlService.RefreshData();
@@ -605,7 +605,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, DateTime cutOffDate, string POno = "", DataRow PORow = null)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> allActuals, DateTime cutOffDate, string POno = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
                 PORow = findPORow(POno);
@@ -613,7 +613,7 @@ namespace BluePrints.ViewModels
             if (PORow != null)
             {
                 POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
-                forecast.UpdateForecastPayments(FORECAST_POCollection, cutOffDate);
+                forecast.UpdateForecastPayments(FORECAST_POCollection, allActuals, cutOffDate);
 
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
@@ -712,8 +712,9 @@ namespace BluePrints.ViewModels
         {
             EntitiesUndoRedoManager.Clear();
             //set exoPOs to null to avoid dataPointsTable getting refreshed when DisplayEntities aren't fully loaded yet
-            exoPOs = null;
+            allExoPos = null;
             dataPointsTable = null;
+            allPODetails = null;
             base.FullRefresh();
         }
 
@@ -834,21 +835,81 @@ namespace BluePrints.ViewModels
         private void SelectedItemsChangedDispatcher_Tick(object sender, EventArgs e)
         {
             selectedItemsChangedDispatcher.Stop();
-            setFilter();
+            //setFilter();
             //this.RaisePropertyChanged(x => x.PODetails);
         }
 
-        public IEnumerable<ExoDataPoint> PODetails => exoPOs;
+        List<ExoDataPoint> allPODetails;
+        public IEnumerable<ExoDataPoint> PODetails
+        {
+            get
+            {
+                if (IsLoading || IsForecastLoading)
+                    return new List<ExoDataPoint>();
 
+                if(allPODetails == null)
+                {
+                    allPODetails = new List<ExoDataPoint>();
+                    allPODetails.AddRange(allExoPos);
+                    allPODetails.AddRange(allExoActuals);
+                }
+
+                return allPODetails;
+            }
+        }
+
+        /// <summary>
+        /// Because grid alternate between showing editor and focused row, use mousedown to invoke set filter
+        /// </summary>
+        public void MouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            try
+            {
+                TableView tableView = (TableView)e.Source;
+                TableViewHitInfo hi = ((TableView)e.Source).CalcHitInfo(e.OriginalSource as DependencyObject);
+                RowData clickRowData = tableView.FocusedRowData;
+                if (clickRowData.Row == null)
+                {
+                    GridControl masterGrid = tableView.Grid;
+                    var selected_cells = Enumerable.Range(0, masterGrid.VisibleRowCount)
+                    .Select(x => (GridControl)masterGrid.GetDetail(x))
+                    .Where(x => x != null).
+                    Select(x => ((TableView)(x).View).FocusedRowData).ToList();
+
+                    clickRowData = selected_cells.FirstOrDefault();
+                }
+
+                if (clickRowData != null)
+                    setFilter((DataRowView)clickRowData.Row, hi.Column);
+            }
+            catch (Exception ex)
+            {
+                string s = ex.ToString();
+            }
+        }
         public bool IsPOColumnsVisible { get; set; }
-        private void setFilter()
+        private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (SelectedDataRows == null || SelectedDataRows.Count == 0)
                 return;
 
-            DataRowView dataRowView = selectedDataRows.First();
-            POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
-            FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "'");
+            if (gridColumn.FieldName.ToUpper().Contains("PO_REMAININGPRICE"))
+            {
+                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' And [IsPO] = 'True'");
+            }
+            else if (gridColumn.FieldName.ToUpper().Contains("PO_TOTALPRICE"))
+            {
+                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "'");
+            }
+            else if (gridColumn.FieldName.ToUpper().Contains("PO_INVOICED"))
+            {
+                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' And [IsPO] = 'False'");
+            }
+
+
 
             IsPOColumnsVisible = false;
             this.RaisePropertyChanged(x => x.FilterCriteria);

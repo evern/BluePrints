@@ -429,45 +429,64 @@
                                             <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" FilterPopupMode="CheckedList" VisibleIndex="30" />
                                             <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" SortIndex="40" FilterPopupMode="CheckedList" Visible="True" VisibleIndex="40" />
                                             <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="50" FilterPopupMode="CheckedList" VisibleIndex="50" />
+                                            <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="60" />
+                                            <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" FilterPopupMode="CheckedList" Visible="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" FilterPopupMode="CheckedList" Visible="True" VisibleIndex="80" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
                                             <dxg:GridColumn FieldName="ResourceName" Header="Resource" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" FilterPopupMode="CheckedList" VisibleIndex="60" />
                                             <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="70" />
                                             <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="80" />
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Header="Costs">
-                                            <dxg:GridColumn FieldName="Quantity" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
-                                            <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" >
+                                        <dxg:GridControlBand Header="Actuals">
+                                            <dxg:GridColumn FieldName="DisplayActualQty" Header="Quantity" ReadOnly="True" VisibleIndex="90" />
+                                            <dxg:GridColumn FieldName="DisplayActualCost" Header="Costs" ReadOnly="True" VisibleIndex="100" >
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
-                                        <dxg:GridControlBand Header="Details">
-                                            <dxg:GridColumn FieldName="Purchase_GLName" Header="Purchase GL" ReadOnly="True" FilterPopupMode="CheckedList" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="110" />
-                                            <dxg:GridColumn FieldName="Cost_GLName" Header="Cost GL" ReadOnly="True" FilterPopupMode="CheckedList" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" VisibleIndex="120" />
-                                            <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="130" />
-                                            <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" VisibleIndex="150" />
-                                            <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl}" VisibleIndex="160" />
-                                            <dxg:GridColumn FieldName="IsPO" Header="IsPO" ReadOnly="True" Visible="False" VisibleIndex="170" />
+                                        <dxg:GridControlBand Header="PO Only columns (Only populated when data is PO as indicated by a tick on 'Is PO')">
+                                            <dxg:GridColumn FieldName="IsPO" Header="Is PO" ReadOnly="True" Visible="True" VisibleIndex="100" />
+                                            <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" Visible="True" VisibleIndex="150" />
+                                            <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" Visible="True" VisibleIndex="160" />
+                                            <dxg:GridColumn FieldName="DisplayRemainingQty" Header="PO Remaining Quantity" ReadOnly="True" VisibleIndex="171" />
+                                            <dxg:GridColumn FieldName="DisplayRemainingCost" Header="PO Remaining Costs" ReadOnly="True" VisibleIndex="172" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Invoice (Applicable for Rates Job Only)" Visible="{Binding DataContext.IsPOColumnsVisible, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}">
                                             <dxg:GridColumn FieldName="InvoiceNo" Header="Invoice No" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="180" />
                                             <dxg:GridColumn FieldName="InvoiceAmount" Header="Invoice Amount" ReadOnly="True" VisibleIndex="190" />
                                             <dxg:GridColumn FieldName="InvoiceDate" Header="Invoice Date" ReadOnly="True" VisibleIndex="200" />
                                         </dxg:GridControlBand>
+                                        <dxg:GridControlBand Header="Total">
+                                            <dxg:GridColumn FieldName="Costs" Header="Total $" ReadOnly="True" VisibleIndex="100" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                        </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.GroupSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.TotalSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Quantity" ShowInColumn="Quantity" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="InvoiceAmount" ShowInColumn="InvoiceAmount" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
