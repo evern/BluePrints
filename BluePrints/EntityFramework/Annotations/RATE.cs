@@ -53,7 +53,7 @@ namespace BluePrints.Data
             get
             {
                 if(commodityCodes != null)
-                    return commodityCodes.Where(x => x.PhaseType == PHASE_TYPE);
+                    return commodityCodes;
 
                 return null;
             }

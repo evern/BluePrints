@@ -205,7 +205,7 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => y.COST_TYPE == CostType.Charge && (y.PHASE_TYPE == baseline_item.Phase) && (y.CHARGE_TYPE == baseline_item.PHASE.CHARGE_TYPE));
+                IEnumerable<RATE> rateByPhaseCharge = RATES.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_PHASE == baseline_item.GUID_PHASE));
 
                 //order by descending places null GUID's at the end, so First() won't pick it up
                 IEnumerable <RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == baseline_item.GUID_DOCTYPE) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);

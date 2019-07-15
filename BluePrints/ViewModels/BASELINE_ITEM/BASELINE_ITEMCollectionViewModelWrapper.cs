@@ -430,7 +430,7 @@ namespace BluePrints.ViewModels
 
         protected Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.PHASE_TYPE == PhaseType.Design);
+            return query => query.Where(x => (x.PHASE_TYPE == PhaseType.Design || x.PHASE_TYPE == PhaseType.Indirect) && x.CHARGE_TYPE == ChargeType.Chargeable);
         }
 
         protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
