@@ -223,6 +223,9 @@ namespace BluePrints.Common.Base
 
         private void loadExoData()
         {
+            if (MainViewModel == null)
+                return;
+
             HashSet<string> projectNumbers = new HashSet<string>();
             foreach (var entity in MainViewModel.Entities)
             {

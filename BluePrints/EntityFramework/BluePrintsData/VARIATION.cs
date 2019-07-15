@@ -29,6 +29,8 @@ namespace BluePrints.Data
 
         public VariationType TYPE { get; set; }
 
+        public bool ADJUSTMENT_TO_BUDGET { get; set; }
+
         public DateTime? SUBMITTED { get; set; }
 
         public Guid? SUBMITTEDBY { get; set; }

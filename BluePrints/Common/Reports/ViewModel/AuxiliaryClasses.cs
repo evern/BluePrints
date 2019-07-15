@@ -25,6 +25,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DateTime AdjustmentDate { get; set; }
         public decimal AdjustmentUnits { get; set; }
         public decimal? AdjustmentRate { get; set; }
+        public bool IsBudgetAdjustment { get; set; }
 
         public readonly Guid DeliverableOriginalGuid;
 

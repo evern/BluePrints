@@ -325,6 +325,10 @@ namespace BluePrints.Common.Projections
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
 
         public string Project_Number => Entity.Project_Number;
+
+        public decimal Budget_Adjustment_Units => 0;
+
+        public decimal Budget_Adjustment_Costs => 0;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

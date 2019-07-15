@@ -160,6 +160,10 @@ namespace BluePrints.Common.Projections
 
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
+        public decimal Budget_Adjustment_Units => 0;
+
+        public decimal Budget_Adjustment_Costs => 0;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             

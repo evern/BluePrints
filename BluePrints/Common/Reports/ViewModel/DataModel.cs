@@ -455,6 +455,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
         public ProgressStats Stats { get; set; }
         public List<VariationAdjustment> ApprovedVariations;
+        public List<VariationAdjustment> BudgetAdjustments;
         public BluePrintsProgressableProjectionBase()
         {
             //Initialization without stats
@@ -468,7 +469,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(Live_PROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(Live_PROGRESS);
             SetReportingDataDate(reporting_data_date);
-            ApprovedVariations = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
+            ApprovedVariations = variation_adjustments.Where(x => !x.IsBudgetAdjustment).Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
+            BudgetAdjustments = variation_adjustments.Where(x => x.IsBudgetAdjustment).Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
             decimal variationUnits = ApprovedVariations.Sum(x => x.AdjustmentUnits);
             decimal totalUnits = variationUnits + variationUnits;
             decimal unitsPerQuantity = entity.Budget_Quantity == 0 ? 0 : entity.Budget_Units / entity.Budget_Quantity;
@@ -522,7 +524,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? SubArea_Guid => Entity.SubArea_Guid;
 
-        public decimal Budget_Units => Entity.Budget_Units;
+        public decimal Budget_Units => Entity.Budget_Units + Budget_Adjustment_Units;
 
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date < ReportingDataDate.Date);
 
@@ -824,6 +826,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Variation_Code => Entity.Variation_Code;
 
         public decimal Variation_Units => ApprovedVariations == null ? 0 : ApprovedVariations.Sum(x => x.AdjustmentUnits);
+
+        public decimal Budget_Adjustment_Units => BudgetAdjustments == null ? 0 : BudgetAdjustments.Sum(x => x.AdjustmentUnits);
+
+        public decimal Budget_Adjustment_Costs => Budget_Adjustment_Units * Entity.Budget_ItemRate;
 
         public string Discipline_Code => Entity.Discipline_Code;
 

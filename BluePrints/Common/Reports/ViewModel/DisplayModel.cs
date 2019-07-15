@@ -260,6 +260,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal Budget_Adjustment_Units => ((IReportable)ProgressItem).Budget_Adjustment_Units;
+
+        public decimal Budget_Adjustment_Costs => ((IReportable)ProgressItem).Budget_Adjustment_Costs;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -591,6 +595,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public ChargeType? Charge => Reportable.Charge;
 
         public string Project_Number => Reportable.Project_Number;
+
+        public decimal Budget_Adjustment_Units => Reportable.Budget_Adjustment_Units;
+
+        public decimal Budget_Adjustment_Costs => Reportable.Budget_Adjustment_Costs;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

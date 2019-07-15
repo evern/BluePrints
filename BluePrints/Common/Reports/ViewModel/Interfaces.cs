@@ -260,6 +260,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         string Variation_Code { get; }
         decimal Variation_Units { get; }
+        decimal Budget_Adjustment_Units { get; }
+        decimal Budget_Adjustment_Costs { get; }
         decimal Variation_Costs { get; }
         decimal Total_Units { get; }
         decimal Total_Costs { get; }

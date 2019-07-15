@@ -921,7 +921,7 @@ namespace BluePrints.ViewModels
                     DOCTYPE doctype = DOCTYPECollection.FirstOrDefault(x => x.GUID == doctypeGuid);
                     if (doctype != null)
                     {
-                        if (doctype.IS_INDIRECT_ONLY && phase.CHARGE_TYPE == ChargeType.Chargeable)
+                        if (doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE != PhaseType.Indirect)
                             return false;
                     }
                 }

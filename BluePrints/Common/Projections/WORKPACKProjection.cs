@@ -105,6 +105,10 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Costs => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Total_Costs);
 
+        public decimal Budget_Adjustment_Units => Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Budget_Adjustment_Units);
+
+        public decimal Budget_Adjustment_Costs => Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Budget_Adjustment_Costs);
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

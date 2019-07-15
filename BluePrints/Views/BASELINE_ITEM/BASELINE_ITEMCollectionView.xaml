@@ -294,7 +294,8 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Budget_Units" FilterPopupMode="CheckedList" Header="Adjusted Budget" HeaderToolTip="Additional hours added from the variation page and original budget, approved and checked as budget adjustment" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours added from the variation page and approved to be shown here" ReadOnly="True" />
                         <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
                         <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
@@ -388,13 +389,15 @@
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" /> 
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n0}" FieldName="Variation_Units" ShowInColumn="Variation_Units" SummaryType="Sum" />

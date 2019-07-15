@@ -96,6 +96,7 @@
                                     <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn Header="Budget Adjustment" FieldName="Entity.ADJUSTMENT_TO_BUDGET" HeaderToolTip="Variation is used as budget adjustment due to approved scope changes" VisibleIndex="100" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem FieldName="TOTAL_UNITS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="TOTAL_UNITS" SummaryType="SUM" />
@@ -108,7 +109,7 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" MouseUp="TableView_MouseUp">
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                     <dxb:BarCheckItem Content="Submit" IsChecked="{Binding DataContext.IsSubmitted, ElementName=userControl}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" />

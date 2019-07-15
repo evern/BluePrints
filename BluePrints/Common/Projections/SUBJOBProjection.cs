@@ -131,6 +131,10 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Costs => Reportables == null ? 0 : Reportables.Sum(x => x.Total_Costs);
 
+        public decimal Budget_Adjustment_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_Adjustment_Units);
+
+        public decimal Budget_Adjustment_Costs => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_Adjustment_Costs);
+
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
             throw new NotImplementedException();
