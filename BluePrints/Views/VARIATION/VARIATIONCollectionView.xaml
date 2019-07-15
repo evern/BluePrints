@@ -109,7 +109,7 @@
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                         </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" MouseUp="TableView_MouseUp">
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItem Content="Edit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                                     <dxb:BarCheckItem Content="Submit" IsChecked="{Binding DataContext.IsSubmitted, ElementName=userControl}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" />
