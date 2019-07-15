@@ -18,6 +18,7 @@ namespace BluePrints.Common.Projections
         public string Description { get; set; }
         public string Supplier { get; set; }
         public List<ExoDataPoint> ExoPOs { get; set; }
+        public List<ExoDataPoint> ExoActuals { get; set; }
         public DateTime ActualCutOffDate { get; set; }
         public List<FORECAST_PO> FORECAST_POs { get; set; }
         public decimal TotalForecast => FORECAST_POs.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
@@ -29,6 +30,7 @@ namespace BluePrints.Common.Projections
         public POForecastProjection()
         {
             FORECAST_POs = new List<FORECAST_PO>();
+            ExoActuals = new List<ExoDataPoint>();
         }
 
         public DateTime? InvoiceDate
@@ -45,15 +47,22 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public void UpdateForecastPayments(IEnumerable<FORECAST_PO> allFORECAST_POs, DateTime actualCutOffDate)
+        public void UpdateForecastPayments(IEnumerable<FORECAST_PO> allFORECAST_POs, IEnumerable<ExoDataPoint> allActuals, DateTime actualCutOffDate)
         {
             ActualCutOffDate = actualCutOffDate;
+            ExoActuals.Clear();
             FORECAST_POs.Clear();
             ResetPaymentDates();
             IEnumerable<FORECAST_PO> currentPOForecasts = allFORECAST_POs.Where(x => x.PONO == this.PONO);
+            IEnumerable<ExoDataPoint> currentActuals = allActuals.Where(x => x.PONumber == this.PONO);
             foreach(FORECAST_PO currentPOForecast in currentPOForecasts)
             {
                 FORECAST_POs.Add(currentPOForecast);
+            }
+
+            foreach(ExoDataPoint currentActual in currentActuals)
+            {
+                ExoActuals.Add(currentActual);
             }
 
             this.RaisePropertiesChanged();
@@ -124,9 +133,14 @@ namespace BluePrints.Common.Projections
             get => ExoPOs.Sum(x => x.Costs);
         }
 
+        public decimal PO_Invoiced
+        {
+            get => ExoActuals.Sum(x => x.Costs);
+        }
+
         public decimal PO_TotalPrice
         {
-            get => ExoPOs.Sum(x => x.TotalCosts);
+            get => PO_Invoiced + PO_RemainingPrice;
         }
     }
 }
