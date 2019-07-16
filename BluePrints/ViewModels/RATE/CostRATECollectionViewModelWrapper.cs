@@ -51,7 +51,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => !(x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Chargeable));
+            return query => query;
         }
 
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
