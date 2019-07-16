@@ -83,6 +83,10 @@ namespace BluePrints.ViewModels
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
             IsForecastLoading = true;
+
+            //need to put it here because loading times can be long and mainviewmodel can go null after it's loaded
+            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             this.RaisePropertyChanged(x => x.isForecastLoading);
         }
 
@@ -94,7 +98,30 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
+        }
+
+        private void setProject(Data.PROJECT project)
+        {
+            loadPROJECT = project;
+
+            DateTime dataDate;
+            if (loadPROJECT.FORECAST_DATA_DATE != null)
+                dataDate = (DateTime)loadPROJECT.FORECAST_DATA_DATE;
+            else
+                dataDate = DateTime.Now;
+
+            ForecastStartDate = new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
+
+            DateTime endDate;
+            if (loadPROJECT.FORECAST_END_DATE != null)
+                endDate = (DateTime)loadPROJECT.FORECAST_END_DATE;
+            else
+                endDate = DateTime.Now;
+
+            ForecastEndDate = endDate;
+
+            this.RaisePropertiesChanged();
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -116,11 +143,10 @@ namespace BluePrints.ViewModels
         //List<ExoDataPoint> materialDataPoints;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
+            MainViewModel.SetParentViewModel(this);
+
             generateAlignedDataDates();
 
-            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -336,7 +362,7 @@ namespace BluePrints.ViewModels
 
         private bool generateAlignedDataDates()
         {
-            if (MainViewModel == null)
+            if (MainViewModel == null || ForecastStartDate == null)
                 return false;
 
             //since displayentities comes from mainviewmodel it should be populated by now
@@ -344,7 +370,7 @@ namespace BluePrints.ViewModels
             if (latestDate > ForecastEndDate)
                 ForecastEndDate = latestDate;
 
-            DateTime earliestDateBeginningOfMonth = new DateTime(ForecastStartDate.Year, ForecastStartDate.Month, 1);
+            DateTime earliestDateBeginningOfMonth = new DateTime(((DateTime)ForecastStartDate).Year, ((DateTime)ForecastStartDate).Month, 1);
             alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection(earliestDateBeginningOfMonth, ForecastEndDate);
 
             return true;
@@ -711,60 +737,47 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             EntitiesUndoRedoManager.Clear();
-            //set exoPOs to null to avoid dataPointsTable getting refreshed when DisplayEntities aren't fully loaded yet
-            allExoPos = null;
             dataPointsTable = null;
             allPODetails = null;
+
+            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             base.FullRefresh();
         }
 
-        public DateTime ActualsCutOffDate => new DateTime(ForecastStartDate.Year, ForecastStartDate.Month, 1).AddDays(-1);
-        public DateTime ForecastStartDate
+        public DateTime ActualsCutOffDate
         {
             get
             {
-                DateTime dataDate = DateTime.Now;
-
-                //do this to prevent binding errors
-                if (loadPROJECT != null && loadPROJECT.FORECAST_DATA_DATE != null)
-                    dataDate = (DateTime)loadPROJECT.FORECAST_DATA_DATE;
-
-                return new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
-            }
-            set
-            {
-                if (!IsForecastLoading)
+                if (ForecastStartDate == null)
+                    return DateTime.Now;
+                else
                 {
-                    DateTime saveDateTime = value;
-                    loadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddDays(-1);
-                    PROJECTCollectionViewModel.Save(loadPROJECT);
-                    refreshDataTable();
-
-                    this.RaisePropertyChanged(x => x.ForecastStartDate);
+                    DateTime forecastStartDate = (DateTime)ForecastStartDate;
+                    return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddDays(-1);
                 }
             }
         }
 
-        public DateTime ForecastEndDate
+        public DateTime? ForecastStartDate { get; set; }
+        public DateTime ForecastEndDate { get; set; }
+
+        public bool CanSaveDateAndRefresh()
         {
-            get
-            {
-                //do this to prevent binding errors
-                if (loadPROJECT == null || loadPROJECT.FORECAST_END_DATE == null)
-                    return DateTime.Now;
+            return !IsForecastLoading;
+        }
 
-                return (DateTime)loadPROJECT.FORECAST_END_DATE;
-            }
-            set
+        public void SaveDateAndRefresh()
+        {
+            if(ForecastStartDate != null)
             {
-                if (!IsForecastLoading)
-                {
-                    loadPROJECT.FORECAST_END_DATE = value;
-                    PROJECTCollectionViewModel.Save(loadPROJECT);
-                    refreshDataTable();
+                DateTime saveDateTime = (DateTime)ForecastStartDate;
+                loadPROJECT.FORECAST_END_DATE = ForecastEndDate;
+                loadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddDays(-1);
+                PROJECTCollectionViewModel.Save(loadPROJECT);
+                refreshDataTable();
 
-                    this.RaisePropertyChanged(x => x.ForecastEndDate);
-                }
+                this.RaisePropertyChanged(x => x.ForecastStartDate);
             }
         }
 

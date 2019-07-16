@@ -69,11 +69,11 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline">
-                                <!--<dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsTextEditable="true" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DisciplineCollection}" NullValueButtonPlacement="Popup"  ValueMember="GUID" />
                                     </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>-->
+                                </dxg:GridColumn.CellTemplate>
                                 <!--  For Filtering  -->
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
@@ -87,8 +87,8 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">
-                                            <!--<dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">-->
+                                        <!--<dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">-->
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AllowNullInput="True" AutoPopulateColumns="False" DisplayMember="CODE" ValidateOnTextInput="False" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValueMember="CODE">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>

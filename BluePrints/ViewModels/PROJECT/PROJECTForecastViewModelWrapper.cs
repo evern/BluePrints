@@ -83,12 +83,35 @@ namespace BluePrints.ViewModels
         {
             base.addEntitiesLoader();
             //need to reassign project because forecast dates information on project might changed since navigation is loaded since loadPROJECT comes from navigation
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => LoadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS, FORECAST_POProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+        }
+
+        private void setProject(Data.PROJECT project)
+        {
+            LoadPROJECT = project;
+
+            DateTime dataDate;
+            if (LoadPROJECT.FORECAST_DATA_DATE == null)
+                dataDate = DateTime.Now;
+            else
+                dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
+
+            FixedDataDate = dataDate;
+
+            DateTime endDate;
+            if (LoadPROJECT.FORECAST_END_DATE == null)
+                endDate = DateTime.Now.AddMonths(1);
+            else
+                endDate = (DateTime)LoadPROJECT.FORECAST_END_DATE;
+
+            FixedEndDate = endDate;
+
+            this.RaisePropertiesChanged();
         }
 
         private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
@@ -229,47 +252,23 @@ namespace BluePrints.ViewModels
 
         public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
 
-        public override DateTime? FixedDataDate
-        {
-            get
-            {
-                //do this to prevent binding errors
-                if (liveDesignProgress == null || LoadPROJECT == null || LoadPROJECT.FORECAST_DATA_DATE == null)
-                    return DateTime.Now;
+        public override DateTime? FixedDataDate { get; set; }
+        public DateTime FixedEndDate { get; set; }
 
-                return LoadPROJECT.FORECAST_DATA_DATE;
-            }
-            set
-            {
-                if (isCompletelyLoaded)
-                {
-                    LoadPROJECT.FORECAST_DATA_DATE = value;
-                    PROJECTCollectionViewModel.Save(LoadPROJECT);
-                    this.RaisePropertyChanged(x => x.FixedDataDate);
-                    //showDateChangeMessage();
-                }
-            }
+        public bool CanSaveDateAndRefresh()
+        {
+            return isCompletelyLoaded;
         }
 
-        public DateTime FixedEndDate
+        public void SaveDateAndRefresh()
         {
-            get
+            if(FixedDataDate != null)
             {
-                //do this to prevent binding errors
-                if (liveDesignProgress == null || LoadPROJECT == null || LoadPROJECT.FORECAST_END_DATE == null)
-                    return DateTime.Now;
-
-                return (DateTime)LoadPROJECT.FORECAST_END_DATE;
-            }
-            set
-            {
-                if (isCompletelyLoaded)
-                {
-                    LoadPROJECT.FORECAST_END_DATE = value;
-                    PROJECTCollectionViewModel.Save(LoadPROJECT);
-                    this.RaisePropertyChanged(x => x.FixedEndDate);
-                    //showDateChangeMessage();
-                }
+                DateTime saveDateTime = (DateTime)FixedDataDate;
+                LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(1).AddDays(-1);
+                LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
+                PROJECTCollectionViewModel.Save(LoadPROJECT);
+                FullRefresh();
             }
         }
 

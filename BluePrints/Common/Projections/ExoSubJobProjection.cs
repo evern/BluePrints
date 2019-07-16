@@ -255,6 +255,7 @@ namespace BluePrints.Common.Projections
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
         public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
         {
+            validCommodityCodes = null;
             COMMODITY_CODES = COMMODITY_CODECollection;
         }
 

@@ -64,7 +64,7 @@
                                 <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="700" ValidateOnTextInput="False" ValueMember="CODE">
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" ValidateOnTextInput="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" NullValueButtonPlacement="None" PopupMinWidth="700" ValidateOnTextInput="False" ValueMember="CODE">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>
@@ -93,7 +93,7 @@
                                 <dxg:GridColumn FieldName="StockCode" Header="Stock Code" HeaderToolTip="Select from combobox">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidStockItemsCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValidateOnTextInput="False" ValueMember="STOCKCODE">
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" ValidateOnTextInput="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidStockItemsCollection}" NullValueButtonPlacement="None" PopupMinWidth="700" ValidateOnTextInput="False" ValueMember="STOCKCODE">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>

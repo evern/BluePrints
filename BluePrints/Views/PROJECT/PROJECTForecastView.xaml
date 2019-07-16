@@ -76,6 +76,7 @@
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
+                                <dxb:BarButtonItem Command="{Binding DataContext.SaveDateAndRefreshCommand, ElementName=userControl}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="P6 Tools">
                                 <dxb:BarStaticItem Content="P6 Schedule" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" />
@@ -299,23 +300,6 @@
                                                                     <dxc:Format Background="#FFFF9B98"/>
                                                                 </dxg:FormatCondition>
                                                             </dxg:TableView.FormatConditions>
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
-                                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
-                                                                <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                                                <dxb:BarButtonItem Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
-                                                            </dxg:TableView.RowCellMenuCustomizations>
                                                         </dxg:TableView>
                                                     </dxg:GridControl.View>
                                                     <dxg:GridControl.GroupSummary>
