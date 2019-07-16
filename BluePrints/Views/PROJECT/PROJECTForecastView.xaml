@@ -76,7 +76,7 @@
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
-                                <dxb:BarButtonItem Command="{Binding DataContext.SaveDateAndRefreshCommand, ElementName=userControl}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
+                                <dxb:BarButtonItem Command="{Binding DataContext.SaveDateAndRefreshCommand, ElementName=userControl}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the data date, end date and refreshes this view" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="P6 Tools">
                                 <dxb:BarStaticItem Content="P6 Schedule" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" />

@@ -876,6 +876,7 @@ namespace BluePrints.ViewModels
 
                         e.Column.Width = 75;
                         e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
+                        e.Column.ReadOnly = true;
                         //GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "n0");
                         e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
                     }
