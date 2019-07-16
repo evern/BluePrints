@@ -38,18 +38,19 @@
                                 <dxb:BarButtonItem Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup Caption="Forecast Tools">
-                                <dxb:BarStaticItem Content="Forecast Start Month" Glyph="{dx:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dx:DXImage Image=Calendar_32x32.png}" />
+                                <dxb:BarStaticItem Content="Forecast Start" Glyph="{dx:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dx:DXImage Image=Calendar_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.ForecastStartDate, ElementName=userControl}" ToolTip="Data date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
-                                <dxb:BarStaticItem Content="Forecast End Month" Glyph="{dx:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dx:DXImage Image=AlignVerticalRight2_32x32.png}" />
+                                <dxb:BarStaticItem Content="Forecast End" Glyph="{dx:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dx:DXImage Image=AlignVerticalRight2_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.ForecastEndDate, ElementName=userControl}" ToolTip="End date">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:DateEditSettings />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
+                                <dxb:BarButtonItem Command="{Binding DataContext.SaveDateAndRefreshCommand, ElementName=userControl}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                                 <dxb:BarStaticItem Content="Actuals Last Aligned" Glyph="{dx:DXImage Image=AlignVerticalLeft2_16x16.png}" LargeGlyph="{dx:DXImage Image=AlignVerticalLeft2_32x32.png}" />
                                 <dxb:BarEditItem EditValue="{Binding DataContext.LastAlignedDate, ElementName=userControl}" ToolTip="The last time PO values were adjusted with actuals">
                                     <dxb:BarEditItem.EditSettings>
