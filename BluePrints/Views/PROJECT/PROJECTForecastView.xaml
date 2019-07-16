@@ -498,14 +498,14 @@
                         <dxdo:LayoutGroup MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="275" Orientation="Vertical">
                             <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
                                 <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
-                                    <dxlc:LayoutGroup Orientation="Vertical" Header="Budget" View="GroupBox">
-                                        <dxlc:LayoutItem Label="Original Revenue Budget" LabelPosition="Left">
+                                    <dxlc:LayoutGroup Orientation="Vertical" Header="Baseline" View="GroupBox">
+                                        <dxlc:LayoutItem Label="Original Revenue" LabelPosition="Left">
                                             <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding DataContext.LoadPROJECT.ORI_REVENUE, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Approved Variation Budget" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
                                             <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding DataContext.LoadPROJECT.VAR_REVENUE, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Revised Revenue Budget" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Revised Revenue" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.Revised_Revenue, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Budget Costs" LabelPosition="Left">

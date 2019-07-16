@@ -589,6 +589,9 @@ namespace BluePrints.ViewModels
 
         private void resetRemainingOnJob(DataRow updateRow, string fieldName, bool addUndo)
         {
+            if (updateRow[columnCompare] == DBNull.Value)
+                return;
+
             ExoSubJobProjection entity = ((ForecastJobData)updateRow[columnEntity]).Projection;
             DataTable compareDataTable = (DataTable)updateRow[columnCompare];
 
@@ -1393,6 +1396,7 @@ namespace BluePrints.ViewModels
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
             DataTable dataTable = dataRow.Table;
 
+            decimal outstandingAndUncommittedRecalculation = 0;
             decimal uncommittedRecalculation = 0;
             for (int i = 0; i < dataRow.ItemArray.Count(); i++)
             {
@@ -1408,17 +1412,21 @@ namespace BluePrints.ViewModels
                                 ForecastDateCost dateCost = job.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
                                 if (dateCost != null)
                                 {
+                                    outstandingAndUncommittedRecalculation += currentDateCellValue;
                                     uncommittedRecalculation += (currentDateCellValue - Math.Round(dateCost.PreloadedCosts));
                                 }
                                 else
+                                {
+                                    outstandingAndUncommittedRecalculation += currentDateCellValue;
                                     uncommittedRecalculation += currentDateCellValue;
+                                }
                             }
             }
 
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
             if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
             {
-                if (Math.Round(job.Outstanding) > Math.Round(uncommittedRecalculation))
+                if (Math.Round(job.Outstanding) > Math.Round(outstandingAndUncommittedRecalculation))
                     job.IsPOError = true;
                 else
                     job.IsPOError = false;
