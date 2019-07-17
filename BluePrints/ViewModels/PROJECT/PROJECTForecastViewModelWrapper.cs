@@ -77,6 +77,9 @@ namespace BluePrints.ViewModels
 
             delayedDateChangeMessageBoxTimer = new DispatcherTimer();
             delayedDateChangeMessageBoxTimer.Interval = new TimeSpan(0, 0, 0, 1);
+
+            projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
+            projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected override void addEntitiesLoader()
@@ -167,6 +170,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
         DispatcherTimer delayedGridUpdateTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
+        BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
 
         protected int spreadSheetPhaseIndex = 0;
         protected int spreadSheetAreaIndex = 1;
@@ -406,6 +410,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            PROJECTCollectionViewModel.AlwaysSkipMessage = true;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
             LoadingScreenManager.CloseLoadingScreen();
         }
@@ -1541,9 +1546,13 @@ namespace BluePrints.ViewModels
         private void DelayedProjectSaveTimer_Tick(object sender, EventArgs e)
         {
             delayedProjectSaveTimer.Stop();
+            projectSavingBackgroundWorker.RunWorkerAsync();
+        }
 
+        private void ProjectSavingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
             //when view is closed halfway
-            if(PROJECTCollectionViewModel != null)
+            if (PROJECTCollectionViewModel != null)
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
         }
 
