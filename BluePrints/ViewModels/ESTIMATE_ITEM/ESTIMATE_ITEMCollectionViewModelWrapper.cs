@@ -111,11 +111,17 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
         }
 
         private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.proj_node_flag == "Y" && x.wbs_short_name.Contains(loadPROJECT.NUMBER)).OrderBy(proj => proj.wbs_short_name);
+        }
+
+        private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == PhaseType.Construct);
         }
 
         private void assign_estimation_direct(ESTIMATE estimation_direct)
@@ -313,6 +319,7 @@ namespace BluePrints.ViewModels
             //MainViewModel.DisablePasting = true;
             MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.FuncManualRowPastingIsContinue = FuncManualRowPasteAction;
             MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
             MainViewModel.CanFillDownCallBack = this.CanFillDown;
@@ -326,6 +333,7 @@ namespace BluePrints.ViewModels
             SUBJOBSCollectionViewModel.SetParentViewModel(this);
             WORKPACKSCollectionViewModel.SetParentViewModel(this);
             mainThreadDispatcher.BeginInvoke(new Action(() => showViewReadOnlyMessage()));
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
             //used for interface when this is loaded from variation
@@ -636,6 +644,48 @@ namespace BluePrints.ViewModels
             //because TProjection is not IProjection<TMainEntity>, do it manually here
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
+        }
+
+        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<ESTIMATE_ITEMProgress> entities)
+        {
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            List<ESTIMATE_ITEMProgress> deleteEntities = new List<ESTIMATE_ITEMProgress>();
+            bool showErrorMessage = false;
+            foreach (ESTIMATE_ITEMProgress entity in entities)
+            {
+                IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == entity.OriginalEntityKey);
+
+                //when there are variations that relates to this deliverable
+                if (attachedP6Assignments.Count() > 0)
+                {
+                    string p6AssignmentName = string.Empty;
+                    foreach (P6_ASSIGNMENT attachedP6Assignment in attachedP6Assignments)
+                    {
+                        p6AssignmentName += attachedP6Assignment.P6_ACTIVITYID + ", ";
+                    }
+
+                    if (p6AssignmentName.Length > 2)
+                        p6AssignmentName = p6AssignmentName.Substring(0, p6AssignmentName.Length - 2);
+
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "P6 assignment exists: " + p6AssignmentName));
+                    showErrorMessage = true;
+                }
+                else
+                {
+                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
+                    deleteEntities.Add(entity);
+                }
+            }
+
+            if (showErrorMessage)
+            {
+                MainViewModel.BaseBulkDelete(deleteEntities);
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot delete job(s) due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                return false;
+            }
+
+            return true;
         }
 
         #region Collection Call Backs
@@ -1001,7 +1051,7 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
         {
-            if (MainViewModel != null && MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.Entity.Entity.Deliverable_Name == projection.Entity.Entity.Deliverable_Name))
+            if (MainViewModel != null && MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.UniqueJobcode == projection.UniqueJobcode))
                 return "Duplicate entries";
 
             return string.Empty;
@@ -1092,14 +1142,10 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.CachedPHASE = PHASECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_PHASE);
                 else
                     projection.Entity.Entity.CachedPHASE = null;
-
-                projection.Update();
-            }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_DISCIPLINE)))
-            {
-                projection.Update();
             }
 
+            //update anyway for unique job code to show new value
+            projection.Update();
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
@@ -1632,6 +1678,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
+        {
+            get
+            {
+                return GetEntities<P6_ASSIGNMENT>();
             }
         }
 

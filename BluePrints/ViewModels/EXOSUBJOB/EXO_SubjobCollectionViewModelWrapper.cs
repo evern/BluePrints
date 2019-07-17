@@ -886,7 +886,10 @@ namespace BluePrints.ViewModels
                             string areaName = entity.SubJobCode.Substring(6, 3);
                             string subAreaName = entity.SubJobCode.Substring(10, 2);
 
-                            ESTIMATE_ITEMProgress findESTIMATE_ITEM = estimateItems.FirstOrDefault(x => x.Phase_Code == phaseCode && x.Discipline_Code == disciplineCode && x.Commodity_Code == entity.CommodityCode);
+                            string fullDisciplineCode = string.Concat(disciplineCode, disciplineNum);
+                            string fullWBSCode = entity.SubJobCode + "-" + fullDisciplineCode + "-" + entity.CommodityCode;
+
+                            ESTIMATE_ITEMProgress findESTIMATE_ITEM = estimateItems.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == entity.VariationCode.ToUpper());
                             if (findESTIMATE_ITEM == null)
                             {
                                 ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();

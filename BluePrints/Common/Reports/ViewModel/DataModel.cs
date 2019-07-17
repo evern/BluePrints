@@ -180,6 +180,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        public string UniqueJobcode => Entity.Deliverable_Name + "-" + Entity.Variation_Code;
+
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 
         public Guid? Baseline_Guid { get => Entity.Baseline_Guid; set => Entity.Baseline_Guid = value; }

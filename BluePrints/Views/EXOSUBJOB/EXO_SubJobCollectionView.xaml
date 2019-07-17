@@ -38,7 +38,7 @@
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Free text, type in sub job code">
+                                <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
                                     <!--<dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:PopupBaseEdit Name="PART_Editor" Width="150" Height="24" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False">
@@ -54,28 +54,28 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskType="RegEx" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, free text" />
+                                <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" />
                                 <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Select from combo box and then change last two numbers">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" Mask="{Binding DataContext.DisciplineRegex, ElementName=userControl}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo, free text" />
-                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo">
+                                <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo, type in free text" />
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" >
                                                 <custom:PopupBaseEditEx.PopupContentTemplate>
                                                     <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" MaxHeight="500" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" MaxHeight="750" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">
                                                             <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                                <dxg:GridColumn MinWidth="100" FieldName="NAME" Header="Name" ReadOnly="True" />
-                                                                <dxg:GridColumn MinWidth="50" FieldName="UOM" Header="UOM" ReadOnly="True" />
-                                                                <dxg:GridColumn MinWidth="550" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="200" FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="50" FieldName="UOM" Header="UOM" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="350" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                             </dxg:GridControl.Columns>
                                                             <dxg:GridControl.View>
-                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
                                                             </dxg:GridControl.View>
                                                         </dxg:GridControl>
                                                     </ControlTemplate>
@@ -93,13 +93,13 @@
                                             <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="STOCKCODE" >
                                                 <custom:PopupBaseEditEx.PopupContentTemplate>
                                                     <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" MaxHeight="500" SelectionMode="Row" ItemsSource="{Binding RowData.Row.ValidStockItemsCollection}" ShowBorder="False">
+                                                        <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" SelectionMode="Row" ItemsSource="{Binding RowData.Row.ValidStockItemsCollection}" ShowBorder="False">
                                                             <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
-                                                                <dxg:GridColumn MinWidth="550" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="50" FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="350" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                             </dxg:GridControl.Columns>
                                                             <dxg:GridControl.View>
-                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowSearchPanelMode="Always" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
                                                             </dxg:GridControl.View>
                                                         </dxg:GridControl>
                                                     </ControlTemplate>

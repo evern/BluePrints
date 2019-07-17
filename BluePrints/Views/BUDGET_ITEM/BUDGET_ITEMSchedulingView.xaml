@@ -252,6 +252,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" FilterPopupMode="CheckedList" Header="Variation Code" ReadOnly="True"/>
                                 <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
