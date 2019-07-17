@@ -1401,7 +1401,7 @@ namespace BluePrints.ViewModels
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
             DataTable dataTable = dataRow.Table;
 
-            decimal outstandingAndUncommittedRecalculation = 0;
+            decimal preloadedSum = 0;
             decimal uncommittedRecalculation = 0;
             for (int i = 0; i < dataRow.ItemArray.Count(); i++)
             {
@@ -1416,18 +1416,19 @@ namespace BluePrints.ViewModels
                                 decimal currentDateCellValue = (decimal)dataRow[columnName];
                                 ForecastDateCost dateCost = job.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
                                 if (dateCost != null)
+                                {
                                     uncommittedRecalculation += (currentDateCellValue - Math.Round(dateCost.PreloadedCosts));
+                                    preloadedSum += Math.Round(dateCost.PreloadedCosts);
+                                }
                                 else
                                     uncommittedRecalculation += currentDateCellValue;
-
-                                outstandingAndUncommittedRecalculation += currentDateCellValue;
                             }
             }
 
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
             if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
             {
-                decimal differences = Math.Round(job.Outstanding) - Math.Round(outstandingAndUncommittedRecalculation);
+                decimal differences = Math.Round(job.Outstanding) - Math.Round(preloadedSum);
                 differences = Math.Abs(differences);
 
                 if (differences <= 10)

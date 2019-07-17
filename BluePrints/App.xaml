@@ -118,7 +118,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True">
+            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
@@ -135,7 +135,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateChild">
-            <dxe:SpinEdit Name="PART_Editor" IsReadOnly="True" Increment="10" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+            <dxe:SpinEdit Name="PART_Editor" IsReadOnly="True" Increment="1" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
@@ -146,7 +146,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="POForecastTemplate">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" Mask="c0" MaskType="Numeric" IsReadOnly="False" MaskUseAsDisplayFormat="True" MinValue="0" />
+            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" IsReadOnly="False" MaskUseAsDisplayFormat="True" MinValue="0" />
         </DataTemplate>
         <DataTemplate x:Key="invisibleCellTemplate">
             <dxe:TextEdit Name="PART_Editor" Width="0" Margin="0" Padding="0" />
