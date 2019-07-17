@@ -66,6 +66,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         public CriteriaOperator FilterCriteria { get; set; }
+        BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -82,12 +83,28 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
+            exoLoadingBackgroundWorker.DoWork += ExoLoadingBackgroundWorker_DoWork;
+            exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
             IsForecastLoading = true;
-
-            //need to put it here because loading times can be long and mainviewmodel can go null after it's loaded
-            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
             this.RaisePropertyChanged(x => x.isForecastLoading);
+        }
+
+        private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            loadExoData();
+        }
+
+        bool isExoDataLoaded = false;
+        private void loadExoData()
+        {
+            isExoDataLoaded = false;
+            //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
+            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER, null, 1, true);
+            generateAlignedDataDates();
+            isExoDataLoaded = true;
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => postLoadedDispatcherTimer.Start()));
         }
 
         private void CloseEditorDispatcher_Tick(object sender, EventArgs e)
@@ -143,10 +160,9 @@ namespace BluePrints.ViewModels
         //List<ExoDataPoint> materialDataPoints;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
+            delayPostLoadedTimer = false;
+            exoLoadingBackgroundWorker.RunWorkerAsync();
             MainViewModel.SetParentViewModel(this);
-
-            generateAlignedDataDates();
-
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -303,7 +319,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null || allExoPos == null)
+                if (MainViewModel == null || allExoPos == null || !isExoDataLoaded)
                     return null;
 
                 if (dataPointsTable == null)
@@ -311,9 +327,6 @@ namespace BluePrints.ViewModels
                     //generate aligned dates
                     if (alignedDataDateCollection == null || alignedDataDateCollection.Count == 0)
                         return null;
-
-                    IsForecastLoading = true;
-                    this.RaisePropertyChanged(x => x.IsForecastLoading);
 
                     //initialize datatable schema
                     dataPointsTable = new DataTable();
@@ -739,9 +752,9 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
             allPODetails = null;
-
-            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER);
+            //loadExoData();
+            IsForecastLoading = true;
+            this.RaisePropertyChanged(x => x.IsForecastLoading);
             base.FullRefresh();
         }
 
