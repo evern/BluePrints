@@ -101,6 +101,7 @@ namespace BluePrints.ViewModels
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
             allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER, null, 1, true);
+            setProject(loadPROJECT);
             generateAlignedDataDates();
             isExoDataLoaded = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
