@@ -320,7 +320,7 @@ namespace BluePrints.ViewModels
 
         public bool CanReloadP6Forecast()
         {
-            return !IsLoadingForecast;
+            return isCompletelyLoaded && !IsLoadingForecast;
         }
 
         public async void ReloadP6Forecast()
@@ -417,8 +417,15 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
         }
 
+        public override bool CanFullRefresh()
+        {
+            return isCompletelyLoaded;
+        }
+
         public override void FullRefresh()
         {
+            isCompletelyLoaded = false;
+            this.RaisePropertyChanged(x => x.isCompletelyLoaded);
             alignedDataDateCollection.Clear();
             DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();

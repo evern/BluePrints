@@ -457,7 +457,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     materialDataPoint.CostType = jobMaterial.CostTypeDesc;
                     materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                     materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                    materialDataPoint.Variation_Code = ExtractVariationCode(jobMaterial.VariationCode);
+                    materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
                     materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
                     materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
                     materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
@@ -475,15 +475,17 @@ namespace BluePrints.Common.ViewModel.Utils
             return materialDataPoints.ToList();
         }
 
-        public static string ExtractVariationCode(string variationCode)
+        public static string normalizeVariationCode(string variationCode)
         {
             if (variationCode == null)
                 return string.Empty;
 
-            if (variationCode.Length >= 6)
-                return variationCode.Substring(0, 6);
+            //cannot use this because subjob code isn't formatted to 6 characters, because user's don't use variation code as 6 characters sometimes
+            //if (variationCode.Length >= 6)
+            //    return variationCode.Substring(0, 6);
 
-            return string.Empty;
+            //return string.Empty;
+            return variationCode;
         }
 
         public static List<ExoDataPoint> GetEXOPO(string projectNumber, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
@@ -552,7 +554,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.PONumber = po.SEQNO.ToString();
                     poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
                     poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
-                    poDataPoint.Variation_Code = po.X_VARIATIONCODE == null ? string.Empty : po.X_VARIATIONCODE;
+                    poDataPoint.Variation_Code = normalizeVariationCode(po.X_VARIATIONCODE);
                     poDataPoints.Add(poDataPoint);
                 }
 

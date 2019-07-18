@@ -299,23 +299,9 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, bool isNew)
         {
             string errorMessage = string.Empty;
-            if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)))
-            {
-                if (isNew)
-                {
-                    projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                    projection.Update();
-                }
-            }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
-            {
-                //need to raise property changed for valid stock code collection
-                if (isNew)
-                {
-                    projection.PopulateStockCodes(STOCK_ITEMSCollection);
-                    projection.Update();
-                }
-            }
+            projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+            projection.PopulateStockCodes(STOCK_ITEMSCollection);
+            projection.Update();
 
             if (MainViewModel.IsValidEntity(projection, null, ref errorMessage) && projection.IsLineExistsInExo)
             {

@@ -118,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.Role = jobTransaction.TITLE;
                             burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                             burnedDataPoint.CostType = jobTransaction.COSTDESC3;
-                            burnedDataPoint.Variation_Code = BluePrintsDataUtils.ExtractVariationCode(jobTransaction.VARIATIONCODE);
+                            burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
                             burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                             burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
                             burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;

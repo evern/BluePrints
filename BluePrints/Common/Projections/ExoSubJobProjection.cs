@@ -50,6 +50,7 @@ namespace BluePrints.Common.Projections
         public ExoSubJobEditableProjection()
         {
             AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+            this.VariationCode = string.Empty;
         }
 
         public ExoSubJobEditableProjection(ExoSubJobProjection entity)
@@ -1961,7 +1962,7 @@ namespace BluePrints.Common.Projections
             exoTime.CommodityName = dbTime.COMMODITY_NAME;
             exoTime.StockCode = dbTime.STOCK_CODE;
             exoTime.StockName = dbTime.STOCK_NAME;
-            exoTime.VariationCode = dbTime.VARIATION_CODE;
+            exoTime.VariationCode = dbTime.VARIATION_CODE == null ? string.Empty : dbTime.VARIATION_CODE;
             exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
             exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
             exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);
