@@ -7,6 +7,7 @@ using BluePrints.ViewModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace BluePrints.Common.ViewModel.Misc
             //for debugging
             //foreach (var groupedDisciplineJob in groupedDisciplineJobs)
             //{
-                
+
             //}
 
             LoadingScreenManager.CloseLoadingScreen();
@@ -146,8 +147,8 @@ namespace BluePrints.Common.ViewModel.Misc
 
                     if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0 || currentJobPOForecasts.Count > 0)
                     {
-                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                        decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal p6RemainingCosts = 0;
                         decimal p6RemainingHours = 0;
                         decimal poForecastCosts = 0;
@@ -155,7 +156,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         //prevent population of values from PO forecast before forecast date
                         if(cutOffActualFloorDate > firstViewDate)
                         {
-                            poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE > cutOffActualFloorDate && x.FORECAST_DATE <= cutOffCeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                            poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE >= cutOffActualFloorDate && x.FORECAST_DATE <= cutOffCeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
                         }
 
                         //prevet population of values from remaining before forecast date
@@ -165,8 +166,8 @@ namespace BluePrints.Common.ViewModel.Misc
                             if (cutOffCeilingDate == firstForecastDate)
                                 cutOffRemainingFloorDate = new DateTime(1);
 
-                            p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date > cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Costs);
-                            p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date > cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Units);
+                            p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Costs);
+                            p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Units);
                         }
 
                         dateCost.MaterialCosts = Math.Round(materialCosts);
