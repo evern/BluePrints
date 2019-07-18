@@ -480,6 +480,7 @@ namespace BluePrints.ViewModels
                     if (remainingDataPoints.Count() > 0)
                     {
                         endDateToGenerate = remainingDataPoints.Max(x => x.ProgressDate);
+                        endDateToGenerate = endDateToGenerate.AddMonths(1);
                         if (endDateToGenerate > FixedEndDate)
                             FixedEndDate = endDateToGenerate;
                         else
