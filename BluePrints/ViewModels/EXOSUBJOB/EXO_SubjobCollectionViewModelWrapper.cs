@@ -879,7 +879,7 @@ namespace BluePrints.ViewModels
                     if (entity.SubJobCode.Length >= 15 && entity.DisciplineCode.Length >= 4 && entity.CommodityCode != string.Empty)
                     {
                         string phaseCode = entity.SubJobCode.Substring(13, 2);
-                        if (!phaseCode.Contains("D"))
+                        if (!phaseCode.ToUpper().Contains("D") && !phaseCode.ToUpper().Contains("P"))
                         {
                             string disciplineCode = entity.DisciplineCode.Substring(0, 2);
                             string disciplineNum = entity.DisciplineCode.Substring(2, 2);

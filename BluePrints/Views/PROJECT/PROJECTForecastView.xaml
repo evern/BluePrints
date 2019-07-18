@@ -152,7 +152,7 @@
                                                             <ColumnDefinition Width="{Binding RowData.Row.Entity.IsPOErrorImageWidth}" />
                                                             <ColumnDefinition Width="*" />
                                                         </Grid.ColumnDefinitions>
-                                                        <Image Grid.Column="0" Visibility="{Binding RowData.Row.Entity.IsPOError, Converter={dxmvvm:BooleanToVisibilityConverter}}" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="Uncommitted amount cannot be less than outstanding PO"/>
+                                                        <Image Grid.Column="0" Visibility="{Binding RowData.Row.Entity.IsPOError, Converter={dxmvvm:BooleanToVisibilityConverter}}" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast"/>
                                                         <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
                                                     </Grid>
                                                 </DataTemplate>

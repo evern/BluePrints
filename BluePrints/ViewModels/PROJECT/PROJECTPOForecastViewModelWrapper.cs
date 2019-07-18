@@ -432,7 +432,7 @@ namespace BluePrints.ViewModels
             {
                 decimal newValue = (decimal)e.Value;
                 DataRowView dataRowView = (DataRowView)e.Row;
-                findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue);
+                findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue, true);
 
                 updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);

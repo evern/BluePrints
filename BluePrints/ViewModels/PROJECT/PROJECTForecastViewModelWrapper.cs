@@ -1447,7 +1447,7 @@ namespace BluePrints.ViewModels
             List<ForecastJobData> jobs = getJobDataFromDatatable();
             if(jobs.Any(x => x.IsPOError))
             {
-                MessageBoxService.ShowMessage("Please ensure that all PO forecasts matches remaining before saving", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet, please complete it before saving", "Error", MessageButton.OK, MessageIcon.Exclamation);
                 return;
             }
 
