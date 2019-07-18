@@ -254,6 +254,7 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
             IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
             IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
+            IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
 
             LoadingScreenManager.CloseLoadingScreen();
             LoadingScreenManager.ShowLoadingScreen(1);
@@ -262,12 +263,14 @@ namespace BluePrints.Common.ViewModel.Misc
             allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
             allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
 
-            List<string> uniqueJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();
+            List<string> uniqueExoJobsConcatNames = dashboardJobs.Select(x => x.SubjobCode + ";" + x.DisciplineCode + ";" + x.CommodityCode + ";" + x.Variation_Code).Distinct().ToList();
+
+            //List<string> uniqueExoJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();
             LoadingScreenManager.CloseLoadingScreen();
 
-            LoadingScreenManager.ShowLoadingScreen(uniqueJobsConcatNames.Count);
+            LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
             LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
-            Parallel.ForEach(uniqueJobsConcatNames,
+            Parallel.ForEach(uniqueExoJobsConcatNames,
             uniqueJobsConcatName =>
             {
                 List<string> delimited = uniqueJobsConcatName.Split(';').ToList();
