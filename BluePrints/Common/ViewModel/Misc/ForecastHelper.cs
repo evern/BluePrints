@@ -165,8 +165,8 @@ namespace BluePrints.Common.ViewModel.Misc
                             if (cutOffCeilingDate == firstForecastDate)
                                 cutOffRemainingFloorDate = new DateTime(1);
 
-                            p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                            p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Units);
+                            p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date > cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Costs);
+                            p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date > cutOffRemainingFloorDate && x.ProgressDate.Date <= cutOffCeilingDate).Sum(x => x.Units);
                         }
 
                         dateCost.MaterialCosts = Math.Round(materialCosts);
