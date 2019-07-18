@@ -171,11 +171,11 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public ESTIMATE_ITEMProgress()
         {
-
+            Entity.Entity.VARIATION_CODE = string.Empty;
         }
 
-        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments)
+        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
 
         }
@@ -238,8 +238,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
-        public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, false)
+        public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, false, null, forceRetrieveRemainingDataPoints)
         {
             
         }
@@ -463,7 +463,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Initialization without stats
         }
 
-        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate, DateTime? extrapolateDate = null)
+        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false)
         {
             this.Live_PROGRESS = Live_PROGRESS;
             //DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
@@ -481,7 +481,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal totalCosts = totalUnits * costsPerUnit;
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 

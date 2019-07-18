@@ -141,6 +141,6 @@ namespace BluePrints.Data
 
         public string P6_Baseline_Name => P6FORECAST_NAME;
 
-        public string P6_Mod_Baseline_Name => throw new NotImplementedException();
+        public string P6_Mod_Baseline_Name => string.Empty;
     }
 }

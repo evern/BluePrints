@@ -40,6 +40,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public bool StatsBuilt { get; set; }
         readonly IEnumerable<VariationAdjustment> rawVariationAdjustments;
         readonly bool hideDataPointsBeforeDataDate;
+        readonly bool forceRetrieveAllRemaining;
         readonly bool alwaysBenchmarkAgainstBudgeted;
         readonly DateTime firstAlignedDataDate;
         readonly TimeSpan reportInterval;
@@ -51,7 +52,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// Used For Subjob Summary Stats
         /// </summary>
         /// <param name="summaryStats">Project Summary Stats</param>
-        public Stats(SummaryStats summaryStats, bool hideDataPointsBeforeDataDate = false)
+        public Stats(SummaryStats summaryStats, bool hideDataPointsBeforeDataDate = false, bool forceRetrieveAllRemaining = false)
         {
             this.reportingDataDate = summaryStats.ReportingDataDate;
             this.BudgetedUnits = summaryStats.BudgetedUnits;
@@ -66,9 +67,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = summaryStats.VariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
+            this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool isDebug = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool isDebug = false, bool forceRetrieveAllRemaining = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -84,6 +86,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             //this.reportInterval = new TimeSpan(1, 0, 0, 0);
             this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
+            this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
+
             this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;
             this.isDebug = isDebug;
         }
@@ -145,7 +149,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
-
+            
             this.rawDataPoints = convertedDataPoints;
             this.StatsBuilt = true;
         }
@@ -289,12 +293,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     decimal qtyPerUnit = TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
                     //Budgeted units are always used because variation adjustment will be added on if alwaysBenchmarkAgainstBudgeted is false and rawVariationAdjustments is not null
-                    
+
                     //variation adjustment implementation
                     //cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
+                    DateTime firstDataDate = firstAlignedDataDate;
+                    if (rawDataPoints.Count() > 0 && forceRetrieveAllRemaining)
+                        firstDataDate = rawDataPoints.Min(x => x.ProgressDate);
 
                     //total units at start
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
                 }
 
                 return cumulativeDataPoints;

@@ -127,7 +127,8 @@ namespace BluePrints.Common.ViewModel.Misc
                     jobForecastSummary.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
-                DateTime firstForecastDate = dates.First();
+                DateTime firstViewDate = dates.First();
+                DateTime firstForecastDate = new DateTime(firstViewDate.Year, firstViewDate.Month, 1).AddMonths(2).AddDays(-1);
 
                 //the first remaining date will be the second month in the view because data date will end on the first month
                 DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
@@ -140,23 +141,33 @@ namespace BluePrints.Common.ViewModel.Misc
                     DateTime cutOffCeilingDate = cutOffActualFloorDate.AddMonths(1).AddDays(-1);
 
                     //override floor date to the beginning of time because we want to get everything
-                    if (dateCost.Date == firstForecastDate)
+                    if (dateCost.Date == firstViewDate)
                         cutOffActualFloorDate = new DateTime(1);
-
-                    if (dateCost.Date == firstRemainingDate)
-                        cutOffRemainingFloorDate = new DateTime(1);
 
                     if (materialDataPoints.Count() > 0 || actualDataPoints.Count > 0 || remainingDataPoints.Count() > 0 || currentJobPOForecasts.Count > 0)
                     {
                         decimal materialCosts = materialDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
                         decimal actualCosts = actualDataPoints.Where(x => x.ActualDate > cutOffActualFloorDate && x.ActualDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
-                        decimal p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Units);
+                        decimal p6RemainingCosts = 0;
+                        decimal p6RemainingHours = 0;
                         decimal poForecastCosts = 0;
 
                         //prevent population of values from PO forecast before forecast date
-                        if(cutOffActualFloorDate > firstForecastDate)
+                        if(cutOffActualFloorDate > firstViewDate)
+                        {
                             poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE > cutOffActualFloorDate && x.FORECAST_DATE <= cutOffCeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                        }
+
+                        //prevet population of values from remaining before forecast date
+                        if(cutOffRemainingFloorDate > firstViewDate)
+                        {
+                            //accumulate hours and costs in the first forecast date
+                            if (cutOffCeilingDate == firstForecastDate)
+                                cutOffRemainingFloorDate = new DateTime(1);
+
+                            p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Costs);
+                            p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate > cutOffRemainingFloorDate && x.ProgressDate <= cutOffCeilingDate).Sum(x => x.Units);
+                        }
 
                         dateCost.MaterialCosts = Math.Round(materialCosts);
                         dateCost.ActualCosts = Math.Round(actualCosts);

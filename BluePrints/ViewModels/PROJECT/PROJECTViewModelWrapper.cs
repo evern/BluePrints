@@ -218,6 +218,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
+        protected bool forceRetrieveRemainingDataPoints;
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
             specifyMainViewModelProjection()
         {
@@ -229,7 +230,7 @@ namespace BluePrints.ViewModels
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, forceRetrieveRemainingDataPoints);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -286,7 +287,7 @@ namespace BluePrints.ViewModels
             {
                 project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllBurned, getForecastTypes(), useProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
-                project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated);
+                project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated, forceRetrieveRemainingDataPoints);
                 project.Update();
 
                 foreach(var subjobDashboard in project.Subjob_Dashboards)
@@ -311,9 +312,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated)
+        protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated, bool forceRetrieveRemainingDataPoints = false)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, isVariationSeparated);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, isVariationSeparated, forceRetrieveRemainingDataPoints);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

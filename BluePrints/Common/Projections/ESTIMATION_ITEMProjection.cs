@@ -336,7 +336,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<ESTIMATE_ITEMProgress> IDeliverable_Progress_Transformation(
             IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, 
             IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, IEnumerable<STOCK_CODE> STOCK_CODES, IEnumerable<STOCK_GROUP> STOCK_GROUPS = null, 
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool showLoadingScreen = false, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool showLoadingScreen = false, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, bool forceRetrieveRemainingDataPoints = false)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
             List<ESTIMATE_ITEM> estimate_items = ESTIMATE_ITEMS.ToList();
@@ -354,7 +354,7 @@ namespace BluePrints.Common.Projections
             //LoadingScreenManager.SetMessage("Building budget stats");
             foreach (ESTIMATE_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
-                ESTIMATE_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATE_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments);
+                ESTIMATE_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATE_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments, forceRetrieveRemainingDataPoints);
                 newEstimation_Direct_itemProgress.P6_Assignments = P6_ASSIGNMENTS == null ? null : P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == estimation_direct_item_rate.OriginalEntityKey).ToList();
                 newEstimation_Direct_itemProgress.Live_PROGRESS = PROGRESS;
                 newEstimation_Direct_itemProgress.Entity = estimation_direct_item_rate;

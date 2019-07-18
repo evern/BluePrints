@@ -34,14 +34,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public List<SUBJOB> ExoMissingSUBJOBS { get; private set; }
         #endregion
 
-        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, DateTime? overrideLastProgressDate = null)
-            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
+        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false)
+            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
             this.reporting_data_date = reporting_data_date;
             this.reporting_interval = reporting_interval;
             this.first_aligned_data_date = first_aligned_data_date;
             ExoMissingSUBJOBS = new List<SUBJOB>();
-            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false, overrideLastProgressDate);
+            ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false, overrideLastProgressDate, forceRetrieveRemainingDataPoints);
         }
 
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()
@@ -68,7 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public static class SummaryStatsHelpers
     {
-        public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate)
+        public static SummaryStats Group_Summary_Stats(SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> predicate, bool forceRetrieveRemainingDataPoints = false)
         {
             if (summary_stats == null)
                 return null;
@@ -84,7 +84,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             DateTime first_aligned_data_date = summary_stats.FirstAlignedDataDate;
 
             List<VariationAdjustment> grouped_variation_adjustments = grouped_reportables.SelectMany(x => x.Stats.VariationAdjustments).ToList();
-            SummaryStats grouped_summary_stats = new SummaryStats(grouped_reportables, reporting_data_date, reporting_interval, first_aligned_data_date, grouped_variation_adjustments);
+            SummaryStats grouped_summary_stats = new SummaryStats(grouped_reportables, reporting_data_date, reporting_interval, first_aligned_data_date, grouped_variation_adjustments, forceRetrieveRemainingDataPoints);
             grouped_summary_stats.GenerateSummary();
 
             IEnumerable<ExoDataPoint> burned_data_points = summary_stats.Burned.GetData().Select(x => (ExoDataPoint)x);
@@ -176,8 +176,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
-        public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Quantity), progressItem.Sum(x => x.Total_Quantity), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments)
+        public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false)
+            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Quantity), progressItem.Sum(x => x.Total_Quantity), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments, null, forceRetrieveRemainingDataPoints)
         {
             Reportables = progressItem;
 
@@ -188,7 +188,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             PO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
 
-            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
+            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, !forceRetrieveRemainingDataPoints, false, null, false, forceRetrieveRemainingDataPoints);
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments, DateTime? extrapolateDate = null)
+        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false)
         {
             this.ReportingDataDate = reporting_data_date;
             this.ReportingInterval = reporting_interval;
@@ -453,7 +453,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
             TenderEarned = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedQty, budgetedQty, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
 
-            Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true, false, extrapolateDate);
+            Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, !forceRetrieveRemainingDataPoints, false, extrapolateDate, false, forceRetrieveRemainingDataPoints);
             //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
         }
 

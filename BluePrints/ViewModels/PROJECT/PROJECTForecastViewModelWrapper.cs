@@ -66,6 +66,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTForecastViewModelWrapper()
         {
+            forceRetrieveRemainingDataPoints = true;
+
             delayedProjectSaveTimer = new DispatcherTimer();
             delayedProjectSaveTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
