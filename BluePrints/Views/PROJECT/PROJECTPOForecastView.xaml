@@ -73,7 +73,7 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical" dxlc:LayoutControl.AllowVerticalSizing="True" >
                         <dxdo:LayoutPanel>
-                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" SelectionMode="Cell" ClipboardCopyMode="ExcludeHeader" AutoGenerateColumns="AddNew" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsForecastLoading, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}">
+                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPO" SelectionMode="Cell" ClipboardCopyMode="ExcludeHeader" AutoGenerateColumns="AddNew" dx:DXSerializer.StoreLayoutMode="All" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsForecastLoading, ElementName=userControl}" CurrentItem="{Binding DataContext.SelectedDataRow, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -168,7 +168,7 @@
                             <dxlc:LayoutItem Label="Click anywhere on the table below and press CTRL + F to clear filter and search on any PO attributes" LabelPosition="Left" />
                         </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel>
-                            <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.PODetails, ElementName=userControl}" SelectionMode="Row">
+                            <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataContext.PODetails, ElementName=userControl}" SelectionMode="Row">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DataContext.DetailGridKeyDownCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>

@@ -106,7 +106,7 @@
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                             <dxdo:LayoutPanel Visibility="Collapsed">
                                 <Grid>
-                                    <dxg:GridControl x:Name="gridControlExport" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                    <dxg:GridControl x:Name="gridControlExport" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.HideColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
@@ -135,7 +135,7 @@
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:LayoutSerializationService />
                                     </dxmvvm:Interaction.Behaviors>
-                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="True" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="True" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -399,7 +399,7 @@
                             </dxdo:LayoutPanel>
                             <!--<dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">-->
                             <dxdo:LayoutPanel AutoHidden="False" ShowHideButton="True">
-                                <dxg:GridControl x:Name="gridControlDetail" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ActualsDetail, ElementName=userControl}" SelectionMode="Row">
+                                <dxg:GridControl x:Name="gridControlDetail" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ActualsDetail, ElementName=userControl}" SelectionMode="Row">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DataContext.DetailGridKeyDownCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
