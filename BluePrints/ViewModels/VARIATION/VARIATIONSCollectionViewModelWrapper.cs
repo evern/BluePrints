@@ -970,7 +970,7 @@ namespace BluePrints.ViewModels
                     var queryVARIATION_UNITS = from VARIATION_ITEM in bluePrintsUnitOfWork.VARIATION_ITEMS
                                                join VARIATION in bluePrintsUnitOfWork.VARIATIONS
                                                on VARIATION_ITEM.GUID_VARIATION equals VARIATION.GUID
-                                               where VARIATION.APPROVED != null && VARIATION_ITEM.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL
+                                               where VARIATION.APPROVED != null && VARIATION.ADJUSTMENT_TO_BUDGET == false && VARIATION_ITEM.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL
                                                select VARIATION_ITEM;
 
                     List<VARIATION_ITEM> deliverableVariations = queryVARIATION_UNITS.ToList();
