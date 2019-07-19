@@ -225,7 +225,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     remainingDataPoint.PeriodRemainingPrice *= weightingPortionDbl;
                 }
 
-                reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.DataPoints);
+                reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.GetData());
             }
         }
     }

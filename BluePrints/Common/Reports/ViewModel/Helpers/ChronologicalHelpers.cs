@@ -10,7 +10,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static DateTime? GetEarliestFirstAlignedDataDate(IEnumerable<PROGRESS> PROGRESSES)
         {
             DateTime? earliest_first_aligned_data_date = null;
-            foreach (PROGRESS PROGRESS in PROGRESSES)
+            //when construction progress have an earlier data date it'll skew the day of week of the weekly progress thats responsible of retrieving period data point, so always use the weekly one and make sure all weekly falls on the same day of week
+            foreach (PROGRESS PROGRESS in PROGRESSES.Where(x => x.INTERVAL_TYPE == ProgressIntervalType.Weekly))
             {
                 DateTime current_first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(PROGRESS);
                 if (earliest_first_aligned_data_date == null)
@@ -25,7 +26,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static DateTime? GetReportLastDataDate(IEnumerable<PROGRESS> PROGRESSES)
         {
             DateTime? latest_data_date = null;
-            foreach (PROGRESS PROGRESS in PROGRESSES)
+            //when construction progress have an earlier data date it'll skew the day of week of the weekly progress thats responsible of retrieving period data point, so always use the weekly one and make sure all weekly falls on the same day of week
+            foreach (PROGRESS PROGRESS in PROGRESSES.Where(x => x.INTERVAL_TYPE == ProgressIntervalType.Weekly))
             {
                 if (latest_data_date == null)
                     latest_data_date = PROGRESS.REPORT_DATE != null ? PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;

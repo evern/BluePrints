@@ -290,9 +290,9 @@ namespace BluePrints.ViewModels
                 project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated, forceRetrieveRemainingDataPoints);
                 project.Update();
 
-                foreach(var subjobDashboard in project.Subjob_Dashboards)
+                foreach (var subjobDashboard in project.Subjob_Dashboards)
                 {
-                    if(subjobDashboard != null)
+                    if (subjobDashboard != null)
                     {
                         subjobDashboard.IsManaged = false;
                         if (SUBJOBCollection.Any(x => x.INTERNAL_NAME1 == subjobDashboard.SubjobCode))

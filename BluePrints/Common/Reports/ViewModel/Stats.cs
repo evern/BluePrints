@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly DateTime firstAlignedDataDate;
         readonly TimeSpan reportInterval;
         readonly DateTime? extrapolateDate;
-        readonly bool isDebug;
+        readonly bool forceMoveToWeekEnding;
         public bool FromP6 { get; private set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool isDebug = false, bool forceRetrieveAllRemaining = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool forceMoveToWeekEnding = false, bool forceRetrieveAllRemaining = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -89,7 +89,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
 
             this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;
-            this.isDebug = isDebug;
+            this.forceMoveToWeekEnding = forceMoveToWeekEnding;
         }
 
         public void SetData(IEnumerable<DataPoint> rawDataPoints)
@@ -145,7 +145,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedureRemainingDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
 
             if (earnedDataPoints != null)
-                convertedDataPoints.AddRange(earnedDataPoints.ToList());
+            {
+                //need to adjust the dates for earned because sum function in cumulative data point will aggregate between >= looping date and < aligned dates
+                List<DataPoint> earnedAdjustedDataPoints = new List<DataPoint>();
+                foreach(var earnedDataPoint in earnedDataPoints)
+                {
+                    DataPoint newDataPoint = new DataPoint();
+                    DataUtils.ShallowCopy(newDataPoint, earnedDataPoint);
+                    newDataPoint.ProgressDate = newDataPoint.ProgressDate.AddDays(this.reportInterval.Days);
+                    earnedAdjustedDataPoints.Add(newDataPoint);
+                }
+               
+                convertedDataPoints.AddRange(earnedAdjustedDataPoints);
+            }
 
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
@@ -301,7 +313,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         firstDataDate = rawDataPoints.Min(x => x.ProgressDate);
 
                     //total units at start
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate, forceMoveToWeekEnding);
                 }
 
                 return cumulativeDataPoints;
@@ -331,7 +343,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (currentPeriodDataPoint == null && reportingDataDate != null && CumulativeDataPoints != null && CumulativeDataPoints.Count() > 0 && reportingDataDate != null)
+                {
                     currentPeriodDataPoint = DataPointsHelpers.FindPeriodDataPointInCumulativeDataPoints(CumulativeDataPoints, reportingDataDate.Date);
+                }
 
                 return currentPeriodDataPoint;
             }
@@ -343,7 +357,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (currentPeriodCumulativeDataPoint == null && CumulativeDataPoints != null && CumulativeDataPoints.Count > 0 && reportingDataDate != null)
+                {
                     currentPeriodCumulativeDataPoint = DataPointsHelpers.FindPeriodDataPointInDataPoints(CumulativeDataPoints, reportingDataDate.Date);
+                }
                 return currentPeriodCumulativeDataPoint;
             }
         }

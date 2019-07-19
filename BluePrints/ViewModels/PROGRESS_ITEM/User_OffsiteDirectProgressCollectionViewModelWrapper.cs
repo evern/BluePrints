@@ -60,6 +60,9 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
+                return;
+
             //due to heavy query through navigational properties, always skip messages for both deliverable and progress
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = true;
             MainViewModel.AlwaysSkipMessage = true;

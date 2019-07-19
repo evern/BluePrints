@@ -386,7 +386,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableLateDataPoints = new List<StoredProcedure_RemainingDataPoint>();
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
-                                reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.DataPoints);
+                                reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.GetData());
                                 //SummaryStats summaryStats = reportable.Stats as SummaryStats;
                                 //if(summaryStats != null)
                                 //    reportable.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), summaryStats.Burned.DataPoints);
@@ -396,7 +396,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                 currentGroupDeliverableLateDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
-                            reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.DataPoints);
+                            reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.GetData());
                             //SummaryStats groupSummaryStats = reportable_Group.Stats as SummaryStats;
                             //if (groupSummaryStats != null)
                             //    reportable_Group.Stats.RemainingActual.SetRemainingData(currentGroupDeliverableLateDataPoints, groupSummaryStats.Burned.DataPoints);
@@ -406,7 +406,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.DataPoints);
+                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.GetData());
                             //SummaryStats summaryStats = reportablesDisplay.Stats as SummaryStats;
                             //if (summaryStats != null)
                             //    reportablesDisplay.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
@@ -425,7 +425,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                             storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, productivity));
                         }
 
-                        reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.DataPoints);
+                        reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.GetData());
                         reportableObject.Update();
                     }
 

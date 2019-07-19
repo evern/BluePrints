@@ -18,7 +18,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
-            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null)
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool forceMoveToWeekEnding = false)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal cumulativeCosts = 0;
             decimal cumulativeAdjustmentUnits = 0;
             decimal cumulativeAdjustmentCosts = 0;
-            while (scanDate <= progressLastDataDate)
+            while (scanDate.Date <= progressLastDataDate.Date)
             {
                 List<DataPoint> currentPeriodDataPoints;
                 List<VariationAdjustment> currentPeriodVariationAdjustments;
@@ -88,6 +88,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                     cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
                     cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
+                    
+                    //used by earned units, because units are being summed less than scan date, so move date forward
+                    if(forceMoveToWeekEnding)
+                        scanDate = scanDate.AddDays(progressInterval.Days);
 
                     summaryDataPoints.Add(new DataPoint()
                     {
@@ -124,8 +128,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                     }
                 //}
-                
-                scanDate = scanDate.AddDays(progressInterval.Days);
+                if (!forceMoveToWeekEnding)
+                    scanDate = scanDate.AddDays(progressInterval.Days);
+                else if (scanDate >= progressLastDataDate.Date)
+                    break;
             }
 
             return summaryDataPoints;
@@ -298,7 +304,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     var CurrentPeriodIndex = progressDataPoints.IndexOf(CumulativeProgressOnDataDate);
                     if (CurrentPeriodIndex == 0)
                     {
-                        return null;
+                        return nullProgressDataPoint;
                     }
                     else
                     {

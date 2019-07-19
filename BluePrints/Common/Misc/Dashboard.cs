@@ -628,15 +628,16 @@ namespace BluePrints.Common.Misc
             if (summaryStats == null)
                 return true;
 
-            if (summaryStats.Budgeted == null && summaryStats.Burned == null && summaryStats.Current == null)
+            if (summaryStats.Budgeted == null && summaryStats.Burned == null && summaryStats.Current == null && summaryStats.Earned == null)
                 return true;
 
-            if (summaryStats.Budgeted.DataPoints == null && summaryStats.Burned.DataPoints == null && summaryStats.Current.DataPoints == null)
+            if (summaryStats.Budgeted.DataPoints == null && summaryStats.Burned.DataPoints == null && summaryStats.Current.DataPoints == null && summaryStats.Earned.DataPoints == null)
                 return true;
 
             if ((summaryStats.Budgeted.DataPoints != null && summaryStats.Budgeted.DataPoints.Count == 0) &&
                 (summaryStats.Burned.DataPoints != null && summaryStats.Burned.DataPoints.Count == 0) && 
-                (summaryStats.Current.DataPoints != null && summaryStats.Current.DataPoints.Count == 0))
+                (summaryStats.Current.DataPoints != null && summaryStats.Current.DataPoints.Count == 0) &&
+                (summaryStats.Earned.DataPoints != null && summaryStats.Earned.DataPoints.Count == 0))
                 return true;
 
             return false;
