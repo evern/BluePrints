@@ -38,12 +38,12 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Start Date" FieldName="PROGRESS_START" HeaderToolTip="When progress is first started. It also determines when S-Curve should start plotting">
+                            <dxg:GridColumn Header="Start Date (Must be the same day as data date)" FieldName="PROGRESS_START" HeaderToolTip="When progress is first started. It also determines when S-Curve should start plotting">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Data Date" FieldName="DATA_DATE" HeaderToolTip="What is the current progress data date. It also determines when remaining units should start showing in S-Curve">
+                            <dxg:GridColumn Header="Data Date (Must be the same day as start date)" FieldName="DATA_DATE" HeaderToolTip="What is the current progress data date. It also determines when remaining units should start showing in S-Curve">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
                                 </dxg:GridColumn.EditSettings>

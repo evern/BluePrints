@@ -367,8 +367,11 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public async void ViewReport()
+        public void ViewReport()
         {
+            if (MessageBoxService.ShowMessage("Please make sure that you've recalculated this progress prior to this (Double clicking on the project and press recalculate)", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
             var progressReport = new XtraReportPROGRESS_ITEMS();
             var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
             if (dbProjectReport != null)
@@ -382,9 +385,9 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            LoadingScreenManager.ShowLoadingScreen(1);
-            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-            LoadingScreenManager.Progress();
+            //LoadingScreenManager.ShowLoadingScreen(1);
+            //await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            //LoadingScreenManager.Progress();
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
