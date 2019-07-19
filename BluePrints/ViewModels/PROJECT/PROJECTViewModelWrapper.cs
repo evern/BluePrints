@@ -742,7 +742,7 @@ namespace BluePrints.ViewModels
                         SummaryStats summary = ((IHaveStats)e.Row).Stats as SummaryStats;
                         if (is_ratio)
                         {
-                            if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                            if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
                                 runningTotals += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Costs;
                         }
                         else
@@ -785,7 +785,7 @@ namespace BluePrints.ViewModels
                             {
                                 if (is_ratio)
                                 {
-                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodDataPoint != null)
+                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodCumulativeDataPoint != null)
                                         currentValue = summary.Burned.CurrentPeriodCumulativeDataPoint.Costs;
                                 }
                                 else
@@ -814,7 +814,7 @@ namespace BluePrints.ViewModels
                             {
                                 if (is_ratio)
                                 {
-                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodCumulativeDataPoint != null)
+                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodDataPoint != null)
                                         runningPeriod += summary.Burned.CurrentPeriodDataPoint.Costs;
                                 }
                                 else
@@ -874,19 +874,24 @@ namespace BluePrints.ViewModels
                         SummaryStats summary = ((IHaveStats)e.Row).Stats as SummaryStats;
                         if (is_ratio)
                         {
-                            if(is_earn)
+                            if (is_tender)
                             {
-                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                if (((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint != null)
+                                    runningTotals += ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint.Units;
+                            }
+                            if (is_earn)
+                            {
+                                if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
                                     runningTotals += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
                             }
                             else if(is_budget)
                             {
-                                if (((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint != null)
+                                if (((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
                                     runningTotals += ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
                             }
                             else if (is_current)
                             {
-                                if (((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint != null)
+                                if (((IHaveStats)e.Row).Stats.Current.CurrentPeriodCumulativeDataPoint != null)
                                     runningTotals += ((IHaveStats)e.Row).Stats.Current.CurrentPeriodCumulativeDataPoint.Units;
                             }
                         }
@@ -897,7 +902,7 @@ namespace BluePrints.ViewModels
                             else if (is_current || is_earn)
                                 runningTotals += ((IHaveStats)e.Row).Stats.TotalUnits;
                         }
-                        if (e.IsGroupSummary && ((IHaveStats)e.Row).Stats.Earned != null)
+                        if (e.IsGroupSummary)
                         {
                             if (is_period)
                             {
@@ -906,21 +911,27 @@ namespace BluePrints.ViewModels
                                     if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodDataPoint != null)
                                         currentValue = summary.Burned.CurrentPeriodDataPoint.Units;
                                 }
-                                else if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                else
                                 {
                                     if(is_tender)
-                                        currentValue = ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodDataPoint.Units;
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodDataPoint.Units;
+                                    }
                                     else if (is_earn)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Units;
+                                        if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Units;
                                     }
                                     else if (is_budget)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                                        if (((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint.Units;
                                     }
                                     else if (is_current)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint.Units;
+                                        if (((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint.Units;
                                     }
                                 }
                             }
@@ -928,24 +939,30 @@ namespace BluePrints.ViewModels
                             {
                                 if (is_ratio)
                                 {
-                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodDataPoint != null)
+                                    if (summary != null && summary.Burned != null && summary.Burned.CurrentPeriodCumulativeDataPoint != null)
                                         currentValue = summary.Burned.CurrentPeriodCumulativeDataPoint.Units;
                                 }
-                                else if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                else
                                 {
                                     if (is_tender)
-                                        currentValue = ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint.Units;
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint.Units;
+                                    }
                                     else if (is_earn)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
+                                        if(((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
                                     }
                                     else if (is_budget)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                                        if (((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint.Units;
                                     }
                                     else if (is_current)
                                     {
-                                        currentValue = ((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint.Units;
+                                        if (((IHaveStats)e.Row).Stats.Current.CurrentPeriodCumulativeDataPoint != null)
+                                            currentValue = ((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint.Units;
                                     }
                                 }
                             }
@@ -961,13 +978,36 @@ namespace BluePrints.ViewModels
                                 }
                                 else
                                 {
-                                    if (is_tender || is_budget)
-                                        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedUnits;
-                                    else if (is_current || is_earn)
+                                    if (is_tender)
                                     {
-                                        runningTotals += ((IHaveStats)e.Row).Stats.TotalUnits;
+                                        if (((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodDataPoint != null)
+                                            runningPeriod = ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodDataPoint.Units;
+                                    }
+                                    else if (is_earn)
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint != null)
+                                            runningPeriod = ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodDataPoint.Units;
+                                    }
+                                    else if (is_budget)
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint != null)
+                                            runningPeriod = ((IHaveStats)e.Row).Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                                    }
+                                    else if (is_current)
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint != null)
+                                            runningPeriod = ((IHaveStats)e.Row).Stats.Current.CurrentPeriodDataPoint.Units;
                                     }
                                 }
+                                //else
+                                //{
+                                //    if (is_tender || is_budget)
+                                //        runningTotals += ((IHaveStats)e.Row).Stats.BudgetedUnits;
+                                //    else if (is_current || is_earn)
+                                //    {
+                                //        runningTotals += ((IHaveStats)e.Row).Stats.TotalUnits;
+                                //    }
+                                //}
                             }
                             else
                             {
@@ -978,7 +1018,12 @@ namespace BluePrints.ViewModels
                                 }
                                 else
                                 {
-                                    if (is_earn)
+                                    if (is_tender)
+                                    {
+                                        if (((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint != null)
+                                            runningCurrent += ((IHaveStats)e.Row).Stats.TenderEarned.CurrentPeriodCumulativeDataPoint.Units;
+                                    }
+                                    else if (is_earn)
                                     {
                                         if (((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint != null)
                                             runningCurrent += ((IHaveStats)e.Row).Stats.Earned.CurrentPeriodCumulativeDataPoint.Units;
