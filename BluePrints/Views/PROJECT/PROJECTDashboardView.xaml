@@ -25,9 +25,9 @@
                                 <!--<dxb:BarCheckItem Content="Auto Refresh"
                                                   IsChecked="{Binding DataContext.DoNotAutoRefresh, ElementName=userControl, Converter={dxmvvm:BooleanNegationConverter}}"
                                                   Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
-                                <dxb:BarButtonItem Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" Content="Calculate Stats" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" Content="P6 Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any invalid mappings because activity isn't found on P6" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" Content="Exo Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any subjobs in exo that isn't available in blueprints" />
+                                <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" Content="Calculate Stats" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
+                                <dxb:BarButtonItem x:Name="biShowP6Error" Command="{Binding DataContext.ShowP6ErrorsCommand, ElementName=userControl}" Content="P6 Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any invalid mappings because activity isn't found on P6" />
+                                <dxb:BarButtonItem x:Name="biShowExoError" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" Content="Exo Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any subjobs in exo that isn't available in blueprints" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

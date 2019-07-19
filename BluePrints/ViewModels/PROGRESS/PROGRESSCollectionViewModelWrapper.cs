@@ -247,22 +247,22 @@ namespace BluePrints.ViewModels
                 if (otherPROGRESSES.Any(x => x.STATUS == ProgressStatus.Live) && newStatus == ProgressStatus.Live)
                     return "There can be only one live progress";
             }
-            else if(field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
-            {
-                DayOfWeek progressStartDayOfWeek = projection.PROGRESS_START.DayOfWeek;
-                DayOfWeek dataDateDayOfWeek = ((DateTime)new_value).DayOfWeek;
+            //else if(field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
+            //{
+            //    DayOfWeek progressStartDayOfWeek = projection.PROGRESS_START.DayOfWeek;
+            //    DayOfWeek dataDateDayOfWeek = ((DateTime)new_value).DayOfWeek;
 
-                if (progressStartDayOfWeek != dataDateDayOfWeek)
-                    return "Data date day of week must be the same as start date";
-            }
-            else if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().PROGRESS_START) && new_value != null)
-            {
-                DayOfWeek progressStartDayOfWeek = ((DateTime)new_value).DayOfWeek; 
-                DayOfWeek dataDateDayOfWeek = projection.DATA_DATE.DayOfWeek;
+            //    if (progressStartDayOfWeek != dataDateDayOfWeek)
+            //        return "Data date day of week must be the same as start date";
+            //}
+            //else if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().PROGRESS_START) && new_value != null)
+            //{
+            //    DayOfWeek progressStartDayOfWeek = ((DateTime)new_value).DayOfWeek; 
+            //    DayOfWeek dataDateDayOfWeek = projection.DATA_DATE.DayOfWeek;
 
-                if (progressStartDayOfWeek != dataDateDayOfWeek)
-                    return "Data date day of week must be the same as start date";
-            }
+            //    if (progressStartDayOfWeek != dataDateDayOfWeek)
+            //        return "Data date day of week must be the same as start date";
+            //}
 
             return string.Empty;
         }

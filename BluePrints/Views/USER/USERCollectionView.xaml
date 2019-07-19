@@ -27,16 +27,16 @@
                             <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup Caption="Tools">
-                                <dxb:BarButtonItem Command="{Binding DataContext.ImportCommand, ElementName=userControl}" Content="Import" Glyph="{dx:DXImage Image=Download_16x16.png}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" Content="Update User(s)" ToolTip="Get user department, discipline and description from active directory" Glyph="{dx:DXImage Image=BODetails_16x16.png}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" Content="Update EXO Name" ToolTip="Auto populate user's EXO name" Glyph="{dx:DXImage Image=Merge_16x16.png}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" />
+                                <dxb:BarButtonItem x:Name="biImport" Command="{Binding DataContext.ImportCommand, ElementName=userControl}" Content="Import" Glyph="{dx:DXImage Image=Download_16x16.png}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" />
+                                <dxb:BarButtonItem x:Name="biUpdateUser" Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" Content="Update User(s)" ToolTip="Get user department, discipline and description from active directory" Glyph="{dx:DXImage Image=BODetails_16x16.png}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
+                                <dxb:BarButtonItem x:Name="biMatchExoStaffId" Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" Content="Update EXO Name" ToolTip="Auto populate user's EXO name" Glyph="{dx:DXImage Image=Merge_16x16.png}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" />
                                 <!--<dxb:BarEditItem EditValue="{Binding DataContext.SelectedCOMPort, ElementName=userControl}" Content="Arduino Port" Glyph="{dx:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dx:DXImage Image=Satellite_32x32.png}">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:ComboBoxEditSettings IsTextEditable="False" ItemsSource="{Binding DataContext.AvailablePorts, ElementName=userControl}" />
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph"  Command="{Binding DataContext.PortConnectCommand, ElementName=userControl}" Content="{Binding DataContext.ConnectButtonContent, ElementName=userControl}" Glyph="{dx:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dx:DXImage Image=Satellite_32x32.png}" />-->
-                                <dxb:BarCheckItem Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding DataContext.HideLeave, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" ToolTip="Show bookable only" />
+                                <dxb:BarCheckItem x:Name="bcHideUser" Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding DataContext.HideLeave, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" ToolTip="Show bookable only" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
