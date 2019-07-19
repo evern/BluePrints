@@ -486,7 +486,7 @@ namespace BluePrints.ViewModels
                     P6Data.PROJWBS p6WBS = p6uow.PROJWBS.FirstOrDefault(x => x.wbs_short_name == livePRO.P6PROGRESS_NAME);
                     if (p6WBS == null)
                         projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("P6 progress schedule not found"), Resolve = "Please set a new p6 schedule on live design progress" });
-                    else if (p6WBS.PROJECT.last_recalc_date == null || (p6WBS.PROJECT.last_recalc_date != null && ((DateTime)p6WBS.PROJECT.last_recalc_date).Date != livePRO.DATA_DATE))
+                    else if (p6WBS.PROJECT.last_recalc_date == null || (p6WBS.PROJECT.last_recalc_date != null && ((DateTime)p6WBS.PROJECT.last_recalc_date).Date != livePRO.DATA_DATE.Date))
                         projectIssues.Add(new ProjectIssue() { Severity = "Critical", Type = "Progress", Description = string.Format("P6 progress schedule data date don't match"), Resolve = "Please open up p6 schedule and process F9 on " + livePRO.DATA_DATE.ToString("G") });
                 }
 
