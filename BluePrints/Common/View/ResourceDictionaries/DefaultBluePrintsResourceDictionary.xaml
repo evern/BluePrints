@@ -22,6 +22,7 @@
     </collections:ArrayList>
     <collections:ArrayList x:Key="RibbonDefaultCollapsedGridButtons">
         <dxb:BarButtonItem x:Name="biBulkDelete2" Command="{Binding BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+        <dxb:BarButtonItem x:Name="biFullRefresh2" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
         <dxb:BarCheckItem x:Name="biCellSelection2" Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
         <dxb:BarSubItem Content="Grid Tools" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
             <dxb:BarButtonItem x:Name="biUndo2" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Undo last action" />
