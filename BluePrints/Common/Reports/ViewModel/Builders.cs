@@ -192,8 +192,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Costs = x.EARNED_UNITS * reportable.Budget_ItemRate * CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
-            reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
-            reportable.Stats.TenderEarned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+
+            //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
+            reportable.Stats.Earned.AdjustSetEarnedData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.TenderEarned.AdjustSetEarnedData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
         public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)

@@ -18,7 +18,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
-            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool forceMoveToWeekEnding = false)
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool omitLastDataPoint = false)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
@@ -53,27 +53,29 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<DataPoint> currentPeriodDataPoints;
                 List<VariationAdjustment> currentPeriodVariationAdjustments;
 
-                if (scanDate == firstAlignedDataDate)
+                DateTime floorDate = scanDate;
+                DateTime ceilingDate = scanDate.AddDays(progressInterval.Days);
+                if (floorDate == firstAlignedDataDate)
                 {
                     currentPeriodDataPoints =
                         rawDataPoints.Where(
-                            DataPoint => DataPoint.ProgressDate < scanDate.AddDays(progressInterval.Days)).ToList();
+                            DataPoint => DataPoint.ProgressDate < ceilingDate).ToList();
                     currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
                         : rawVariationAdjustments.Where(
-                            Adjustment => Adjustment.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
+                            Adjustment => Adjustment.AdjustmentDate < ceilingDate).ToList();
                 }
                 else
                 {
                     currentPeriodDataPoints =
                         rawDataPoints.Where(
                             DataPoint =>
-                                DataPoint.ProgressDate >= scanDate &&
-                                DataPoint.ProgressDate < scanDate.AddDays(progressInterval.Days)).ToList();
+                                DataPoint.ProgressDate >= floorDate &&
+                                DataPoint.ProgressDate < ceilingDate).ToList();
                     currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
-                        : rawVariationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate >= scanDate &&
-                                Adjustment.AdjustmentDate < scanDate.AddDays(progressInterval.Days)).ToList();
+                        : rawVariationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate >= floorDate &&
+                                Adjustment.AdjustmentDate < ceilingDate).ToList();
                 }
 
                 decimal currentPeriodUnits = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Units);
@@ -81,56 +83,44 @@ namespace BluePrints.Common.ViewModel.Reporting
                 decimal currentPeriodAdjustmentUnits = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentUnits);
                 decimal currentPeriodAdjustmentCosts = currentPeriodVariationAdjustments.Sum(adjustment => adjustment.AdjustmentNativeCosts);
 
-                //if (currentPeriodUnits > 0)
-                //{
-                    cumulativeUnits += currentPeriodUnits;
-                    cumulativeCosts += currentPeriodCosts;
+                cumulativeUnits += currentPeriodUnits;
+                cumulativeCosts += currentPeriodCosts;
 
-                    cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
-                    cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
+                cumulativeAdjustmentUnits += currentPeriodAdjustmentUnits;
+                cumulativeAdjustmentCosts += currentPeriodAdjustmentCosts;
                     
-                    //used by earned units, because units are being summed less than scan date, so move date forward
-                    if(forceMoveToWeekEnding)
-                        scanDate = scanDate.AddDays(progressInterval.Days);
+                summaryDataPoints.Add(new DataPoint()
+                {
+                    BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                    BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                    Units = cumulativeUnits,
+                    Costs = cumulativeCosts,
+                    Quantity = cumulativeUnits * qtyPerUnit,
+                    ProgressDate = floorDate
+                });
 
-                    summaryDataPoints.Add(new DataPoint()
+                if (currentPeriodAdjustmentUnits > 0)
+                {
+                    DataPoint lastDataPoint = summaryDataPoints.Last();
+                    if (lastDataPoint != null)
                     {
-                        BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
-                        BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
-                        Units = cumulativeUnits,
-                        Costs = cumulativeCosts,
-                        Quantity = cumulativeUnits * qtyPerUnit,
-                        ProgressDate = scanDate
-                    });
-
-                    if (currentPeriodAdjustmentUnits > 0)
-                    {
-                        DataPoint lastDataPoint = summaryDataPoints.Last();
-                        if (lastDataPoint != null)
-                        {
-                            //for sharktooth effect, add dip on a day before the adjustment's week ending occurs
-                            //this means that a day before, the percentage would be higher if it weren't for the variation adjustments
-                            DataPoint newDataPoint = new DataPoint();
-                            DataUtils.ShallowCopy(newDataPoint, lastDataPoint);
-                            newDataPoint.ProgressDate = scanDate.AddDays(-1);
-                            newDataPoint.BudgetedUnits -= currentPeriodAdjustmentUnits;
-                            newDataPoint.BudgetedCosts -= currentPeriodAdjustmentCosts;
-                            summaryDataPoints.Add(newDataPoint);
-
-                            //summaryDataPoints.Add(new DataPoint()
-                            //{
-                            //    BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
-                            //    BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
-                            //    Units = cumulativeUnits,
-                            //    Costs = cumulativeCosts,
-                            //    ProgressDate = scanDate
-                            //});
-                        }
+                        //for sharktooth effect, add dip on a day before the adjustment's week ending occurs
+                        //this means that a day before, the percentage would be higher if it weren't for the variation adjustments
+                        DataPoint newDataPoint = new DataPoint();
+                        DataUtils.ShallowCopy(newDataPoint, lastDataPoint);
+                        newDataPoint.ProgressDate = scanDate.AddDays(-1);
+                        newDataPoint.BudgetedUnits -= currentPeriodAdjustmentUnits;
+                        newDataPoint.BudgetedCosts -= currentPeriodAdjustmentCosts;
+                        summaryDataPoints.Add(newDataPoint);
                     }
-                //}
-                if (!forceMoveToWeekEnding)
-                    scanDate = scanDate.AddDays(progressInterval.Days);
-                else if (scanDate >= progressLastDataDate.Date)
+                }
+
+                scanDate = ceilingDate;
+
+                //when stats is earned, datapoints were shifted forward so that current period data point sums on the correct date 
+                //(it was incorrect due to >= floor date and < ceiling date being used and ceiling date is the earned date)
+                //so last data point with zero units/costs were generated because data point dates were moved forward by an interval
+                if (omitLastDataPoint && scanDate.Date >= progressLastDataDate.Date)
                     break;
             }
 

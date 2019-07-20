@@ -46,6 +46,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly TimeSpan reportInterval;
         readonly DateTime? extrapolateDate;
         readonly bool forceMoveToWeekEnding;
+
+        //need to omit last data piont because series dates were moved forward due to set earned data
+        //because sum function in cumulative data point will aggregate between >= looping date and < aligned dates
+        readonly bool omitLastDataPointInPeriodGrouping;
         public bool FromP6 { get; private set; }
 
         /// <summary>
@@ -70,7 +74,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool forceMoveToWeekEnding = false, bool forceRetrieveAllRemaining = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool forceMoveToWeekEnding = false, bool forceRetrieveAllRemaining = false, bool omitLastDataPointInPeriodGrouping = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -87,6 +91,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
+            this.omitLastDataPointInPeriodGrouping = omitLastDataPointInPeriodGrouping;
 
             this.alwaysBenchmarkAgainstBudgeted = alwaysBenchmarkAgainstBudgeted;
             this.forceMoveToWeekEnding = forceMoveToWeekEnding;
@@ -140,24 +145,31 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.StatsBuilt = true;
         }
 
+        /// <summary>
+        /// Adjust the dates for earned because sum function in cumulative data point will aggregate between >= looping date and < aligned dates
+        /// Adjust only once at the lowest level, summary entity will use set data instead of this
+        /// </summary>
+        /// <param name="earnedDataPoints"></param>
+        public void AdjustSetEarnedData(IEnumerable<DataPoint> earnedDataPoints)
+        {
+            List<DataPoint> earnedAdjustedDataPoints = new List<DataPoint>();
+            foreach (var earnedDataPoint in earnedDataPoints)
+            {
+                DataPoint newDataPoint = new DataPoint();
+                DataUtils.ShallowCopy(newDataPoint, earnedDataPoint);
+                newDataPoint.ProgressDate = newDataPoint.ProgressDate.AddDays(this.reportInterval.Days);
+                earnedAdjustedDataPoints.Add(newDataPoint);
+            }
+
+            this.rawDataPoints = earnedAdjustedDataPoints;
+        }
+
         public void SetRemainingData(IEnumerable<StoredProcedure_RemainingDataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
         {
             List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedureRemainingDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
 
             if (earnedDataPoints != null)
-            {
-                //need to adjust the dates for earned because sum function in cumulative data point will aggregate between >= looping date and < aligned dates
-                List<DataPoint> earnedAdjustedDataPoints = new List<DataPoint>();
-                foreach(var earnedDataPoint in earnedDataPoints)
-                {
-                    DataPoint newDataPoint = new DataPoint();
-                    DataUtils.ShallowCopy(newDataPoint, earnedDataPoint);
-                    newDataPoint.ProgressDate = newDataPoint.ProgressDate.AddDays(this.reportInterval.Days);
-                    earnedAdjustedDataPoints.Add(newDataPoint);
-                }
-               
-                convertedDataPoints.AddRange(earnedAdjustedDataPoints);
-            }
+                convertedDataPoints.AddRange(earnedDataPoints);
 
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
@@ -309,11 +321,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     //variation adjustment implementation
                     //cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
                     DateTime firstDataDate = firstAlignedDataDate;
-                    if (rawDataPoints.Count() > 0 && forceRetrieveAllRemaining)
-                        firstDataDate = rawDataPoints.Min(x => x.ProgressDate);
 
                     //total units at start
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate, forceMoveToWeekEnding);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate, omitLastDataPointInPeriodGrouping);
                 }
 
                 return cumulativeDataPoints;
