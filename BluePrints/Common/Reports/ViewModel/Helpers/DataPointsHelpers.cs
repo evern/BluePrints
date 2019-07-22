@@ -18,7 +18,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
-            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool omitLastDataPoint = false)
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal cumulativeCosts = 0;
             decimal cumulativeAdjustmentUnits = 0;
             decimal cumulativeAdjustmentCosts = 0;
-            while (scanDate.Date <= progressLastDataDate.Date)
+            while (scanDate <= progressLastDataDate)
             {
                 List<DataPoint> currentPeriodDataPoints;
                 List<VariationAdjustment> currentPeriodVariationAdjustments;
@@ -116,12 +116,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 scanDate = ceilingDate;
-
-                //when stats is earned, datapoints were shifted forward so that current period data point sums on the correct date 
-                //(it was incorrect due to >= floor date and < ceiling date being used and ceiling date is the earned date)
-                //so last data point with zero units/costs were generated because data point dates were moved forward by an interval
-                if (omitLastDataPoint && scanDate.Date >= progressLastDataDate.Date)
-                    break;
             }
 
             return summaryDataPoints;

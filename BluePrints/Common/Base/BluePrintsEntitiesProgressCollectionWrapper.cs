@@ -381,6 +381,7 @@ namespace BluePrints.Common.Base
                     loadPROGRESS.DATA_DATE = value;
                     PROGRESSCollectionViewModel.Save(loadPROGRESS);
                     this.RaisePropertyChanged(x => x.DataDate);
+                    this.RaisePropertyChanged(x => x.DataDateStr);
                     FullRefresh();
                 }
             }
