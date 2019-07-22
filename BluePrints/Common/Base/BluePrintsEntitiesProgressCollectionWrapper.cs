@@ -378,7 +378,7 @@ namespace BluePrints.Common.Base
             {
                 if (isCompletelyLoaded)
                 {
-                    loadPROGRESS.DATA_DATE = value;
+                    loadPROGRESS.DATA_DATE = value.Date.AddDays(1).AddSeconds(-1);
                     PROGRESSCollectionViewModel.Save(loadPROGRESS);
                     this.RaisePropertyChanged(x => x.DataDate);
                     this.RaisePropertyChanged(x => x.DataDateStr);
