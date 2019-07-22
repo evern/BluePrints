@@ -149,11 +149,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             var alignedDataDatesCollection = new List<DateTime>();
             alignedDataDatesCollection.Add(firstAlignedDataDate);
             //forward the first progress date to scan to after the datadate aligned to end day of week
-            do
+
+            if(lastProgressDate < lastDataPointDate)
             {
-                lastProgressDate = lastProgressDate.AddDays(intervalPeriod.Days);
-                alignedDataDatesCollection.Add(lastProgressDate);
-            } while (lastProgressDate < lastDataPointDate);
+                do
+                {
+                    lastProgressDate = lastProgressDate.AddDays(intervalPeriod.Days);
+                    alignedDataDatesCollection.Add(lastProgressDate);
+                } while (lastProgressDate < lastDataPointDate);
+            }
 
             return alignedDataDatesCollection;
         }
