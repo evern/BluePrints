@@ -903,7 +903,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS_ITEM savePROGRESS_ITEM = new PROGRESS_ITEM();
             savePROGRESS_ITEM.GUID_ORIBASEITEM = Entity.OriginalEntityKey;
             savePROGRESS_ITEM.GUID_PROGRESS = Live_PROGRESS.GUID;
-            savePROGRESS_ITEM.EARNED_DATE = Live_PROGRESS.DATA_DATE;
+            savePROGRESS_ITEM.EARNED_DATE = Live_PROGRESS.DATA_DATE.Date.AddDays(1).AddSeconds(-1);
             savePROGRESS_ITEM.CREATED = DateTime.Now;
 
             return savePROGRESS_ITEM;

@@ -104,10 +104,10 @@ namespace BluePrints.ViewModels
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
             entity.PROGRESS_START = entity.PROGRESS_START.Date;
-            entity.DATA_DATE = entity.DATA_DATE.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+            entity.DATA_DATE = entity.DATA_DATE.Date.AddDays(1).AddSeconds(-1);
             if(entity.REPORT_DATE != null)
             {
-                DateTime qualifiedReportDate = ((DateTime)entity.REPORT_DATE).Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                DateTime qualifiedReportDate = ((DateTime)entity.REPORT_DATE).Date.AddDays(1).AddSeconds(-1);
                 entity.REPORT_DATE = qualifiedReportDate;
             }
 
