@@ -728,10 +728,12 @@ namespace BluePrints.ViewModels
                 entity.Phase_Guid = defaultPHASE.GUID;
             }
 
-            //if(entity.IsInternalNumberEditable)
-            //    entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity);
-            //BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
-            //BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            string errorMessage = string.Empty;
+            if (entity.IsInternalNumberEditable)
+                entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity, out errorMessage);
+
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             entity.Update();
             //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
             return true;
