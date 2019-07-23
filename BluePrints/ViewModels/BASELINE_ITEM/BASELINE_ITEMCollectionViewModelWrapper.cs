@@ -729,7 +729,7 @@ namespace BluePrints.ViewModels
             }
 
             string errorMessage = string.Empty;
-            if (entity.IsInternalNumberEditable)
+            if (entity.GUID == Guid.Empty && entity.Entity.Entity.INTERNAL_NUM == string.Empty && entity.IsInternalNumberEditable)
                 entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity, out errorMessage);
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType, false, allowSubJobDeletion);
