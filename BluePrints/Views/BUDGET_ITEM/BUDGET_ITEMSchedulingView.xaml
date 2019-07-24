@@ -252,6 +252,11 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Width="400" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings DisplayMember="DESCRIPTION" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="CODE" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" FilterPopupMode="CheckedList" Header="Variation Code" ReadOnly="True"/>
                                 <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
