@@ -95,6 +95,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = rawDataPoints;
         }
 
+        public void SetEarnedData(IEnumerable<DataPoint> rawDataPoints)
+        {
+            List<DataPoint> earnedDataPoints = new List<DataPoint>(rawDataPoints);
+
+            //deduct a second so that GroupDataPointsByPeriod uses < ceilingDate when grouping data points into periods and earned data date is ceiling date
+            earnedDataPoints.ForEach(x => x.ProgressDate = x.ProgressDate.AddSeconds(-1));
+
+            this.rawDataPoints = earnedDataPoints;
+        }
+
         public decimal GetApplicableProductivityCalculationBudgetedDuration()
         {
             if (this.rawDataPoints == null || this.rawDataPoints.Count() == 0)

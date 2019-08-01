@@ -96,7 +96,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Units = cumulativeUnits,
                     Costs = cumulativeCosts,
                     Quantity = cumulativeUnits * qtyPerUnit,
-                    ProgressDate = floorDate
+                    ProgressDate = ceilingDate
                 });
 
                 if (currentPeriodAdjustmentUnits > 0)
@@ -332,8 +332,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     DateTime? exoStartDateRange = null;
                     DateTime? exoEndDateRange = null;
 
-                    if (plotStartDate != null && CumulativeDataPointCollection[i].ProgressDate < plotStartDate)
-                        continue;
+                    if (plotStartDate != null)
+                        if(CumulativeDataPointCollection[i].ProgressDate <= plotStartDate)
+                            continue;
 
                     if (i == 0)
                     {
