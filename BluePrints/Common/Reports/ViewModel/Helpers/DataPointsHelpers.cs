@@ -387,7 +387,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
                     Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedQuantity),
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
+
+                    //deduct a second so that GroupDataPointsByPeriod uses < ceilingDate when grouping data points into periods and aligned date on points are ceiling dates
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate.AddSeconds(-1), 
                     IsFromP6 = deliverablesDataPoint.IsFromP6, 
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
                 });
@@ -408,7 +410,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     BudgetedCosts = 0,
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
+
+                    //deduct a second so that GroupDataPointsByPeriod uses < ceilingDate when grouping data points into periods and aligned date on points are ceiling dates
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate.AddSeconds(-1),
                     IsFromP6 = deliverablesDataPoint.IsFromP6,
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration),
                     IsRemaining = true
