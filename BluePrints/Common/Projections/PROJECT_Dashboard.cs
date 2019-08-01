@@ -62,7 +62,7 @@ namespace BluePrints.Common.Projections
 
             projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion, calcTypes, useProductivityFactorOnRemaining);
 
-            if(calcTypes.Contains(StatsCalculationType.Burned))
+            if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual
                 projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllBurned, showLoadingScreen);
 
