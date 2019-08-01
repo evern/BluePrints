@@ -648,11 +648,11 @@ namespace BluePrints.ViewModels
                 return false;
             }
 
-            if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
-            {
-                MessageBoxService.ShowMessage("Uploading to EXO is disabled because this job is in tender phase\nPlease contact " + BluePrintsResources.Default_CFO + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return false;
-            }
+            //if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
+            //{
+            //    MessageBoxService.ShowMessage("Uploading to EXO is disabled because this job is in tender phase\nPlease contact " + BluePrintsResources.Default_CFO + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+            //    return false;
+            //}
 
             if (masterJob == null)
             {
