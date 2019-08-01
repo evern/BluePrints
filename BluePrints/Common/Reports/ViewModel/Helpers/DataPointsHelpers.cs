@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal cumulativeCosts = 0;
             decimal cumulativeAdjustmentUnits = 0;
             decimal cumulativeAdjustmentCosts = 0;
-            while (scanDate <= progressLastDataDate)
+            while (scanDate < progressLastDataDate)
             {
                 List<DataPoint> currentPeriodDataPoints;
                 List<VariationAdjustment> currentPeriodVariationAdjustments;
@@ -59,23 +59,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     currentPeriodDataPoints =
                         rawDataPoints.Where(
-                            DataPoint => DataPoint.ProgressDate < ceilingDate).ToList();
+                            DataPoint => DataPoint.ProgressDate <= ceilingDate).ToList();
                     currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
                         : rawVariationAdjustments.Where(
-                            Adjustment => Adjustment.AdjustmentDate < ceilingDate).ToList();
+                            Adjustment => Adjustment.AdjustmentDate <= ceilingDate).ToList();
                 }
                 else
                 {
                     currentPeriodDataPoints =
                         rawDataPoints.Where(
                             DataPoint =>
-                                DataPoint.ProgressDate >= floorDate &&
-                                DataPoint.ProgressDate < ceilingDate).ToList();
+                                DataPoint.ProgressDate > floorDate &&
+                                DataPoint.ProgressDate <= ceilingDate).ToList();
                     currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
-                        : rawVariationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate >= floorDate &&
-                                Adjustment.AdjustmentDate < ceilingDate).ToList();
+                        : rawVariationAdjustments.Where(Adjustment => Adjustment.AdjustmentDate > floorDate &&
+                                Adjustment.AdjustmentDate <= ceilingDate).ToList();
                 }
 
                 decimal currentPeriodUnits = currentPeriodDataPoints.Sum(dataPoint => dataPoint.Units);
@@ -388,8 +388,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
                     Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedQuantity),
 
-                    //deduct a second so that GroupDataPointsByPeriod uses < ceilingDate when grouping data points into periods and aligned date on points are ceiling dates
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate.AddSeconds(-1), 
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
                     IsFromP6 = deliverablesDataPoint.IsFromP6, 
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
                 });
@@ -411,8 +410,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
 
-                    //deduct a second so that GroupDataPointsByPeriod uses < ceilingDate when grouping data points into periods and aligned date on points are ceiling dates
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate.AddSeconds(-1),
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
                     IsFromP6 = deliverablesDataPoint.IsFromP6,
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration),
                     IsRemaining = true

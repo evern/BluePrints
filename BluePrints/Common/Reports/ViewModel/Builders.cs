@@ -195,8 +195,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }).ToArray();
 
             //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
-            reportable.Stats.Earned.SetAlignedDateData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
-            reportable.Stats.TenderEarned.SetAlignedDateData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.TenderEarned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
         public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
