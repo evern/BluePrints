@@ -110,8 +110,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                             burnedDataPoint.BudgetedCosts = 0;
                             burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
-                            burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
                             burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
+                            burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
                             burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                             burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                             burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
@@ -138,8 +139,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         LoadingScreenManager.Progress();
                 }
 
-                materialDataPoints = BluePrintsDataUtils.GetMaterials(projectNumber, alignedDataDates, CurrencyConversion, showLoadingScreen);
-                poDataPoints = BluePrintsDataUtils.GetEXOPO(projectNumber, alignedDataDates, showLoadingScreen);
+                materialDataPoints = BluePrintsDataUtils.GetMaterials(projectNumber, null, CurrencyConversion, showLoadingScreen);
+                poDataPoints = BluePrintsDataUtils.GetEXOPO(projectNumber, null, showLoadingScreen);
 
                 foreach (string missingSubJob in missingSubJobs)
                 {
@@ -194,8 +195,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             }).ToArray();
 
             //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
-            reportable.Stats.Earned.SetEarnedData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
-            reportable.Stats.TenderEarned.SetEarnedData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.Earned.SetAlignedDateData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.TenderEarned.SetAlignedDateData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
         public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
