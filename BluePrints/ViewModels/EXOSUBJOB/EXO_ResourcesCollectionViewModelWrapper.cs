@@ -49,6 +49,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        private readonly IPrimeroEntitiesUnitOfWork pgaUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
 
         protected override void resolveParameters(object parameter)
         {
@@ -120,7 +121,14 @@ namespace BluePrints.ViewModels
             List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
             ExoResourceProjection newLine = projection;
             newLines.Add(newLine);
-            commitToExo(newLines);
+
+            List<ExoResourceProjection> remoteNewLines = new List<ExoResourceProjection>();
+            ExoResourceProjection remoteNewLine = new ExoResourceProjection();
+            DataUtils.ShallowCopy(remoteNewLine, newLine);
+            remoteNewLines.Add(remoteNewLine);
+
+            commitToExo(newLines, primeroUnitOfWork);
+            commitToExo(remoteNewLines, pgaUnitOfWork);
 
             //need to add post to capture generated id and properties
             //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
@@ -137,32 +145,33 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void commitToExo(IEnumerable<ExoResourceProjection> projections)
+        private void commitToExo(IEnumerable<ExoResourceProjection> projections, IPrimeroEntitiesUnitOfWork primeroUOW)
         {
             foreach(ExoResourceProjection resource in projections)
             {
-                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUnitOfWork, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID);
+                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID);
                 if(addedStaff != null)
                 {
                     resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
                     //map back generated properties to projection
-                    resource.STAFFNO = addedStaff.STAFFNO;
+                    //do not map back because multiple contexts are involved
+                    //resource.STAFFNO = addedStaff.STAFFNO;
                     resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
 
-                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUnitOfWork, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
+                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
 
                     //map back generated properties to projection
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
                     resource.SHORTCODE = addedResource.SHORTCODE;
 
-                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUnitOfWork, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+                    STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
                 }
 
                 resource.IsNewRow = false;
                 resource.Update();
             }
 
-            primeroUnitOfWork.SaveChanges();
+            primeroUOW.SaveChanges();
         }
 
         public void DeleteSelected()
@@ -170,7 +179,8 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Are you sure you want to remove selected resource(s)\n\nThis will mark resource as inactive in EXO", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                 return;
 
-            delete(displaySelectedEntities);
+            delete(displaySelectedEntities, primeroUnitOfWork);
+            delete(displaySelectedEntities, pgaUnitOfWork);
         }
 
         private void delete(ExoResourceProjection projection)
@@ -179,22 +189,32 @@ namespace BluePrints.ViewModels
             List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
             ExoResourceProjection newLine = projection;
             newLines.Add(newLine);
-            delete(newLines);
+
+            List<ExoResourceProjection> remoteNewLines = new List<ExoResourceProjection>();
+            ExoResourceProjection remoteNewLine = new ExoResourceProjection();
+            DataUtils.ShallowCopy(remoteNewLine, newLine);
+            remoteNewLines.Add(remoteNewLine);
+
+            delete(newLines, primeroUnitOfWork);
+            delete(remoteNewLines, pgaUnitOfWork, true);
         }
 
-        private void delete(IEnumerable<ExoResourceProjection> projections)
+        private void delete(IEnumerable<ExoResourceProjection> projections, IPrimeroEntitiesUnitOfWork primeroUOW, bool isRemoteOperation = false)
         {
-            ExoMethods.RemoveStaff(primeroUnitOfWork, projections);
-            ExoMethods.RemoveResources(primeroUnitOfWork, projections);
-            ExoMethods.RemoveStockItem(primeroUnitOfWork, projections);
-            primeroUnitOfWork.SaveChanges();
+            ExoMethods.RemoveStaff(primeroUOW, projections);
+            ExoMethods.RemoveResources(primeroUOW, projections);
+            ExoMethods.RemoveStockItem(primeroUOW, projections);
+            primeroUOW.SaveChanges();
 
-            List<ExoResourceProjection> removeProjections = projections.ToList();
-            foreach(ExoResourceProjection removeProjection in removeProjections)
+            if(!isRemoteOperation)
             {
-                DisplayEntities.Remove(removeProjection);
-                if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(removeProjection, null, null, null, EntityMessageType.Deleted);
+                List<ExoResourceProjection> removeProjections = projections.ToList();
+                foreach (ExoResourceProjection removeProjection in removeProjections)
+                {
+                    DisplayEntities.Remove(removeProjection);
+                    if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(removeProjection, null, null, null, EntityMessageType.Deleted);
+                }
             }
         }
 

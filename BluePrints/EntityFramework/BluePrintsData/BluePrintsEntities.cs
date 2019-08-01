@@ -852,6 +852,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_USER);
 
             modelBuilder.Entity<USER>()
+                .HasMany(e => e.SUBORDINATES)
+                .WithOptional(e => e.APPROVER)
+                .HasForeignKey(e => e.GUID_APPROVER);
+
+            modelBuilder.Entity<USER>()
                 .HasMany(e => e.BASELINE_ITEM_WORK)
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)

@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public USER()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
+            SUBORDINATES = new HashSet<USER>();
             BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             RA_STUDY = new HashSet<RA_STUDY>();
             RA_STUDY1 = new HashSet<RA_STUDY>();
@@ -40,6 +41,8 @@ namespace BluePrints.Data
         public Guid? GUID_DEPARTMENT { get; set; }
 
         public Guid? GUID_DISCIPLINE { get; set; }
+
+        public Guid? GUID_APPROVER { get; set; }
 
         [StringLength(100)]
         public string DEPARTMENT { get; set; }
@@ -88,11 +91,16 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<USER> SUBORDINATES { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM_WORK> BASELINE_ITEM_WORK { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT1 { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
+
+        public virtual USER APPROVER { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY> RA_STUDY { get; set; }

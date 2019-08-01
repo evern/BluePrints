@@ -13,24 +13,29 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// <summary>
         /// Returns the IUnitOfWorkFactory implementation based on the current mode (run-time or design-time).
         /// </summary>
-        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory()
+        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isRemote = false)
         {
-            return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode);
+            return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode, isRemote);
         }
 
         /// <summary>
         /// Returns the IUnitOfWorkFactory implementation based on the given mode (run-time or design-time).
         /// </summary>
         /// <param name="isInDesignTime">Used to determine which implementation of IUnitOfWorkFactory should be returned.</param>
-        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime)
+        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime, bool isRemote)
         {
-            if (isInDesignTime)
+            if(isRemote)
+                return
+                    new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
+                        () => new PrimeroEntitiesUnitOfWork(() => new PGAEntities()));
+            else if (isInDesignTime)
                 return
                     new DesignTimeUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
                         () => new PrimeroEntitiesDesignTimeUnitOfWork());
-            return
-                new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
-                    () => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
+            else
+                return
+                    new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
+                        () => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
         }
     }
 }

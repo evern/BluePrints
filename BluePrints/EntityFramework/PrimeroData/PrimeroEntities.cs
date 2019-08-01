@@ -2,12 +2,34 @@ namespace BluePrints.PrimeroData
 {
     using System.Data.Entity;
 
+    public partial class PGAEntities : PrimeroEntities
+    {
+        public PGAEntities()
+            : base("name=PGAEntities")
+        {
+        }
+
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<PGAEntities>(null);
+            Database.CommandTimeout = 100000;
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+
     public partial class PrimeroEntities : DbContext
     {
+        public PrimeroEntities(string connectionString)
+            : base(connectionString)
+        {
+            this.Database.CommandTimeout = 100000;
+        }
+
         public PrimeroEntities()
             : base("name=PrimeroEntities")
         {
-            this.Database.CommandTimeout = 5000;
+            this.Database.CommandTimeout = 100000;
         }
 
         public virtual DbSet<ADJUSTMENT_TYPES> ADJUSTMENT_TYPES { get; set; }

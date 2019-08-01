@@ -82,6 +82,11 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="GUID_APPROVER" Header="Approver" HeaderToolTip="Approver">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="UTILIZATION" Header="Utilisation" HeaderToolTip="For reporting use only">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.01" Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" />
