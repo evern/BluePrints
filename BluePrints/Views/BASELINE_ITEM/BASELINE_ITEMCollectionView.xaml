@@ -51,23 +51,12 @@
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
-                            <dxr:RibbonPageGroup Caption="Internal Number Mode">
-                                <dxb:BarCheckItem x:Name="bcInternalNumDefault" Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
-                                <dxb:BarCheckItem x:Name="bcInternalNumAlwaysEditable" Content="Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
-                                <dxb:BarCheckItem x:Name="bcInternalNumManual" Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Approvals">
-                                <dxb:BarButtonItem x:Name="biFinaliseInternalNum" Command="{Binding DataContext.FinaliseInternalNumbersCommand, ElementName=userControl}" Content="Finalise Internal Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list internal numbers" />
-                                <dxb:BarButtonItem x:Name="biFinaliseClientNum" Command="{Binding DataContext.FinaliseClientNumbersCommand, ElementName=userControl}" Content="Finalise Client Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list client numbers" />
-                                <dxb:BarButtonItem x:Name="biModifyInternalNum" Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Modify Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
-                                <dxb:BarButtonItem x:Name="biModifyClientNum" Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Modify Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup Caption="Tools">
+                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarStaticItem x:Name="bsAvailableUnits" Content="Available Units" />
                                 <dxb:BarEditItem x:Name="beFreeUnits" EditValue="{Binding DataContext.FreeUnits, ElementName=userControl, Mode=OneWay}" IsReadOnly="True" ToolTip="Remaining units to be assigned when baseline is locked">
                                     <dxb:BarEditItem.EditSettings>
@@ -75,8 +64,21 @@
                                     </dxb:BarEditItem.EditSettings>
                                 </dxb:BarEditItem>
                                 <dxb:BarCheckItem x:Name="bcLockBaseline" Content="Lock Baseline" Glyph="{dxc:DXImage Image=ProtectDocument_16x16.png}" IsChecked="{Binding DataContext.IsBASELINELocked, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=ProtectDocument_32x32.png}" ToolTip="Lock total budget units, so that units assigned to all deliverables cannot exceed the current total units" />
-                                <dxb:BarButtonItem x:Name="bbMapClientNumber" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" Content="Import Client Numbers" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
                                 <dxb:BarCheckItem x:Name="bcShowBookableOnly" Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Internal Number Mode">
+                                <dxb:BarCheckItem x:Name="bcInternalNumDefault" Content="Default" Glyph="{dxc:DXImage Image=CheckButtons_16x16.png}" IsChecked="{Binding DataContext.InternalNumDefault, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=CheckButtons_32x32.png}" ToolTip="Only non-progressed internal number can be edited and auto-generated" />
+                                <dxb:BarCheckItem x:Name="bcInternalNumAlwaysEditable" Content="Editable" Glyph="{dxc:DXImage Image=EditName_16x16.png}" IsChecked="{Binding DataContext.InternalNumAlwaysEditable, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=EditName_32x32.png}" ToolTip="All internal number can be auto-generated and edited" />
+                                <dxb:BarCheckItem x:Name="bcInternalNumManual" Content="Manual" Glyph="{dxc:DXImage Image=BORules_16x16.png}" IsChecked="{Binding DataContext.InternalNumManual, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" ToolTip="Only non-progressed internal number can be manually edited or populated by context menu option" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Approvals">
+                                <dxb:BarSubItem Content="Doc Control" Glyph="{dx:DXImage Image=EditRangePermission_16x16.png}" LargeGlyph="{dxc:DXImage Image=EditRangePermission_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
+                                    <dxb:BarButtonItem x:Name="bbMapClientNumber" Command="{Binding DataContext.MapClientNumberCommand, ElementName=userControl}" Content="Import Client Numbers" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
+                                    <dxb:BarButtonItem x:Name="biFinaliseInternalNum" Command="{Binding DataContext.FinaliseInternalNumbersCommand, ElementName=userControl}" Content="Finalise Internal Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list internal numbers" />
+                                    <dxb:BarButtonItem x:Name="biFinaliseClientNum" Command="{Binding DataContext.FinaliseClientNumbersCommand, ElementName=userControl}" Content="Finalise Client Num" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock current list client numbers" />
+                                    <dxb:BarButtonItem x:Name="biModifyInternalNum" Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Modify Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
+                                    <dxb:BarButtonItem x:Name="biModifyClientNum" Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Modify Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
+                                </dxb:BarSubItem>
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

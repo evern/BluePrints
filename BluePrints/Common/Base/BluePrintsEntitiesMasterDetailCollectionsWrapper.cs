@@ -1,11 +1,15 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
+using BluePrints.Common.Helpers;
+using BluePrints.ViewModels;
+using BluePrints.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BluePrints.Common.Base
 {
@@ -24,6 +28,11 @@ namespace BluePrints.Common.Base
             SpellCheckerModule.ApplySpellCheckMode(true);
 
             base.OnLoaded();
+        }
+
+        public void LogOut()
+        {
+            BluePrintsGlobalMethods.LogOut();
         }
     }
 
@@ -44,6 +53,11 @@ namespace BluePrints.Common.Base
 
             base.OnLoaded();
         }
+
+        public void LogOut()
+        {
+            BluePrintsGlobalMethods.LogOut();
+        }
     }
 
     public abstract class BluePrintsEntitiesStaticMasterOtherDetailCollectionsWrapper<TStaticEntity, TMainEntity, TChildEntity, TAllEntityPrimaryKey,
@@ -61,6 +75,11 @@ namespace BluePrints.Common.Base
             SpellCheckerModule = new SpellCheckerModule();
             SpellCheckerModule.ApplySpellCheckMode(true);
             base.OnLoaded();
+        }
+
+        public void LogOut()
+        {
+            BluePrintsGlobalMethods.LogOut();
         }
     }
 }

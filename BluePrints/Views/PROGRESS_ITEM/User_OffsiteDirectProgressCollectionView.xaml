@@ -23,16 +23,16 @@
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <!--<dxr:RibbonPageGroup Caption="Data Date">
+                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <!--<dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
                                 <dxb:BarStaticItem Content="{Binding DataContext.DataDate, ElementName=userControl}" />
                                 <dxb:BarCheckItem Content="Hide Completed" Glyph="{dxc:DXImage Image=Hide_16x16.png}" IsChecked="{Binding DataContext.HideCompleted, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Hide_32x32.png}" ToolTip="Hide completed deliverable" />
                             </dxr:RibbonPageGroup>-->
-                            <dxr:RibbonPageGroup Caption="Tools">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarCheckItem x:Name="bcShowBookableOnly" Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>

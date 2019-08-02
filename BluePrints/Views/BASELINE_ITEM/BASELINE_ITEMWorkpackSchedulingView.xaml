@@ -74,12 +74,12 @@
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
             <DockPanel>
-                <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                        <dxr:RibbonPage Caption="Home">
-                            <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup Caption="Scheduling">
+                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Scheduling">
                                 <dxb:BarButtonItem Content="Check and Delete Assignments" ToolTip="Check for invalid assignment and prompt to remove them" Command="{Binding DataContext.Check_AssignmentsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                                 <dxb:BarButtonItem Content="Remap P6 Ids" ToolTip="Map old assignments activity id to new assignments activity id" Command="{Binding DataContext.Remap_P6_IdsCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DuplicateValues_32x32.png}" Glyph="{dxc:DXImage Image=DuplicateValues_16x16.png}" />
                                 <dxb:BarButtonItem Content="Push to P6" ToolTip="Push assigned units to budgeted units in P6" Command="{Binding DataContext.PushToP6Command, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />

@@ -1032,7 +1032,6 @@ namespace BluePrints.ViewModels
         //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
-            string fieldName = formatFieldName(field_name);
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION)))
             {
                 if ((bool)new_value)
@@ -1041,7 +1040,7 @@ namespace BluePrints.ViewModels
                     if (oldValue > 0)
                     {
                         decimal newValue = 0;
-                        string budgetHoursFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS));
+                        string budgetHoursFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS));
                         projection.Entity.Entity.BUDGET_HOURS = newValue;
                         PauseUndoRedo();
                         AddUndo(projection, budgetHoursFieldName, oldValue, newValue, EntityMessageType.Changed);
@@ -1057,7 +1056,7 @@ namespace BluePrints.ViewModels
                 projection.Entity.Entity.GUID_SUBAREA = newValue;
                 if (!isNew)
                 {
-                    string subAreaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
+                    string subAreaFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
                     PauseUndoRedo();
                     AddUndo(projection, subAreaFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
@@ -1077,7 +1076,7 @@ namespace BluePrints.ViewModels
 
                 if (!isNew)
                 {
-                    string statusFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS));
+                    string statusFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_STATUS));
                     PauseUndoRedo();
                     AddUndo(projection, statusFieldName, oldValue, newValue, EntityMessageType.Changed);
                 }
@@ -1092,12 +1091,12 @@ namespace BluePrints.ViewModels
                 if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
                 {
                     //commit the latest value for internal number generation
-                    DataUtils.SetNestedValue(fieldName, projection, new_value);
+                    DataUtils.SetNestedValue(field_name, projection, new_value);
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
                     string errorMessage = string.Empty;
                     string newValue = generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
-                    string internalNumberFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM));
+                    string internalNumberFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM));
                     //when it's new this entity will be added as EntityMessageType.Added later
                     if(!isNew)
                     {
@@ -1120,7 +1119,7 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.GUID_STATUS = newValue;
 
                     PauseUndoRedo();
-                    AddUndo(projection, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                    AddUndo(projection, field_name, oldValue, newValue, EntityMessageType.Changed);
                     projection.Update();
                 }
             }
@@ -1234,7 +1233,7 @@ namespace BluePrints.ViewModels
                 if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
                 {
                     processedValueToFillStringOnly.Add(valueToFillStringOnly);
-                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existingEntities, formatFieldName);
+                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existingEntities, formatFieldNameForProjectionProperty);
                     concatenatedEntities.AddRange(renameEntities);
                 }
             }
@@ -1437,14 +1436,14 @@ namespace BluePrints.ViewModels
             if (info.Column == null)
                 return;
 
-            var areaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA));
-            var subAreaFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
-            var subjobFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB));
-            var workpackFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK));
-            var internalNumberFieldName = formatFieldName(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
+            var areaFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA));
+            var subAreaFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().SubAreaGuid));
+            var subjobFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_SUBJOB));
+            var workpackFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_WORKPACK));
+            var internalNumberFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM));
 
             var entitiesToSave = new List<BASELINE_ITEMProgress>();
-            string fieldName = formatFieldName(info.Column.FieldName);
+            string fieldName = formatFieldNameForProjectionProperty(info.Column.FieldName);
 
             Dictionary<Guid, string> internalNumberUndoInfos = new Dictionary<Guid, string>();
             if (fieldName == internalNumberFieldName)
@@ -1569,7 +1568,7 @@ namespace BluePrints.ViewModels
             BackgroundRefresh();
         }
 
-        private string formatFieldName(string fieldName)
+        private string formatFieldNameForProjectionProperty(string fieldName)
         {
             string cleanFieldName = DataUtils.FormatColumnFieldname(fieldName);
             return "Entity.Entity." + cleanFieldName;
@@ -1628,7 +1627,7 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntity == null || DisplaySelectedEntities.Count() < 2 || info.Column.ReadOnly == true)
                 return false;
 
-            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(formatFieldName(info.Column.FieldName), DisplaySelectedEntity);
+            var columnPropertyInfo = DataUtils.GetNestedPropertyInfo(info.Column.FieldName, DisplaySelectedEntity);
             if (columnPropertyInfo.PropertyType == typeof(string))
             {
                 var constraintString = DataUtils.GetConstraintPropertyStrings(DisplaySelectedEntity.GetType());
@@ -1655,7 +1654,7 @@ namespace BluePrints.ViewModels
         {
             var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
             BASELINE_ITEMProgress first_selected_entity = DisplaySelectedEntities.First();
-            string fieldName = formatFieldName(info.Column.FieldName);
+            string fieldName = info.Column.FieldName;
             object find_nested_value = DataUtils.GetNestedValue(fieldName, first_selected_entity);
 
             string find_value;

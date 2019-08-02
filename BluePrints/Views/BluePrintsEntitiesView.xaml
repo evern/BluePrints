@@ -93,7 +93,7 @@
             <dxmvvm:LayoutSerializationService />
         </dxmvvm:Interaction.Behaviors>
         <DockPanel>
-            <dxr:RibbonControl x:Name="ribbonControl1" dx:DXSerializer.Enabled="False" AllowCustomization="False" AllowMinimizeRibbon="False" ApplicationButtonText="" DockPanel.Dock="Top" RibbonHeaderVisibility="Collapsed" RibbonStyle="OfficeSlim" ShowApplicationButton="False" ToolbarShowMode="Hide">
+            <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" x:Name="ribbonControl1" dx:DXSerializer.Enabled="False" AllowCustomization="False" AllowMinimizeRibbon="False" ApplicationButtonText="" DockPanel.Dock="Top" RibbonHeaderVisibility="Collapsed" RibbonStyle="OfficeSlim" ShowApplicationButton="False" ToolbarShowMode="Hide">
                 <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                     <Style TargetType="dxr:RibbonApplicationButtonControl">
                         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -102,9 +102,9 @@
                         <Setter Property="Padding" Value="1,1,1,1" />
                     </Style>
                 </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
-                <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                    <dxr:RibbonPage Caption="Home" MergeOrder="1000" MergeType="Remove">
-                        <dxr:RibbonPageGroup Caption="Navigation" MergeType="Remove" MergeOrder="1001">
+                <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                    <dxr:RibbonPage Caption="Home" MergeOrder="1000" >
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Navigation" MergeOrder="1001">
                             <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                             <dxr:RibbonGalleryBarItem x:Name="biGalleryItems" Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
                                 <dxmvvm:Interaction.Behaviors>

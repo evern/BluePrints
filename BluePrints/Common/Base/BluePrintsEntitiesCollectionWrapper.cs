@@ -39,12 +39,7 @@ namespace BluePrints.Common.Base
 
         public void LogOut()
         {
-            XMLHelpers.ClearSettings();
-            Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
-            if (active_window == null)
-                return;
-
-            ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(string.Empty);
+            BluePrintsGlobalMethods.LogOut();
         }
 
         public virtual void ShowNotification()

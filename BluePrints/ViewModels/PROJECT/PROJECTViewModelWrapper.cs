@@ -612,11 +612,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        bool isExecutedFirstLoadedAction = false;
         protected override void executeFirstLoadedActions()
         {
             doHealthCheck();
             ChartControlService?.Animate();
+
             base.executeFirstLoadedActions();
         }
 
@@ -1124,11 +1124,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsAllSelected);
             this.RaisePropertyChanged(x => x.IsAllDesignSelected);
             this.RaisePropertyChanged(x => x.IsAllConstructSelected);
-
-            if (isExecutedFirstLoadedAction)
-                ChartControlService?.Animate();
-            else
-                isExecutedFirstLoadedAction = true;
         }
 
         public bool IsAllSelected
@@ -1393,6 +1388,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            base.FullRefresh();
             ReloadEntitiesCollection();
         }
 

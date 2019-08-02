@@ -3,7 +3,7 @@
         <dxlc:LayoutGroup Height="100" Width="300" Orientation="Horizontal" View="Group">
             <dxlc:LayoutItem Height="100">
                 <TextBlock TextWrapping="WrapWithOverflow">
-                    Tips: hold shift + [number key] on forecast cells to <LineBreak />automatically spread the remaining cost <LineBreak />across [number key] period with the interval defined here
+                    Tips: hold shift + [number key] on the forecast cells without opening this view to spread the remaining cost across [number key] period with the "Months Interval" defined here
                 </TextBlock>
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>

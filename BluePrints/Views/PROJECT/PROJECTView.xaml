@@ -34,18 +34,18 @@
             </dxmvvm:Interaction.Behaviors>
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>
-                    <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
-                        <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                            <dxr:RibbonPage Caption="Home">
-                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
-                                <dxr:RibbonPageGroup Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
-                                <dxr:RibbonPageGroup Caption="Data Date">
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
                                     <dxb:BarStaticItem x:Name="bsDesign" Content="Design" />
                                     <dxb:BarStaticItem x:Name="bsDesignDataDate" Content="{Binding DataContext.DesignDataDate, ElementName=userControl}" ToolTip="Design Data date" />
                                     <dxb:BarStaticItem x:Name="bsConstruct" Content="Construct" />
                                     <dxb:BarStaticItem x:Name="bsConstructDataDate" Content="{Binding DataContext.ConstructDataDate, ElementName=userControl}" ToolTip="Construct Data date" />
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Export">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Export">
                                     <dxb:BarSubItem x:Name="subDetailedExport" Content="Detailed Export" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
                                         <dxb:BarButtonItem x:Name="biExportPlanned" Content="Export Planned" ToolTip="Export planned datapoints to excel" Command="{Binding DataContext.ExportPlannedCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                                         <dxb:BarButtonItem x:Name="biExportCurrent" Content="Export Current" ToolTip="Export current (planned including variation) datapoints to excel" Command="{Binding DataContext.ExportCurrentCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
@@ -53,7 +53,7 @@
                                         <dxb:BarButtonItem x:Name="biExportRemaining" Content="Export Remaining" ToolTip="Export remaining datapoints to excel" Command="{Binding DataContext.ExportRemainingCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                                     </dxb:BarSubItem>
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Tools" DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools" DataContext="{Binding DataContext, ElementName=userControl}">
                                     <dxb:BarButtonItem x:Name="biHealthCheck" Command="{Binding ProjectHealthCheckCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Health Check" ToolTip="Check S-Curve accuracy">
                                         <dxb:BarButtonItem.GlyphTemplate>
                                             <DataTemplate>
@@ -93,7 +93,7 @@
                                     <dxb:BarButtonItem x:Name="biShowExoErrors" Command="{Binding ShowExoErrorsCommand}" Content="Exo Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any subjobs in exo that isn't available in blueprints" />
                                     <!--<dxb:BarButtonItem Content="Export" ToolTip="Export selected rows S-Curve to PDF" Command="{Binding ExportToPDFCommand}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />-->
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Data">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Data">
                                     <dxb:BarButtonItem x:Name="biEditArea" Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" Content="Area" Glyph="{dx:DXImage Image=Web_16x16.png}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" ToolTip="View all project areas" />
                                     <dxb:BarButtonItem x:Name="biEditRate" Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" Content="Rate" Glyph="{dx:DXImage Image=Financial_16x16.png}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" ToolTip="View all project rates" />
                                     <dxb:BarButtonItem x:Name="biEditBaseline" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" Content="Baselines" Glyph="{dx:DXImage Image=Information_16x16.png}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" ToolTip="View all revisions of project baseline" />

@@ -41,22 +41,22 @@
             </dxmvvm:Interaction.Behaviors>
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>
-                    <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
-                        <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                            <dxr:RibbonPage Caption="Home">
-                                <dxr:RibbonPageGroup Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
-                                <dxr:RibbonPageGroup Caption="Data Date">
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultCollapsedGridButtons}" />
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
                                     <dxb:BarButtonItem Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Chart" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Redesign the current report layout" />
                                     <dxb:BarButtonItem Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="Export Chart" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
                                     <dxb:BarButtonItem Command="{Binding DataContext.ViewReportLookAheadCommand, ElementName=userControl}" Content="Export Chart Lookahead" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Data Date">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
                                     <dxb:BarStaticItem Content="Design" />
                                     <dxb:BarStaticItem Content="{Binding DataContext.DesignDataDate, ElementName=userControl}" ToolTip="Design Data date" />
                                     <dxb:BarStaticItem Content="Construct" />
                                     <dxb:BarStaticItem Content="{Binding DataContext.ConstructDataDate, ElementName=userControl}" ToolTip="Construct Data date" />
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Tools" DataContext="{Binding DataContext, ElementName=userControl}">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools" DataContext="{Binding DataContext, ElementName=userControl}">
                                     <dxb:BarButtonItem x:Name="biHealthCheck" Command="{Binding ProjectHealthCheckCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Health Check" ToolTip="Check S-Curve accuracy">
                                         <dxb:BarButtonItem.GlyphTemplate>
                                             <DataTemplate>
@@ -97,7 +97,7 @@
                                     <!--<dxb:BarButtonItem Content="Export" ToolTip="Export all datapoints to excel" Command="{Binding ExportToExcelCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />-->
                                     <!--<dxb:BarButtonItem Content="Export" ToolTip="Export selected rows S-Curve to PDF" Command="{Binding ExportToPDFCommand}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />-->
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup Caption="Data">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Data">
                                     <dxb:BarButtonItem Command="{Binding DataContext.EditAreaCommand, ElementName=userControl}" Content="Area" Glyph="{dx:DXImage Image=Web_16x16.png}" LargeGlyph="{dx:DXImage Image=Web_32x32.png}" ToolTip="View all project areas" />
                                     <dxb:BarButtonItem Command="{Binding DataContext.EditRateCommand, ElementName=userControl}" Content="Rate" Glyph="{dx:DXImage Image=Financial_16x16.png}" LargeGlyph="{dx:DXImage Image=Financial_32x32.png}" ToolTip="View all project rates" />
                                     <dxb:BarButtonItem Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" Content="Baselines" Glyph="{dx:DXImage Image=Information_16x16.png}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" ToolTip="View all revisions of project baseline" />

@@ -15,10 +15,10 @@
         <Grid Style="{StaticResource DashboardView.RootContainer}">
             <Grid DataContext="{Binding MainViewModel}">
                 <DockPanel>
-                    <dxr:RibbonControl AllowCustomization="False" DockPanel.Dock="Top" MDIMergeStyle="Always" RibbonStyle="OfficeSlim">
-                        <dxr:RibbonDefaultPageCategory Caption="defaultCategory">
-                            <dxr:RibbonPage Caption="Home">
-                                <dxr:RibbonPageGroup Caption="Tools">
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                     <dxb:BarCheckItem Content="Units" ToolTip="S-Curve shows by units" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" IsChecked="True" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" x:Name="biCheckUnits" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarCheckItem Content="Costs" ToolTip="S-Curve shows by costs" Command="{Binding DataContext.ChangeStatsTypeCommand, ElementName=userControl}" IsChecked="{Binding ElementName=biCheckUnits, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" x:Name="biCheckCosts" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" />
                                     <dxb:BarButtonItem Content="Refresh" ToolTip="Refresh table with updated data. Also clears any undo redo entries" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />

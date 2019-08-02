@@ -70,7 +70,7 @@ namespace BluePrints.Common.ViewModel
             DoNotAutoRefresh = true;
             IsSummaryLoading = true;
             IsChartLoading = true;
-            isSuppressPropertyChange = false;
+            isSuppressPropertyChange = true;
 
             Selected_Dashboards = new ObservableCollection<IHaveStats>();
             Selected_Dashboards.CollectionChanged += SelectedDashboard_CollectionChanged;
@@ -79,7 +79,7 @@ namespace BluePrints.Common.ViewModel
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             first_loaded_dispatchTimer = new DispatcherTimer();
-            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 3);
+            first_loaded_dispatchTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             first_loaded_dispatchTimer.Tick += first_loaded_dispatchTimer_Tick;
         }
         
@@ -104,10 +104,10 @@ namespace BluePrints.Common.ViewModel
                     this.SwitchBinding(DashboardViewType.Units, null, GridControlService);
 
                 SummaryEntity = MainViewModel.Entities.First();
-                this.RaisePropertyChanged(x => x.SummaryEntity);
             }
 
             executeFirstLoadedActions();
+            isSuppressPropertyChange = true;
         }
 
         protected virtual void executeFirstLoadedActions()
@@ -136,10 +136,11 @@ namespace BluePrints.Common.ViewModel
         public ObservableCollection<IHaveStats> Selected_Dashboards { get; set; }
         public void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
         {
-            IsChartLoading = true;
             if (MainViewModel == null)
                 return;
 
+            IsChartLoading = true;
+            this.RaisePropertyChanged(x => x.IsChartLoading);
             if (entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
@@ -167,6 +168,7 @@ namespace BluePrints.Common.ViewModel
 
 
             IsChartLoading = false;
+            this.RaisePropertyChanged(x => x.IsChartLoading);
             this.RaisePropertyChanged(x => x.SummaryEntity);
             OnAfterSelectedEntitiesChanged();
         }
