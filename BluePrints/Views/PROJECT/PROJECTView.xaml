@@ -37,13 +37,17 @@
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Refresh">
+                                    <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding Refresh_From_P6Command}" Content="Refresh" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
+                                </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
-                                    <dxb:BarStaticItem x:Name="bsDesign" Content="Design" />
-                                    <dxb:BarStaticItem x:Name="bsDesignDataDate" Content="{Binding DataContext.DesignDataDate, ElementName=userControl}" ToolTip="Design Data date" />
-                                    <dxb:BarStaticItem x:Name="bsConstruct" Content="Construct" />
-                                    <dxb:BarStaticItem x:Name="bsConstructDataDate" Content="{Binding DataContext.ConstructDataDate, ElementName=userControl}" ToolTip="Construct Data date" />
+                                    <dxb:BarEditItem x:Name="bsDesignDataDate" IsReadOnly="False" Content="Data Date" EditValue="{Binding DataContext.DesignDataDate, ElementName=userControl, Mode=OneWay}" >
+                                        <dxb:BarEditItem.EditSettings>
+                                            <dxe:TextEditSettings />
+                                        </dxb:BarEditItem.EditSettings>
+                                    </dxb:BarEditItem>
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Export">
                                     <dxb:BarSubItem x:Name="subDetailedExport" Content="Detailed Export" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
@@ -84,7 +88,6 @@
                                     <dxb:BarButtonItem x:Name="biCheckQty" Command="{Binding ChangeStatsTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Qty" Glyph="{dx:DXImage Image=Number_16x16.png}" LargeGlyph="{dx:DXImage Image=Number_32x32.png}" ToolTip="S-Curve shows by quantity" />
                                     <dxb:BarCheckItem x:Name="biCheckPercent" Command="{Binding ChangeStatsPercentageTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Percentage" Glyph="{dx:DXImage Image=Percentage_16x16.png}" IsChecked="True" LargeGlyph="{dx:DXImageOffice2013 Image=Percentage_32x32.png}" ToolTip="S-Curve shows cumulative as percentage" />
                                     <dxb:BarCheckItem x:Name="biCheckCumulativeUC" Command="{Binding ChangeStatsPercentageTypeCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Absolute" Glyph="{dx:DXImage Image=FormatNumberDecimal_16x16.png}" IsChecked="{Binding ElementName=biCheckPercent, Path=IsChecked, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dx:DXImageOffice2013 Image=FormatNumberDecimal_32x32.png}" ToolTip="S-Curve shows cumulative absolutes only" />
-                                    <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding Refresh_From_P6Command}" Content="Calculate Stats" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
                                     <dxb:BarCheckItem x:Name="biSelectAll" Command="{Binding SelectAllCommand}" Content="All" Glyph="{dx:DXImage Image=BODepartment_16x16.png}" IsChecked="{Binding IsAllSelected, Mode=OneWay}" LargeGlyph="{dx:DXImage Image=BODepartment_32x32.png}" ToolTip="Selects all subjobs. S-Curve will also be construction only" />
                                     <dxb:BarCheckItem x:Name="biSelectConstruct" Command="{Binding SelectSubjobCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Construct" Glyph="{dx:DXImage Image=BOEmployee_16x16.png}" IsChecked="{Binding IsAllConstructSelected, Mode=OneWay}" LargeGlyph="{dx:DXImage Image=BOEmployee_32x32.png}" ToolTip="Selects construction subjobs. S-Curve will also be construction only" />
                                     <dxb:BarCheckItem x:Name="biSelectDesign" Command="{Binding SelectSubjobCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Design" Glyph="{dx:DXImage Image=BOPerson_16x16.png}" IsChecked="{Binding IsAllDesignSelected, Mode=OneWay}" LargeGlyph="{dx:DXImage Image=BOPerson_32x32.png}" ToolTip="Selects design subjobs. S-Curve will also be construction only" />
