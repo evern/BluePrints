@@ -111,7 +111,7 @@
                                     <dxr:RibbonGalleryItemThemeSelectorBehavior />
                                 </dxmvvm:Interaction.Behaviors>
                             </dxr:RibbonGalleryBarItem>
-                            <!--<dxb:BarButtonItem Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />-->
+                            <dxb:BarButtonItem x:Name="biLogOutMain" Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />
                             <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>

@@ -38,7 +38,7 @@
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Home">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Refresh">
-                                    <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding Refresh_From_P6Command}" Content="Refresh" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
+                                    <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding DataContext.Refresh_From_P6Command, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
