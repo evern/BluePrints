@@ -529,7 +529,7 @@
                                         <dxlc:LayoutItem Label="Claimed to Date" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding DataContext.ForecastSummary.TotalClaims, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Claim - Actuals" LabelPosition="Left">
+                                        <dxlc:LayoutItem Label="Total Claims less Total Costs" LabelPosition="Left">
                                             <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Background="{Binding DataContext.ForecastSummary.UnderOverClaim_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.UnderOverClaim, ElementName=userControl, Mode=OneWay}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
