@@ -43,7 +43,7 @@
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
-                                    <dxb:BarEditItem x:Name="bsDesignDataDate" IsReadOnly="False" Content="Data Date" EditValue="{Binding DataContext.DesignDataDate, ElementName=userControl, Mode=OneWay}" >
+                                    <dxb:BarEditItem x:Name="bsDesignDataDate" IsReadOnly="True" Content="Data Date" EditValue="{Binding DataContext.DesignDataDate, ElementName=userControl, Mode=OneWay}" >
                                         <dxb:BarEditItem.EditSettings>
                                             <dxe:TextEditSettings />
                                         </dxb:BarEditItem.EditSettings>
