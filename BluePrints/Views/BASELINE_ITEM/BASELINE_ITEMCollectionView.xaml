@@ -59,6 +59,41 @@
             <dxb:BarManager>
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                    <dxb:BarButtonItem x:Name="biBookTime" Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
+                    <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
+                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
+                            <dxb:BarEditItem.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                    <dxe:SpinEditSettings.Buttons>
+                                        <dxe:ButtonInfo GlyphKind="Apply">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxe:ButtonInfo>
+                                    </dxe:SpinEditSettings.Buttons>
+                                </dxe:SpinEditSettings>
+                            </dxb:BarEditItem.EditSettings>
+                        </dxb:BarEditItem>
+                    </dxb:BarSubItem>
+                    <dxb:BarSubItem x:Name="biInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
+                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
+                            <dxb:BarEditItem.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                    <dxe:SpinEditSettings.Buttons>
+                                        <dxe:ButtonInfo GlyphKind="Apply">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxe:ButtonInfo>
+                                    </dxe:SpinEditSettings.Buttons>
+                                </dxe:SpinEditSettings>
+                            </dxb:BarEditItem.EditSettings>
+                        </dxb:BarEditItem>
+                    </dxb:BarSubItem>
+                    <dxb:BarButtonItem x:Name="biUnapproveSelectedIntNum" Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Internal Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
+                    <dxb:BarButtonItem x:Name="biApproveSelectedIntNum" Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Client Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -435,54 +470,26 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGridMenu="tableView_ShowGridMenu" Style="{StaticResource DefaultTableViewTemplate}">
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
+                                    <dxb:BarButtonItemLink BarItemName="biBookTime" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                    <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                    <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                    <dxb:BarButtonItem Name="contextMenuBulkEdit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" ToolTip="Change column values for selected rows" />
-                                    <dxb:BarButtonItem Name="contextMenuFillUp" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" ToolTip="Replicate column values for selected rows starting from last selection" />
-                                    <dxb:BarButtonItem Name="contextMenuFillDown" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" ToolTip="Replicate column values for selected rows starting from first selection" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkEdit1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFillUp1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFillDown1" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
+                                    <dxb:BarButtonItemLink BarItemName="biPopulate1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                                    <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
+                                    <dxb:BarButtonItemLink BarItemName="biInsert1" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
-                                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
-                                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
+                                    <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
+                                    <dxb:BarSubItemLink BarItemName="biInsertMulti" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Internal Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
-                                    <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Client Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
+                                    <dxb:BarButtonItemLink BarItemName="biUnapproveSelectedIntNum" />
+                                    <dxb:BarButtonItemLink BarItemName="biApproveSelectedIntNum" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                                 <dxg:TableView.FormatConditions>
                                     <dxg:FormatCondition Expression="[IsInternalNumberEditable] = 'True'" FieldName="Entity.Entity.INTERNAL_NUM">
