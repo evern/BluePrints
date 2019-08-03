@@ -97,7 +97,19 @@ namespace BluePrints.ViewModels
 
         public override void OnLoaded()
         {
+            WindowState = WindowState.Maximized;
+            this.RaisePropertyChanged(x => x.WindowState);
+        }
 
+        WindowState windowState;
+        public WindowState WindowState
+        {
+            get => windowState;
+            set
+            {
+                windowState = value;
+                this.RaisePropertyChanged(x => x.IsApplicationWindowMaximized);
+            }
         }
 
         public override void OnClosing(CancelEventArgs cancelEventArgs)
@@ -235,12 +247,30 @@ namespace BluePrints.ViewModels
         }
         public void LogOut()
         {
-            XMLHelpers.ClearSettings();
-            Window active_window = Application.Current.Windows.OfType<Window>().FirstOrDefault(x => x.ToString().Contains("LoginWindow"));
-            if (active_window == null)
-                return;
+            BluePrintsGlobalMethods.LogOut();
+        }
 
-            ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(string.Empty);
+        public bool IsApplicationWindowMaximized => windowState == WindowState.Maximized;
+
+        public void ApplicationToggleWindowSize()
+        {
+            if (windowState == WindowState.Maximized)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.Maximized;
+
+            this.RaisePropertyChanged(x => x.WindowState);
+        }
+
+        public void ApplicationMinimizedWindowSize()
+        {
+            WindowState = WindowState.Minimized;
+            this.RaisePropertyChanged(x => x.WindowState);
+        }
+
+        public void ApplicationShutDown()
+        {
+            BluePrintsGlobalMethods.ApplicationShutDown();
         }
 
         private void RemoveProjectModule(Guid primaryKey)

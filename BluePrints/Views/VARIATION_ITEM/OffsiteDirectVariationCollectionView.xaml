@@ -13,7 +13,7 @@
             <DockPanel>
                 <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                         </dxr:RibbonPage>
@@ -74,16 +74,6 @@
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="NAME" IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" HeaderToolTip="Changing  this fieldmay affect subjob and workpack name, see internal number mode default, editable, manual on the ribbon">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>

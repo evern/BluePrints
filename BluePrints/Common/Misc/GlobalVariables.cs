@@ -29,5 +29,10 @@ namespace BluePrints.Common
 
             ((LoginViewModel)((LoginWindow)active_window).DataContext).SignalRShutdown(string.Empty);
         }
+
+        public static void ApplicationShutDown()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
     }
 }

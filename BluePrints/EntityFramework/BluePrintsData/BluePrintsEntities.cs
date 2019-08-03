@@ -92,6 +92,7 @@ namespace BluePrints.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<BluePrintsNativeEntities>(null);
+            Database.SetInitializer<BluePrintsEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
             modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

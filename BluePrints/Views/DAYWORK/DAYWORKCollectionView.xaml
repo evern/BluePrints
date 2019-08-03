@@ -13,7 +13,7 @@
             <DockPanel>
                 <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
                             <dxr:RibbonPageGroup>
                                 <dxb:BarStaticItem Content="To perform Undo/Redo and Copy/Paste, please click on the desired grid and use keyboard shortcuts or right click menu" />

@@ -30,7 +30,7 @@
             <DockPanel>
                 <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" RibbonStyle="Office2010" DockPanel.Dock="Top" AllowCustomization="False">
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="INDIRECT_TYPE Tasks">
                                 <dxb:BarButtonItem Content="Delete Row" Command="{Binding BulkDeleteCommand}"
                                                    LargeGlyph="{dx:DXImage Image=Delete_32x32.png}"

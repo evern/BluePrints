@@ -32,7 +32,7 @@
             <DockPanel>
                 <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" RibbonStyle="OfficeSlim" DockPanel.Dock="Top" AllowCustomization="False">
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Home">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="PROJECT Tasks">
                                 <dxb:BarButtonItem Content="Subjobs"
                                                    Command="{Binding DataContext.EditCommand, ElementName=userControl}"

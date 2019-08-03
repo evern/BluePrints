@@ -6,6 +6,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.Views;
 using DevExpress.LookAndFeel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -236,14 +237,14 @@ namespace BluePrints.ViewModels
 
         private void preloadMainWindow()
         {
-            MainWindow preloadMainWindow = new MainWindow();
+            BluePrintsEntitiesWindow preloadMainWindow = new BluePrintsEntitiesWindow();
             preloadMainWindow = null;
         }
 
-        MainWindow mainWindow;
+        BluePrintsEntitiesWindow mainWindow;
         public void ShowMainWindow()
         {
-            mainWindow = new MainWindow();
+            mainWindow = new BluePrintsEntitiesWindow();
             mainWindow.Show();
         }
 

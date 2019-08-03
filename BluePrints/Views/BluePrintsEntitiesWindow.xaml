@@ -1,0 +1,203 @@
+﻿<dx:DXWindow SnapsToDevicePixels="True" WindowStyle="None" 
+        xmlns:dxrt="http://schemas.devexpress.com/winfx/2008/xaml/ribbon/themekeys" WindowState="{Binding WindowState, Mode=TwoWay}" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel" x:Class="BluePrints.Views.BluePrintsEntitiesWindow" Padding="-2,-2,-2,-2" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui" xmlns:dxwuin="http://schemas.devexpress.com/winfx/2008/xaml/windowsui/navigation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:pfdata="clr-namespace:System.Windows.Data;assembly=PresentationFramework" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="600" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:BluePrintsEntitiesViewModel}" UseLayoutRounding="True" mc:Ignorable="d">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService />
+        <dxmvvm:NotificationService x:Name="AppNotificationService" CustomNotificationPosition="BottomRight" UseWin8NotificationsIfAvailable="False" />
+        <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" CommandParameter="{Binding DefaultModule}" EventName="Initialized" />
+        <dxmvvm:CurrentWindowService ClosingCommand="{Binding OnClosingCommand}" />
+    </dxmvvm:Interaction.Behaviors>
+    <dx:DXWindow.Resources>
+        <ResourceDictionary>
+            <!--For aligning items in ribbon page to the right-->
+            <ItemsPanelTemplate x:Key="{dxrt:RibbonThemeKey ResourceKey=PageGroupsControlItemsPanelTemplate, IsThemeIndependent=True}">
+                <local:CustomRibbonPageGroupsItemsPanel />
+            </ItemsPanelTemplate>
+            <ItemsPanelTemplate x:Key="{dxrt:RibbonThemeKey ResourceKey=PagesControlItemsPanelTemplate, IsThemeIndependent=True}">
+                <local:CustomRibbonPagesItemsPanel />
+            </ItemsPanelTemplate>
+            <DataTemplate x:Key="NotificationTemplate">
+                <TextBlock Text="{Binding Caption}">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="transTransform1" X="0" Y="0" />
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Animate}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Name="bounce">
+                                <Storyboard>
+                                    <DoubleAnimation AutoReverse="True" RepeatBehavior="10x" Storyboard.TargetName="transTransform1" Storyboard.TargetProperty="X" From="10" To="0" Duration="00:00:01">
+                                        <DoubleAnimation.EasingFunction>
+                                            <BounceEase Bounces="1" Bounciness="3" EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <StopStoryboard BeginStoryboardName="bounce" />
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+            <dxmvvm:ObjectToObjectConverter x:Key="NavigationPaneIsExpandedConverter">
+                <dxmvvm:MapItem Source="Minimized" Target="False" />
+                <dxmvvm:MapItem Source="Normal" Target="True" />
+            </dxmvvm:ObjectToObjectConverter>
+            <dxmvvm:ObjectToObjectConverter x:Key="NavigationPaneVisibilityConverter">
+                <dxmvvm:MapItem Source="Minimized" Target="Visible" />
+                <dxmvvm:MapItem Source="Normal" Target="Visible" />
+                <dxmvvm:MapItem Source="Off" Target="Collapsed" />
+            </dxmvvm:ObjectToObjectConverter>
+            <Style x:Key="speedDialTileStyle" TargetType="dxlc:Tile">
+                <Setter Property="dxlc:FlowLayoutControl.IsFlowBreak" Value="{Binding TileLayoutProperty.TileLayoutFlowBreak}" />
+                <Setter Property="Size" Value="{Binding TileLayoutProperty.TileLayoutSize}" />
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ModuleTitle}" TextAlignment="Center" TextWrapping="Wrap" />
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=dxlc:TileLayoutControl}}" />
+                <Setter Property="CommandParameter" Value="{Binding}" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="0" Opacity="0" ShadowDepth="0" Color="#FF2980D1" />
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="14" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0.6" Duration="0:0:0.20" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="0" Duration="0:0:0.14" />
+                                    <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0" Duration="0:0:0.14" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </dx:DXWindow.Resources>
+    <Grid dx:DXSerializer.StoreLayoutMode="UI">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="ReportDialogService">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+            <dxmvvm:LayoutSerializationService />
+        </dxmvvm:Interaction.Behaviors>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarButtonItem x:Name="biLogOut" Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />
+                <dxr:RibbonGalleryBarItem x:Name="biGalleryItems" Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxr:RibbonGalleryItemThemeSelectorBehavior />
+                    </dxmvvm:Interaction.Behaviors>
+                </dxr:RibbonGalleryBarItem>
+                <dxb:BarButtonItem x:Name="biMinimize" Command="{Binding DataContext.ApplicationMinimizedWindowSizeCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=NavigateNext_16x16.png}" LargeGlyph="{dx:DXImage Image=NavigateNext_32x32.png}" ToolTip="Minimize window to taskbar" />
+                <!--<dxb:BarButtonItem x:Name="biMaximize" Command="{Binding DataContext.ApplicationToggleWindowSizeCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Zoom2_16x16.png}" LargeGlyph="{dx:DXImage Image=Zoom2_32x32.png}" >
+                                <dxb:BarButtonItem.GlyphTemplate>
+                                    <DataTemplate>
+                                        <Image Width="16" Height="16" >
+                                            <Image.Style>
+                                                <Style TargetType="{x:Type Image}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsApplicationWindowMaximized, ElementName=userControl}" Value="true">
+                                                            <Setter Property="Source" Value="{dx:DXImage Image=HighlightActiveElement_16x16.png}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DataContext.IsApplicationWindowMaximized, ElementName=userControl}" Value="false">
+                                                            <Setter Property="Source" Value="{dx:DXImage Image=Zoom2_16x16.png}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                    </DataTemplate>
+                                </dxb:BarButtonItem.GlyphTemplate>
+                            </dxb:BarButtonItem>-->
+                <dxb:BarButtonItem x:Name="biClose" Command="{Binding DataContext.ApplicationShutDownCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Close_16x16.png}" LargeGlyph="{dx:DXImage Image=Close_32x32.png}" />
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" x:Name="ribbonControl1" dx:DXSerializer.Enabled="False" AllowCustomization="False" AllowMinimizeRibbon="False" ApplicationButtonText="" DockPanel.Dock="Top" RibbonHeaderVisibility="Visible"  RibbonStyle="OfficeSlim" ShowApplicationButton="False" ToolbarShowMode="Hide" MouseDown="RibbonControl1_MouseDown" MouseUp="RibbonControl1_MouseUp" MouseMove="RibbonControl1_MouseMove">
+                    <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+                        <Style TargetType="dxr:RibbonApplicationButtonControl">
+                            <Setter Property="HorizontalAlignment" Value="Left" />
+                            <Setter Property="VerticalAlignment" Value="Bottom" />
+                            <Setter Property="Margin" Value="1,1,1,1" />
+                            <Setter Property="Padding" Value="1,1,1,1" />
+                        </Style>
+                    </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
+                    <dxr:RibbonControl.PageHeaderItemLinks>
+                        <dxb:BarButtonItemLink BarItemName="biLogOut" />
+                        <dxr:RibbonGalleryBarItemLink BarItemName="biGalleryItems" />
+                        <dxb:BarButtonItemLink BarItemName="biMinimize" />
+                        <dxb:BarButtonItemLink BarItemName="biClose" />
+                    </dxr:RibbonControl.PageHeaderItemLinks>
+                    <dxr:RibbonDefaultPageCategory MergeType="MergeItems" Caption="defaultCategory">
+                        <dxr:RibbonPage Caption="Home" MergeType="Remove" MergeOrder="1" >
+                            <dxr:RibbonPageGroup MergeType="Remove" Caption="Navigation" MergeOrder="1001" local:CustomRibbonPageGroupsItemsPanel.GroupAlignment="Right">
+                                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
+                                <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxa:AccordionControl x:Name="TreeListControl" dx:DXSerializer.SerializationID="NavigationTree" MaxWidth="400" Background="Transparent" BorderThickness="0" ChildrenPath="ChildModules" CollapsedItemClickAction="ShowItems" ExpandItemOnHeaderClick="False" ExpandMode="Multiple" IsCollapseButtonVisible="True" IsExpanded="{Binding AccordionExpanded}" ItemsSource="{Binding Modules}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedModule}" ShowSearchControl="True">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand Command="{Binding NavigateCommand}" EventName="MouseDoubleClick" />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxa:AccordionControl.ItemContainerStyle>
+                        <Style TargetType="dxa:AccordionItem">
+                            <Setter Property="Glyph" Value="{Binding Image}" />
+                            <Setter Property="GlyphTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <Image Width="16" Height="16" SnapsToDevicePixels="True" Source="{Binding}" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="HeaderTemplate" Value="{StaticResource NotificationTemplate}" />
+                            <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
+                            <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapseMode}" />
+                            <Setter Property="ContextMenu" Value="{Binding Menu}" />
+                        </Style>
+                    </dxa:AccordionControl.ItemContainerStyle>
+                </dxa:AccordionControl>
+                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                    <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
+                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0">
+                            <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
+
+                        </dxdo:LayoutPanel>-->
+                            <dxdo:DocumentGroup x:Name="documentGroup" Margin="0" Padding="0" BorderThickness="0" DestroyContentOnTabSwitching="False" TabContentCacheMode="CacheAllTabs">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxdo:TabbedDocumentUIService />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxdo:DocumentGroup>
+                        </dxdo:LayoutGroup>
+                    </dxdo:LayoutGroup>
+                </dxdo:DockLayoutManager>
+            </DockPanel>
+        </dxb:BarManager>
+    </Grid>
+</dx:DXWindow>

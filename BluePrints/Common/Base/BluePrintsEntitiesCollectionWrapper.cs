@@ -42,6 +42,11 @@ namespace BluePrints.Common.Base
             BluePrintsGlobalMethods.LogOut();
         }
 
+        public void ApplicationShutDown()
+        {
+            BluePrintsGlobalMethods.ApplicationShutDown();
+        }
+
         public virtual void ShowNotification()
         {
             //if (AppNotificationService == null || GlobalVariables.IsNotificationShown)

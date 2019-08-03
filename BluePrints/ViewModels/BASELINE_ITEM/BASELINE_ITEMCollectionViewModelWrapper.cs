@@ -692,6 +692,16 @@ namespace BluePrints.ViewModels
                 //Need to raise property change to stimulate converter to calculate maxValue for each deliverable
                 this.RaisePropertyChanged(x => x.DisplayEntities);
             }
+            else if(changedType == typeof(SUBJOB))
+            {
+                //so that when new subjobs are automatically generated it's displaymember can  be shown in comboboxes
+                this.RaisePropertyChanged(x => x.SUBJOBCollection);
+            }
+            else if (changedType == typeof(WORKPACK))
+            {
+                //so that when new workpacks are automatically generated it's displaymember can  be shown in comboboxes
+                this.RaisePropertyChanged(x => x.WORKPACKCollection);
+            }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }

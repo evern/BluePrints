@@ -34,6 +34,11 @@ namespace BluePrints.Common.Base
         {
             BluePrintsGlobalMethods.LogOut();
         }
+
+        public void ApplicationShutDown()
+        {
+            BluePrintsGlobalMethods.ApplicationShutDown();
+        }
     }
 
     public abstract class BluePrintsEntitiesMasterOtherDetailCollectionsWrapper<TMainEntity, TChildEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
@@ -58,6 +63,11 @@ namespace BluePrints.Common.Base
         {
             BluePrintsGlobalMethods.LogOut();
         }
+
+        public void ApplicationShutDown()
+        {
+            BluePrintsGlobalMethods.ApplicationShutDown();
+        }
     }
 
     public abstract class BluePrintsEntitiesStaticMasterOtherDetailCollectionsWrapper<TStaticEntity, TMainEntity, TChildEntity, TAllEntityPrimaryKey,
@@ -80,6 +90,11 @@ namespace BluePrints.Common.Base
         public void LogOut()
         {
             BluePrintsGlobalMethods.LogOut();
+        }
+
+        public void ApplicationShutDown()
+        {
+            BluePrintsGlobalMethods.ApplicationShutDown();
         }
     }
 }

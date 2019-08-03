@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -1040,9 +1040,6 @@
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml.cs">
-      <DependentUpon>BluePrintsSplashScreen.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\BUDGET_ITEM\BUDGET_ITEMSchedulingView.xaml.cs">
       <DependentUpon>BUDGET_ITEMSchedulingView.xaml</DependentUpon>
     </Compile>
@@ -1653,9 +1650,6 @@
     <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
       <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>User_OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1707,8 +1701,8 @@
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMCollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\BluePrintsEntitiesView.xaml.cs">
-      <DependentUpon>BluePrintsEntitiesView.xaml</DependentUpon>
+    <Compile Include="Views\BluePrintsEntitiesWindow.xaml.cs">
+      <DependentUpon>BluePrintsEntitiesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DEPARTMENT\DEPARTMENTCollectionView.xaml.cs">
       <DependentUpon>DEPARTMENTCollectionView.xaml</DependentUpon>
@@ -2005,10 +1999,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DXSplashScreen\BluePrintsSplashScreen.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\BUDGET_ITEM\BUDGET_ITEMSchedulingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2076,10 +2066,6 @@
     <Page Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\MainWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -2149,7 +2135,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\BluePrintsEntitiesView.xaml">
+    <Page Include="Views\BluePrintsEntitiesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
