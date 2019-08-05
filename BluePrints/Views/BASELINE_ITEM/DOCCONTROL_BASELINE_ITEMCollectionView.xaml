@@ -39,132 +39,152 @@
             </dx:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Approvals">
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Approve Internal Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) internal numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.SendEmailCommand, ElementName=userControl}" Content="Send Approved Notification" Glyph="{dxc:DXImage Image=EmailTemplate_16x16.png}" LargeGlyph="{dx:DXImage Image=EmailTemplate_32x32.png}" ToolTip="Send approved client/internal number email notification" />
-                            </dxr:RibbonPageGroup>
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutControl DockPanel.Dock="Right">
-                    <dxlc:LayoutGroup.LayoutTransform>
-                        <RotateTransform Angle="90" />
-                    </dxlc:LayoutGroup.LayoutTransform>
-                    <dxlc:LayoutGroup IsCollapsible="True" View="Group">
-                        <Grid>
-                            <Grid.LayoutTransform>
-                                <RotateTransform Angle="-90" />
-                            </Grid.LayoutTransform>
-                            <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
-                        </Grid>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutControl>
-                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
-                    <dxg:GridControl.Columns>
-                        <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.BASELINE.PROJECT.NUMBER" FilterPopupMode="CheckedList" GroupIndex="0" Header="Project" ReadOnly="True" />
-                        <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from subjob" ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                            <!--  For Filtering  -->
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="Discipline Number" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="Document Type" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;False;Autofill from area, department, discipline and doc-type" FieldName="Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Header="Internal Number" HeaderToolTip="Must be unique">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
-                                    <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.INTERNALNUM_STATUS" FilterPopupMode="CheckedList" Header="Internal Number Status" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="IsInternalNumberEditable" ReadOnly="True" Visible="False" />
-                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
-                                    <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsClientNumberEditable}" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.CLIENTNUM_STATUS" FilterPopupMode="CheckedList" Header="Client Number Status" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="Revision Number" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" ReadOnly="True" />
-                        <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.DeliverableStatusGuid" FilterPopupMode="Custom" Header="Status" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                            <!--  For Filtering  -->
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <!--<dxg:GridColumn ReadOnly="True" FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biApproveSelectedInternal" Command="{Binding DataContext.ApproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Approve Internal Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) internal numbers" />
+                    <dxb:BarButtonItem x:Name="biApproveSelectedClient" Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
+                    <dxb:BarButtonItem x:Name="biUnapproveSelectedInternal" Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Internal Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
+                    <dxb:BarButtonItem x:Name="biUnapproveSelectedClient" Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Client Num(s)" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
+                    <dxb:BarButtonItem x:Name="biSendEmail" Command="{Binding DataContext.SendEmailCommand, ElementName=userControl}" Content="Send Approved Notification" Glyph="{dxc:DXImage Image=EmailTemplate_16x16.png}" LargeGlyph="{dx:DXImage Image=EmailTemplate_32x32.png}" ToolTip="Send approved client/internal number email notification" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                            <dxr:RibbonPage MergeType="Replace" Caption="Doc Control">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Doc Control" >
+                                    <dxb:BarButtonItemLink BarItemName="biApproveSelectedInternal" />
+                                    <dxb:BarButtonItemLink BarItemName="biApproveSelectedClient" />
+                                    <dxb:BarButtonItemLink BarItemName="biUnapproveSelectedInternal" />
+                                    <dxb:BarButtonItemLink BarItemName="biUnapproveSelectedClient" />
+                                    <dxb:BarButtonItemLink BarItemName="biSendEmail" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxlc:LayoutControl DockPanel.Dock="Right">
+                        <dxlc:LayoutGroup.LayoutTransform>
+                            <RotateTransform Angle="90" />
+                        </dxlc:LayoutGroup.LayoutTransform>
+                        <dxlc:LayoutGroup IsCollapsible="True" View="Group">
+                            <Grid>
+                                <Grid.LayoutTransform>
+                                    <RotateTransform Angle="-90" />
+                                </Grid.LayoutTransform>
+                                <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                            </Grid>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutControl>
+                    <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.BASELINE.PROJECT.NUMBER" FilterPopupMode="CheckedList" GroupIndex="0" Header="Project" ReadOnly="True" />
+                            <dxg:GridColumn Tag="True;True;Autofill subjob" FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Tag="True;True;Autofill from subjob" ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--  For Filtering  -->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" Header="Discipline Number" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Header="Document Type" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Tag="True;False;Autofill from area, department, discipline and doc-type" FieldName="Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Header="Internal Number" HeaderToolTip="Must be unique">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsInternalNumberEditable}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.INTERNALNUM_STATUS" FilterPopupMode="CheckedList" Header="Internal Number Status" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IsInternalNumberEditable" ReadOnly="True" Visible="False" />
+                            <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Header="Client Number">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!--  Use IsEnabled because when textEdit is invoked the 2nd time IsReadOnly didn't get picked up in the binding  -->
+                                        <dxe:TextEdit Name="PART_Editor" IsEnabled="{Binding RowData.Row.IsClientNumberEditable}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.CLIENTNUM_STATUS" FilterPopupMode="CheckedList" Header="Client Number Status" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.REVISION_NUMBER" FilterPopupMode="CheckedList" Header="Revision Number" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Header="Deliverable Type" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Header="Primary Title" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Header="Secondary Title" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" ReadOnly="True" />
+                            <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.DeliverableStatusGuid" FilterPopupMode="Custom" Header="Status" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--  For Filtering  -->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" FilterPopupMode="CheckedList" Header="Resource" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <!--<dxg:GridColumn ReadOnly="True" FieldName="Entity.AssignDeliverablesObject" Header="Deliverables">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" Tag="CopyPasteSkip" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                     <dxe:ComboBoxEditSettings.StyleSettings>
@@ -173,208 +193,168 @@
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>-->
-                        <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:CheckEditSettings />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="15" />
-                                            <ColumnDefinition Width="15" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Cannot reduce anymore because these units has already been earned">
-                                            <Image.Visibility>
-                                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                    <MultiBinding.ConverterParameter>
-                                                        <sys:Boolean>False</sys:Boolean>
-                                                    </MultiBinding.ConverterParameter>
-                                                    <Binding ElementName="PART_Editor" Path="MinValue" />
-                                                    <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                </MultiBinding>
-                                            </Image.Visibility>
-                                        </Image>
-                                        <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum possible units, please reduce other deliverable units to increase this">
-                                            <Image.Visibility>
-                                                <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                    <MultiBinding.ConverterParameter>
-                                                        <sys:Boolean>False</sys:Boolean>
-                                                    </MultiBinding.ConverterParameter>
-                                                    <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                                    <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                </MultiBinding>
-                                            </Image.Visibility>
-                                        </Image>
-                                        <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinEstimateUnits}">
-                                            <dxe:SpinEdit.MaxValue>
-                                                <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
-                                                    <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
-                                                    <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
-                                                    <Binding Path="RowData.Row" />
-                                                </MultiBinding>
-                                            </dxe:SpinEdit.MaxValue>
-                                        </dxe:SpinEdit>
-                                    </Grid>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="CanBook" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Time can be booked in exo" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_OFFICE" Header="Office">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from area and sub-area" FieldName="Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" ReadOnly="True" Visible="true">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" ReadOnly="True" Visible="true">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATED" FilterPopupMode="CheckedList" Header="Created" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" FilterPopupMode="CheckedList" Header="Created By" ReadOnly="True" Visible="False">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATED" FilterPopupMode="CheckedList" Header="Updated" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="CheckedList" Header="Updated By" ReadOnly="True" Visible="False">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.GUID_ORIGINAL" FilterPopupMode="CheckedList" Header="Key" HeaderToolTip="Key to match progress. Can be used to trace original record from previous baseline revisions" ReadOnly="True" Visible="False" />
-                        <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.Holds" FilterPopupMode="CheckedList" Header="Holds" HeaderToolTip="Holds on deliverable" ReadOnly="True" Visible="True" />
-                    </dxg:GridControl.Columns>
-                    <dxg:GridControl.GroupSummary>
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.Total_Units" ShowInColumn="Entity.Entity.Total_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Entity.Total_Costs" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                    </dxg:GridControl.GroupSummary>
-                    <dxg:GridControl.TotalSummary>
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.Total_Units" ShowInColumn="Entity.Entity.Total_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Entity.Total_Costs" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
-                    </dxg:GridControl.TotalSummary>
-                    <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                            </dxmvvm:Interaction.Behaviors>
-                            <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItem Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                <dxb:BarButtonItem Name="contextMenuBulkEdit" Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" ToolTip="Change column values for selected rows" />
-                                <dxb:BarButtonItem Name="contextMenuFillUp" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" ToolTip="Replicate column values for selected rows starting from last selection" />
-                                <dxb:BarButtonItem Name="contextMenuFillDown" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" ToolTip="Replicate column values for selected rows starting from first selection" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultPopulateReplaceButtons}" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
-                                    <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
-                                        <dxb:BarEditItem.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                <dxe:SpinEditSettings.Buttons>
-                                                    <dxe:ButtonInfo GlyphKind="Apply">
-                                                        <dxmvvm:Interaction.Behaviors>
-                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                                        </dxmvvm:Interaction.Behaviors>
-                                                    </dxe:ButtonInfo>
-                                                </dxe:SpinEditSettings.Buttons>
-                                            </dxe:SpinEditSettings>
-                                        </dxb:BarEditItem.EditSettings>
-                                    </dxb:BarEditItem>
-                                </dxb:BarSubItem>
-                                <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
-                                    <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
-                                        <dxb:BarEditItem.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                <dxe:SpinEditSettings.Buttons>
-                                                    <dxe:ButtonInfo GlyphKind="Apply">
-                                                        <dxmvvm:Interaction.Behaviors>
-                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                                        </dxmvvm:Interaction.Behaviors>
-                                                    </dxe:ButtonInfo>
-                                                </dxe:SpinEditSettings.Buttons>
-                                            </dxe:SpinEditSettings>
-                                        </dxb:BarEditItem.EditSettings>
-                                    </dxb:BarEditItem>
-                                </dxb:BarSubItem>
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Approve Internal Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) internal numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.ApproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Approve Client Num(s)" Glyph="{dxc:DXImage Image=BOPermission_16x16.png}" LargeGlyph="{dx:DXImage Image=BOPermission_32x32.png}" ToolTip="Lock selected deliverable(s) client numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedInternalNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Internal Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) internal numbers" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.UnapproveSelectedClientNumbersCommand, ElementName=userControl}" Content="Unapprove Selected Client Numbers" Glyph="{dxc:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" ToolTip="Unlock selected deliverable(s) client numbers" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
-                            </dxg:TableView.RowCellMenuCustomizations>
-                            <dxg:TableView.FormatConditions>
-                                <dxg:FormatCondition Expression="[IsInternalNumberEditable] = 'True'" FieldName="Entity.Entity.INTERNAL_NUM">
-                                    <dxc:Format Background="LightBlue" />
-                                </dxg:FormatCondition>
-                                <dxg:FormatCondition Expression="[IsClientNumberEditable] = 'True'" FieldName="Entity.Entity.CLIENT_NUM">
-                                    <dxc:Format Background="LightBlue" />
-                                </dxg:FormatCondition>
-                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
-                                    <dxc:Format Background="#FFFF9B98" />
-                                </dxg:UniqueDuplicateRuleFormatCondition>
-                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
-                                    <dxc:Format Background="#FFFF9B98" />
-                                </dxg:UniqueDuplicateRuleFormatCondition>
-                                <dxg:FormatCondition Expression="[Entity.Total_Costs] = '0.00'" FieldName="Entity.Total_Costs">
-                                    <dxc:Format Background="#FFFF9B98" />
-                                </dxg:FormatCondition>
-                            </dxg:TableView.FormatConditions>
-                        </dxg:TableView>
-                    </dxg:GridControl.View>
-                    <!--<dxmvvm:Interaction.Behaviors>
+                            <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" FilterPopupMode="CheckedList" Header="By Duration" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" FilterPopupMode="CheckedList" Header="Budget Hours" HeaderToolTip="Baseline hours" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="15" />
+                                                <ColumnDefinition Width="15" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Cannot reduce anymore because these units has already been earned">
+                                                <Image.Visibility>
+                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
+                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Maximum possible units, please reduce other deliverable units to increase this">
+                                                <Image.Visibility>
+                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
+                                                        <MultiBinding.ConverterParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </MultiBinding.ConverterParameter>
+                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
+                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
+                                                    </MultiBinding>
+                                                </Image.Visibility>
+                                            </Image>
+                                            <dxe:SpinEdit Name="PART_Editor" Grid.Column="2" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.Entity.BY_DURATION}" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="{Binding RowData.Row.MinEstimateUnits}">
+                                                <dxe:SpinEdit.MaxValue>
+                                                    <MultiBinding Converter="{StaticResource IReportableStatsMaximumUnitsConverter}">
+                                                        <Binding ElementName="userControl" Path="DataContext.TotalAllowedUnits" />
+                                                        <Binding ElementName="userControl" Path="DataContext.DisplayEntities" />
+                                                        <Binding Path="RowData.Row" />
+                                                    </MultiBinding>
+                                                </dxe:SpinEdit.MaxValue>
+                                            </dxe:SpinEdit>
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="CheckedList" Header="Target Date" HeaderToolTip="Due date" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Variation_Units" FilterPopupMode="CheckedList" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Total_Units" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" />
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" FilterPopupMode="CheckedList" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CanBook" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Time can be booked in exo" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_OFFICE" Header="Office">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Tag="True;True;Autofill from area and sub-area" FieldName="Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Header="Subjob" ReadOnly="True" Visible="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" ReadOnly="True" Visible="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATED" FilterPopupMode="CheckedList" Header="Created" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" FilterPopupMode="CheckedList" Header="Created By" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATED" FilterPopupMode="CheckedList" Header="Updated" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="CheckedList" Header="Updated By" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.GUID_ORIGINAL" FilterPopupMode="CheckedList" Header="Key" HeaderToolTip="Key to match progress. Can be used to trace original record from previous baseline revisions" ReadOnly="True" Visible="False" />
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.Holds" FilterPopupMode="CheckedList" Header="Holds" HeaderToolTip="Holds on deliverable" ReadOnly="True" Visible="True" />
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.Total_Units" ShowInColumn="Entity.Entity.Total_Units" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Entity.Total_Costs" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
+                        </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.COMMENTS" ShowInColumn="Entity.Entity.COMMENTS" SummaryType="Count" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0}" FieldName="Entity.Entity.Total_Units" ShowInColumn="Entity.Entity.Total_Units" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Entity.Total_Costs" ShowInColumn="Entity.Total_Costs" SummaryType="Sum" />
+                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Entity.Entity.DC_HOURS" ShowInColumn="Entity.Entity.DC_HOURS" SummaryType="Sum" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="biApproveSelectedInternal" />
+                                    <dxb:BarButtonItemLink BarItemName="biApproveSelectedClient" />
+                                    <dxb:BarButtonItemLink BarItemName="biUnapproveSelectedInternal" />
+                                    <dxb:BarButtonItemLink BarItemName="biUnapproveSelectedClient" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                </dxg:TableView.RowCellMenuCustomizations>
+                                <dxg:TableView.FormatConditions>
+                                    <dxg:FormatCondition Expression="[IsInternalNumberEditable] = 'True'" FieldName="Entity.Entity.INTERNAL_NUM">
+                                        <dxc:Format Background="LightBlue" />
+                                    </dxg:FormatCondition>
+                                    <dxg:FormatCondition Expression="[IsClientNumberEditable] = 'True'" FieldName="Entity.Entity.CLIENT_NUM">
+                                        <dxc:Format Background="LightBlue" />
+                                    </dxg:FormatCondition>
+                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
+                                        <dxc:Format Background="#FFFF9B98" />
+                                    </dxg:UniqueDuplicateRuleFormatCondition>
+                                    <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
+                                        <dxc:Format Background="#FFFF9B98" />
+                                    </dxg:UniqueDuplicateRuleFormatCondition>
+                                    <dxg:FormatCondition Expression="[Entity.Total_Costs] = '0.00'" FieldName="Entity.Total_Costs">
+                                        <dxc:Format Background="#FFFF9B98" />
+                                    </dxg:FormatCondition>
+                                </dxg:TableView.FormatConditions>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                        <!--<dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>-->
-                </custom:GridControlEx>
-            </DockPanel>
+                    </custom:GridControlEx>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

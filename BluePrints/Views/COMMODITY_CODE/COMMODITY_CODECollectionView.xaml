@@ -10,60 +10,81 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biAlignExo" Command="{Binding DataContext.AlignExoDataCommand, ElementName=userControl}" Content="Align Exo" Glyph="{dxc:DXImage Image=MergeAcross_32x32.png}" ToolTip="Align EXO cost type, cost group and stock item" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Exo" >
+                                    <dxb:BarButtonItemLink BarItemName="biAlignExo" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <Grid>
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
+                            <dxmvvm:LayoutSerializationService />
                         </dxmvvm:Interaction.Behaviors>
-                        <dxg:GridControl.Bands>
-                            <dxg:GridControlBand Header="BluePrints Data">
-                                <dxg:GridColumn FieldName="Entity.PHASE_TYPE" Header="Phase" HeaderToolTip="Phase">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" NullValueButtonPlacement="Popup" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.CODE" Header="Code" HeaderToolTip="An identifier for the commodity code. Must be unique" />
-                                <dxg:GridColumn FieldName="Entity.NAME" Header="Name" HeaderToolTip="Name" />
-                                <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="Discipline">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
-                                <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure" />
-                                <dxg:GridColumn FieldName="Entity.DEFAULT_COSTGROUP" Header="Cost Group (Auto)" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
-                                        <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.DEFAULT_STOCKCODE" Header="Stock Code (Auto)" >
-                                    <dxg:GridColumn.EditSettings>
-                                        <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
-                                        <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControlBand>
-                            <!--<dxg:GridControlBand Header="Exo Data">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:GridControl.Bands>
+                                <dxg:GridControlBand Header="BluePrints Data">
+                                    <dxg:GridColumn FieldName="Entity.PHASE_TYPE" Header="Phase" HeaderToolTip="Phase">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" NullValueButtonPlacement="Popup" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Entity.CODE" Header="Code" HeaderToolTip="An identifier for the commodity code. Must be unique" />
+                                    <dxg:GridColumn FieldName="Entity.NAME" Header="Name" HeaderToolTip="Name" />
+                                    <dxg:GridColumn FieldName="Entity.GUID_DISCIPLINE" Header="Discipline">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Entity.DESCRIPTION" Header="Description" />
+                                    <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" HeaderToolTip="Unit of measure" />
+                                    <dxg:GridColumn FieldName="Entity.DEFAULT_COSTGROUP" Header="Cost Group (Auto)" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
+                                            <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->
+                                            <dxe:TextEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Entity.DEFAULT_STOCKCODE" Header="Stock Code (Auto)" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
+                                            <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->
+                                            <dxe:TextEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControlBand>
+                                <!--<dxg:GridControlBand Header="Exo Data">
                                 <dxg:GridControlBand.Bands>
                                     <dxg:GridControlBand Header="Cost Type">
                                         <dxg:GridColumn FieldName="EXO_COSTTYPE.DEF_COSTGROUP" Header="Linked CostGroup" HeaderToolTip="If this is empty it means that cost type doesn't exists" ReadOnly="True">
@@ -86,34 +107,37 @@
                                     </dxg:GridControlBand>
                                 </dxg:GridControlBand.Bands>
                             </dxg:GridControlBand>-->
-                            <dxg:GridControlBand Header="Validation">
-                                <dxg:GridColumn FieldName="ErrorMessage" UnboundType="String" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left" />
-                            </dxg:GridControlBand>
-                        </dxg:GridControl.Bands>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Command="{Binding DataContext.AlignExoDataCommand, ElementName=userControl}" Content="Align Exo" Glyph="{dxc:DXImage Image=MergeAcross_32x32.png}" ToolTip="Align EXO cost type, cost group and stock item" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                                <dxg:TableView.FormatConditions>
-                                    <dxg:FormatCondition Expression="Not IsNullOrEmpty([ErrorMessage])" ApplyToRow="True" FieldName="Entity.PHASE_TYPE">
-                                        <dxc:Format Background="#FFFF9B98" />
-                                    </dxg:FormatCondition>
-                                </dxg:TableView.FormatConditions>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </dxg:GridControl>
-                </Grid>
-            </DockPanel>
+                                <dxg:GridControlBand Header="Validation">
+                                    <dxg:GridColumn FieldName="ErrorMessage" UnboundType="String" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left" />
+                                </dxg:GridControlBand>
+                            </dxg:GridControl.Bands>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biAlignExo" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                    <dxg:TableView.FormatConditions>
+                                        <dxg:FormatCondition Expression="Not IsNullOrEmpty([ErrorMessage])" ApplyToRow="True" FieldName="Entity.PHASE_TYPE">
+                                            <dxc:Format Background="#FFFF9B98" />
+                                        </dxg:FormatCondition>
+                                    </dxg:TableView.FormatConditions>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </dxg:GridControl>
+                    </Grid>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

@@ -109,6 +109,14 @@
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biPopulate1" />
+                                    <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
+                                    <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
+                                    <dxb:BarButtonItemLink BarItemName="biInsert1" />
+                                    <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
+                                    <dxb:BarSubItemLink BarItemName="biInsertMulti" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                     <dxb:BarButtonItemLink BarItemName="biEditReport1" />
@@ -472,9 +480,7 @@
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItemLink BarItemName="biBookTime" />
                                     <dxb:BarItemLinkSeparator />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkEdit1" />
-                                    <dxb:BarButtonItemLink BarItemName="biFillUp1" />
-                                    <dxb:BarButtonItemLink BarItemName="biFillDown1" />
+                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                     <dxb:BarItemLinkSeparator />
                                     <dxb:BarButtonItemLink BarItemName="biPopulate1" />
                                     <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
