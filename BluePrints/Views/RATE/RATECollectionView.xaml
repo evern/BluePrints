@@ -141,9 +141,9 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Auto checked field to indicate whether rate is derived from gang rate" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Auto checked field to indicate whether rate is derived from gang rate" Visible="False" ReadOnly="True" />
                             </dxg:GridControlBand>
-                            <dxg:GridControlBand Header="Gang Rate Parameters (Fill in every columns in this section (Even 0% or 0 Rate) so that gang rate will be used. Is Gang Rate column will be checked if gang rate is successfully applied)">
+                            <dxg:GridControlBand Header="Gang Rate Parameters (Fill in every columns in this section (Even 0% or 0 Rate) so that gang rate will be used. Row will be highlighted in green when gang rate is successfully applied)">
                                 <dxg:GridColumn FieldName="MANAGER_RATE" Header="Manager Rate" HeaderToolTip="Charge rate for manager per hour" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
