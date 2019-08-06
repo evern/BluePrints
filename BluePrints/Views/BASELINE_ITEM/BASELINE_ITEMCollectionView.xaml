@@ -109,12 +109,6 @@
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biPopulate1" />
-                                    <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
-                                    <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
-                                    <dxb:BarButtonItemLink BarItemName="biInsert1" />
-                                    <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
-                                    <dxb:BarSubItemLink BarItemName="biInsertMulti" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
@@ -126,6 +120,16 @@
                                     <dxb:BarCheckItem x:Name="bcShowBookableOnly" Content="Show Bookable Only" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding DataContext.ShowBookable, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                                 </dxr:RibbonPageGroup>
                                 <!--<dxr:RibbonPageGroup MergeType="Replace" Caption="Report" ItemLinksSource="{StaticResource RibbonDefaultReportingButtons}" />-->
+                            </dxr:RibbonPage>
+                            <dxr:RibbonPage MergeType="Replace" Caption="Tools">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                    <dxb:BarButtonItemLink BarItemName="biPopulate1" /> 
+                                    <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
+                                    <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
+                                    <dxb:BarButtonItemLink BarItemName="biInsert1" />
+                                    <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
+                                    <dxb:BarSubItemLink BarItemName="biInsertMulti" />
+                                </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Doc Control">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Doc Control">

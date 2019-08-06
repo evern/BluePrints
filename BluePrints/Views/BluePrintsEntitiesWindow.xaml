@@ -135,7 +135,6 @@
                                 </dxb:BarButtonItem.GlyphTemplate>
                             </dxb:BarButtonItem>-->
                 <dxb:BarButtonItem x:Name="biClose" Command="{Binding DataContext.ApplicationShutDownCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Close_16x16.png}" LargeGlyph="{dx:DXImage Image=Close_32x32.png}" ToolTip="Shut down program" />
-                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" x:Name="ribbonControl1" dx:DXSerializer.Enabled="False" AllowCustomization="False" AllowMinimizeRibbon="False" ApplicationButtonText="" DockPanel.Dock="Top" RibbonHeaderVisibility="Visible"  RibbonStyle="TabletOffice" ShowApplicationButton="False" ToolbarShowMode="Hide" MouseDown="RibbonControl1_MouseDown" MouseUp="RibbonControl1_MouseUp" MouseMove="RibbonControl1_MouseMove">

@@ -108,7 +108,7 @@
                                             <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.View>
-                                            <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="True" AutoExpandAllNodes="True" AutoWidth="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
+                                            <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="False" AutoExpandAllNodes="True" AutoWidth="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
                                                 <dxmvvm:Interaction.Behaviors>
                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.NodeExpandedCommand, ElementName=userControl}" EventName="NodeExpanded" />
                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.Activities_MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />

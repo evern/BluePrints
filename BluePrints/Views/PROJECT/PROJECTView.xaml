@@ -304,7 +304,7 @@
                                     <dxg:GridControl.View>
                                         <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>

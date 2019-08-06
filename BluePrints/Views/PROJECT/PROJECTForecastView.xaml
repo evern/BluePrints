@@ -66,7 +66,7 @@
                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
-                    <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Last Refreshed Data Date" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding DataContext.P6DataDate, ElementName=userControl, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
+                    <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Data Date" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding DataContext.P6DataDate, ElementName=userControl, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
                         <dxb:BarEditItem.EditSettings>
                             <dxe:DateEditSettings />
                         </dxb:BarEditItem.EditSettings>

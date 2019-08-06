@@ -949,7 +949,7 @@ namespace BluePrints.ViewModels
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
                 pasteCellData(gridControl, gridTableView, RowData);
 
-                GridControlService.RefreshData();
+                //GridControlService.RefreshData();
                 e.Handled = true;
             }
 
@@ -1053,7 +1053,7 @@ namespace BluePrints.ViewModels
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
-            GridControlService.RefreshData();
+            //GridControlService.RefreshData();
         }
 
         /// <summary>
@@ -1070,7 +1070,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
-            GridControlService.RefreshData();
+            //GridControlService.RefreshData();
             e.Handled = true;
         }
 
@@ -1193,7 +1193,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                GridControlService.RefreshData();
+                //GridControlService.RefreshData();
                 updateFloatingSummaryMembers();
             }
 
@@ -1616,7 +1616,7 @@ namespace BluePrints.ViewModels
                 updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
             }
 
-            GridControlService.RefreshData();
+            //GridControlService.RefreshData();
         }
 
         /// <summary>
@@ -1653,7 +1653,7 @@ namespace BluePrints.ViewModels
                 updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
             }
 
-            GridControlService.RefreshData();
+            //GridControlService.RefreshData();
         }
 
         public void CopyDetailWithHeader()
