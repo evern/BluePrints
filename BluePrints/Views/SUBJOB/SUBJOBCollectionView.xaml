@@ -9,163 +9,149 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSUBJOB" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="Phase">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.GUID_DAREA" Header="Area">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.SubAreaGuid" Header="Subarea">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.INTERNAL_NAME1" Header="Name" HeaderToolTip="An identifier for the subjob. Must be unique" />
-                            <dxg:GridColumn FieldName="Entity.INTERNAL_NAME2" Header="Description" />
-                            <dxg:GridColumn FieldName="Entity.COMMENTS" Header="Comments" />
-                            <dxg:GridColumn FieldName="Entity.STARTDATE" Header="Start Date" HeaderToolTip="Start date used for deliverables assigned to it when P6 mapping is absent">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.ENDDATE" Header="End Date" HeaderToolTip="End date used for deliverables assigned to it when P6 mapping is absent">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.REVIEWSTARTDATE" Header="Review Start Date" HeaderToolTip="Suspension start date used for deliverables assigned to it when P6 mapping is absent">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.REVIEWENDDATE" Header="Review End Date" HeaderToolTip="Suspension end date used for deliverables assigned to it when P6 mapping is absent">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.FORECASTSTARTDATE" Header="Forecast Start Date" HeaderToolTip="Override start date when project is already in progress">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.FORECASTENDDATE" Header="Forecast End Date" HeaderToolTip="Override end date when project is already in progress">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.AUTOGENERATED" Header="Generated" HeaderToolTip="Indicates whether subjob is automatically generated by system" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="Entity.BELLCURVESHAPE" Header="Bell Curve" HeaderToolTip="Apply bell curve to manning histogram">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" NullValueButtonPlacement="EditBox" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Budget_Units" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="Total_Units" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="Budget_Costs" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Costs" HeaderToolTip="Total costs includes variation from all assigned deliverables" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControl.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Estimated_Units" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Estimated_Costs" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Estimated_Units" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Estimated_Costs" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" SummaryType="Sum" />
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarSubItem x:Name="contextMenuDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
-                                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarSubItem x:Name="contextMenuInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
-                                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
-                                            <dxb:BarEditItem.EditSettings>
-                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                                    <dxe:SpinEditSettings.Buttons>
-                                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                                            <dxmvvm:Interaction.Behaviors>
-                                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                                            </dxmvvm:Interaction.Behaviors>
-                                                        </dxe:ButtonInfo>
-                                                    </dxe:SpinEditSettings.Buttons>
-                                                </dxe:SpinEditSettings>
-                                            </dxb:BarEditItem.EditSettings>
-                                        </dxb:BarEditItem>
-                                    </dxb:BarSubItem>
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </custom:GridControlEx>
-                </Grid>
-            </DockPanel>
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <Grid>
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:LayoutSerializationService />
+                        </dxmvvm:Interaction.Behaviors>
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSUBJOB" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="Entity.GUID_DPHASE" Header="Phase">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.GUID_DAREA" Header="Area">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.SubAreaGuid" Header="Subarea">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    <!--  For Filtering  -->
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.INTERNAL_NAME1" Header="Name" HeaderToolTip="An identifier for the subjob. Must be unique" />
+                                <dxg:GridColumn FieldName="Entity.INTERNAL_NAME2" Header="Description" />
+                                <dxg:GridColumn FieldName="Entity.COMMENTS" Header="Comments" />
+                                <dxg:GridColumn FieldName="Entity.STARTDATE" Header="Start Date" HeaderToolTip="Start date used for deliverables assigned to it when P6 mapping is absent">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.ENDDATE" Header="End Date" HeaderToolTip="End date used for deliverables assigned to it when P6 mapping is absent">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.REVIEWSTARTDATE" Header="Review Start Date" HeaderToolTip="Suspension start date used for deliverables assigned to it when P6 mapping is absent">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.REVIEWENDDATE" Header="Review End Date" HeaderToolTip="Suspension end date used for deliverables assigned to it when P6 mapping is absent">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.FORECASTSTARTDATE" Header="Forecast Start Date" HeaderToolTip="Override start date when project is already in progress">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.FORECASTENDDATE" Header="Forecast End Date" HeaderToolTip="Override end date when project is already in progress">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.AUTOGENERATED" Header="Generated" HeaderToolTip="Indicates whether subjob is automatically generated by system" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.BELLCURVESHAPE" Header="Bell Curve" HeaderToolTip="Apply bell curve to manning histogram">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" NullValueButtonPlacement="EditBox" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Budget_Units" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Total_Units" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Budget_Costs" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Total_Costs" HeaderToolTip="Total costs includes variation from all assigned deliverables" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Estimated_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Estimated_Costs" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Estimated_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Estimated_Costs" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Total_Units" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c2}" FieldName="Total_Costs" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                    </Grid>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

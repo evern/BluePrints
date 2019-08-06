@@ -13,132 +13,156 @@
             <services:GridControlService Name="TreeGridControlService" GridControl="{Binding ElementName=GridControlTree}" />
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
-                                <dxb:BarButtonItem Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
-                                <dxb:BarButtonItem Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
-                            </dxr:RibbonPageGroup>
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
-                    <dxlc:LayoutGroup>
-                        <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="ROLETree" MouseUp="treeListControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListDragDropManager x:Name="dragDropManager">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" EventName="Drop" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" EventName="Dropped" PassEventArgsToCommand="True" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                    <dxg:TreeListDragDropManager.DragElementTemplate>
-                                        <DataTemplate>
-                                            <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
-                                                <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
-                                                    <StackPanel Margin="5" Background="White" Orientation="Vertical">
-                                                        <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
-                                                            <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                    <dxb:BarButtonItem x:Name="biLocalBulkDelete" Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="biAddRowBefore" Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
+                    <dxb:BarButtonItem x:Name="biAddRowAfter" Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                    <dxb:BarButtonItemLink BarItemName="biEditReport1" />
+                                    <dxb:BarButtonItemLink BarItemName="biViewReport1" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                    <dxb:BarButtonItemLink BarItemName="biAddRowBefore" />
+                                    <dxb:BarButtonItemLink BarItemName="biAddRowAfter"  />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
+                        <dxlc:LayoutGroup>
+                            <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="ROLETree" MouseUp="treeListControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxg:TreeListDragDropManager x:Name="dragDropManager">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" EventName="Drop" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" EventName="Dropped" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxg:TreeListDragDropManager.DragElementTemplate>
+                                            <DataTemplate>
+                                                <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
+                                                    <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
+                                                        <StackPanel Margin="5" Background="White" Orientation="Vertical">
+                                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <Separator />
+                                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
                                                         </StackPanel>
                                                     </StackPanel>
-                                                    <Separator />
-                                                    <StackPanel Margin="5" Orientation="Horizontal">
-                                                        <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
-                                                        <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </Border>
-                                        </DataTemplate>
-                                    </dxg:TreeListDragDropManager.DragElementTemplate>
-                                </dxg:TreeListDragDropManager>
-                            </dxmvvm:Interaction.Behaviors>
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Entity.NAME" Header="NAME" VisibleIndex="10" />
-                                <dxg:GridColumn FieldName="Entity.ISMANAGER" Header="IS MANAGER" HeaderToolTip="Tick this so that user associated to this role can be assigned to project in project collection view" VisibleIndex="20">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.SORTORDER" ReadOnly="True" Visible="False" VisibleIndex="30" />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.View>
-                                <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
-                                    <dxg:TreeListView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
-                                        <dxb:BarButtonItem Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                    </dxg:TreeListView.RowCellMenuCustomizations>
-                                </dxg:TreeListView>
-                            </dxg:GridControl.View>
-                        </dxg:GridControl>
+                                                </Border>
+                                            </DataTemplate>
+                                        </dxg:TreeListDragDropManager.DragElementTemplate>
+                                    </dxg:TreeListDragDropManager>
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="Entity.NAME" Header="NAME" VisibleIndex="10" />
+                                    <dxg:GridColumn FieldName="Entity.ISMANAGER" Header="IS MANAGER" HeaderToolTip="Tick this so that user associated to this role can be assigned to project in project collection view" VisibleIndex="20">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Entity.SORTORDER" ReadOnly="True" Visible="False" VisibleIndex="30" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
+                                        <dxg:TreeListView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItemLink BarItemName="biAddRowBefore" />
+                                            <dxb:BarButtonItemLink BarItemName="biAddRowAfter"  />
+                                            <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
+                                        </dxg:TreeListView.RowCellMenuCustomizations>
+                                    </dxg:TreeListView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
+                            <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn MinWidth="300" AllowEditing="False" FieldName="PermissionKey" Header="Permission" HeaderToolTip="Permissions within the system">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings DisplayMember="Value" IsTextEditable="False" ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" ValueMember="Key" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether selected role have the permission">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" ShowGroupPanel="False">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
+                            <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn MinWidth="75" AllowEditing="False" FieldName="DocType.CODE" Header="Cost Type" HeaderToolTip="Cost type in exo is document type code in Blueprints" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="DocType.NAME" Header="Description" />
+                                    <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether cost type is recommended for the selected role">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView1" ShowGroupPanel="False">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DocTypePermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn MinWidth="300" AllowEditing="False" FieldName="PermissionKey" Header="Permission" HeaderToolTip="Permissions within the system">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings DisplayMember="Value" IsTextEditable="False" ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" ValueMember="Key" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether selected role have the permission">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" ShowGroupPanel="False">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                    </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn MinWidth="75" AllowEditing="False" FieldName="DocType.CODE" Header="Cost Type" HeaderToolTip="Cost type in exo is document type code in Blueprints" />
-                                <dxg:GridColumn AllowEditing="False" FieldName="DocType.NAME" Header="Description" />
-                                <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether cost type is recommended for the selected role">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:CheckEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView1" ShowGroupPanel="False">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.DocTypePermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutGroup>
-            </DockPanel>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

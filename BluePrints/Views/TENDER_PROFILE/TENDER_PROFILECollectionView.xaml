@@ -10,50 +10,73 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biEdit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" Content="Edit" Glyph="{dx:DXImageOffice2013 Image=Edit_16x16.png}" ToolTip="Edit tender profile items" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools" >
+                                    <dxb:BarButtonItemLink BarItemName="biEdit" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <Grid>
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                            <dxmvvm:LayoutSerializationService />
                         </dxmvvm:Interaction.Behaviors>
-                        <custom:GridControlEx.Columns>
-                            <dxg:GridColumn FieldName="NAME" Header="Name" />
-                        </custom:GridControlEx.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItem Name="contextMenuEdit" Command="{Binding DataContext.EditCommand, ElementName=userControl}" Content="Edit" Glyph="{dx:DXImageOffice2013 Image=Edit_16x16.png}" ToolTip="Edit tender profile items" />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </custom:GridControlEx>
-                </Grid>
-            </DockPanel>
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditCommand, ElementName=userControl}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                            </dxmvvm:Interaction.Behaviors>
+                            <custom:GridControlEx.Columns>
+                                <dxg:GridColumn FieldName="NAME" Header="Name" />
+                            </custom:GridControlEx.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biEdit" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                    </Grid>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

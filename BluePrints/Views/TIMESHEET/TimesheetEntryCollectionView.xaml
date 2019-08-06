@@ -19,123 +19,132 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
-                                <dxb:BarButtonItem x:Name="biFullRefresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                <dxb:BarButtonItem x:Name="biBulkDelete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete selected rows" />
-                                <dxb:BarButtonItem x:Name="biKeyboardCopy" Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                <dxb:BarButtonItem x:Name="biKeyboardPaste" Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                <dxb:BarCheckItem x:Name="biCellSelection" Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" ToolTip="Change selection to cells instead of row" />
-                                <dxb:BarButtonItem x:Name="biUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem x:Name="biRedo" Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                <!--<dxb:BarButtonItem Command="{Binding DataContext.ReadFromExoCommand, ElementName=userControl}" Content="Read from Exo" Glyph="{dx:DXImage Image=DoublePrev_16x16.png}" LargeGlyph="{dx:DXImage Image=DoublePrev_32x32.png}" ToolTip="Read valid job line hours from exo and remove invalid job lines." />-->
-                                <dxb:BarButtonItem x:Name="biCommitToExo" Command="{Binding DataContext.CommitToExoCommand, ElementName=userControl}" Content="Commit to Exo" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Commit current table data to exo timesheet." />
-                                <dxb:BarButtonItem x:Name="biShowValidJobLines" Command="{Binding DataContext.ShowValidJobLinesCommand, ElementName=userControl}" Content="Show Valid Jobs" Glyph="{dx:DXImage Image=RowIndex_16x16.png}" LargeGlyph="{dx:DXImage Image=RowIndex_32x32.png}" ToolTip="Clear current table entries and populate with valid job lines." />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutControl DockPanel.Dock="Right">
-                    <dxlc:LayoutGroup.LayoutTransform>
-                        <RotateTransform Angle="90" />
-                    </dxlc:LayoutGroup.LayoutTransform>
-                    <dxlc:LayoutGroup IsCollapsible="True" View="Group">
-                        <Grid>
-                            <Grid.LayoutTransform>
-                                <RotateTransform Angle="-90" />
-                            </Grid.LayoutTransform>
-                            <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
-                        </Grid>
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biLocalBulkDelete" Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete selected rows" />
+                    <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                    <dxb:BarButtonItem x:Name="biLocalRedo" Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                    <dxb:BarButtonItem x:Name="biCommitToExo" Command="{Binding DataContext.CommitToExoCommand, ElementName=userControl}" Content="Commit to Exo" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Commit current table data to exo timesheet." />
+                    <dxb:BarButtonItem x:Name="biShowValidJobLines" Command="{Binding DataContext.ShowValidJobLinesCommand, ElementName=userControl}" Content="Show Valid Jobs" Glyph="{dx:DXImage Image=RowIndex_16x16.png}" LargeGlyph="{dx:DXImage Image=RowIndex_32x32.png}" ToolTip="Clear current table entries and populate with valid job lines." />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
+                                    <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
+                                    <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxlc:LayoutControl DockPanel.Dock="Right">
+                        <dxlc:LayoutGroup.LayoutTransform>
+                            <RotateTransform Angle="90" />
+                        </dxlc:LayoutGroup.LayoutTransform>
+                        <dxlc:LayoutGroup IsCollapsible="True" View="Group">
+                            <Grid>
+                                <Grid.LayoutTransform>
+                                    <RotateTransform Angle="-90" />
+                                </Grid.LayoutTransform>
+                                <filter:FilterAccordionView DataContext="{Binding DataContext.FilterTreeViewModel, ElementName=userControl}" />
+                            </Grid>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutControl>
+                    <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
+                        <dxlc:LayoutGroup>
+                            <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
+                                    <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="Resource_SeqNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Resource" VisibleIndex="1">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="JobNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Job" VisibleIndex="2">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="CostGroup" FilterPopupMode="CheckedList" Fixed="Left" Header="Discipline" VisibleIndex="3">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="CostType" FilterPopupMode="CheckedList" Fixed="Left" Header="Commodity" VisibleIndex="4">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="StockCode" FilterPopupMode="CheckedList" Fixed="Left" Header="StockCode" VisibleIndex="5">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings NullText="Leave empty to autopopulate with rsc code" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="6">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodes, ElementName=userControl}" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative" VisibleIndex="7">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Right" VisibleIndex="80" />
+                                    <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left" VisibleIndex="99">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.GroupSummary />
+                                <dxg:GridControl.TotalSummary />
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.TimeSheetCellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                            <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
+                                            <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                            <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
+                                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                        <dxg:TableView.FormatConditions>
+                                            <dxg:UniqueDuplicateRuleFormatCondition FieldName="UniqueCode" ApplyToRow="True">
+                                                <dxc:Format Background="#FFFF9B98" />
+                                            </dxg:UniqueDuplicateRuleFormatCondition>
+                                        </dxg:TableView.FormatConditions>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
-                </dxlc:LayoutControl>
-                <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
-                    <dxlc:LayoutGroup>
-                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetEntry" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding DataContext.SelectedDataRow, Mode=TwoWay, ElementName=userControl}" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoading, ElementName=userControl}">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.CustomUnboundColumnDataCommand, ElementName=userControl}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
-                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
-                            </dxmvvm:Interaction.Behaviors>
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Resource_SeqNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Resource" VisibleIndex="1">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="JobNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Job" VisibleIndex="2">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CostGroup" FilterPopupMode="CheckedList" Fixed="Left" Header="Discipline" VisibleIndex="3">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="CostType" FilterPopupMode="CheckedList" Fixed="Left" Header="Commodity" VisibleIndex="4">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="StockCode" FilterPopupMode="CheckedList" Fixed="Left" Header="StockCode" VisibleIndex="5">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings NullText="Leave empty to autopopulate with rsc code" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="6">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodes, ElementName=userControl}" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative" VisibleIndex="7">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Right" VisibleIndex="80" />
-                                <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left" VisibleIndex="99">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.GroupSummary />
-                            <dxg:GridControl.TotalSummary />
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True">
-                                    <dxmvvm:Interaction.Behaviors>
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding DataContext.TimeSheetCellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                        <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
-                                        <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
-                                    </dxmvvm:Interaction.Behaviors>
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding DataContext.BulkDeleteCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete selected rows" />
-                                        <dxb:BarButtonItem Name="contextMenuCopyWithHeader" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Copy selected rows along with header" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                    <dxg:TableView.FormatConditions>
-                                        <dxg:UniqueDuplicateRuleFormatCondition FieldName="UniqueCode" ApplyToRow="True">
-                                            <dxc:Format Background="#FFFF9B98" />
-                                        </dxg:UniqueDuplicateRuleFormatCondition>
-                                    </dxg:TableView.FormatConditions>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </dxg:GridControl>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutGroup>
-            </DockPanel>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

@@ -21,89 +21,98 @@
             </dxc:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
-                                <dxb:BarButtonItem x:Name="biFullRefresh" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
-                                <dxb:BarButtonItem x:Name="biUndo" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Undo last action" />
-                                <dxb:BarButtonItem x:Name="biRedo" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redo undone action" />
-                                <dxb:BarButtonItem x:Name="biKeyboardCopy" Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
-                                <dxb:BarButtonItem x:Name="biKeyboardPaste" Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
-                                <dxb:BarButtonItem x:Name="biExpandAllGroups" Command="{Binding DataContext.ExpandAllGroupsCommand, ElementName=userControl}" Content="Expand All Groups" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all groups, only works when grid is grouped" />
-                                <dxb:BarButtonItem x:Name="biCollapseAllGroupsh" Command="{Binding DataContext.CollapseAllGroupsCommand, ElementName=userControl}" Content="Collapse All Groups" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=CollapseFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Collapse all groups, only works when grid is grouped" />
-                                <dxb:BarButtonItem x:Name="biExportToExcel" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />
-                                <dxb:BarButtonItem x:Name="biExportToPDF" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF.Includes grouping, sorting and column visibility preferences" />
-                            </dxr:RibbonPageGroup>
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
-                    <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
-                        <dxdo:LayoutPanel>
-                            <Grid>
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:LayoutSerializationService />
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultLightGridControlTemplate}">
-                                    <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="JOBNO" FilterPopupMode="CheckedList" Header="Sub Job">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="COST_GROUP" FilterPopupMode="CheckedList" Header="Cost Group">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="COST_TYPE" FilterPopupMode="CheckedList" Header="Cost Type">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" />
-                                        <dxg:GridColumn FieldName="DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
-                                        <dxg:GridColumn FieldName="STAFFNO" FilterPopupMode="CheckedList" Header="Resource">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
-                                        <dxg:GridColumn FieldName="QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
-                                        <!--<dxg:GridColumn FieldName="LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />-->
-                                        <dxg:GridColumn FieldName="LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
-                                    </dxg:GridControl.Columns>
-                                    <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="QUANTITY" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="LINETOTAL" SummaryType="Sum" />
-                                    </dxg:GridControl.GroupSummary>
-                                    <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="QUANTITY" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="LINETOTAL" SummaryType="Sum" />
-                                    </dxg:GridControl.TotalSummary>
-                                    <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                                <dxb:BarButtonItem Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Refresh current table with updated data. Also clears any undo redo entries" />
-                                            </dxg:TableView.RowCellMenuCustomizations>
-                                        </dxg:TableView>
-                                    </dxg:GridControl.View>
-                                </dxg:GridControl>
-                            </Grid>
-                        </dxdo:LayoutPanel>
-                    </dxdo:LayoutGroup>
-                </dxdo:DockLayoutManager>
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
+                            <dxdo:LayoutPanel>
+                                <Grid>
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:LayoutSerializationService />
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultLightGridControlTemplate}">
+                                        <dxg:GridControl.Columns>
+                                            <dxg:GridColumn FieldName="JOBNO" FilterPopupMode="CheckedList" Header="Sub Job">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="COST_GROUP" FilterPopupMode="CheckedList" Header="Cost Group">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="COST_TYPE" FilterPopupMode="CheckedList" Header="Cost Type">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" />
+                                            <dxg:GridColumn FieldName="DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                            <dxg:GridColumn FieldName="STAFFNO" FilterPopupMode="CheckedList" Header="Resource">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="TRANSDATE" FilterPopupMode="CheckedList" Header="Transdate" ReadOnly="True" />
+                                            <dxg:GridColumn FieldName="QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
+                                            <!--<dxg:GridColumn FieldName="LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />-->
+                                            <dxg:GridColumn FieldName="LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
+                                        </dxg:GridControl.Columns>
+                                        <dxg:GridControl.GroupSummary>
+                                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="QUANTITY" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="LINETOTAL" SummaryType="Sum" />
+                                        </dxg:GridControl.GroupSummary>
+                                        <dxg:GridControl.TotalSummary>
+                                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="QUANTITY" SummaryType="Sum" />
+                                            <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="LINETOTAL" SummaryType="Sum" />
+                                        </dxg:GridControl.TotalSummary>
+                                        <dxg:GridControl.View>
+                                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                                <dxg:TableView.RowCellMenuCustomizations>
+                                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                                    <dxb:BarItemLinkSeparator />
+                                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                                </dxg:TableView.RowCellMenuCustomizations>
+                                            </dxg:TableView>
+                                        </dxg:GridControl.View>
+                                    </dxg:GridControl>
+                                </Grid>
+                            </dxdo:LayoutPanel>
+                        </dxdo:LayoutGroup>
+                    </dxdo:DockLayoutManager>
 
-            </DockPanel>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>

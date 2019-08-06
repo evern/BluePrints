@@ -10,103 +10,123 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup>
-                                <dxb:BarStaticItem Content="To perform Undo/Redo and Copy/Paste, please click on the desired grid and use keyboard shortcuts or right click menu" />
-                            </dxr:RibbonPageGroup>
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <dxlc:LayoutGroup Orientation="Horizontal">
-                    <dxlc:LayoutGroup>
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTUDYTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Entity.STUDY_TYPE" Header="Study Type" />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarStaticItem x:Name="bsInstructions" Content="To perform Undo/Redo and Copy/Paste, please click on the desired grid and use keyboard shortcuts or right click menu" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Instructions" >
+                                    <dxb:BarStaticItemLink BarItemName="bsInstructions" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxlc:LayoutGroup Orientation="Horizontal">
+                        <dxlc:LayoutGroup>
+                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTUDYTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="Entity.STUDY_TYPE" Header="Study Type" />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup DataContext="{Binding DataContext.RA_GUIDE_PROMPTViewModel, ElementName=userControl}">
+                            <custom:GridControlEx x:Name="GridControlPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding DataContext.PROMPTEnabled, ElementName=userControl}" ItemsSource="{Binding DataContext.GUIDE_PROMPTS, ElementName=userControl}" Style="{StaticResource MultiGridControlTemplate}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="GUIDE_PROMPT" Header="Guide Prompt" HeaderToolTip="Guide prompt name." />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableViewPrompt" AllowColumnMoving="False" AutoWidth="True" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup DataContext="{Binding DataContext.RA_GUIDE_SUBPROMPTViewModel, ElementName=userControl}">
+                            <custom:GridControlEx x:Name="GridControlSUBPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding DataContext.SUBPROMPTEnabled, ElementName=userControl}" ItemsSource="{Binding DataContext.GUIDE_SUBPROMPTS, ElementName=userControl}" Style="{StaticResource MultiGridControlTemplate}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Guide Sub Prompt" HeaderToolTip="Guide sub prompt name." />
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableViewSubPrompt" AutoWidth="True" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </custom:GridControlEx>
+                        </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup DataContext="{Binding DataContext.RA_GUIDE_PROMPTViewModel, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControlPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding DataContext.PROMPTEnabled, ElementName=userControl}" ItemsSource="{Binding DataContext.GUIDE_PROMPTS, ElementName=userControl}" Style="{StaticResource MultiGridControlTemplate}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="GUIDE_PROMPT" Header="Guide Prompt" HeaderToolTip="Guide prompt name." />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableViewPrompt" AllowColumnMoving="False" AutoWidth="True" ExpandDetailButtonWidth="50" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                    </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup DataContext="{Binding DataContext.RA_GUIDE_SUBPROMPTViewModel, ElementName=userControl}">
-                        <custom:GridControlEx x:Name="GridControlSUBPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding DataContext.SUBPROMPTEnabled, ElementName=userControl}" ItemsSource="{Binding DataContext.GUIDE_SUBPROMPTS, ElementName=userControl}" Style="{StaticResource MultiGridControlTemplate}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Guide Sub Prompt" HeaderToolTip="Guide sub prompt name." />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableViewSubPrompt" AutoWidth="True" NewItemRowPosition="Top" ShowGroupPanel="False" Style="{StaticResource MultiTableViewTemplate}">
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Delete selected rows" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutGroup>
-            </DockPanel>
+                </DockPanel>
+            </dxb:BarManager>
         </Grid>
     </Grid>
 </UserControl>
