@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v18.1" xmlns:local="clr-namespace:BluePrints.Views" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v18.2" xmlns:local="clr-namespace:BluePrints.Views" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel">
     <Style x:Key="DashboardView.RootContainer" TargetType="FrameworkElement">
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
@@ -49,114 +49,114 @@
     <collections:ArrayList x:Key="dashboardXYChartSeries">
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Budgeted_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="OrangeRed" DataSource="{Binding SummaryEntity.Stats.BudgetedLate.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_BudgetedLate_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="DarkOrange" DataSource="{Binding SummaryEntity.Stats.Current.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Current_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightGreen" DataSource="{Binding SummaryEntity.Stats.Earned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Earned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Cyan" DataSource="{Binding SummaryEntity.Stats.Remaining.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Remaining_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="Red" DataSource="{Binding SummaryEntity.Stats.RemainingActual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_RemainingActual_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Burned.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Burned_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:BarSideBySideSeries2D AnimationAutoStartMode="SetStartState" Brush="#FFFFA200" DataSource="{Binding SummaryEntity.Stats.Actual.DataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.Header_Actual_Period, ElementName=userControl}" Style="{StaticResource DefaultBarSideBySideSeries2DTemplate}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}">
             <dxc:BarSideBySideSeries2D.PointAnimation>
-                <dxc:Bar2DWidenAnimation />
+                <dxc:Bar2DGrowUpAnimation />
             </dxc:BarSideBySideSeries2D.PointAnimation>
         </dxc:BarSideBySideSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Orange" DataSource="{Binding SummaryEntity.Stats.Budgeted.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesBudgetDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="OrangeRed" DataSource="{Binding SummaryEntity.Stats.BudgetedLate.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesBudgetLateDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="DarkOrange" DataSource="{Binding SummaryEntity.Stats.Current.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesCurrentDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Cyan" DataSource="{Binding SummaryEntity.Stats.Remaining.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesRemainingDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Red" DataSource="{Binding SummaryEntity.Stats.RemainingActual.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesRemainingActualDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LimeGreen" DataSource="{Binding SummaryEntity.Stats.TenderEarned.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesTenderEarnedDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Green" DataSource="{Binding SummaryEntity.Stats.Earned.CumulativeDataPoints}" DisplayName="{Binding DataContext.LineSeriesEarnedDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Burned.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.LineSeriesBurnedDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
         <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="LightCoral" DataSource="{Binding SummaryEntity.Stats.Actual.CumulativeDataPoints, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" DisplayName="{Binding DataContext.LineSeriesActualDisplayName, ElementName=userControl}" Style="{StaticResource DefaultLineSeries2DTemplate}" Visible="{Binding DataContext.IsActualVisible, ElementName=userControl}">
             <dxc:LineSeries2D.SeriesAnimation>
-                <dxc:Line2DUnwindAnimation />
+                <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>
             <dxc:LineSeries2D.PointAnimation>
-                <dxc:Marker2DSlideFromTopCenterAnimation />
+                <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
     </collections:ArrayList>
