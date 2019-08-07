@@ -379,12 +379,23 @@ namespace BluePrints.Common.Base
                 if (isCompletelyLoaded)
                 {
                     loadPROGRESS.DATA_DATE = value.Date.AddDays(1).AddSeconds(-1);
-                    PROGRESSCollectionViewModel.Save(loadPROGRESS);
-                    this.RaisePropertyChanged(x => x.DataDate);
-                    this.RaisePropertyChanged(x => x.DataDateStr);
-                    FullRefresh();
+
+                    //!= null is used because set method can be invoked in quick succession (when full refresh is called and PROGRESSCollectionViewModel is disposed)
+                    if(PROGRESSCollectionViewModel != null)
+                    {
+                        PROGRESSCollectionViewModel.Save(loadPROGRESS);
+                        this.RaisePropertyChanged(x => x.DataDate);
+                        this.RaisePropertyChanged(x => x.DataDateStr);
+                        FullRefresh();
+                    }
                 }
             }
+        }
+
+        public override void FullRefresh()
+        {
+            isCompletelyLoaded = false;
+            base.FullRefresh();
         }
 
         public string DataDateStr => DataDate.ToString("dd-MMM-yy");
