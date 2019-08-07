@@ -73,7 +73,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView">
+                                    <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />

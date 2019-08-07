@@ -303,7 +303,7 @@
                                                         <dxg:GridColumn Fixed="Left" Header="Forecast Type" FieldName="Entity.DropDownPhase" HeaderToolTip="Source of forecasted costs/hours type" ReadOnly="True" VisibleIndex="115" />
                                                         <!--<dxg:GridColumn FieldName="Entity.IsPOError" Fixed="Left" Header="Is Error" ReadOnly="True" VisibleIndex="120" />-->
                                                         <dxg:GridControl.View>
-                                                            <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                                            <dxg:TableView x:Name="tableViewChild" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                                 <dxg:TableView.FormatConditions>
                                                                     <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="0" ValueRule="Less">
                                                                         <dxc:Format Background="#FFFF9B98"/>
@@ -371,7 +371,7 @@
                                                 <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
                                             </dxg:GridControl.TotalSummary>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                                <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                     <dxg:TableView.FormatConditions>
                                                         <!--<dxg:FormatCondition Expression="[Entity.IsPOError] = 'True'" FieldName="Entity.Projection.SubJob.Code">
                                                         <dxc:Format Background="Salmon" />

@@ -508,7 +508,6 @@ namespace BluePrints.ViewModels
                     foreach (ForecastJobData commodityJob in commodityJobs)
                     {
                         DataRow commodityRow = dataPointsTable.NewRow();
-
                         DataTable compareDataTable = dataPointsTable.Clone();
                         DataRow compareActualsRow = compareDataTable.NewRow();
                         compareActualsRow[columnEntity] = new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" };
@@ -1447,7 +1446,7 @@ namespace BluePrints.ViewModels
                     job.IsPOError = true;
             }
 
-            job.Uncommitted = uncommittedRecalculation;
+            job.Uncommitted = uncommittedRecalculation + job.P6RemainingCosts;
         }
 
         public bool CanSaveEAC => isCompletelyLoaded;

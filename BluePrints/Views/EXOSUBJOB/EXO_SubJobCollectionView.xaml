@@ -146,7 +146,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True">
+                                    <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />

@@ -65,6 +65,7 @@ namespace BluePrints.Common.Projections
         public decimal Actuals { get; set; }
         public decimal Invoiced { get; set; }
         public decimal Outstanding { get; set; }
+        public decimal P6RemainingCosts { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;

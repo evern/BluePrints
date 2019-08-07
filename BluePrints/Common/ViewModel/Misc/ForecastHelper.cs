@@ -109,7 +109,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 {
                     remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.DataPoints));
                     decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
-                    jobForecastSummary.Outstanding += p6RemainingCosts;
+                    jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
                 }
 
 

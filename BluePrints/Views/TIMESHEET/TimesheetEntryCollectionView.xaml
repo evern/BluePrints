@@ -117,7 +117,7 @@
                                 <dxg:GridControl.GroupSummary />
                                 <dxg:GridControl.TotalSummary />
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True">
+                                    <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True" ScrollBarAnnotationMode="None" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />

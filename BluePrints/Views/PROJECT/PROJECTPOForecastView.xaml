@@ -152,7 +152,7 @@
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.Unforecasted" ShowInColumn="Entity.Unforecasted" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" >
+                                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" ScrollBarAnnotationMode="None">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
