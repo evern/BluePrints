@@ -106,7 +106,12 @@ namespace BluePrints.Common.ViewModel.Misc
                 List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
                 IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null);
                 if (remainingStats.Count() > 0)
+                {
                     remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.DataPoints));
+                    decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
+                    jobForecastSummary.Outstanding += p6RemainingCosts;
+                }
+
 
                 //get actual data points and populate summary
                 List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
