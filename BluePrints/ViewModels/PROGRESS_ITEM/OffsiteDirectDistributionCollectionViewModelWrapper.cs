@@ -84,6 +84,8 @@ namespace BluePrints.ViewModels
             IsCalculating = true;
             this.RaisePropertyChanged(x => x.IsCalculating);
             extrapolateDataDate = true;
+            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+
             base.resolveParameters(parameter);
         }
 
@@ -1023,6 +1025,12 @@ namespace BluePrints.ViewModels
         protected override PhaseType progress_type => PhaseType.Design;
 
         protected override bool haveGroupEntity => false;
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
         #endregion
 
         #region Reporting
