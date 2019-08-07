@@ -13,6 +13,7 @@
             <dxb:BarManager>
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biCopyToJobSetup" Command="{Binding DataContext.CopyToJobCommand, ElementName=userControl}" Content="Copy to Job Setup" Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}" LargeGlyph="{dx:DXImage Image=ConvertToRange_32x32.png}" ToolTip="This will copy jobs in exo that doesn't exists in job setup yet, safe to click whenever as it won't create duplicates" />
                     <dxb:BarButtonItem x:Name="biRemoveSelected" Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete entry from exo" />
                 </dxb:BarManager.Items>
                 <DockPanel>
@@ -32,6 +33,9 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                    <dxb:BarButtonItemLink BarItemName="biCopyToJobSetup" />
+                                </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                         </dxr:RibbonDefaultPageCategory>
                     </dxr:RibbonControl>
@@ -41,7 +45,7 @@
                         </dxr:RibbonStatusBarControl.LeftItems>
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
