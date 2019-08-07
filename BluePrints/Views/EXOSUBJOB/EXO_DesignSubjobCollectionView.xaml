@@ -25,8 +25,6 @@
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                     <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalCopy"/>
                                     <dxb:BarButtonItemLink BarItemName="biLocalPaste" />
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
@@ -55,13 +53,13 @@
                         </dxr:RibbonStatusBarControl.LeftItems>
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="900" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                    <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" />
+                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" />
                                     <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
+                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                     <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
                                     <!--<dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">

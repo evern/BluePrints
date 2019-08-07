@@ -536,6 +536,7 @@ namespace BluePrints.ViewModels
                 return;
 
             List<ExoSubJobEditableProjection> viewRemoveProjections = new List<ExoSubJobEditableProjection>();
+            LoadingScreenManager.ShowLoadingScreen(removeProjections.Count);
             foreach (ExoSubJobEditableProjection removeProjection in removeProjections)
             {
                 JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
@@ -545,8 +546,10 @@ namespace BluePrints.ViewModels
                     primeroUnitOfWork.SaveChanges();
                 }
                 viewRemoveProjections.Add(removeProjection);
+                LoadingScreenManager.Progress();
             }
 
+            LoadingScreenManager.CloseLoadingScreen();
             foreach (ExoSubJobEditableProjection viewRemoveProjection in viewRemoveProjections)
             {
                 DisplayEntities.Remove(viewRemoveProjection);
