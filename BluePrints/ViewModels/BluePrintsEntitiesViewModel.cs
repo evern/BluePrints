@@ -581,12 +581,7 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesDirect" + keyString, projectKey, childTitlePrefix + "Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT,object>(entity, ChargeType.Chargeable), null, "Rates [Direct]", false, false, @"Business Objects\BOSale_16x16.png"));
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectRatesIndirect" + keyString, projectKey, childTitlePrefix + "Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.NotChargeable), null, "Rates [Indirect]", false, false, @"Spreadsheet\FunctionsDateAndTime_16x16.png"));
             }
-
-            if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
-            {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectKey, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs", false, false, @"Programming\ProjectFile_16x16.png"));
-            }
-
+            
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack) && entity.USE_WORKPACKS)
             {
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks", false, false, @"Support\PackageProduct_16x16.png"));
@@ -648,6 +643,7 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectKey, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs", false, false, @"Programming\ProjectFile_16x16.png"));
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructionExoJobSetup" + keyString, projectKey, childTitlePrefix + "Resource Allocation", "EXO_ConstructionSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Resource Allocation", false, false, @"Business Objects\BOUser_16x16.png"));
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"));
                 exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"));

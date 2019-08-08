@@ -104,12 +104,24 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //get remaining data points
                 List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
+                List<Common.ViewModel.Reporting.DataPoint> budgetDataPoints = new List<Reporting.DataPoint>();
                 IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null);
+                IEnumerable<SummaryStats> budgetedStats = summaryStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null);
+
+                if (budgetedStats.Count() > 0)
+                {
+                    budgetDataPoints.AddRange(budgetedStats.SelectMany(x => x.Budgeted.DataPoints));
+                    decimal p6BudgetedUnits = budgetDataPoints.Sum(x => x.Units);
+                    jobForecastSummary.P6BudgetedUnits = p6BudgetedUnits;
+                }
+
                 if (remainingStats.Count() > 0)
                 {
                     remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.DataPoints));
                     decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
+                    decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
                     jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
+                    jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
                 }
 
 

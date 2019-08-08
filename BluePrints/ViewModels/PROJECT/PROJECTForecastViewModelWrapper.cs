@@ -332,6 +332,7 @@ namespace BluePrints.ViewModels
 
             //LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
             //LoadingScreenManager.Progress();
             FullRefresh();
         }

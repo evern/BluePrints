@@ -199,11 +199,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportable.Stats.TenderEarned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
-        public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1)
+        public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
                 foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints)
                 {

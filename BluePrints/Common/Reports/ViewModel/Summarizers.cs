@@ -64,6 +64,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Forecast Data...");
 
+                SetBudgetDataPoints(weightingPortion, true);
                 SetRemainingDataPoints(weightingPortion, useProductivity, true);
             }
 
@@ -85,7 +86,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         
         public abstract int SetBudgetDataPointsProgress();
-        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1);
+        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false);
 
         public abstract int SetCurrentDataPointsProgress();
         public abstract void SetCurrentDataPoints(decimal weightingPortion = 1);
@@ -137,11 +138,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
                 List<StoredProcedure_PlannedDataPoint> plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
@@ -496,9 +497,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false)
         {
-            PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem, weightingPortion);
+            PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();
         }
 

@@ -179,6 +179,17 @@
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
+                                            <!--For Debugging-->
+                                            <!--<dxg:GridColumn FieldName="Entity.P6BudgetedUnits" Fixed="Left" Header="P6 Budget" ReadOnly="True" VisibleIndex="61">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="Entity.P6RemainingUnits" Fixed="Left" Header="P6 Remains" ReadOnly="True" VisibleIndex="62">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>-->
                                             <dxg:GridColumn FieldName="Entity.Outstanding" Fixed="Left" Header="Outstanding" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" ReadOnly="True" VisibleIndex="70">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -194,7 +205,7 @@
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>-->
-                                            <dxg:GridColumn FieldName="Entity.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="Actuals / (Actuals + Outstanding + Uncommitted)" ReadOnly="True" VisibleIndex="87">
+                                            <dxg:GridColumn FieldName="Entity.PctComplete" Fixed="Left" Header="% Comp" HeaderToolTip="(Budgeted Units - Remaining Units)/ Budgeted Units" ReadOnly="True" VisibleIndex="87">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
