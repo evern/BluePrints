@@ -302,7 +302,7 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                        <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" ScrollBarAnnotationMode="None" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                             </dxg:TableView.RowCellMenuCustomizations>

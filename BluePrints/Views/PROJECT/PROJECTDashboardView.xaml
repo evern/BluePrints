@@ -85,7 +85,7 @@
                                     </dxg:DataControlDetailDescriptor>
                                 </dxg:GridControl.DetailDescriptor>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" AllowEditing="False" IsDetailButtonVisibleBinding="{Binding Row.IHaveSubjob_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}" />
+                                    <dxg:TableView x:Name="tableView" AllowEditing="False" ScrollBarAnnotationMode="None" IsDetailButtonVisibleBinding="{Binding Row.IHaveSubjob_Dashboards}" NewItemRowPosition="None" ShowGroupPanel="False" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}" UseLightweightTemplates="{x:Null}" />
                                 </dxg:GridControl.View>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem x:Name="totalSummaryBudgeted" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0:n}" FieldName="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" ShowInColumn="Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units" SummaryType="Sum" />

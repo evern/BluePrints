@@ -31,7 +31,6 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                     <dxb:BarButtonItemLink BarItemName="biUndo1" />
                                     <dxb:BarButtonItemLink BarItemName="biRedo1" />
                                     <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
