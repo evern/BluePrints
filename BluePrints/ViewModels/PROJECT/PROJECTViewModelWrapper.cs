@@ -415,7 +415,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ExcelExportData);
             LoadingScreenManager.CloseLoadingScreen();
 
-            exportFileName = LoadPROJECT.NUMBER + "_" + statsType.ToString() +  "_BP_Export" + ((DateTime)designDataDate).ToString("yyyymmdd");
+            exportFileName = LoadPROJECT.NUMBER + "_" + statsType.ToString() +  "_BP_Export" + ((DateTime)designDataDate).ToString("yyyyMMdd");
             base.ExportToExcel();
         }
 

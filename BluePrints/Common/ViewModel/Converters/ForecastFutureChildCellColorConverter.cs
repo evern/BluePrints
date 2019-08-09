@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.Projections;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Data;
@@ -6,7 +7,7 @@ using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    public class ForecastFutureCellColorConverter : IMultiValueConverter
+    public class ForecastFutureChildCellColorConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
@@ -24,25 +25,21 @@ namespace BluePrints.Common.ViewModel.Converters
                 if(!dataRow.Table.Columns.Contains("CompareEntities"))
                     return transparentColor;
 
+                ForecastJobData jobData = (ForecastJobData)dataRow["Entity"];
+                if (!jobData.IsP6HoursRow)
+                    return transparentColor;
+
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count > 3)
+                    if (compareEntity.Rows.Count > 0)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
-                            decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
-                            decimal poForecastCosts = (decimal)compareEntity.Rows[2][fieldname];
-                            DataRow compareP6UnitsRemainingRow = compareEntity.Rows[4];
-                            DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow["CompareEntities"];
-                            DataRow compareChildP6CostsRemainingRow = compareChildDataTable.Rows[0];
-                            decimal p6RemainingCosts = (decimal)compareChildP6CostsRemainingRow[fieldname];
-
-                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
-                            totalCosts = Math.Round(totalCosts);
+                            decimal p6RemainingHours = (decimal)compareEntity.Rows[1][fieldname];
+                            decimal totalCosts = Math.Round(p6RemainingHours);
                             decimal currentValue = (decimal)values[2];
 
                             if(currentValue != 0)

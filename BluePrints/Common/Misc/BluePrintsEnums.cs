@@ -25,6 +25,16 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum ForecastDataType
+    {
+        [Display(Name = "Cost")]
+        Cost,
+        [Display(Name = "P6")]
+        P6,
+        [Display(Name = "EAC")]
+        EAC
+    }
+
     public enum StatsCalculationType
     {
         [Display(Name = "Planned")]

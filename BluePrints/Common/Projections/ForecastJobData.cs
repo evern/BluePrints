@@ -1,4 +1,5 @@
-﻿using BluePrints.ViewModels;
+﻿using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,11 @@ namespace BluePrints.Common.Projections
         public bool IsBudgetReadOnly { get; set; }
         public bool IsPOError { get; set; }
         public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
+
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? 0 : P6RemainingCosts / P6RemainingUnits;
+
+        //used by detailed rows so that only P6 hour row can be edited
+        public bool IsP6HoursRow { get; set; }
     }
 
     public class ForecastDateCost

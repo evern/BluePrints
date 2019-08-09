@@ -231,7 +231,7 @@ namespace BluePrints.Common.ViewModel.Misc
         private static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
         {
             //populate previous estimate to completion
-            IEnumerable<FORECAST> previousEAC = FORECASTCollection.Where(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.IS_EAC && x.FORECAST_DATE < dataDate).OrderBy(x => x.FORECAST_DATE);
+            IEnumerable<FORECAST> previousEAC = FORECASTCollection.Where(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE < dataDate).OrderBy(x => x.FORECAST_DATE);
             if (previousEAC.Count() > 0)
             {
                 FORECAST lastEAC = previousEAC.Last();
