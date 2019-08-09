@@ -117,6 +117,14 @@
                                         <dxb:BarCheckItemLink BarItemName="biSelectDesign" />
                                     </dxr:RibbonPageGroup>
                                 </dxr:RibbonPage>
+                                <dxr:RibbonPage MergeType="Replace" Caption="Detailed Export">
+                                    <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Details">
+                                        <dxb:BarButtonItemLink BarItemName="biExportPlanned" />
+                                        <dxb:BarButtonItemLink BarItemName="biExportCurrent" />
+                                        <dxb:BarButtonItemLink BarItemName="biExportEarned" />
+                                        <dxb:BarButtonItemLink BarItemName="biExportRemaining" />
+                                    </dxr:RibbonPageGroup>
+                                </dxr:RibbonPage>
                                 <dxr:RibbonPage MergeType="Replace" Caption="Troubleshooting">
                                     <dxr:RibbonPageGroup MergeType="Replace" Caption="Troubleshooting">
                                         <dxb:BarButtonItemLink BarItemName="biShowP6Errors" />
@@ -124,8 +132,8 @@
                                         <dxb:BarButtonItemLink BarItemName="biHealthCheck" />
                                     </dxr:RibbonPageGroup>
                                 </dxr:RibbonPage>
-                                <dxr:RibbonPage MergeType="Replace" Caption="Project Details">
-                                    <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Details">
+                                <dxr:RibbonPage MergeType="Replace" Caption="Project Detail">
+                                    <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Detail">
                                         <dxb:BarButtonItemLink BarItemName="biEditArea" />
                                         <dxb:BarButtonItemLink BarItemName="biEditRate" />
                                         <dxb:BarButtonItemLink BarItemName="biEditBaseline" />

@@ -34,7 +34,8 @@ namespace BluePrints.Views
                 return;
             }
 
-            DragMove();
+            if(e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                DragMove();
         }
 
 
@@ -63,7 +64,8 @@ namespace BluePrints.Views
                 Left = lMousePosition.X - targetHorizontal;
                 Top = lMousePosition.Y - targetVertical;
 
-                DragMove();
+                if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                    DragMove();
             }
         }
 
