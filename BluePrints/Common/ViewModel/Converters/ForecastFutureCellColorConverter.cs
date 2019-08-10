@@ -48,8 +48,10 @@ namespace BluePrints.Common.ViewModel.Converters
                             if(currentValue != 0)
                             {
                                 currentValue = Math.Round(currentValue);
-                                if(currentValue != totalCosts)
+                                if(currentValue > totalCosts)
                                     return new System.Windows.Media.SolidColorBrush(Colors.GreenYellow);
+                                else if (currentValue < totalCosts)
+                                    return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                             }
                         }
                     }

@@ -128,12 +128,12 @@
                         <Binding ElementName="PART_Editor" Path="EditValue" />
                     </MultiBinding>
                 </dxe:SpinEdit.Background>
-                <dxe:SpinEdit.MinValue>
+                <!--<dxe:SpinEdit.MinValue>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellMinValueConverter}">
                         <Binding Path="RowData.Row.Row" />
                         <Binding Path="Column.FieldName" />
                     </MultiBinding>
-                </dxe:SpinEdit.MinValue>
+                </dxe:SpinEdit.MinValue>-->
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateChild">

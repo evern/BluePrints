@@ -520,7 +520,7 @@ namespace BluePrints.ViewModels
                         DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
                         compareP6CostsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" };
                         DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
-                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0", Projection = commodityJob.Projection, IsP6HoursRow = true };
+                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0", Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts };
 
                         DataTable compareChildDataTable = dataPointsTable.Clone();
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
@@ -536,7 +536,10 @@ namespace BluePrints.ViewModels
 
                             compareChildP6CostsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Costs;
 
-                            compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
+                            FORECAST findFORECASTS = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == dateCost.Date && x.SUBJOB_CODE == commodityJob.Projection.SubJob.Code && x.DISCIPLINE_CODE == commodityJob.Projection.Discipline.Code && x.COMMODITY_CODE == commodityJob.Projection.Commodity.Code && x.VARIATION_CODE == commodityJob.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6);
+                            if(findFORECASTS != null)
+                                compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = findFORECASTS.FORECAST_UNITS;
+
                             compareChildP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
 
                             commodityRow[dateCost.Date.ToShortDateString()] = dateCost.TotalCosts;
@@ -656,20 +659,9 @@ namespace BluePrints.ViewModels
                             if (dataPointsTable.Columns.Contains(alignedDateField))
                             {
                                 IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE.ToShortDateString() == dateStr);
-                                FORECAST p6FORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.P6);
                                 FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-                                if (p6FORECAST != null && p6FORECAST.FORECAST_UNITS != null)
-                                {
-                                    parentRow[alignedDateField] = p6FORECAST.FORECAST_UNITS * job.P6NominalRate;
 
-                                    //update override field when first loaded
-                                    if (p6HoursRow != null)
-                                        p6HoursRow[alignedDateField] = p6FORECAST.FORECAST_UNITS;
-
-                                    if (p6CostRow != null)
-                                        p6CostRow[alignedDateField] = p6FORECAST.FORECAST_UNITS * job.P6NominalRate;
-                                }
-                                else if(costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
+                                if(costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
                                 {
                                     parentRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
                                 }
@@ -982,7 +974,7 @@ namespace BluePrints.ViewModels
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
                 pasteCellData(gridControl, gridTableView, RowData);
 
-                //GridControlService.RefreshData();
+                refreshGridData();
                 e.Handled = true;
             }
 
@@ -1012,21 +1004,24 @@ namespace BluePrints.ViewModels
                     DateTime columnDateTime;
                     if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
                     {
-                        DataTable compareEntity = (DataTable)newRow["CompareEntities"];
-                        if (compareEntity.Rows.Count > 3)
+                        DataTable compareDataTable = (DataTable)newRow["CompareEntities"];
+
+                        //when this is called from parent grid
+                        if (compareDataTable.Rows.Count > 3)
                         {
-                            decimal actualCosts = (decimal)compareEntity.Rows[0][copyColumn.FieldName];
-                            decimal materialCosts = (decimal)compareEntity.Rows[1][copyColumn.FieldName];
-                            decimal poForecastCosts = (decimal)compareEntity.Rows[2][copyColumn.FieldName];
-                            decimal p6RemainingCosts = (decimal)compareEntity.Rows[3][copyColumn.FieldName];
-                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
-                            totalCosts = Math.Round(totalCosts);
+                            decimal totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
                             if (decimal_value >= totalCosts)
                             {
+                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName]);
                                 //EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
                                 newRow[copyColumn.FieldName] = decimal_value;
-                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName]);
                             }
+                        }
+                        //when this called from child grid no validation required
+                        else
+                        {
+                            findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName]);
+                            newRow[copyColumn.FieldName] = decimal_value;
                         }
                     }
                 }
@@ -1086,7 +1081,7 @@ namespace BluePrints.ViewModels
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
-            //GridControlService.RefreshData();
+            refreshGridData();
         }
 
         /// <summary>
@@ -1103,7 +1098,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
-            //GridControlService.RefreshData();
+            refreshGridData();
             e.Handled = true;
         }
 
@@ -1125,15 +1120,24 @@ namespace BluePrints.ViewModels
                     if (newValue != null && decimal.TryParse(newValue.ToString(), out convertUnits))
                         forecastUnits = convertUnits;
 
-                    //when undoing the last undo that get's added affects the final output
-                    //ForecastDataType editForecastDataType = ((ForecastJobData)row[columnEntity]).IsP6HoursRow ? ForecastDataType.P6 : ForecastDataType.Cost;
-                    //if (editForecastDataType == ForecastDataType.P6)
-                    //    EntitiesUndoRedoManager.AddUndo(row, fieldName, oldValue, forecastUnits, EntityMessageType.Changed);
-
                     findExistingOrAddNewForecast(row, dateTime, forecastUnits, oldValue);
+                }
+            }
+        }
 
-                    //if (editForecastDataType == ForecastDataType.Cost)
-                        //EntitiesUndoRedoManager.AddUndo(row, fieldName, oldValue, forecastUnits, EntityMessageType.Changed);
+        public void ValidateCell(GridCellValidationEventArgs e)
+        {
+            if(e.Value != null)
+            {
+                DateTime dateTime;
+                if (DateTime.TryParse(e.Column.FieldName, out dateTime))
+                {
+                    decimal defaultCosts = getMasterRowResetValue((DataTable)(((DataRowView)e.Row)[columnCompare]), e.Column.FieldName);
+                    if ((decimal)e.Value < defaultCosts)
+                    {
+                        e.ErrorContent = "Cannot set costs below forecasted costs";
+                        e.IsValid = false;
+                    }
                 }
             }
         }
@@ -1233,7 +1237,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                //GridControlService.RefreshData();
+                refreshGridData();
                 updateFloatingSummaryMembers();
             }
 
@@ -1308,7 +1312,7 @@ namespace BluePrints.ViewModels
                         decimal childP6UnitsValue = compareChildP6UnitsRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareChildP6UnitsRemainingRow[dateFieldName];
                         if (addUndo)
                         {
-                            //EntitiesUndoRedoManager.AddUndo(compareP6CostsRemainingRow, dateFieldName, compareP6CostsRemainingRow[dateFieldName], childP6CostsValue, EntityMessageType.Changed);
+                            //EntitiesUndoRedoManager.AddUndo(compareP6UnitsRemainingRow, dateFieldName, compareP6UnitsRemainingRow[dateFieldName], childP6CostsValue, EntityMessageType.Changed);
                             EntitiesUndoRedoManager.AddUndo(compareP6UnitsRemainingRow, dateFieldName, compareP6UnitsRemainingRow[dateFieldName], childP6UnitsValue, EntityMessageType.Changed);
                         }
 
@@ -1355,15 +1359,9 @@ namespace BluePrints.ViewModels
 
             if(oldValue != null)
             {
-                //the final undo that gets added determines the final results when undoing
-                //if (editForecastDataType == ForecastDataType.P6)
-                //    EntitiesUndoRedoManager.AddUndo(dataRow, dateFieldName, oldValue, saveNewValue, EntityMessageType.Changed);
-
                 if (editForecastDataType == ForecastDataType.Cost)
                     resetChildRow(compareDataTable, dateFieldName, true);
 
-                //add twice so that detailed grid will refresh (Hack)
-                EntitiesUndoRedoManager.AddUndo(dataRow, dateFieldName, oldValue, saveNewValue, EntityMessageType.Changed);
                 EntitiesUndoRedoManager.AddUndo(dataRow, dateFieldName, oldValue, saveNewValue, EntityMessageType.Changed);
             }
 
@@ -1375,17 +1373,18 @@ namespace BluePrints.ViewModels
 
             if (editFORECAST == null)
             {
-                FORECAST newFORECAST = new FORECAST();
-                newFORECAST.GUID = Guid.Empty;
-                newFORECAST.GUID_PROJECT = LoadPROJECT.GUID;
-                newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
-                newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
-                newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
-                newFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
-                newFORECAST.FORECAST_DATE = forecastDate.Date;
-                newFORECAST.FORECAST_UNITS = saveNewValue;
-                newFORECAST.FORECAST_TYPE = editForecastDataType;
-                FORECASTCollectionViewModel.Save(newFORECAST);
+                editFORECAST = new FORECAST();
+                editFORECAST.GUID = Guid.Empty;
+                editFORECAST.GUID_PROJECT = LoadPROJECT.GUID;
+                editFORECAST.SUBJOB_CODE = entity.SubJob.Code;
+                editFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
+                editFORECAST.COMMODITY_CODE = entity.Commodity.Code;
+                editFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
+                editFORECAST.FORECAST_DATE = forecastDate.Date;
+                editFORECAST.FORECAST_UNITS = saveNewValue;
+                editFORECAST.FORECAST_TYPE = editForecastDataType;
+                FORECASTCollectionViewModel.Save(editFORECAST);
+
             }
             else
             {
@@ -1393,12 +1392,21 @@ namespace BluePrints.ViewModels
                 FORECASTCollectionViewModel.Save(editFORECAST);
             }
 
-            //either reset p6 or cost info to null
-            if(resetFORECAST != null)
+            if (resetFORECAST == null)
             {
-                resetFORECAST.FORECAST_UNITS = null;
-                FORECASTCollectionViewModel.Save(resetFORECAST);
+                resetFORECAST = new FORECAST();
+                DataUtils.ShallowCopy(resetFORECAST, editFORECAST);
+                resetFORECAST.GUID = Guid.Empty;
+                resetFORECAST.FORECAST_TYPE = editForecastDataType == ForecastDataType.Cost ? ForecastDataType.P6 : ForecastDataType.Cost;
             }
+
+            //either reset p6 or cost info to null
+            if (editForecastDataType == ForecastDataType.P6)
+                resetFORECAST.FORECAST_UNITS = saveNewValue * job.P6NominalRate;
+            else
+                resetFORECAST.FORECAST_UNITS = null;
+
+            FORECASTCollectionViewModel.Save(resetFORECAST);
 
             //used to ensure child row is set
             if (viewNewValue != null)
@@ -1409,6 +1417,11 @@ namespace BluePrints.ViewModels
             updateUncommittedOnDatesFromDb(dataRow, true);
             updateTotalUncommittedOnJob(dataRow);
             updateFloatingSummaryMembers();
+        }
+
+        private void refreshGridData()
+        {
+            refreshGridDataDelayed();
         }
 
         private void refreshGridDataDelayed()
@@ -1424,7 +1437,12 @@ namespace BluePrints.ViewModels
             GridControlService.GridControl.RefreshData();
             DataControlDetailDescriptor gridDetail = (DataControlDetailDescriptor)GridControlService.GridControl.DetailDescriptor;
             GridControl childGrid = (GridControl)gridDetail.DataControl;
-            childGrid.RefreshData();
+
+            childGrid.RefreshRow(0);
+            childGrid.RefreshRow(1);
+            childGrid.RefreshRow(2);
+            childGrid.RefreshRow(3);
+            childGrid.RefreshRow(4);
         }
 
         private void updateFloatingSummaryMembers()
@@ -1734,7 +1752,7 @@ namespace BluePrints.ViewModels
                 updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
             }
 
-            GridControlService.RefreshData();
+            refreshGridData();
         }
 
         /// <summary>
@@ -1771,7 +1789,7 @@ namespace BluePrints.ViewModels
                 updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
             }
 
-            GridControlService.RefreshData();
+            refreshGridData();
         }
 
         public void CopyDetailWithHeader()
