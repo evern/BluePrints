@@ -537,8 +537,10 @@ namespace BluePrints.ViewModels
                             compareChildP6CostsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Costs;
 
                             FORECAST findFORECASTS = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == dateCost.Date && x.SUBJOB_CODE == commodityJob.Projection.SubJob.Code && x.DISCIPLINE_CODE == commodityJob.Projection.Discipline.Code && x.COMMODITY_CODE == commodityJob.Projection.Commodity.Code && x.VARIATION_CODE == commodityJob.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6);
-                            if(findFORECASTS != null)
+                            if(findFORECASTS != null && findFORECASTS.FORECAST_UNITS != null)
                                 compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = findFORECASTS.FORECAST_UNITS;
+                            else
+                                compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
 
                             compareChildP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
 
@@ -609,7 +611,7 @@ namespace BluePrints.ViewModels
 
         public List<ExoDataPoint> DetailedData { get; set; }
 
-        private void resetRemainingOnJob(DataRow updateRow, string fieldName, bool addUndo)
+        private void resetViewRemainingOnJob(DataRow updateRow, string fieldName, bool addUndo)
         {
             if (updateRow[columnCompare] == DBNull.Value)
                 return;
@@ -625,6 +627,9 @@ namespace BluePrints.ViewModels
                 resetChildRow(compareDataTable, fieldName, addUndo);
                 oldValue = (decimal)updateRow[fieldName];
                 newValue = resetValue;
+
+                //do it twice so that child row value can be updated (hack)
+                updateRow[fieldName] = newValue;
                 updateRow[fieldName] = newValue;
                 EntitiesUndoRedoManager.AddUndo(updateRow, fieldName, oldValue, newValue, EntityMessageType.Changed);
                 updateTotalUncommittedOnJob(updateRow);
@@ -1027,7 +1032,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    resetRemainingOnJob(newRow, copyColumn.FieldName, true);
+                    resetViewRemainingOnJob(newRow, copyColumn.FieldName, true);
                     return false;
                 }
             }
@@ -1074,7 +1079,7 @@ namespace BluePrints.ViewModels
                 DateTime deleteCellDate;
                 if(DateTime.TryParse(columnFieldName, out deleteCellDate))
                 {
-                    resetRemainingOnJob(editing_row, columnFieldName, true);
+                    resetViewRemainingOnJob(editing_row, columnFieldName, true);
                     findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
                     //editing_row[columnFieldName] = 0.00m;
                 }
@@ -1731,11 +1736,15 @@ namespace BluePrints.ViewModels
                 object oldValue = entityProperty.OldValue;
                 if (oldValue == null || oldValue == DBNull.Value)
                 {
-                    resetRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
+                    resetViewRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
                     //oldValue = 0.00m;
                 }
                 else
+                {
+                    //do this twice so that detailed grid value can be updated (hack)
                     entityProperty.ChangedEntity[entityProperty.PropertyName] = oldValue;
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = oldValue;
+                }
 
                 DateTime parseDateTime;
                 if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
@@ -1768,11 +1777,15 @@ namespace BluePrints.ViewModels
                 object newValue = entityProperty.NewValue;
                 if (newValue == null || newValue == DBNull.Value)
                 {
-                    resetRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
+                    resetViewRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
                     //newValue = 0.00m;
                 }
                 else
+                {
+                    //do this twice so that detailed grid value can be updated (hack)
                     entityProperty.ChangedEntity[entityProperty.PropertyName] = newValue;
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = newValue;
+                }
 
                 DateTime parseDateTime;
                 if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
