@@ -76,7 +76,7 @@ namespace BluePrints.ViewModels
             delayedUpdateFloatingProjectSummaryTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
             delayedGridUpdateTimer = new DispatcherTimer();
-            delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 
             delayedDateChangeMessageBoxTimer = new DispatcherTimer();
             delayedDateChangeMessageBoxTimer.Interval = new TimeSpan(0, 0, 0, 1);
@@ -1439,6 +1439,8 @@ namespace BluePrints.ViewModels
         private void DelayedGridUpdateTimer_Tick(object sender, EventArgs e)
         {
             delayedGridUpdateTimer.Stop();
+            GridControlEx gridControlEx = (GridControlEx)GridControlService.GridControl;
+            ObservableCollection<BaseModel.Misc.GroupInfo> saveStates = gridControlEx.States;
             GridControlService.GridControl.RefreshData();
             DataControlDetailDescriptor gridDetail = (DataControlDetailDescriptor)GridControlService.GridControl.DetailDescriptor;
             GridControl childGrid = (GridControl)gridDetail.DataControl;
@@ -1448,6 +1450,8 @@ namespace BluePrints.ViewModels
             childGrid.RefreshRow(2);
             childGrid.RefreshRow(3);
             childGrid.RefreshRow(4);
+
+            gridControlEx.States = saveStates;
         }
 
         private void updateFloatingSummaryMembers()
