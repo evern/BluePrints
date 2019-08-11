@@ -1044,10 +1044,10 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void DeleteCellContent(object parameter)
+        public void DeleteCellContent()
         {
             //EntitiesUndoRedoManager.Clear();
-            GridControl gridControl = (GridControl)parameter;
+            GridControl gridControl = GridControlService.GridControl;
             TableView tableView = gridControl.View as TableView;
             EntitiesUndoRedoManager.PauseActionId();
             var selected_cells = tableView.GetSelectedCells();
