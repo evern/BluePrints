@@ -95,6 +95,10 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS, FORECAST_POProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
+            loaderCollection.AddLoaderDescription<Data.PHASE, Data.PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
         }
 
         private void setProject(Data.PROJECT project)
@@ -143,6 +147,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == null);
+        }
+
+        protected virtual Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.COST_TYPE == CostType.Cost);
         }
 
         protected virtual Func<IRepositoryQuery<FORECAST_PO>, IQueryable<FORECAST_PO>> FORECAST_POProjectionFunc()
@@ -509,6 +518,28 @@ namespace BluePrints.ViewModels
                     //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
                     foreach (ForecastJobData commodityJob in commodityJobs)
                     {
+                        #region fallback rate search
+                        Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.SubJob.PhaseCode);
+
+                        string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
+                        //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
+                        DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                        COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
+                        DOCTYPE rateDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
+
+                        RATE searchRATE = null;
+                        if (ratePHASE != null && rateDISCIPLINE != null)
+                        {
+                            IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_PHASE == ratePHASE.GUID));
+                            Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ?  rateDOCTYPE.GUID : (Guid?)null;
+
+                            //order by descending places null GUID's at the end, so First() won't pick it up
+                            IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
+                            IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
+                            searchRATE = rateByDiscipline.FirstOrDefault();
+                        }
+                        #endregion
+
                         DataRow commodityRow = dataPointsTable.NewRow();
                         DataTable compareDataTable = dataPointsTable.Clone();
                         DataRow compareActualsRow = compareDataTable.NewRow();
@@ -520,7 +551,7 @@ namespace BluePrints.ViewModels
                         DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
                         compareP6CostsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" };
                         DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
-                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0", Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts };
+                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts };
 
                         DataTable compareChildDataTable = dataPointsTable.Clone();
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
@@ -2046,6 +2077,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<Data.PHASE> PHASECollection
+        {
+            get
+            {
+                return GetEntities<Data.PHASE>();
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                return GetEntities<DISCIPLINE>();
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                return GetEntities<DOCTYPE>();
+            }
+        }
+
         public CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork> FORECASTCollectionViewModel
         {
             get
@@ -2072,6 +2127,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
+        public IEnumerable<RATE> RATECollection
+        {
+            get
+            {
+                return GetEntities<RATE>();
             }
         }
 
