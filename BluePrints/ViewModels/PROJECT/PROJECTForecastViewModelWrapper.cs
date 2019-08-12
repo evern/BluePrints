@@ -530,7 +530,7 @@ namespace BluePrints.ViewModels
                         RATE searchRATE = null;
                         if (ratePHASE != null && rateDISCIPLINE != null)
                         {
-                            IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_PHASE == ratePHASE.GUID));
+                            IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
                             Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ?  rateDOCTYPE.GUID : (Guid?)null;
 
                             //order by descending places null GUID's at the end, so First() won't pick it up
