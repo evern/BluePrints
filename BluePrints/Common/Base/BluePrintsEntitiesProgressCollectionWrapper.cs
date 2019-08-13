@@ -61,6 +61,7 @@ namespace BluePrints.Common.Base
         protected bool is_single_project_mode = true;
         protected bool is_load_p6_task = false;
         protected bool isCompletelyLoaded = false;
+        BackgroundWorker progressSaveBackgroundWorker;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
@@ -201,6 +202,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
+            MainViewModel.OnBeforeExistingRowAddUndoAndSaveIsContinue = onExistingRowAddUndoAndSaveIsContinue;
             MainViewModel.DisablePasteRowLevel = true;
             //MainViewModel.AlwaysSkipMessage = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
@@ -210,6 +212,26 @@ namespace BluePrints.Common.Base
             onMainViewModelFirstLoadedTimer.Start();
             isFirstLoaded = true;
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        protected bool onExistingRowAddUndoAndSaveIsContinue(CellValueChangedEventArgs e, TMainProjectionEntity projection)
+        {
+            //only save progress when total % complete is changed
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
+            {
+                if (!haveGroupEntity && projection.ShouldSaveProgress)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+                    progressSaveBackgroundWorker.RunWorkerAsync(projection);
+                }
+
+                return false;
+            }
+
+            //saves the deliverable when changes occur on other fields
+            return true;
         }
 
         protected List<ExoTimeAuthorisation> exoAuthorisations = null;
@@ -244,11 +266,28 @@ namespace BluePrints.Common.Base
         /// <param name="isNewEntity"></param>
         protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
         {
+            //because undo/redo operation still relies on mainviewmodel progress needs to be re-checked even though we had onExistingRowAddUndoAndSaveIsContinue
             if (!haveGroupEntity && projectionEntity.ShouldSaveProgress)
             {
-                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
-                PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
+                progressSaveBackgroundWorker.RunWorkerAsync(projectionEntity);
+
+                //main thread implementation
+                //IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                //PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
             }
+        }
+
+        private void ProgressSaveBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (progressSaveBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            TMainProjectionEntity projectionEntity = (TMainProjectionEntity)e.Argument;
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+            PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
         }
 
         protected virtual void OnMappingAdditionalChangedEntitiesProperties(TMainProjectionEntity existingProjectionEntity, TMainProjectionEntity projectionEntity)
@@ -297,6 +336,10 @@ namespace BluePrints.Common.Base
             calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
             calculatePlannedBackgroundWorker.RunWorkerAsync();
+
+            progressSaveBackgroundWorker = new BackgroundWorker();
+            progressSaveBackgroundWorker.DoWork += ProgressSaveBackgroundWorker_DoWork;
+            progressSaveBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected bool extrapolateDataDate = false;
@@ -1549,6 +1592,8 @@ namespace BluePrints.Common.Base
         #region Disposing
         protected override void OnClose(CancelEventArgs e)
         {
+            calculatePlannedBackgroundWorker.CancelAsync();
+            progressSaveBackgroundWorker.CancelAsync();
 //            if (loadPROJECT != null)
 //#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 //                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);

@@ -249,34 +249,23 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsCalculating);
         }
 
+        bool isUndoRedoOperation;
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            //if (changedType == typeof(PROGRESS_ITEM))
-            //{
-            //    BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.PROGRESS_ITEMS.Any(y => y.GUID == (Guid)key));
+            BASELINE_ITEMProgress deliverable = null;
+            //only recalculate on progress item when undo/redo operation is being performed, because normal operation will be recalculated on Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>
+            if (isUndoRedoOperation && changedType == typeof(PROGRESS_ITEM))
+                deliverable = DisplayEntities.FirstOrDefault(x => x.PROGRESS_ITEMS.Any(y => y.GUID == (Guid)key));
+            else if (changedType == typeof(BASELINE_ITEM))
+                deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
 
-            //    if (deliverable != null)
-            //    {
-            //        deliverable.BuildStats();
-            //        BuildRowStats(deliverable, true);
-            //        mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
-            //    }
-
-            //    return;
-            //}
-            //else
-
-            if (changedType == typeof(BASELINE_ITEM))
+            if (deliverable != null)
             {
-                BASELINE_ITEMProgress deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
-                if (deliverable != null)
-                {
-                    List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
-                    calcTypes.Add(StatsCalculationType.Earned);
-                    deliverable.BuildStats(1, calcTypes);
-                    BuildRowStats(deliverable, true);
-                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
-                }
+                List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+                calcTypes.Add(StatsCalculationType.Earned);
+                deliverable.BuildStats(1, calcTypes);
+                BuildRowStats(deliverable, true);
+                mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
@@ -362,12 +351,16 @@ namespace BluePrints.ViewModels
 
         public void ProgressUndo()
         {
+            isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
+            isUndoRedoOperation = false;
         }
 
         public void ProgressRedo()
         {
+            isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
+            isUndoRedoOperation = false;
         }
 
         private void reselectDeliverable()
