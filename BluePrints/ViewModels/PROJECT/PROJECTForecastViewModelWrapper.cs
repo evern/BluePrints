@@ -1588,6 +1588,7 @@ namespace BluePrints.ViewModels
             DataTable dataTable = dataRow.Table;
 
             decimal preloadedSum = 0;
+            decimal poSum = 0;
             decimal uncommittedRecalculation = 0;
             for (int i = 0; i < dataRow.ItemArray.Count(); i++)
             {
@@ -1605,6 +1606,7 @@ namespace BluePrints.ViewModels
                                 {
                                     uncommittedRecalculation += (currentDateCellValue - Math.Round(dateCost.PreloadedCosts));
                                     preloadedSum += Math.Round(dateCost.PreloadedCosts);
+                                    poSum += Math.Round(dateCost.POForecastCosts);
                                 }
                                 else
                                     uncommittedRecalculation += currentDateCellValue;
@@ -1614,7 +1616,7 @@ namespace BluePrints.ViewModels
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
             if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
             {
-                decimal differences = Math.Round(job.Outstanding) - Math.Round(preloadedSum);
+                decimal differences = Math.Round(job.Outstanding) - Math.Round(poSum);
                 differences = Math.Abs(differences);
 
                 if (differences <= 10)
@@ -1630,10 +1632,16 @@ namespace BluePrints.ViewModels
 
         public void SaveEAC()
         {
+            if (!LoginCredentials.hasPermission(PermissionResources.SaveEAC))
+            {
+                MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
             List<ForecastJobData> jobs = getJobDataFromDatatable();
             if(jobs.Any(x => x.IsPOError))
             {
-                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet, please complete it before saving", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned, please go to PO forecast module and click Align Actuals to fix all issues", "Error", MessageButton.OK, MessageIcon.Exclamation);
                 return;
             }
 

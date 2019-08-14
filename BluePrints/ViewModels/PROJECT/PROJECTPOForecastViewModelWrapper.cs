@@ -683,47 +683,86 @@ namespace BluePrints.ViewModels
             IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
                                                             select (POForecastProjection)dr[columnEntity];
 
-            List < FORECAST_PO > saveFORECAST_POs = new List<FORECAST_PO>();
-            foreach(POForecastProjection projection in projections)
+            List <FORECAST_PO> saveFORECAST_POs = new List<FORECAST_PO>();
+            //fix codes mis-alignment
+
+            decimal adjustmentFactor = 0;
+            //fix dates mis-alignment
+            foreach (POForecastProjection projection in projections)
             {
-                decimal viewForecastCosts = projection.FORECAST_POs.Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
-                decimal costDifferences = projection.PO_RemainingPrice - viewForecastCosts;
-
-                foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
+                decimal totalForecastValue = projection.FORECAST_POs.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                if(totalForecastValue == 0)
                 {
-                    if (FORECAST_PO.FORECAST_DATE.Date <= ActualsCutOffDate.Date)
+                    DataRow editing_row = findPORow(projection.PONO);
+                    if(editing_row != null)
                     {
-                        //store as 0 so that when we rewind and adjust actuals again this point will actually be used
-                        FORECAST_PO.FORECAST_VALUE = 0.00m;
-                        saveFORECAST_POs.Add(FORECAST_PO);
-                        continue;
+                        findExistingOrAddNewFORECAST_PO(editing_row, (DateTime)ForecastStartDate, projection.PO_RemainingPrice);
+                    }
+                }
+                else
+                {
+
+                    var groupedFORECAST_POs = projection.FORECAST_POs.GroupBy(x => x.JOB_CODE + x.DISCIPLINE_CODE + x.COMMODITY_CODE).Select(group => new { FirstJob = group.First(), Forecasts = group.ToList() });
+                    foreach (var groupedFORECAST_PO in groupedFORECAST_POs)
+                    {
+                        var firstFORECAST_PO = groupedFORECAST_PO.FirstJob;
+                        decimal remainingUnits = projection.ExoPOs.Where(x => x.Subjob_Name == firstFORECAST_PO.JOB_CODE && x.Discipline_Code == firstFORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == firstFORECAST_PO.COMMODITY_CODE).Sum(x => x.Costs);
+                        decimal groupUnits = groupedFORECAST_PO.Forecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+
+                        if (remainingUnits != groupUnits)
+                        {
+                            adjustmentFactor = remainingUnits / groupUnits;
+                            foreach (FORECAST_PO forecast_po in groupedFORECAST_PO.Forecasts)
+                            {
+                                if (forecast_po.FORECAST_VALUE != null)
+                                    forecast_po.FORECAST_VALUE *= adjustmentFactor;
+                            }
+                        }
                     }
 
-                    //cost adjustment
-                    if (costDifferences > 0)
+                    decimal viewForecastCosts = projection.FORECAST_POs.Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                    decimal costDifferences = projection.PO_RemainingPrice - viewForecastCosts;
+                    foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
                     {
-                        FORECAST_PO.FORECAST_VALUE += costDifferences;
-                        saveFORECAST_POs.Add(FORECAST_PO);
-                        break;
-                    }
-                    else if (costDifferences < 0)
-                    {
-                        decimal postAdjustmentCosts = (decimal)FORECAST_PO.FORECAST_VALUE + costDifferences;
-                        if (postAdjustmentCosts > 0)
+                        if (FORECAST_PO.FORECAST_DATE.Date <= ActualsCutOffDate.Date)
+                        {
+                            //store as 0 so that when we rewind and adjust actuals again this point will actually be used
+                            FORECAST_PO.FORECAST_VALUE = 0.00m;
+                            saveFORECAST_POs.Add(FORECAST_PO);
+                            continue;
+                        }
+
+                        //cost adjustment
+                        if (costDifferences > 0)
                         {
                             FORECAST_PO.FORECAST_VALUE += costDifferences;
                             saveFORECAST_POs.Add(FORECAST_PO);
                             break;
                         }
-                        else
+                        else if (costDifferences < 0)
                         {
-                            costDifferences += (decimal)FORECAST_PO.FORECAST_VALUE;
-                            FORECAST_PO.FORECAST_VALUE = 0.00m;
-                            saveFORECAST_POs.Add(FORECAST_PO);
+                            decimal forecastValue = FORECAST_PO.FORECAST_VALUE == null ? 0 : (decimal)FORECAST_PO.FORECAST_VALUE;
+                            decimal postAdjustmentCosts = forecastValue + costDifferences;
+                            if (postAdjustmentCosts > 0)
+                            {
+                                FORECAST_PO.FORECAST_VALUE += costDifferences;
+                                saveFORECAST_POs.Add(FORECAST_PO);
+                                break;
+                            }
+                            else
+                            {
+                                costDifferences += forecastValue;
+                                FORECAST_PO.FORECAST_VALUE = 0.00m;
+                                saveFORECAST_POs.Add(FORECAST_PO);
+                            }
+                        }
+                        else if (costDifferences == 0)
+                        {
+                            //need to save adjustment anyway
+                            if (adjustmentFactor != 0)
+                                saveFORECAST_POs.Add(FORECAST_PO);
                         }
                     }
-                    else if (costDifferences == 0)
-                        break;
                 }
             }
 

@@ -224,7 +224,7 @@ namespace BluePrints.Common.Base
                     MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
                     MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-                    progressSaveBackgroundWorker.RunWorkerAsync(projection);
+                    saveProgressItem(projection);
                 }
 
                 return false;
@@ -269,12 +269,18 @@ namespace BluePrints.Common.Base
             //because undo/redo operation still relies on mainviewmodel progress needs to be re-checked even though we had onExistingRowAddUndoAndSaveIsContinue
             if (!haveGroupEntity && projectionEntity.ShouldSaveProgress)
             {
-                progressSaveBackgroundWorker.RunWorkerAsync(projectionEntity);
+                saveProgressItem(projectionEntity);
 
                 //main thread implementation
                 //IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
                 //PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
             }
+        }
+        
+        private void saveProgressItem(TMainProjectionEntity projection)
+        {
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+            PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
         }
 
         private void ProgressSaveBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

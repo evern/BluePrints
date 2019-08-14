@@ -228,4 +228,7 @@
   <data name="ChangeBudget" xml:space="preserve">
     <value>Allow user to change construction budget</value>
   </data>
+  <data name="SaveEAC" xml:space="preserve">
+    <value>Allow user to save forecast EAC</value>
+  </data>
 </root>

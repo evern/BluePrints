@@ -166,7 +166,6 @@
                                                 <dxb:BarItemLinkSeparator />
                                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                                 <dxb:BarItemLinkSeparator />
-                                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
