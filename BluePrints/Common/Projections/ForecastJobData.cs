@@ -63,7 +63,8 @@ namespace BluePrints.Common.Projections
         public decimal Revenue { get; set; }
         public decimal CurrentBudget => Budget + Variation;
         public decimal Variation { get; set; }
-        public decimal Actuals { get; set; }
+        public decimal ActualCosts { get; set; }
+        public decimal ActualUnits { get; set; }
         public decimal Invoiced { get; set; }
         public decimal Outstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }
@@ -72,7 +73,7 @@ namespace BluePrints.Common.Projections
         public decimal Uncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;
-        public decimal EstimateAtCompletion => Actuals + Outstanding + Uncommitted;
+        public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
         //public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
         public decimal PctComplete => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;

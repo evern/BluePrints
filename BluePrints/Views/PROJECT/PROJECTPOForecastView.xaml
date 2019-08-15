@@ -120,7 +120,7 @@
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn FieldName="Entity.Unforecasted" Fixed="Left" Header="Not Forecasted" ReadOnly="True" VisibleIndex="60" >
+                                        <dxg:GridColumn FieldName="Entity.Unforecasted" Fixed="Left" Header="Not Forecasted" ReadOnly="True" VisibleIndex="61" >
                                             <dxg:GridColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Grid>
@@ -137,19 +137,19 @@
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.TotalSummary>
                                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_TotalPrice" ShowInColumn="Entity.PO_TotalPrice" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_Invoiced" ShowInColumn="Entity.PO_Invoiced" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_RemainingPrice" ShowInColumn="Entity.PO_RemainingPrice" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.TotalForecast" ShowInColumn="Entity.TotalForecast" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.Unforecasted" ShowInColumn="Entity.Unforecasted" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_TotalPrice" ShowInColumn="Entity.PO_TotalPrice" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_Invoiced" ShowInColumn="Entity.PO_Invoiced" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_RemainingPrice" ShowInColumn="Entity.PO_RemainingPrice" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.TotalForecast" ShowInColumn="Entity.TotalForecast" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Unforecasted" ShowInColumn="Entity.Unforecasted" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.GroupSummary>
                                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_TotalPrice" ShowInColumn="Entity.PO_TotalPrice" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_Invoiced" ShowInColumn="Entity.PO_Invoiced" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.PO_RemainingPrice" ShowInColumn="Entity.PO_RemainingPrice" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.TotalForecast" ShowInColumn="Entity.TotalForecast" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Entity.Unforecasted" ShowInColumn="Entity.Unforecasted" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_TotalPrice" ShowInColumn="Entity.PO_TotalPrice" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_Invoiced" ShowInColumn="Entity.PO_Invoiced" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PO_RemainingPrice" ShowInColumn="Entity.PO_RemainingPrice" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.TotalForecast" ShowInColumn="Entity.TotalForecast" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Unforecasted" ShowInColumn="Entity.Unforecasted" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" ScrollBarAnnotationMode="None">
@@ -212,7 +212,7 @@
                                         <dxg:GridControlBand Header="Total">
                                             <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" >
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
@@ -226,17 +226,17 @@
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.TotalSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayRemainingCost" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />

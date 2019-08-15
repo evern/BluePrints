@@ -8,6 +8,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -335,7 +336,7 @@ namespace BluePrints.ViewModels
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                        string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
@@ -416,11 +417,12 @@ namespace BluePrints.ViewModels
                 if (DateTime.TryParse(e.Column.FieldName, out parsedate))
                 {
                     e.Column.CellTemplate = System.Windows.Application.Current.Resources["POForecastTemplate"] as DataTemplate;
+                    e.Column.HeaderTemplate = System.Windows.Application.Current.Resources["POForecastHeaderTemplate"] as DataTemplate;
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
                     e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
                     e.Column.ReadOnly = false;
                     e.Column.FixedWidth = true;
-                    e.Column.Width = 75;
+                    e.Column.Width = 60;
                 }
             }
         }
@@ -604,7 +606,7 @@ namespace BluePrints.ViewModels
                             if (lastProcessedDate == null)
                                 continue;
 
-                            parseFieldName = ((DateTime)lastProcessedDate).AddMonths((int)spreadInterval).AddDays(-1).ToShortDateString();
+                            parseFieldName = ((DateTime)lastProcessedDate).AddMonths((int)spreadInterval).AddDays(-1).ToString(BluePrintsResources.ColumnDateFormat);
                             oldValue = 0.00m;
                             forceRefreshDataTable = true;
                         }
@@ -658,7 +660,7 @@ namespace BluePrints.ViewModels
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
                 {
-                    PORow[alignedDate.ToShortDateString()] = 0;
+                    PORow[alignedDate.ToString(BluePrintsResources.ColumnDateFormat)] = 0;
                 }
 
                 foreach (ExoDataPoint forecastPayment in forecast.ForecastPayments)
@@ -671,7 +673,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
+                        string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
                         PORow[alignedDateField] = forecastPayment.Costs;
                     }
                 }

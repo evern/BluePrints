@@ -285,7 +285,7 @@ namespace BluePrints.ViewModels
                 constructionPlanned = null;
                 totalPlanned = filteredForecastCalculaton.Sum(x => x.PreviousEAC);
 
-                actual = filteredForecastCalculaton.Sum(x => x.Actuals);
+                actual = filteredForecastCalculaton.Sum(x => x.ActualCosts);
                 //designEarned = directDesignEarnedStats.Where(x => x.CurrentPeriodCumulativeDataPoint != null).Sum(x => x.CurrentPeriodCumulativeDataPoint.Costs);
                 designEarned = null;
                 constructionEarned = null;

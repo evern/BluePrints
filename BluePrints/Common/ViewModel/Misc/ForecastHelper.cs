@@ -131,7 +131,8 @@ namespace BluePrints.Common.ViewModel.Misc
                 if (actualStats.Count() > 0)
                 {
                     actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                    jobForecastSummary.Actuals += actualDataPoints.Sum(x => x.Costs);
+                    jobForecastSummary.ActualUnits += actualDataPoints.Sum(x => x.Units);
+                    jobForecastSummary.ActualCosts += actualDataPoints.Sum(x => x.Costs);
                     jobForecastSummary.Invoiced += actualDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
@@ -141,7 +142,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 if (materialStats != null && materialStats.Count() > 0)
                 {
                     materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                    jobForecastSummary.Actuals += materialDataPoints.Sum(x => x.Costs);
+                    jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
                     jobForecastSummary.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
                 }
 

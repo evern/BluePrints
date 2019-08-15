@@ -508,7 +508,7 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                        string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
@@ -560,22 +560,22 @@ namespace BluePrints.ViewModels
                         commodityRow[columnEntity] = commodityJob;
                         foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
                         {
-                            compareActualsRow[dateCost.Date.ToShortDateString()] = dateCost.ActualCosts;
-                            compareMaterialRow[dateCost.Date.ToShortDateString()] = dateCost.MaterialCosts;
-                            comparePOForecastRow[dateCost.Date.ToShortDateString()] = dateCost.POForecastCosts;
-                            compareP6CostsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Costs;
+                            compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
+                            compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
+                            comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
+                            compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
 
-                            compareChildP6CostsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Costs;
+                            compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
 
                             FORECAST findFORECASTS = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == dateCost.Date && x.SUBJOB_CODE == commodityJob.Projection.SubJob.Code && x.DISCIPLINE_CODE == commodityJob.Projection.Discipline.Code && x.COMMODITY_CODE == commodityJob.Projection.Commodity.Code && x.VARIATION_CODE == commodityJob.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6);
                             if(findFORECASTS != null && findFORECASTS.FORECAST_UNITS != null)
-                                compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = findFORECASTS.FORECAST_UNITS;
+                                compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = findFORECASTS.FORECAST_UNITS;
                             else
-                                compareP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
+                                compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
-                            compareChildP6UnitsRemainingRow[dateCost.Date.ToShortDateString()] = dateCost.P6Hours;
+                            compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
-                            commodityRow[dateCost.Date.ToShortDateString()] = dateCost.TotalCosts;
+                            commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
                         }
 
                         compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
@@ -595,7 +595,7 @@ namespace BluePrints.ViewModels
 
                         //calculate project summary, needs to be done after uncommitted is calculated
                         ForecastSummary.Budget_Cost += commodityJob.Budget;
-                        ForecastSummary.Current_Cost += commodityJob.Actuals;
+                        ForecastSummary.Current_Cost += commodityJob.ActualCosts;
                         ForecastSummary.Commitments += commodityJob.Outstanding;
                         ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
                         ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
@@ -678,8 +678,11 @@ namespace BluePrints.ViewModels
             DataRow p6CostRow = compareDataTable.Rows[3];
             DataRow p6HoursRow = compareDataTable.Rows[4];
 
+            DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
+            DataRow childCompareP6HoursRow = childCompareDataTable.Rows[1];
+
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
-            List<string> dateStrs = currentRowFORECASTS.Select(x => x.FORECAST_DATE.ToShortDateString()).ToList();
+            List<string> dateStrs = currentRowFORECASTS.Select(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat)).ToList();
 
             foreach(string dateStr in dateStrs)
             {
@@ -689,17 +692,25 @@ namespace BluePrints.ViewModels
                     DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= parseDate.Date);
                     if (alignedDataDate != null)
                     {
-                        string alignedDateField = ((DateTime)alignedDataDate).ToShortDateString();
+                        string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
                         //put forecast history only on compare datatable
                         if (alignedDataDate > FixedDataDateMonthEnd)
                             if (dataPointsTable.Columns.Contains(alignedDateField))
                             {
-                                IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE.ToShortDateString() == dateStr);
+                                IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat) == dateStr);
                                 FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
 
                                 if(costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
                                 {
                                     parentRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
+
+                                    //when p6 units isn't the original value, update the costs from db because cost from db is calculated from modified p6 units * norminal rate
+                                    decimal originalP6Units = (decimal)childCompareP6HoursRow[alignedDateField];
+                                    decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
+                                    if (originalP6Units != currentP6Units)
+                                    {
+                                        p6CostRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
+                                    }
                                 }
                                 else
                                 {
@@ -786,7 +797,7 @@ namespace BluePrints.ViewModels
                     this.RaisePropertyChanged(x => x.FilterCriteria);
                     this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
                 }
-                else if (gridColumn.FieldName.ToUpper().Contains("ACTUALS"))
+                else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
                 {
                     ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                     if(entity.Commodity.Code != string.Empty)
@@ -874,7 +885,9 @@ namespace BluePrints.ViewModels
                 DateTime parsedate;
                 if (DateTime.TryParse(e.Column.FieldName, out parsedate))
                 {
-                    e.Column.MaxWidth = 50;
+                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
+                    e.Column.Width = 60;
+                    e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
                 }
                 else
                 {
@@ -894,16 +907,21 @@ namespace BluePrints.ViewModels
                 {
                     if(parsedate <= FixedDataDateMonthEnd)
                     {
+                        e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
                         e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
                         e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
                         e.Column.ReadOnly = true;
                     }
                     else
+                    {
+                        e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
                         e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
+                    }
 
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
                     e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
-                    e.Column.Width = 75;
+                    e.Column.Width = 60;
+                    e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
                     e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
                 }
                 else
@@ -1371,7 +1389,7 @@ namespace BluePrints.ViewModels
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
             ExoSubJobProjection entity = job.Projection;
-            string dateFieldName = forecastDate.ToShortDateString();
+            string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
             decimal? compareValue = null;
             decimal? saveNewValue = viewNewValue;
 
@@ -1438,7 +1456,9 @@ namespace BluePrints.ViewModels
 
             //either reset p6 or cost info to null
             if (editForecastDataType == ForecastDataType.P6)
+            {
                 resetFORECAST.FORECAST_UNITS = saveNewValue * job.P6NominalRate;
+            }
             else
                 resetFORECAST.FORECAST_UNITS = null;
 
@@ -1447,7 +1467,7 @@ namespace BluePrints.ViewModels
             //used to ensure child row is set
             if (viewNewValue != null)
             {
-                dataRow[forecastDate.ToShortDateString()] = viewNewValue;
+                dataRow[forecastDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewNewValue;
             }
 
             updateUncommittedOnDatesFromDb(dataRow, true);
@@ -1555,7 +1575,7 @@ namespace BluePrints.ViewModels
                 else
                     eacName = projectDateEAC.SUBJOB_CODE + "-" + projectDateEAC.DISCIPLINE_CODE;
 
-                LoadingScreenManager.SetMessage("Removing old EAC on " + forecastDate.ToShortDateString() + " for job: " + eacName);
+                LoadingScreenManager.SetMessage("Removing old EAC on " + forecastDate.ToString(BluePrintsResources.ColumnDateFormat) + " for job: " + eacName);
                 bluePrintsUnitOfWork.FORECASTS.Remove(projectDateEAC);
                 LoadingScreenManager.Progress();
             }
@@ -1665,7 +1685,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToShortDateString() + " is saved", "EAC Saved", MessageButton.OK, MessageIcon.Information);
+            MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved", "EAC Saved", MessageButton.OK, MessageIcon.Information);
         }
 
         public bool CanUndo()

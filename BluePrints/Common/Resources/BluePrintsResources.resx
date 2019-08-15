@@ -300,4 +300,7 @@
   <data name="SecurityKey" xml:space="preserve">
     <value>p4y57zcvp</value>
   </data>
+  <data name="ColumnDateFormat" xml:space="preserve">
+    <value>dd-MMM-yy</value>
+  </data>
 </root>
