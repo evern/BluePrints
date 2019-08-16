@@ -21,7 +21,7 @@
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
             </Style>
             <DataTemplate x:Key="ColumnHeaderTemplate">
-                <TextBlock TextWrapping="Wrap" Text="{Binding Converter={StaticResource DynamicDateColumnDisplayStringConverter}}"
+                <TextBlock TextWrapping="WrapWithOverflow" Text="{Binding Converter={StaticResource DynamicDateColumnDisplayStringConverter}}"
                            FontFamily="Calibri" FontSize="12"
                            VerticalAlignment="Center" TextAlignment="Center"
                            HorizontalAlignment="Center">
