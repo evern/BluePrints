@@ -671,6 +671,15 @@ namespace BluePrints.Common.Base
             ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original, loadPROJECT };
         }
 
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Please check whether data date is correct before updating", null, null, null);
+            notification1.ShowAsync();
+        }
+
         public void SyncProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)
         {
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
