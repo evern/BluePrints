@@ -362,6 +362,15 @@ namespace BluePrints.ViewModels
             MainViewModel.BulkSave(saveEntities);
         }
 
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Please check whether data date is correct before updating", null, null, null);
+            notification1.ShowAsync();
+        }
+
         public bool CanViewReport()
         {
             return true;
