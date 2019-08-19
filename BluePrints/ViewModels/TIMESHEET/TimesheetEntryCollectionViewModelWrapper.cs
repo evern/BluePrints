@@ -67,8 +67,8 @@ namespace BluePrints.ViewModels
         List<string> systemColumnFieldNames = new List<string>();
         private Data.PROJECT loadPROJECT;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         string columnResourceSeqNo = "Resource_SeqNo";
         string columnJobNo = "JobNo";
         string columnCostGroup = "CostGroup";
@@ -89,6 +89,8 @@ namespace BluePrints.ViewModels
             forceApplyBestFit = true;
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             GetDateRange();
 
             defaultColumnFieldNames.Add(columnResourceSeqNo);
