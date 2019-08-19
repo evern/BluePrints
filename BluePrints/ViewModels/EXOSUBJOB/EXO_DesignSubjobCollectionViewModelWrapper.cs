@@ -64,14 +64,17 @@ namespace BluePrints.ViewModels
         private BASELINE liveBASELINE;
         private PROGRESS livePROGRESS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         #endregion
 
         #region Loading Operations
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
+
             loadPROJECT = PROJECTParameter.GetEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+
             initializeCompulsoryViewProperties();
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
@@ -213,7 +216,7 @@ namespace BluePrints.ViewModels
                     newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
                     if (newUser.ShouldAssign && subJob.SubJobId != null)
                     {
-                        if (ExoMethods.findExistingOrAddResourceAllocation(newUser, (int)subJob.SubJobId))
+                        if (ExoMethods.findExistingOrAddResourceAllocation(primeroUnitOfWork, newUser, (int)subJob.SubJobId))
                             addedCount += 1;
 
                         newUser.IsAssigned = true;
@@ -319,6 +322,15 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+        }
+
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo, null, null, null);
+            notification1.ShowAsync();
         }
 
         public override string ViewName

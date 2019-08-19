@@ -79,7 +79,8 @@ namespace BluePrints.ViewModels
         protected Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         protected PROGRESS livePROGRESS { get; set; }
         protected bool isQueryForLiveStatus;
-        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         //public bool Is_Autofill_Internal_Number { get; set; }
         private bool allow_drag_drop { get; set; }
         public bool Allow_Drag_Drop
@@ -272,6 +273,8 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
             viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -1743,6 +1746,14 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo + " for time booking", null, null, null);
+            notification1.ShowAsync();
+        }
 
         public bool CanShowBookable()
         {

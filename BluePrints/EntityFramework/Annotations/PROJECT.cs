@@ -84,6 +84,17 @@ namespace BluePrints.Data
             }
         }
 
+        public string OfficeNameForExo
+        {
+            get
+            {
+                if (OFFICE == null)
+                    return BluePrintsResources.OfficeMontreal;
+
+                return OFFICE.NAME.ToUpper();
+            }
+        }
+
         [NotMapped]
         private IEnumerable<object> disciplines;
 

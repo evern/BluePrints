@@ -70,8 +70,8 @@ namespace BluePrints.ViewModels
         protected Data.PROJECT loadPROJECT;
         protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
         protected JOBCOST_HDR masterJob;
@@ -89,21 +89,13 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Loading Operations
-        public override void ShowNotification()
-        {
-            if (AppNotificationService == null || GlobalVariables.IsNotificationShown)
-                return;
-
-            INotification notification1 = AppNotificationService.CreatePredefinedNotification("[Is Assigned] been changed to [Can Book] and moved to the first column", null, null, null);
-
-            GlobalVariables.IsNotificationShown = true;
-            notification1.ShowAsync();
-        }
-
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
@@ -394,7 +386,7 @@ namespace BluePrints.ViewModels
             {
                 foreach (ExoSubJobEditableProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
                 {
-                    ExoMethods.findExistingOrAddResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJobId);
+                    ExoMethods.findExistingOrAddResourceAllocation(primeroUnitOfWork, editingSubJobAuth, (int)selectedEntity.SubJobId);
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
 
@@ -734,7 +726,7 @@ namespace BluePrints.ViewModels
                                 projection.StockName = stock_item.DESCRIPTION;
                                 if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
                                 {
-                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(projection, copyLine, loadPROJECT.NUMBER);
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(primeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER);
                                     projection.LineId = findExistingOrAddLine.SEQNO;
                                     if (projection.LineId != null)
                                     {
@@ -980,6 +972,15 @@ namespace BluePrints.ViewModels
                 permissions.AddRange(orderedAuthUsers.OrderBy(x => x.User.Full_Name));
                 return permissions;
             }
+        }
+
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo, null, null, null);
+            notification1.ShowAsync();
         }
 
         public override string ViewName

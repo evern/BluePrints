@@ -8,9 +8,12 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Helpers;
+using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
@@ -53,6 +56,9 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCoreCommand;
         BackgroundWorker backgroundWorker = new BackgroundWorker();
+        protected IPrimeroEntitiesUnitOfWork primeroPerthUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        protected IPrimeroEntitiesUnitOfWork primeroMontrealUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+
         protected override void resolveParameters(object parameter)
         {
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -700,7 +706,6 @@ namespace BluePrints.ViewModels
                 shouldInvokeTenderSubjobDates = true;
             }
 
-
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
@@ -753,6 +758,30 @@ namespace BluePrints.ViewModels
                 if(DisplayEntities.Any(x => x.NUMBER != null && x.NUMBER.ToUpper() == new_value.ToString().ToUpper()))
                 {
                     return "Project number already exists";
+                }
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().GUID_OFFICE))
+            {
+                if (projection.NUMBER != string.Empty)
+                {
+                    if (projection.GUID_OFFICE != null && new_value != null)
+                    {
+                        Guid newOfficeGuid = (Guid)new_value;
+                        OFFICE findOldOFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == projection.GUID_OFFICE);
+                        if (findOldOFFICE != null)
+                        {
+                            JOBCOST_LINES exoLine;
+                            if (findOldOFFICE.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
+                                exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroMontrealUnitOfWork, projection.NUMBER);
+                            else
+                                exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroPerthUnitOfWork, projection.NUMBER);
+
+                            if (exoLine != null && newOfficeGuid.ToString() != projection.GUID_OFFICE.ToString())
+                            {
+                                return "Exo job already already exists in " + findOldOFFICE.NAME + ", so office cannot be changed";
+                            }
+                        }
+                    }
                 }
             }
             //else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))

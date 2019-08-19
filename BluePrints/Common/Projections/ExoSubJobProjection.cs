@@ -610,9 +610,8 @@ namespace BluePrints.Common.Projections
         //    }
         //}
 
-        public static JOBCOST_LINES findExistingOrAddLine(ExoSubJobEditableProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
+        public static JOBCOST_LINES findExistingOrAddLine(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobEditableProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
         {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             if (exoLine.SubJobId == null || exoLine.DisciplineId == null || exoLine.CommodityId == null)
                 return null;
             else
@@ -1115,9 +1114,8 @@ namespace BluePrints.Common.Projections
         }
 
         /// <returns>Whether new record is added</returns>
-        public static bool findExistingOrAddResourceAllocation(ExoSubJobAuth existingPermission, int jobNo)
+        public static bool findExistingOrAddResourceAllocation(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobAuth existingPermission, int jobNo)
         {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo, true);
 
             if (resourceAllocation != null)

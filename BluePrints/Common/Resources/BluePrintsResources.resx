@@ -303,4 +303,10 @@
   <data name="ColumnDateFormat" xml:space="preserve">
     <value>dd-MMM-yy</value>
   </data>
+  <data name="OfficeMontreal" xml:space="preserve">
+    <value>MONTREAL</value>
+  </data>
+  <data name="OfficePerth" xml:space="preserve">
+    <value>PERTH</value>
+  </data>
 </root>

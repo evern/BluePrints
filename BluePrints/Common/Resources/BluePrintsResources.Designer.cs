@@ -502,6 +502,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MONTREAL.
+        /// </summary>
+        internal static string OfficeMontreal {
+            get {
+                return ResourceManager.GetString("OfficeMontreal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PERTH.
+        /// </summary>
+        internal static string OfficePerth {
+            get {
+                return ResourceManager.GetString("OfficePerth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to P6 progress schedule population failed.
         /// </summary>
         internal static string P6_Assignment_Progress_Write_Failed {
