@@ -90,6 +90,11 @@ namespace BluePrints.ViewModels
             get { return "UserOffsiteDirectProgressViewModelWrapper"; }
         }
 
+        public override void ShowNotification()
+        {
+            //base.ShowNotification();
+        }
+
         bool hideCompleted;
         public bool HideCompleted
         {
