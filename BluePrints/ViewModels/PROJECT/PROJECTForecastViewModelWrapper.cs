@@ -1197,7 +1197,7 @@ namespace BluePrints.ViewModels
                         decimal oldP6Units = (decimal)compareP6UnitsRemainingRow[alignedDateField];
                         if (originalP6Units > 0)
                         {
-                            decimal newP6Units = originalP6Units * newProductivity;
+                            decimal newP6Units = originalP6Units / newProductivity;
                             findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, newP6Units, oldP6Units);
                         }
                         else
