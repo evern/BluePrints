@@ -49,6 +49,9 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
+        IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
         //timer to scan serial port
         private DispatcherTimer serialPortScanTimer;
         private DispatcherTimer serialPortWriteTimer;
@@ -58,6 +61,8 @@ namespace BluePrints.ViewModels
         private SerialPort serialPort1;
         protected override void resolveParameters(object parameter)
         {
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
             serialPortScanTimer = new DispatcherTimer();
             serialPortScanTimer.Interval = new TimeSpan(0, 0, 1);
             serialPortScanTimer.Tick += SerialPortScanTimer_Tick;
@@ -277,8 +282,21 @@ namespace BluePrints.ViewModels
 
         private int? getExoStaffId(USER bluePrintsUser)
         {
+            if (bluePrintsUser.GUID_OFFICE == null)
+                return null;
+
             string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
-            STAFF exoSTAFF = PrimeroSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName);
+            IEnumerable<STAFF> officeSpecificCollection;
+            OFFICE findOffice = OFFICECollection.FirstOrDefault(x => x.GUID == bluePrintsUser.GUID_OFFICE);
+            if (findOffice == null)
+                return null;
+
+            if (findOffice.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
+                officeSpecificCollection = PGASTAFFCollection;
+            else
+                officeSpecificCollection = PrimeroSTAFFCollection;
+
+            STAFF exoSTAFF = officeSpecificCollection.FirstOrDefault(x => x.NAME == exoGuessUserName);
             if (exoSTAFF != null)
             {
                 return exoSTAFF.STAFFNO;
@@ -311,15 +329,27 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            bool showErrorMessage = false;
             List<USER> userToSave = new List<USER>();
             foreach(USER entity in DisplaySelectedEntities)
             {
+                if (entity.GUID_OFFICE == null)
+                {
+                    showErrorMessage = true;
+                    continue;
+                }
+
                 int? exoId = getExoStaffId(entity);
                 if(exoId != null)
                 {
                     entity.EXO_STAFF_ID = exoId;
                     userToSave.Add(entity);
                 }
+            }
+
+            if (showErrorMessage)
+            {
+                MessageBoxService.ShowMessage("Cannot assign Exo user because office isn't populated, please populate office then try again", "Error", MessageButton.OK, MessageIcon.Information);
             }
 
             MainViewModel.BulkSave(userToSave);
@@ -337,10 +367,53 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                var collection = GetEntities<STAFF>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
+                if (primeroUnitOfWork == null)
+                    return null;
+
+                return primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME);
+            }
+        }
+
+        List<STAFF> combinedStaffCollection;
+        public IEnumerable<STAFF> CombinedSTAFFCollection
+        {
+            get
+            {
+                if (PGASTAFFCollection == null || PrimeroSTAFFCollection == null)
+                    return null;
+
+                if(combinedStaffCollection == null)
+                {
+                    combinedStaffCollection = new List<STAFF>();
+                    List<STAFF> perthStaffs = PrimeroSTAFFCollection.ToList();
+                    perthStaffs.ForEach(x => x.Office = BluePrintsResources.OfficePerth);
+                    List<STAFF> montrealStaffs = PGASTAFFCollection.ToList();
+                    montrealStaffs.ForEach(x => x.Office = BluePrintsResources.OfficeMontreal);
+
+                    List<STAFF> tempStaff = new List<STAFF>();
+                    tempStaff.AddRange(perthStaffs);
+
+                    foreach(STAFF montrealStaff in montrealStaffs)
+                    {
+                        if (!perthStaffs.Any(x => x.STAFFNO == montrealStaff.STAFFNO))
+                            tempStaff.Add(montrealStaff);
+                    }
+
+                    combinedStaffCollection.AddRange(tempStaff.OrderBy(x => x.NAME));
+                }
+
+                return combinedStaffCollection;
+            }
+        }
+
+        public IEnumerable<STAFF> PGASTAFFCollection
+        {
+            get
+            {
+                if (pgaUnitOfWork == null)
+                    return null;
+
+                return pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME);
             }
         }
 
