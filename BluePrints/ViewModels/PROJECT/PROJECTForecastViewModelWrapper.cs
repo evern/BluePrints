@@ -727,8 +727,8 @@ namespace BluePrints.ViewModels
 
             job.P6RemainingUnitsOverride = P6CurrentRemainingUnits;
 
-            if (job.P6RemainingUnitsOverride != null && job.P6RemainingUnits != 0)
-                job.Productivity = (decimal)job.P6RemainingUnitsOverride / job.P6RemainingUnits;
+            if (job.P6RemainingUnitsOverride != null && job.P6RemainingUnitsOverride != 0 && job.P6RemainingUnits != 0)
+                job.Productivity = job.P6RemainingUnits / (decimal)job.P6RemainingUnitsOverride;
             else
                 job.Productivity = 0.00m;
         }
@@ -2279,10 +2279,10 @@ namespace BluePrints.ViewModels
         public decimal TotalClaims { get; set; }
         public decimal UnderOverClaim => TotalClaims - Current_Cost;
 
-        public SolidColorBrush Budget_Margin_Background => Budget_Margin > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
-        public SolidColorBrush Budget_Margin_Percent_Background => Budget_Margin_Percent > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
-        public SolidColorBrush EAC_Margin_Background => EAC_Margin > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
-        public SolidColorBrush EAC_Margin_Percent_Background => EAC_Margin_Percent > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
-        public SolidColorBrush UnderOverClaim_Background => UnderOverClaim > 0 ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush Budget_Margin_Background => Budget_Margin > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush Budget_Margin_Percent_Background => Budget_Margin_Percent > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush EAC_Margin_Background => EAC_Margin > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush EAC_Margin_Percent_Background => EAC_Margin_Percent > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush UnderOverClaim_Background => UnderOverClaim > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
     }
 }

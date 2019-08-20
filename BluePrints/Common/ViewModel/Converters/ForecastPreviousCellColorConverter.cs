@@ -11,7 +11,7 @@ namespace BluePrints.Common.ViewModel.Converters
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            SolidColorBrush paleGreenColor = new System.Windows.Media.SolidColorBrush(Colors.PaleGreen);
+            SolidColorBrush paleGreenColor = new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)

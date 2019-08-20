@@ -110,7 +110,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplatePast">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
@@ -121,7 +121,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
-            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True">
+            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
@@ -138,7 +138,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateChild">
-            <dxe:SpinEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellReadOnlyConverter}}" Increment="1" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0">
+            <dxe:SpinEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellReadOnlyConverter}}" Increment="1" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureChildCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />
