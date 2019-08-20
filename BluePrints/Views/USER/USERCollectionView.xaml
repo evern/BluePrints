@@ -95,10 +95,15 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.RestrictedROLECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="GUID_OFFICE" Header="Office">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="EXO_STAFF_ID" Header="Exo Name" HeaderToolTip="User name in Exo">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" ValueMember="STAFFNO" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.CombinedSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" >
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" ValueMember="STAFFNO" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ExoSTAFFS}" NullValueButtonPlacement="Popup" PopupMinWidth="500" >
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>
@@ -120,11 +125,6 @@
                                     </dxg:GridColumn.CellTemplate>
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="GUID_OFFICE" Header="Office">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="GUID_APPROVER" Header="Approver" HeaderToolTip="Approver">

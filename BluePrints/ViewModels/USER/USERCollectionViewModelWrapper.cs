@@ -230,13 +230,30 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<USER>, IQueryable<USER>> specifyMainViewModelProjection()
         {
             if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername)
-                return query => query.OrderBy(x => x.NAME);
+                return query => USERCollectionPopulation(query.OrderBy(x => x.NAME));
             else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                 return query => query.Where(x => x.GUID == Guid.Empty);
             else
-                return query => query;
+                return query => USERCollectionPopulation(query.OrderBy(x => x.NAME));
             //else
             //    return query => query.ToArray().Where(x => x.GUID_ROLE == null || x.GUID_ROLE == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID_ROLE)).AsQueryable();
+        }
+
+        public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
+        {
+            List<USER> userList = USERS.ToList();
+            userList.ForEach(x => populateUSERStaff(x, PerthSTAFFCollection, MontrealSTAFFCollection, OFFICECollection));
+            return userList.AsQueryable();
+        }
+
+        private void populateUSERStaff(USER user, IEnumerable<STAFF> perthSTAFF, IEnumerable<STAFF> montrealSTAFF, IEnumerable<OFFICE> OFFICECollection)
+        {
+            if (user.OFFICE == null && user.GUID_OFFICE != null)
+                user.OFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
+
+            user.PerthStaffs = perthSTAFF;
+            user.MontrealStaffs = montrealSTAFF;
+            user.Update();
         }
 
         public IEnumerable<Guid> ChildrenRoles(Guid roleGuid)
@@ -249,6 +266,16 @@ namespace BluePrints.ViewModels
                     foreach (var entityChild in ChildrenRoles(role.GUID))
                         yield return entityChild;
                 }
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, USER projection, bool isNew)
+        {
+            if(field_name == BindableBase.GetPropertyName(() => new USER().GUID_OFFICE))
+            {
+                populateUSERStaff(projection, PerthSTAFFCollection, MontrealSTAFFCollection, OFFICECollection);
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
@@ -292,9 +319,9 @@ namespace BluePrints.ViewModels
                 return null;
 
             if (findOffice.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
-                officeSpecificCollection = PGASTAFFCollection;
+                officeSpecificCollection = MontrealSTAFFCollection;
             else
-                officeSpecificCollection = PrimeroSTAFFCollection;
+                officeSpecificCollection = PerthSTAFFCollection;
 
             STAFF exoSTAFF = officeSpecificCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
@@ -311,7 +338,7 @@ namespace BluePrints.ViewModels
                 }
 
                 exoGuessUserName2 = exoGuessUserName2.Trim();
-                STAFF exoSTAFF2 = PrimeroSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName2);
+                STAFF exoSTAFF2 = PerthSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName2);
                 if (exoSTAFF2 != null)
                 {
                     return exoSTAFF2.STAFFNO;
@@ -363,57 +390,39 @@ namespace BluePrints.ViewModels
             get { return "USERCollectionViewModelWrapper"; }
         }
 
-        public IEnumerable<STAFF> PrimeroSTAFFCollection
-        {
-            get
-            {
-                if (primeroUnitOfWork == null)
-                    return null;
-
-                return primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME);
-            }
-        }
-
-        List<STAFF> combinedStaffCollection;
-        public IEnumerable<STAFF> CombinedSTAFFCollection
-        {
-            get
-            {
-                if (PGASTAFFCollection == null || PrimeroSTAFFCollection == null)
-                    return null;
-
-                if(combinedStaffCollection == null)
-                {
-                    combinedStaffCollection = new List<STAFF>();
-                    List<STAFF> perthStaffs = PrimeroSTAFFCollection.ToList();
-                    perthStaffs.ForEach(x => x.Office = BluePrintsResources.OfficePerth);
-                    List<STAFF> montrealStaffs = PGASTAFFCollection.ToList();
-                    montrealStaffs.ForEach(x => x.Office = BluePrintsResources.OfficeMontreal);
-
-                    List<STAFF> tempStaff = new List<STAFF>();
-                    tempStaff.AddRange(perthStaffs);
-
-                    foreach(STAFF montrealStaff in montrealStaffs)
-                    {
-                        if (!perthStaffs.Any(x => x.STAFFNO == montrealStaff.STAFFNO))
-                            tempStaff.Add(montrealStaff);
-                    }
-
-                    combinedStaffCollection.AddRange(tempStaff.OrderBy(x => x.NAME));
-                }
-
-                return combinedStaffCollection;
-            }
-        }
-
-        public IEnumerable<STAFF> PGASTAFFCollection
+        List<STAFF> perthStaffCollection;
+        public IEnumerable<STAFF> PerthSTAFFCollection
         {
             get
             {
                 if (pgaUnitOfWork == null)
                     return null;
 
-                return pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME);
+                if (perthStaffCollection == null)
+                {
+                    perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    perthStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficePerth);
+                }
+
+                return perthStaffCollection;
+            }
+        }
+
+        List<STAFF> pgaStaffCollection;
+        public IEnumerable<STAFF> MontrealSTAFFCollection
+        {
+            get
+            {
+                if (pgaUnitOfWork == null)
+                    return null;
+
+                if(pgaStaffCollection == null)
+                {
+                    pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    pgaStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficeMontreal);
+                }
+
+                return pgaStaffCollection;
             }
         }
 
