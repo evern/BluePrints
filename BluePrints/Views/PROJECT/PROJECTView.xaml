@@ -87,6 +87,7 @@
                         <dxb:BarButtonItem x:Name="biEditBaseline" Command="{Binding DataContext.EditBaselineCommand, ElementName=userControl}" Content="Baselines" Glyph="{dx:DXImage Image=Information_16x16.png}" LargeGlyph="{dx:DXImage Image=Information_32x32.png}" ToolTip="View all revisions of project baseline" />
                         <dxb:BarButtonItem x:Name="biEditEstimate" Command="{Binding DataContext.EditEstimateCommand, ElementName=userControl}" Content="Estimates" Glyph="{dx:DXImage Image=Cube_16x16.png}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" ToolTip="View all revisions of project estimate" />
                         <dxb:BarButtonItem x:Name="biEditProgress" Command="{Binding DataContext.EditProgressCommand, ElementName=userControl}" Content="Progresses" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="View all revisions of project progress" />
+                        <dxb:BarButtonItem x:Name="biLocalExportToExcel" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export All" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export all datapoints to excel" />
                     </dxb:BarManager.Items>
                     <DockPanel>
                         <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
@@ -119,6 +120,7 @@
                                 </dxr:RibbonPage>
                                 <dxr:RibbonPage MergeType="Replace" Caption="Detailed Export">
                                     <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Details">
+                                        <dxb:BarButtonItemLink BarItemName="biLocalExportToExcel" />
                                         <dxb:BarButtonItemLink BarItemName="biExportPlanned" />
                                         <dxb:BarButtonItemLink BarItemName="biExportCurrent" />
                                         <dxb:BarButtonItemLink BarItemName="biExportEarned" />
