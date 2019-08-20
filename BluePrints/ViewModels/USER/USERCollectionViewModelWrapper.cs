@@ -296,7 +296,7 @@ namespace BluePrints.ViewModels
             else
                 officeSpecificCollection = PrimeroSTAFFCollection;
 
-            STAFF exoSTAFF = officeSpecificCollection.FirstOrDefault(x => x.NAME == exoGuessUserName);
+            STAFF exoSTAFF = officeSpecificCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
             {
                 return exoSTAFF.STAFFNO;
