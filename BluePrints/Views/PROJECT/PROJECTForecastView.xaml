@@ -122,7 +122,6 @@
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                     <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
@@ -237,7 +236,7 @@
                                                     <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.Productivity" Fixed="Left" Header="PF" HeaderToolTip="Productivity" VisibleIndex="78">
+                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.Productivity" Fixed="Left" Header="PF" HeaderToolTip="Productivity Factor, 0 means there aren't any units from P6" VisibleIndex="78">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="0.1" />
                                                 </dxg:GridColumn.EditSettings>

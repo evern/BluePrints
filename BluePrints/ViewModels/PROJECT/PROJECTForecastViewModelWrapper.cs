@@ -730,7 +730,7 @@ namespace BluePrints.ViewModels
             if (job.P6RemainingUnitsOverride != null && job.P6RemainingUnits != 0)
                 job.Productivity = (decimal)job.P6RemainingUnitsOverride / job.P6RemainingUnits;
             else
-                job.Productivity = 1;
+                job.Productivity = 0.00m;
         }
         #endregion
 
