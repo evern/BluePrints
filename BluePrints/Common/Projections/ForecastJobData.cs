@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.ViewModels;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,11 @@ namespace BluePrints.Common.Projections
         public decimal Outstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }
         public decimal P6RemainingUnits { get; set; }
-        public decimal P6RemainingUnitsOverride { get; set; }
+
+        public decimal? P6RemainingUnitsOverride { get; set; }
+
+        public decimal Productivity { get; set; }
+
         public decimal P6RemainingCosts { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal PreviousEAC { get; set; }

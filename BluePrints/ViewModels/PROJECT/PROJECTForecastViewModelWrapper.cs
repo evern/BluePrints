@@ -543,15 +543,15 @@ namespace BluePrints.ViewModels
                         DataRow commodityRow = dataPointsTable.NewRow();
                         DataTable compareDataTable = dataPointsTable.Clone();
                         DataRow compareActualsRow = compareDataTable.NewRow();
-                        compareActualsRow[columnEntity] = new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" };
+                        compareActualsRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" });
                         DataRow compareMaterialRow = compareDataTable.NewRow();
-                        compareMaterialRow[columnEntity] = new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" };
+                        compareMaterialRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" });
                         DataRow comparePOForecastRow = compareDataTable.NewRow();
-                        comparePOForecastRow[columnEntity] = new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" };
+                        comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" });
                         DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
-                        compareP6CostsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" };
+                        compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
                         DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
-                        compareP6UnitsRemainingRow[columnEntity] = new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n0", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts };
+                        compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
 
                         DataTable compareChildDataTable = dataPointsTable.Clone();
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
@@ -690,54 +690,47 @@ namespace BluePrints.ViewModels
             DataRow childCompareP6HoursRow = childCompareDataTable.Rows[1];
 
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
-            List<string> dateStrs = currentRowFORECASTS.Select(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat)).ToList();
-
-            HashSet<string> uniqueDateStrs = new HashSet<string>(dateStrs);
+            
             decimal P6CurrentRemainingUnits = 0;
-            foreach(string dateStr in uniqueDateStrs)
+            foreach(ForecastDateCost dateCost in job.DateCosts)
             {
-                DateTime parseDate;
-                if (DateTime.TryParse(dateStr, out parseDate))
+                DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= dateCost.Date);
+                if (alignedDataDate != null)
                 {
-                    DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= parseDate.Date);
-                    if (alignedDataDate != null)
+                    string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
+                    //put forecast history only on compare datatable
+                    if (alignedDataDate > FixedDataDateMonthEnd)
                     {
-                        string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
-                        //put forecast history only on compare datatable
-                        if (alignedDataDate > FixedDataDateMonthEnd)
+                        if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            if (dataPointsTable.Columns.Contains(alignedDateField))
+                            IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE == dateCost.Date);
+                            FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+
+                            decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
+                            P6CurrentRemainingUnits += currentP6Units;
+                            decimal P6RemainingCostsOnDataDate = 0;
+                            if (costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
                             {
-                                IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat) == dateStr);
-                                FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-
-                                decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
-                                P6CurrentRemainingUnits += currentP6Units;
-                                decimal P6RemainingCostsOnDataDate = 0;
-                                if (costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
-                                {
-                                    P6RemainingCostsOnDataDate = (decimal)costFORECAST.FORECAST_UNITS;
-
-                                    //when p6 units isn't the original value, update the costs from db because cost from db is calculated from modified p6 units * norminal rate
-                                    decimal originalP6Units = (decimal)childCompareP6HoursRow[alignedDateField];
-                                    if (originalP6Units != currentP6Units)
-                                    {
-                                        p6CostRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
-                                    }
-                                }
-                                else
-                                {
-                                    P6RemainingCostsOnDataDate = getMasterRowResetValue(compareDataTable, alignedDateField);
-                                }
-
-                                parentRow[alignedDateField] = P6RemainingCostsOnDataDate;
+                                P6RemainingCostsOnDataDate = (decimal)costFORECAST.FORECAST_UNITS;
                             }
+                            else
+                            {
+                                P6RemainingCostsOnDataDate = getMasterRowResetValue(compareDataTable, alignedDateField);
+                            }
+
+                            parentRow[alignedDateField] = P6RemainingCostsOnDataDate;
+                            p6CostRow[alignedDateField] = P6RemainingCostsOnDataDate;
                         }
                     }
                 }
             }
 
             job.P6RemainingUnitsOverride = P6CurrentRemainingUnits;
+
+            if (job.P6RemainingUnitsOverride != null && job.P6RemainingUnits != 0)
+                job.Productivity = (decimal)job.P6RemainingUnitsOverride / job.P6RemainingUnits;
+            else
+                job.Productivity = 1;
         }
         #endregion
 
@@ -1178,9 +1171,42 @@ namespace BluePrints.ViewModels
         {
             ExoSubJobProjection entity = ((ForecastJobData)row[columnEntity]).Projection;
 
-            if (fieldName.ToUpper() == "ENTITY.BUDGET" || fieldName.ToUpper().Contains("ENTITY.RATE"))
+            fieldName = fieldName.Replace("Entity.", "");
+            if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Budget) || fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Rate))
             {
                 commitBudget(row, newValue);
+            }
+            else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+            {
+                if(newValue != null)
+                {
+                    decimal newProductivity = (decimal)newValue;
+                    ForecastJobData job = ((ForecastJobData)row[columnEntity]);
+
+                    DataTable compareDataTable = (DataTable)row[columnCompare];
+                    DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[4];
+
+                    DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
+                    DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[1];
+
+                    EntitiesUndoRedoManager.PauseActionId();
+                    foreach (ForecastDateCost dateCost in job.DateCosts)
+                    {
+                        string alignedDateField = (dateCost.Date).ToString(BluePrintsResources.ColumnDateFormat);
+                        decimal originalP6Units = (decimal)compareChildP6UnitsRemainingRow[alignedDateField];
+                        decimal oldP6Units = (decimal)compareP6UnitsRemainingRow[alignedDateField];
+                        if (originalP6Units > 0)
+                        {
+                            decimal newP6Units = originalP6Units * newProductivity;
+                            findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, newP6Units, oldP6Units);
+                        }
+                        else
+                        {
+                            findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, 0.00m, oldP6Units);
+                        }
+                    }
+                    EntitiesUndoRedoManager.UnpauseActionId();
+                }
             }
             else
             {

@@ -232,14 +232,14 @@
                                                     <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.P6RemainingUnits" Fixed="Left" Header="P6 Remaining Units" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="76">
+                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.P6RemainingUnitsOverride" Fixed="Left" Header="P6 Remaining Units" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.P6RemainingUnitsOverride" Fixed="Left" Header="P6 Override" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
+                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.Productivity" Fixed="Left" Header="PF" HeaderToolTip="Productivity" VisibleIndex="78">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="0.1" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.ActualCosts" Fixed="Left" Header="Actual Costs" HeaderToolTip="Costs burned to Date" ReadOnly="True" VisibleIndex="80">
@@ -324,14 +324,14 @@
                                                                 <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="76">
+                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
                                                             <dxg:GridColumn.EditSettings>
                                                                 <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
+                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Productivity" ReadOnly="True" VisibleIndex="78">
                                                             <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                                <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="0.1" />
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
                                                         <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Costs burned to Date" ReadOnly="True" VisibleIndex="80">
@@ -396,7 +396,7 @@
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnits" ShowInColumn="Entity.P6RemainingUnits" SummaryType="Sum" />
+                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
@@ -412,7 +412,7 @@
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnits" ShowInColumn="Entity.P6RemainingUnits" SummaryType="Sum" />
+                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
                                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
@@ -431,7 +431,7 @@
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnits" ShowInColumn="Entity.P6RemainingUnits" SummaryType="Sum" />
+                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
@@ -447,7 +447,7 @@
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnits" ShowInColumn="Entity.P6RemainingUnits" SummaryType="Sum" />
+                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />

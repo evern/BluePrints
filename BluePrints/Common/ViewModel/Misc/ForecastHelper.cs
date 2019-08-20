@@ -4,6 +4,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.ViewModels;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -207,7 +208,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// </summary>
         private static ForecastJobData createJobForecastSummary(string subJobCode, string subJobTitle, string disciplineCode, string disciplineName, string commodityCode, string commodityName, string commodityDescription, string commodityUOM, string variationCode, IEnumerable<ExoTimeAuthorisation> jobLines)
         {
-            ForecastJobData forecastProjection = new ForecastJobData();
+            ForecastJobData forecastProjection = ViewModelSource.Create(() => new ForecastJobData());
             forecastProjection.IsBudgetReadOnly = !LoginCredentials.hasPermission(PermissionResources.ChangeBudget);
             variationCode = NormalizeVariationCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityName, Description = commodityDescription, UOM = commodityUOM }, Variation_Code = variationCode };
