@@ -237,6 +237,11 @@
                                                     <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
+                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.P6RemainingUnitsOverride" Fixed="Left" Header="P6 Override" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                             <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.ActualCosts" Fixed="Left" Header="Actual Costs" HeaderToolTip="Costs burned to Date" ReadOnly="True" VisibleIndex="80">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -320,6 +325,11 @@
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
                                                         <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="76">
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
                                                             <dxg:GridColumn.EditSettings>
                                                                 <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                             </dxg:GridColumn.EditSettings>

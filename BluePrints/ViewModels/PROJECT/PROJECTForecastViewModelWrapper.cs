@@ -557,7 +557,7 @@ namespace BluePrints.ViewModels
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
                         DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.NewRow();
 
-                        commodityRow[columnEntity] = commodityJob;
+                        decimal P6TotalCurrentRemainingUnits = 0;
                         foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
                         {
                             compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
@@ -568,15 +568,23 @@ namespace BluePrints.ViewModels
                             compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
 
                             FORECAST findFORECASTS = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == dateCost.Date && x.SUBJOB_CODE == commodityJob.Projection.SubJob.Code && x.DISCIPLINE_CODE == commodityJob.Projection.Discipline.Code && x.COMMODITY_CODE == commodityJob.Projection.Commodity.Code && x.VARIATION_CODE == commodityJob.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6);
-                            if(findFORECASTS != null && findFORECASTS.FORECAST_UNITS != null)
-                                compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = findFORECASTS.FORECAST_UNITS;
+
+                            decimal P6RemainingUnitsOnDataDate = 0;
+                            if (findFORECASTS != null && findFORECASTS.FORECAST_UNITS != null)
+                                P6RemainingUnitsOnDataDate = (decimal)findFORECASTS.FORECAST_UNITS;
                             else
-                                compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+                                P6RemainingUnitsOnDataDate = dateCost.P6Hours;
+
+                            compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = P6RemainingUnitsOnDataDate;
+                            P6TotalCurrentRemainingUnits += P6RemainingUnitsOnDataDate;
 
                             compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
                             commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
                         }
+
+                        commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
+                        commodityRow[columnEntity] = commodityJob;
 
                         compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
                         compareChildDataTable.Rows.Add(compareChildP6UnitsRemainingRow);
@@ -684,7 +692,9 @@ namespace BluePrints.ViewModels
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
             List<string> dateStrs = currentRowFORECASTS.Select(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat)).ToList();
 
-            foreach(string dateStr in dateStrs)
+            HashSet<string> uniqueDateStrs = new HashSet<string>(dateStrs);
+            decimal P6CurrentRemainingUnits = 0;
+            foreach(string dateStr in uniqueDateStrs)
             {
                 DateTime parseDate;
                 if (DateTime.TryParse(dateStr, out parseDate))
@@ -695,18 +705,21 @@ namespace BluePrints.ViewModels
                         string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
                         //put forecast history only on compare datatable
                         if (alignedDataDate > FixedDataDateMonthEnd)
+                        {
                             if (dataPointsTable.Columns.Contains(alignedDateField))
                             {
                                 IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat) == dateStr);
                                 FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
 
-                                if(costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
+                                decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
+                                P6CurrentRemainingUnits += currentP6Units;
+                                decimal P6RemainingCostsOnDataDate = 0;
+                                if (costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
                                 {
-                                    parentRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
+                                    P6RemainingCostsOnDataDate = (decimal)costFORECAST.FORECAST_UNITS;
 
                                     //when p6 units isn't the original value, update the costs from db because cost from db is calculated from modified p6 units * norminal rate
                                     decimal originalP6Units = (decimal)childCompareP6HoursRow[alignedDateField];
-                                    decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
                                     if (originalP6Units != currentP6Units)
                                     {
                                         p6CostRow[alignedDateField] = costFORECAST.FORECAST_UNITS;
@@ -714,12 +727,17 @@ namespace BluePrints.ViewModels
                                 }
                                 else
                                 {
-                                    parentRow[alignedDateField] = getMasterRowResetValue(compareDataTable, alignedDateField);
+                                    P6RemainingCostsOnDataDate = getMasterRowResetValue(compareDataTable, alignedDateField);
                                 }
+
+                                parentRow[alignedDateField] = P6RemainingCostsOnDataDate;
                             }
+                        }
                     }
                 }
             }
+
+            job.P6RemainingUnitsOverride = P6CurrentRemainingUnits;
         }
         #endregion
 

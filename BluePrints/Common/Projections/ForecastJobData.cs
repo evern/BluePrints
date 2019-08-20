@@ -69,6 +69,7 @@ namespace BluePrints.Common.Projections
         public decimal Outstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }
         public decimal P6RemainingUnits { get; set; }
+        public decimal P6RemainingUnitsOverride { get; set; }
         public decimal P6RemainingCosts { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
