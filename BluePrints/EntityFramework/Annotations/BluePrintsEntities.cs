@@ -120,7 +120,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_PlannedDataPoint> QueryDeliverableCurrentDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == true).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == true & !x.IsForecast).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -136,7 +136,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedLateDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == true && x.IsCurrent == false).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList()
                 .Select(x => new StoredProcedure_PlannedDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
@@ -168,7 +168,7 @@ namespace BluePrints.Data
 
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingLateDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true && x.IsCurrent == false).ToList()
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList()
                 .Select(x => new StoredProcedure_RemainingDataPoint()
                 {
                     Deliverable_Guid = x.Deliverable_Guid,
