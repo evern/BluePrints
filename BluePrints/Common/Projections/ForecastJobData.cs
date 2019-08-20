@@ -81,8 +81,21 @@ namespace BluePrints.Common.Projections
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
-        //public decimal PctComplete => EstimateAtCompletion == 0 ? 1 : Actuals / EstimateAtCompletion;
-        public decimal PctComplete => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;
+
+        public bool IsProcurement
+        {
+            get
+            {
+                if (Projection == null || Projection.SubJob == null || Projection.SubJob.Code == string.Empty)
+                    return false;
+
+                return Projection.SubJob.Code.ToUpper().Contains("P");
+            }
+        }
+
+        public decimal PctCompleteCosts => EstimateAtCompletion == 0 ? 1 : ActualCosts / EstimateAtCompletion;
+        public decimal PctCompleteUnits => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;
+        public decimal PctComplete => IsProcurement ? PctCompleteCosts : PctCompleteUnits;
         public decimal Variance => Budget - EstimateAtCompletion;
         public bool IsBudgetReadOnly { get; set; }
         public bool IsPOError { get; set; }

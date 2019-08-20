@@ -1678,7 +1678,7 @@ namespace BluePrints.ViewModels
             }
 
             //flag procurement jobs as error when uncommitted values on dates doesn't add up to outstanding POs
-            if(job.Projection.SubJob.Code.ToUpper().Contains("P"))
+            if(job.IsProcurement)
             {
                 decimal differences = Math.Round(job.Outstanding) - Math.Round(poSum);
                 differences = Math.Abs(differences);

@@ -252,7 +252,7 @@
                                                 <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>-->
-                                            <dxg:GridColumn Width="40" AllowBestFit="False" FieldName="Entity.PctComplete" Fixed="Left" Header="% Complete" HeaderToolTip="(Budgeted Units - Remaining Units)/ Budgeted Units" ReadOnly="True" VisibleIndex="87">
+                                            <dxg:GridColumn Width="40" AllowBestFit="False" FieldName="Entity.PctComplete" Fixed="Left" Header="% Complete" HeaderToolTip="Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" ReadOnly="True" VisibleIndex="87">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
