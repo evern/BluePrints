@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.2.84</MinimumRequiredVersion>
-    <ApplicationRevision>84</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.2.87</MinimumRequiredVersion>
+    <ApplicationRevision>87</ApplicationRevision>
     <ApplicationVersion>1.0.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -85,7 +85,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Perth_Beta|AnyCPU' ">
     <AssemblyName>BluePrints BETA</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA_LIVE\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA\</PublishUrl>
     <OutputPath>bin\Perth_Beta\</OutputPath>
     <DefineConstants>TRACE;BETA</DefineConstants>
     <Optimize>true</Optimize>
@@ -151,10 +151,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BluePrints</AssemblyName>
+    <AssemblyName>BluePrints BETA 64bit</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
