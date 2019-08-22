@@ -44,6 +44,9 @@ using System.Windows.Media;
 using DevExpress.Xpf.Core.Serialization;
 using System.Windows.Input;
 using BluePrints.Common.ViewModel.Utils;
+using DevExpress.Xpf.Editors.Settings;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace BluePrints.ViewModels
 {
@@ -81,6 +84,9 @@ namespace BluePrints.ViewModels
             delayedDateChangeMessageBoxTimer = new DispatcherTimer();
             delayedDateChangeMessageBoxTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
+            delayedDataTableRefreshTimer = new DispatcherTimer();
+            delayedDataTableRefreshTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedDataTableRefreshTimer.Tick += DelayedDataTableRefreshTimer_Tick;
             projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
         }
@@ -181,6 +187,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
         DispatcherTimer delayedGridUpdateTimer;
+        DispatcherTimer delayedDataTableRefreshTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
 
@@ -199,6 +206,21 @@ namespace BluePrints.ViewModels
         protected int spreadSheetRateIndex = 12;
         protected int spreadSheetBudgetIndex = 13;
         protected int spreadSheetDateStartIndex = 14;
+
+        bool isWeeks;
+        public bool IsWeeks
+        {
+            get => isWeeks;
+            set
+            {
+                if(isWeeks != value)
+                {
+                    isWeeks = value;
+                    dataPointsTable = null;
+                    this.RaisePropertyChanged(x => x.dataPointsTable);
+                }
+            }
+        }
 
         protected override void resolveParameters(object parameter)
         {
@@ -478,6 +500,7 @@ namespace BluePrints.ViewModels
                 if (dataPointsTable == null)
                 {
                     dataPointsTable = new DataTable();
+
                     //get immutable data
                     List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
                     List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobs, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
@@ -500,8 +523,12 @@ namespace BluePrints.ViewModels
                     else
                         endDateToGenerate = FixedEndDate;
 
-                    alignedDataDateCollection = ChronologicalHelpers.GenerateMonthEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
-                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate);
+                    if(IsWeeks)
+                        alignedDataDateCollection = ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate, true);
+                    else
+                        alignedDataDateCollection = ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
+
+                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
@@ -512,6 +539,8 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
+                    InitializeColumnSource(ParentViewColumns, alignedDataDateCollection, false);
+                    InitializeColumnSource(ChildViewColumns, alignedDataDateCollection, true);
                     LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
                     LoadingScreenManager.SetMessage("Preparing View...");
 
@@ -616,10 +645,79 @@ namespace BluePrints.ViewModels
                     this.RaisePropertyChanged(x => x.ExportTable);
 
                     //refreshGridDataDelayed();
-                    //TableViewService.ScrollToLast();
+                    //TableViewService.ScrollToLast();            
+
+                    //delayedDataTableRefreshTimer.Start();
                 }
 
                 return dataPointsTable;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, List<DateTime> alignedDates, bool isChild)
+        {
+            columns.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.PhaseCode", Header = isChild ? string.Empty : "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.Code", Header = isChild ? string.Empty : "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Discipline.Code", Header = isChild ? string.Empty : "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Code", Header = isChild ? string.Empty : "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Name", Header = isChild ? string.Empty : "Commodity Name", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Variation_Code", Header = isChild ? string.Empty : "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Rate", Header = isChild ? string.Empty : "Rate", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number, Mask = "n0" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", Header = isChild ? string.Empty : "Budget", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", Header = isChild ? string.Empty : "Outstanding", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", Header = isChild ? string.Empty : "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", Header = isChild ? string.Empty : "PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", Header = isChild ? string.Empty : "EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
+            if(isChild)
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "Forecast Type", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
+            else
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", Header = isChild ? string.Empty : "Period Move", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
+
+            foreach (DateTime alignedDate in alignedDates)
+            {
+                string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+
+                if (alignedDate <= FixedDataDateMonthEnd)
+                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                else
+                {
+                    if (isChild)
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                    else
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                }
+            }
+        }
+
+        public void RefreshDataTable()
+        {
+            GridControlService.GridControl.PopulateColumns();
+            for (int i = 0; i < GridControlService.GridControl.VisibleRowCount; i++)
+            {
+                var detail = GridControlService.GridControl.GetDetail(GridControlService.GridControl.GetRowHandleByVisibleIndex(i));
+                if (detail != null)
+                    detail.PopulateColumns();
+            }
+        }
+
+        private void DelayedDataTableRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            delayedDataTableRefreshTimer.Stop();
+            GridControlService.GridControl.PopulateColumns();
+            for (int i = 0; i < GridControlService.GridControl.VisibleRowCount; i++)
+            {
+                var detail = GridControlService.GridControl.GetDetail(GridControlService.GridControl.GetRowHandleByVisibleIndex(i));
+                if (detail != null)
+                    detail.PopulateColumns();
             }
         }
 
@@ -910,43 +1008,36 @@ namespace BluePrints.ViewModels
 
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
         {
-            if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
+            GridControl gridControl = (GridControl)e.Source;
+            DateTime parsedate;
+            if (DateTime.TryParse(e.Column.FieldName, out parsedate))
             {
-                GridControl gridControl = (GridControl)e.Source;
-                DateTime parsedate;
-                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
+                if(parsedate <= FixedDataDateMonthEnd)
                 {
-                    if(parsedate <= FixedDataDateMonthEnd)
-                    {
-                        e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
-                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
-                        e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
-                        e.Column.ReadOnly = true;
-                    }
-                    else
-                    {
-                        e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
-                        e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
-                    }
-
-                    GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
-                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
-                    e.Column.Width = 60;
-                    e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
-                    e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
+                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
+                    e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
+                    e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
+                    e.Column.ReadOnly = true;
                 }
                 else
                 {
-                    if (e.Column.FieldType == typeof(decimal))
-                        GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, e.Column.FieldName + ": {0:c0}");
-
-                    e.Column.ReadOnly = true;
-                    e.Column.Fixed = FixedStyle.Left;
+                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
+                    e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
                 }
+
+                GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
+                e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                e.Column.Width = 60;
+                e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
+                e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
             }
             else
             {
-                e.Cancel = true;
+                if (e.Column.FieldType == typeof(decimal))
+                    GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, e.Column.FieldName + ": {0:c0}");
+
+                e.Column.ReadOnly = true;
+                e.Column.Fixed = FixedStyle.Left;
             }
         }
 
@@ -2207,6 +2298,32 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<RATE>();
+            }
+        }
+
+        protected ObservableCollection<ColumnDescriptor> parentViewColumns;
+        public ObservableCollection<ColumnDescriptor> ParentViewColumns
+        {
+            get
+            {
+                if (parentViewColumns == null)
+                {
+                    parentViewColumns = new ObservableCollection<ColumnDescriptor>();
+                }
+                return parentViewColumns;
+            }
+        }
+
+        protected ObservableCollection<ColumnDescriptor> childViewColumns;
+        public ObservableCollection<ColumnDescriptor> ChildViewColumns
+        {
+            get
+            {
+                if (childViewColumns == null)
+                {
+                    childViewColumns = new ObservableCollection<ColumnDescriptor>();
+                }
+                return childViewColumns;
             }
         }
 

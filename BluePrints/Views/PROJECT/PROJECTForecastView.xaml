@@ -1,6 +1,137 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal"
+             xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
+            <DataTemplate x:Key="DefaultColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="POErrorColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding RowData.Row.Entity.IsPOErrorImageWidth}" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Visibility="{Binding RowData.Row.Entity.IsPOError, Converter={dxmvvm:BooleanToVisibilityConverter}}" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast"/>
+                                    <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
+                                </Grid>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="BudgetColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="NumberColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:TextEditSettings Mask="{Binding Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastPastColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
+                                    <dxe:SpinEdit.Background>
+                                        <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
+                                            <Binding Path="RowData.Row.Row" />
+                                            <Binding Path="Column.FieldName" />
+                                            <Binding ElementName="PART_Editor" Path="EditValue" />
+                                        </MultiBinding>
+                                    </dxe:SpinEdit.Background>
+                                </dxe:SpinEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastFutureColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
+                                    <dxe:SpinEdit.Background>
+                                        <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
+                                            <Binding Path="RowData.Row.Row" />
+                                            <Binding Path="Column.FieldName" />
+                                            <Binding ElementName="PART_Editor" Path="EditValue" />
+                                        </MultiBinding>
+                                    </dxe:SpinEdit.Background>
+                                </dxe:SpinEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastChildColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:SpinEdit Name="PART_Editor" IsReadOnly="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellReadOnlyConverter}}" Increment="1" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
+                                    <dxe:SpinEdit.Background>
+                                        <MultiBinding Converter="{StaticResource ForecastFutureChildCellColorConverter}">
+                                            <Binding Path="RowData.Row.Row" />
+                                            <Binding Path="Column.FieldName" />
+                                            <Binding ElementName="PART_Editor" Path="EditValue" />
+                                        </MultiBinding>
+                                    </dxe:SpinEdit.Background>
+                                </dxe:SpinEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
             <converter:DynamicDateColumnDisplayStringConverter x:Key="DynamicDateColumnDisplayStringConverter" />
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
             <Style x:Key="TableRowStyle" TargetType="dxg:RowControl">
@@ -20,16 +151,6 @@
                 <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
             </Style>
-            <DataTemplate x:Key="ColumnHeaderTemplate">
-                <TextBlock TextWrapping="WrapWithOverflow" Text="{Binding Converter={StaticResource DynamicDateColumnDisplayStringConverter}}"
-                           FontFamily="Calibri" FontSize="12"
-                           VerticalAlignment="Center" TextAlignment="Center"
-                           HorizontalAlignment="Center">
-                    <TextBlock.LayoutTransform>
-                        <RotateTransform Angle="0" />
-                    </TextBlock.LayoutTransform>
-                </TextBlock>
-            </DataTemplate>
             <Style x:Key="SingleObjectView.SpinEditControlContainer" TargetType="dxe:SpinEdit">
                 <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
                     <Setter.Value>
@@ -83,6 +204,7 @@
                     <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
                     <dxb:BarButtonItem x:Name="biLocalRedo" Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                     <dxb:BarButtonItem x:Name="biSaveEAC" Command="{Binding DataContext.SaveEACCommand, ElementName=userControl}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
+                    <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding DataContext.IsWeeks, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
                     <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding DataContext.FixedDataDate, ElementName=userControl}" ToolTip="Data date">
                         <dxb:BarEditItem.EditSettings>
                             <dxe:DateEditSettings />
@@ -112,11 +234,13 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItem x:Name="biRefresh1" Command="{Binding DataContext.RefreshDataTableCommand, ElementName=userControl}" Content="Refresh DT" Glyph="{dxc:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dxc:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardPaste" />
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarCheckItemLink BarItemName="biWeeks" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
@@ -175,121 +299,15 @@
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:LayoutSerializationService />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ParentViewColumns, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                 <dxmvvm:KeyToCommand Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" KeyGesture="Delete" />
                                             </dxmvvm:Interaction.Behaviors>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.Projection.SubJob.PhaseCode" Fixed="Left" GroupIndex="0" Header="Phase" ReadOnly="True" VisibleIndex="12" />
-                                            <!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="12" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
-                                            <dxg:GridColumn Width="95" AllowBestFit="False" FieldName="Entity.Projection.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="13" >
-                                                <dxg:GridColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="{Binding RowData.Row.Entity.IsPOErrorImageWidth}" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Image Grid.Column="0" Visibility="{Binding RowData.Row.Entity.IsPOError, Converter={dxmvvm:BooleanToVisibilityConverter}}" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast"/>
-                                                            <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </dxg:GridColumn.CellTemplate>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="38" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
-                                            <dxg:GridColumn Width="35" AllowBestFit="False" FieldName="Entity.Projection.Commodity.Code" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="21" />
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.Projection.Commodity.Name" Fixed="Left" Header="Commodity Name" ReadOnly="True" VisibleIndex="22" />
-                                            <!--<dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Commodity Name" ReadOnly="True" VisibleIndex="25" />-->
-                                            <dxg:GridColumn Width="60" AllowBestFit="False" FieldName="Entity.Projection.Variation_Code" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="30" />
-                                            <dxg:GridColumn Width="75" AllowBestFit="False" FieldName="Entity.Budget" Fixed="Left" Header="Budget" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
-                                                <dxg:GridColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                                    </DataTemplate>
-                                                </dxg:GridColumn.CellTemplate>
-                                            </dxg:GridColumn>
-                                            <!--For Debugging-->
-                                            <!--<dxg:GridColumn FieldName="Entity.P6BudgetedUnits" Fixed="Left" Header="P6 Budget" ReadOnly="True" VisibleIndex="61">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="Entity.P6RemainingUnits" Fixed="Left" Header="P6 Remains" ReadOnly="True" VisibleIndex="62">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>-->
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.Outstanding" Fixed="Left" Header="Outstanding" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" ReadOnly="True" VisibleIndex="70">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.ActualUnits" Fixed="Left" Header="Actual Units" HeaderToolTip="Actual units to date" ReadOnly="True" VisibleIndex="75">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.P6RemainingUnitsOverride" Fixed="Left" Header="P6 Remaining Units" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="50" AllowBestFit="False" FieldName="Entity.Productivity" Fixed="Left" Header="PF" HeaderToolTip="Productivity Factor, 0 means there aren't any units from P6" VisibleIndex="78">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="0.1" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.ActualCosts" Fixed="Left" Header="Actual Costs" HeaderToolTip="Costs burned to Date" ReadOnly="True" VisibleIndex="80">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>-->
-                                            <dxg:GridColumn Width="40" AllowBestFit="False" FieldName="Entity.PctComplete" Fixed="Left" Header="% Complete" HeaderToolTip="Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" ReadOnly="True" VisibleIndex="87">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="80" AllowBestFit="False" FieldName="Entity.Uncommitted" Fixed="Left" Header="Uncommitted" HeaderToolTip="Sum of uncommitted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.EstimateToComplete" Fixed="Left" Header="ETC" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.PreviousEAC" Fixed="Left" Header="Prev. EAC" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.EstimateAtCompletion" Fixed="Left" Header="EAC" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.Variance" Fixed="Left" Header="Variance" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <dxg:GridColumn Width="70" AllowBestFit="False" FieldName="Entity.PeriodMovement" Fixed="Left" Header="Period Move" HeaderToolTip="Difference from previous EAC" ReadOnly="True" VisibleIndex="115">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                </dxg:GridColumn.EditSettings>
-                                            </dxg:GridColumn>
-                                            <!--<dxg:GridColumn FieldName="Entity.IsPOError" Fixed="Left" Header="Is Error" ReadOnly="True" VisibleIndex="120" />-->
                                             <dxg:GridControl.DetailDescriptor>
                                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CompareEntities}">
-                                                    <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
+                                                    <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="None" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ChildViewColumns, ElementName=userControl}" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
                                                         <i:Interaction.Behaviors>
                                                             <behavior:DetailSyncBehavior />
                                                         </i:Interaction.Behaviors>
@@ -297,86 +315,8 @@
                                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                                             <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingChildColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                         </dxmvvm:Interaction.Behaviors>
-                                                        <dxg:GridColumn AllowBestFit="False" Fixed="Left" GroupIndex="0" Header="" ReadOnly="True" VisibleIndex="12" />
-                                                        <!--<dxg:GridColumn FieldName="Entity.Projection.SubJob.AreaCode" Fixed="Left" Header="Area" ReadOnly="True" VisibleIndex="12" />
-                                        <dxg:GridColumn FieldName="Entity.Projection.SubJob.SubAreaCode" Fixed="Left" Header="Sub-Area" ReadOnly="True" VisibleIndex="12" />-->
-                                                        <dxg:GridColumn Fixed="Left" Header="" ReadOnly="True" VisibleIndex="13" />
-                                                        <dxg:GridColumn Fixed="Left" Header="" ReadOnly="True" VisibleIndex="20" />
-                                                        <dxg:GridColumn Fixed="Left" Header="" ReadOnly="True" VisibleIndex="21" />
-                                                        <dxg:GridColumn AllowBestFit="False" Fixed="Left" Header="" ReadOnly="True" VisibleIndex="22" />
-                                                        <!--<dxg:GridColumn Width="100" AllowBestFit="False" FieldName="Entity.Projection.Discipline.Name" Fixed="Left" Header="Commodity Name" ReadOnly="True" VisibleIndex="25" />-->
-                                                        <dxg:GridColumn AllowBestFit="False" Fixed="Left" Header="" ReadOnly="True" VisibleIndex="30" />
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Original budgeted cost at contract award" VisibleIndex="60">
-                                                            <dxg:GridColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                                                </DataTemplate>
-                                                            </dxg:GridColumn.CellTemplate>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" ReadOnly="True" VisibleIndex="70">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Units burned to Date" ReadOnly="True" VisibleIndex="75">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="P6 remaining units" ReadOnly="True" VisibleIndex="77">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Productivity" ReadOnly="True" VisibleIndex="78">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Increment="0.1" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Costs burned to Date" ReadOnly="True" VisibleIndex="80">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <!--<dxg:GridColumn FieldName="Entity.Invoiced" Fixed="Left" Header="Invoiced" HeaderToolTip="Actual Revenue is amount paid to Primero to date" ReadOnly="True" Visible="True" VisibleIndex="85">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>-->
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Actuals / (Actuals + Outstanding + Uncommitted)" ReadOnly="True" VisibleIndex="87">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Sum of forecasted costs - (from the forecasting months)" ReadOnly="True" VisibleIndex="90">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" ReadOnly="True" VisibleIndex="95">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Previous estimate at completion" ReadOnly="True" VisibleIndex="96">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Estimate at complete, forecasted costs + open commitments + accruals" ReadOnly="True" VisibleIndex="100">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="" HeaderToolTip="Variance to budget" ReadOnly="True" VisibleIndex="110">
-                                                            <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                            </dxg:GridColumn.EditSettings>
-                                                        </dxg:GridColumn>
-                                                        <dxg:GridColumn Fixed="Left" Header="Forecast Type" FieldName="Entity.DropDownPhase" HeaderToolTip="Source of forecasted costs/hours type" ReadOnly="True" VisibleIndex="115" />
-                                                        <!--<dxg:GridColumn FieldName="Entity.IsPOError" Fixed="Left" Header="Is Error" ReadOnly="True" VisibleIndex="120" />-->
                                                         <dxg:GridControl.View>
-                                                            <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ColumnHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                            <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                                 <dxmvvm:Interaction.Behaviors>
                                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                                     <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
@@ -457,7 +397,7 @@
                                                 <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
                                             </dxg:GridControl.TotalSummary>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ColumnHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                <dxg:TableView x:Name="tableView" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                     <dxg:TableView.FormatConditions>
                                                         <!--<dxg:FormatCondition Expression="[Entity.IsPOError] = 'True'" FieldName="Entity.Projection.SubJob.Code">
                                                         <dxc:Format Background="Salmon" />
@@ -566,7 +506,7 @@
                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ColumnHeaderTemplate}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                            <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                             </dxg:TableView>
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>

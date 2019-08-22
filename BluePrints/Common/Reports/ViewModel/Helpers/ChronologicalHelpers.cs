@@ -165,26 +165,55 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Calculates the data date forward to get the last aligned data date as per the first aligned data date
         /// </summary>
-        public static List<DateTime> GenerateMonthEndDatesCollection(DateTime firstAlignedDataDate,
-            DateTime lastDataPointDate)
+        public static List<DateTime> GenerateEndDatesCollection(DateTime firstAlignedDataDate,
+            DateTime lastDataPointDate, bool isWeeks = false)
         {
-            DateTime lastProgressDate = new DateTime(firstAlignedDataDate.Year, firstAlignedDataDate.Month, 1);
-            lastProgressDate = lastProgressDate.AddDays(-1);
+            DateTime lastProgressDate;
+
+            if(isWeeks)
+            {
+                lastProgressDate = GetLastWeekdayOfMonth(firstAlignedDataDate, DayOfWeek.Sunday);
+            }
+            else
+            {
+                lastProgressDate = new DateTime(firstAlignedDataDate.Year, firstAlignedDataDate.Month, 1);
+                lastProgressDate = lastProgressDate.AddDays(-1);
+            }
+
             //adjust last datapoint date to end of the month
             DateTime lastEndOfMonthDate = new DateTime(lastDataPointDate.Year, lastDataPointDate.Month, 1);
             lastEndOfMonthDate = lastEndOfMonthDate.AddMonths(1).AddDays(-1);
             var alignedDataDatesCollection = new List<DateTime>();
 
-            DateTime progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1);
+            DateTime currentProgressDate = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1);
             //forward the first progress date to scan to after the datadate aligned to end day of week
             do
             {
-                lastProgressDate = lastProgressDate.AddMonths(1);
-                progressEndOfMonth = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1).AddDays(-1);
-                alignedDataDatesCollection.Add(progressEndOfMonth);
-            } while (progressEndOfMonth < lastEndOfMonthDate);
+                if (isWeeks)
+                {
+                    lastProgressDate = lastProgressDate.AddDays(7);
+                    currentProgressDate = lastProgressDate;
+                    alignedDataDatesCollection.Add(lastProgressDate);
+                }
+                else
+                {
+                    lastProgressDate = lastProgressDate.AddMonths(1);
+                    currentProgressDate = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1).AddDays(-1);
+                    alignedDataDatesCollection.Add(currentProgressDate);
+                }
+            } while (currentProgressDate < lastEndOfMonthDate);
 
             return alignedDataDatesCollection;
+        }
+
+        private static DateTime GetLastWeekdayOfMonth(DateTime date, DayOfWeek day)
+        {
+            DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, 1)
+                .AddMonths(1).AddDays(-1);
+            int wantedDay = (int)day;
+            int lastDay = (int)lastDayOfMonth.DayOfWeek;
+            return lastDayOfMonth.AddDays(
+                lastDay >= wantedDay ? wantedDay - lastDay : wantedDay - lastDay - 7);
         }
     }
 }
