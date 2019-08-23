@@ -155,20 +155,32 @@
             <dxe:TextEdit Name="PART_Editor" Width="0" Margin="0" Padding="0" />
         </DataTemplate>
         <DataTemplate x:Key="ForecastHeaderTemplate">
-            <TextBlock TextWrapping="WrapWithOverflow"  Text="{Binding Converter={StaticResource DynamicDateColumnDisplayStringConverter}}"
+            <TextBlock TextWrapping="WrapWithOverflow" 
                            Width="40" FontFamily="Calibri" FontSize="12"
                            VerticalAlignment="Center" TextAlignment="Center" 
                            HorizontalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource DynamicDateColumnDisplayStringConverter}">
+                        <Binding />
+                        <Binding ElementName="userControl" Path="DataContext.IsWeeks" />
+                    </MultiBinding>
+                </TextBlock.Text>
                 <TextBlock.LayoutTransform>
                     <RotateTransform Angle="0" />
                 </TextBlock.LayoutTransform>
             </TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="POForecastHeaderTemplate">
-            <TextBlock TextWrapping="WrapWithOverflow" Text="{Binding Converter={StaticResource DynamicDateColumnDisplayStringConverter}}"
+            <TextBlock TextWrapping="WrapWithOverflow"
                            Width="40" 
                            VerticalAlignment="Center" TextAlignment="Center" 
                            HorizontalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource DynamicDateColumnDisplayStringConverter}">
+                        <Binding />
+                        <Binding ElementName="userControl" Path="DataContext.IsWeeks" />
+                    </MultiBinding>
+                </TextBlock.Text>
                 <TextBlock.LayoutTransform>
                     <RotateTransform Angle="0" />
                 </TextBlock.LayoutTransform>
