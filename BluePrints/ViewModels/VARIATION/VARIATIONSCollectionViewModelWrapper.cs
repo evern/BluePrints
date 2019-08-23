@@ -905,8 +905,15 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.Progress();
             }
 
-            if ((variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit) && DisplaySelectedEntity.Entity.TYPE == VariationType.External)
-                addVariationJobToExo(exoVariations, variationStage);
+            if ((variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit))
+            {
+                if (DisplaySelectedEntity.Entity.TYPE == VariationType.External)
+                    addVariationJobToExo(exoVariations, variationStage);
+                else if (variationStage == VariationStages.Submit)
+                    SubmitSelectedEntity();
+                else
+                    UnsubmitSelectedEntity();
+            }
             else
             {
                 unitOfWork.SaveChanges();
@@ -1088,6 +1095,7 @@ namespace BluePrints.ViewModels
         {
             DisplaySelectedEntity.Entity.SUBMITTED = null;
             DisplaySelectedEntity.Entity.SUBMITTEDBY = null;
+            DisplaySelectedEntity.Update();
             MainViewModel.Save(DisplaySelectedEntity);
         }
 
@@ -1095,6 +1103,7 @@ namespace BluePrints.ViewModels
         {
             DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
             DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
+            DisplaySelectedEntity.Update();
             MainViewModel.Save(DisplaySelectedEntity);
         }
 

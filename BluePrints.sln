@@ -63,8 +63,8 @@ Global
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Montreal|x64.ActiveCfg = Debug|x64
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|Any CPU.ActiveCfg = Perth_Beta|Any CPU
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|Any CPU.Build.0 = Perth_Beta|Any CPU
-		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|x64.ActiveCfg = Perth_Beta|Any CPU
-		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|x64.Build.0 = Perth_Beta|Any CPU
+		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|x64.ActiveCfg = Perth_Beta|x64
+		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Beta|x64.Build.0 = Perth_Beta|x64
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Debug|Any CPU.ActiveCfg = Perth_Debug|Any CPU
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Debug|Any CPU.Build.0 = Perth_Debug|Any CPU
 		{3824191A-1EA6-471E-A7EF-9930FF121E25}.Perth_Debug|x64.ActiveCfg = Perth_Debug|Any CPU
