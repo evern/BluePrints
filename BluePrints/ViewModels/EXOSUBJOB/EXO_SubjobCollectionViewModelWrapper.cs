@@ -71,7 +71,9 @@ namespace BluePrints.ViewModels
         protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        protected IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
         protected JOBCOST_HDR masterJob;
@@ -124,7 +126,12 @@ namespace BluePrints.ViewModels
         {
             masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
-            exoSTAFFS = ExoQueries.GetStaffs(primeroUnitOfWork).ToList();
+
+            List<STAFF> perthSTAFFS = ExoQueries.GetStaffs(primeroUnitOfWork).ToList();
+            List<STAFF> montrealSTAFFS = ExoQueries.GetStaffs(pgaUnitOfWork).ToList();
+            exoSTAFFS = new List<STAFF>();
+            exoSTAFFS.AddRange(perthSTAFFS);
+            exoSTAFFS.AddRange(montrealSTAFFS);
         }
 
         private void initializeOptionalViewCollections()

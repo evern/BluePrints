@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.2.89</MinimumRequiredVersion>
-    <ApplicationRevision>89</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.2.90</MinimumRequiredVersion>
+    <ApplicationRevision>90</ApplicationRevision>
     <ApplicationVersion>1.0.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -124,7 +124,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Perth_Debug|AnyCPU' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_BETA\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
@@ -151,10 +151,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BluePrints BETA 64bit</AssemblyName>
+    <AssemblyName>BluePrints</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
