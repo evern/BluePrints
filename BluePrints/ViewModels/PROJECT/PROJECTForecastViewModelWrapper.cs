@@ -217,6 +217,7 @@ namespace BluePrints.ViewModels
                 {
                     isWeeks = value;
                     dataPointsTable = null;
+                    EntitiesUndoRedoManager.Clear();
                     this.RaisePropertyChanged(x => x.dataPointsTable);
                 }
             }
@@ -580,7 +581,7 @@ namespace BluePrints.ViewModels
                         DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
                         compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
                         DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
-                        compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
+                        compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, DateCosts = commodityJob.DateCosts, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
 
                         DataTable compareChildDataTable = dataPointsTable.Clone();
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
@@ -596,16 +597,8 @@ namespace BluePrints.ViewModels
 
                             compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
 
-                            FORECAST findFORECASTS = FORECASTCollectionViewModel.Entities.FirstOrDefault(x => x.FORECAST_DATE == dateCost.Date && x.SUBJOB_CODE == commodityJob.Projection.SubJob.Code && x.DISCIPLINE_CODE == commodityJob.Projection.Discipline.Code && x.COMMODITY_CODE == commodityJob.Projection.Commodity.Code && x.VARIATION_CODE == commodityJob.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6);
-
-                            decimal P6RemainingUnitsOnDataDate = 0;
-                            if (findFORECASTS != null && findFORECASTS.FORECAST_UNITS != null)
-                                P6RemainingUnitsOnDataDate = (decimal)findFORECASTS.FORECAST_UNITS;
-                            else
-                                P6RemainingUnitsOnDataDate = dateCost.P6Hours;
-
-                            compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = P6RemainingUnitsOnDataDate;
-                            P6TotalCurrentRemainingUnits += P6RemainingUnitsOnDataDate;
+                            compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6HoursOverride;
+                            P6TotalCurrentRemainingUnits += dateCost.P6HoursOverride;
 
                             compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
@@ -698,26 +691,15 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void RefreshDataTable()
-        {
-            GridControlService.GridControl.PopulateColumns();
-            for (int i = 0; i < GridControlService.GridControl.VisibleRowCount; i++)
-            {
-                var detail = GridControlService.GridControl.GetDetail(GridControlService.GridControl.GetRowHandleByVisibleIndex(i));
-                if (detail != null)
-                    detail.PopulateColumns();
-            }
-        }
-
         private void DelayedDataTableRefreshTimer_Tick(object sender, EventArgs e)
         {
             delayedDataTableRefreshTimer.Stop();
-            GridControlService.GridControl.PopulateColumns();
+            GridControlService.GridControl.RefreshData();
             for (int i = 0; i < GridControlService.GridControl.VisibleRowCount; i++)
             {
                 var detail = GridControlService.GridControl.GetDetail(GridControlService.GridControl.GetRowHandleByVisibleIndex(i));
                 if (detail != null)
-                    detail.PopulateColumns();
+                    detail.RefreshData();
             }
         }
 
@@ -801,15 +783,14 @@ namespace BluePrints.ViewModels
                     {
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_DATE == dateCost.Date);
-                            FORECAST costFORECAST = currentRowDateFORECAST.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+                            IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.Cost && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
 
                             decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
                             P6CurrentRemainingUnits += currentP6Units;
                             decimal P6RemainingCostsOnDataDate = 0;
-                            if (costFORECAST != null && costFORECAST.FORECAST_UNITS != null)
+                            if (currentRowDateFORECAST.Count() > 0)
                             {
-                                P6RemainingCostsOnDataDate = (decimal)costFORECAST.FORECAST_UNITS;
+                                P6RemainingCostsOnDataDate = currentRowDateFORECAST.Sum(x => (decimal)x.FORECAST_UNITS);
                             }
                             else
                             {
@@ -1554,12 +1535,29 @@ namespace BluePrints.ViewModels
                 EntitiesUndoRedoManager.AddUndo(dataRow, dateFieldName, oldValue, saveNewValue, EntityMessageType.Changed);
             }
 
-            IEnumerable<FORECAST> findFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code);
-            FORECAST costFORECAST = findFORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-            FORECAST p6FORECAST = findFORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.P6);
+            //this is definitely present because the view is generated from datecost model
+            ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
+
+            IEnumerable<FORECAST> findFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code);
+            IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+            IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
+            FORECAST costFORECAST = findCostFORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
+            FORECAST p6FORECAST = findP6FORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
+            
             FORECAST editFORECAST = editForecastDataType == ForecastDataType.Cost ? costFORECAST : p6FORECAST;
             FORECAST resetFORECAST = editForecastDataType == ForecastDataType.Cost ? p6FORECAST : costFORECAST;
 
+            List<FORECAST> deleteFORECASTS = new List<FORECAST>();
+            if(!IsWeeks)
+            {
+                deleteFORECASTS.AddRange(findCostFORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
+
+                //need to delete both cost and units when type is p6
+                if((editForecastDataType == ForecastDataType.P6))
+                    deleteFORECASTS.AddRange(findP6FORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
+            }
+
+            FORECASTCollectionViewModel.BaseBulkDelete(deleteFORECASTS);
             if (editFORECAST == null)
             {
                 editFORECAST = new FORECAST();
@@ -1573,7 +1571,6 @@ namespace BluePrints.ViewModels
                 editFORECAST.FORECAST_UNITS = saveNewValue;
                 editFORECAST.FORECAST_TYPE = editForecastDataType;
                 FORECASTCollectionViewModel.Save(editFORECAST);
-
             }
             else
             {

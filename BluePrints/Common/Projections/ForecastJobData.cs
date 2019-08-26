@@ -111,19 +111,31 @@ namespace BluePrints.Common.Projections
 
     public class ForecastDateCost
     {
-        public ForecastDateCost(DateTime date)
+        public ForecastDateCost(DateTime date, bool isWeeks)
         {
             Date = date;
+            if (isWeeks)
+            {
+                FloorDate = date.Date.AddDays(-6);
+                CeilingDate = date.Date;
+            }
+            else
+            {
+                FloorDate = new DateTime(date.Date.Year, date.Date.Month, 1);
+                CeilingDate = FloorDate.AddMonths(1).AddDays(-1);
+            }
         }
 
+        public DateTime ActualFloorDate { get; set; }
+        public DateTime FloorDate { get; set; }
+        public DateTime CeilingDate { get; set; }
         public DateTime Date { get; set; }
-
         //not using this as a measure because user can override it
         public decimal TotalCosts { get; set; }
-
         public decimal ActualCosts { get; set; }
         public decimal MaterialCosts { get; set; }
         public decimal P6Hours { get; set; }
+        public decimal P6HoursOverride { get; set; }
         public decimal P6Costs { get; set; }
         public decimal POForecastCosts { get; set; }
 

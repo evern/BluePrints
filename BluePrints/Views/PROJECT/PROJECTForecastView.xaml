@@ -6,7 +6,7 @@
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -15,7 +15,7 @@
             </DataTemplate>
             <DataTemplate x:Key="POErrorColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -37,7 +37,7 @@
             </DataTemplate>
             <DataTemplate x:Key="BudgetColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -52,7 +52,7 @@
             </DataTemplate>
             <DataTemplate x:Key="NumberColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -65,7 +65,7 @@
             </DataTemplate>
             <DataTemplate x:Key="ForecastPastColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -88,7 +88,7 @@
             </DataTemplate>
             <DataTemplate x:Key="ForecastFutureColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -111,7 +111,7 @@
             </DataTemplate>
             <DataTemplate x:Key="ForecastChildColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -234,7 +234,6 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItem x:Name="biRefresh1" Command="{Binding DataContext.RefreshDataTableCommand, ElementName=userControl}" Content="Refresh DT" Glyph="{dxc:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dxc:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>

@@ -191,9 +191,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (isWeeks)
                 {
+                    alignedDataDatesCollection.Add(lastProgressDate);
                     lastProgressDate = lastProgressDate.AddDays(7);
                     currentProgressDate = lastProgressDate;
-                    alignedDataDatesCollection.Add(lastProgressDate);
                 }
                 else
                 {
