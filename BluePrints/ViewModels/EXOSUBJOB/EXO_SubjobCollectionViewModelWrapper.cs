@@ -99,6 +99,9 @@ namespace BluePrints.ViewModels
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
+            pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo != BluePrintsResources.OfficeMontreal);
+            pgaUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             backgroundBudgetChecker = new BackgroundWorker();
