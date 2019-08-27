@@ -21,7 +21,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<DateTime> dates, DateTime dataDate, bool isWeeks)
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, List<DateTime> dates, DateTime dataDate, bool isWeeks)
         {
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
@@ -43,7 +43,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
-                    populateProjection(commodityJobForecastSummary, commodityDashboards, FORECASTCollection, FORECAST_POCollection, dates, isWeeks, true);
+                    PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, dates, isWeeks, true);
                     PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
                 });
@@ -75,22 +75,16 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Populates data row with dashboards summary
         /// </summary>
-        private static void populateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<DateTime> dates, bool isWeeks, bool isFiltered)
+        public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered)
         {
             ExoSubJobProjection entity = jobForecastSummary.Projection;
-            List<FORECAST> relevantP6FORECAST;
             List<DashboardFlatStructure> relevantDashboards;
-            if (!isFiltered)
-            {
+            if (!isDataFiltered)
                 relevantDashboards = DashboardCollection.Where(x => x.SubjobCode == entity.SubJob.Code && x.DisciplineCode == entity.Discipline.Code && x.CommodityCode == entity.Commodity.Code && x.Variation_Code == entity.Variation_Code).ToList();
-                relevantP6FORECAST = FORECASTCollection.Where(x => x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code && x.FORECAST_TYPE == ForecastDataType.P6).ToList();
-            }
             else
-            {
                 relevantDashboards = DashboardCollection.ToList();
-                relevantP6FORECAST = FORECASTCollection.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
-            }
 
+            jobForecastSummary.DateCosts.Clear();
             foreach (DateTime date in dates)
             {
                 jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, isWeeks));
@@ -145,9 +139,9 @@ namespace BluePrints.Common.ViewModel.Misc
                 if (actualStats.Count() > 0)
                 {
                     actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                    jobForecastSummary.ActualUnits += actualDataPoints.Sum(x => x.Units);
-                    jobForecastSummary.ActualCosts += actualDataPoints.Sum(x => x.Costs);
-                    jobForecastSummary.Invoiced += actualDataPoints.Sum(x => x.InvoiceAmount);
+                    jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
+                    jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
+                    jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
                 //get material data points and accrue summary
@@ -156,24 +150,29 @@ namespace BluePrints.Common.ViewModel.Misc
                 if (materialStats != null && materialStats.Count() > 0)
                 {
                     materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                    jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
-                    jobForecastSummary.Invoiced += materialDataPoints.Sum(x => x.InvoiceAmount);
+                    jobForecastSummary.ActualCosts = materialDataPoints.Sum(x => x.Costs);
+                    jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
                 }
 
                 DateTime firstViewDate = dates.First();
-                DateTime firstForecastDate = new DateTime(firstViewDate.Year, firstViewDate.Month, 1).AddMonths(2).AddDays(-1);
+                DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
 
                 //the first remaining date will be the second month in the view because data date will end on the first month
                 DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
 
                 foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
                 {
-                    decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= dateCost.FloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
-                    decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= dateCost.FloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
+                    //override floor date to the beginning of time because we want to get everything
+                    if (dateCost.Date == firstViewDate)
+                        dateCost.ActualFloorDate = new DateTime(1);
+                    else
+                        dateCost.ActualFloorDate = dateCost.FloorDate;
+
+                    decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
+                    decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
                     decimal p6RemainingCosts = 0;
                     decimal p6RemainingHours = 0;
                     decimal poForecastCosts = 0;
-                    decimal p6RemainingHoursOverride = relevantP6FORECAST.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).Sum(x => (decimal)x.FORECAST_UNITS);
 
                     //prevent population of values from PO forecast before forecast date
                     if (dateCost.FloorDate > firstViewDate)
@@ -186,17 +185,18 @@ namespace BluePrints.Common.ViewModel.Misc
                     {
                         //accumulate hours and costs in the first forecast date
                         if (dateCost.CeilingDate == firstForecastDate)
-                            dateCost.FloorDate = new DateTime(1);
+                            dateCost.RemainingFloorDate = new DateTime(1);
+                        else
+                            dateCost.RemainingFloorDate = dateCost.FloorDate;
 
-                        p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.FloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Costs);
-                        p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.FloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Units);
+                        p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Costs);
+                        p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Units);
                     }
 
                     dateCost.MaterialCosts = Math.Round(materialCosts);
                     dateCost.ActualCosts = Math.Round(actualCosts);
                     dateCost.P6Costs = p6RemainingCosts;
                     dateCost.P6Hours = p6RemainingHours;
-                    dateCost.P6HoursOverride = p6RemainingHoursOverride;
                     dateCost.POForecastCosts = Math.Round(poForecastCosts);
 
                     dateCost.TotalCosts = Math.Round(materialCosts + actualCosts + p6RemainingCosts + poForecastCosts);

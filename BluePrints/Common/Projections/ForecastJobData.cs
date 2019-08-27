@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Data;
 using BluePrints.ViewModels;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -81,7 +82,6 @@ namespace BluePrints.Common.Projections
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
-
         public bool IsProcurement
         {
             get
@@ -101,9 +101,9 @@ namespace BluePrints.Common.Projections
         public bool IsPOError { get; set; }
         public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
 
-        public decimal fallBackRate { get; set; }
+        public RATE FallBackRate { get; set; }
 
-        public decimal P6NominalRate => P6RemainingUnits == 0 ? fallBackRate == 0 ? 0 : fallBackRate : P6RemainingCosts / P6RemainingUnits;
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
 
         //used by detailed rows so that only P6 hour row can be edited
         public bool IsP6HoursRow { get; set; }
@@ -127,6 +127,7 @@ namespace BluePrints.Common.Projections
         }
 
         public DateTime ActualFloorDate { get; set; }
+        public DateTime RemainingFloorDate { get; set; }
         public DateTime FloorDate { get; set; }
         public DateTime CeilingDate { get; set; }
         public DateTime Date { get; set; }
@@ -135,7 +136,6 @@ namespace BluePrints.Common.Projections
         public decimal ActualCosts { get; set; }
         public decimal MaterialCosts { get; set; }
         public decimal P6Hours { get; set; }
-        public decimal P6HoursOverride { get; set; }
         public decimal P6Costs { get; set; }
         public decimal POForecastCosts { get; set; }
 

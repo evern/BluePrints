@@ -6,19 +6,21 @@
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
                 </ContentControl>
             </DataTemplate>
             <DataTemplate x:Key="POErrorColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
@@ -41,6 +43,7 @@
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
@@ -52,23 +55,25 @@
             </DataTemplate>
             <DataTemplate x:Key="NumberColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings Mask="{Binding Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            <dxe:SpinEditSettings Mask="{Binding Mask}" MaskType="Numeric" Increment="{Binding Increment}" MaskUseAsDisplayFormat="True" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
             <DataTemplate x:Key="ForecastPastColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
@@ -92,6 +97,7 @@
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
@@ -130,6 +136,13 @@
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
                     </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="SummaryTemplate">
+                <ContentControl>
+                    <dxg:GridSummaryItem FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}"
+                                         SummaryType="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Type, RelativeSource={RelativeSource Self}}"
+                                         DisplayFormat="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayFormat, RelativeSource={RelativeSource Self}}"/>
                 </ContentControl>
             </DataTemplate>
             <converter:DynamicDateColumnDisplayStringConverter x:Key="DynamicDateColumnDisplayStringConverter" />
@@ -298,7 +311,12 @@
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:LayoutSerializationService />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ParentViewColumns, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
+                                             TotalSummarySource="{Binding DataContext.ParentSummaries, ElementName=userControl}"
+                                             TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                             GroupSummarySource="{Binding DataContext.ParentSummaries, ElementName=userControl}"
+                                             GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ParentViewColumns, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -306,7 +324,12 @@
                                             </dxmvvm:Interaction.Behaviors>
                                             <dxg:GridControl.DetailDescriptor>
                                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding CompareEntities}">
-                                                    <dxg:GridControl x:Name="gridControlChild" AutoGenerateColumns="None" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ChildViewColumns, ElementName=userControl}" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
+                                                    <dxg:GridControl x:Name="gridControlChild"                                              
+                                                                     TotalSummarySource="{Binding DataContext.ChildSummaries, ElementName=userControl}"
+                                                                     TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                                                     GroupSummarySource="{Binding DataContext.ChildSummaries, ElementName=userControl}"
+                                                                     GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                                                     AutoGenerateColumns="None" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ChildViewColumns, ElementName=userControl}" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
                                                         <i:Interaction.Behaviors>
                                                             <behavior:DetailSyncBehavior />
                                                         </i:Interaction.Behaviors>
@@ -315,7 +338,7 @@
                                                             <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingChildColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                         </dxmvvm:Interaction.Behaviors>
                                                         <dxg:GridControl.View>
-                                                            <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                            <dxg:TableView x:Name="tableViewChild" ColumnFilterPopupMode="ExcelSmart" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                                 <dxmvvm:Interaction.Behaviors>
                                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                                     <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
@@ -328,75 +351,11 @@
                                                                 </dxg:TableView.FormatConditions>
                                                             </dxg:TableView>
                                                         </dxg:GridControl.View>
-                                                        <dxg:GridControl.GroupSummary>
-                                                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Projection.SubJob.Code" ShowInColumn="Entity.Projection.SubJob.Code" SummaryType="Count" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.Projection.ExoBudgetQty" ShowInColumn="Entity.Projection.ExoBudgetQty" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateAtCompletion" ShowInColumn="Entity.EstimateAtCompletion" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Variance" ShowInColumn="Entity.Variance" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Invoiced" ShowInColumn="Entity.Invoiced" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateToComplete" ShowInColumn="Entity.EstimateToComplete" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
-                                                        </dxg:GridControl.GroupSummary>
-                                                        <dxg:GridControl.TotalSummary>
-                                                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Projection.SubJob.Code" ShowInColumn="Entity.Projection.SubJob.Code" SummaryType="Count" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.Projection.ExoBudgetQty" ShowInColumn="Entity.Projection.ExoBudgetQty" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Variance" ShowInColumn="Entity.Variance" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Invoiced" ShowInColumn="Entity.Invoiced" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateAtCompletion" ShowInColumn="Entity.EstimateAtCompletion" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateToComplete" ShowInColumn="Entity.EstimateToComplete" SummaryType="Sum" />
-                                                            <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
-                                                        </dxg:GridControl.TotalSummary>
                                                     </dxg:GridControl>
                                                 </dxg:DataControlDetailDescriptor>
                                             </dxg:GridControl.DetailDescriptor>
-                                            <dxg:GridControl.GroupSummary>
-                                                <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Projection.SubJob.Code" ShowInColumn="Entity.Projection.SubJob.Code" SummaryType="Count" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.Projection.ExoBudgetQty" ShowInColumn="Entity.Projection.ExoBudgetQty" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateAtCompletion" ShowInColumn="Entity.EstimateAtCompletion" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Variance" ShowInColumn="Entity.Variance" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Invoiced" ShowInColumn="Entity.Invoiced" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateToComplete" ShowInColumn="Entity.EstimateToComplete" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
-                                            </dxg:GridControl.GroupSummary>
-                                            <dxg:GridControl.TotalSummary>
-                                                <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Projection.SubJob.Code" ShowInColumn="Entity.Projection.SubJob.Code" SummaryType="Count" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.Projection.ExoBudgetQty" ShowInColumn="Entity.Projection.ExoBudgetQty" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Budget" ShowInColumn="Entity.Budget" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Outstanding" ShowInColumn="Entity.Outstanding" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.ActualUnits" ShowInColumn="Entity.ActualUnits" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="n0" FieldName="Entity.P6RemainingUnitsOverride" ShowInColumn="Entity.P6RemainingUnitsOverride" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.ActualCosts" ShowInColumn="Entity.ActualCosts" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Uncommitted" ShowInColumn="Entity.Uncommitted" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PreviousEAC" ShowInColumn="Entity.PreviousEAC" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateAtCompletion" ShowInColumn="Entity.EstimateAtCompletion" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Variance" ShowInColumn="Entity.Variance" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.Invoiced" ShowInColumn="Entity.Invoiced" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.EstimateToComplete" ShowInColumn="Entity.EstimateToComplete" SummaryType="Sum" />
-                                                <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Entity.PeriodMovement" ShowInColumn="Entity.PeriodMovement" SummaryType="Sum" />
-                                            </dxg:GridControl.TotalSummary>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView x:Name="tableView" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                <dxg:TableView x:Name="tableView" ColumnFilterPopupMode="ExcelSmart" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                     <dxg:TableView.FormatConditions>
                                                         <!--<dxg:FormatCondition Expression="[Entity.IsPOError] = 'True'" FieldName="Entity.Projection.SubJob.Code">
                                                         <dxc:Format Background="Salmon" />

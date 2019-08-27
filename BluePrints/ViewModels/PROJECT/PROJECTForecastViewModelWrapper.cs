@@ -490,7 +490,7 @@ namespace BluePrints.ViewModels
         }
 
         DataTable dataPointsTable = null;
-        List<ForecastJobData> commodityJobs;
+        List<ForecastJobData> commodityJobs = null;
         public virtual DataTable DataPointsTable
         {
             get
@@ -503,33 +503,22 @@ namespace BluePrints.ViewModels
                     dataPointsTable = new DataTable();
 
                     //get immutable data
-                    List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                    List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobs, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
-                    DetailedData.AddRange(allDataPoints);
+                    alignedDataDateCollection = generateDates();
+                    InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
+                    InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
 
-                    IEnumerable<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = AllProjectDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.DataPoints != null).SelectMany(x => x.Stats.Remaining.DataPoints).ToList();
-                    DateTime endDateToGenerate;
-
-                    //because background worker haven't update this value yet, updating it will allow end date to be saved when it's less than remaining end date
-                    isCompletelyLoaded = true;
-                    if (remainingDataPoints.Count() > 0)
+                    bool isNewData = false;
+                    if(commodityJobs == null)
                     {
-                        endDateToGenerate = remainingDataPoints.Max(x => x.ProgressDate);
-                        endDateToGenerate = endDateToGenerate.AddMonths(1);
-                        if (endDateToGenerate > FixedEndDate)
-                            FixedEndDate = endDateToGenerate;
-                        else
-                            endDateToGenerate = FixedEndDate;
+                        List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobs, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
+                        DetailedData.AddRange(allDataPoints);
+                        commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
+                        isNewData = true;
                     }
-                    else
-                        endDateToGenerate = FixedEndDate;
 
-                    if(IsWeeks)
-                        alignedDataDateCollection = ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate, true);
-                    else
-                        alignedDataDateCollection = ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
-
-                    commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
+                    LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
+                    LoadingScreenManager.SetMessage("Preparing View...");
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
@@ -540,96 +529,10 @@ namespace BluePrints.ViewModels
                         dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                     }
 
-                    InitializeColumnSource(ParentViewColumns, alignedDataDateCollection, false);
-                    InitializeColumnSource(ChildViewColumns, alignedDataDateCollection, true);
-                    LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
-                    LoadingScreenManager.SetMessage("Preparing View...");
-
                     //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
                     foreach (ForecastJobData commodityJob in commodityJobs)
                     {
-                        #region fallback rate search
-                        Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.SubJob.PhaseCode);
-
-                        string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
-                        //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
-                        DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
-                        COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
-                        DOCTYPE rateDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
-
-                        RATE searchRATE = null;
-                        if (ratePHASE != null && rateDISCIPLINE != null)
-                        {
-                            IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
-                            Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ?  rateDOCTYPE.GUID : (Guid?)null;
-
-                            //order by descending places null GUID's at the end, so First() won't pick it up
-                            IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
-                            IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
-                            searchRATE = rateByDiscipline.FirstOrDefault();
-                        }
-                        #endregion
-
-                        DataRow commodityRow = dataPointsTable.NewRow();
-                        DataTable compareDataTable = dataPointsTable.Clone();
-                        DataRow compareActualsRow = compareDataTable.NewRow();
-                        compareActualsRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" });
-                        DataRow compareMaterialRow = compareDataTable.NewRow();
-                        compareMaterialRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" });
-                        DataRow comparePOForecastRow = compareDataTable.NewRow();
-                        comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" });
-                        DataRow compareP6CostsRemainingRow = compareDataTable.NewRow();
-                        compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
-                        DataRow compareP6UnitsRemainingRow = compareDataTable.NewRow();
-                        compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", fallBackRate = searchRATE == null ? 0 : searchRATE.RATE1 == null ? 0 : (decimal)searchRATE.RATE1, Projection = commodityJob.Projection, DateCosts = commodityJob.DateCosts, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
-
-                        DataTable compareChildDataTable = dataPointsTable.Clone();
-                        DataRow compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
-                        DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.NewRow();
-
-                        decimal P6TotalCurrentRemainingUnits = 0;
-                        foreach(ForecastDateCost dateCost in commodityJob.DateCosts)
-                        {
-                            compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
-                            compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
-                            comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
-                            compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
-
-                            compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
-
-                            compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6HoursOverride;
-                            P6TotalCurrentRemainingUnits += dateCost.P6HoursOverride;
-
-                            compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
-
-                            commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
-                        }
-
-                        commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-                        commodityRow[columnEntity] = commodityJob;
-
-                        compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
-                        compareChildDataTable.Rows.Add(compareChildP6UnitsRemainingRow);
-                        compareP6UnitsRemainingRow[columnCompare] = compareChildDataTable;
-
-                        compareDataTable.Rows.Add(compareActualsRow);
-                        compareDataTable.Rows.Add(compareMaterialRow);
-                        compareDataTable.Rows.Add(comparePOForecastRow);
-                        compareDataTable.Rows.Add(compareP6CostsRemainingRow);
-                        compareDataTable.Rows.Add(compareP6UnitsRemainingRow);
-                        commodityRow[columnCompare] = compareDataTable;
-                        updateUncommittedOnDatesFromDb(commodityRow);
-
-                        updateTotalUncommittedOnJob(commodityRow);
-                        dataPointsTable.Rows.Add(commodityRow);
-
-                        //calculate project summary, needs to be done after uncommitted is calculated
-                        ForecastSummary.Budget_Cost += commodityJob.Budget;
-                        ForecastSummary.Current_Cost += commodityJob.ActualCosts;
-                        ForecastSummary.Commitments += commodityJob.Outstanding;
-                        ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
-                        ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
-
+                        updateDataTable(commodityJob, isNewData);
                         LoadingScreenManager.Progress();
                     }
 
@@ -647,35 +550,206 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, List<DateTime> alignedDates, bool isChild)
+        private List<DateTime> generateDates()
+        {
+            IEnumerable<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = AllProjectDashboards.Where(x => x.Stats != null && x.Stats.Remaining != null && x.Stats.Remaining.DataPoints != null).SelectMany(x => x.Stats.Remaining.DataPoints).ToList();
+            DateTime endDateToGenerate;
+
+            //because background worker haven't update this value yet, updating it will allow end date to be saved when it's less than remaining end date
+            isCompletelyLoaded = true;
+            if (remainingDataPoints.Count() > 0)
+            {
+                endDateToGenerate = remainingDataPoints.Max(x => x.ProgressDate);
+                endDateToGenerate = endDateToGenerate.AddMonths(1);
+                if (endDateToGenerate > FixedEndDate)
+                    FixedEndDate = endDateToGenerate;
+                else
+                    endDateToGenerate = FixedEndDate;
+            }
+            else
+                endDateToGenerate = FixedEndDate;
+
+            if (IsWeeks)
+                return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate, true);
+            else
+                return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
+        }
+
+        private void updateDataTable(ForecastJobData commodityJob, bool isNew)
+        {
+            DataRow commodityRow = dataPointsTable.NewRow();
+            commodityRow[columnEntity] = commodityJob;
+            #region fallback rate search
+            //rate already present during update
+            if (isNew)
+            {
+                Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.SubJob.PhaseCode);
+
+                string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
+                //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
+                DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
+                DOCTYPE rateDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
+                
+                if (ratePHASE != null && rateDISCIPLINE != null)
+                {
+                    IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
+                    Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ? rateDOCTYPE.GUID : (Guid?)null;
+
+                    //order by descending places null GUID's at the end, so First() won't pick it up
+                    IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
+                    IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
+                    commodityJob.FallBackRate = rateByDiscipline.FirstOrDefault();
+                }
+            }
+            #endregion
+
+            DataTable compareDataTable;
+            DataRow compareActualsRow;
+            DataRow compareMaterialRow;
+            DataRow comparePOForecastRow;
+            DataRow compareP6CostsRemainingRow;
+            DataRow compareP6UnitsRemainingRow;
+            DataTable compareChildDataTable;
+            DataRow compareChildP6CostsRemainingRow;
+            DataRow compareChildP6UnitsRemainingRow;
+
+            compareDataTable = dataPointsTable.Clone();
+            compareActualsRow = compareDataTable.NewRow();
+            compareMaterialRow = compareDataTable.NewRow();
+            comparePOForecastRow = compareDataTable.NewRow();
+            compareP6CostsRemainingRow = compareDataTable.NewRow();
+            compareP6UnitsRemainingRow = compareDataTable.NewRow();
+
+            compareActualsRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" });
+            compareMaterialRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" });
+            comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" });
+            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
+            compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", FallBackRate = commodityJob.FallBackRate, Projection = commodityJob.Projection, DateCosts = commodityJob.DateCosts, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
+
+            compareChildDataTable = dataPointsTable.Clone();
+            compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
+            compareChildP6UnitsRemainingRow = compareChildDataTable.NewRow();
+
+            compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
+            compareChildDataTable.Rows.Add(compareChildP6UnitsRemainingRow);
+
+            compareP6UnitsRemainingRow[columnCompare] = compareChildDataTable;
+            compareDataTable.Rows.Add(compareActualsRow);
+            compareDataTable.Rows.Add(compareMaterialRow);
+            compareDataTable.Rows.Add(comparePOForecastRow);
+            compareDataTable.Rows.Add(compareP6CostsRemainingRow);
+            compareDataTable.Rows.Add(compareP6UnitsRemainingRow);
+            commodityRow[columnCompare] = compareDataTable;
+            dataPointsTable.Rows.Add(commodityRow);
+
+            if (!isNew)
+                ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, alignedDataDateCollection, IsWeeks, false);
+
+            ExoSubJobProjection projection = commodityJob.Projection;
+
+
+            IEnumerable<FORECAST> FORECASTCollection = FORECASTCollectionViewModel.Entities;
+            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
+
+            decimal P6TotalCurrentRemainingUnits = 0;
+            foreach (ForecastDateCost dateCost in commodityJob.DateCosts)
+            {
+                List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
+                List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
+                List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
+
+                if(forecastUnitsOverrides.Count > 0)
+                {
+                    decimal p6OverrideUnits = forecastUnitsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+
+                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits;
+                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits * commodityJob.P6NominalRate;
+                    P6TotalCurrentRemainingUnits += p6OverrideUnits;
+                }
+                else
+                {
+                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
+                    P6TotalCurrentRemainingUnits += dateCost.P6Hours;
+                }
+
+                if (forecastCostsOverrides.Count > 0)
+                {
+                    decimal p6OverrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideCosts;
+                }
+                else
+                {
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
+                }
+
+                compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
+                compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
+                comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
+                compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
+                compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+            }
+
+            commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
+            updateUncommittedOnDatesFromDb(commodityRow);
+            updateTotalUncommittedOnJob(commodityRow);
+
+            if(isNew)
+            {
+                //calculate project summary, needs to be done after uncommitted is calculated
+                ForecastSummary.Budget_Cost += commodityJob.Budget;
+                ForecastSummary.Current_Cost += commodityJob.ActualCosts;
+                ForecastSummary.Commitments += commodityJob.Outstanding;
+                ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
+                ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
+            summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.PhaseCode", Header = isChild ? string.Empty : "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.Code", Header = isChild ? string.Empty : "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Discipline.Code", Header = isChild ? string.Empty : "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Code", Header = isChild ? string.Empty : "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Name", Header = isChild ? string.Empty : "Commodity Name", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Variation_Code", Header = isChild ? string.Empty : "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Rate", Header = isChild ? string.Empty : "Rate", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number, Mask = "n0" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", Header = isChild ? string.Empty : "Budget", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", Header = isChild ? string.Empty : "Outstanding", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", Header = isChild ? string.Empty : "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", Header = isChild ? string.Empty : "PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", Header = isChild ? string.Empty : "EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
-            if(isChild)
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = isChild ? string.Empty : "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.Code", ReadOnly = true, Header = isChild ? string.Empty : "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.SubJob.Code", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Discipline.Code", ReadOnly = true, Header = isChild ? string.Empty : "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Code", ReadOnly = true, Header = isChild ? string.Empty : "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Name", ReadOnly = true, Header = isChild ? string.Empty : "Commodity Name", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Variation_Code", ReadOnly = true, Header = isChild ? string.Empty : "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Rate", ReadOnly = true, Header = isChild ? string.Empty : "Rate", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number, Mask = "n0" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", ReadOnly = false, Header = isChild ? string.Empty : "Budget", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", ReadOnly = true, Header = isChild ? string.Empty : "Outstanding", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", ReadOnly = true, Header = isChild ? string.Empty : "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", ReadOnly = false, Header = isChild ? string.Empty : "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", ReadOnly = true, Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", ReadOnly = true, Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", ReadOnly = true, Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", ReadOnly = true, Header = isChild ? string.Empty : "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", ReadOnly = true, Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", ReadOnly = true, Header = isChild ? string.Empty : "EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", ReadOnly = true, Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            if (isChild)
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "Forecast Type", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
             else
+            {
                 columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", Header = isChild ? string.Empty : "Period Move", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            }
 
-            foreach (DateTime alignedDate in alignedDates)
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
@@ -688,6 +762,9 @@ namespace BluePrints.ViewModels
                     else
                         columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                 }
+
+                if(!isChild)
+                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             }
         }
 
@@ -751,7 +828,7 @@ namespace BluePrints.ViewModels
                 updateRow[fieldName] = newValue;
                 updateRow[fieldName] = newValue;
                 EntitiesUndoRedoManager.AddUndo(updateRow, fieldName, oldValue, newValue, EntityMessageType.Changed);
-                updateTotalUncommittedOnJob(updateRow);
+                updateTotalUncommittedOnJob(updateRow, true);
             }
         }
 
@@ -1262,6 +1339,13 @@ namespace BluePrints.ViewModels
                     DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[1];
 
                     EntitiesUndoRedoManager.PauseActionId();
+                    List<FORECAST> resetFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == job.Projection.SubJob.Code && x.DISCIPLINE_CODE == job.Projection.Discipline.Code && x.COMMODITY_CODE == job.Projection.Commodity.Code && x.VARIATION_CODE == job.Projection.Variation_Code).ToList();
+                    foreach (FORECAST resetFORECAST in resetFORECASTS)
+                    {
+                        resetFORECAST.FORECAST_UNITS = null;
+                    }
+
+                    FORECASTCollectionViewModel.BulkSave(resetFORECASTS);
                     foreach (ForecastDateCost dateCost in job.DateCosts)
                     {
                         string alignedDateField = (dateCost.Date).ToString(BluePrintsResources.ColumnDateFormat);
@@ -1274,7 +1358,7 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, 0.00m, oldP6Units);
+                            resetChildRow(compareDataTable, alignedDateField, false);
                         }
                     }
                     EntitiesUndoRedoManager.UnpauseActionId();
@@ -1309,14 +1393,46 @@ namespace BluePrints.ViewModels
                         e.IsValid = false;
                     }
                 }
+                else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Budget)))
+                {
+                    if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                    {
+                        e.ErrorContent = "You do not have permission to change the budget";
+                        e.IsValid = false;
+                    }    
+                }
+                else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
+                {
+                    DataRowView row = (DataRowView)e.Row;
+                    if (!IsWeeks)
+                    {
+                        e.ErrorContent = "Sorry, PF cannot be change in weeks view, please change view to show weeks instead of months";
+                        e.IsValid = false;
+                    }
+                    else if (sumP6Units(row) == 0)
+                    {
+                        e.ErrorContent = "There are no units from P6 to override productivity, please edit P6 hours manually";
+                        e.IsValid = false;
+                    }
+                    else
+                    {
+                        ForecastJobData job = (ForecastJobData)row[columnEntity];
+                        ExoSubJobProjection projection = job.Projection;
+                        if (FORECASTCollectionViewModel.Entities.Any(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code))
+                        {
+                            if(MessageBoxService.ShowMessage("Any forecast done on this job will be removed and automatically generated based on " + e.Value.ToString() + " PF, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                            {
+                                e.ErrorContent = "Action cancelled";
+                                e.IsValid = false;
+                            }
+                        }
+                    }
+                }
             }
         }
 
         private bool commitBudget(DataRow dataRow, object newValue)
         {
-            if(!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
-                return false;
-
             ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
             ExoSubJobProjection entity = job.Projection;
             decimal newDecimalValue = 0;
@@ -1493,6 +1609,34 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private decimal sumP6Units(DataRowView parentRow)
+        {
+            decimal p6Units = 0;
+            DataTable compareDataTable = (DataTable)parentRow[columnCompare];
+            if (compareDataTable != null && compareDataTable.Rows.Count > 0)
+            {
+                if (compareDataTable.Rows.Count == 5)
+                {
+                    DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[4];
+                    DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
+                    DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[1];
+
+                    foreach(DataColumn column in compareDataTable.Columns)
+                    {
+                        DateTime parseDateTime;
+                        if(DateTime.TryParse(column.ColumnName, out parseDateTime))
+                        {
+                            decimal childP6UnitsValue = compareChildP6UnitsRemainingRow[column.ColumnName] == DBNull.Value ? 0 : (decimal)compareChildP6UnitsRemainingRow[column.ColumnName];
+
+                            p6Units += childP6UnitsValue;
+                        }
+                    }
+                }
+            }
+
+            return p6Units;
+        }
+
         /// <summary>
         /// update view and database at the same time
         /// </summary>
@@ -1548,16 +1692,16 @@ namespace BluePrints.ViewModels
             FORECAST resetFORECAST = editForecastDataType == ForecastDataType.Cost ? p6FORECAST : costFORECAST;
 
             List<FORECAST> deleteFORECASTS = new List<FORECAST>();
-            if(!IsWeeks)
-            {
-                deleteFORECASTS.AddRange(findCostFORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
+            deleteFORECASTS.AddRange(findCostFORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
+            deleteFORECASTS.AddRange(findP6FORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
 
-                //need to delete both cost and units when type is p6
-                if((editForecastDataType == ForecastDataType.P6))
-                    deleteFORECASTS.AddRange(findP6FORECASTS.Where(x => x.FORECAST_DATE != forecastDate.Date));
+            foreach(FORECAST deleteFORECAST in deleteFORECASTS)
+            {
+                deleteFORECAST.FORECAST_UNITS = null;
             }
 
-            FORECASTCollectionViewModel.BaseBulkDelete(deleteFORECASTS);
+            FORECASTCollectionViewModel.BulkSave(deleteFORECASTS);
+
             if (editFORECAST == null)
             {
                 editFORECAST = new FORECAST();
@@ -1603,7 +1747,7 @@ namespace BluePrints.ViewModels
             }
 
             updateUncommittedOnDatesFromDb(dataRow, true);
-            updateTotalUncommittedOnJob(dataRow);
+            updateTotalUncommittedOnJob(dataRow, true);
             updateFloatingSummaryMembers();
         }
 
@@ -1734,9 +1878,14 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Sum uncommitted values, need to be run after any updates to dates value
         /// </summary>
-        private void updateTotalUncommittedOnJob(DataRow dataRow)
+        private void updateTotalUncommittedOnJob(DataRow dataRow, bool searchParentRow = false)
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
+            //need to map back into main row because datarow could be coming from p6 hours edit
+            DataRow parentRow = searchParentRow ? findRow(job.Projection, true) : dataRow;
+            dataRow = parentRow;
+            job = (ForecastJobData)parentRow[columnEntity];
+
             DataTable dataTable = dataRow.Table;
 
             decimal preloadedSum = 0;
@@ -1953,7 +2102,7 @@ namespace BluePrints.ViewModels
 
             foreach(UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
+                updateTotalUncommittedOnJob(entityProperty.ChangedEntity, true);
             }
 
             refreshGridData();
@@ -1994,7 +2143,7 @@ namespace BluePrints.ViewModels
 
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                updateTotalUncommittedOnJob(entityProperty.ChangedEntity);
+                updateTotalUncommittedOnJob(entityProperty.ChangedEntity, true);
             }
 
             refreshGridData();
@@ -2321,6 +2470,32 @@ namespace BluePrints.ViewModels
                     childViewColumns = new ObservableCollection<ColumnDescriptor>();
                 }
                 return childViewColumns;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> parentSummaries;
+        public ObservableCollection<SummaryDescriptor> ParentSummaries
+        {
+            get
+            {
+                if (parentSummaries == null)
+                {
+                    parentSummaries = new ObservableCollection<SummaryDescriptor>();
+                }
+                return parentSummaries;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> childSummaries;
+        public ObservableCollection<SummaryDescriptor> ChildSummaries
+        {
+            get
+            {
+                if (childSummaries == null)
+                {
+                    childSummaries = new ObservableCollection<SummaryDescriptor>();
+                }
+                return childSummaries;
             }
         }
 
