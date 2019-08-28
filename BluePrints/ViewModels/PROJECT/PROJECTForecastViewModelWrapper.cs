@@ -1420,7 +1420,7 @@ namespace BluePrints.ViewModels
                         ExoSubJobProjection projection = job.Projection;
                         if (FORECASTCollectionViewModel.Entities.Any(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code))
                         {
-                            if(MessageBoxService.ShowMessage("Any forecast done on this job will be removed and automatically generated based on " + e.Value.ToString() + " PF, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+                            if(MessageBoxService.ShowMessage("Any forecast done on this job will be removed and automatically generated based on PF = " + e.Value.ToString() + ", do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                             {
                                 e.ErrorContent = "Action cancelled";
                                 e.IsValid = false;

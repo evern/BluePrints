@@ -17,6 +17,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.View;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -472,6 +473,67 @@ namespace BluePrints.ViewModels
             }
 
             return findDISCIPLINE.GUID;
+        }
+
+        public void Trim()
+        {
+            if (MessageBoxService.ShowMessage("This will attempt to remove any duplicate entries, or entires that doesn't exists in exo and doesn't have P6 assignments, do you wish to continue?", "Warning", MessageButton.OKCancel, MessageIcon.Question) != MessageResult.OK)
+                return;
+
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
+            List<ESTIMATE_ITEMProgress> removeESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+
+            int removeCount = 0;
+            Common.LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
+            Common.LoadingScreenManager.SetMessage("Looking for invalid entries...");
+            List<ESTIMATE_ITEMProgress> entities = DisplayEntities.ToList();
+
+            for(int i=0;i < entities.Count;i++)
+            {
+                Common.LoadingScreenManager.Progress();
+                ESTIMATE_ITEMProgress displayEntity = entities[i];
+                IEnumerable<ExoTimeAuthorisation> findExoLines = exoLines.Where(x => x.SubJobCode == displayEntity.Subjob_Name && x.DisciplineCode == displayEntity.Discipline_Code && x.CommodityCode == displayEntity.Commodity_Code);
+                ExoTimeAuthorisation findExoLine;
+                if (displayEntity.Variation_Code != null || displayEntity.Variation_Code != string.Empty)
+                    findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == displayEntity.Variation_Code);
+                else
+                    findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == string.Empty || x.VariationCode == null);
+
+                if (findExoLine == null)
+                {
+                    removeESTIMATE_ITEMS.Add(displayEntity);
+                    entities.Remove(displayEntity);
+                }
+                else
+                {
+                    IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = DisplayEntities.Where(x => x.GUID != displayEntity.GUID && x.UniqueJobcode == displayEntity.UniqueJobcode);
+                    if (duplicateEntities.Count() > 0)
+                    {
+                        foreach (ESTIMATE_ITEMProgress duplicateEntity in duplicateEntities)
+                        {
+                            IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == duplicateEntity.OriginalEntityKey);
+                            if (attachedP6Assignments.Count() == 0)
+                            {
+                                if (!removeESTIMATE_ITEMS.Any(x => x.GUID == duplicateEntity.GUID))
+                                {
+                                    removeESTIMATE_ITEMS.Add(displayEntity);
+
+                                    //must be removed or else displayEntity will be scanned later and all duplication will be removed
+                                    entities.Remove(displayEntity);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            removeCount = removeESTIMATE_ITEMS.Count;
+            MainViewModel.BaseBulkDelete(removeESTIMATE_ITEMS);
+
+            MessageBoxService.ShowMessage(removeCount + " entries removed, all jobs are valid");
         }
 
         public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)

@@ -29,13 +29,14 @@
                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
+                    <dxb:BarButtonItem x:Name="biTrim" Content="Trim" Command="{Binding DataContext.TrimCommand, ElementName=userControl}" LargeGlyph="{dxc:DXImage Images/Actions/Clip_32x32.png}" Glyph="{dx:DXImage Images/Actions/Clip_16x16.png}" ToolTip="Removes duplicate entries, or entries that doesn't exist in exo. Entries with p6 assignments won't be removed" />
                     <dxb:BarButtonItem x:Name="biP6Assignment" Content="P6 Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
                         <dxr:RibbonDefaultPageCategory MergeType="MergeItems" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" Glyph="{dxc:DXImage Images/Actions/Clip_32x32.png}" >
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                     <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                     <dxb:BarButtonItemLink BarItemName="biUndo1" />
@@ -51,6 +52,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                     <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                     <dxb:BarButtonItemLink BarItemName="biViewReport1" />
+                                    <dxb:BarButtonItemLink BarItemName="biTrim" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="P6">
