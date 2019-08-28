@@ -258,7 +258,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoSubJobProjection> queriedJobs, IEnumerable<DashboardFlatStructure> dashboardJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints)
+        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<DashboardFlatStructure> dashboardJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints)
         {
             ConcurrentBag<ExoSubJobProjection> combinedSubJobs = new ConcurrentBag<ExoSubJobProjection>();
             LoadingScreenManager.ShowLoadingScreen(queriedJobs.Count());
@@ -266,43 +266,40 @@ namespace BluePrints.Common.ViewModel.Misc
             //assume queried jobs are already unique
             Parallel.ForEach(queriedJobs,
             queriedJob =>
-            {   
+            {
                 //jobs from query are added as it is
-                addExoSubJob(combinedSubJobs, queriedJob.SubJob.Code, queriedJob.Discipline.Code, queriedJob.Commodity.Code, queriedJob.Variation_Code, COMMODITY_CODELookup, queriedJobs, queriedJob.SubJob.Title, queriedJob.Discipline.Name, false);
+                addExoSubJob(combinedSubJobs, queriedJob.SubJobCode, queriedJob.DisciplineCode, queriedJob.CommodityCode, queriedJob.VariationCode, COMMODITY_CODELookup, queriedJobs, queriedJob.SubJobTitle, queriedJob.DisciplineName, false);
                 LoadingScreenManager.Progress();
             });
+            LoadingScreenManager.CloseLoadingScreen();
 
-            //IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
-            //IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
-            //IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
+            IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+            IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
+            IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
             //IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
 
-            //LoadingScreenManager.CloseLoadingScreen();
-            //LoadingScreenManager.ShowLoadingScreen(1);
-            //LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
-            //allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
-            //allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
-            //allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
+            allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
+            allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
+            allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
 
             ////List<string> uniqueExoJobsConcatNames = dashboardJobs.Select(x => x.SubjobCode + ";" + x.DisciplineCode + ";" + x.CommodityCode + ";" + x.Variation_Code).Distinct().ToList();
+            List<string> uniqueExoJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();
 
-            //List<string> uniqueExoJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();
-            //LoadingScreenManager.CloseLoadingScreen();
+            LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
+            LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
+            Parallel.ForEach(uniqueExoJobsConcatNames,
+            uniqueJobsConcatName =>
+            {
+                List<string> delimited = uniqueJobsConcatName.Split(';').ToList();
+                string subjobCode = delimited[0];
+                string disciplineCode = delimited[1];
+                string commodityCode = delimited[2];
+                string variationCode = delimited[3];
 
-            //LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
-            //Parallel.ForEach(uniqueExoJobsConcatNames,
-            //uniqueJobsConcatName =>
-            //{
-            //    List<string> delimited = uniqueJobsConcatName.Split(';').ToList();
-            //    string subjobCode = delimited[0];
-            //    string disciplineCode = delimited[1];
-            //    string commodityCode = delimited[2];
-            //    string variationCode = delimited[3];
-
-            //    //data points from exo requires lookup and is filtered by unique code string
-            //    addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs);
-            //    LoadingScreenManager.Progress();
-            //});
+                //data points from exo requires lookup and is filtered by unique code string
+                addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs);
+                LoadingScreenManager.Progress();
+            });
 
             LoadingScreenManager.CloseLoadingScreen();
             return combinedSubJobs.ToList();
@@ -312,7 +309,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals
         /// </summary>
         private static void addExoSubJob(ConcurrentBag<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
-            IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoSubJobProjection> ExoJobLookup, 
+            IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true)
         {
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
@@ -330,16 +327,16 @@ namespace BluePrints.Common.ViewModel.Misc
             {
                 if (subJobTitle == string.Empty)
                 {
-                    ExoSubJobProjection findSubJobProjection = ExoJobLookup == null ? null : ExoJobLookup.FirstOrDefault(x => x.SubJob.Code == subJobCode);
+                    ExoTimeAuthorisation findSubJobProjection = ExoJobLookup == null ? null : ExoJobLookup.FirstOrDefault(x => x.SubJobCode == subJobCode);
                     if (findSubJobProjection != null)
-                        subJobTitle = findSubJobProjection.SubJob.Title;
+                        subJobTitle = findSubJobProjection.SubJobTitle;
                 }
 
                 if (disciplineName == string.Empty)
                 {
-                    ExoSubJobProjection findDisciplineProjection = ExoJobLookup == null ? null : ExoJobLookup.FirstOrDefault(x => x.Discipline.Code == disciplineCode);
+                    ExoTimeAuthorisation findDisciplineProjection = ExoJobLookup == null ? null : ExoJobLookup.FirstOrDefault(x => x.DisciplineCode == disciplineCode);
                     if (findDisciplineProjection != null)
-                        disciplineName = findDisciplineProjection.Discipline.Name;
+                        disciplineName = findDisciplineProjection.DisciplineName;
                 }
             }
 

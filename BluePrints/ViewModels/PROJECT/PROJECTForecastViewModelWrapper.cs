@@ -511,7 +511,7 @@ namespace BluePrints.ViewModels
                     if(commodityJobs == null)
                     {
                         List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobs, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
+                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
                         DetailedData.AddRange(allDataPoints);
                         commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
                         isNewData = true;
