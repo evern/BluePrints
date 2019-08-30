@@ -79,7 +79,7 @@ namespace BluePrints.Common.Base
         protected override void resolveParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
-            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
             var receiveParameter =
                 (DualEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
