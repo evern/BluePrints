@@ -23,7 +23,7 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<SUBJOB> SUBJOBS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false)
+        public PROJECT_Dashboard(IEnumerable<IReportable> reportableItems, IEnumerable<PROGRESS> PROGRESSES, IEnumerable<SUBJOB> SUBJOBS, IEnumerable<VARIATION> VARIATIONS, string project_number, decimal currency_conversion, IPrimeroEntitiesUnitOfWork PrimeroUOW, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false)
         {
             TimeSpan reporting_interval = ChronologicalHelpers.GetDefaultIntervalTimeSpan();
             DateTime? earliest_first_aligned_data_date;
@@ -194,7 +194,8 @@ namespace BluePrints.Common.Projections
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }
 
-                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, null, fixedStartDate, fixedDataDate, forceRetrieveRemainingDataPoints)
+                IPrimeroEntitiesUnitOfWork primeroUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(current_project.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, primeroUOW, fixedStartDate, fixedDataDate, forceRetrieveRemainingDataPoints)
                 {
                     GUID = current_project.GUID,
                     Entity = current_project
