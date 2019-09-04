@@ -72,12 +72,7 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
 
             loadPROJECT = PROJECTParameter.GetEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-            pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
-            pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
-
-            initializeCompulsoryViewProperties();
+            initializeCompulsoryViewProperties(loadPROJECT);
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
@@ -183,7 +178,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, primeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
+            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
@@ -218,7 +213,7 @@ namespace BluePrints.ViewModels
                     newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
                     if (newUser.ShouldAssign && subJob.SubJobId != null)
                     {
-                        if (ExoMethods.findExistingOrAddResourceAllocation(primeroUnitOfWork, newUser, (int)subJob.SubJobId))
+                        if (ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, newUser, (int)subJob.SubJobId))
                             addedCount += 1;
 
                         newUser.IsAssigned = true;

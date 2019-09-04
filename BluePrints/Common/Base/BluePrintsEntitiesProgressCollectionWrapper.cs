@@ -76,6 +76,7 @@ namespace BluePrints.Common.Base
             progressSaveBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
@@ -86,6 +87,7 @@ namespace BluePrints.Common.Base
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -336,7 +338,6 @@ namespace BluePrints.Common.Base
         #region Stats Calculation
         protected FullSummarizer fullSummarizer;
         protected ProjectSummaryStats projectSummary;
-        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         protected bool statsCalculatedOnProjection = false;
         protected virtual void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {

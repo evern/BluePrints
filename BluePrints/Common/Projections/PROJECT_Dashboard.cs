@@ -129,8 +129,6 @@ namespace BluePrints.Common.Projections
                 project_single_or_active_selection = PROJECTS.Where(x => x.STATUS == ProjectStatus.Active);
 
             List<PROJECT_Dashboard> project_dashboard = new List<PROJECT_Dashboard>();
-            var primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
             foreach (var current_project in project_single_or_active_selection)
             {
                 BASELINE live_baseline = BASELINES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);

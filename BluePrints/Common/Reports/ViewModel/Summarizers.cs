@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using BaseModel.Data.Helpers;
 using BluePrints.Common.ViewModel.Utils;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
@@ -465,7 +466,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(projectSummaryStats, forceRetrieveAllBurned, showLoadingScreen);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllBurned, showLoadingScreen);
         }
 
         public void RecalculateStats(bool isCosts)

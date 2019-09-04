@@ -531,7 +531,7 @@ namespace BluePrints.Common.Projections
             if (projection.CommodityCode == null || projection.CommodityCode == string.Empty || projection.DisciplineId == null)
                 return false;
 
-            JOB_COSTTYPES commodity = ExoMethods.findExistingCommodity(projection.CommodityCode, string.Empty, (int)projection.DisciplineId);
+            JOB_COSTTYPES commodity = ExoMethods.findExistingCommodity(primeroUnitOfWork, projection.CommodityCode, string.Empty, (int)projection.DisciplineId);
             if (commodity != null)
             {
                 projection.CommodityId = commodity.SEQNO;
@@ -680,7 +680,7 @@ namespace BluePrints.Common.Projections
             {
                 if (staffId != null)
                 {
-                    JOBCOST_RESOURCE newJOBCOST_RESOURCE = createNewResource((int)staffId, uppercaseName, uppercaseTitle, uppercaseDefaultStockCode, uppercaseShortCode);
+                    JOBCOST_RESOURCE newJOBCOST_RESOURCE = createNewResource(pUnitOfWork, (int)staffId, uppercaseName, uppercaseTitle, uppercaseDefaultStockCode, uppercaseShortCode);
                     pUnitOfWork.JOBCOST_RESOURCE.Add(newJOBCOST_RESOURCE);
                     return newJOBCOST_RESOURCE;
                 }
@@ -712,7 +712,7 @@ namespace BluePrints.Common.Projections
             }
             else
             {
-                STAFF newSTAFF = createNewStaff(uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId, payrollId);
+                STAFF newSTAFF = createNewStaff(pUnitOfWork, uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId, payrollId);
                 pUnitOfWork.STAFF.Add(newSTAFF);
 
                 //need to save changes here to get new staff id;
@@ -757,7 +757,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        private static JOBCOST_RESOURCE createNewResource(int staffId, string name, string title, string defaultStockCode, string shortCode)
+        private static JOBCOST_RESOURCE createNewResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int staffId, string name, string title, string defaultStockCode, string shortCode)
         {
             JOBCOST_RESOURCE newJOBCOST_RESOURCE = new JOBCOST_RESOURCE();
             newJOBCOST_RESOURCE.RESOURCENAME = name;
@@ -776,7 +776,6 @@ namespace BluePrints.Common.Projections
             newJOBCOST_RESOURCE.ISACTIVE = "Y";
 
             //use new unit of work to prevent concurrency issues
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             string generatedShortCode = ExoQueries.GetStaffShortcode(pUnitOfWork, init);
             newJOBCOST_RESOURCE.STAFFNO = staffId;
             newJOBCOST_RESOURCE.SHORTCODE = shortCode == string.Empty ? generatedShortCode : shortCode;
@@ -866,11 +865,8 @@ namespace BluePrints.Common.Projections
             return newSTOCK_ITEM;
         }
 
-        private static STAFF createNewStaff(string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId)
+        private static STAFF createNewStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId)
         {
-            //use new unit of work to prevent concurrency issues
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
             STAFF newSTAFF = new STAFF();
             newSTAFF.NAME = name;
             newSTAFF.JOBTITLE = title;
@@ -964,9 +960,8 @@ namespace BluePrints.Common.Projections
             return newLINE;
         }
 
-        public static JOB_COSTTYPES findExistingCommodity(string commodityCode, string commodityName, int defaultDisciplineId)
+        public static JOB_COSTTYPES findExistingCommodity(IPrimeroEntitiesUnitOfWork pUnitOfWork, string commodityCode, string commodityName, int defaultDisciplineId)
         {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOB_COSTTYPES costType = ExoQueries.GetCommodity(pUnitOfWork, commodityCode);
 
             if (costType != null)
@@ -1007,9 +1002,8 @@ namespace BluePrints.Common.Projections
             return newCOSTGROUP;
         }
 
-        public static void updateSubJobTitle(string projectNumber, string jobCode)
+        public static void updateSubJobTitle(IPrimeroEntitiesUnitOfWork pUnitOfWork, string projectNumber, string jobCode)
         {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOBCOST_HDR existingSubJobs = ExoQueries.GetProjectSubJob(pUnitOfWork, projectNumber, jobCode);
         }
 
@@ -1167,9 +1161,8 @@ namespace BluePrints.Common.Projections
                 return false;
         }
 
-        public static void deleteResourceAllocation(ExoSubJobAuth existingPermission, int jobNo)
+        public static void deleteResourceAllocation(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobAuth existingPermission, int jobNo)
         {
-            var pUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             JOB_RESOURCE_ALLOCATION resourceAllocation = ExoQueries.GetResourceAllocation(pUnitOfWork, existingPermission, jobNo, false);
 
             if (resourceAllocation != null)

@@ -81,6 +81,7 @@ namespace BluePrints.ViewModels
 
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
             IsCalculating = true;
             this.RaisePropertyChanged(x => x.IsCalculating);
             extrapolateDataDate = true;
@@ -1078,7 +1079,7 @@ namespace BluePrints.ViewModels
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
             fullSummarizer.BuildBurnedDataPoints(false);
             fullSummarizer.Build();

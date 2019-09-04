@@ -22,13 +22,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DateTime FirstAlignedDataDate { get; private set; }
         readonly DateTime CurrentDataDate;
         readonly string ProjectNumber;
-        readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
+        public readonly IPrimeroEntitiesUnitOfWork PrimeroUOW;
 
-        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<SUBJOB> SUBJOBS, DateTime current_date_date, IPrimeroEntitiesUnitOfWork primeroUOW = null)
+        public FullStatsBuilder(string project_number, decimal currency_conversion, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<SUBJOB> SUBJOBS, DateTime current_date_date, IPrimeroEntitiesUnitOfWork primeroUOW)
             : base(currency_conversion)
         {
             ProjectNumber = project_number;
-            PrimeroUOW = primeroUOW == null ? PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork() : primeroUOW;
+            PrimeroUOW = primeroUOW;
             this.ReportingInterval = reporting_interval;
             this.FirstAlignedDataDate = first_aligned_data_date;
             this.CurrentDataDate = current_date_date;
@@ -36,7 +36,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
 
-        public void BuildExoDataPoints(ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false, bool showLoadingScreen = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false, bool showLoadingScreen = false)
         {
             try
             {
@@ -139,8 +139,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         LoadingScreenManager.Progress();
                 }
 
-                materialDataPoints = BluePrintsDataUtils.GetMaterials(projectNumber, null, CurrencyConversion, showLoadingScreen);
-                poDataPoints = BluePrintsDataUtils.GetEXOPO(projectNumber, null, showLoadingScreen);
+                materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, null, CurrencyConversion, showLoadingScreen);
+                poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, null, showLoadingScreen);
 
                 foreach (string missingSubJob in missingSubJobs)
                 {

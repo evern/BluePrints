@@ -175,7 +175,6 @@ namespace BluePrints.ViewModels
         protected List<ExoTimeAuthorisation> queryJobLines { get; set; }
         protected JOBCOST_HDR masterJob;
         protected JOBCOST_LINES copyLine;
-        IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
@@ -223,9 +222,11 @@ namespace BluePrints.ViewModels
             }
         }
 
+        protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
+            primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
             forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
@@ -251,14 +252,12 @@ namespace BluePrints.ViewModels
 
         private void loadExoMethodsData()
         {
-            IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             masterJob = ExoQueries.GetProjectSubJob(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
         private void loadSummaryStats()
         {
-            IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>(); 
             queryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
             queryJobLines = jobLines;
@@ -1323,7 +1322,7 @@ namespace BluePrints.ViewModels
             fieldName = fieldName.Replace("Entity.", "");
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Budget) || fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Rate))
             {
-                commitBudget(row, newValue);
+                commitBudget(primeroEntitiesUnitOfWork, row, newValue);
             }
             else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
             {
@@ -1431,7 +1430,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool commitBudget(DataRow dataRow, object newValue)
+        private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue)
         {
             ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
             ExoSubJobProjection entity = job.Projection;

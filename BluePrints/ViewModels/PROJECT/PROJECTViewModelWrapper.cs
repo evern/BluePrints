@@ -33,6 +33,7 @@ using BaseModel.ViewModel.Services;
 using DevExpress.Mvvm.DataAnnotations;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.Common.ViewModel.Utils;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 
 namespace BluePrints.ViewModels
 {

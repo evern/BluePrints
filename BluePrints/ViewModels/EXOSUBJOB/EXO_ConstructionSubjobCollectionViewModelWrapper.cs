@@ -72,12 +72,7 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
 
             loadPROJECT = PROJECTParameter.GetEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-            pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
-            pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
-
-            initializeCompulsoryViewProperties();
+            initializeCompulsoryViewProperties(loadPROJECT);
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
@@ -187,7 +182,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, primeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
+            return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, localPrimeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)

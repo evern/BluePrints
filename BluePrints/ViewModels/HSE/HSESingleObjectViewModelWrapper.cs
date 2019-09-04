@@ -51,7 +51,12 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+#if MONTREAL
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
+#else
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+#endif
+
         public PROJECT loadPROJECT { get; set; }
         public HSEProjection EditingEntity { get; set; }
         private bool isCompletelyLoaded { get; set; }

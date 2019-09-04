@@ -70,10 +70,10 @@ namespace BluePrints.ViewModels
         protected Data.PROJECT loadPROJECT;
         protected List<STAFF> exoSTAFFS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
-        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory;
-        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-        protected IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> localPrimeroUnitOfWorkFactory;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> remotePrimeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork;
+        protected IPrimeroEntitiesUnitOfWork remotePrimeroUnitOfWork;
         private IEnumerable<JOB_COSTGROUPS> costGroups;
         private IEnumerable<JOBCOST_HDR> existingSubJobs;
         protected JOBCOST_HDR masterJob;
@@ -95,19 +95,12 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-
-            pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo != BluePrintsResources.OfficeMontreal);
-            pgaUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-
+            initializeCompulsoryViewProperties(loadPROJECT);
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
-            initializeCompulsoryViewProperties();
             initializeOptionalViewCollections();
         }
 
@@ -116,8 +109,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-            loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
-            loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
+            loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.PROFILE);
+            loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -125,22 +118,27 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
-        protected void initializeCompulsoryViewProperties()
+        protected void initializeCompulsoryViewProperties(Data.PROJECT project)
         {
-            masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER);
-            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, loadPROJECT.NUMBER);
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeName == BluePrintsResources.OfficeMontreal);
+            remotePrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeName != BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
+            remotePrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
 
-            List<STAFF> perthSTAFFS = ExoQueries.GetStaffs(primeroUnitOfWork).ToList();
-            List<STAFF> montrealSTAFFS = ExoQueries.GetStaffs(pgaUnitOfWork).ToList();
+            masterJob = ExoQueries.GetProjectSubJob(localPrimeroUnitOfWork, project.NUMBER);
+            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(localPrimeroUnitOfWork, project.NUMBER);
+
+            List<STAFF> localSTAFFS = ExoQueries.GetStaffs(localPrimeroUnitOfWork).ToList();
+            List<STAFF> remoteSTAFFS = ExoQueries.GetStaffs(remotePrimeroUnitOfWork).ToList();
             exoSTAFFS = new List<STAFF>();
-            exoSTAFFS.AddRange(perthSTAFFS);
-            exoSTAFFS.AddRange(montrealSTAFFS);
+            exoSTAFFS.AddRange(localSTAFFS);
+            exoSTAFFS.AddRange(remoteSTAFFS);
         }
 
         private void initializeOptionalViewCollections()
         {
-            costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
-            existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
+            costGroups = ExoQueries.GetCostGroups(localPrimeroUnitOfWork);
+            existingSubJobs = ExoQueries.GetProjectSubJobs(localPrimeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         private void BackgroundBudgetChecker_DoWork(object sender, DoWorkEventArgs e)
@@ -179,7 +177,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetNativeExoSubJobEditableProjection(primeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS);
+            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
@@ -219,9 +217,9 @@ namespace BluePrints.ViewModels
         {
             refreshPermissions();
         }
-        #endregion
+#endregion
 
-        #region Events
+#region Events
         /// <summary>
         /// Remembers an entity added for undoing
         /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
@@ -319,21 +317,21 @@ namespace BluePrints.ViewModels
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)))
                 {
-                    ExoMethods.CommitLineSubJob(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
+                    ExoMethods.CommitLineSubJob(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork);
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)))
                 {
-                    ExoMethods.CommitLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork);
+                    ExoMethods.CommitLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork);
                 }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
                 {                            
                     //stock item cannot be added, so it must exists before commodity can be added using it
                     string stockCode = projection.GetStockCode();
-                    STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                    STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(localPrimeroUnitOfWork, stockCode);
                     if(stock_item != null)
                     {
                         projection.StockName = stock_item.DESCRIPTION;
-                        if (ExoMethods.CommitLineCommodity(projection, stock_item, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                        if (ExoMethods.CommitLineCommodity(projection, stock_item, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                             this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
                     }
                 }
@@ -396,7 +394,7 @@ namespace BluePrints.ViewModels
             {
                 foreach (ExoSubJobEditableProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
                 {
-                    ExoMethods.findExistingOrAddResourceAllocation(primeroUnitOfWork, editingSubJobAuth, (int)selectedEntity.SubJobId);
+                    ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, editingSubJobAuth, (int)selectedEntity.SubJobId);
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
 
@@ -421,7 +419,7 @@ namespace BluePrints.ViewModels
                     ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.EXO_STAFF_ID == editingSubJobAuth.User.EXO_STAFF_ID);
                     if (existingPermission != null)
                     {
-                        ExoMethods.deleteResourceAllocation(editingSubJobAuth, (int)selectedEntity.SubJobId);
+                        ExoMethods.deleteResourceAllocation(localPrimeroUnitOfWork, editingSubJobAuth, (int)selectedEntity.SubJobId);
                         selectedEntity.AuthUsers.Remove(existingPermission);
                         e.Handled = true;
                     }
@@ -541,11 +539,11 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(removeProjections.Count);
             foreach (ExoSubJobEditableProjection removeProjection in removeProjections)
             {
-                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
                 if (line != null)
                 {
-                    primeroUnitOfWork.JOBCOST_LINES.Remove(line);
-                    primeroUnitOfWork.SaveChanges();
+                    localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
+                    localPrimeroUnitOfWork.SaveChanges();
                 }
                 viewRemoveProjections.Add(removeProjection);
                 LoadingScreenManager.Progress();
@@ -628,15 +626,15 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            initializeCompulsoryViewProperties();
+            initializeCompulsoryViewProperties(loadPROJECT);
             if(initializeOptionalViewCollectionsOnRefresh)
                 initializeOptionalViewCollections();
 
             base.FullRefresh();
         }
-        #endregion
+#endregion
 
-        #region EXO Database
+#region EXO Database
         private bool commitToExo(ExoSubJobEditableProjection projection)
         {
             List<ExoSubJobEditableProjection> newLines = new List<ExoSubJobEditableProjection>();
@@ -724,19 +722,19 @@ namespace BluePrints.ViewModels
 
                 if (!projection.IsLineExistsInExo)
                 {
-                    if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                    if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                     {
-                        if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                        if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                         {
                             //stock item cannot be added, so it must exists before commodity can be added using it
                             string stockCode = projection.GetStockCode();
-                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
+                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(localPrimeroUnitOfWork, stockCode);
                             if (stock_item != null)
                             {
                                 projection.StockName = stock_item.DESCRIPTION;
-                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, primeroUnitOfWork))
+                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                                 {
-                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(primeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER);
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER);
                                     projection.LineId = findExistingOrAddLine.SEQNO;
                                     if (projection.LineId != null)
                                     {
@@ -785,11 +783,11 @@ namespace BluePrints.ViewModels
         {
             if (projection.LineId != null)
             {
-                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                 if (line != null)
                 {
                     line.X_VARIATION_CODE = projection.VariationCode;
-                    primeroUnitOfWork.SaveChanges();
+                    localPrimeroUnitOfWork.SaveChanges();
                     return true;
                 }
             }
@@ -801,12 +799,12 @@ namespace BluePrints.ViewModels
         {
             if (projection.LineId != null)
             {
-                JOBCOST_LINES line = primeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                 if (line != null)
                 {
                     line.QUOTE_QTY = 1;
                     line.ACTUAL_UNITCOST = Convert.ToDouble(projection.Budget);
-                    primeroUnitOfWork.SaveChanges();
+                    localPrimeroUnitOfWork.SaveChanges();
                     return true;
                 }
             }
@@ -816,7 +814,7 @@ namespace BluePrints.ViewModels
 
         private void commitSubJobTitle(ExoSubJobEditableProjection projection)
         {
-            JOBCOST_HDR existingSubJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, loadPROJECT.NUMBER, projection.SubJobCode);
+            JOBCOST_HDR existingSubJob = ExoQueries.GetProjectSubJob(localPrimeroUnitOfWork, loadPROJECT.NUMBER, projection.SubJobCode);
             if (existingSubJob == null)
             {
                 MessageBoxService.ShowMessage(projection.SubJobCode + subJobMissingError);
@@ -824,9 +822,9 @@ namespace BluePrints.ViewModels
             }
 
             existingSubJob.TITLE = projection.SubJobTitle;
-            primeroUnitOfWork.SaveChanges();
+            localPrimeroUnitOfWork.SaveChanges();
 
-            existingSubJobs = ExoQueries.GetProjectSubJobs(primeroUnitOfWork, loadPROJECT.NUMBER);
+            existingSubJobs = ExoQueries.GetProjectSubJobs(localPrimeroUnitOfWork, loadPROJECT.NUMBER);
         }
 
         private void commitCostGroupName(ExoSubJobEditableProjection projection)
@@ -839,13 +837,13 @@ namespace BluePrints.ViewModels
             }
 
             costGroup.COSTDESC = projection.DisciplineName;
-            primeroUnitOfWork.SaveChanges();
+            localPrimeroUnitOfWork.SaveChanges();
 
-            costGroups = ExoQueries.GetCostGroups(primeroUnitOfWork);
+            costGroups = ExoQueries.GetCostGroups(localPrimeroUnitOfWork);
         }
-        #endregion
+#endregion
 
-        #region View Properties
+#region View Properties
         ESTIMATE_ITEMCollectionViewModelWrapper estimateItemViewModel;
         public void CopyToJob()
         {
@@ -1131,6 +1129,6 @@ namespace BluePrints.ViewModels
                 return DisplayEntities.Select(x => x.VariationCode).OrderBy(x => x).Distinct();
             }
         }
-        #endregion
+#endregion
     }
 }

@@ -12,6 +12,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
@@ -58,6 +59,9 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+
         protected PROJECT loadPROJECT;
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
@@ -72,6 +76,10 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeName == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+
             hiddenColumnFieldNames.Add(columnEntity);
 
             selectedItemsChangedDispatcher = new DispatcherTimer();
@@ -92,16 +100,16 @@ namespace BluePrints.ViewModels
 
         private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            loadExoData();
+            loadExoData(primeroUnitOfWork);
         }
 
         bool isExoDataLoaded = false;
-        private void loadExoData()
+        private void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
         {
             isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
-            allExoPos = BluePrintsDataUtils.GetEXOPO(loadPROJECT.NUMBER, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(loadPROJECT.NUMBER, null, 1, true);
+            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, null, 1, true);
             setProject(loadPROJECT);
             generateAlignedDataDates();
             isExoDataLoaded = true;

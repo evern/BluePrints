@@ -74,7 +74,7 @@
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
     <OutputPath>bin\Montreal_Beta\</OutputPath>
     <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
-    <DefineConstants>TRACE;BETA</DefineConstants>
+    <DefineConstants>TRACE;BETA;MONTREAL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -100,7 +100,7 @@
     <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
     <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\</PublishUrl>
     <OutputPath>bin\Montreal_Release\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE;RELEASE;MONTREAL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -142,7 +142,7 @@
     </PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Montreal_Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;BETA;MONTREAL</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
@@ -179,7 +179,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Montreal_Beta|x64'">
     <OutputPath>bin\x64\Montreal_Beta\</OutputPath>
-    <DefineConstants>TRACE;BETA</DefineConstants>
+    <DefineConstants>TRACE;BETA;MONTREAL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -199,7 +199,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Montreal_Release|x64'">
     <OutputPath>bin\x64\Montreal_Release\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE;RELEASE;MONTREAL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>

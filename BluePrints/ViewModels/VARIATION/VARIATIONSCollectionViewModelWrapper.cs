@@ -59,10 +59,12 @@ namespace BluePrints.ViewModels
 
         EXO_SubjobCollectionViewModelWrapper exoJobCollectionViewModel;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, PhaseTypeClass>) parameter;
             loadPROJECT = project_phasetype_parameter.GetFirstEntity();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeName == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             phaseType = project_phasetype_parameter.GetSecondEntity().phaseType;
             exoJobCollectionViewModel = EXO_SubjobCollectionViewModelWrapper.Create(bluePrintsUnitOfWorkFactory);
             exoJobCollectionViewModel.OnParameterChange(new EntitiesParameter<Data.PROJECT>(loadPROJECT));
@@ -993,7 +995,6 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ConfirmationDialogService"); }
         }
 
-        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private void addVariationJobToExo(List<ExoSubJobEditableProjection> exoVariationJobs, VariationStages exoInteraction)
         {
             bool isAnyVariationJobsExists = false;

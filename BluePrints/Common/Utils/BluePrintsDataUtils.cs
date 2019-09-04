@@ -391,10 +391,9 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static List<ExoDataPoint> GetMaterials(string projectNumber, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             ConcurrentBag<ExoDataPoint> materialDataPoints = new ConcurrentBag<ExoDataPoint>();
-            var primeroUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             if (showLoadingScreen)
             {
                 LoadingScreenManager.ShowLoadingScreen(1);
@@ -481,10 +480,9 @@ namespace BluePrints.Common.ViewModel.Utils
             return variationCode;
         }
 
-        public static List<ExoDataPoint> GetEXOPO(string projectNumber, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
         {
             ConcurrentBag<ExoDataPoint> poDataPoints = new ConcurrentBag<ExoDataPoint>();
-            var primeroUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
             if (showLoadingScreen)
             {

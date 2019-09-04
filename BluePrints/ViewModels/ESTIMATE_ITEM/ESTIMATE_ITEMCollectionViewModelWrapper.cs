@@ -83,12 +83,14 @@ namespace BluePrints.ViewModels
             Interface_InitializeParameters(parameter);
         }
 
+        IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         public void Interface_InitializeParameters(object parameter)
         {
             var receiveParameter = (TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
-            
+
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             IsProcurementSubjobVisible = false;
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -480,7 +482,6 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("This will attempt to remove any duplicate entries, or entires that doesn't exists in exo and doesn't have P6 assignments, do you wish to continue?", "Warning", MessageButton.OKCancel, MessageIcon.Question) != MessageResult.OK)
                 return;
 
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             List<ESTIMATE_ITEMProgress> removeESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
 

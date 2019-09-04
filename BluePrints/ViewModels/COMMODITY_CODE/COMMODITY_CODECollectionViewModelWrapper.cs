@@ -49,7 +49,13 @@ namespace BluePrints.ViewModels
         private PROJECT loadPROJECT;
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
+#if MONTREAL
+        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+#else
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+#endif
+
         public bool IsProjectSpecific
         {
             get { return loadPROJECT != null; }
@@ -118,7 +124,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        #region Collection Call Backs
+#region Collection Call Backs
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
@@ -329,11 +335,11 @@ namespace BluePrints.ViewModels
                 }
             }
         }
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region View Properties
+#region View Properties
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
@@ -457,6 +463,6 @@ namespace BluePrints.ViewModels
                 return (CollectionViewModel<COMMODITY_CODE, COMMODITY_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<COMMODITY_CODE>();
             }
         }
-        #endregion
+#endregion
     }
 }
