@@ -335,6 +335,16 @@ namespace BluePrints.ViewModels
                             this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
                     }
                 }
+                else if(field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)))
+                {
+                    if(new_value != null)
+                    {
+                        STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(localPrimeroUnitOfWork, new_value.ToString());
+                        projection.StockName = stock_item.DESCRIPTION;
+                        if (ExoMethods.CommitLineCommodity(projection, stock_item, true, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
+                            this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection);
+                    }
+                }
                 else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)))
                 {
                     commitLineVariation(projection);
