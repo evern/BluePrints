@@ -252,17 +252,20 @@ namespace BluePrints.ViewModels
 
         private void loadExoMethodsData()
         {
-            masterJob = ExoQueries.GetProjectSubJob(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
-            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
+            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
         private void loadSummaryStats()
         {
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>(); 
-            queryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
+            queryJobs = ExoQueries.GetNativeExoSubJobProjection(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
             queryJobLines = jobLines;
 
-            dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
             if (revenueLine != null)
             {
                 if(LoadPROJECT.ORI_REVENUE == null)
@@ -276,7 +279,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.VAR_REVENUE;
             ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
 
-            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
         protected override List<StatsCalculationType> getForecastTypes()
