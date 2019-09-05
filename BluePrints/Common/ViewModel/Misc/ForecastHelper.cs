@@ -44,7 +44,8 @@ namespace BluePrints.Common.ViewModel.Misc
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
                     PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, dates, isWeeks, true);
-                    PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
+                    //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load
+                    //PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
                 });
 
@@ -231,7 +232,7 @@ namespace BluePrints.Common.ViewModel.Misc
             return forecastProjection;
         }
 
-        private static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
+        public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
         {
             //populate previous estimate to completion
             IEnumerable<FORECAST> previousEAC = FORECASTCollection.Where(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE < dataDate).OrderBy(x => x.FORECAST_DATE);
@@ -240,6 +241,10 @@ namespace BluePrints.Common.ViewModel.Misc
                 FORECAST lastEAC = previousEAC.Last();
                 if (lastEAC.FORECAST_UNITS != null)
                     forecastProjection.PreviousEAC = (decimal)lastEAC.FORECAST_UNITS;
+            }
+            else
+            {
+                forecastProjection.PreviousEAC = 0.00m;
             }
         }
 

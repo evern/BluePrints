@@ -534,6 +534,7 @@ namespace BluePrints.ViewModels
                     //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
                     foreach (ForecastJobData commodityJob in commodityJobs)
                     {
+                        ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
                         updateDataTable(commodityJob, isNewData);
                         LoadingScreenManager.Progress();
                     }
@@ -649,8 +650,6 @@ namespace BluePrints.ViewModels
                 ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, alignedDataDateCollection, IsWeeks, false);
 
             ExoSubJobProjection projection = commodityJob.Projection;
-
-
             IEnumerable<FORECAST> FORECASTCollection = FORECASTCollectionViewModel.Entities;
             List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
 
