@@ -305,6 +305,21 @@ namespace BluePrints.ViewModels
         {
             if(FixedDataDate != null)
             {
+                DateTime? lastEACDataDate = null;
+                IEnumerable<FORECAST> EACForecasts = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC);
+                if(EACForecasts.Count() > 0)
+                {
+                    lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
+                    if(FixedDataDate < lastEACDataDate)
+                    {
+                        if (!LoginCredentials.hasPermission(PermissionResources.CanRewindDataDate))
+                        {
+                            MessageBoxService.ShowMessage("Cannot save because EAC if finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OKCancel, MessageIcon.Exclamation);
+                            return;
+                        }
+                    }
+                }
+
                 DateTime saveDateTime = (DateTime)FixedDataDate;
                 LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(1).AddDays(-1);
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
@@ -1967,7 +1982,9 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved", "EAC Saved", MessageButton.OK, MessageIcon.Information);
+            MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved\nData date will be changed to next month after closing this dialog", "EAC Saved", MessageButton.OK, MessageIcon.Information);
+            FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
+            SaveDateAndRefresh();
         }
 
         public bool CanUndo()

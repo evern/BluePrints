@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -586,6 +586,7 @@
     <Compile Include="Common\Base\BluePrintsProjectionBase.cs" />
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
     <Compile Include="Common\Misc\Messages.cs" />
+    <Compile Include="Common\Misc\ProjectUnitOfWorkContext.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProgress.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />

@@ -18,9 +18,9 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class BookTimeSheetViewModel
     {
-        public static BookTimeSheetViewModel Create(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
+        public static BookTimeSheetViewModel Create(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
         {
-            return ViewModelSource.Create(() => new BookTimeSheetViewModel(project, deliverable, primeroUnitOfWork, exoAuthorisations, narratives));
+            return ViewModelSource.Create(() => new BookTimeSheetViewModel(deliverable, primeroUnitOfWork, exoAuthorisations, narratives));
         }
 
         public DateTime BookDate { get; set; }
@@ -238,7 +238,7 @@ namespace BaseModel.ViewModel.Dialogs
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
         private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
-        protected BookTimeSheetViewModel(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
+        protected BookTimeSheetViewModel(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();

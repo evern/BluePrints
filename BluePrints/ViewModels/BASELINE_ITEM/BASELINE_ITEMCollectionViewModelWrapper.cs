@@ -499,10 +499,10 @@ namespace BluePrints.ViewModels
             if (loadPROJECT == null)
                 return;
 
-            HashSet<string> projectNumbers = new HashSet<string>();
-            projectNumbers.Add(loadPROJECT.NUMBER);
+            List<ProjectUnitOfWorkContext> projectContexts = new List<ProjectUnitOfWorkContext>();
+            projectContexts.Add(new ProjectUnitOfWorkContext(loadPROJECT.NUMBER, primeroUnitOfWork));
 
-            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, ref narratives, projectContexts);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
@@ -2123,7 +2123,9 @@ namespace BluePrints.ViewModels
             if (exoAuthorisations == null || narratives == null)
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
-                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            {
+                BluePrintsUtils.BookTime(DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            }
         }
 
         protected override string ExportFilename()

@@ -231,4 +231,7 @@
   <data name="SaveEAC" xml:space="preserve">
     <value>Allow user to save forecast EAC</value>
   </data>
+  <data name="CanRewindDataDate" xml:space="preserve">
+    <value>Can rewind data date even if EAC is saved</value>
+  </data>
 </root>

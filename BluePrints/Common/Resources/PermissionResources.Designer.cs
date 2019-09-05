@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can rewind data date even if EAC is saved.
+        /// </summary>
+        internal static string CanRewindDataDate {
+            get {
+                return ResourceManager.GetString("CanRewindDataDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to change construction budget.
         /// </summary>
         internal static string ChangeBudget {

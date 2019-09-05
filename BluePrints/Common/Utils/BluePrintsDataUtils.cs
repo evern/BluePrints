@@ -208,7 +208,7 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, ref List<string> narratives, HashSet<string> projectNumbers, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, ref List<string> narratives, List<ProjectUnitOfWorkContext> projectContexts)
             where TProjection : IReportable, IBookable
         {
             if (exoAuthorisations != null && narratives != null)
@@ -216,10 +216,10 @@ namespace BluePrints.Common.ViewModel.Utils
 
             List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
             List<string> cacheNarratives = new List<string>();
-            foreach (var projectNumber in projectNumbers)
+            foreach (var projectContext in projectContexts)
             {
-                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, projectNumber, false);
-                List<string> projectNarratives = ExoQueries.GetJobNarratives(primeroUnitOfWork, projectNumber);
+                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber, false);
+                List<string> projectNarratives = ExoQueries.GetJobNarratives(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber);
 
                 cacheExoAuthorisations.AddRange(projectExoTimeAuths);
 
@@ -245,9 +245,9 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void BookTime(PROJECT project, IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
+        public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(project, deliverable, primeroUnitOfWork, exoAuthorisations, narratives);
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(deliverable, primeroUnitOfWork, exoAuthorisations, narratives);
             if (bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");

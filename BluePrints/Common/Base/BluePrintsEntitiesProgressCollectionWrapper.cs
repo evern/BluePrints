@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
@@ -82,8 +83,7 @@ namespace BluePrints.Common.Base
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
-            var receiveParameter =
-                (DualEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
+            var receiveParameter = (DualEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 
@@ -257,13 +257,37 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            HashSet<string> projectNumbers = new HashSet<string>();
-            foreach (var entity in MainViewModel.Entities)
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, ref narratives, getProjectContexts());
+        }
+
+        List<ProjectUnitOfWorkContext> projectContexts;
+        private List<ProjectUnitOfWorkContext> getProjectContexts()
+        {
+            if(projectContexts == null)
             {
-                projectNumbers.Add(entity.Project_Number);
+                IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+                projectContexts = new List<ProjectUnitOfWorkContext>();
+                foreach (var entity in MainViewModel.Entities)
+                {
+                    if (!projectContexts.Any(x => x.ProjectNumber == entity.Project_Number))
+                    {
+                        Data.PROJECT project = bluePrintsUOW.PROJECTS.FirstOrDefault(x => x.NUMBER == entity.Project_Number);
+                        IPrimeroEntitiesUnitOfWork uow;
+                        if (project != null)
+                        {
+                            if (project.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+                                uow = montrealUOW;
+                            else
+                                uow = perthUOW;
+
+                            projectContexts.Add(new ProjectUnitOfWorkContext(entity.Project_Number, uow));
+                        }
+                    }
+                }
             }
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, ref narratives, projectNumbers, primeroUnitOfWork);
+            return projectContexts;
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
@@ -1756,7 +1780,11 @@ namespace BluePrints.Common.Base
             if (exoAuthorisations == null || narratives == null)
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
-                BluePrintsUtils.BookTime(loadPROJECT, DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            {
+                ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == DisplaySelectedEntity.Project_Number);
+                if(projectContext != null)
+                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+            }
         }
         #endregion
     }
