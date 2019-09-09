@@ -801,6 +801,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\FORECAST_JOB.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_SUMMARY.cs" />
@@ -857,6 +858,7 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
@@ -989,6 +991,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
@@ -1096,6 +1099,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\POSpreadView.xaml.cs">
       <DependentUpon>POSpreadView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTIndirectForecastView.xaml.cs">
+      <DependentUpon>PROJECTIndirectForecastView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOForecastView.xaml.cs">
       <DependentUpon>PROJECTPOForecastView.xaml</DependentUpon>
@@ -2040,6 +2046,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\POSpreadView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTIndirectForecastView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

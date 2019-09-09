@@ -167,6 +167,8 @@ namespace BluePrints.ViewModels
 
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
+        public bool UseForecastJobHourOverride { get; set; }
+        public bool IsJobForecast;
         public ForecastSummary ForecastSummary { get; set; }
         public CriteriaOperator FilterCriteria { get; set; }
         public virtual DateTime EndSelectionDate { get; set; }
@@ -189,6 +191,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedDataTableRefreshTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
+
 
         protected int spreadSheetPhaseIndex = 0;
         protected int spreadSheetAreaIndex = 1;
@@ -550,6 +553,7 @@ namespace BluePrints.ViewModels
                     foreach (ForecastJobData commodityJob in commodityJobs)
                     {
                         ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
+                        updateAdditionalJobInfo(commodityJob);
                         updateDataTable(commodityJob, isNewData);
                         LoadingScreenManager.Progress();
                     }
@@ -566,6 +570,11 @@ namespace BluePrints.ViewModels
 
                 return dataPointsTable;
             }
+        }
+
+        protected virtual void updateAdditionalJobInfo(ForecastJobData commodityJob)
+        {
+
         }
 
         private List<DateTime> generateDates()
@@ -674,8 +683,9 @@ namespace BluePrints.ViewModels
                 List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
+                List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
 
-                if(forecastUnitsOverrides.Count > 0)
+                if (forecastUnitsOverrides.Count > 0)
                 {
                     decimal p6OverrideUnits = forecastUnitsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
 
@@ -690,14 +700,29 @@ namespace BluePrints.ViewModels
                     P6TotalCurrentRemainingUnits += dateCost.P6Hours;
                 }
 
-                if (forecastCostsOverrides.Count > 0)
+                if(UseForecastJobHourOverride)
                 {
-                    decimal p6OverrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
-                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideCosts;
+                    if (forecastJobHourOverrides.Count > 0)
+                    {
+                        decimal p6OverrideHours = forecastJobHourOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+                        commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideHours;
+                    }
+                    else
+                    {
+                        commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = 0.00m;
+                    }
                 }
                 else
                 {
-                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
+                    if (forecastCostsOverrides.Count > 0)
+                    {
+                        decimal p6OverrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+                        commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideCosts;
+                    }
+                    else
+                    {
+                        commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
+                    }
                 }
 
                 compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
@@ -734,35 +759,38 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Code", ReadOnly = true, Header = isChild ? string.Empty : "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Commodity.Name", ReadOnly = true, Header = isChild ? string.Empty : "Commodity Name", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Projection.Variation_Code", ReadOnly = true, Header = isChild ? string.Empty : "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Rate", ReadOnly = true, Header = isChild ? string.Empty : "Rate", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number, Mask = "n0" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", ReadOnly = false, Header = isChild ? string.Empty : "Budget", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", ReadOnly = true, Header = isChild ? string.Empty : "Outstanding", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", ReadOnly = true, Header = isChild ? string.Empty : "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", ReadOnly = false, Header = isChild ? string.Empty : "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", ReadOnly = true, Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", ReadOnly = true, Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", ReadOnly = true, Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", ReadOnly = true, Header = isChild ? string.Empty : "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", ReadOnly = true, Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", ReadOnly = true, Header = isChild ? string.Empty : "EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", ReadOnly = true, Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
-            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            if (isChild)
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "Forecast Type", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
-            else
+            if(!IsJobForecast)
             {
-                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", Header = isChild ? string.Empty : "Period Move", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
-                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Rate", ReadOnly = true, Header = isChild ? string.Empty : "Rate", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number, Mask = "n0" });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", ReadOnly = false, Header = isChild ? string.Empty : "Budget", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", ReadOnly = true, Header = isChild ? string.Empty : "Outstanding", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Outstanding", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", ReadOnly = true, Header = isChild ? string.Empty : "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", ReadOnly = false, Header = isChild ? string.Empty : "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", ReadOnly = true, Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", ReadOnly = true, Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", ReadOnly = true, Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", ReadOnly = true, Header = isChild ? string.Empty : "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", ReadOnly = true, Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", ReadOnly = true, Header = isChild ? string.Empty : "EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", ReadOnly = true, Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
+                summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                if (isChild)
+                    columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "Forecast Type", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
+                else
+                {
+                    columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", Header = isChild ? string.Empty : "Period Move", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
+                    summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                }
             }
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
