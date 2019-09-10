@@ -216,7 +216,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
         {
             if (copyColumn.FieldType == typeof(decimal))
             {
@@ -234,7 +234,7 @@ namespace BluePrints.ViewModels
                     addUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], viewDecimalValue, EntityMessageType.Changed);
                     newRow[copyColumn.FieldName] = viewDecimalValue;
 
-                    findExistingOrAddNewFORECAST_PO(newRow, columnDateTime, viewDecimalValue);
+                    findExistingOrAddNewFORECAST_PO(newRow, columnDateTime, viewDecimalValue, !isLastRow);
                 }
                 else
                 {

@@ -905,6 +905,7 @@ namespace BluePrints.ViewModels
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
                             IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.Cost && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
+                            IEnumerable<FORECAST> currentRowP6OverrideFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.P6 && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
 
                             decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
                             P6CurrentRemainingUnits += currentP6Units;
@@ -919,7 +920,9 @@ namespace BluePrints.ViewModels
                             }
 
                             parentRow[alignedDateField] = P6RemainingCostsOnDataDate;
-                            p6CostRow[alignedDateField] = P6RemainingCostsOnDataDate;
+
+                            if (currentRowP6OverrideFORECAST.Count() > 0)
+                                p6CostRow[alignedDateField] = P6RemainingCostsOnDataDate;
                         }
                     }
                 }
@@ -1245,7 +1248,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
         {
             if(copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
             {
@@ -1267,10 +1270,14 @@ namespace BluePrints.ViewModels
                         //when this is called from parent grid
                         if (compareDataTable.Rows.Count > 3)
                         {
-                            decimal totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
+                            ForecastJobData job = (ForecastJobData)newRow[columnEntity];
+                            decimal totalCosts = 0;
+                            if (job.IsProcurement)
+                                totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
+
                             if (decimal_value >= totalCosts)
                             {
-                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName]);
+                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
                                 //EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
                                 newRow[copyColumn.FieldName] = decimal_value;
                             }
@@ -1278,7 +1285,7 @@ namespace BluePrints.ViewModels
                         //when this called from child grid no validation required
                         else
                         {
-                            findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName]);
+                            findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
                             newRow[copyColumn.FieldName] = decimal_value;
                         }
                     }
@@ -1333,7 +1340,7 @@ namespace BluePrints.ViewModels
                 if(DateTime.TryParse(columnFieldName, out deleteCellDate))
                 {
                     resetViewRemainingOnJob(editing_row, columnFieldName, true);
-                    findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
+                    findExistingOrAddNewForecast(editing_row, deleteCellDate, null, selected_cell != selected_cells.Last());
                     //editing_row[columnFieldName] = 0.00m;
                 }
             }
@@ -1689,7 +1696,7 @@ namespace BluePrints.ViewModels
         /// <param name="viewNewValue">determine what will be updated in db but will be replaced by null if it's same as compare info, 
         /// however if it is passed in as null it signifies that the view is already updated and won't update it</param>
         /// <param name="addUndo">whether to add undo information</param>
-        private void findExistingOrAddNewForecast(DataRow dataRow, DateTime forecastDate, decimal? viewNewValue, object oldValue = null)
+        private void findExistingOrAddNewForecast(DataRow dataRow, DateTime forecastDate, decimal? viewNewValue, object oldValue = null, bool skipRowRefresh = false)
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
             ExoSubJobProjection entity = job.Projection;
@@ -1790,9 +1797,12 @@ namespace BluePrints.ViewModels
                 dataRow[forecastDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewNewValue;
             }
 
-            updateUncommittedOnDatesFromDb(dataRow, true);
-            updateTotalUncommittedOnJob(dataRow, true);
-            updateFloatingSummaryMembers();
+            if(!skipRowRefresh)
+            {
+                updateUncommittedOnDatesFromDb(dataRow, true);
+                updateTotalUncommittedOnJob(dataRow, true);
+                updateFloatingSummaryMembers();
+            }
         }
 
         private void refreshGridData()
