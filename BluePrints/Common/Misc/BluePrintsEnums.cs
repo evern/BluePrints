@@ -32,7 +32,9 @@ namespace BluePrints.Common
         [Display(Name = "P6")]
         P6,
         [Display(Name = "EAC")]
-        EAC
+        EAC,
+        [Display(Name = "Hour")]
+        Hour
     }
 
     public enum StatsCalculationType

@@ -115,6 +115,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<FORECAST>(), (FORECAST x) => x.GUID); }
         }
 
+        IRepository<FORECAST_JOB, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOBS
+        {
+            get { return GetRepository(x => x.Set<FORECAST_JOB>(), (FORECAST_JOB x) => x.GUID); }
+        }
+
         IRepository<FORECAST_PO, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_POS
         {
             get { return GetRepository(x => x.Set<FORECAST_PO>(), (FORECAST_PO x) => x.GUID); }

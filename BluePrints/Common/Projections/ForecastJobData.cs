@@ -107,6 +107,17 @@ namespace BluePrints.Common.Projections
 
         //used by detailed rows so that only P6 hour row can be edited
         public bool IsP6HoursRow { get; set; }
+
+        #region Indirect details
+        public string Description { get; set; }
+        public string Source { get; set; }
+        public string Reference { get; set; }
+        public string Note { get; set; }
+        public string UOM { get; set; }
+
+        //used in indirect job forecast
+        public decimal? JobRate { get; set; }
+        #endregion
     }
 
     public class ForecastDateCost
