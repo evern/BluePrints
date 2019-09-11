@@ -120,6 +120,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<FORECAST_JOB>(), (FORECAST_JOB x) => x.GUID); }
         }
 
+        IRepository<FORECAST_JOB_HOUR, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOURS
+        {
+            get { return GetRepository(x => x.Set<FORECAST_JOB_HOUR>(), (FORECAST_JOB_HOUR x) => x.GUID); }
+        }
+
         IRepository<FORECAST_PO, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_POS
         {
             get { return GetRepository(x => x.Set<FORECAST_PO>(), (FORECAST_PO x) => x.GUID); }

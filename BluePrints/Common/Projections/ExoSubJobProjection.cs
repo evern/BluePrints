@@ -332,7 +332,27 @@ namespace BluePrints.Common.Projections
         {
             Variation_Code = string.Empty;
         }
-        
+
+        public override string ToString()
+        {
+            return FullCode;
+        }
+
+        public string FullCode
+        {
+            get
+            {
+                if (SubJob == null || Discipline == null || Commodity == null)
+                    return string.Empty;
+
+                string fullCode = SubJob.Code + "-" + Discipline.Code + "-" + Commodity.Code;
+                if (Variation_Code != string.Empty && Variation_Code != null)
+                    fullCode += "-" + Variation_Code;
+
+                return fullCode;
+            }
+        }
+
         public int? LineId { get; set; }
         public PrimeroSubJob SubJob { get; set; }
         public PrimeroDiscipline Discipline { get; set; }

@@ -1,144 +1,680 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.View;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common;
-using BluePrints.Common.Misc;
+using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
-using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using System.IO;
-using BaseModel.ViewModel.Dialogs;
-using BluePrints.Common.Resources;
-using BaseModel.ViewModel.Services;
 using System.Data;
-using BluePrints.PrimeroData;
-using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
-using DevExpress.Utils.Filtering;
-using System.ComponentModel.DataAnnotations;
-using DevExpress.Data.Filtering;
-using BaseModel.ViewModel.UndoRedo;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Timers;
-using DevExpress.Xpf.Spreadsheet;
-using DevExpress.Spreadsheet;
-using BluePrints.Common.ViewModel.Misc;
-using System.Threading.Tasks;
-using BluePrints.P6EntitiesDataModel;
-using BluePrints.P6Data;
-using DevExpress.Xpf.Editors;
-using System.Windows.Threading;
-using System.Windows.Media;
-using DevExpress.Xpf.Core.Serialization;
-using System.Windows.Input;
-using BluePrints.Common.ViewModel.Utils;
-using DevExpress.Xpf.Editors.Settings;
-using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
-    /// <summary>
-    /// Represents the PROJECTS collection view model.
-    /// </summary>
-    public class PROJECTIndirectForecastViewModelWrapper : PROJECTForecastViewModelWrapper
+    public class PROJECTIndirectForecastViewModelWrapper :
+        BluePrintsEntitiesCollectionWrapper
+        <FORECAST_JOB, FORECAST_JOB, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
+        /// Creates a new instance of FORECAST_JOBCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public new static PROJECTIndirectForecastViewModelWrapper Create()
+        public static PROJECTIndirectForecastViewModelWrapper Create(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new PROJECTIndirectForecastViewModelWrapper());
+            return ViewModelSource.Create(() => new PROJECTIndirectForecastViewModelWrapper(unitOfWorkFactory));
         }
 
+
         /// <summary>
-        /// Initializes a new instance of the PROJECTViewModel class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTViewModel type without the POCO proxy factory.
+        /// Initializes a new instance of the FORECAST_JOBCollectionViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the FORECAST_JOBCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
-        protected PROJECTIndirectForecastViewModelWrapper()
+        /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
+        protected PROJECTIndirectForecastViewModelWrapper(
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            UseForecastJobHourOverride = true;
-            IsJobForecast = true;
+        }
+
+        #region Database Operations
+        public PROJECT LoadPROJECT { get; set; }
+        public DateTime FixedDataDateMonthEnd => new DateTime((FixedDataDate).Year, (FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
+        public DateTime FixedDataDate { get; set; }
+        public DateTime FixedEndDate { get; set; }
+        protected List<DateTime> alignedDataDateCollection;
+        public List<ExoSubJobProjection> QueryJobs { get; set; }
+        protected List<ExoTimeAuthorisation> queryJobLines { get; set; }
+        public bool IsWeeks { get; set; }
+        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
+
+        protected override void resolveParameters(object parameter)
+        {
+            var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
+            LoadPROJECT = PROJECTParameter.GetEntity();
+            primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             IsWeeks = true;
+            List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
+            QueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).Where(x => x.SubJob != null && x.SubJob.Code.Contains("I1")).ToList();
+            queryJobLines = jobLines;
         }
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
-            base.addEntitiesLoader();
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOURS, FORECAST_JOB_HOURSProjectionFunc);
         }
 
-        protected override void resolveParameters(object parameter)
+        private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            base.resolveParameters(parameter);
+            return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<FORECAST_JOB>, IQueryable<FORECAST_JOB>> FORECAST_JOBProjectionFunc()
+        private Func<IRepositoryQuery<FORECAST_JOB_HOUR>, IQueryable<FORECAST_JOB_HOUR>> FORECAST_JOB_HOURSProjectionFunc()
+        {
+            return query => query.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        private void setProject(Data.PROJECT project)
+        {
+            LoadPROJECT = project;
+
+            DateTime dataDate;
+            if (LoadPROJECT.FORECAST_DATA_DATE == null)
+                dataDate = DateTime.Now;
+            else
+                dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
+
+            FixedDataDate = dataDate;
+
+            DateTime endDate;
+            if (LoadPROJECT.FORECAST_END_DATE == null)
+                endDate = DateTime.Now.AddMonths(1);
+            else
+                endDate = (DateTime)LoadPROJECT.FORECAST_END_DATE;
+
+            FixedEndDate = endDate;
+
+            this.RaisePropertiesChanged();
+        }
+
+        #endregion
+        #region View Properties
+        DataTable dataPointsTable = null;
+        public DataTable DataPointsTable
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                if (dataPointsTable == null)
+                {
+                    dataPointsTable = new DataTable();
+
+                    //get immutable data
+                    alignedDataDateCollection = generateDates();
+                    InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
+
+                    LoadingScreenManager.ShowLoadingScreen(1);
+                    LoadingScreenManager.SetMessage("Preparing View...");
+
+                    //construct data points table
+                    dataPointsTable.Columns.Add(columnFullCode, typeof(string));
+                    dataPointsTable.Columns.Add(columnProjection, typeof(ExoSubJobProjection));
+                    dataPointsTable.Columns.Add(columnGUID, typeof(Guid));
+                    dataPointsTable.Columns.Add(columnDescription, typeof(string));
+                    dataPointsTable.Columns.Add(columnSource, typeof(string));
+                    dataPointsTable.Columns.Add(columnReference, typeof(string));
+                    dataPointsTable.Columns.Add(columnNote, typeof(string));
+                    dataPointsTable.Columns.Add(columnUOM, typeof(string));
+                    dataPointsTable.Columns.Add(columnForecastRate, typeof(decimal));
+
+                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
+                    {
+                        string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+                    }
+
+                    List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+                    foreach(FORECAST_JOB job in MainViewModel.Entities)
+                    {
+                        ExoSubJobProjection projection = QueryJobs.Where(x => x.Commodity != null && x.Discipline != null && x.SubJob != null).FirstOrDefault(x => x.Commodity.Code == job.COMMODITY_CODE && x.Discipline.Code == job.DISCIPLINE_CODE && x.SubJob.Code == job.SUBJOB_CODE && x.Variation_Code == job.VARIATION_CODE);
+                        if (projection == null)
+                            continue;
+
+                        DataRow newRow = dataPointsTable.NewRow();
+                        newRow[columnFullCode] = projection.FullCode;
+                        newRow[columnProjection] = projection;
+                        newRow[columnGUID] = job.GUID;
+                        newRow[columnDescription] = job.DESCRIPTION;
+                        newRow[columnReference] = job.REFERENCE;
+                        newRow[columnNote] = job.NOTE;
+                        newRow[columnSource] = job.SOURCE;
+                        newRow[columnUOM] = job.UOM;
+                        if (job.FORECAST_RATE == null)
+                            newRow[columnForecastRate] = DBNull.Value;
+                        else
+                            newRow[columnForecastRate] = job.FORECAST_RATE;
+
+                        dataPointsTable.Rows.Add(newRow);
+                        foreach(FORECAST_JOB_HOUR jobHour in FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == job.GUID))
+                        {
+                            if (jobHour.FORECAST_HOUR == null)
+                                continue;
+
+                            string dateFieldName = jobHour.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat);
+                            if (dataPointsTable.Columns.Contains(dateFieldName))
+                            {
+                                newRow[dateFieldName] = jobHour.FORECAST_HOUR;
+                            }
+                        }
+                    }
+
+                    LoadingScreenManager.CloseLoadingScreen();
+                }
+
+                return dataPointsTable;
+            }
+        }
+
+        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            GridControl gridControl = (GridControl)e.Source;
+            TableView gridTableView = (TableView)gridControl.View;
+            string newValueString = Clipboard.GetText().ToString();
+
+            //remove tab in front
+            if (newValueString != string.Empty)
+            {
+                if (newValueString.Substring(0, 1) == "\t")
+                {
+                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                }
+
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+
+                if (MainViewModel.SelectMode == MultiSelectMode.Row)
+                    pasteRowData(gridTableView, RowData);
+                else
+                    pasteCellData(gridControl, gridTableView, RowData);
+
+                GridControlService.GridControl.RefreshData();
+                e.Handled = true;
+            }
+        }
+        private void pasteRowData(TableView gridTableView, string[] RowData)
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            foreach (var Row in RowData)
+            {
+                DataRow newRow = DataPointsTable.NewRow();
+                var ColumnStrings = Row.Split('\t');
+                string fullCode = ColumnStrings[0];
+                ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
+                if(queryJob != null)
+                {
+                    newRow[columnFullCode] = queryJob.FullCode;
+                    newRow[columnProjection] = queryJob;
+                    addNewFORECAST_JOB(newRow);
+                    for (var i = 1; i < ColumnStrings.Count(); i++)
+                    {
+                        if (i > gridTableView.VisibleColumns.Count - 1)
+                            continue;
+
+                        string pasteData = ColumnStrings[i];
+                        ColumnBase copyColumn = gridTableView.VisibleColumns[i];
+                        basePasteData(newRow, copyColumn, pasteData, true);
+                    }
+                }
+
+                DataPointsTable.Rows.Add(newRow);
+            }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
+            EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
+        {
+            DateTime columnDateTime;
+            if(copyColumn.FieldType == typeof(ExoSubJobProjection))
+            {
+                ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == pasteData);
+                if(queryJob != null)
+                {
+                    newRow[copyColumn.FieldName] = queryJob;
+                }
+            }
+            else if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+            {
+                if (copyColumn.FieldType == typeof(decimal))
+                {
+                    var rgx = new Regex("[^0-9a-z\\.]");
+                    var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                    decimal decimal_value;
+                    if (decimal.TryParse(cleanColumnString, out decimal_value))
+                    {
+                        commitCellValue(copyColumn.FieldName, newRow, null, decimal_value);
+                    }
+                }
+            }
+            else if (copyColumn.FieldType == typeof(string))
+            {
+                newRow[copyColumn.FieldName] = pasteData;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void NewIndirectRowAddUndoAndSave(RowEventArgs e)
+        {
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
+            {
+                EntitiesUndoRedoManager.PauseActionId();
+
+                DataRowView row = (DataRowView)e.Row;
+
+                addNewFORECAST_JOB(row.Row);
+
+                //added not working well atm because when row is removed from datatable its itemarray is cleared
+                //EntitiesUndoRedoManager.AddUndo(row.Row, null, null, null, EntityMessageType.Added);
+                EntitiesUndoRedoManager.UnpauseActionId();
+            }
+        }
+
+        private void addNewFORECAST_JOB(DataRow row)
+        {
+            FORECAST_JOB newFORECAST_JOB = new FORECAST_JOB();
+
+            if (row[columnFullCode] == DBNull.Value)
+                return;
+
+            ExoSubJobProjection projection = QueryJobs.FirstOrDefault(x => x.FullCode == row[columnFullCode].ToString());
+            if (projection != null)
+            {
+                newFORECAST_JOB.SUBJOB_CODE = projection.SubJob.Code;
+                newFORECAST_JOB.DISCIPLINE_CODE = projection.Discipline.Code;
+                newFORECAST_JOB.COMMODITY_CODE = projection.Commodity.Code;
+                if (projection.Variation_Code == null)
+                    newFORECAST_JOB.VARIATION_CODE = string.Empty;
+                else
+                    newFORECAST_JOB.VARIATION_CODE = projection.Variation_Code;
+
+                newFORECAST_JOB.DESCRIPTION = row[columnDescription].ToString();
+                newFORECAST_JOB.SOURCE = row[columnSource].ToString();
+                newFORECAST_JOB.NOTE = row[columnNote].ToString();
+                newFORECAST_JOB.UOM = row[columnUOM].ToString();
+                newFORECAST_JOB.REFERENCE = row[columnReference].ToString();
+                if (row[columnForecastRate] != DBNull.Value)
+                    newFORECAST_JOB.FORECAST_RATE = (decimal)row[columnForecastRate];
+
+                newFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
+                MainViewModel.Save(newFORECAST_JOB);
+                row[columnGUID] = newFORECAST_JOB.GUID;
+                //add undo must be after so that Guid is populated
+            }
+        }
+
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChangedUpdate(CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle || e.RowHandle == GridControl.NewItemRowHandle)
+                return;
+
+            DataRowView dataRowView = (DataRowView)e.Row;
+            EntitiesUndoRedoManager.PauseActionId();
+            DataRowView row = (DataRowView)e.Row;
+            Guid guid = (Guid)row[columnGUID];
+            string fieldName = e.Column.FieldName;
+
+            commitCellValue(fieldName, row.Row, e.OldValue, e.Value);
+            EntitiesUndoRedoManager.AddUndo(dataRowView.Row, fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+            EntitiesUndoRedoManager.UnpauseActionId();
+
+            e.Handled = true;
+        }
+
+        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
+        {
+            Guid guid = (Guid)row[columnGUID];
+
+            DateTime dateTime;
+            if (DateTime.TryParse(fieldName, out dateTime))
+            {
+                decimal? forecastHours = null;
+                decimal convertUnits = 0;
+                if (newValue != null && decimal.TryParse(newValue.ToString(), out convertUnits))
+                    forecastHours = convertUnits;
+
+                FORECAST_JOB_HOUR forecastJobHour = FORECAST_JOB_HOURCollection.FirstOrDefault(x => x.GUID_FORECAST_JOB == guid && x.FORECAST_DATE.Date == dateTime.Date);
+                FORECAST_JOB_HOUR editForecastJobHour;
+                if (forecastJobHour == null)
+                    editForecastJobHour = new FORECAST_JOB_HOUR();
+                else
+                    editForecastJobHour = forecastJobHour;
+
+                editForecastJobHour.FORECAST_DATE = dateTime.Date;
+                editForecastJobHour.GUID_FORECAST_JOB = guid;
+                editForecastJobHour.FORECAST_HOUR = forecastHours;
+                FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
+
+                if (forecastHours == null)
+                    row[fieldName] = DBNull.Value;
+                else
+                    //for undo/redo
+                    row[fieldName] = forecastHours;
+            }
+            else
+            {
+                FORECAST_JOB editFORECAST_JOB = MainViewModel.Entities.FirstOrDefault(x => x.GUID == guid);
+                if (editFORECAST_JOB != null)
+                {
+                    if (fieldName == columnDescription)
+                        editFORECAST_JOB.DESCRIPTION = newValue.ToString();
+                    else if (fieldName == columnSource)
+                        editFORECAST_JOB.SOURCE = newValue.ToString();
+                    else if (fieldName == columnNote)
+                        editFORECAST_JOB.NOTE = newValue.ToString();
+                    else if (fieldName == columnReference)
+                        editFORECAST_JOB.REFERENCE = newValue.ToString();
+                    else if (fieldName == columnUOM)
+                        editFORECAST_JOB.UOM = newValue.ToString();
+                    else if (fieldName == columnForecastRate)
+                    {
+                        if (newValue == null)
+                            editFORECAST_JOB.FORECAST_RATE = (decimal?)null;
+                        else
+                            editFORECAST_JOB.FORECAST_RATE = (decimal)newValue;
+                    }
+
+                    //for undo/redo
+                    if (newValue == null)
+                        row[fieldName] = DBNull.Value;
+                    else
+                        row[fieldName] = newValue;
+
+                    MainViewModel.Save(editFORECAST_JOB);
+                }
+            }
+        }
+
+        private DataRow searchRow(Guid guid)
+        {
+            IEnumerable<DataRow> findRows = (from DataRow dr in dataPointsTable.Rows
+                                                         where (Guid)dr[columnGUID] == guid
+                                                         select dr);
+
+            return findRows.FirstOrDefault();
+        }
+
+        string columnFullCode = "FullCode";
+        string columnProjection = "Projection";
+        string columnGUID = "GUID";
+        string columnDescription = "DESCRIPTION";
+        string columnSource = "SOURCE";
+        string columnReference = "REFERENCE";
+        string columnNote = "NOTE";
+        string columnUOM = "UOM";
+        string columnForecastRate = "FORECAST_RATE";
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = columnFullCode, ReadOnly = false, Header = "Full Code", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.FullCode });
+            summaries.Add(new SummaryDescriptor() { FieldName = "FULL_CODE", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = "DESCRIPTION", ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "SOURCE", ReadOnly = false, Header = "Source", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "REFERENCE", ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "NOTE", ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "UOM", ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "FORECAST_RATE", ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            {
+                string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+
+                if (alignedDate > FixedDataDateMonthEnd)
+                {
+                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "0", Type = SummaryItemType.Sum });
+                }
+            }
+        }
+        private List<DateTime> generateDates()
+        {
+            return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, FixedEndDate, true);
+        }
+
+        protected override void onAuxiliaryEntitiesCollectionLoaded()
+        {
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS);
+            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+        }
+
+        protected override Func<IRepositoryQuery<FORECAST_JOB>, IQueryable<FORECAST_JOB>> specifyMainViewModelProjection()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
-        protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
+        public override string UnifiedValueValidation(FORECAST_JOB projection, string field_name, object new_value)
         {
-            return base.OnMainViewModelLoaded(entities);
+            return string.Empty;
         }
 
-        protected override void updateAdditionalJobInfo(ForecastJobData commodityJob)
+        public override string UnifiedRowValidation(FORECAST_JOB projection)
         {
-            ExoSubJobProjection projection = commodityJob.Projection;
-            FORECAST_JOB findFORECAST_JOB = forecastJobLookup(projection.SubJob.Code, projection.Discipline.Code, projection.Commodity.Code, projection.Variation_Code);
-            if(findFORECAST_JOB != null)
-            {
-                commodityJob.Description = findFORECAST_JOB.DESCRIPTION;
-                commodityJob.Reference = findFORECAST_JOB.REFERENCE;
-                commodityJob.Note = findFORECAST_JOB.NOTE;
-                commodityJob.UOM = findFORECAST_JOB.UOM;
-                commodityJob.JobRate = findFORECAST_JOB.FORECAST_RATE;
-            }
-
-            base.updateAdditionalJobInfo(commodityJob);
+            return string.Empty;
         }
 
-        private FORECAST_JOB forecastJobLookup(string subjobCode, string disciplineCode, string commodityCode, string variationCode)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
         {
-            IEnumerable<FORECAST_JOB> matchedJobsWithoutVariation = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == subjobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode);
-            if(matchedJobsWithoutVariation.Count() > 0)
-            {
-                if (variationCode == string.Empty || variationCode == null)
-                    return matchedJobsWithoutVariation.FirstOrDefault(x => x.VARIATION_CODE == string.Empty || x.VARIATION_CODE == null);
-                else
-                    return matchedJobsWithoutVariation.FirstOrDefault(x => x.VARIATION_CODE == variationCode);
-            }
-
-            return null;
+            MainViewModel.SetParentViewModel(this);
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override void OnClose(CancelEventArgs e)
+        /// <summary>
+        /// The view name to be used when saving layout for IDocumentContent
+        /// </summary>
+        public override string ViewName
         {
-            base.OnClose(e);
+            get { return "FORECAST_JOBCollectionViewModelWrapper"; }
         }
 
-        public override string ViewName => "PROJECTIndirectForecastView_v1.00";
+        /// <summary>
+        /// Manages all undo and redo operation
+        /// </summary>
+        private EntitiesUndoRedoManager<DataRow> entitiesundoredomanager { get; set; }
 
-        public IEnumerable<FORECAST_JOB> FORECAST_JOBCollection
+        public EntitiesUndoRedoManager<DataRow> EntitiesUndoRedoManager
         {
             get
             {
-                return GetEntities<FORECAST_JOB>();
+                if (entitiesundoredomanager == null)
+                    entitiesundoredomanager = new EntitiesUndoRedoManager<DataRow>(BulkPropertyUndo, BulkPropertyRedo);
+
+                return entitiesundoredomanager;
             }
         }
+
+        /// <summary>
+        /// Function to undo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddedProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach(UndoRedoEntityInfo<DataRow> entityProperty in bulkAddedProperties)
+            {
+                Guid guid = (Guid)entityProperty.ChangedEntity[columnGUID];
+                FORECAST_JOB findFORECAST_JOB = MainViewModel.Entities.FirstOrDefault(x => x.GUID == guid);
+                if(findFORECAST_JOB != null)
+                {
+                    MainViewModel.Delete(findFORECAST_JOB);
+                }
+
+                DataRow findRow = searchRow(guid);
+                if(findRow != null)
+                {
+                    dataPointsTable.Rows.Remove(findRow);
+                }
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue, entityProperty.OldValue);
+            }
+
+            GridControlService.GridControl.RefreshData();
+        }
+
+        /// <summary>
+        /// Function to redo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkAddedProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Added);
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkAddedProperties)
+            {
+                addNewFORECAST_JOB(entityProperty.ChangedEntity);
+                dataPointsTable.Rows.Add(entityProperty.ChangedEntity);
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue, entityProperty.NewValue);
+            }
+
+            GridControlService.GridControl.RefreshData();
+        }
+
+        public bool CanUndo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanUndo();
+        }
+
+        public bool CanRedo()
+        {
+            if (EntitiesUndoRedoManager == null)
+                return false;
+
+            return EntitiesUndoRedoManager.CanRedo();
+        }
+
+        public void Undo()
+        {
+            EntitiesUndoRedoManager.Undo();
+        }
+
+        public void Redo()
+        {
+            EntitiesUndoRedoManager.Redo();
+        }
+
+        public void KeyboardCopy()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^c");
+        }
+
+        public void KeyboardPaste()
+        {
+            System.Windows.Forms.SendKeys.SendWait("^v");
+        }
+
+        ObservableCollection<DataRowView> selectedDataRows { get; set; }
+        public ObservableCollection<DataRowView> SelectedDataRows
+        {
+            get
+            {
+                return selectedDataRows;
+            }
+            set
+            {
+                selectedDataRows = value;
+            }
+        }
+
+        protected ObservableCollection<ColumnDescriptor> parentViewColumns;
+        public ObservableCollection<ColumnDescriptor> ParentViewColumns
+        {
+            get
+            {
+                if (parentViewColumns == null)
+                {
+                    parentViewColumns = new ObservableCollection<ColumnDescriptor>();
+                }
+                return parentViewColumns;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> parentSummaries;
+        public ObservableCollection<SummaryDescriptor> ParentSummaries
+        {
+            get
+            {
+                if (parentSummaries == null)
+                {
+                    parentSummaries = new ObservableCollection<SummaryDescriptor>();
+                }
+                return parentSummaries;
+            }
+        }
+
+        public IEnumerable<Data.FORECAST_JOB_HOUR> FORECAST_JOB_HOURCollection
+        {
+            get
+            {
+                return GetEntities<Data.FORECAST_JOB_HOUR>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_JOB_HOUR, FORECAST_JOB_HOUR, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_JOB_HOURCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<FORECAST_JOB_HOUR, FORECAST_JOB_HOUR, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<FORECAST_JOB_HOUR>();
+            }
+        }
+        #endregion
     }
 }

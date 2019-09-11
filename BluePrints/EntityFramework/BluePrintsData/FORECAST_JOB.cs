@@ -17,6 +17,11 @@ namespace BluePrints.Data
     [Table("FORECAST_JOB")]
     public partial class FORECAST_JOB
     {
+        public FORECAST_JOB()
+        {
+            FORECAST_JOB_HOUR = new HashSet<FORECAST_JOB_HOUR>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
@@ -34,7 +39,6 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
@@ -55,8 +59,6 @@ namespace BluePrints.Data
 
         public decimal? FORECAST_RATE { get; set; }
 
-        public DateTime FORECAST_DATE { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -70,5 +72,8 @@ namespace BluePrints.Data
         public Guid? DELETEDBY { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FORECAST_JOB_HOUR> FORECAST_JOB_HOUR { get; set; }
     }
 }
