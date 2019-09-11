@@ -12,6 +12,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
@@ -43,6 +44,8 @@ namespace BluePrints.ViewModels
         {            
             var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             loadVARIATION = receiveParameter.GetSecondEntity();
             viewType = DeliverablesViewType.Both;
             isQueryForLiveStatus = true;

@@ -79,8 +79,8 @@ namespace BluePrints.ViewModels
         protected Guid load_context_guid => loadBASELINE == null ? Guid.Empty : loadBASELINE.GUID;
         protected PROGRESS livePROGRESS { get; set; }
         protected bool isQueryForLiveStatus;
-        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
-        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         //public bool Is_Autofill_Internal_Number { get; set; }
         private bool allow_drag_drop { get; set; }
         public bool Allow_Drag_Drop
@@ -271,12 +271,12 @@ namespace BluePrints.ViewModels
         {
             var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
-            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
-            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            loadBASELINE = (BASELINE)receiveParameter.GetSecondEntity();
+            viewType = (DeliverablesViewType)receiveParameter.GetThirdEntity();
 
-            if (loadPROJECT != null)
+            if (loadBASELINE == null)
                 isQueryForLiveStatus = true;
 
             Allow_Drag_Drop = false;
