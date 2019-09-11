@@ -71,6 +71,15 @@ namespace BluePrints.ViewModels
             IsWeeks = true;
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
             QueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).Where(x => x.SubJob != null && x.SubJob.Code.Contains("I1")).ToList();
+            List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
+
+            foreach(ExoSubJobProjection queryJob in QueryJobs)
+            {
+                if (!uniqueQueryJobs.Any(x => x.FullCode == queryJob.FullCode))
+                    uniqueQueryJobs.Add(queryJob);
+            }
+
+            QueryJobs = uniqueQueryJobs.OrderBy(x => x.FullCode).ToList();
             queryJobLines = jobLines;
         }
 
