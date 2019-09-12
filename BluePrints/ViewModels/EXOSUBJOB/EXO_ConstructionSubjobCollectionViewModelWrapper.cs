@@ -204,19 +204,6 @@ namespace BluePrints.ViewModels
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
-        public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value)
-        {
-            if (field_name.ToUpper().Contains("BUDGET"))
-            {
-                if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
-                    return "You do not have authority to change the budget";
-                else if (!projection.IsLineExistsInExo)
-                    return "Budget must be changed on bookable entries only";
-            }
-
-            return base.UnifiedValueValidation(projection, field_name, new_value);
-        }
-
         public void UploadToExo()
         {
             base.CommitToExo(DisplaySelectedEntities);

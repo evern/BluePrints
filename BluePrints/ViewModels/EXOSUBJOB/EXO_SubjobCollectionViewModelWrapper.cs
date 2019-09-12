@@ -601,6 +601,14 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value)
         {
+            if (field_name.ToUpper().Contains("BUDGET"))
+            {
+                if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                    return "You do not have authority to change the budget";
+                else if (!projection.IsLineExistsInExo)
+                    return "Budget must be changed on bookable entries only";
+            }
+
             return string.Empty;
         }
 

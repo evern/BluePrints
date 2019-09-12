@@ -156,14 +156,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             return user_baseline_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectVariationItemTransformation(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, BASELINE BASELINE, IEnumerable<VARIATION> VARIATIONS, VARIATION VARIATION, IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES)
+        public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectVariationItemTransformation(IQueryable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, BASELINE BASELINE, IEnumerable<VARIATION> VARIATIONS, VARIATION VARIATION, IEnumerable<VARIATION_ITEM> VARIATION_ITEMS, IEnumerable<RATE> RATES, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null)
         {
             //when either live progress or variation doesn't exists don't return anything
             IQueryable<BASELINE_ITEMProgress> Baseline_ItemProgresses;
             if (PROGRESS == null || VARIATION == null)
                 Baseline_ItemProgresses = new List<BASELINE_ITEMProgress>().AsQueryable();
             else
-                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, false, null, DeliverableInternalNumberMode.Default);
+                Baseline_ItemProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, false, null, DeliverableInternalNumberMode.Default, false, null, null, null, false, null, null, null, null, DOCTYPECollection, COMMODITY_CODECollection);
 
             foreach (var baseline_item in Baseline_ItemProgresses)
             {
@@ -181,7 +181,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, bool showLoadingScreen = false)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, bool extrapolateDateToDataDate = false, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null, bool showLoadingScreen = false)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -260,8 +260,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                         baseline_item_progress.BuildStats();
 
-                    if (DOCTYPECollection != null)
-                        baseline_item_progress.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection);
+                    if (DOCTYPECollection != null && COMMODITY_CODECollection != null)
+                        baseline_item_progress.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection, COMMODITY_CODECollection);
 
                     if (deliverables_statuses != null)
                     {

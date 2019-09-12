@@ -341,6 +341,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD_REF);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
@@ -348,6 +349,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null && (x.PHASE_TYPE == PhaseType.Design || x.PHASE_TYPE == PhaseType.Indirect));
         }
 
         private Func<IRepositoryQuery<P6_ASSIGNMENT>, IQueryable<P6_ASSIGNMENT>> P6_ASSIGNMENTProjectionFunc()
@@ -508,7 +514,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(baseQueryFilter(query), loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, InternalNumberMode, false, null, USERCollection, BASELINE_ITEM_WORKCollection, false, REGISTER_HOLD_REFCollection, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, DOCTYPECollection, COMMODITY_CODECollection);
         }
 
         public Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BaseEntityQueryCallBack { get; set; }
@@ -979,7 +985,7 @@ namespace BluePrints.ViewModels
             if (isNew)
             {
                 projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
-                projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection);
+                projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection, COMMODITY_CODECollection);
             }
 
             //only new row will change department according to doc type selection
@@ -1061,6 +1067,16 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE)))
+            {
+                if (isNew)
+                {
+                    //Area is required immediately for subarea selection
+                    projection.Entity.Entity.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    projection.Update();
+                }
+            }
+
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_AREA)))
             {
                 Guid? oldValue = projection.Entity.Entity.GUID_SUBAREA;
@@ -1079,6 +1095,11 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.AREA = AREACollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
                     projection.Update();
                 }
+            }
+
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DISCIPLINE)) || field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE)))
+            {
+                projection.Entity.Entity.ResetValidDocTypes();
             }
 
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_DOCTYPE)) || field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE)))
@@ -1929,6 +1950,17 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;

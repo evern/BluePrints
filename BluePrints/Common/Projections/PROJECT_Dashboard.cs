@@ -169,7 +169,7 @@ namespace BluePrints.Common.Projections
                     }
 
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, false, null, null, null, null, null, isSingleProject).ToArray().AsEnumerable();
+                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, false, null, null, null, null, null, null, isSingleProject).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
                     current_project_progresses.Add(live_baseline_progress);
                 }
