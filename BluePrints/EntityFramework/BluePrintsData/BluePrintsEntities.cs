@@ -337,6 +337,11 @@ namespace BluePrints.Data
                 .WithOptional(e => e.ESTIMATE)
                 .HasForeignKey(e => e.GUID_ESTIMATE);
 
+            modelBuilder.Entity<FORECAST_JOB>()
+                .HasMany(e => e.FORECAST_JOB_HOUR)
+                .WithRequired(e => e.FORECAST_JOB)
+                .HasForeignKey(e => e.GUID_FORECAST_JOB);
+
             modelBuilder.Entity<HSE>()
                 .HasMany(e => e.HSE_INCIDENT)
                 .WithRequired(e => e.HSE)

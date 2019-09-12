@@ -180,7 +180,7 @@ namespace BluePrints.ViewModels
         IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
-        List<DateTime> alignedDataDateCollection;
+        protected List<DateTime> alignedDataDateCollection;
         protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
         protected virtual IGridControlService ExportGridControlService { get { return this.GetService<IGridControlService>("ExportGridControlService"); } }
         protected virtual ITableViewService ExportTableViewService { get { return this.GetService<ITableViewService>("ExportTableViewService"); } }
@@ -531,7 +531,7 @@ namespace BluePrints.ViewModels
                     if(commodityJobs == null)
                     {
                         List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, AllProjectDashboards, COMMODITY_CODECollection, ref allDataPoints);
+                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, AllProjectDashboards);
                         DetailedData.AddRange(allDataPoints);
                         commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
                         isNewData = true;
@@ -1217,7 +1217,7 @@ namespace BluePrints.ViewModels
         {
             System.Windows.Forms.SendKeys.SendWait("^v");
         }
-
+        
         public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;

@@ -263,7 +263,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<DashboardFlatStructure> dashboardJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints)
+        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
             ConcurrentBag<ExoSubJobProjection> combinedSubJobs = new ConcurrentBag<ExoSubJobProjection>();
             LoadingScreenManager.ShowLoadingScreen(queriedJobs.Count());
@@ -278,14 +278,17 @@ namespace BluePrints.Common.ViewModel.Misc
             });
             LoadingScreenManager.CloseLoadingScreen();
 
-            IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
-            IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
-            IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
-            //IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
+            if(dashboardJobs != null)
+            {
+                IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+                IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
+                IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
+                //IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
 
-            allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
-            allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
-            allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
+                allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
+                allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
+                allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
+            }
 
             ////List<string> uniqueExoJobsConcatNames = dashboardJobs.Select(x => x.SubjobCode + ";" + x.DisciplineCode + ";" + x.CommodityCode + ";" + x.Variation_Code).Distinct().ToList();
             List<string> uniqueExoJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();

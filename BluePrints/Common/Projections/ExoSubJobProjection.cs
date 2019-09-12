@@ -200,7 +200,14 @@ namespace BluePrints.Common.Projections
                     else
                     {
                         string disciplineCode = DisciplineCode.Substring(0, 2);
-                        validCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                        IEnumerable<COMMODITY_CODE> phaseCommodityCodes;
+                        if (PhaseType == Common.PhaseType.Design)
+                            //because design deliverable's have indirect components also
+                            phaseCommodityCodes  = COMMODITY_CODES.Where(x => x.PHASE_TYPE == Common.PhaseType.Design || x.PHASE_TYPE == Common.PhaseType.Indirect);
+                        else
+                            phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType);
+                        
+                        validCommodityCodes = phaseCommodityCodes.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
                     }
 
                 }
@@ -332,7 +339,27 @@ namespace BluePrints.Common.Projections
         {
             Variation_Code = string.Empty;
         }
-        
+
+        public override string ToString()
+        {
+            return FullCode;
+        }
+
+        public string FullCode
+        {
+            get
+            {
+                if (SubJob == null || Discipline == null || Commodity == null)
+                    return string.Empty;
+
+                string fullCode = SubJob.Code + "-" + Discipline.Code + "-" + Commodity.Code;
+                if (Variation_Code != string.Empty && Variation_Code != null)
+                    fullCode += "-" + Variation_Code;
+
+                return fullCode;
+            }
+        }
+
         public int? LineId { get; set; }
         public PrimeroSubJob SubJob { get; set; }
         public PrimeroDiscipline Discipline { get; set; }
