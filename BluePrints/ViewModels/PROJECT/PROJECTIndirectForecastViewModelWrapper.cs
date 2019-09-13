@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.View;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -14,11 +15,13 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -81,12 +84,15 @@ namespace BluePrints.ViewModels
 
             QueryJobs = uniqueQueryJobs.OrderBy(x => x.FullCode).ToList();
             queryJobLines = jobLines;
+
+            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
         }
 
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOURS, FORECAST_JOB_HOURSProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -97,6 +103,10 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<FORECAST_JOB_HOUR>, IQueryable<FORECAST_JOB_HOUR>> FORECAST_JOB_HOURSProjectionFunc()
         {
             return query => query.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+        private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         private void setProject(Data.PROJECT project)
@@ -145,6 +155,7 @@ namespace BluePrints.ViewModels
 
                     //construct data points table
                     dataPointsTable.Columns.Add(columnFullCode, typeof(string));
+                    dataPointsTable.Columns.Add(columnCommodityName, typeof(string));
                     dataPointsTable.Columns.Add(columnProjection, typeof(ExoSubJobProjection));
                     dataPointsTable.Columns.Add(columnGUID, typeof(Guid));
                     dataPointsTable.Columns.Add(columnDescription, typeof(string));
@@ -153,6 +164,8 @@ namespace BluePrints.ViewModels
                     dataPointsTable.Columns.Add(columnNote, typeof(string));
                     dataPointsTable.Columns.Add(columnUOM, typeof(string));
                     dataPointsTable.Columns.Add(columnForecastRate, typeof(decimal));
+                    dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
+                    dataPointsTable.Columns.Add(columnTotalCosts, typeof(decimal));
 
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -182,17 +195,18 @@ namespace BluePrints.ViewModels
                             newRow[columnForecastRate] = job.FORECAST_RATE;
 
                         dataPointsTable.Rows.Add(newRow);
-                        foreach(FORECAST_JOB_HOUR jobHour in FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == job.GUID))
+                        foreach(DateTime alignedDate in alignedDataDateCollection)
                         {
-                            if (jobHour.FORECAST_HOUR == null)
-                                continue;
+                            string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
-                            string dateFieldName = jobHour.FORECAST_DATE.ToString(BluePrintsResources.ColumnDateFormat);
-                            if (dataPointsTable.Columns.Contains(dateFieldName))
-                            {
-                                newRow[dateFieldName] = jobHour.FORECAST_HOUR;
-                            }
+                            FORECAST_JOB_HOUR jobHourOnAlignedDate = FORECAST_JOB_HOURCollection.FirstOrDefault(x => x.GUID_FORECAST_JOB == job.GUID && x.FORECAST_DATE.Date == alignedDate.Date);
+                            if(jobHourOnAlignedDate != null && jobHourOnAlignedDate.FORECAST_HOUR != null)
+                                newRow[columnFieldName] = jobHourOnAlignedDate.FORECAST_HOUR;
+                            else
+                                newRow[columnFieldName] = DBNull.Value;
                         }
+
+                        updateRowReadOnlyAttributes(newRow);
                     }
 
                     LoadingScreenManager.CloseLoadingScreen();
@@ -202,12 +216,41 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void updateRowReadOnlyAttributes(DataRow row)
+        {
+            if (row[columnProjection] == DBNull.Value)
+                return;
+
+            ExoSubJobProjection projection = (ExoSubJobProjection)row[columnProjection];
+            COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == projection.Commodity.Code);
+            if (findCOMMODITY_CODE != null)
+                row[columnCommodityName] = findCOMMODITY_CODE.NAME;
+
+            if (row[columnGUID] == DBNull.Value)
+                return;
+
+            decimal rate = 0.00m;
+            Guid guid = (Guid)row[columnGUID];
+            decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == guid && x.FORECAST_HOUR != null).Sum(x => (decimal)x.FORECAST_HOUR);
+            row[columnTotalHours] = totalForecastHours;
+
+            if (row[columnForecastRate] != DBNull.Value)
+            {
+                rate = (decimal)row[columnForecastRate];
+                row[columnTotalCosts] = rate * totalForecastHours;
+            }
+            else
+                row[columnTotalCosts] = 0.00m;
+        }
+
         public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
             TableView gridTableView = (TableView)gridControl.View;
             string newValueString = Clipboard.GetText().ToString();
 
+            if (newValueString == string.Empty)
+                newValueString = " ";
             //remove tab in front
             if (newValueString != string.Empty)
             {
@@ -219,7 +262,15 @@ namespace BluePrints.ViewModels
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
 
                 if (MainViewModel.SelectMode == MultiSelectMode.Row)
-                    pasteRowData(gridTableView, RowData);
+                {
+                    List<ErrorMessage> invalidRows = pasteRowData(gridTableView, RowData);
+
+                    if (invalidRows.Count > 0)
+                    {
+                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(invalidRows, "Cannot paste job(s) due to the following error");
+                        ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                    }
+                }
                 else
                     pasteCellData(gridControl, gridTableView, RowData);
 
@@ -227,16 +278,23 @@ namespace BluePrints.ViewModels
                 e.Handled = true;
             }
         }
-        private void pasteRowData(TableView gridTableView, string[] RowData)
+
+        /// <summary>
+        /// Paste data from string into rows
+        /// </summary>
+        /// <param name="RowData">Invalid rows</param>
+        /// <returns></returns>
+        private List<ErrorMessage> pasteRowData(TableView gridTableView, string[] RowData)
         {
             EntitiesUndoRedoManager.PauseActionId();
+            List<ErrorMessage> invalidRows = new List<ErrorMessage>();
             foreach (var Row in RowData)
             {
                 DataRow newRow = DataPointsTable.NewRow();
                 var ColumnStrings = Row.Split('\t');
                 string fullCode = ColumnStrings[0];
                 ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
-                if(queryJob != null)
+                if (queryJob != null)
                 {
                     newRow[columnFullCode] = queryJob.FullCode;
                     newRow[columnProjection] = queryJob;
@@ -250,12 +308,15 @@ namespace BluePrints.ViewModels
                         ColumnBase copyColumn = gridTableView.VisibleColumns[i];
                         basePasteData(newRow, copyColumn, pasteData, true);
                     }
-                }
 
-                DataPointsTable.Rows.Add(newRow);
+                    DataPointsTable.Rows.Add(newRow);
+                }
+                else
+                    invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
+            return invalidRows;
         }
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
@@ -276,20 +337,21 @@ namespace BluePrints.ViewModels
                     newRow[copyColumn.FieldName] = queryJob;
                 }
             }
-            else if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+            else if (copyColumn.FieldName == columnForecastRate || DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
             {
                 if (copyColumn.FieldType == typeof(decimal))
                 {
                     var rgx = new Regex("[^0-9a-z\\.]");
                     var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                    decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
                     decimal decimal_value;
                     if (decimal.TryParse(cleanColumnString, out decimal_value))
-                    {
-                        commitCellValue(copyColumn.FieldName, newRow, null, decimal_value);
-                    }
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, !isLastRow);
+                    else
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, null, !isLastRow);
                 }
             }
-            else if (copyColumn.FieldType == typeof(string))
+            else if (copyColumn.FieldType == typeof(string) && !copyColumn.ReadOnly)
             {
                 newRow[copyColumn.FieldName] = pasteData;
             }
@@ -370,7 +432,7 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
-        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
+        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipUpdate = false)
         {
             Guid guid = (Guid)row[columnGUID];
 
@@ -380,7 +442,12 @@ namespace BluePrints.ViewModels
                 decimal? forecastHours = null;
                 decimal convertUnits = 0;
                 if (newValue != null && decimal.TryParse(newValue.ToString(), out convertUnits))
-                    forecastHours = convertUnits;
+                {
+                    if (convertUnits == 0)
+                        forecastHours = null;
+                    else
+                        forecastHours = convertUnits;
+                }
 
                 FORECAST_JOB_HOUR forecastJobHour = FORECAST_JOB_HOURCollection.FirstOrDefault(x => x.GUID_FORECAST_JOB == guid && x.FORECAST_DATE.Date == dateTime.Date);
                 FORECAST_JOB_HOUR editForecastJobHour;
@@ -394,10 +461,10 @@ namespace BluePrints.ViewModels
                 editForecastJobHour.FORECAST_HOUR = forecastHours;
                 FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
 
+                //for undo/redo
                 if (forecastHours == null)
                     row[fieldName] = DBNull.Value;
                 else
-                    //for undo/redo
                     row[fieldName] = forecastHours;
             }
             else
@@ -432,6 +499,9 @@ namespace BluePrints.ViewModels
                     MainViewModel.Save(editFORECAST_JOB);
                 }
             }
+
+            if (!skipUpdate)
+                updateRowReadOnlyAttributes(row);
         }
 
         private DataRow searchRow(Guid guid)
@@ -444,6 +514,7 @@ namespace BluePrints.ViewModels
         }
 
         string columnFullCode = "FullCode";
+        string columnCommodityName = "CommodityName";
         string columnProjection = "Projection";
         string columnGUID = "GUID";
         string columnDescription = "DESCRIPTION";
@@ -452,19 +523,26 @@ namespace BluePrints.ViewModels
         string columnNote = "NOTE";
         string columnUOM = "UOM";
         string columnForecastRate = "FORECAST_RATE";
+        string columnTotalHours = "TOTAL_HOURS";
+        string columnTotalCosts = "TOTAL_COSTS";
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
             summaries.Clear();
 
             columns.Add(new ColumnDescriptor() { FieldName = columnFullCode, ReadOnly = false, Header = "Full Code", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.FullCode });
-            summaries.Add(new SummaryDescriptor() { FieldName = "FULL_CODE", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnFullCode, DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = columnCommodityName, ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "DESCRIPTION", ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "SOURCE", ReadOnly = false, Header = "Source", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "REFERENCE", ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "NOTE", ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "UOM", ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "FORECAST_RATE", ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalHours, ReadOnly = false, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -506,6 +584,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
         {
             MainViewModel.SetParentViewModel(this);
+            MainViewModel.IsPasteCellLevel = true;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -589,6 +668,32 @@ namespace BluePrints.ViewModels
             GridControlService.GridControl.RefreshData();
         }
 
+        public bool CanDeleteRows()
+        {
+            return !IsLoading && SelectedDataRows != null && SelectedDataRows.Count > 0;
+        }
+
+        public void DeleteRows()
+        {
+            List<DataRow> removeRows = new List<DataRow>();
+            foreach(DataRowView selectedRow in SelectedDataRows)
+            {
+                Guid guid = (Guid)selectedRow.Row[columnGUID];
+                FORECAST_JOB findFORECAST_JOB = MainViewModel.Entities.FirstOrDefault(x => x.GUID == guid);
+                if (findFORECAST_JOB != null)
+                    MainViewModel.Delete(findFORECAST_JOB);
+
+                DataRow findRow = searchRow(guid);
+                if (findRow != null)
+                    removeRows.Add(findRow);
+            }
+
+            foreach(DataRow removeRow in removeRows)
+            {
+                dataPointsTable.Rows.Remove(removeRow);
+            }
+        }
+
         public bool CanUndo()
         {
             if (EntitiesUndoRedoManager == null)
@@ -630,6 +735,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (selectedDataRows == null)
+                    selectedDataRows = new ObservableCollection<DataRowView>();
+
                 return selectedDataRows;
             }
             set
@@ -672,6 +780,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<Data.COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                return GetEntities<Data.COMMODITY_CODE>();
+            }
+        }
+
         public CollectionViewModel<FORECAST_JOB_HOUR, FORECAST_JOB_HOUR, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_JOB_HOURCollectionViewModel
         {
             get
@@ -683,6 +799,12 @@ namespace BluePrints.ViewModels
                     (CollectionViewModel<FORECAST_JOB_HOUR, FORECAST_JOB_HOUR, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST_JOB_HOUR>();
             }
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
         }
         #endregion
     }

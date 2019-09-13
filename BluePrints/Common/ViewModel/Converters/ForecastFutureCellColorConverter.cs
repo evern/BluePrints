@@ -27,7 +27,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count > 3)
+                    if (compareEntity.Rows.Count > 5)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
@@ -37,15 +37,16 @@ namespace BluePrints.Common.ViewModel.Converters
                             decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
                             decimal poForecastCosts = (decimal)compareEntity.Rows[2][fieldname];
                             DataRow compareP6UnitsRemainingRow = compareEntity.Rows[4];
+                            decimal weeklyCosts = (decimal)compareEntity.Rows[5][fieldname];
                             DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow["CompareEntities"];
                             DataRow compareChildP6CostsRemainingRow = compareChildDataTable.Rows[0];
                             decimal p6RemainingCosts = (decimal)compareChildP6CostsRemainingRow[fieldname];
 
-                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts + weeklyCosts;
                             totalCosts = Math.Round(totalCosts);
                             decimal currentValue = (decimal)values[2];
 
-                            if(currentValue != 0)
+                            if(totalCosts != 0)
                             {
                                 currentValue = Math.Round(currentValue);
                                 if(currentValue > totalCosts)

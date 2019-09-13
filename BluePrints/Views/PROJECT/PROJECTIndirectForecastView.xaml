@@ -52,7 +52,7 @@
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
-                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="###,### hrs" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
+                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="###,##0 hrs" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
                                     <dxe:SpinEdit.Background>
                                         <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                                             <Binding Path="RowData.Row.Row" />
@@ -136,6 +136,7 @@
                     <dxb:BarButtonItem Command="{Binding DataContext.DistributeUnitsCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Units" Glyph="{dxc:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dxc:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute selected cells units" />
                     <dxb:BarButtonItem Command="{Binding DataContext.CreateExportSheetCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" ToolTip="Export current view to excel.Includes grouping, sorting and column visibility preferences" />-->
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biLocalBulkDelete" Command="{Binding DataContext.DeleteRowsCommand, ElementName=userControl}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
                     <dxb:BarButtonItem x:Name="biLocalKeyboardCopy" Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
                     <dxb:BarButtonItem x:Name="biLocalKeyboardPaste" Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
                     <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
@@ -157,6 +158,7 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
@@ -215,7 +217,7 @@
                                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.RedoCommand, ElementName=userControl}" KeyGesture="CTRL+Y" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                     <dxg:TableView.RowCellMenuCustomizations>
-                                                        <dxb:BarButtonItemLink BarItemName="biResetForecast" />
+                                                        <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
                                                         <dxb:BarItemLinkSeparator />
                                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                                         <dxb:BarItemLinkSeparator /> 

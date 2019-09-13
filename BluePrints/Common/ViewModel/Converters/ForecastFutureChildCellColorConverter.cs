@@ -42,7 +42,7 @@ namespace BluePrints.Common.ViewModel.Converters
                             decimal totalCosts = Math.Round(p6RemainingHours);
                             decimal currentValue = (decimal)values[2];
 
-                            if(currentValue != 0)
+                            if(totalCosts != 0)
                             {
                                 currentValue = Math.Round(currentValue);
                                 if(currentValue > totalCosts)

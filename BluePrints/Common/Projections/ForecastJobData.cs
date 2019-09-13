@@ -149,7 +149,10 @@ namespace BluePrints.Common.Projections
         public decimal P6Hours { get; set; }
         public decimal P6Costs { get; set; }
         public decimal POForecastCosts { get; set; }
+        public decimal WeeklyForecastCosts { get; set; }
 
-        public decimal PreloadedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
+        //weekly forecast costs is uncommitted costs
+        //public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + WeeklyForecastCosts;
+        public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
     }
 }
