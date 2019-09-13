@@ -1772,6 +1772,9 @@ namespace BluePrints.ViewModels
             if (AppNotificationService == null)
                 return;
 
+            if (loadPROJECT == null)
+                return;
+
             INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo + " for time booking", null, null, null);
             notification1.ShowAsync();
         }
