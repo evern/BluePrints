@@ -329,12 +329,14 @@ namespace BluePrints.ViewModels
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
         {
             DateTime columnDateTime;
-            if(copyColumn.FieldType == typeof(ExoSubJobProjection))
+            if(copyColumn.FieldName == columnFullCode)
             {
                 ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == pasteData);
                 if(queryJob != null)
                 {
                     newRow[copyColumn.FieldName] = queryJob;
+                    if(MainViewModel.IsPasteCellLevel)
+                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], queryJob, EntityMessageType.Changed);
                 }
             }
             else if (copyColumn.FieldName == columnForecastRate || DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
@@ -346,14 +348,24 @@ namespace BluePrints.ViewModels
                     decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
                     decimal decimal_value;
                     if (decimal.TryParse(cleanColumnString, out decimal_value))
+                    {
                         commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, !isLastRow);
+                        if (MainViewModel.IsPasteCellLevel)
+                            EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                    }
                     else
+                    {
                         commitCellValue(copyColumn.FieldName, newRow, oldValue, null, !isLastRow);
+                        if (MainViewModel.IsPasteCellLevel)
+                            EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, null, EntityMessageType.Changed);
+                    }
                 }
             }
             else if (copyColumn.FieldType == typeof(string) && !copyColumn.ReadOnly)
             {
                 newRow[copyColumn.FieldName] = pasteData;
+                if (MainViewModel.IsPasteCellLevel)
+                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName].ToString(), pasteData, EntityMessageType.Changed);
             }
 
             return true;
