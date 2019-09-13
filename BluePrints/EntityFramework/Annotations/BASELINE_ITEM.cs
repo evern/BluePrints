@@ -167,12 +167,13 @@ namespace BluePrints.Data
         {
             get
             {
-                if(validDocTypesByDeliverableTypeAndCommodityCode == null)
+                if (DOC_TYPES == null)
+                    return new List<DOCTYPE>();
+
+                if (validDocTypesByDeliverableTypeAndCommodityCode == null)
                 {
                     validDocTypesByDeliverableTypeAndCommodityCode = new List<DOCTYPE>();
                     IEnumerable<DOCTYPE> documentTypeByDeliverableType;
-                    if (DOC_TYPES == null)
-                        return new List<DOCTYPE>();
 
                     switch (DELIVERABLE_TYPE)
                     {
