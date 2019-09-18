@@ -254,10 +254,10 @@ namespace BluePrints.ViewModels
             //remove tab in front
             if (newValueString != string.Empty)
             {
-                if (newValueString.Substring(0, 1) == "\t")
-                {
-                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
-                }
+                //if (newValueString.Substring(0, 1) == "\t")
+                //{
+                //    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                //}
 
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
 
