@@ -274,5 +274,8 @@ namespace BluePrints.PrimeroData
 
         [StringLength(50)]
         public string X_SUPPLIERNAME { get; set; }
+
+        [NotMapped]
+        public string SupplierName { get; set; }
     }
 }

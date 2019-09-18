@@ -86,6 +86,7 @@
                                             <dxg:GridColumn FieldName="QUANTITY" FilterPopupMode="CheckedList" Header="Quantity" ReadOnly="True" />
                                             <!--<dxg:GridColumn FieldName="LINETOTAL" FilterPopupMode="CheckedList" Header="Cost" ReadOnly="True" />-->
                                             <dxg:GridColumn FieldName="LINE_STATUS" FilterPopupMode="CheckedList" Header="Status" ReadOnly="True" />
+                                            <dxg:GridColumn FieldName="SupplierName" FilterPopupMode="CheckedList" Header="Supplier" ReadOnly="True" />
                                         </dxg:GridControl.Columns>
                                         <dxg:GridControl.GroupSummary>
                                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n0" FieldName="QUANTITY" SummaryType="Sum" />

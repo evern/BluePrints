@@ -82,6 +82,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos, X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
         }
 
@@ -99,7 +100,25 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<JOB_TRANSACTIONS>, IQueryable<JOB_TRANSACTIONS>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.JOBNO);
+            return query => attachSupplierQuery(query);
+        }
+
+        protected Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection()
+        {
+            return query => query.Where(x => x.jobcode == loadPROJECT.NUMBER);
+        }
+
+        public IQueryable<JOB_TRANSACTIONS> attachSupplierQuery(IQueryable<JOB_TRANSACTIONS> JOB_TRANSACTIONCollection)
+        {
+            List<JOB_TRANSACTIONS> jobTransactions = JOB_TRANSACTIONCollection.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.JOBNO).ToList();
+            foreach(JOB_TRANSACTIONS jobTransaction in jobTransactions)
+            {
+                X_JOB_TRANSACTIONS_DETAIL_SeqNo transactionDetail = X_JOB_TRANSACTIONS_DETAILCollection.FirstOrDefault(x => x.SEQNO == jobTransaction.SEQNO);
+                if (transactionDetail != null)
+                    jobTransaction.SupplierName = transactionDetail.name;
+            }
+
+            return jobTransactions.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<JOB_TRANSACTIONS> entities)
@@ -196,6 +215,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
                 return collection;
+            }
+        }
+
+        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAILCollection
+        {
+            get
+            {
+                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_SeqNo>();
             }
         }
 
