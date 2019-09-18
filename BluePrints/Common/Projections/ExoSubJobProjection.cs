@@ -1230,6 +1230,7 @@ namespace BluePrints.Common.Projections
                 newCommodity.Id = exoLine.CommodityId;
                 newCommodity.Code = exoLine.CommodityCode;
                 newCommodity.Name = exoLine.CommodityName;
+                newCommodity.StockCode = exoLine.StockCode;
 
                 newSubJobProjection.SubJob = newSubJob;
                 newSubJobProjection.Discipline = newDiscipline;

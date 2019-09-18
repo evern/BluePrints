@@ -290,33 +290,62 @@ namespace BluePrints.ViewModels
             List<ErrorMessage> invalidRows = new List<ErrorMessage>();
             foreach (var Row in RowData)
             {
-                DataRow newRow = DataPointsTable.NewRow();
                 var ColumnStrings = Row.Split('\t');
                 string fullCode = ColumnStrings[0];
                 ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
                 if (queryJob != null)
                 {
-                    newRow[columnFullCode] = queryJob.FullCode;
-                    newRow[columnProjection] = queryJob;
-                    addNewFORECAST_JOB(newRow);
-                    for (var i = 1; i < ColumnStrings.Count(); i++)
-                    {
-                        if (i > gridTableView.VisibleColumns.Count - 1)
-                            continue;
-
-                        string pasteData = ColumnStrings[i];
-                        ColumnBase copyColumn = gridTableView.VisibleColumns[i];
-                        basePasteData(newRow, copyColumn, pasteData, true);
-                    }
-
-                    DataPointsTable.Rows.Add(newRow);
+                    addNewPasteRow(queryJob, gridTableView, ColumnStrings);
                 }
                 else
-                    invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                {
+                    //try to see if user mistaken stock code as commodity code
+                    if(fullCode.Length > 3)
+                    {
+                        string stockCode = fullCode.Substring(fullCode.Length - 3, 3);
+                        COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.DEFAULT_STOCKCODE == stockCode);
+                        if(findCOMMODITY_CODE != null)
+                        {
+                            string oldCode = fullCode;
+                            fullCode = fullCode.Replace(stockCode, findCOMMODITY_CODE.CODE);
+                            queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
+                            if(queryJob != null)
+                            {
+                                addNewPasteRow(queryJob, gridTableView, ColumnStrings);
+                                invalidRows.Add(new ErrorMessage(oldCode, oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is stock code"));
+                            }
+                            else
+                                invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                        }
+                        else
+                            invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                    }
+                    else
+                        invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                }
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
             return invalidRows;
+        }
+
+        private void addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings)
+        {
+            DataRow newRow = DataPointsTable.NewRow();
+            newRow[columnFullCode] = queryJob.FullCode;
+            newRow[columnProjection] = queryJob;
+            addNewFORECAST_JOB(newRow);
+            for (var i = 1; i < ColumnStrings.Count(); i++)
+            {
+                if (i > gridTableView.VisibleColumns.Count - 1)
+                    continue;
+
+                string pasteData = ColumnStrings[i];
+                ColumnBase copyColumn = gridTableView.VisibleColumns[i];
+                basePasteData(newRow, copyColumn, pasteData, true);
+            }
+
+            DataPointsTable.Rows.Add(newRow);
         }
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
