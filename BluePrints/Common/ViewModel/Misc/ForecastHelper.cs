@@ -28,8 +28,7 @@ namespace BluePrints.Common.ViewModel.Misc
             LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
             LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
 
-            Parallel.ForEach(groupedDisciplineJobs,
-            groupedDisciplineJob =>
+            foreach(var groupedDisciplineJob in groupedDisciplineJobs)
             {
                 //retrive the discipline subjob, any member in the collection will do
                 ExoSubJobProjection DisciplineJob = groupedDisciplineJob.DisciplineJob;
@@ -38,8 +37,14 @@ namespace BluePrints.Common.ViewModel.Misc
                 List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
                 ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
 
-                Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
-                commodityJob =>
+                //cannot use this anymore because of navigational property in FORECAST_JOB
+                //Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
+                //commodityJob =>
+                //{
+
+                //});
+
+                foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines);
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
@@ -47,13 +52,7 @@ namespace BluePrints.Common.ViewModel.Misc
                     //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load
                     //PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
-                });
-
-                //for debugging
-                //foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
-                //{
-
-                //}
+                }
 
                 foreach (ForecastJobData commodityJob in commodityJobs)
                 {
@@ -61,13 +60,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 }
 
                 LoadingScreenManager.Progress();
-            });
-
-            //for debugging
-            //foreach (var groupedDisciplineJob in groupedDisciplineJobs)
-            //{
-
-            //}
+            }
 
             LoadingScreenManager.CloseLoadingScreen();
             return forecastProjections.ToList();

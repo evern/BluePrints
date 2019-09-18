@@ -129,6 +129,8 @@ namespace BluePrints.ViewModels
 
             FixedEndDate = endDate;
 
+            //get immutable data
+            alignedDataDateCollection = generateDates();
             this.RaisePropertiesChanged();
         }
 
@@ -146,8 +148,6 @@ namespace BluePrints.ViewModels
                 {
                     dataPointsTable = new DataTable();
 
-                    //get immutable data
-                    alignedDataDateCollection = generateDates();
                     InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
 
                     LoadingScreenManager.ShowLoadingScreen(1);
@@ -378,13 +378,13 @@ namespace BluePrints.ViewModels
                     decimal decimal_value;
                     if (decimal.TryParse(cleanColumnString, out decimal_value))
                     {
-                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, !isLastRow);
+                        commitCellValue(copyColumn.FieldName, newRow, decimal_value, !isLastRow);
                         if (MainViewModel.IsPasteCellLevel)
                             EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
                     }
                     else
                     {
-                        commitCellValue(copyColumn.FieldName, newRow, oldValue, null, !isLastRow);
+                        commitCellValue(copyColumn.FieldName, newRow, null, !isLastRow);
                         if (MainViewModel.IsPasteCellLevel)
                             EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, null, EntityMessageType.Changed);
                     }
@@ -393,6 +393,7 @@ namespace BluePrints.ViewModels
             else if (copyColumn.FieldType == typeof(string) && !copyColumn.ReadOnly)
             {
                 newRow[copyColumn.FieldName] = pasteData;
+                commitCellValue(copyColumn.FieldName, newRow, pasteData, !isLastRow);
                 if (MainViewModel.IsPasteCellLevel)
                     EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName].ToString(), pasteData, EntityMessageType.Changed);
             }
@@ -466,14 +467,14 @@ namespace BluePrints.ViewModels
             Guid guid = (Guid)row[columnGUID];
             string fieldName = e.Column.FieldName;
 
-            commitCellValue(fieldName, row.Row, e.OldValue, e.Value);
+            commitCellValue(fieldName, row.Row, e.Value);
             EntitiesUndoRedoManager.AddUndo(dataRowView.Row, fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
             EntitiesUndoRedoManager.UnpauseActionId();
 
             e.Handled = true;
         }
 
-        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipUpdate = false)
+        protected virtual void commitCellValue(string fieldName, DataRow row, object newValue, bool skipUpdate = false)
         {
             Guid guid = (Guid)row[columnGUID];
 
@@ -680,7 +681,7 @@ namespace BluePrints.ViewModels
 
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue, entityProperty.OldValue);
+                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue);
             }
 
             GridControlService.GridControl.RefreshData();
@@ -703,7 +704,7 @@ namespace BluePrints.ViewModels
 
             foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
             {
-                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.OldValue, entityProperty.NewValue);
+                commitCellValue(entityProperty.PropertyName, entityProperty.ChangedEntity, entityProperty.NewValue);
             }
 
             GridControlService.GridControl.RefreshData();
