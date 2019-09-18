@@ -315,13 +315,13 @@ namespace BluePrints.ViewModels
                                 invalidRows.Add(new ErrorMessage(oldCode, oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is stock code"));
                             }
                             else
-                                invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                                invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
                         }
                         else
-                            invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                            invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
                     }
                     else
-                        invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo"));
+                        invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
                 }
             }
 
