@@ -731,15 +731,12 @@ namespace BluePrints.ViewModels
             updateViewForecastsOnDatesFromDb(commodityRow);
             updateTotalUncommittedOnJob(commodityRow);
 
-            if(isNew)
-            {
-                //calculate project summary, needs to be done after uncommitted is calculated
-                ForecastSummary.Budget_Cost += commodityJob.Budget;
-                ForecastSummary.Current_Cost += commodityJob.ActualCosts;
-                ForecastSummary.Commitments += commodityJob.Outstanding;
-                ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
-                ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
-            }
+            //calculate project summary, needs to be done after uncommitted is calculated
+            ForecastSummary.Budget_Cost += commodityJob.Budget;
+            ForecastSummary.Current_Cost += commodityJob.ActualCosts;
+            ForecastSummary.Commitments += commodityJob.Outstanding;
+            ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
+            ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
         }
 
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
