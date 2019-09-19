@@ -296,6 +296,7 @@ namespace BluePrints.ViewModels
                 if (queryJob != null)
                 {
                     addNewPasteRow(queryJob, gridTableView, ColumnStrings);
+                    invalidRows.Add(new ErrorMessage(fullCode, "Row is pasted"));
                 }
                 else
                 {
@@ -312,16 +313,16 @@ namespace BluePrints.ViewModels
                             if(queryJob != null)
                             {
                                 addNewPasteRow(queryJob, gridTableView, ColumnStrings);
-                                invalidRows.Add(new ErrorMessage(oldCode, oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is stock code"));
+                                invalidRows.Add(new ErrorMessage(oldCode, "Row is pasted, but " + oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is a stock code"));
                             }
                             else
-                                invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
+                                invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                         }
                         else
-                            invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
+                            invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                     }
                     else
-                        invalidRows.Add(new ErrorMessage(fullCode, "Job not added into exo, because exo job doesn't exists"));
+                        invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                 }
             }
 

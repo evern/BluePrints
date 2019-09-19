@@ -17,7 +17,7 @@
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Name" FixedWidth="True" Width="200" FieldName="NAME" ReadOnly="True" IsSmart="True" />
-                        <dxg:GridColumn Header="Error" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Description" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
