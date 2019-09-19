@@ -267,7 +267,7 @@ namespace BluePrints.ViewModels
 
                     if (invalidRows.Count > 0)
                     {
-                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(invalidRows, "Cannot paste job(s) due to the following error");
+                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(invalidRows, "Paste status");
                         ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
                     }
                 }
