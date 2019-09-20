@@ -2139,6 +2139,157 @@ namespace BluePrints.ViewModels
             previewWindow.Show();
         }
 
+        public void ViewRoleCostReport()
+        {
+            var groupByDepartmentDisciplineDeliverables = (from entity in DisplayEntities
+                                                           where entity.Entity.Entity.GUID_DEPARTMENT != null && entity.Entity.Entity.GUID_DISCIPLINE != null
+                                                           group entity by new { entity.Entity.Entity.GUID_PHASE, entity.Entity.Entity.GUID_DEPARTMENT, entity.Entity.Entity.GUID_DISCIPLINE, entity.Entity.Entity.GUID_DOCTYPE }
+                                                           into entitiesGroup
+                                                           select new
+                                                           {
+                                                               entitiesGroup.Key.GUID_PHASE,
+                                                               entitiesGroup.Key.GUID_DEPARTMENT,
+                                                               entitiesGroup.Key.GUID_DISCIPLINE,
+                                                               entitiesGroup.Key.GUID_DOCTYPE,
+                                                               Hours = entitiesGroup.Sum(x => x.Total_Units)
+                                                           }).ToList();
+
+            //because final report demands by department and discipline when in reality it's splitted by phase and doc type also
+            List<DeliverableRoleCost> preliminaryRoleCosts = new List<DeliverableRoleCost>();
+            List<ErrorMessage> invalidDeliverables = new List<ErrorMessage>();
+            foreach (var deliverable in groupByDepartmentDisciplineDeliverables)
+            {
+                DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DEPARTMENT);
+                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DISCIPLINE);
+                if(findDEPARTMENT != null && findDISCIPLINE != null)
+                {
+                    string errorName = "Department: " + findDEPARTMENT.NAME + ", Discipline: " + findDISCIPLINE.NAME;
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DOCTYPE);
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, deliverable.GUID_DOCTYPE, RATECollection);
+                    if(findRATE != null && findRATE.RATE1 != null)
+                    {
+                        if(findRATE.IsUsingGangRate)
+                        {
+                            if (findRATE.ManagerPercent > 0)
+                            {
+                                DeliverableRoleCost managerRoleCost = new DeliverableRoleCost();
+                                managerRoleCost.Department = findDEPARTMENT.NAME;
+                                managerRoleCost.Discipline = findDISCIPLINE.NAME;
+                                managerRoleCost.Role = RateRole.Manager.ToString();
+                                managerRoleCost.Hours = deliverable.Hours * findRATE.ManagerPercent;
+                                managerRoleCost.Rate = findRATE.ManagerRate;
+                                managerRoleCost.TotalCosts = managerRoleCost.Hours * managerRoleCost.Rate;
+                                preliminaryRoleCosts.Add(managerRoleCost);
+                            }
+                            if (findRATE.PrincipalPercent > 0)
+                            {
+                                DeliverableRoleCost principalRoleCost = new DeliverableRoleCost();
+                                principalRoleCost.Department = findDEPARTMENT.NAME;
+                                principalRoleCost.Discipline = findDISCIPLINE.NAME;
+                                principalRoleCost.Role = RateRole.Principal.ToString();
+                                principalRoleCost.Hours = deliverable.Hours * findRATE.PrincipalPercent;
+                                principalRoleCost.Rate = findRATE.PrincipalRate;
+                                principalRoleCost.TotalCosts = principalRoleCost.Hours * principalRoleCost.Rate;
+                                preliminaryRoleCosts.Add(principalRoleCost);
+                            }
+                            if (findRATE.LeadPercent > 0)
+                            {
+                                DeliverableRoleCost leadRoleCost = new DeliverableRoleCost();
+                                leadRoleCost.Department = findDEPARTMENT.NAME;
+                                leadRoleCost.Discipline = findDISCIPLINE.NAME;
+                                leadRoleCost.Role = RateRole.Lead.ToString();
+                                leadRoleCost.Hours = deliverable.Hours * findRATE.LeadPercent;
+                                leadRoleCost.Rate = findRATE.LeadRate;
+                                leadRoleCost.TotalCosts = leadRoleCost.Hours * leadRoleCost.Rate;
+                                preliminaryRoleCosts.Add(leadRoleCost);
+                            }
+                            if (findRATE.SeniorPercent > 0)
+                            {
+                                DeliverableRoleCost seniorRoleCost = new DeliverableRoleCost();
+                                seniorRoleCost.Department = findDEPARTMENT.NAME;
+                                seniorRoleCost.Discipline = findDISCIPLINE.NAME;
+                                seniorRoleCost.Role = RateRole.Senior.ToString();
+                                seniorRoleCost.Hours = deliverable.Hours * findRATE.SeniorPercent;
+                                seniorRoleCost.Rate = findRATE.SeniorRate;
+                                seniorRoleCost.TotalCosts = seniorRoleCost.Hours * seniorRoleCost.Rate;
+                                preliminaryRoleCosts.Add(seniorRoleCost);
+                            }
+                            if (findRATE.EngineerPercent > 0)
+                            {
+                                DeliverableRoleCost engineerRoleCost = new DeliverableRoleCost();
+                                engineerRoleCost.Department = findDEPARTMENT.NAME;
+                                engineerRoleCost.Discipline = findDISCIPLINE.NAME;
+                                engineerRoleCost.Role = RateRole.Engineer.ToString();
+                                engineerRoleCost.Hours = deliverable.Hours * findRATE.EngineerPercent;
+                                engineerRoleCost.Rate = findRATE.EngineerRate;
+                                engineerRoleCost.TotalCosts = engineerRoleCost.Hours * engineerRoleCost.Rate;
+                                preliminaryRoleCosts.Add(engineerRoleCost);
+                            }
+                            if (findRATE.GraduatePercent > 0)
+                            {
+                                DeliverableRoleCost graduateRoleCost = new DeliverableRoleCost();
+                                graduateRoleCost.Department = findDEPARTMENT.NAME;
+                                graduateRoleCost.Discipline = findDISCIPLINE.NAME;
+                                graduateRoleCost.Role = RateRole.Graduate.ToString();
+                                graduateRoleCost.Hours = deliverable.Hours * findRATE.GraduatePercent;
+                                graduateRoleCost.Rate = findRATE.GraduateRate;
+                                graduateRoleCost.TotalCosts = graduateRoleCost.Hours * graduateRoleCost.Rate;
+                                preliminaryRoleCosts.Add(graduateRoleCost);
+                            }
+                            if (findRATE.UndergraduatePercent > 0)
+                            {
+                                DeliverableRoleCost undergraduateRoleCost = new DeliverableRoleCost();
+                                undergraduateRoleCost.Department = findDEPARTMENT.NAME;
+                                undergraduateRoleCost.Discipline = findDISCIPLINE.NAME;
+                                undergraduateRoleCost.Role = RateRole.Undergraduate.ToString();
+                                undergraduateRoleCost.Hours = deliverable.Hours * findRATE.UndergraduatePercent;
+                                undergraduateRoleCost.Rate = findRATE.UndergraduateRate;
+                                undergraduateRoleCost.TotalCosts = undergraduateRoleCost.Hours * undergraduateRoleCost.Rate;
+                                preliminaryRoleCosts.Add(undergraduateRoleCost);
+                            }
+                        }
+                        else
+                        {
+                            if (findRATE.GUID_COMMODITY != null && findDOCTYPE != null)
+                                errorName += ", Commodity: " + findDOCTYPE.NAME;
+
+                            invalidDeliverables.Add(new ErrorMessage(errorName, "Not using gang rate"));
+                        }
+                    }
+                    else
+                    {
+                        invalidDeliverables.Add(new ErrorMessage(errorName, "Rate not found"));
+                    }
+                }
+            }
+
+            if (invalidDeliverables.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(invalidDeliverables, "Report is not accurate due to the following error, do you wish to continue?");
+                if (ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.Cancel)
+                    return;
+            }
+
+            List<DeliverableRoleCost> finalRoleCosts = (from roleCost in preliminaryRoleCosts
+                                                        group roleCost by new { roleCost.Department, roleCost.Discipline, roleCost.Role }
+                                                        into roleCostGroup
+                                                        select new DeliverableRoleCost() { Department = roleCostGroup.Key.Department, Discipline = roleCostGroup.Key.Discipline, Role = roleCostGroup.Key.Role, Hours = roleCostGroup.Sum(x => x.Hours), Rate = roleCostGroup.Average(x => x.Rate), TotalCosts = roleCostGroup.Sum(x => x.TotalCosts)}).ToList();
+
+            var roleCostReport = new XtraReportDeliverableRoleCost();
+
+            //make sure disciplines are all populated
+            PopulateNavigationalProperties();
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            roleCostReport.AssignProperties(finalRoleCosts, loadPROJECT.NUMBER + " Cost Report");
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = roleCostReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            roleCostReport.RequestParameters = false;
+            roleCostReport.CreateDocument(true);
+            previewWindow.Show();
+        }
+
         private void PopulateNavigationalProperties()
         {
             foreach (var projection in MainViewModel.Entities)
@@ -2186,5 +2337,15 @@ namespace BluePrints.ViewModels
 
         public bool InVariationMode { get; set; }
         #endregion
+    }
+
+    public class DeliverableRoleCost
+    {
+        public string Department { get; set; }
+        public string Discipline { get; set; }
+        public string Role { get; set; }
+        public decimal Hours { get; set; }
+        public decimal Rate { get; set; }
+        public decimal TotalCosts { get; set; }
     }
 }
