@@ -215,7 +215,7 @@
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ScrollBarAnnotationMode="None">
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                         <dxb:BarItemLinkSeparator />

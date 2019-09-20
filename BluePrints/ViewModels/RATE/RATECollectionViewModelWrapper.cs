@@ -193,41 +193,7 @@ namespace BluePrints.ViewModels
                 {
                     if (MessageBoxService.ShowMessage("Gang rate is being used, do you wish to clear the gang rate parameters and continue to manually set the rate?", "Confirmation", MessageButton.OKCancel, MessageIcon.Exclamation) == MessageResult.OK)
                     {
-                        MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().MANAGER_PERCENT), projection.MANAGER_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_PERCENT), projection.PRINCIPAL_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().LEAD_PERCENT), projection.LEAD_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().SENIOR_PERCENT), projection.SENIOR_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().ENGINEER_PERCENT), projection.ENGINEER_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GRADUATE_PERCENT), projection.GRADUATE_PERCENT, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_PERCENT), projection.UNDERGRADUATE_PERCENT, null, EntityMessageType.Changed);
-
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().MANAGER_RATE), projection.MANAGER_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_RATE), projection.PRINCIPAL_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().LEAD_RATE), projection.LEAD_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().SENIOR_RATE), projection.SENIOR_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().ENGINEER_RATE), projection.ENGINEER_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GRADUATE_RATE), projection.GRADUATE_RATE, null, EntityMessageType.Changed);
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_RATE), projection.UNDERGRADUATE_RATE, null, EntityMessageType.Changed);
-
-                        projection.MANAGER_PERCENT = null;
-                        projection.PRINCIPAL_PERCENT = null;
-                        projection.LEAD_PERCENT = null;
-                        projection.SENIOR_PERCENT = null;
-                        projection.ENGINEER_PERCENT = null;
-                        projection.GRADUATE_PERCENT = null;
-                        projection.UNDERGRADUATE_PERCENT = null;
-
-                        projection.MANAGER_RATE = null;
-                        projection.PRINCIPAL_RATE = null;
-                        projection.LEAD_RATE = null;
-                        projection.SENIOR_RATE = null;
-                        projection.ENGINEER_RATE = null;
-                        projection.GRADUATE_RATE = null;
-                        projection.UNDERGRADUATE_RATE = null;
-
-                        projection.Update();
-
+                        clearGangRate(projection);
                         return string.Empty;
                     }
                     else
@@ -238,6 +204,44 @@ namespace BluePrints.ViewModels
             }
 
             return string.Empty;
+        }
+
+        private void clearGangRate(RATE projection)
+        {
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().MANAGER_PERCENT), projection.MANAGER_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_PERCENT), projection.PRINCIPAL_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().LEAD_PERCENT), projection.LEAD_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().SENIOR_PERCENT), projection.SENIOR_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().ENGINEER_PERCENT), projection.ENGINEER_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GRADUATE_PERCENT), projection.GRADUATE_PERCENT, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_PERCENT), projection.UNDERGRADUATE_PERCENT, null, EntityMessageType.Changed);
+
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().MANAGER_RATE), projection.MANAGER_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_RATE), projection.PRINCIPAL_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().LEAD_RATE), projection.LEAD_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().SENIOR_RATE), projection.SENIOR_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().ENGINEER_RATE), projection.ENGINEER_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GRADUATE_RATE), projection.GRADUATE_RATE, null, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_RATE), projection.UNDERGRADUATE_RATE, null, EntityMessageType.Changed);
+
+            projection.MANAGER_PERCENT = null;
+            projection.PRINCIPAL_PERCENT = null;
+            projection.LEAD_PERCENT = null;
+            projection.SENIOR_PERCENT = null;
+            projection.ENGINEER_PERCENT = null;
+            projection.GRADUATE_PERCENT = null;
+            projection.UNDERGRADUATE_PERCENT = null;
+
+            projection.MANAGER_RATE = null;
+            projection.PRINCIPAL_RATE = null;
+            projection.LEAD_RATE = null;
+            projection.SENIOR_RATE = null;
+            projection.ENGINEER_RATE = null;
+            projection.GRADUATE_RATE = null;
+            projection.UNDERGRADUATE_RATE = null;
+
+            projection.Update();
         }
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
