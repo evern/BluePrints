@@ -168,7 +168,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0)
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0 || Stats.Budgeted.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
                     return null;
 
                 return Stats.Budgeted.CumulativeDataPoints.Where(x => x.Units > 0).Min(x => x.ProgressDate);
@@ -179,7 +179,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0)
+                if (Stats == null || Stats.Budgeted == null || Stats.Budgeted.CumulativeDataPoints == null || Stats.Budgeted.CumulativeDataPoints.Count == 0 || Stats.Budgeted.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
                     return null;
 
                 return Stats.Budgeted.CumulativeDataPoints.Where(x => x.Units > 0).Max(x => x.ProgressDate);
@@ -190,7 +190,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Stats == null || Stats.Budgeted == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0)
+                if (Stats == null || Stats.Budgeted == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0 || Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
                     return null;
 
                 return Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Max(x => x.ProgressDate);
