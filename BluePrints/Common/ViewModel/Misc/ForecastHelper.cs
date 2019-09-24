@@ -106,8 +106,10 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //get remaining data points
                 List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
+                List<Common.ViewModel.Reporting.DataPoint> earnedDataPoints = new List<Reporting.DataPoint>();
                 List<Common.ViewModel.Reporting.DataPoint> budgetDataPoints = new List<Reporting.DataPoint>();
                 IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.DataPoints != null);
+                IEnumerable<SummaryStats> earnedStats = summaryStats.Where(x => x.Earned != null && x.Earned.DataPoints != null);
                 IEnumerable<SummaryStats> budgetedStats = summaryStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null);
 
                 if (budgetedStats.Count() > 0)
@@ -120,10 +122,13 @@ namespace BluePrints.Common.ViewModel.Misc
                 if (remainingStats.Count() > 0)
                 {
                     remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.DataPoints));
+                    earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
                     decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
                     decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
+                    decimal earnedUnits = earnedDataPoints.Sum(x => x.Units);
                     jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
                     jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
+                    jobForecastSummary.EarnedUnits = earnedUnits;
                 }
 
 

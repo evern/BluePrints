@@ -71,16 +71,21 @@ namespace BluePrints.Common.Projections
         public decimal Outstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }
         public decimal P6RemainingUnits { get; set; }
+        public decimal? EarnedUnits { get; set; }
 
         public decimal? P6RemainingUnitsOverride { get; set; }
 
         public decimal Productivity { get; set; }
 
+        public decimal CurrentProductivity { get; set; }
+
         public decimal P6RemainingCosts { get; set; }
         public decimal Uncommitted { get; set; }
+        public decimal CurrentUncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
+        public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
         public bool IsProcurement
         {

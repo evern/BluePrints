@@ -295,6 +295,7 @@ namespace BluePrints.ViewModels
             List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
             calcTypes.Add(StatsCalculationType.Forecast);
             calcTypes.Add(StatsCalculationType.Burned);
+            calcTypes.Add(StatsCalculationType.Earned);
 
             return calcTypes;
         }
@@ -737,6 +738,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.Commitments += commodityJob.Outstanding;
             ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
             ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
+            ForecastSummary.CurrentEstimateAtCompletion += commodityJob.CurrentEstimateAtCompletion;
         }
 
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
@@ -762,11 +764,14 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = isChild ? string.Empty : "P6 Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", ReadOnly = false, Header = isChild ? string.Empty : "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.CurrentProductivity", ReadOnly = true, Header = isChild ? string.Empty : "Current PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Current productivity factor, 0 means there aren't any earned or actuals units" });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", ReadOnly = true, Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", ReadOnly = true, Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
-            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", ReadOnly = true, Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Sum of uncommitted costs - (from the forecasting months)" });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", ReadOnly = true, Header = isChild ? string.Empty : "Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "(Sum of uncommitted costs - (costs from the forecasting months)) + P6 Costs" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Uncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.CurrentUncommitted", ReadOnly = true, Header = isChild ? string.Empty : "PF Uncommitted", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "(Sum of uncommitted costs - (costs from the forecasting months)) + (P6 Costs / Current Productivity)" });
+            summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.CurrentUncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", ReadOnly = true, Header = isChild ? string.Empty : "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PreviousEAC", ReadOnly = true, Header = isChild ? string.Empty : "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
@@ -881,12 +886,12 @@ namespace BluePrints.ViewModels
             DataRow p6HoursRow = compareDataTable.Rows[4];
 
             DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
-            DataRow childCompareP6HoursRow = childCompareDataTable.Rows[1];
+            DataRow childCompareP6CostsRow = childCompareDataTable.Rows[0];
 
             IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
             
             decimal P6CurrentRemainingUnits = 0;
-            foreach(ForecastDateCost dateCost in job.DateCosts)
+            foreach (ForecastDateCost dateCost in job.DateCosts)
             {
                 DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= dateCost.Date);
                 if (alignedDataDate != null)
@@ -927,6 +932,16 @@ namespace BluePrints.ViewModels
                 job.Productivity = job.P6RemainingUnits / (decimal)job.P6RemainingUnitsOverride;
             else
                 job.Productivity = 0.00m;
+
+            if (job.EarnedUnits != null && job.ActualUnits != 0)
+            {
+                if (job.EarnedUnits > 0)
+                    job.CurrentProductivity = job.ActualUnits / (decimal)job.EarnedUnits;
+                else
+                    job.CurrentProductivity = 0.00m;
+            }
+            else
+                job.CurrentProductivity = 0.00m;
         }
         #endregion
 
@@ -1248,6 +1263,19 @@ namespace BluePrints.ViewModels
                 //currently disabled on paste because view doesn't reflect changes
                 //return commitBudget(newRow, pasteData);
             }
+            else if(copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+            {
+                decimal decimal_value;
+                var rgx = new Regex("[^0-9a-z\\.]");
+                var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                if (decimal.TryParse(cleanColumnString, out decimal_value))
+                {
+                    ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
+                    decimal oldValue = job.Productivity;
+
+                    commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
+                }
+            }
             else if (copyColumn.FieldType == typeof(decimal))
             {
                 var rgx = new Regex("[^0-9a-z\\.]");
@@ -1299,31 +1327,13 @@ namespace BluePrints.ViewModels
 
         public void DeleteCellContent()
         {
-            //EntitiesUndoRedoManager.Clear();
-            GridControl gridControl = GridControlService.GridControl;
-            TableView tableView = gridControl.View as TableView;
             EntitiesUndoRedoManager.PauseActionId();
-            var selected_cells = tableView.GetSelectedCells();
-            if(selected_cells.Count == 0)
-            {
-                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
-                .Select(x => (GridControl)gridControl.GetDetail(x))
-                .Where(x => x != null).
-                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
-
-                if (selected_cells.Count == 0)
-                    return;
-                else
-                {
-                    tableView = (TableView)selected_cells.First().Column.View;
-                    gridControl = tableView.Grid;
-                }
-            }
+            var selected_cells = getSelectedCells();
 
             foreach (var selected_cell in selected_cells)
             {
                 int row_handle = selected_cell.RowHandle;
-                DataRowView editing_row_view = (DataRowView)gridControl.GetRow(row_handle);
+                DataRowView editing_row_view = (DataRowView)GridControlService.GridControl.GetRow(row_handle);
                 DataRow editing_row = editing_row_view.Row;
                 DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.FieldName];
                 ExoSubJobProjection entity = ((ForecastJobData)editing_row[columnEntity]).Projection;
@@ -1340,6 +1350,53 @@ namespace BluePrints.ViewModels
 
             EntitiesUndoRedoManager.UnpauseActionId();
             refreshGridData();
+        }
+
+        public void ApplyCurrentPF()
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            GridControl gridControl = GridControlService.GridControl;
+            TableView tableView = gridControl.View as TableView;
+            var selectedRows = tableView.GetSelectedRows();
+
+            foreach (var selectedRow in selectedRows)
+            {
+                int row_handle = selectedRow.RowHandle;
+                DataRowView editing_row_view = (DataRowView)GridControlService.GridControl.GetRow(row_handle);
+                DataRow editing_row = editing_row_view.Row;
+                ForecastJobData job = (ForecastJobData)editing_row[columnEntity];
+                ExoSubJobProjection entity = job.Projection;
+
+                if(job.CurrentProductivity > 0)
+                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), editing_row, job.Productivity, job.CurrentProductivity);
+            }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
+            refreshGridData();
+        }
+
+        private IEnumerable<GridCell> getSelectedCells()
+        {
+            GridControl gridControl = GridControlService.GridControl;
+            TableView tableView = gridControl.View as TableView;
+            var selected_cells = tableView.GetSelectedCells();
+            if (selected_cells.Count == 0)
+            {
+                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                .Select(x => (GridControl)gridControl.GetDetail(x))
+                .Where(x => x != null).
+                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+
+                if (selected_cells.Count == 0)
+                    return selected_cells;
+                else
+                {
+                    tableView = (TableView)selected_cells.First().Column.View;
+                    gridControl = tableView.Grid;
+                }
+            }
+
+            return selected_cells;
         }
 
         /// <summary>
@@ -1428,7 +1485,12 @@ namespace BluePrints.ViewModels
             if(e.Value != null)
             {
                 DateTime dateTime;
-                if (DateTime.TryParse(e.Column.FieldName, out dateTime))
+                if (IsWeeks)
+                {
+                    e.ErrorContent = "Sorry, cells in weeks view aren't editable";
+                    e.IsValid = false;
+                }
+                else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
                 {
                     decimal defaultCosts = getMasterRowResetValue((DataTable)(((DataRowView)e.Row)[columnCompare]), e.Column.FieldName);
                     if ((decimal)e.Value < defaultCosts)
@@ -1448,12 +1510,8 @@ namespace BluePrints.ViewModels
                 else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
                 {
                     DataRowView row = (DataRowView)e.Row;
-                    if (!IsWeeks)
-                    {
-                        e.ErrorContent = "Sorry, PF cannot be change in weeks view, please change view to show weeks instead of months";
-                        e.IsValid = false;
-                    }
-                    else if (sumP6Units(row) == 0)
+
+                    if (sumP6Units(row) == 0)
                     {
                         e.ErrorContent = "There are no units from P6 to override productivity, please edit P6 hours manually";
                         e.IsValid = false;
@@ -1662,7 +1720,7 @@ namespace BluePrints.ViewModels
             DataTable compareDataTable = (DataTable)parentRow[columnCompare];
             if (compareDataTable != null && compareDataTable.Rows.Count > 0)
             {
-                if (compareDataTable.Rows.Count == 5)
+                if (compareDataTable.Rows.Count == 6)
                 {
                     DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[4];
                     DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
@@ -1844,6 +1902,7 @@ namespace BluePrints.ViewModels
 
             List<ForecastJobData> jobs = getJobDataFromDatatable();
             ForecastSummary.EstimateAtCompletion = 0;
+            ForecastSummary.CurrentEstimateAtCompletion = 0;
             ForecastSummary.Uncommitted_Forecast = 0;
             ForecastSummary.Budget_Cost = 0;
             //cannot use parallel foreach because of inaccuracy
@@ -1851,6 +1910,7 @@ namespace BluePrints.ViewModels
             {
                 ForecastSummary.Budget_Cost += job.Budget;
                 ForecastSummary.EstimateAtCompletion += job.EstimateAtCompletion;
+                ForecastSummary.CurrentEstimateAtCompletion += job.CurrentEstimateAtCompletion;
                 ForecastSummary.Uncommitted_Forecast += job.Uncommitted;
             }
 
@@ -1939,7 +1999,7 @@ namespace BluePrints.ViewModels
             DataTable dataTable = dataRow.Table;
 
             decimal poSum = 0;
-            decimal uncommittedRecalculation = 0;
+            decimal uncommittedDifferences = 0;
             for (int i = 0; i < dataRow.ItemArray.Count(); i++)
             {
                 DataColumn dataColumn = dataTable.Columns[i];
@@ -1954,11 +2014,11 @@ namespace BluePrints.ViewModels
                                 ForecastDateCost dateCost = job.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
                                 if (dateCost != null)
                                 {
-                                    uncommittedRecalculation += (currentDateCellValue - Math.Round(dateCost.CommittedCosts));
+                                    uncommittedDifferences += (currentDateCellValue - Math.Round(dateCost.CommittedCosts));
                                     poSum += Math.Round(dateCost.POForecastCosts);
                                 }
                                 else
-                                    uncommittedRecalculation += currentDateCellValue;
+                                    uncommittedDifferences += currentDateCellValue;
                             }
             }
 
@@ -1974,7 +2034,11 @@ namespace BluePrints.ViewModels
                     job.IsPOError = true;
             }
 
-            job.Uncommitted = uncommittedRecalculation + job.P6RemainingCosts;
+            job.Uncommitted = uncommittedDifferences + job.P6RemainingCosts;
+            if (job.CurrentProductivity > 0)
+                job.CurrentUncommitted = uncommittedDifferences + (job.P6RemainingCosts / job.CurrentProductivity);
+            else
+                job.CurrentUncommitted = job.Uncommitted;
         }
 
         public bool CanSaveEAC => isCompletelyLoaded;
@@ -2620,8 +2684,11 @@ namespace BluePrints.ViewModels
         public decimal Commitments { get; set; }
         public decimal Uncommitted_Forecast { get; set; }
         public decimal EstimateAtCompletion { get; set; }
+        public decimal CurrentEstimateAtCompletion { get; set; }
         public decimal EAC_Margin => EAC_Revenue - EstimateAtCompletion;
+        public decimal CurrentEAC_Margin => EAC_Revenue - CurrentEstimateAtCompletion;
         public decimal EAC_Margin_Percent => EAC_Revenue == 0 ? 0 : EAC_Margin / EAC_Revenue;
+        public decimal CurrentEAC_Margin_Percent => EAC_Revenue == 0 ? 0 : CurrentEAC_Margin / EAC_Revenue;
 
         public decimal TotalClaims { get; set; }
         public decimal UnderOverClaim => TotalClaims - Current_Cost;
