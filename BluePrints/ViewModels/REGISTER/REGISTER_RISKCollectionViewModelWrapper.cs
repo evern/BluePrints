@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, REGISTER_RISK projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, REGISTER_RISK projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_CONSEQUENCES) || field_name == BindableBase.GetPropertyName(() => new REGISTER_RISK().RISK_LIKELIHOOD))
             {
@@ -142,6 +142,12 @@ namespace BluePrints.ViewModels
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new REGISTER_RISK().RESIDUE_RISK_RANKING), oldValue, newValue, EntityMessageType.Changed);
                 }
             }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, REGISTER_RISK projection, bool isNew)
+        {
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
