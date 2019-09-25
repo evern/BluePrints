@@ -697,16 +697,13 @@ namespace BluePrints.ViewModels
                 compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                 compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
-                //skip overrides on actual dates
-                if (dateCost == commodityJob.DateCosts.First())
-                    continue;
 
                 List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
                 List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
 
-                if (forecastUnitsOverrides.Count > 0)
+                if (dateCost != commodityJob.DateCosts.First() && forecastUnitsOverrides.Count > 0)
                 {
                     decimal p6OverrideUnits = forecastUnitsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
 
@@ -721,10 +718,10 @@ namespace BluePrints.ViewModels
                     P6TotalCurrentRemainingUnits += dateCost.P6Hours;
                 }
 
-                if (forecastCostsOverrides.Count > 0)
+                if (dateCost != commodityJob.DateCosts.First() && forecastCostsOverrides.Count > 0)
                 {
-                    decimal p6OverrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
-                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideCosts;
+                    decimal overrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = overrideCosts;
                 }
                 else
                 {
