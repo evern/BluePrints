@@ -243,13 +243,13 @@ namespace BluePrints.ViewModels
             KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
             KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)));
 
-            pasteEntity.SubJobCode = subjobCodeData.Value;
-            pasteEntity.SubJobTitle = subjobCodeTitleData.Value;
-            pasteEntity.DisciplineCode = disciplineCodeData.Value;
-            pasteEntity.DisciplineName = disciplineNameData.Value;
-            pasteEntity.CommodityCode = commodityCodeData.Value;
-            pasteEntity.StockCode = stockCodeData.Value;
-            pasteEntity.VariationCode = variationCodeData.Value;
+            pasteEntity.SubJobCode = subjobCodeData.Value.Trim();
+            pasteEntity.SubJobTitle = subjobCodeTitleData.Value.Trim();
+            pasteEntity.DisciplineCode = disciplineCodeData.Value.Trim();
+            pasteEntity.DisciplineName = disciplineNameData.Value.Trim();
+            pasteEntity.CommodityCode = commodityCodeData.Value.Trim();
+            pasteEntity.StockCode = stockCodeData.Value.Trim();
+            pasteEntity.VariationCode = variationCodeData.Value.Trim();
 
             decimal budgetValue = 0;
             if (decimal.TryParse(budgetData.Value, out budgetValue))

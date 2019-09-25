@@ -67,6 +67,10 @@ namespace BluePrints.Common.ViewModel.Reporting
                     LoadingScreenManager.SetMessage("Loading Actuals...");
                 }
 
+                DateTime queryDataDate = DateTime.Now;
+                if (!forceRetrieveAllBurned)
+                    queryDataDate = CurrentDataDate;
+
                 var PrimeroUnitOfWork = PrimeroUOW;
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
                                       join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
@@ -79,7 +83,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                                       on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                       join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
                                       on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= CurrentDataDate
+                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= queryDataDate
                                       select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
 
                 var exoSubjobs = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
