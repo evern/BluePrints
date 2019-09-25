@@ -972,14 +972,16 @@ namespace BluePrints.ViewModels
                         if (newUser == null)
                             newUser = new USER();
 
-                        newUser.NAME = staff.NAME;
-                        newUser.EXO_STAFF_ID = staff.STAFFNO;
-                        newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
-                        newUser.SecurityProfileID = staff.SECURITYPROFILEID;
-                        displayUserAuth.User = newUser;
+                        if (!orderedAuthUsers.Any(x => x.User.EXO_STAFF_ID == staff.STAFFNO))
+                        {
+                            newUser.NAME = staff.NAME;
+                            newUser.EXO_STAFF_ID = staff.STAFFNO;
+                            newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
+                            newUser.SecurityProfileID = staff.SECURITYPROFILEID;
+                            displayUserAuth.User = newUser;
 
-
-                        orderedAuthUsers.Add(displayUserAuth);
+                            orderedAuthUsers.Add(displayUserAuth);
+                        }
                     }
                 }
 

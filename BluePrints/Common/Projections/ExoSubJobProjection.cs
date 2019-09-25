@@ -457,13 +457,14 @@ namespace BluePrints.Common.Projections
             {
                 if (subjob == null)
                 {
-                    var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJobCode + " Title:");
-                    if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
-                    {
-                        projection.SubJobTitle = bulkEditStringsViewModel.EditValue;
-                    }
-                    else
-                        return false;
+                    projection.SubJobTitle = "Please input title";
+                    //var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(string.Empty, projection.SubJobCode + " Title:");
+                    //if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please input title", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+                    //{
+                    //    projection.SubJobTitle = bulkEditStringsViewModel.EditValue;
+                    //}
+                    //else
+                    //    return false;
                 }
                 else
                 {
