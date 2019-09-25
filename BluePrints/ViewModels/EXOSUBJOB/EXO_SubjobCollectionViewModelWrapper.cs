@@ -232,7 +232,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ExoSubJobEditableProjection pasteEntity)
+        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ExoSubJobEditableProjection pasteEntity, bool isLastRow)
         {
             KeyValuePair<ColumnBase, string> subjobCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)));
             KeyValuePair<ColumnBase, string> subjobCodeTitleData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobTitle)));
@@ -264,10 +264,11 @@ namespace BluePrints.ViewModels
             string errorMessage = string.Empty;
             if (MainViewModel.IsValidEntity(pasteEntity, null, ref errorMessage))
             {
-                if (commitToExo(pasteEntity))
+                if (commitToExo(pasteEntity, false))
                 {
                     MainViewModel.Entities.Insert(0, pasteEntity);
-                    this.RaisePropertyChanged(x => x.DisplayEntities);
+                    if(isLastRow)
+                        this.RaisePropertyChanged(x => x.DisplayEntities);
                 }
 
                 //remove restriction atm because user isn't familiar with system yet
@@ -656,15 +657,15 @@ namespace BluePrints.ViewModels
 #endregion
 
 #region EXO Database
-        private bool commitToExo(ExoSubJobEditableProjection projection)
+        private bool commitToExo(ExoSubJobEditableProjection projection, bool updatePermission = true)
         {
             List<ExoSubJobEditableProjection> newLines = new List<ExoSubJobEditableProjection>();
             ExoSubJobEditableProjection newLine = projection;
             newLines.Add(newLine);
-            return CommitToExo(newLines);
+            return CommitToExo(newLines, updatePermission);
         }
 
-        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
+        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections, bool updatePermission = true)
         {
             if(masterJob == null)
             {
@@ -770,7 +771,9 @@ namespace BluePrints.ViewModels
                                             }
                                         }
 
-                                        refreshPermissions();
+                                        if(updatePermission)
+                                            refreshPermissions();
+
                                         addedProjections.Add(projection);
                                         updatedLineCount += 1;
                                     }

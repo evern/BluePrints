@@ -267,7 +267,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity)
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity, bool isLastRow)
         {
             //pasteEntity.STATUS = ProgressStatus.Working;
             return true;

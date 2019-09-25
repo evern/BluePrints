@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, HSE_INCIDENT pasteEntity)
+        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, HSE_INCIDENT pasteEntity, bool isLastRow)
         {
             KeyValuePair<ColumnBase, string> incidentData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new HSE_INCIDENT().CLASSIFICATION)));
             if(incidentData.Value != string.Empty)

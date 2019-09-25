@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, RA_GUIDE_SUBPROMPT pasteEntity)
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, RA_GUIDE_SUBPROMPT pasteEntity, bool isLastRow)
         {
             KeyValuePair<ColumnBase, string> study_type_paste_data = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new RA_GUIDE_SUBPROMPT().GUID_STUDY_TYPE)));
             if(study_type_paste_data.Key != null)

@@ -54,6 +54,8 @@ namespace BluePrints.Common.ViewModel.Converters
                                 else if (currentValue < totalCosts)
                                     return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                             }
+                            else if(currentValue > 0)
+                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
                         }
                     }
                 }

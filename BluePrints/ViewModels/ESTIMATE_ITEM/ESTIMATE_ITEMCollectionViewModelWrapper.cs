@@ -537,7 +537,7 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage(removeCount + " entries removed, all jobs are valid");
         }
 
-        public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity)
+        public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity, bool isLastRow)
         {
             string searchStockCodeFieldName;
             if (IsBudget)

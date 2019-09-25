@@ -249,7 +249,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, BASELINE pasteEntity)
+        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, BASELINE pasteEntity, bool isLastRow)
         {
             //pasteEntity.STATUS = BaselineStatus.Working;
             return true;
