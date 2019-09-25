@@ -154,7 +154,7 @@
     <value>Allow user to manage projects</value>
   </data>
   <data name="ManageRate" xml:space="preserve">
-    <value>Allow user to manage rates</value>
+    <value>Allow user to manage chargeout rates</value>
   </data>
   <data name="ManageRegisters" xml:space="preserve">
     <value>Allow user to manage registers</value>
@@ -233,5 +233,8 @@
   </data>
   <data name="CanRewindDataDate" xml:space="preserve">
     <value>Can rewind data date even if EAC is saved</value>
+  </data>
+  <data name="ManageCostRate" xml:space="preserve">
+    <value>Allow user to manage cost rates</value>
   </data>
 </root>

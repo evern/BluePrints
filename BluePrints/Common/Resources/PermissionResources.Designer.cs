@@ -133,6 +133,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to manage cost rates.
+        /// </summary>
+        internal static string ManageCostRate {
+            get {
+                return ResourceManager.GetString("ManageCostRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allow user to manage deliverable statuses.
         /// </summary>
         internal static string ManageDeliverableStatuses {
@@ -259,7 +268,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage rates.
+        ///   Looks up a localized string similar to Allow user to manage chargeout rates.
         /// </summary>
         internal static string ManageRate {
             get {

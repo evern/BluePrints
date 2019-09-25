@@ -690,6 +690,17 @@ namespace BluePrints.ViewModels
             decimal P6TotalCurrentRemainingUnits = 0;
             foreach (ForecastDateCost dateCost in commodityJob.DateCosts)
             {
+                compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
+                compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
+                comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
+                compareWeeklyCostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.WeeklyForecastCosts;
+                compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
+                compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+
+                //skip overrides on actual dates
+                if (dateCost == commodityJob.DateCosts.First())
+                    continue;
+
                 List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
@@ -719,13 +730,6 @@ namespace BluePrints.ViewModels
                 {
                     commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
                 }
-
-                compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
-                compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
-                comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
-                compareWeeklyCostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.WeeklyForecastCosts;
-                compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
-                compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
             }
 
             commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
