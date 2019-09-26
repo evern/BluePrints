@@ -496,7 +496,7 @@ namespace BluePrints.ViewModels
                 ESTIMATE_ITEMProgress displayEntity = entities[i];
                 IEnumerable<ExoTimeAuthorisation> findExoLines = exoLines.Where(x => x.SubJobCode == displayEntity.Subjob_Name && x.DisciplineCode == displayEntity.Discipline_Code && x.CommodityCode == displayEntity.Commodity_Code);
                 ExoTimeAuthorisation findExoLine;
-                if (displayEntity.Variation_Code != null || displayEntity.Variation_Code != string.Empty)
+                if (displayEntity.Variation_Code != null && displayEntity.Variation_Code != string.Empty)
                     findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == displayEntity.Variation_Code);
                 else
                     findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == string.Empty || x.VariationCode == null);

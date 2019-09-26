@@ -10,6 +10,14 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    public interface IHaveWBSCodeString
+    {
+        string SUBJOB_CODE { get; set; }
+        string DISCIPLINE_CODE { get; set; }
+        string COMMODITY_CODE { get; set; }
+        string VARIATION_CODE { get; set; }
+    }
+
     public interface IReportable_Quantity_Group : IReportable_Quantity
     {
         IEnumerable<IReportable_Quantity> Reportables { get; }

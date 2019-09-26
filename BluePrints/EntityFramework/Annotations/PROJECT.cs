@@ -27,6 +27,7 @@ namespace BluePrints.Data
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATE = new HashSet<ESTIMATE>();
             FORECAST_JOB = new HashSet<FORECAST_JOB>();
+            FORECAST_JOB_SETTING = new HashSet<FORECAST_JOB_SETTING>();
             FORECAST = new HashSet<FORECAST>();
             FORECAST_PO = new HashSet<FORECAST_PO>();
             HOLIDAY = new HashSet<HOLIDAY>();

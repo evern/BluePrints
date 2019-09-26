@@ -75,15 +75,21 @@ namespace BluePrints.Common.Projections
 
         public decimal? P6RemainingUnitsOverride { get; set; }
 
+        public bool IsProductivityFloating { get; set; }
+
         public decimal Productivity { get; set; }
 
         public decimal CurrentProductivity { get; set; }
 
         public decimal P6RemainingCosts { get; set; }
+        public decimal PORemainingCosts { get; set; }
+        public decimal Commitments => PORemainingCosts + P6RemainingCosts;
+        public decimal OriginalUncommitted { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal CurrentUncommitted { get; set; }
         public decimal PreviousEAC { get; set; }
         public decimal EstimateToComplete => Outstanding + Uncommitted;
+        public decimal OriginalEstimateAtCompletion => ActualCosts + Outstanding + OriginalUncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
         public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
@@ -158,6 +164,9 @@ namespace BluePrints.Common.Projections
 
         //weekly forecast costs is uncommitted costs
         //public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + WeeklyForecastCosts;
-        public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
+        //public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
+
+        //p6 costs needs to be categorised as uncommitted
+        public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;
     }
 }

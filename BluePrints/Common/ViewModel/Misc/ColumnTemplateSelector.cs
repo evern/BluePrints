@@ -18,6 +18,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public ColumnDescriptor()
         {
             Increment = 1;
+            Visible = true;
         }
 
         public string FieldName { get; set; }
@@ -29,6 +30,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public decimal Increment { get; set; }
         public SettingsType Settings { get; set; }
         public bool ReadOnly { get; set; }
+        public bool Visible { get; set; }
     }
 
     public enum SettingsType { Default, POError, Budget, Number, ForecastPast, ForecastFuture, ForecastChild, FullCode }
