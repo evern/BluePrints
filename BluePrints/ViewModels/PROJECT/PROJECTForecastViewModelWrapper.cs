@@ -79,7 +79,7 @@ namespace BluePrints.ViewModels
             delayedUpdateFloatingProjectSummaryTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
             delayedGridUpdateTimer = new DispatcherTimer();
-            delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
 
             delayedDateChangeMessageBoxTimer = new DispatcherTimer();
             delayedDateChangeMessageBoxTimer.Interval = new TimeSpan(0, 0, 0, 1);
@@ -777,8 +777,10 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Productivity", ReadOnly = false, Header = isChild ? string.Empty : "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.CurrentProductivity", ReadOnly = true, Header = isChild ? string.Empty : "Current PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Current productivity factor, 0 means there aren't any earned or actuals units" });
+
             if (!isChild)
                 columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = isChild ? string.Empty : "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
+
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", ReadOnly = true, Header = isChild ? string.Empty : "Actual Costs", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.PctComplete", ReadOnly = true, Header = isChild ? string.Empty : "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
@@ -805,6 +807,7 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", ReadOnly = true, Header = isChild ? string.Empty : "Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
             summaries.Add(new SummaryDescriptor() { FieldName = isChild ? string.Empty : "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+
             if (isChild)
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "Forecast Type", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
             else
@@ -818,13 +821,13 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
                 if (alignedDate <= FixedDataDateMonthEnd)
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 else
                 {
                     if (isChild)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
                     else
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                 }
 
                 if(!isChild)
@@ -1437,6 +1440,24 @@ namespace BluePrints.ViewModels
             refreshGridData();
         }
 
+        public void UpdateCurrentPF()
+        {
+            if (MessageBoxService.ShowMessage("Are you use you want to apply current PF to all jobs that had current PF applied?", "Confirmation", MessageButton.OKCancel, MessageIcon.Question) == MessageResult.Cancel)
+                return;
+
+            IEnumerable<DataRow> enumerableRows = from DataRow dr in dataPointsTable.Rows select dr;
+            foreach (var row in enumerableRows)
+            {
+                ForecastJobData job = (ForecastJobData)row[columnEntity];
+                if(job.IsProductivityFloating && job.CurrentProductivity > 0)
+                {
+                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), row, job.Productivity, job.CurrentProductivity);
+                }
+            }
+
+            refreshGridData();
+        }
+
         private IEnumerable<GridCell> getSelectedCells()
         {
             GridControl gridControl = GridControlService.GridControl;
@@ -1473,15 +1494,19 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.PauseActionId();
 
             bool removeFloatingProductivity = false;
-            DateTime dateTime;
-            if (DateTime.TryParse(e.Column.FieldName, out dateTime))
-                removeFloatingProductivity = true;
-            else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
-                removeFloatingProductivity = true;
-
-            if(removeFloatingProductivity)
+            ForecastJobData job = ((ForecastJobData)dataRowView.Row[columnEntity]);
+            if(job.IsProductivityFloating)
             {
-                findExistingOrAddNewForecastJobSetting(dataRowView.Row, false);
+                DateTime dateTime;
+                if (DateTime.TryParse(e.Column.FieldName, out dateTime))
+                    removeFloatingProductivity = true;
+                else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+                    removeFloatingProductivity = true;
+
+                if (removeFloatingProductivity)
+                {
+                    findExistingOrAddNewForecastJobSetting(dataRowView.Row, false);
+                }
             }
 
             commitCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);

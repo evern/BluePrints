@@ -73,7 +73,7 @@
             </DataTemplate>
             <DataTemplate x:Key="ForecastPastColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" ReadOnly="True" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -101,7 +101,6 @@
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
-                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
@@ -219,6 +218,7 @@
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarButtonItem x:Name="biResetForecast" Command="{Binding DataContext.DeleteCellContentCommand, ElementName=userControl}" Content="Reset Forecast" Glyph="{dx:DXImage Image=Reset_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to P6 or PO forecasted values" />
                     <dxb:BarButtonItem x:Name="biApplyPF" Command="{Binding DataContext.ApplyCurrentPFCommand, ElementName=userControl}" Content="Apply PF" Glyph="{dxc:DXImage Images/People/PublicFix_32x32.png}" LargeGlyph="{dx:DXImage Images/People/PublicFix_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Apply current PF to selected rows" />
+                    <dxb:BarButtonItem x:Name="biUpdatePF" Command="{Binding DataContext.UpdateCurrentPFCommand, ElementName=userControl}" Content="Update All PF" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update PF for all jobs that had current PF applied before, to verify which job will get updated, right click on columns, find Show Column Chooser and tick Floating PF" />
                     <dxb:BarButtonItem x:Name="biLocalKeyboardCopy" Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
                     <dxb:BarButtonItem x:Name="biLocalKeyboardPaste" Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
                     <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
@@ -261,6 +261,7 @@
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                     <dxb:BarCheckItemLink BarItemName="biWeeks" />
                                     <dxb:BarButtonItemLink BarItemName="biApplyPF" />
+                                    <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
