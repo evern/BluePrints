@@ -461,7 +461,7 @@ namespace BluePrints.ViewModels
 
                 if (updateRelatedSubjobsEntries)
                 {
-                    foreach (ExoSubJobEditableProjection relatedProjection in DisplayEntities.Where(x => x.SubJobCode == newSubJobCode))
+                    foreach (ExoSubJobEditableProjection relatedProjection in DisplayEntities.Where(x => x.SubJobCode == newSubJobCode && x.IsLineExistsInExo))
                     {
                         relatedProjection.SubJobTitle = existingSubJob.TITLE;
                         relatedProjection.Update();

@@ -259,7 +259,7 @@ namespace BluePrints.Common.Projections
         public bool IsCommodityExistsInExo => CommodityCode != string.Empty;
         public bool IsLineExistsInExo => LineId != null;
         public bool HasBudget { get; set; }
-
+        public string NullText => IsLineExistsInExo ? "Double click this cell to change title" : "Title can only be changed when job is bookable";
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
         public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
         {
