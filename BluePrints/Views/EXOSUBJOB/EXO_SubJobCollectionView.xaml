@@ -67,7 +67,11 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskType="RegEx" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" />
+                                    <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Select from combo box and then change last two numbers">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" Mask="{Binding DataContext.DisciplineRegex, ElementName=userControl}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
