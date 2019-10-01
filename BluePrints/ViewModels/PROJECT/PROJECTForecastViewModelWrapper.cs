@@ -2007,6 +2007,7 @@ namespace BluePrints.ViewModels
             {
                 ForecastSummary.Budget_Cost += job.Budget;
                 ForecastSummary.OriginalEstimateAtCompletion += job.OriginalEstimateAtCompletion;
+                ForecastSummary.Current_Cost += job.ActualCosts;
                 ForecastSummary.EstimateAtCompletion += job.EstimateAtCompletion;
                 ForecastSummary.CurrentEstimateAtCompletion += job.CurrentEstimateAtCompletion;
                 ForecastSummary.Uncommitted_Forecast += job.Uncommitted;
@@ -2797,7 +2798,7 @@ namespace BluePrints.ViewModels
             Commitments = 0;
             Uncommitted_Forecast = 0;
             EstimateAtCompletion = 0;
-            TotalClaims = 0;
+            //TotalClaims = 0;
 
             OriginalEstimateAtCompletion = 0;
             CurrentEstimateAtCompletion = 0;

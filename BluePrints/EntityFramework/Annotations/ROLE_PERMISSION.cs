@@ -17,6 +17,11 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public override string ToString()
+        {
+            return PERMISSION;
+        }
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }
