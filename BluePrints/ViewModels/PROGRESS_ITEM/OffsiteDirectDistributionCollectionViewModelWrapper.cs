@@ -614,23 +614,16 @@ namespace BluePrints.ViewModels
                     decimal totalUnitsDifferences = percentageDifference * currentProgressMaximumUnits;
                     decimal maximumEarnUnits = currentProgressMaximumUnits;
 
-                    //update progress items so that it is accurate at run time
-                    IBluePrintsEntitiesUnitOfWork uow = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-                    //refresh from database routine
-                    List<PROGRESS_ITEM> dbPROGRESSES = uow.PROGRESS_ITEMS.Where(x => x.PROGRESS.GUID == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == entity.OriginalEntityKey).OrderBy(x => x.EARNED_DATE).ToList();
-                    IEnumerable<PROGRESS_ITEM> unalignedDataDatePROGRESS_ITEMS = dbPROGRESSES.Where(x => !alignedDataDateCollection.Any(y => y.Date == x.EARNED_DATE.Date));
+                    IEnumerable<PROGRESS_ITEM> unalignedDataDatePROGRESS_ITEMS = entity.PROGRESS_ITEMS.Where(x => !alignedDataDateCollection.Any(y => y.Date == x.EARNED_DATE.Date));
                     foreach(PROGRESS_ITEM unalignedPROGRESS_ITEM in unalignedDataDatePROGRESS_ITEMS)
                     {
                         unalignedPROGRESS_ITEM.EARNED_UNITS = 0;
+                        progressToSave.Add(unalignedPROGRESS_ITEM);
                     }
-
-                    uow.SaveChanges();
-                    entity.SetProgressItems(dbPROGRESSES);
 
                     IEnumerable<PROGRESS_ITEM> previousProgresses = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE.Date == currentProgressDate.Date);
                     List<PROGRESS_ITEM> futureProgressToEdit = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
-                    
                     
                     //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
                     if (currentPeriodPROGRESS_ITEM == null && totalUnitsDifferences > 0)
