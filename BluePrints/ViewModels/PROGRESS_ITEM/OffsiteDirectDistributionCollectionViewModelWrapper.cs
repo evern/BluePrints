@@ -655,8 +655,13 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the last highest % datapoint");
-                        Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
+                        decimal oldValueDecimal;
+                        if(oldValue != null && Decimal.TryParse(oldValue.ToString(), out oldValueDecimal))
+                        {
+                            MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the first instance of " + string.Format(oldValueDecimal.ToString("P")));
+                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
+                        }
+
                         return;
                     }
 

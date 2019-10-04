@@ -314,6 +314,29 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        //because cumulative datapoint includes earned data points as well
+        private ObservableCollection<DataPoint> remainingOnlyCumulativeDataPoints { get; set; }
+        public ObservableCollection<DataPoint> RemainingOnlyCumulativeDataPoints
+        {
+            get
+            {
+                if (remainingOnlyCumulativeDataPoints == null && rawDataPoints != null && rawDataPoints.Count() > 0 && firstAlignedDataDate != null)
+                {
+                    decimal qtyPerUnit = TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
+                    //Budgeted units are always used because variation adjustment will be added on if alwaysBenchmarkAgainstBudgeted is false and rawVariationAdjustments is not null
+
+                    //variation adjustment implementation
+                    //cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, qtyPerUnit, firstAlignedDataDate, reportInterval, Guid.Empty, alwaysBenchmarkAgainstBudgeted ? null : rawVariationAdjustments, extrapolateDate);
+                    DateTime firstDataDate = firstAlignedDataDate;
+
+                    //total units at start
+                    remainingOnlyCumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty, null, extrapolateDate, true);
+                }
+
+                return remainingOnlyCumulativeDataPoints;
+            }
+        }
+
         private ObservableCollection<DataPoint> dataPoints { get; set; }
         public ObservableCollection<DataPoint> DataPoints
         {
@@ -328,6 +351,24 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 return dataPoints;
+            }
+        }
+
+        //because cumulative datapoint includes earned data points as well
+        private ObservableCollection<DataPoint> remainingOnlyDataPoints { get; set; }
+        public ObservableCollection<DataPoint> RemainingOnlyDataPoints
+        {
+            get
+            {
+                if (remainingOnlyDataPoints == null && RemainingOnlyCumulativeDataPoints != null && RemainingOnlyCumulativeDataPoints.Count() > 0 && reportingDataDate != null)
+                {
+                    decimal qtyPerUnit = this.TotalUnits == 0 ? 0 : TotalQty / TotalUnits;
+                    DateTime? plotStartdate = hideDataPointsBeforeDataDate ? reportingDataDate : (DateTime?)null;
+                    remainingOnlyDataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(RemainingOnlyCumulativeDataPoints, qtyPerUnit, plotStartdate, ExoDataPoints);
+                    //dataPoints = DataPointsHelpers.ConvertCumulativeToPeriodDataPoint(CumulativeDataPoints);
+                }
+
+                return remainingOnlyDataPoints;
             }
         }
 

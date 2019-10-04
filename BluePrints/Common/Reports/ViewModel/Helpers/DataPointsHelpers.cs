@@ -18,18 +18,27 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
-            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null)
+            IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool isRemaining = false)
         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
 
+            List<DataPoint> filteredRawDataPoints;
+            if (isRemaining)
+                filteredRawDataPoints = rawDataPoints.Where(x => x.IsRemaining).ToList();
+            else
+                filteredRawDataPoints = rawDataPoints.ToList();
+
             var summaryDataPoints = new ObservableCollection<DataPoint>();
+            if (filteredRawDataPoints.Count() == 0)
+                return summaryDataPoints;
+
             DateTime progressLastDataDate;
             //In progress distribution we want to generate data points even if P6 or subjob says it's finished. i.e. 100% all the way until data date
             if (overrideLastPeriodDate != null)
                 progressLastDataDate = (DateTime)overrideLastPeriodDate;
             else
-                progressLastDataDate = rawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
+                progressLastDataDate = filteredRawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
             //Add zero UOM data point so that line graph starts at 0%
             summaryDataPoints.Add(new DataPoint()
@@ -58,7 +67,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (floorDate == firstAlignedDataDate)
                 {
                     currentPeriodDataPoints =
-                        rawDataPoints.Where(
+                        filteredRawDataPoints.Where(
                             DataPoint => DataPoint.ProgressDate <= ceilingDate).ToList();
                     currentPeriodVariationAdjustments = rawVariationAdjustments == null
                         ? new List<VariationAdjustment>()
@@ -68,7 +77,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     currentPeriodDataPoints =
-                        rawDataPoints.Where(
+                        filteredRawDataPoints.Where(
                             DataPoint =>
                                 DataPoint.ProgressDate > floorDate &&
                                 DataPoint.ProgressDate <= ceilingDate).ToList();
