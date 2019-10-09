@@ -244,7 +244,8 @@ namespace BluePrints.ViewModels
             primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
-            forceRetrieveAllBurned = true; //force exo burned to retrieve subjobs that aren't defined
+            forceRetrieveAllJobs = false; //force exo burned to retrieve subjobs that aren't defined
+            forceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
             useProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = false;
@@ -821,7 +822,10 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
                 if (alignedDate <= FixedDataDateMonthEnd)
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                {
+                    //do not show actuals
+                    //columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                }
                 else
                 {
                     if (isChild)

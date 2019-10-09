@@ -450,6 +450,7 @@ namespace BluePrints.ViewModels
                 newFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
                 MainViewModel.Save(newFORECAST_JOB);
                 row[columnGUID] = newFORECAST_JOB.GUID;
+                row[columnProjection] = newFORECAST_JOB;
                 //add undo must be after so that Guid is populated
             }
         }
@@ -459,10 +460,19 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void CellValueChangedUpdate(CellValueChangedEventArgs e)
         {
-            if (e.RowHandle == GridControl.AutoFilterRowHandle || e.RowHandle == GridControl.NewItemRowHandle)
-                return;
-
             DataRowView dataRowView = (DataRowView)e.Row;
+            if (e.RowHandle == GridControl.AutoFilterRowHandle || e.RowHandle == GridControl.NewItemRowHandle)
+            {
+                if (e.Column.FieldName == columnFullCode && e.Value != null)
+                {
+                    ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == e.Value.ToString());
+                    dataRowView[columnProjection] = queryJob;
+                }
+
+                updateRowReadOnlyAttributes(dataRowView.Row);
+                return;
+            }
+
             EntitiesUndoRedoManager.PauseActionId();
             DataRowView row = (DataRowView)e.Row;
             Guid guid = (Guid)row[columnGUID];

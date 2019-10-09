@@ -36,7 +36,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
 
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllBurned = false, bool showLoadingScreen = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool showLoadingScreen = false)
         {
             try
             {
@@ -68,8 +68,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
 
                 DateTime queryDataDate = DateTime.Now;
-                if (!forceRetrieveAllBurned)
-                    queryDataDate = CurrentDataDate;
+                if (!forceRetrieveAllUnits)
+                    queryDataDate = CurrentDataDate.AddDays(1).AddMinutes(-1);
 
                 var PrimeroUnitOfWork = PrimeroUOW;
                 var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
@@ -105,9 +105,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (var jobTransaction in jobTransactionsList)
                 {
-                    if (forceRetrieveAllBurned || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
+                    if (forceRetrieveAllJobs || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        if (forceRetrieveAllBurned || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
+                        if (forceRetrieveAllJobs || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
@@ -143,8 +143,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         LoadingScreenManager.Progress();
                 }
 
-                materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, null, CurrencyConversion, showLoadingScreen);
-                poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, null, showLoadingScreen);
+                materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, queryDataDate, null, CurrencyConversion, showLoadingScreen);
+                poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, queryDataDate, null, showLoadingScreen);
 
                 foreach (string missingSubJob in missingSubJobs)
                 {

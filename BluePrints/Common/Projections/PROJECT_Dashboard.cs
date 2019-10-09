@@ -52,7 +52,7 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllBurned = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
+        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
         {
             if (projectSummarizer == null)
                 return;
@@ -64,7 +64,7 @@ namespace BluePrints.Common.Projections
 
             if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual
-                projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllBurned, showLoadingScreen);
+                projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllJobs, forceRetrieveAllUnits, showLoadingScreen);
 
             this.RaisePropertiesChanged();
         }

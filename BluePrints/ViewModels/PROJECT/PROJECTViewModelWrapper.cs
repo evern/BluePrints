@@ -82,7 +82,8 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected bool isCompletelyLoaded { get; set; }
-        protected bool forceRetrieveAllBurned { get; set; }
+        protected bool forceRetrieveAllJobs { get; set; }
+        protected bool forceRetrieveAllUnits { get; set; }
         protected bool useProductivityFactorOnRemaining { get; set; }
         protected bool isVariationSeparated { get; set; }
         protected override void resolveParameters(object parameter)
@@ -286,7 +287,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllBurned, getForecastTypes(), useProductivityFactorOnRemaining);
+                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllJobs, forceRetrieveAllUnits, getForecastTypes(), useProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated, forceRetrieveRemainingDataPoints);
                 project.Update();
