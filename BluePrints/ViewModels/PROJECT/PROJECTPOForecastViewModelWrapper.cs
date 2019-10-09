@@ -460,7 +460,9 @@ namespace BluePrints.ViewModels
             POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
-            decimal proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
+            decimal proRateOnPOItem = 1;
+            if(entity.PO_RemainingPrice > 0)
+                proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
             var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, VariationCode = g.Variation_Code }).Select(g => new { PONumber = g.Key.PONumber, JobCode = g.Key.JobCode, DisciplineCode = g.Key.DisciplineCode, CommodityCode = g.Key.CommodityCode, VariationCode = g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
             foreach (var groupByCodesPOItem in groupByCodesPOItems)
