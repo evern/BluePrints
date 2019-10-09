@@ -84,140 +84,143 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, isWeeks));
             }
 
+            IEnumerable<SummaryStats> summaryStats;
+
             if (relevantDashboards != null && relevantDashboards.Count() > 0)
+                summaryStats = relevantDashboards.Select(x => (SummaryStats)x.Stats);
+            else
+                summaryStats = new List<SummaryStats>();
+
+            IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
+
+            List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
+            if (poStats != null && poStats.Count() > 0)
             {
-                IEnumerable<SummaryStats> summaryStats = relevantDashboards.Select(x => (SummaryStats)x.Stats);
-                IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
+                IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
+                jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
 
-                List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
-                if (poStats != null && poStats.Count() > 0)
+                //group the pos into PO numbers group to get the total remaining cost
+                //costs is remaining cost in this case
+                var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
+                foreach(var poItem in poItems)
                 {
-                    IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
-                    jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
-
-                    //group the pos into PO numbers group to get the total remaining cost
-                    //costs is remaining cost in this case
-                    var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
-                    foreach(var poItem in poItems)
-                    {
-                        currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
-                    }
-
-                    jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                    currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
                 }
 
-                //get remaining data points
-                List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
-                List<Common.ViewModel.Reporting.DataPoint> earnedDataPoints = new List<Reporting.DataPoint>();
-                List<Common.ViewModel.Reporting.DataPoint> budgetDataPoints = new List<Reporting.DataPoint>();
-                IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.RemainingOnlyDataPoints != null);
-                IEnumerable<SummaryStats> earnedStats = summaryStats.Where(x => x.Earned != null && x.Earned.DataPoints != null);
-                IEnumerable<SummaryStats> budgetedStats = summaryStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null);
+                jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+            }
 
-                if (budgetedStats.Count() > 0)
+            //get remaining data points
+            List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
+            List<Common.ViewModel.Reporting.DataPoint> earnedDataPoints = new List<Reporting.DataPoint>();
+            List<Common.ViewModel.Reporting.DataPoint> budgetDataPoints = new List<Reporting.DataPoint>();
+            IEnumerable<SummaryStats> remainingStats = summaryStats.Where(x => x.Remaining != null && x.Remaining.RemainingOnlyDataPoints != null);
+            IEnumerable<SummaryStats> earnedStats = summaryStats.Where(x => x.Earned != null && x.Earned.DataPoints != null);
+            IEnumerable<SummaryStats> budgetedStats = summaryStats.Where(x => x.Budgeted != null && x.Budgeted.DataPoints != null);
+
+            if (budgetedStats.Count() > 0)
+            {
+                budgetDataPoints.AddRange(budgetedStats.SelectMany(x => x.Budgeted.DataPoints));
+                decimal p6BudgetedUnits = budgetDataPoints.Sum(x => x.Units);
+                jobForecastSummary.P6BudgetedUnits = p6BudgetedUnits;
+            }
+
+            if (remainingStats.Count() > 0)
+            {
+                remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
+                earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
+                decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
+                decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
+                decimal earnedUnits = earnedDataPoints.Sum(x => x.Units);
+                jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
+                jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
+                jobForecastSummary.EarnedUnits = earnedUnits;
+            }
+
+            jobForecastSummary.ActualCosts = 0;
+            //get actual data points and populate summary
+            List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
+            if (actualStats.Count() > 0)
+            {
+                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
+                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
+                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
+            //get material data points and accrue summary
+            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
+            if (materialStats != null && materialStats.Count() > 0)
+            {
+                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
+                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
+            DateTime firstViewDate = dates.First();
+            DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
+
+            //the first remaining date will be the second month in the view because data date will end on the first month
+            DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
+
+            List<RemainingCost> weeklyForecastRemainingCosts = new List<RemainingCost>();
+            List<FORECAST_JOB> relevantFORECAST_JOBS = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
+            foreach(FORECAST_JOB relevantFORECAST_JOB in relevantFORECAST_JOBS.Where(x => x.FORECAST_RATE != null))
+            {
+                foreach(FORECAST_JOB_HOUR relevantFORECAST_JOB_HOUR in relevantFORECAST_JOB.FORECAST_JOB_HOUR.Where(x => x.FORECAST_HOUR != null))
                 {
-                    budgetDataPoints.AddRange(budgetedStats.SelectMany(x => x.Budgeted.DataPoints));
-                    decimal p6BudgetedUnits = budgetDataPoints.Sum(x => x.Units);
-                    jobForecastSummary.P6BudgetedUnits = p6BudgetedUnits;
+                    weeklyForecastRemainingCosts.Add(new RemainingCost() { ForecastDate = relevantFORECAST_JOB_HOUR.FORECAST_DATE, ForecastRemainingCosts = (decimal)relevantFORECAST_JOB.FORECAST_RATE * (decimal)relevantFORECAST_JOB_HOUR.FORECAST_HOUR });
+                }
+            }
+
+            //set whether productivity is floating
+            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
+                jobForecastSummary.IsProductivityFloating = true;
+
+            foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
+            {
+                //override floor date to the beginning of time because we want to get everything
+                if (dateCost.Date == firstViewDate)
+                    dateCost.ActualFloorDate = new DateTime(1);
+                else
+                    dateCost.ActualFloorDate = dateCost.FloorDate;
+
+                decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
+                decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
+                decimal p6RemainingCosts = 0;
+                decimal p6RemainingHours = 0;
+                decimal poForecastCosts = 0;
+                decimal weeklyForecastCosts = 0;
+
+                //prevent population of values from PO forecast before forecast date
+                if (dateCost.FloorDate > firstViewDate)
+                {
+                    poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
                 }
 
-                if (remainingStats.Count() > 0)
+                //prevet population of values from remaining before forecast date
+                if(dateCost.FloorDate > firstViewDate)
                 {
-                    remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
-                    earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
-                    decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
-                    decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
-                    decimal earnedUnits = earnedDataPoints.Sum(x => x.Units);
-                    jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
-                    jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
-                    jobForecastSummary.EarnedUnits = earnedUnits;
-                }
-
-                jobForecastSummary.ActualCosts = 0;
-                //get actual data points and populate summary
-                List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
-                IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
-                if (actualStats.Count() > 0)
-                {
-                    actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                    jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
-                    jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
-                    jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
-                }
-
-                //get material data points and accrue summary
-                List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
-                IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
-                if (materialStats != null && materialStats.Count() > 0)
-                {
-                    materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                    jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
-                    jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
-                }
-
-                DateTime firstViewDate = dates.First();
-                DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
-
-                //the first remaining date will be the second month in the view because data date will end on the first month
-                DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
-
-                List<RemainingCost> weeklyForecastRemainingCosts = new List<RemainingCost>();
-                List<FORECAST_JOB> relevantFORECAST_JOBS = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
-                foreach(FORECAST_JOB relevantFORECAST_JOB in relevantFORECAST_JOBS.Where(x => x.FORECAST_RATE != null))
-                {
-                    foreach(FORECAST_JOB_HOUR relevantFORECAST_JOB_HOUR in relevantFORECAST_JOB.FORECAST_JOB_HOUR.Where(x => x.FORECAST_HOUR != null))
-                    {
-                        weeklyForecastRemainingCosts.Add(new RemainingCost() { ForecastDate = relevantFORECAST_JOB_HOUR.FORECAST_DATE, ForecastRemainingCosts = (decimal)relevantFORECAST_JOB.FORECAST_RATE * (decimal)relevantFORECAST_JOB_HOUR.FORECAST_HOUR });
-                    }
-                }
-
-                //set whether productivity is floating
-                if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
-                    jobForecastSummary.IsProductivityFloating = true;
-
-                foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
-                {
-                    //override floor date to the beginning of time because we want to get everything
-                    if (dateCost.Date == firstViewDate)
-                        dateCost.ActualFloorDate = new DateTime(1);
+                    //accumulate hours and costs in the first forecast date
+                    if (dateCost.CeilingDate == firstForecastDate)
+                        dateCost.RemainingFloorDate = new DateTime(1);
                     else
-                        dateCost.ActualFloorDate = dateCost.FloorDate;
+                        dateCost.RemainingFloorDate = dateCost.FloorDate;
 
-                    decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
-                    decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
-                    decimal p6RemainingCosts = 0;
-                    decimal p6RemainingHours = 0;
-                    decimal poForecastCosts = 0;
-                    decimal weeklyForecastCosts = 0;
-
-                    //prevent population of values from PO forecast before forecast date
-                    if (dateCost.FloorDate > firstViewDate)
-                    {
-                        poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
-                    }
-
-                    //prevet population of values from remaining before forecast date
-                    if(dateCost.FloorDate > firstViewDate)
-                    {
-                        //accumulate hours and costs in the first forecast date
-                        if (dateCost.CeilingDate == firstForecastDate)
-                            dateCost.RemainingFloorDate = new DateTime(1);
-                        else
-                            dateCost.RemainingFloorDate = dateCost.FloorDate;
-
-                        p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Costs);
-                        p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Units);
-                        weeklyForecastCosts = weeklyForecastRemainingCosts.Where(x => x.ForecastDate.Date >= dateCost.FloorDate && x.ForecastDate.Date <= dateCost.CeilingDate).Sum(x => x.ForecastRemainingCosts);
-                    }
-
-                    dateCost.MaterialCosts = Math.Round(materialCosts);
-                    dateCost.ActualCosts = Math.Round(actualCosts);
-                    dateCost.P6Costs = p6RemainingCosts;
-                    dateCost.P6Hours = p6RemainingHours;
-                    dateCost.POForecastCosts = Math.Round(poForecastCosts);
-                    dateCost.WeeklyForecastCosts = weeklyForecastCosts;
-                    dateCost.TotalCosts = Math.Round(materialCosts + actualCosts + p6RemainingCosts + poForecastCosts + weeklyForecastCosts);
+                    p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Costs);
+                    p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Units);
+                    weeklyForecastCosts = weeklyForecastRemainingCosts.Where(x => x.ForecastDate.Date >= dateCost.FloorDate && x.ForecastDate.Date <= dateCost.CeilingDate).Sum(x => x.ForecastRemainingCosts);
                 }
+
+                dateCost.MaterialCosts = Math.Round(materialCosts);
+                dateCost.ActualCosts = Math.Round(actualCosts);
+                dateCost.P6Costs = p6RemainingCosts;
+                dateCost.P6Hours = p6RemainingHours;
+                dateCost.POForecastCosts = Math.Round(poForecastCosts);
+                dateCost.WeeklyForecastCosts = weeklyForecastCosts;
+                dateCost.TotalCosts = Math.Round(materialCosts + actualCosts + p6RemainingCosts + poForecastCosts + weeklyForecastCosts);
             }
         }
 
@@ -299,7 +302,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
                 IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
                 IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
-                //IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
+                IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
 
                 allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
