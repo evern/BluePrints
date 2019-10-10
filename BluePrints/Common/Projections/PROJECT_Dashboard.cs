@@ -76,7 +76,7 @@ namespace BluePrints.Common.Projections
 
             if(showLoadingScreen)
             {
-                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.ShowLoadingScreen(0);
                 LoadingScreenManager.SetMessage("Recalculating Summary...");
             }
 

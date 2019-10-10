@@ -230,11 +230,17 @@ namespace BluePrints.ViewModels
                 {
                     isWeeks = value;
                     ForecastSummary.Reset();
-                    dataPointsTable = null;
                     EntitiesUndoRedoManager.Clear();
-                    this.RaisePropertyChanged(x => x.DataPointsTable);
+                    mainThreadDispatcher.BeginInvoke(new Action(() => reloadDataPointsTable()));
                 }
             }
+        }
+
+        private void reloadDataPointsTable()
+        {
+            dataPointsTable = null;
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
@@ -276,7 +282,6 @@ namespace BluePrints.ViewModels
         private void loadSummaryStats()
         {
             IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
-
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>(); 
             queryJobs = ExoQueries.GetNativeExoSubJobProjection(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
             queryJobLines = jobLines;
@@ -371,7 +376,7 @@ namespace BluePrints.ViewModels
             set
             {
                 LoadPROJECT.P6FORECAST_NAME = value;
-                PROJECTCollectionViewModel.Save(LoadPROJECT);
+                PROJECTCollectionViewModel?.Save(LoadPROJECT);
             }
         }
 
@@ -412,7 +417,7 @@ namespace BluePrints.ViewModels
             exoLoadingBackgroundWorker.RunWorkerCompleted += ExoLoadingBackgroundWorker_RunWorkerCompleted;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
             exoLoadingBackgroundWorker.RunWorkerAsync();
-             LoadingScreenManager.CloseLoadingScreen();
+            LoadingScreenManager.CloseLoadingScreen();
             return base.OnMainViewModelLoaded(entities);
         }
 
@@ -468,9 +473,9 @@ namespace BluePrints.ViewModels
         {
             if(!isLoadingExo && !IsLoadingForecast)
             {
-                this.RaisePropertyChanged(x => x.DataPointsTable);
+                mainThreadDispatcher.BeginInvoke(new Action(() => reloadDataPointsTable()));
                 LoadingScreenManager.DisableLoadingScreen = false;
-                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.ShowLoadingScreen(0);
                 LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
                 postLoadedDispatcherTimer = new Timer();
                 postLoadedDispatcherTimer.Interval = 10;
@@ -531,61 +536,55 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null || AllProjectDashboards == null)
-                    return null;
-
-                if (dataPointsTable == null)
-                {
-                    dataPointsTable = new DataTable();
-
-                    //get immutable data
-                    alignedDataDateCollection = generateDates();
-                    InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
-                    InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
-
-                    bool isNewData = false;
-                    if(commodityJobs == null)
-                    {
-                        List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                        List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, AllProjectDashboards);
-                        DetailedData.AddRange(allDataPoints);
-                        commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
-                        isNewData = true;
-                    }
-
-                    LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
-                    LoadingScreenManager.SetMessage("Preparing View...");
-
-                    //construct data points table
-                    dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
-                    dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                    {
-                        string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
-                    }
-
-                    //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
-                    foreach (ForecastJobData commodityJob in commodityJobs)
-                    {
-                        ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
-                        updateAdditionalJobInfo(commodityJob);
-                        mainThreadDispatcher.BeginInvoke(new Action(() => updateDataTable(commodityJob, isNewData)));
-                        LoadingScreenManager.Progress();
-                    }
-
-                    LoadingScreenManager.CloseLoadingScreen();
-                    this.RaisePropertyChanged(x => x.ForecastSummary);
-                    this.RaisePropertyChanged(x => x.ExportTable);
-
-                    //refreshGridDataDelayed();
-                    //TableViewService.ScrollToLast();            
-
-                    //delayedDataTableRefreshTimer.Start();
-                }
-
                 return dataPointsTable;
             }
+        }
+
+        private void updateDataPointsTable()
+        {
+            dataPointsTable = new DataTable();
+
+            GridControlService.GridControl.BeginDataUpdate();
+            //get immutable data
+            alignedDataDateCollection = generateDates();
+            InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
+            InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
+
+            bool isNewData = false;
+            if (commodityJobs == null)
+            {
+                List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, AllProjectDashboards);
+                DetailedData.AddRange(allDataPoints);
+                commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
+                isNewData = true;
+            }
+
+            LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
+            LoadingScreenManager.SetMessage("Preparing View...");
+
+            //construct data points table
+            dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
+            dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
+            foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            {
+                string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+            }
+
+            //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
+            foreach (ForecastJobData commodityJob in commodityJobs)
+            {
+                ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
+                updateAdditionalJobInfo(commodityJob);
+                updateDataTable(commodityJob, isNewData);
+                LoadingScreenManager.Progress();
+            }
+            LoadingScreenManager.CloseLoadingScreen();
+            GridControlService.GridControl.EndDataUpdate();
+
+            this.RaisePropertyChanged(x => x.ForecastSummary);
+            this.RaisePropertyChanged(x => x.ExportTable);
         }
 
         protected virtual void updateAdditionalJobInfo(ForecastJobData commodityJob)
@@ -2799,7 +2798,6 @@ namespace BluePrints.ViewModels
         {
             Budget_Cost = 0;
             Current_Cost = 0;
-            Commitments = 0;
             Uncommitted_Forecast = 0;
             EstimateAtCompletion = 0;
             //TotalClaims = 0;

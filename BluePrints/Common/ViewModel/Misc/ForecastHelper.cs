@@ -26,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Misc
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
             LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
-            LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+           LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
 
             foreach(var groupedDisciplineJob in groupedDisciplineJobs)
             {
