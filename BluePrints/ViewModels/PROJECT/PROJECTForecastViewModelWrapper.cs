@@ -1647,7 +1647,7 @@ namespace BluePrints.ViewModels
                 ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
                 JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
                 bool isError = false;
-                projection.Budget = newDecimalValue;
+                projection.ExoBudget = newDecimalValue;
 
                 if (findExistingOrAddLine == null)
                 {
@@ -1704,7 +1704,7 @@ namespace BluePrints.ViewModels
                     }
 
                     if (isError)
-                        projection.Budget = 0;
+                        projection.ExoBudget = 0;
                     else
                     {
                         DataRow disciplineRow = findRow(entity, false);

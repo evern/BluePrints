@@ -14,6 +14,7 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
+                    <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding DataContext.AlignExoBudgetCommand, ElementName=userControl}" Content="Align budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align exo budget with budget calculated from deliverable's list" />
                     <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding DataContext.AutoAssignPermissionCommand, ElementName=userControl}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
                     <dxb:BarButtonItem x:Name="biLocalCopy" Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                     <dxb:BarButtonItem x:Name="biLocalPaste" Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
@@ -37,6 +38,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                     <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                     <dxb:BarButtonItemLink BarItemName="biViewReport1" />
+                                    <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
@@ -69,7 +71,12 @@
                                     <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                     <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget comes from deliverable's total cost when it's not bookable, and exo when it's bookable">
+                                    <dxg:GridColumn FieldName="Budget" Header="Budget" HeaderToolTip="Budget calculated from from deliverable's total">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
@@ -97,6 +104,8 @@
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>

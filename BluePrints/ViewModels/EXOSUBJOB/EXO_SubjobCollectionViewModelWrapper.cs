@@ -241,7 +241,7 @@ namespace BluePrints.ViewModels
             KeyValuePair<ColumnBase, string> commodityCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)));
             KeyValuePair<ColumnBase, string> stockCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)));
             KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
-            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)));
+            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)));
 
             pasteEntity.SubJobCode = subjobCodeData.Value.Trim();
             pasteEntity.SubJobTitle = subjobCodeTitleData.Value.Trim();
@@ -254,7 +254,7 @@ namespace BluePrints.ViewModels
             decimal budgetValue = 0;
             if (decimal.TryParse(budgetData.Value, out budgetValue))
             {
-                pasteEntity.Budget = budgetValue;
+                pasteEntity.ExoBudget = budgetValue;
             }
 
             pasteEntity.PopulateCommodityCodes(COMMODITY_CODECollection);
@@ -819,7 +819,7 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        private bool commitLineBudgetCost(ExoSubJobEditableProjection projection)
+        protected bool commitLineBudgetCost(ExoSubJobEditableProjection projection)
         {
             if (projection.LineId != null)
             {

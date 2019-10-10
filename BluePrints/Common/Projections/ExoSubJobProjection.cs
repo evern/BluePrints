@@ -65,7 +65,7 @@ namespace BluePrints.Common.Projections
             this.CommodityCode = entity.Commodity == null ? string.Empty : entity.Commodity.Code;
             this.CommodityName = entity.Commodity == null ? string.Empty : entity.Commodity.Name;
             this.VariationCode = entity.Variation_Code;
-            this.Budget = entity.ExoBudgetCosts;
+            this.ExoBudget = entity.ExoBudgetCosts;
             this.Rate = entity.ExoForecastRate;
         }
 
@@ -106,7 +106,9 @@ namespace BluePrints.Common.Projections
 
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
+        public decimal ExoBudget { get; set; }
         public decimal Budget { get; set; }
+        public bool IgnoreExoBudgetError { get; set; }
         public decimal Rate { get; set; }
 
         public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
@@ -300,6 +302,12 @@ namespace BluePrints.Common.Projections
                 if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
                 {
                     info.ErrorText = "Invalid stock code, please check commodity code";
+                }
+
+                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget))
+                {
+                    if (IsLineExistsInExo && !IgnoreExoBudgetError && ExoBudget != Budget)
+                        info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
                 }
             }
             else
@@ -926,7 +934,7 @@ namespace BluePrints.Common.Projections
             JOBCOST_LINES newLINE = new JOBCOST_LINES();
             newLINE.QUOTE_QTY = 1;
             newLINE.QUOTE_UNITPR = projection.Rate == 0 ? (Double?)null : Convert.ToDouble(projection.Rate);
-            newLINE.ACTUAL_UNITCOST = projection.Budget == 0 ? (Double?)null : Convert.ToDouble(projection.Budget);
+            newLINE.ACTUAL_UNITCOST = projection.ExoBudget == 0 ? (Double?)null : Convert.ToDouble(projection.ExoBudget);
             newLINE.TRANSDATE = DateTime.Now.Date;
             newLINE.EXCHRATE = copyLine.EXCHRATE;
             newLINE.DISCOUNT = 0;
@@ -1275,6 +1283,7 @@ namespace BluePrints.Common.Projections
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {
                 ExoSubJobEditableProjection projection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
+                projection.IgnoreExoBudgetError = true;
                 projection.LineId = exoLine.LineSeqNo;
                 projection.SubJobId = exoLine.SubJobNo;
                 projection.SubJobCode = exoLine.SubJobCode;
@@ -1288,7 +1297,7 @@ namespace BluePrints.Common.Projections
                 projection.StockCode = exoLine.StockCode;
                 projection.StockName = exoLine.StockName;
                 projection.VariationCode = exoLine.VariationCode;
-                projection.Budget = exoLine.BudgetCosts;
+                projection.ExoBudget = exoLine.BudgetCosts;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 projection.PopulateStockCodes(STOCK_ITEMSCollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
@@ -1362,7 +1371,7 @@ namespace BluePrints.Common.Projections
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STAFF> ExoSTAFFS = null)
         {
             List<ESTIMATE_ITEMProgress> estimateItems = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES).ToList();
-            List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(estimateItems, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, null, ExoSTAFFS);
+            List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(estimateItems, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, null, ExoSTAFFS, true);
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
         }
@@ -1376,7 +1385,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<VARIATION> VARIATIONS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<DOCTYPE> DOCTYPECollection)
         {
             List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, false, null).ToList();
-            List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(baseline_item_progresses, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, userCollection);
+            List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(baseline_item_progresses, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, userCollection, null, false);
 
             foreach(ExoSubJobEditableProjection exoSubJob in exoSubJobs)
             {
@@ -1388,7 +1397,7 @@ namespace BluePrints.Common.Projections
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
         }
 
-        public static List<ExoSubJobEditableProjection> GetProactiveExoSubJobs(IEnumerable<IReportable> deliverables, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null)
+        public static List<ExoSubJobEditableProjection> GetProactiveExoSubJobs(IEnumerable<IReportable> deliverables, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null, bool ignoreExoBudgetError = false)
         {
             var groupedDeliverables = deliverables.GroupBy(x => new { ChargeType = x.Charge, SubJob = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, VariationCode = x.Variation_Code })
                           .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, TotalCosts = group.Sum(x => x.Total_Costs) });
@@ -1404,7 +1413,8 @@ namespace BluePrints.Common.Projections
 
                 ExoSubJobEditableProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
                 ExoTimeAuthorisation exoSubJobLines = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.CommodityCode);
-                newSubJobProjection.Budget = groupedDeliverable.TotalCosts;
+                newSubJobProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
+                newSubJobProjection.ExoBudget = groupedDeliverable.TotalCosts;
                 if (exoSubJobLines != null)
                 {
                     newSubJobProjection.SubJobId = exoSubJobLines.SubJobNo;

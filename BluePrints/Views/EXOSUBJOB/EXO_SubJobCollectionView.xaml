@@ -133,7 +133,7 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Type in a budget">
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>

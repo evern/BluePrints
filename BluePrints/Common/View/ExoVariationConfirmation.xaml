@@ -12,7 +12,7 @@
                             <dxg:GridColumn Header="Cost Group" FieldName="DisciplineCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Cost Type" FieldName="CommodityCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Variation" FieldName="VariationCode" ReadOnly="True" IsSmart="True" />
-                            <dxg:GridColumn Header="Budget" FieldName="Budget" ReadOnly="True" IsSmart="True" >
+                            <dxg:GridColumn Header="Budget" FieldName="ExoBudget" ReadOnly="True" IsSmart="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="10" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
