@@ -1000,11 +1000,11 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? phaseGuid, Guid? disciplineGuid, Guid? departmentGuid, Guid? commodityGuid, IEnumerable<RATE> RATECollection)
+        public static RATE CascadeRateSearch(Guid? phaseGuid, Guid? disciplineGuid, Guid? departmentGuid, Guid? commodityGuid, IEnumerable<RATE> RATECollection, CostType CostType)
         {
-            IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_PHASE == phaseGuid));
+            IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == CostType && (y.GUID_PHASE == phaseGuid));
             //order by descending places null GUID's at the end, so First() won't pick it up
-            IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
+            IEnumerable<RATE> rateByCommodities = rateByPhase.Where(y => (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
             IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == disciplineGuid) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
             IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
 

@@ -89,6 +89,10 @@ namespace BluePrints.Common.Projections
 
         public virtual decimal Forecast_Costs => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
 
+        public virtual decimal Forecast_Total_InternalCosts => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemInternalRate;
+
+        public virtual decimal Forecast_InternalCosts => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemInternalRate;
+
         public decimal Forecast_Units => DisplayVariationUnits;
 
         public bool IsReadOnly

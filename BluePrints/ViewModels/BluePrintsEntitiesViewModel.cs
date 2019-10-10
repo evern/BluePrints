@@ -582,7 +582,7 @@ namespace BluePrints.ViewModels
             }
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageCostRate))
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCostRates" + keyString, projectKey, childTitlePrefix + "Cost Rates", "CostRATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Cost Rates", false, false, @"Spreadsheet\FunctionsFinancial_16x16.png"));
+                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCostRates" + keyString, projectKey, childTitlePrefix + "Rates [Cost]", "CostRATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates [Cost]", false, false, @"Spreadsheet\FunctionsFinancial_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack) && entity.USE_WORKPACKS)
             {

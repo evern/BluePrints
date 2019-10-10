@@ -888,7 +888,7 @@ namespace BluePrints.ViewModels
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
                     string commodityCode = deliverable.Commodity_Code;
-                    decimal variationCost = deliverable.Forecast_Costs;
+                    decimal variationCost = deliverable.Forecast_InternalCosts;
 
                     ExoSubJobEditableProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
                     if (exoVariation == null)

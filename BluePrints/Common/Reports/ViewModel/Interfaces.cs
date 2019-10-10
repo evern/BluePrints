@@ -206,6 +206,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         //use to show what the units will be after approval
         decimal Forecast_Units { get; }
         decimal Forecast_Costs { get; }
+        decimal Forecast_InternalCosts { get; }
     }
 
     //for revising deliverable with approved variation hours

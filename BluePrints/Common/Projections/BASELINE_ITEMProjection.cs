@@ -229,9 +229,13 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES);
+                RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES, CostType.Charge);
                 if (findRATE != null)
                     newBASELINE_ITEM.RATE = findRATE;
+
+                RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES, CostType.Cost);
+                if (findInternalRate != null)
+                    newBASELINE_ITEM.INTERNAL_RATE = findInternalRate;
 
                 returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
 

@@ -242,7 +242,14 @@
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_Costs" Header="Total Costs" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_Costs" Header="Total Charge" HeaderToolTip="Charge Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Total_InternalCosts" Header="Total Costs" HeaderToolTip="Cost Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -256,7 +263,14 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Costs" Header="Adjustment Costs" HeaderToolTip="Costs that will be adjusted after variation approval" ReadOnly="True">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_Costs" Header="Adjustment Charge" HeaderToolTip="Client's costs that will be adjusted after variation approval" ReadOnly="True">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Forecast_InternalCosts" Header="Adjustment Costs" HeaderToolTip="Internal costs that will be pushed to exo after variation approval" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -319,6 +333,8 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_Costs" ShowInColumn="Forecast_Total_Costs" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Forecast_Units" ShowInColumn="Forecast_Units" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Costs" ShowInColumn="Forecast_Costs" SummaryType="SUM" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_InternalCosts" ShowInColumn="Forecast_Total_InternalCosts" SummaryType="SUM" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_InternalCosts" ShowInColumn="Forecast_InternalCosts" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.TotalSummary>
@@ -329,6 +345,8 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_Costs" ShowInColumn="Forecast_Total_Costs" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" FieldName="Forecast_Units" ShowInColumn="Forecast_Units" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Costs" ShowInColumn="Forecast_Costs" SummaryType="SUM" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_Total_InternalCosts" ShowInColumn="Forecast_Total_InternalCosts" SummaryType="SUM" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" FieldName="Forecast_InternalCosts" ShowInColumn="Forecast_InternalCosts" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>

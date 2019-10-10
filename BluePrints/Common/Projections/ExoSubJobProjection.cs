@@ -1404,7 +1404,7 @@ namespace BluePrints.Common.Projections
         public static List<ExoSubJobEditableProjection> GetProactiveExoSubJobs(IEnumerable<IReportable> deliverables, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null, bool ignoreExoBudgetError = false)
         {
             var groupedDeliverables = deliverables.GroupBy(x => new { ChargeType = x.Charge, SubJob = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, VariationCode = x.Variation_Code })
-                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, TotalCosts = group.Sum(x => x.Total_Costs) });
+                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, TotalInternalCosts = group.Sum(x => x.Total_InternalCosts) });
 
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, project.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, project.NUMBER, false);
@@ -1418,13 +1418,13 @@ namespace BluePrints.Common.Projections
                 ExoSubJobEditableProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
                 ExoTimeAuthorisation exoSubJobLines = exoLines.FirstOrDefault(x => x.SubJobCode == groupedDeliverable.SubJob && x.DisciplineCode == groupedDeliverable.DisciplineCode && x.CommodityCode == groupedDeliverable.CommodityCode);
                 newSubJobProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
-                newSubJobProjection.ExoBudget = groupedDeliverable.TotalCosts;
+                newSubJobProjection.Budget = groupedDeliverable.TotalInternalCosts;
                 if (exoSubJobLines != null)
                 {
                     newSubJobProjection.SubJobId = exoSubJobLines.SubJobNo;
                     newSubJobProjection.SubJobCode = exoSubJobLines.SubJobCode;
                     newSubJobProjection.SubJobTitle = exoSubJobLines.SubJobTitle;
-                    newSubJobProjection.Budget = exoSubJobLines.BudgetRate;
+                    newSubJobProjection.ExoBudget = exoSubJobLines.BudgetRate;
                 }
                 else
                 {
