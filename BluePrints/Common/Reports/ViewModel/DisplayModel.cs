@@ -264,6 +264,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Budget_Adjustment_Costs => ((IReportable)ProgressItem).Budget_Adjustment_Costs;
 
+        public decimal Budget_ItemInternalRate => ((IReportable)ProgressItem).Budget_ItemInternalRate;
+
+        public decimal Budget_InternalCost => ((IReportable)ProgressItem).Budget_InternalCost;
+
+        public decimal Variation_InternalCosts => ((IReportable)ProgressItem).Variation_InternalCosts;
+
+        public decimal Total_InternalCosts => ((IReportable)ProgressItem).Total_InternalCosts;
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -599,6 +607,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Budget_Adjustment_Units => Reportable.Budget_Adjustment_Units;
 
         public decimal Budget_Adjustment_Costs => Reportable.Budget_Adjustment_Costs;
+
+        public decimal Budget_ItemInternalRate => Reportable.Budget_ItemInternalRate;
+
+        public decimal Budget_InternalCost => Reportable.Budget_InternalCost;
+
+        public decimal Variation_InternalCosts => Reportable.Variation_InternalCosts;
+
+        public decimal Total_InternalCosts => Reportable.Total_InternalCosts;
 
         public void SetReportingDataDate(DateTime dataDate)
         {

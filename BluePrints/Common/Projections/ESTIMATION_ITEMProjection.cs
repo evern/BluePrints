@@ -212,7 +212,7 @@ namespace BluePrints.Common.Projections
         //fallback to forecast phase 1 implementation because user's aren't ready to put full budget in
         //public decimal Total_Costs => Total_Budget_Install_Cost + Total_Budget_Freight_Cost + Total_Budget_Supply_Cost;
 
-        public decimal Total_Costs => Budget_ItemRate;
+        public decimal Total_Costs => Budget_Costs;
 
         public decimal Budget_Quantity => Entity.BUDGET_QUANTITY == null ? 0 : (decimal)Entity.BUDGET_QUANTITY;
 
@@ -329,6 +329,14 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Adjustment_Units => 0;
 
         public decimal Budget_Adjustment_Costs => 0;
+
+        public decimal Budget_ItemInternalRate => Budget_ItemRate;
+
+        public decimal Budget_InternalCost => Budget_Units * Budget_ItemInternalRate;
+
+        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
+
+        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

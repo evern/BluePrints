@@ -1075,6 +1075,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+
+        public decimal Budget_ItemInternalRate => Entity.Budget_ItemInternalRate;
+
+        public decimal Budget_InternalCost => Entity.Budget_InternalCost;
+
+        public decimal Variation_InternalCosts => Entity.Variation_InternalCosts;
+
+        public decimal Total_InternalCosts => Entity.Total_InternalCosts;
     }
 
     public class DeliverableEarnedPercentages

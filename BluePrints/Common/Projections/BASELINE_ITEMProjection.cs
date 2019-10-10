@@ -25,6 +25,8 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
+        public RATE INTERNAL_RATE { get; set; }
+
         private IEnumerable<object> assignUserObject;
 
         public object AssignUserObject
@@ -115,6 +117,23 @@ namespace BluePrints.Common.Projections
         }
 
         public decimal Budget_Costs => Entity.Budget_Units * this.Budget_ItemRate;
+
+        public decimal Budget_ItemInternalRate
+        {
+            get
+            {
+                if (INTERNAL_RATE == null || INTERNAL_RATE.RATE1 == null)
+                    return 0;
+
+                return (decimal)INTERNAL_RATE.RATE1;
+            }
+        }
+
+        public decimal Budget_InternalCost => Entity.Budget_Units * this.Budget_ItemInternalRate;
+
+        public decimal Variation_InternalCosts => 0;
+
+        public decimal Total_InternalCosts => 0;
 
         public Guid OriginalEntityKey => Entity.OriginalEntityKey;
 

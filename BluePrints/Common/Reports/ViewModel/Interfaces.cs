@@ -239,6 +239,9 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal Budget_ItemRate { get; }
         decimal Budget_Costs { get; }
+
+        decimal Budget_ItemInternalRate { get; }
+        decimal Budget_InternalCost { get; }
     }
 
     public interface IHaveStockCode
@@ -271,8 +274,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Budget_Adjustment_Units { get; }
         decimal Budget_Adjustment_Costs { get; }
         decimal Variation_Costs { get; }
+        decimal Variation_InternalCosts { get; }
         decimal Total_Units { get; }
         decimal Total_Costs { get; }
+        decimal Total_InternalCosts { get; }
     }
 
     public interface IHaveDeliverableStatus

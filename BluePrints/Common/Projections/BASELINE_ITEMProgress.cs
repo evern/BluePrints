@@ -353,6 +353,7 @@ namespace BluePrints.Common.Projections
         public void GetError(ErrorInfo info)
         {
         }
+
         #region User Report
         public string User_Name { get; set; }
         public string User_Role { get; set; }

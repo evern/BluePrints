@@ -934,6 +934,8 @@ namespace BluePrints.ViewModels
                 }
 
                 LoadingScreenManager.CloseLoadingScreen();
+
+
                 estimateItemViewModel.BulkSave(newESTIMATE_ITEMS);
                 estimateItemViewModel.Dispose();
                 MessageBoxService.ShowMessage(saveCount + " jobs generated in job setup", "Information", MessageButton.OK, MessageIcon.Information);

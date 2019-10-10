@@ -164,6 +164,14 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Adjustment_Costs => 0;
 
+        public decimal Budget_ItemInternalRate => Deliverables == null ? 0 : Deliverables.Sum(x => x.Budget_ItemInternalRate);
+
+        public decimal Budget_InternalCost => Deliverables == null ? 0 : Deliverables.Sum(x => x.Budget_InternalCost);
+
+        public decimal Variation_InternalCosts => Deliverables == null ? 0 : Deliverables.Sum(x => x.Variation_InternalCosts);
+
+        public decimal Total_InternalCosts => Deliverables == null ? 0 : Deliverables.Sum(x => x.Total_InternalCosts);
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             

@@ -451,6 +451,10 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Adjustment_Units => throw new NotImplementedException();
 
         public decimal Budget_Adjustment_Costs => throw new NotImplementedException();
+
+        public decimal Variation_InternalCosts => throw new NotImplementedException();
+
+        public decimal Total_InternalCosts => throw new NotImplementedException();
     }
 
     public static class ExoMethods

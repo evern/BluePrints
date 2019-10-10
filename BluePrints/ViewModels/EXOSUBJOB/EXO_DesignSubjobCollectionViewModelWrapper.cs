@@ -197,7 +197,7 @@ namespace BluePrints.ViewModels
 
             foreach (ExoSubJobEditableProjection subJob in DisplayEntities.Where(x => x.IsLineExistsInExo))
             {
-                subJob.Budget = subJob.ExoBudget;
+                subJob.ExoBudget = subJob.Budget;
                 commitLineBudgetCost(subJob);
             }
 
