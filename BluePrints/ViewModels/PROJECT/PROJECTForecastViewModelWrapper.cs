@@ -570,7 +570,7 @@ namespace BluePrints.ViewModels
                     {
                         ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
                         updateAdditionalJobInfo(commodityJob);
-                        updateDataTable(commodityJob, isNewData);
+                        mainThreadDispatcher.BeginInvoke(new Action(() => updateDataTable(commodityJob, isNewData)));
                         LoadingScreenManager.Progress();
                     }
 
