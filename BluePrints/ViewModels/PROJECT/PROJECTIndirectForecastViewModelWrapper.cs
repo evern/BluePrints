@@ -505,7 +505,7 @@ namespace BluePrints.ViewModels
                 newFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
                 MainViewModel.Save(newFORECAST_JOB);
                 row[columnGUID] = newFORECAST_JOB.GUID;
-                row[columnProjection] = newFORECAST_JOB;
+                row[columnProjection] = projection;
                 //add undo must be after so that Guid is populated
             }
         }
