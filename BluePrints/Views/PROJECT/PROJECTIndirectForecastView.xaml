@@ -47,7 +47,7 @@
                                         <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
                                             <dxg:GridControl.Columns>
                                                 <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
-                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" SortOrder="10" ReadOnly="True" />
                                                 <dxg:GridColumn FieldName="LATESTCOST" Header="Latest Costs" ReadOnly="True" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
