@@ -791,10 +791,10 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if(addedProjections.Count() > 0)
+            if (addedProjections.Count() > 0)
             {
                 //MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-                OnAfterNewRowAdded(addedProjections.First());
+                OnAfterNewRowAdded(addedProjections.Count);
                 //Refreshes collection properties
                 this.RaisePropertiesChanged();
                 return true;

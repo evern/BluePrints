@@ -27,6 +27,7 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -69,6 +70,7 @@ namespace BluePrints.ViewModels
         IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         public bool IsLoadingForecast { get; set; }
 
+        DispatcherTimer focusNewlyAddedProjectionTimer = new DispatcherTimer();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -89,6 +91,11 @@ namespace BluePrints.ViewModels
             QueryJobs = uniqueQueryJobs.OrderBy(x => x.FullCode).ToList();
             queryJobLines = jobLines;
             IsLoadingForecast = true;
+
+
+            focusNewlyAddedProjectionTimer = new DispatcherTimer();
+            focusNewlyAddedProjectionTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            focusNewlyAddedProjectionTimer.Tick += FocusNewlyAddedProjectionTimer_Tick;
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
         }
 
@@ -328,6 +335,9 @@ namespace BluePrints.ViewModels
         {
             EntitiesUndoRedoManager.PauseActionId();
             List<ErrorMessage> invalidRows = new List<ErrorMessage>();
+
+            LoadingScreenManager.ShowLoadingScreen(RowData.Count());
+            LoadingScreenManager.SetMessage("Pasting Rows...");
             foreach (var Row in RowData)
             {
                 var ColumnStrings = Row.Split('\t');
@@ -336,7 +346,7 @@ namespace BluePrints.ViewModels
                 if (queryJob != null)
                 {
                     addNewPasteRow(queryJob, gridTableView, ColumnStrings);
-                    invalidRows.Add(new ErrorMessage(fullCode, "Row is pasted"));
+                    pasteRowCount += 1;
                 }
                 else
                 {
@@ -353,6 +363,7 @@ namespace BluePrints.ViewModels
                             if(queryJob != null)
                             {
                                 addNewPasteRow(queryJob, gridTableView, ColumnStrings);
+                                pasteRowCount += 1;
                                 invalidRows.Add(new ErrorMessage(oldCode, "Row is pasted, but " + oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is a stock code"));
                             }
                             else
@@ -364,13 +375,17 @@ namespace BluePrints.ViewModels
                     else
                         invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                 }
+
+                LoadingScreenManager.Progress();
             }
 
+            focusNewlyAddedProjectionTimer.Start();
             EntitiesUndoRedoManager.UnpauseActionId();
+            LoadingScreenManager.CloseLoadingScreen();
             return invalidRows;
         }
 
-        private void addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings)
+        private DataRow addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings)
         {
             DataRow newRow = DataPointsTable.NewRow();
             newRow[columnFullCode] = queryJob.FullCode;
@@ -387,6 +402,29 @@ namespace BluePrints.ViewModels
             }
 
             DataPointsTable.Rows.Add(newRow);
+            return newRow;
+        }
+
+        int pasteRowCount = 0;
+        private void FocusNewlyAddedProjectionTimer_Tick(object sender, EventArgs e)
+        {
+            focusNewlyAddedProjectionTimer.Stop();
+            if (DataPointsTable == null || pasteRowCount == 0)
+                return;
+
+            IEnumerable<DataRow> selectRows = DataPointsTable.AsEnumerable().Skip(Math.Max(0, DisplayEntities.Count() - pasteRowCount));
+            selectedDataRows.Clear();
+
+            foreach (var selectRow in selectRows)
+            {
+                DataRowView dataRowView = DataPointsTable.DefaultView[DataPointsTable.Rows.IndexOf(selectRow)];
+                selectedDataRows.Add(dataRowView);
+                SelectedDataRow = dataRowView;
+            }
+
+            this.RaisePropertyChanged(x => x.SelectedDataRow);
+            this.RaisePropertyChanged(x => x.SelectedDataRows);
+            pasteRowCount = 0;
         }
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
@@ -874,6 +912,8 @@ namespace BluePrints.ViewModels
         {
             System.Windows.Forms.SendKeys.SendWait("^v");
         }
+
+        public DataRowView SelectedDataRow { get; set; }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedDataRows
