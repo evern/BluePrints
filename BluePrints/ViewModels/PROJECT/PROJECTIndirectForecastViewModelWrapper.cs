@@ -562,6 +562,8 @@ namespace BluePrints.ViewModels
                     newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.LATESTCOST);
                 else if (findSTOCK_ITEM.AVECOST != null && findSTOCK_ITEM.AVECOST > 0)
                     newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.AVECOST);
+                else if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
+                    newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
 
                 if (newDecimalValue == null)
                     row[columnForecastRate] = DBNull.Value;

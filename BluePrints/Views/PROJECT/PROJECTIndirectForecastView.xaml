@@ -48,12 +48,17 @@
                                             <dxg:GridControl.Columns>
                                                 <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
                                                 <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" SortIndex="1" ReadOnly="True" />
-                                                <dxg:GridColumn FieldName="LATESTCOST" Header="Latest Costs" ReadOnly="True" >
+                                                <dxg:GridColumn FieldName="LATESTCOST" Header="Latest Cost" ReadOnly="True" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="AVECOST" Header="Average Costs" ReadOnly="True" >
+                                                <dxg:GridColumn FieldName="AVECOST" Header="Average Cost" ReadOnly="True" >
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="STDCOST" Header="Standard Cost" ReadOnly="True" >
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                                     </dxg:GridColumn.EditSettings>
