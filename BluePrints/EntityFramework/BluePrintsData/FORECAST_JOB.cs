@@ -45,8 +45,8 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
 
-        [StringLength(500)]
-        public string SOURCE { get; set; }
+        [StringLength(50)]
+        public string STOCK_ITEM { get; set; }
 
         [StringLength(500)]
         public string REFERENCE { get; set; }

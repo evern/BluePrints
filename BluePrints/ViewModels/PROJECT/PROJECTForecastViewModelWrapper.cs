@@ -231,12 +231,12 @@ namespace BluePrints.ViewModels
                     isWeeks = value;
                     ForecastSummary.Reset();
                     EntitiesUndoRedoManager.Clear();
-                    mainThreadDispatcher.BeginInvoke(new Action(() => reloadDataPointsTable()));
+                    mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
                 }
             }
         }
 
-        private void reloadDataPointsTable()
+        private void loadDataPointsTable()
         {
             dataPointsTable = null;
             updateDataPointsTable();
@@ -473,7 +473,7 @@ namespace BluePrints.ViewModels
         {
             if(!isLoadingExo && !IsLoadingForecast)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => reloadDataPointsTable()));
+                mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
                 LoadingScreenManager.DisableLoadingScreen = false;
                 LoadingScreenManager.ShowLoadingScreen(0);
                 LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
@@ -580,9 +580,9 @@ namespace BluePrints.ViewModels
                 updateDataTable(commodityJob, isNewData);
                 LoadingScreenManager.Progress();
             }
-            LoadingScreenManager.CloseLoadingScreen();
-            GridControlService.GridControl.EndDataUpdate();
 
+            GridControlService.GridControl.EndDataUpdate();
+            LoadingScreenManager.CloseLoadingScreen();
             this.RaisePropertyChanged(x => x.ForecastSummary);
             this.RaisePropertyChanged(x => x.ExportTable);
         }
@@ -1340,6 +1340,7 @@ namespace BluePrints.ViewModels
             }
             else if (copyColumn.FieldType == typeof(decimal))
             {
+                decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
                 var rgx = new Regex("[^0-9a-z\\.]");
                 var cleanColumnString = rgx.Replace(pasteData, string.Empty);
                 decimal decimal_value;
@@ -1361,7 +1362,7 @@ namespace BluePrints.ViewModels
                             if (decimal_value >= totalCosts)
                             {
                                 findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
-                                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], decimal_value, EntityMessageType.Changed);
+                                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
                                 newRow[copyColumn.FieldName] = decimal_value;
                             }
                         }
@@ -1381,7 +1382,9 @@ namespace BluePrints.ViewModels
             }
             else if (copyColumn.FieldType == typeof(string))
             {
+                string oldValue = newRow[copyColumn.FieldName].ToString();
                 newRow[copyColumn.FieldName] = pasteData;
+                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, pasteData, EntityMessageType.Changed);
             }
 
             return true;
