@@ -711,6 +711,13 @@ namespace BluePrints.ViewModels
                 //so that when new workpacks are automatically generated it's displaymember can  be shown in comboboxes
                 this.RaisePropertyChanged(x => x.WORKPACKCollection);
             }
+            else if(changedType == typeof(DOCTYPE) && (messageType != EntityMessageType.Changed))
+            {
+                foreach(var entity in DisplayEntities)
+                {
+                    entity.Entity.Entity.ResetValidDocTypes();
+                }
+            }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }

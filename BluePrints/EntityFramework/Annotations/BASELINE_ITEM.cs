@@ -214,6 +214,7 @@ namespace BluePrints.Data
         public void ResetValidDocTypes()
         {
             validDocTypesByDeliverableTypeAndCommodityCode = null;
+            Update();
         }
 
         [NotMapped]
