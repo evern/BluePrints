@@ -38,6 +38,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
+        protected override CostType loadCostType => CostType.Cost;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;

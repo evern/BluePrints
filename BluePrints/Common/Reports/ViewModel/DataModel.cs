@@ -180,6 +180,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        //because this is used in P6 mapping to show number of activities mapped
+        public override decimal Total_Units => 1;
+
         public string UniqueJobcode => Entity.Deliverable_Name + "-" + Entity.Variation_Code;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
@@ -226,6 +229,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 info.ErrorText = "Invalid discipline code, please check phase";
             }
+        }
+
+        public override string ToString()
+        {
+            return UniqueJobcode;
         }
     }
 
@@ -512,7 +520,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PROGRESS Live_PROGRESS { get; set; }
         #endregion
 
-        public decimal Total_Units => Variation_Units + Budget_Units;
+        public virtual decimal Total_Units => Variation_Units + Budget_Units;
 
         public DateTime? TaskAssignmentStartDate { get; set; }
 

@@ -72,9 +72,11 @@
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">

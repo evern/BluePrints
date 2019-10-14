@@ -239,6 +239,8 @@ namespace BluePrints.ViewModels
         private void loadDataPointsTable()
         {
             dataPointsTable = null;
+            commodityJobs = null;
+
             updateDataPointsTable();
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }

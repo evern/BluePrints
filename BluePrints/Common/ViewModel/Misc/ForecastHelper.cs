@@ -322,7 +322,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
-
+                
                 //data points from exo requires lookup and is filtered by unique code string
                 addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs);
                 LoadingScreenManager.Progress();

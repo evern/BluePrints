@@ -592,27 +592,66 @@ namespace BluePrints.Common.Base
             if (Selected_Deliverable == null)
                 return;
 
-            bool show_already_assigned_message = false;
-            bool show_multiple_deliverable_assignment_message = false;
-
             IEnumerable<ICanAssignP6> active_deliverables;
             active_deliverables = Selected_Deliverables;
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (ICanAssignP6 deliverable in active_deliverables)
             {
                 if (deliverable.Assigned_Percentage == Assignment_Value)
                 {
-                    show_already_assigned_message = true;
+                    string P6AssignmentsString = string.Empty;
+                    foreach(var p6Assignment in deliverable.P6_Assignments)
+                    {
+                        P6AssignmentsString += p6Assignment.P6_ACTIVITYID + "\n";
+                    }
+
+                    if (P6AssignmentsString.Length > 2)
+                        P6AssignmentsString = P6AssignmentsString.Substring(0, P6AssignmentsString.Length - 1);
+
+                    errorMessages.Add(new ErrorMessage(deliverable.ToString(), "Current percentage is already assigned to activity " + P6AssignmentsString));
                     continue;
                 }
 
                 //because when multiple deliverable's are assigned to a single activity the remaining units cannot be reliably pro-rated into jobs
                 if(disableMultipleDeliverablesToOneActivityAssignment)
                 {
-                    if (P6_ASSIGNMENTSCollectionViewModel.Entities.Any(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID))
+                    List<ICanAssignP6> assignedDeliverables = new List<ICanAssignP6>();
+                    IEnumerable<P6_ASSIGNMENT> otherAssignments = P6_ASSIGNMENTSCollectionViewModel.Entities.Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID);
+                    if (otherAssignments.Count() > 0)
                     {
-                        show_multiple_deliverable_assignment_message = true;
-                        continue;
+                        string assignedDeliverableNames = string.Empty;
+                        foreach(P6_ASSIGNMENT otherAssignment in otherAssignments)
+                        {
+                            ICanAssignP6 assignedDeliverable = DisplayEntities.FirstOrDefault(x => x.OriginalEntityKey == otherAssignment.GUID_ORIGINAL);
+                            if (assignedDeliverable != null)
+                            {
+                                assignedDeliverables.Add(assignedDeliverable);
+                                assignedDeliverableNames += assignedDeliverable.ToString() + "\n";
+                            }
+                        }
+
+                        if (assignedDeliverableNames.Length > 2)
+                            assignedDeliverableNames = assignedDeliverableNames.Substring(0, assignedDeliverableNames.Length - 1);
+
+                        if (MessageBoxService.ShowMessage("There are already assignment to activity from " + assignedDeliverableNames + "\n\nDo you wish to replace it with\n\n" + deliverable.ToString() + "?", "Error", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                            continue;
+
+                        //remove assignments on the deliverables
+                        foreach(ICanAssignP6 assignedDeliverable in assignedDeliverables)
+                        {
+                            List<P6_ASSIGNMENT> removeAssignments = new List<P6_ASSIGNMENT>();
+                            foreach(P6_ASSIGNMENT p6Assignments in assignedDeliverable.P6_Assignments)
+                            {
+                                if (p6Assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
+                                    removeAssignments.Add(p6Assignments);
+                            }
+
+                            foreach(P6_ASSIGNMENT removeAssignment in removeAssignments)
+                                assignedDeliverable.P6_Assignments.Remove(removeAssignment);
+                        }
+
+                        P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(otherAssignments);
                     }
                 }
 
@@ -629,11 +668,6 @@ namespace BluePrints.Common.Base
                 });
             }
 
-            if(show_multiple_deliverable_assignment_message)
-                MessageBoxService.ShowMessage("Cannot assign multiple job to a single activity for construction", "Error", MessageButton.OK, MessageIcon.Warning);
-            else if(show_already_assigned_message)
-                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity", "Error", MessageButton.OK, MessageIcon.Warning);
-
             summarize_wbs_parent_unit(Selected_Activity);
 
             IEnumerable<P6_ASSIGNMENT> save_assignments = active_deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
@@ -646,6 +680,12 @@ namespace BluePrints.Common.Base
             SetMaxUnits();
             raise_deliverable_assignment_changes();
             raiseQuantityAssignmentPropertiesChanged();
+
+            if(errorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot create assignments due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+            }
         }
 
         public bool CanExportToExcel()

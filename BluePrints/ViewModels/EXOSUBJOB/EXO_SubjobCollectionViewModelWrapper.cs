@@ -350,7 +350,7 @@ namespace BluePrints.ViewModels
                 {
                     commitLineVariation(projection);
                 }
-                else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)))
+                else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)))
                 {
                     commitLineBudgetCost(projection);
                 }
@@ -827,7 +827,7 @@ namespace BluePrints.ViewModels
                 if (line != null)
                 {
                     line.QUOTE_QTY = 1;
-                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.Budget);
+                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.ExoBudget);
                     localPrimeroUnitOfWork.SaveChanges();
                     return true;
                 }
