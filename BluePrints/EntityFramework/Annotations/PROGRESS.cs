@@ -12,7 +12,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
 
     [ConstraintAttributes("NAME")]
-    public partial class PROGRESS : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    public partial class PROGRESS : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveP6Baselines
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROGRESS()
@@ -32,5 +32,13 @@ namespace BluePrints.Data
         }
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+
+        Guid IHaveP6Baselines.project_guid => GUID_PROJECT;
+
+        string IHaveP6Baselines.P6_Baseline_Name => P6PROGRESS_NAME;
+
+        string IHaveP6Baselines.P6_Mod_Baseline_Name => P6PROGRESS_NAME;
+
+        Guid IGuidEntityKey.GUID { get => GUID; set => GUID = value; }
     }
 }

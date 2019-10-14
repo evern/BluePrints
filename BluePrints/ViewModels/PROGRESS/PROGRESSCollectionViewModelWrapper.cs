@@ -205,6 +205,22 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        public bool CanP6BASELINE_ASSIGN()
+        {
+            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6PROGRESS_NAME != null && DisplaySelectedEntity.P6PROGRESS_NAME != string.Empty;
+        }
+
+        public void P6BASELINE_ASSIGN()
+        {
+            string viewName;
+            if (loadPROJECT.USE_WORKPACKS)
+                viewName = "BASELINE_ITEMWorkpackSchedulingView";
+            else
+                viewName = "BASELINE_ITEMSchedulingView";
+
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6PROGRESS_NAME + " Mapping");
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
 
         public bool CanEdit()
         {

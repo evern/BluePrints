@@ -12,6 +12,7 @@
             <dxb:BarManager>
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biP6Assignment" Content="P6 Assignment" Command="{Binding DataContext.P6BASELINE_ASSIGNCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
                     <dxb:BarButtonItem x:Name="biBackup" Content="Backup Selected" ToolTip="Create a backup of the selected progress" Command="{Binding DataContext.BackupCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=SelectDataMember_32x32.png}" Glyph="{dx:DXImage Image=SelectDataMember_16x16.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
@@ -35,6 +36,9 @@
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                     <dxb:BarButtonItemLink BarItemName="biBackup" />
+                                </dxr:RibbonPageGroup>
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
+                                    <dxb:BarButtonItemLink BarItemName="biP6Assignment" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                         </dxr:RibbonDefaultPageCategory>

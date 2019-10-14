@@ -105,7 +105,7 @@
                                                     <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="Assigned_Units" Header="Assigned Activity" IsSmart="True">
+                                            <dxg:GridColumn FieldName="Assigned_Units" Header="Assigned" IsSmart="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:TextEditSettings DisplayFormat="n" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

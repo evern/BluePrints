@@ -73,10 +73,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID == live_PROGRESS.GUID_PROJECT);
-            else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
+            return query => query.Where(x => x.GUID == iHaveP6BaselinesEntity.project_guid);
         }
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -86,15 +83,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
-            else
-            {
-                if(isProject)
-                    return query => query.Where(x => x.GUID_PROJECT == p6_baseline_entity.project_guid && x.STATUS == BaselineStatus.Live);
-                else
-                    return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
-            }
+            return query => query.Where(x => x.GUID_PROJECT == iHaveP6BaselinesEntity.project_guid && x.STATUS == BaselineStatus.Live);
         }
 
         private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()

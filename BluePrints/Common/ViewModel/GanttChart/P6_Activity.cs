@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel
         public virtual DateTime? Start { get => Task != null ? Task.target_start_date : null; set => start = value; }
         private DateTime? end;
         public virtual DateTime? End { get => Task != null ? Task.target_end_date : null; set => end = value; }
-        public decimal? Budgeted_Units => Task != null ? Task.target_work_qty : (decimal?)null;
+        public decimal? Budgeted_Units { get; set; }
         public bool IsTask => Task != null;
 
         public virtual double Left { get; set; }
