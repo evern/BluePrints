@@ -662,7 +662,8 @@ namespace BluePrints.ViewModels
                 if (loadBASELINE.BUDGETED_UNITS == null || loadBASELINE.BUDGETED_UNITS == 0)
                     return null;
 
-                return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Budget_Units);
+                //use Entity.Budget_Units to retrieve unadjusted budget units
+                return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Entity.Budget_Units);
             }
         }
 

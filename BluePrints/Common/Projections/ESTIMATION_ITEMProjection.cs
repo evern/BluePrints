@@ -337,6 +337,8 @@ namespace BluePrints.Common.Projections
         public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
 
         public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
+
+        public decimal Unadjusted_Budget_Units => Budget_Units;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

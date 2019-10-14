@@ -298,6 +298,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Budget_Units { get; }
         decimal Budget_Quantity { get; }
         decimal Total_Quantity { get; }
+        decimal Unadjusted_Budget_Units { get; }
     }
 
     public interface IHaveQuantity

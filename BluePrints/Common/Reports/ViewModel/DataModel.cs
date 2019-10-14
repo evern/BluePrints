@@ -1042,7 +1042,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinEstimateUnits => Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
+        public decimal MinEstimateUnits => Earned_Units_Total > Unadjusted_Budget_Units ? Unadjusted_Budget_Units : Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
+
+        public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
 
         public string Subjob_Name => Entity.Subjob_Name;
 

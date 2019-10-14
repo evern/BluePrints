@@ -169,6 +169,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Adjustment_Costs => 0;
 
+        public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             Entity.SetOriginalEntityKey(newGuid);
