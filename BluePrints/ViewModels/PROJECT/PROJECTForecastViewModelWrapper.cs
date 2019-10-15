@@ -1508,7 +1508,7 @@ namespace BluePrints.ViewModels
                 DateTime dateTime;
                 if (DateTime.TryParse(e.Column.FieldName, out dateTime))
                     removeFloatingProductivity = true;
-                else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+                else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
                     removeFloatingProductivity = true;
 
                 if (removeFloatingProductivity)

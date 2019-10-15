@@ -359,7 +359,6 @@ namespace BluePrints.ViewModels
                         ExoDataPoint dataPoint = poLine.DataPoints.First();
                         newForecast.Description = dataPoint.Description;
                         newForecast.Supplier = dataPoint.Supplier;
-
                         newForecast.ExoPOs = poLine.DataPoints;
                         projections.Add(newForecast);
                     }
