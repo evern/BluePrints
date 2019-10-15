@@ -35,7 +35,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-
         public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool showLoadingScreen = false)
         {
             try
@@ -44,114 +43,33 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (projectSummaryStats == null)
                     return;
 
-                ConcurrentBag<ExoDataPoint> tempBurnedDataPoints = new ConcurrentBag<ExoDataPoint>();
-                ConcurrentBag<ExoDataPoint> tempActualDataPoints = new ConcurrentBag<ExoDataPoint>();
-                List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+                List<ExoDataPoint> burnedDataPoints;
+                List<ExoDataPoint> materialDataPoints;
                 List<ExoDataPoint> poDataPoints;
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
                 string projectNumber = ProjectNumber;
 
-                IEnumerable<string> qualifiedSubjobs;
-                if (subjobs == null)
-                    qualifiedSubjobs = new List<string>();
-                else
-                {
+                IEnumerable<string> qualifiedSubjobs = null;
+                if (subjobs != null && !forceRetrieveAllJobs)
                     qualifiedSubjobs = subjobs.Select(x => x.INTERNAL_NAME1);
-                }
-
-                if(showLoadingScreen)
-                {
-                    LoadingScreenManager.ShowLoadingScreen(1);
-                    LoadingScreenManager.SetMessage("Loading Actuals...");
-                }
 
                 DateTime queryDataDate = DateTime.Now;
                 if (!forceRetrieveAllUnits)
                     queryDataDate = CurrentDataDate.AddDays(1).AddMinutes(-1);
 
-                var PrimeroUnitOfWork = PrimeroUOW;
-                var jobTransactions = from JOBTRANS in PrimeroUnitOfWork.JOB_TRANSACTIONS
-                                      join JOBCOST_HDR2 in PrimeroUnitOfWork.JOBCOST_HDR
-                                      on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                                      join JOBCOST_HDR1 in PrimeroUnitOfWork.JOBCOST_HDR
-                                      on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                                      join JOBCOST_RESOURCE in PrimeroUnitOfWork.JOBCOST_RESOURCE
-                                      on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
-                                      join JOB_COSTGROUPS in PrimeroUnitOfWork.JOB_COSTGROUPS
-                                      on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
-                                      join JOB_COSTTYPES in PrimeroUnitOfWork.JOB_COSTTYPES
-                                      on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= queryDataDate
-                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
-
-                var exoSubjobs = from JOBCOST_HDR in PrimeroUnitOfWork.JOBCOST_HDR
-                                 where JOBCOST_HDR.JOBCODE.Contains(projectNumber)
-                                 select new { JOBCOST_HDR.TITLE, JOBCOST_HDR.JOBCODE };
-
-                var exoSubjobsList = exoSubjobs.ToList();
-                var jobTransactionsList = jobTransactions.ToList();
 
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
-                HashSet<string> missingSubJobs = new HashSet<string>();
+                List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
-                LoadingScreenManager.CloseLoadingScreen();
-                if (showLoadingScreen)
-                {
-                    LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count);
-                    LoadingScreenManager.SetMessage("Loading Actuals...");
-                }
-
-                foreach (var jobTransaction in jobTransactionsList)
-                {
-                    if (forceRetrieveAllJobs || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
-                    {
-                        if (forceRetrieveAllJobs || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
-                        {
-                            ExoDataPoint burnedDataPoint = new ExoDataPoint();
-                            burnedDataPoint.BudgetedUnits = 0;
-                            burnedDataPoint.BudgetedCosts = 0;
-                            burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
-                            burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * this.CurrencyConversion;
-                            //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                            burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
-                            burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
-                            burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
-                            burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
-                            burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
-                            burnedDataPoint.Role = jobTransaction.TITLE;
-                            burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
-                            burnedDataPoint.CostType = jobTransaction.COSTDESC3;
-                            burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
-                            burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
-                            burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
-                            burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
-
-                            tempBurnedDataPoints.Add(burnedDataPoint);
-
-                            ExoDataPoint actualDataPoint = new ExoDataPoint();
-                            DataUtils.ShallowCopy(actualDataPoint, burnedDataPoint);
-                            actualDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
-                            tempActualDataPoints.Add(actualDataPoint);
-                        }
-                    }
-                    else
-                        missingSubJobs.Add(jobTransaction.JOBCODE);
-
-                    if(showLoadingScreen)
-                        LoadingScreenManager.Progress();
-                }
-
+                burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, queryDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
                 materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, queryDataDate, null, CurrencyConversion, showLoadingScreen);
                 poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, queryDataDate, null, showLoadingScreen);
 
-                foreach (string missingSubJob in missingSubJobs)
+                foreach (SUBJOB missingSUBJOB in missingSUBJOBS)
                 {
-                    SUBJOB newSUBJOB = new SUBJOB();
-                    newSUBJOB.INTERNAL_NAME1 = missingSubJob;
-                    newSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJob && x.QUANTITY != null).Sum(x => x.QUANTITY));
-                    projectSummaryStats.AddMissingExoSubjob(newSUBJOB);
+                    projectSummaryStats.AddMissingExoSubjob(missingSUBJOB);
                 }
 
                 projectSummaryStats.Burned = new Stats(summaryObject);
@@ -160,8 +78,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.PO = new Stats(summaryObject);
                 projectSummaryStats.RemainingActual = new Stats(summaryObject, true);
 
-                projectSummaryStats.Burned.SetData(tempBurnedDataPoints);
-                projectSummaryStats.Actual.SetData(tempActualDataPoints);
+                projectSummaryStats.Burned.SetData(burnedDataPoints);
+                projectSummaryStats.Actual.SetData(burnedDataPoints);
                 projectSummaryStats.Material.SetData(materialDataPoints);
                 projectSummaryStats.PO.SetData(poDataPoints);
 
