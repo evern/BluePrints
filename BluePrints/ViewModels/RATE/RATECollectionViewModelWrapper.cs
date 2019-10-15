@@ -6,6 +6,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -29,7 +30,6 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new RATECollectionViewModelWrapper(unitOfWorkFactory));
         }
 
-
         /// <summary>
         /// Initializes a new instance of the RATECollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the RATECollectionViewModelWrapper type without the POCO proxy factory.
@@ -45,14 +45,16 @@ namespace BluePrints.ViewModels
         protected PROJECT loadPROJECT;
         protected ChargeType loadChargeType;
         protected virtual CostType loadCostType => CostType.Charge;
-        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             loadChargeType = (ChargeType)PROJECTParameter.GetSecondEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()
@@ -91,7 +93,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null) && x.PHASE_TYPE != PhaseType.Design);
+            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
         }
 
         protected virtual IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
@@ -117,23 +119,36 @@ namespace BluePrints.ViewModels
         public virtual bool OnBeforeEntitySaved(RATE entity)
         {
             compulsoryOnBeforeEntitySaved(entity);
-            entity.COST_TYPE = CostType.Charge;
+            entity.COST_TYPE = loadCostType;
             entity.CHARGE_TYPE = loadChargeType;
-
-            if(loadChargeType == ChargeType.Chargeable)
-            {
-                PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "D1");
-                if (findPHASE != null)
-                    entity.GUID_PHASE = findPHASE.GUID;
-            }
-            else if(loadChargeType == ChargeType.NotChargeable)
-            {
-                PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "I1");
-                if (findPHASE != null)
-                    entity.GUID_PHASE = findPHASE.GUID;
-            }
+            populatePHASE(entity);
 
             return true;
+        }
+
+        protected virtual void populatePHASE(RATE entity)
+        {
+            if(entity.GUID_PHASE == null)
+            {
+                if (loadChargeType == ChargeType.Chargeable)
+                {
+                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "D1");
+                    if (findPHASE != null)
+                    {
+                        entity.GUID_PHASE = findPHASE.GUID;
+                        entity.PHASE_TYPE = PhaseType.Design;
+                    }
+                }
+                else if (loadChargeType == ChargeType.NotChargeable)
+                {
+                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "I1");
+                    if (findPHASE != null)
+                    {
+                        entity.GUID_PHASE = findPHASE.GUID;
+                        entity.PHASE_TYPE = PhaseType.Indirect;
+                    }
+                }
+            }
         }
 
         protected void compulsoryOnBeforeEntitySaved(RATE entity)
@@ -144,7 +159,7 @@ namespace BluePrints.ViewModels
                 entity.RATE1 = entity.GangRate;
             }
         }
-
+        
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
@@ -165,27 +180,27 @@ namespace BluePrints.ViewModels
             //do not validate phase type on new row because when enum is instantiated with default values user might get stucked in the cell due to duplication error
             if (projection.GUID != Guid.Empty && field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
             {
-                if (DisplayEntities.Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                if (DisplayEntities.Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DOCTYPE == projection.GUID_DOCTYPE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             if (field_name == BindableBase.GetPropertyName(() => new RATE().CHARGE_TYPE))
             {
-                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DOCTYPE == projection.GUID_DOCTYPE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
             {
-                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DOCTYPE == projection.GUID_DOCTYPE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
-                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.GUID_COMMODITY == projection.GUID_COMMODITY) && x.GUID != projection.GUID))
+                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.GUID_DOCTYPE == projection.GUID_DOCTYPE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().CommodityCodeId))
             {
-                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_COMMODITY == (Guid?)new_value) && x.GUID != projection.GUID))
+                if (DisplayEntities.Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DOCTYPE == (Guid?)new_value) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().RATE1))
@@ -245,21 +260,37 @@ namespace BluePrints.ViewModels
             projection.Update();
         }
 
-        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
-        {      
-            if (field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
+        {
+            projection.COST_TYPE = loadCostType;
+            projection.CHARGE_TYPE = loadChargeType;
+
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
             {
-                //rate is not instantiated with commodity codes to be selected, hence initialization begins here
-                if(isNew && new_value != null)
+                populatePHASE(projection);
+                projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DOCTYPE))
+            {
+                if (new_value != null)
                 {
-                    projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+                    //need to set it immediately so CustomColumnDisplayText will show the updated value without user having to exit the cell
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    if (findDOCTYPE != null)
+                        projection.ManualDOCTYPE = findDOCTYPE;
+                }
+                else
+                {
+                    projection.ManualDOCTYPE = null;
+                    projection.DOCTYPE = null;
                 }
 
-                Guid? oldValue = projection.CommodityCodeId;
-                Guid? newValue = null;
-                projection.CommodityCodeId = newValue;
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().CommodityCodeId), oldValue, newValue, EntityMessageType.Changed);
                 projection.Update();
             }
 
@@ -270,16 +301,31 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        public virtual void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().CommodityCodeId) ||
-                e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) ||
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) ||
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 if (e.Row != null && e.Value == null)
                 {
                     e.DisplayText = "Any";
                 }
+            }
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_DOCTYPE)) && e.Row != null)
+            {
+                RATE projection = (RATE)e.Row;
+                if(projection.DisplayDOCTYPE != null)
+                    e.DisplayText = projection.DisplayDOCTYPE.CODE;
+                else
+                    e.DisplayText = "Any";
+            }
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE)) && e.Row != null)
+            {
+                RATE projection = (RATE)e.Row;
+                if (projection.DisplayCOMMODITY_CODE != null)
+                    e.DisplayText = projection.DisplayCOMMODITY_CODE.CODE;
+                else
+                    e.DisplayText = "Any";
             }
         }
 
@@ -290,7 +336,7 @@ namespace BluePrints.ViewModels
             for(int i = 0;i < Rates.Count;i++)
             {
                 RATE entity = Rates[i];
-                if (Rates.Any(x => x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_COMMODITY == entity.GUID_COMMODITY && x.GUID != entity.GUID))
+                if (Rates.Any(x => x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DOCTYPE == entity.GUID_DOCTYPE && x.GUID != entity.GUID))
                 {
                     Rates.Remove(entity);
                     DeleteRates.Add(entity);
@@ -321,19 +367,27 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void InitNewRow(InitNewRowEventArgs e)
+        {
+            var gridView = (TableView)e.OriginalSource;
+            var grid = gridView.Grid;
+            RATE projection = (RATE)grid.GetRow(e.RowHandle);
+            projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+            projection.COST_TYPE = loadCostType;
+            projection.CHARGE_TYPE = loadChargeType;
+        }
+
         public IEnumerable<CombinedCommodityCode> CombinedCommodityCodeCollection
         {
             get
             {
                 List<CombinedCommodityCode> combinedCommodityCodes = new List<CombinedCommodityCode>();
-                if (DOCTYPECollection != null)
-                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { Code = x.CODE, Key = x.GUID, Description = x.NAME }));
-
-                //if (COMMODITY_CODECollection != null)
-                //    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Construct, Code = x.CODE, Key = x.GUID, Description = x.DESCRIPTION }));
-
-                //if (COMMODITY_CODECollection != null)
-                //    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Indirect, Code = x.CODE, Key = x.GUID, Description = x.DESCRIPTION }));
+                if(loadCostType == CostType.Charge && loadChargeType == ChargeType.Chargeable)
+                    combinedCommodityCodes.AddRange(DOCTYPECollection.Where(x => !x.IS_INDIRECT_ONLY).Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Design, GuidDepartment = x.GUID_DDEPARTMENT, GuidDiscipline = null, Code = x.CODE, Key = x.GUID, Description = x.NAME }));
+                else if (loadCostType == CostType.Charge && loadChargeType == ChargeType.NotChargeable)
+                    combinedCommodityCodes.AddRange(DOCTYPECollection.Select(x => new CombinedCommodityCode() { PhaseType = PhaseType.Indirect, GuidDepartment = x.GUID_DDEPARTMENT, GuidDiscipline = null, Code = x.CODE, Key = x.GUID, Description = x.NAME }));
+                else if(loadCostType == CostType.Cost)
+                    combinedCommodityCodes.AddRange(COMMODITY_CODECollection.Select(x => new CombinedCommodityCode() { PhaseType = x.PHASE_TYPE, GuidDepartment = null, GuidDiscipline = x.GUID_DISCIPLINE, Code = x.CODE, Key = x.GUID, Name = x.NAME, Description = x.DESCRIPTION }));
 
                 return combinedCommodityCodes.OrderBy(x => x.Code);
             }

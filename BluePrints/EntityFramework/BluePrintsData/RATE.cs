@@ -27,7 +27,9 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid? GUID_COMMODITY { get; set; }
+        public Guid? GUID_DOCTYPE { get; set; }
+
+        public Guid? GUID_COMMODITY_CODE { get; set; }
 
         public decimal? MANAGER_RATE { get; set; }
 
@@ -79,5 +81,9 @@ namespace BluePrints.Data
         public virtual PROJECT PROJECT { get; set; }
 
         public virtual PHASE PHASE { get; set; }
+
+        public virtual DOCTYPE DOCTYPE { get; set; }
+
+        public virtual COMMODITY_CODE COMMODITY_CODE { get; set; }
     }
 }

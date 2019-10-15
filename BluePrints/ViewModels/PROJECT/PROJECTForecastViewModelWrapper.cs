@@ -632,18 +632,17 @@ namespace BluePrints.ViewModels
                 string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
                 //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
-                COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
-                DOCTYPE rateDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityJob.Projection.Commodity.Code);
-                
                 if (ratePHASE != null && rateDISCIPLINE != null)
                 {
-                    IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
-                    Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ? rateDOCTYPE.GUID : (Guid?)null;
+                    COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.PHASE_TYPE == ratePHASE.PHASE_TYPE && x.GUID_DISCIPLINE == rateDISCIPLINE.GUID && x.CODE == commodityJob.Projection.Commodity.Code);
+                    commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(ratePHASE.GUID, rateDISCIPLINE.GUID, null, rateCOMMODITY.GUID, RATECollection, CostType.Cost);
+                    //IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
+                    //Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ? rateDOCTYPE.GUID : (Guid?)null;
 
-                    //order by descending places null GUID's at the end, so First() won't pick it up
-                    IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => y.COST_TYPE == CostType.Charge && (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
-                    IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
-                    commodityJob.FallBackRate = rateByDiscipline.FirstOrDefault();
+                    ////order by descending places null GUID's at the end, so First() won't pick it up
+                    //IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => (y.GUID_DOCTYPE == commodityGuid) || (y.GUID_DOCTYPE == null)).OrderByDescending(y => y.GUID_DOCTYPE);
+                    //IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
+                    //rateByDiscipline.FirstOrDefault();
                 }
             }
             #endregion

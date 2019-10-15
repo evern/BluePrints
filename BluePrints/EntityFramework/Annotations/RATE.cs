@@ -11,9 +11,10 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using BaseModel.DataModel;
+    using DevExpress.XtraEditors.DXErrorProvider;
 
-    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY")]
-    public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY_CODE, GUID_DOCTYPE")]
+    public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
         public DateTime EntityCreatedDate
@@ -34,34 +35,66 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid? CommodityCodeId
-        {
-            get { return GUID_COMMODITY; }
-            set
-            {
-                if (CommodityCodes == null)
-                    GUID_COMMODITY = value;
-                else if (value == null || CommodityCodes.Any(x => x.Key.ToString().ToUpper() == value.ToString().ToUpper()))
-                    GUID_COMMODITY = value;
-            }
-        }
+        public DOCTYPE ManualDOCTYPE { get; set; }
 
         [NotMapped]
-        private IEnumerable<CombinedCommodityCode> commodityCodes;
-        public IEnumerable<CombinedCommodityCode> CommodityCodes
+        public DOCTYPE DisplayDOCTYPE => ManualDOCTYPE != null ? ManualDOCTYPE : DOCTYPE;
+
+        [NotMapped]
+        public COMMODITY_CODE ManualCOMMODITY_CODE { get; set; }
+
+        [NotMapped]
+        public COMMODITY_CODE DisplayCOMMODITY_CODE => ManualCOMMODITY_CODE != null ? ManualCOMMODITY_CODE : COMMODITY_CODE;
+
+        [NotMapped]
+        public Guid? CommodityCodeId => COST_TYPE == CostType.Charge ? GUID_DOCTYPE : GUID_COMMODITY_CODE;
+
+        [NotMapped]
+        private IEnumerable<CombinedCommodityCode> allCommodityCodes;
+        [NotMapped]
+        private IEnumerable<CombinedCommodityCode> validCommodityCodes;
+
+        public IEnumerable<CombinedCommodityCode> ValidCommodityCodes
         {
             get
             {
-                if(commodityCodes != null)
-                    return commodityCodes;
+                if (allCommodityCodes == null)
+                    return new List<CombinedCommodityCode>();
 
-                return null;
+                if(GUID_PHASE == null)
+                    return allCommodityCodes;
+
+                if (COST_TYPE == CostType.Charge && GUID_DEPARTMENT == null)
+                    return allCommodityCodes;
+
+                if (validCommodityCodes == null)
+                {
+                    IEnumerable<CombinedCommodityCode> validCommodityCodesByPhase = allCommodityCodes.Where(x => x.PhaseType == PHASE_TYPE);
+
+                    //doc types doesn't have discipline
+                    if(COST_TYPE == CostType.Charge)
+                    {
+                        validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT).ToList();
+                    }
+                    //commodity codes doesn't have department
+                    else
+                    {
+                        if (GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE).ToList();
+                        else
+                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == null || x.GuidDiscipline == GUID_DISCIPLINE)).ToList();
+                    }
+                }
+
+                return validCommodityCodes;
             }
         }
 
         public void SetCommodityCodes(IEnumerable<CombinedCommodityCode> commodityCodes)
         {
-            this.commodityCodes = commodityCodes;
+            validCommodityCodes = null;
+            this.allCommodityCodes = commodityCodes;
+            Update();
         }
 
         public bool IsGangRateCalculatable
@@ -92,8 +125,8 @@ namespace BluePrints.Data
                     constraint += GUID_DEPARTMENT.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
-                if (GUID_COMMODITY != null)
-                    constraint += GUID_COMMODITY.ToString();
+                if (GUID_DOCTYPE != null)
+                    constraint += GUID_DOCTYPE.ToString();
 
                 return constraint;
             }
@@ -130,6 +163,28 @@ namespace BluePrints.Data
             ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.UndergraduatePercent, (decimal)this.UndergraduateRate));
 
             return ratesTable;
+        }
+
+        public void GetPropertyError(string propertyName, ErrorInfo info)
+        {
+            if (GUID_DOCTYPE != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_DOCTYPE)))
+            {
+                if (GUID_DEPARTMENT != null && !ValidCommodityCodes.Any(x => x.Key == GUID_DOCTYPE))
+                {
+                    info.ErrorText = "Document type is not valid for selected department";
+                }
+            }
+            if (GUID_COMMODITY_CODE != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE)))
+            {
+                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_COMMODITY_CODE))
+                {
+                    info.ErrorText = "Document type is not valid for selected discipline";
+                }
+            }
+        }
+
+        public void GetError(ErrorInfo info)
+        {
         }
 
         [NotMapped]

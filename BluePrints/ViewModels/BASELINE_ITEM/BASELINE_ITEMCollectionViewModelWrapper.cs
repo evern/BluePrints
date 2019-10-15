@@ -2258,7 +2258,7 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            if (findRATE.GUID_COMMODITY != null && findDOCTYPE != null)
+                            if (findRATE.GUID_DOCTYPE != null && findDOCTYPE != null)
                                 errorName += ", Commodity: " + findDOCTYPE.NAME;
 
                             invalidDeliverables.Add(new ErrorMessage(errorName, "Not using gang rate"));

@@ -5,6 +5,8 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -57,6 +59,7 @@ namespace BluePrints.ViewModels
 
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
+            //List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primero)
             List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
             rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
 
@@ -80,18 +83,70 @@ namespace BluePrints.ViewModels
         {
             compulsoryOnBeforeEntitySaved(entity);
             entity.COST_TYPE = CostType.Cost;
+            populatePHASE(entity);
 
+            return true;
+        }
+
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_PHASE) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            {
+                //rate is not instantiated with commodity codes to be selected, hence initialization begins here
+                if (isNew && new_value != null)
+                {
+                    projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+                }
+
+                //Guid? oldValue = projection.GUID_COMMODITY_CODE;
+                //Guid? newValue = null;
+                //projection.GUID_COMMODITY_CODE = newValue;
+                //projection.ManualCOMMODITY_CODE = null;
+                //MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+                //MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE), oldValue, newValue, EntityMessageType.Changed);
+                projection.Update();
+            }
+            else if(field_name == BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE))
+            {
+                if (new_value != null)
+                {
+                    //need to set it immediately so CustomColumnDisplayText will show the updated value without user having to exit the cell
+                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
+                    if (findCOMMODITY_CODE != null)
+                        projection.ManualCOMMODITY_CODE = findCOMMODITY_CODE;
+                }
+                else
+                {
+                    projection.ManualCOMMODITY_CODE = null;
+                    projection.COMMODITY_CODE = null;
+                }
+
+                projection.Update();
+            }
+
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_PHASE) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            {
+                populatePHASE(projection);
+                projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+            }
+        }
+
+        protected override void populatePHASE(RATE entity)
+        {
             if (entity.GUID_PHASE != null)
             {
                 PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.GUID == (Guid)entity.GUID_PHASE);
-                if(selectedPHASE != null)
+                if (selectedPHASE != null)
                 {
                     entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
                     entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
                 }
             }
-
-            return true;
         }
 
         #endregion
