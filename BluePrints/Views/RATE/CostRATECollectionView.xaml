@@ -117,11 +117,11 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <!--<dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
+                                    <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>-->
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_COMMODITY_CODE" Header="Commodity" HeaderToolTip="Which commodity the current rate will be applied to">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
