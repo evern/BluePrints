@@ -641,7 +641,7 @@ namespace BluePrints.ViewModels
                     if (rateCOMMODITY != null)
                         commodityGuid = rateCOMMODITY.GUID;
 
-                    commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(ratePHASE.GUID, rateDISCIPLINE.GUID, null, rateCOMMODITY.GUID, RATECollection, CostType.Cost);
+                    commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(ratePHASE.GUID, rateDISCIPLINE.GUID, null, commodityGuid, RATECollection, CostType.Cost);
                     //IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
                     //Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ? rateDOCTYPE.GUID : (Guid?)null;
 

@@ -29,7 +29,7 @@ namespace BluePrints.Data
 
         public Guid? GUID_DOCTYPE { get; set; }
 
-        public Guid? GUID_COMMODITY_CODE { get; set; }
+        public Guid? GUID_COMMODITY { get; set; }
 
         public decimal? MANAGER_RATE { get; set; }
 

@@ -13,7 +13,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using DevExpress.XtraEditors.DXErrorProvider;
 
-    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY_CODE, GUID_DOCTYPE")]
+    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY, GUID_DOCTYPE")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -47,7 +47,7 @@ namespace BluePrints.Data
         public COMMODITY_CODE DisplayCOMMODITY_CODE => ManualCOMMODITY_CODE != null ? ManualCOMMODITY_CODE : COMMODITY_CODE;
 
         [NotMapped]
-        public Guid? CommodityCodeId => COST_TYPE == CostType.Charge ? GUID_DOCTYPE : GUID_COMMODITY_CODE;
+        public Guid? CommodityCodeId => COST_TYPE == CostType.Charge ? GUID_DOCTYPE : GUID_COMMODITY;
 
         [NotMapped]
         private IEnumerable<CombinedCommodityCode> allCommodityCodes;
@@ -174,9 +174,9 @@ namespace BluePrints.Data
                     info.ErrorText = "Document type is not valid for selected department";
                 }
             }
-            if (GUID_COMMODITY_CODE != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE)))
+            if (GUID_COMMODITY != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY)))
             {
-                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_COMMODITY_CODE))
+                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_COMMODITY))
                 {
                     info.ErrorText = "Document type is not valid for selected discipline";
                 }

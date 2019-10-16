@@ -319,7 +319,7 @@ namespace BluePrints.ViewModels
                 else
                     e.DisplayText = "Any";
             }
-            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE)) && e.Row != null)
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY)) && e.Row != null)
             {
                 RATE projection = (RATE)e.Row;
                 if (projection.DisplayCOMMODITY_CODE != null)

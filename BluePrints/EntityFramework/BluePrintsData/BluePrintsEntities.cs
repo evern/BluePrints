@@ -211,7 +211,7 @@ namespace BluePrints.Data
             modelBuilder.Entity<COMMODITY_CODE>()
                 .HasMany(e => e.RATE)
                 .WithOptional(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
+                .HasForeignKey(e => e.GUID_COMMODITY);
 
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)

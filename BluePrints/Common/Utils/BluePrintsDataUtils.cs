@@ -1087,7 +1087,7 @@ namespace BluePrints.Common.ViewModel.Utils
             //order by descending places null GUID's at the end, so First() won't pick it up
             IEnumerable<RATE> rateByCommodities;
             if(CostType == CostType.Cost)
-                rateByCommodities = rateByPhase.Where(y => (y.GUID_COMMODITY_CODE == commodityGuid) || (y.GUID_COMMODITY_CODE == null)).OrderByDescending(y => y.GUID_COMMODITY_CODE);
+                rateByCommodities = rateByPhase.Where(y => (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
             else
                 rateByCommodities = rateByPhase.Where(y => (y.GUID_DOCTYPE == commodityGuid) || (y.GUID_DOCTYPE == null)).OrderByDescending(y => y.GUID_DOCTYPE);
 

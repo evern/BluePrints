@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
                 //MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE), oldValue, newValue, EntityMessageType.Changed);
                 projection.Update();
             }
-            else if(field_name == BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE))
+            else if(field_name == BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY))
             {
                 if (new_value != null)
                 {
