@@ -62,7 +62,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private BASELINE loadBASELINE;
-
         protected override PhaseType phase_type => PhaseType.Design;
 
         protected override void addEntitiesLoader()
@@ -349,7 +348,6 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
-
         #endregion
     }
 }

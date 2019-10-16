@@ -56,7 +56,7 @@
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                         <dxlc:LayoutGroup>
-                            <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="ROLETree" MouseUp="treeListControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="ROLETree" MouseUp="GridControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxg:TreeListDragDropManager x:Name="dragDropManager">
                                         <dxmvvm:Interaction.Behaviors>

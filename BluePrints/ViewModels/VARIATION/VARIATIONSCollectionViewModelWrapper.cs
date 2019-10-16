@@ -709,6 +709,15 @@ namespace BluePrints.ViewModels
                     return "Please uncheck the submit button above to unsubmit this variation.";
             }
 
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.ADJUSTMENT_TO_BUDGET))
+            {
+                if(new_value != null)
+                {
+                    bool adjustBudget = (bool)new_value;
+                    if (projection.Entity.APPROVED == null && adjustBudget)
+                        return "Variation must be approved, please check the approve button above to approve this variation, if you wish to edit the date you can do so after approving it.";
+                }
+            }
             return string.Empty;
         }
 
@@ -928,6 +937,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
+                        DisplaySelectedEntity.Entity.ADJUSTMENT_TO_BUDGET = false;
                         DisplaySelectedEntity.Entity.APPROVED = null;
                         DisplaySelectedEntity.Entity.APPROVEDBY = null;
                         DisplaySelectedEntity.Entity.GUID_ORIBASELINE = null;

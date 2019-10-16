@@ -302,7 +302,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
                 IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
                 IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
-                IEnumerable<Stats> remainingStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Remaining != null).Select(x => ((SummaryStats)x.Stats).Remaining);
 
                 allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));

@@ -30,7 +30,7 @@ namespace BluePrints.Views
         /// <summary>
         /// Circumvent an issue with checkedit not responsive on treelist because of drag drop manager and cellvaluechanged being implemented
         /// </summary>
-        private void treeListControl_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void GridControl_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             InplaceBaseEdit inplaceEdit = e.OriginalSource as InplaceBaseEdit;
             if (inplaceEdit != null)

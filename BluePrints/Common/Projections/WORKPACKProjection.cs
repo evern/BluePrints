@@ -167,7 +167,7 @@ namespace BluePrints.Common.Projections
                 if(p6_assignments != null)
                     foreach(P6_ASSIGNMENT p6_assignment in p6_assignments)
                     {
-                        P6_AssignmentProjection projection = new P6_AssignmentProjection(workpackProjection, p6_assignment);
+                        P6_AssignmentProjection projection = new P6_AssignmentProjection(workpackProjection, p6_assignment, false);
                         projection.P6_TASK = P6TASKS.FirstOrDefault(x => x.task_code == p6_assignment.P6_ACTIVITYID);
                         P6_AssignmentProjection.Add(projection);
                     }

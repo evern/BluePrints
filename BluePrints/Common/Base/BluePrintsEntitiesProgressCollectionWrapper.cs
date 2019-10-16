@@ -1174,7 +1174,7 @@ namespace BluePrints.Common.Base
             scheduling_view_model.OnViewModelLoaded = onSchedulingViewModelLoaded;
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
-            ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, true };
+            ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
         }
 
         private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, string errorMessage)
@@ -1442,7 +1442,7 @@ namespace BluePrints.Common.Base
                 foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                 {
                     TASK actual_context_task = task_source.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
-                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment, false);
 
                     if (actual_context_task != null && actual_context_task.delete_date == null)
                     {

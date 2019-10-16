@@ -34,6 +34,7 @@ namespace BluePrints.Common.Base
         IEnumerable<TASK> TASK_Source { get; }
         void Save_Task(TASK task);
         IEnumerable<TASKPRED> TASKPRED_Source { get; }
+        bool IsBudget { get; set; }
     }
 
     public abstract class BluePrintsEntitiesSchedulingCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
@@ -63,7 +64,7 @@ namespace BluePrints.Common.Base
         }
 
         protected abstract PhaseType phase_type { get; }
-
+        public bool IsBudget { get; set; }
         private void assign_progress(PROGRESS progress)
         {
             if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
@@ -164,7 +165,6 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
         protected BaselineMappingMode mappingMode;
-        protected bool includeVariation;
         protected IDialogService ActivityDetailDialogService
         {
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
@@ -177,7 +177,7 @@ namespace BluePrints.Common.Base
             iHaveP6BaselinesEntity = (IHaveP6Baselines)obj[0];
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
-            includeVariation = (bool)obj[3];
+            IsBudget = (bool)obj[3];
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
@@ -272,7 +272,7 @@ namespace BluePrints.Common.Base
             foreach (var activity in activities.Where(x => x.ActivityType == AppointmentActivityType.Activity))
             {
                 decimal total_activity_assigned_units = deliverables.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
-                                                        .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
+                                                        .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * getUnits(x)));
 
                 activity.Budgeted_Units = activity.Task == null ? (decimal?)null : activity.Task.act_work_qty;
                 activity.Assigned_Units = total_activity_assigned_units;
@@ -280,6 +280,14 @@ namespace BluePrints.Common.Base
             }
 
             summarize_wbs_units(Activities_Source);
+        }
+
+        private decimal getUnits(ICanAssignP6 deliverable)
+        {
+            if (IsBudget)
+                return deliverable.Budget_Units;
+            else
+                return deliverable.Total_Units;
         }
 
         protected void summarize_wbs_parent_unit(P6_Activity activity)
@@ -291,7 +299,7 @@ namespace BluePrints.Common.Base
             calculateSource = Deliverables_Source;
 
             decimal total_activity_assigned_units = calculateSource.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
-                                                    .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
+                                                    .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * getUnits(x)));
 
             activity.Assigned_Units = total_activity_assigned_units;
             activity.RaisePropertiesChanged();
@@ -684,7 +692,7 @@ namespace BluePrints.Common.Base
             {
                 foreach(P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
                 {
-                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(entity, assignment);
+                    P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(entity, assignment, IsBudget);
                     p6_assignment.Deliverable_Description = entity.P6AssignmentDescription;
                     P6_Activity p6_Activity = activities_source.FirstOrDefault(x => x.P6_ActivityId == assignment.P6_ACTIVITYID);
                     p6_assignment.P6_Description = p6_Activity == null ? string.Empty : p6_Activity.Description;
@@ -1029,7 +1037,7 @@ namespace BluePrints.Common.Base
                     {
                         TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID && x.delete_date == null);
 
-                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
+                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget);
 
                         if (actual_context_task != null)
                         {
@@ -1063,7 +1071,7 @@ namespace BluePrints.Common.Base
                         {
                             TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID);
 
-                            P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment);
+                            P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget);
 
                             if (actual_context_task != null && actual_context_task.delete_date == null)
                             {
@@ -1205,13 +1213,13 @@ namespace BluePrints.Common.Base
                 foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                 {
                     if (getAllActivities)
-                        missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment));
+                        missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget));
                     else
                     {
                         P6_Activity existingTask = Activities_Source.FirstOrDefault(x => x.P6_ActivityId == deliverable_assignment.P6_ACTIVITYID);
                         if (existingTask == null)
                         {
-                            missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment));
+                            missing_activities.Add(new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget));
                         }
                     }
                 }

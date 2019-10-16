@@ -782,14 +782,16 @@ namespace BluePrints.Common
     /// </summary>
     public class P6_AssignmentProjection
     {
-        public P6_AssignmentProjection(ICanAssignP6 deliverableProjection, P6_ASSIGNMENT baseline_item_assignment)
+        public P6_AssignmentProjection(ICanAssignP6 deliverableProjection, P6_ASSIGNMENT baseline_item_assignment, bool isBudget)
         {
             this.deliverableProjection = deliverableProjection;
             this.deliverable_assignment = baseline_item_assignment;
+            this.isBudget = isBudget;
         }
 
         public readonly P6_ASSIGNMENT deliverable_assignment;
         public readonly ICanAssignP6 deliverableProjection;
+        public readonly bool isBudget;
 
         TASK p6_task;
         public TASK P6_TASK
@@ -827,7 +829,8 @@ namespace BluePrints.Common
                 if (deliverableProjection == null)
                     return 0;
 
-                return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * deliverableProjection.Total_Units;
+                decimal assignmentUnits = isBudget ? deliverableProjection.Budget_Units : deliverableProjection.Total_Units;
+                return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * assignmentUnits;
             }
         }
 
