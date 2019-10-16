@@ -309,8 +309,14 @@ namespace BluePrints.Common.ViewModel.Misc
                 allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
             }
 
+            List<string> allExoJobConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).ToList();
+            foreach (DashboardFlatStructure dashboardJob in dashboardJobs)
+            {
+                allExoJobConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + dashboardJob.Variation_Code);
+            }
+
             ////List<string> uniqueExoJobsConcatNames = dashboardJobs.Select(x => x.SubjobCode + ";" + x.DisciplineCode + ";" + x.CommodityCode + ";" + x.Variation_Code).Distinct().ToList();
-            List<string> uniqueExoJobsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).Distinct().ToList();
+            List<string> uniqueExoJobsConcatNames = allExoJobConcatNames.Distinct().ToList();
 
             LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
             LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
