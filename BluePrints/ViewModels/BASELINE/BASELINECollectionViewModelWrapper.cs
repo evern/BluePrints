@@ -227,7 +227,7 @@ namespace BluePrints.ViewModels
             else
                 viewName = "BASELINE_ITEMSchedulingView";
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
+            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, false }, viewName, DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 

@@ -84,7 +84,11 @@ namespace BluePrints.ViewModels
 
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
-            return query => query.Where(x => x.CLIENT_APPROVED != null && x.GUID_PROJECT == loadPROJECT.GUID);
+            if(includeVariation)
+                return query => query.Where(x => x.SUBMITTED != null && x.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                //searching for Guid.Empty should return nothing and thus won't be pushed to P6 because units is calculated from TotalUnits
+                return query => query.Where(x => x.GUID_PROJECT == Guid.Empty);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()

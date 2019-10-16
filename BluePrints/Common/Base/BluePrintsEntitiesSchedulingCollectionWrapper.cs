@@ -164,6 +164,7 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
         protected BaselineMappingMode mappingMode;
+        protected bool includeVariation;
         protected IDialogService ActivityDetailDialogService
         {
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
@@ -176,7 +177,7 @@ namespace BluePrints.Common.Base
             iHaveP6BaselinesEntity = (IHaveP6Baselines)obj[0];
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
-
+            includeVariation = (bool)obj[3];
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
             Selected_Deliverables.CollectionChanged += Selected_Deliverables_CollectionChanged;
