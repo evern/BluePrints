@@ -214,6 +214,7 @@ namespace BluePrints.Data
         public void ResetValidDocTypes()
         {
             validDocTypesByDeliverableTypeAndCommodityCode = null;
+            Update();
         }
 
         [NotMapped]
@@ -356,6 +357,8 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? Variation_Guid { get => GUID_VARIATION; set => GUID_VARIATION = value; }
+
+        public decimal Unadjusted_Budget_Units => Budget_Units;
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

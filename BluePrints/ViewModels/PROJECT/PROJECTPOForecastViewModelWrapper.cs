@@ -71,6 +71,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         public CriteriaOperator FilterCriteria { get; set; }
+        public bool IsWeeks => false; //used by POForecastHeaderTemplate
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {
@@ -108,8 +109,8 @@ namespace BluePrints.ViewModels
         {
             isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
-            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, null, 1, true);
+            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, DateTime.Now, null, true);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
             setProject(loadPROJECT);
             generateAlignedDataDates();
             isExoDataLoaded = true;
@@ -359,7 +360,6 @@ namespace BluePrints.ViewModels
                         ExoDataPoint dataPoint = poLine.DataPoints.First();
                         newForecast.Description = dataPoint.Description;
                         newForecast.Supplier = dataPoint.Supplier;
-
                         newForecast.ExoPOs = poLine.DataPoints;
                         projections.Add(newForecast);
                     }
@@ -460,7 +460,9 @@ namespace BluePrints.ViewModels
             POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
-            decimal proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
+            decimal proRateOnPOItem = 1;
+            if(entity.PO_RemainingPrice > 0)
+                proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
             var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, VariationCode = g.Variation_Code }).Select(g => new { PONumber = g.Key.PONumber, JobCode = g.Key.JobCode, DisciplineCode = g.Key.DisciplineCode, CommodityCode = g.Key.CommodityCode, VariationCode = g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
             foreach (var groupByCodesPOItem in groupByCodesPOItems)

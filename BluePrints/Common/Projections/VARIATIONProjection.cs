@@ -42,6 +42,17 @@ namespace BluePrints.Common.Projections
                 return DetailEntities.Sum(x => x.Forecast_Costs);
             }
         }
+
+        public decimal TOTAL_INTERNALCOSTS
+        {
+            get
+            {
+                if (DetailEntities == null)
+                    return 0;
+
+                return DetailEntities.Sum(x => x.Forecast_InternalCosts);
+            }
+        }
     }
 
     public static class VARIATIONProjectionQueries

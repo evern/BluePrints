@@ -100,9 +100,14 @@
                                             <dxg:GridColumn FieldName="DisplayActivityType" FilterPopupMode="CheckedList" Header="Task" IsSmart="True" />
                                             <dxg:GridColumn CellTemplate="{StaticResource TimeTemplate}" FieldName="Start" Header="Begin" IsSmart="True" />
                                             <dxg:GridColumn CellTemplate="{StaticResource TimeTemplate}" FieldName="End" Header="End" IsSmart="True" />
+                                            <dxg:GridColumn FieldName="Budgeted_Units" Header="Budget" IsSmart="True" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="Assigned_Units" Header="Assigned" IsSmart="True">
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings DisplayFormat="n" />
+                                                    <dxe:TextEditSettings DisplayFormat="n" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->

@@ -241,7 +241,7 @@ namespace BluePrints.ViewModels
             KeyValuePair<ColumnBase, string> commodityCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)));
             KeyValuePair<ColumnBase, string> stockCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)));
             KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
-            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)));
+            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)));
 
             pasteEntity.SubJobCode = subjobCodeData.Value.Trim();
             pasteEntity.SubJobTitle = subjobCodeTitleData.Value.Trim();
@@ -254,7 +254,7 @@ namespace BluePrints.ViewModels
             decimal budgetValue = 0;
             if (decimal.TryParse(budgetData.Value, out budgetValue))
             {
-                pasteEntity.Budget = budgetValue;
+                pasteEntity.ExoBudget = budgetValue;
             }
 
             pasteEntity.PopulateCommodityCodes(COMMODITY_CODECollection);
@@ -350,7 +350,7 @@ namespace BluePrints.ViewModels
                 {
                     commitLineVariation(projection);
                 }
-                else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().Budget)))
+                else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)))
                 {
                     commitLineBudgetCost(projection);
                 }
@@ -791,10 +791,10 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if(addedProjections.Count() > 0)
+            if (addedProjections.Count() > 0)
             {
                 //MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
-                OnAfterNewRowAdded(addedProjections.First());
+                OnAfterNewRowAdded(addedProjections.Count);
                 //Refreshes collection properties
                 this.RaisePropertiesChanged();
                 return true;
@@ -819,7 +819,7 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        private bool commitLineBudgetCost(ExoSubJobEditableProjection projection)
+        protected bool commitLineBudgetCost(ExoSubJobEditableProjection projection)
         {
             if (projection.LineId != null)
             {
@@ -827,7 +827,7 @@ namespace BluePrints.ViewModels
                 if (line != null)
                 {
                     line.QUOTE_QTY = 1;
-                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.Budget);
+                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.ExoBudget);
                     localPrimeroUnitOfWork.SaveChanges();
                     return true;
                 }
@@ -934,6 +934,8 @@ namespace BluePrints.ViewModels
                 }
 
                 LoadingScreenManager.CloseLoadingScreen();
+
+
                 estimateItemViewModel.BulkSave(newESTIMATE_ITEMS);
                 estimateItemViewModel.Dispose();
                 MessageBoxService.ShowMessage(saveCount + " jobs generated in job setup", "Information", MessageButton.OK, MessageIcon.Information);

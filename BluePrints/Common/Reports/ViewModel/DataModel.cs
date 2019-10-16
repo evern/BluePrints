@@ -180,6 +180,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         }
 
+        //because this is used in P6 mapping to show number of activities mapped
+        public override decimal Total_Units => 1;
+
         public string UniqueJobcode => Entity.Deliverable_Name + "-" + Entity.Variation_Code;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
@@ -226,6 +229,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 info.ErrorText = "Invalid discipline code, please check phase";
             }
+        }
+
+        public override string ToString()
+        {
+            return UniqueJobcode;
         }
     }
 
@@ -512,7 +520,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public PROGRESS Live_PROGRESS { get; set; }
         #endregion
 
-        public decimal Total_Units => Variation_Units + Budget_Units;
+        public virtual decimal Total_Units => Variation_Units + Budget_Units;
 
         public DateTime? TaskAssignmentStartDate { get; set; }
 
@@ -1034,7 +1042,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinEstimateUnits => Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
+        public decimal MinEstimateUnits => Earned_Units_Total > Unadjusted_Budget_Units ? Unadjusted_Budget_Units : Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
+
+        public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
 
         public string Subjob_Name => Entity.Subjob_Name;
 
@@ -1075,6 +1085,14 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+
+        public decimal Budget_ItemInternalRate => Entity.Budget_ItemInternalRate;
+
+        public decimal Budget_InternalCost => Entity.Budget_InternalCost;
+
+        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
+
+        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
     }
 
     public class DeliverableEarnedPercentages

@@ -44,6 +44,7 @@ namespace BluePrints.ViewModels
 
         protected PROJECT loadPROJECT;
         protected ChargeType loadChargeType;
+        protected virtual CostType loadCostType => CostType.Charge;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -95,7 +96,7 @@ namespace BluePrints.ViewModels
 
         protected virtual IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
-            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType).ToList();
+            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType && x.COST_TYPE == loadCostType).ToList();
             rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
 
             return rateCollection.AsQueryable();

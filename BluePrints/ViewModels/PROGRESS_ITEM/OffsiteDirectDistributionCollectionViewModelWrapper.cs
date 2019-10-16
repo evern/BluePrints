@@ -655,8 +655,13 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the last highest % datapoint");
-                        Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
+                        decimal oldValueDecimal;
+                        if(oldValue != null && Decimal.TryParse(oldValue.ToString(), out oldValueDecimal))
+                        {
+                            MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the first instance of " + string.Format(oldValueDecimal.ToString("P")));
+                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
+                        }
+
                         return;
                     }
 
@@ -1074,7 +1079,7 @@ namespace BluePrints.ViewModels
             DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
-            fullSummarizer.BuildBurnedDataPoints(false);
+            fullSummarizer.BuildBurnedDataPoints(false, false);
             fullSummarizer.Build();
 
             progressReport.AssignProperties(projectSummary, loadPROGRESS.DATA_DATE, loadPROGRESS.PROJECT.NAME);

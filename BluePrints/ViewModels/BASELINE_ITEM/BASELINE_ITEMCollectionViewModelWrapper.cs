@@ -662,7 +662,8 @@ namespace BluePrints.ViewModels
                 if (loadBASELINE.BUDGETED_UNITS == null || loadBASELINE.BUDGETED_UNITS == 0)
                     return null;
 
-                return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Budget_Units);
+                //use Entity.Budget_Units to retrieve unadjusted budget units
+                return (decimal)loadBASELINE.BUDGETED_UNITS - DisplayEntities.Sum(x => x.Entity.Budget_Units);
             }
         }
 
@@ -710,6 +711,13 @@ namespace BluePrints.ViewModels
             {
                 //so that when new workpacks are automatically generated it's displaymember can  be shown in comboboxes
                 this.RaisePropertyChanged(x => x.WORKPACKCollection);
+            }
+            else if(changedType == typeof(DOCTYPE) && (messageType != EntityMessageType.Changed))
+            {
+                foreach(var entity in DisplayEntities)
+                {
+                    entity.Entity.Entity.ResetValidDocTypes();
+                }
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
@@ -2165,7 +2173,7 @@ namespace BluePrints.ViewModels
                 {
                     string errorName = "Department: " + findDEPARTMENT.NAME + ", Discipline: " + findDISCIPLINE.NAME;
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DOCTYPE);
-                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, deliverable.GUID_DOCTYPE, RATECollection);
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, deliverable.GUID_DOCTYPE, RATECollection, CostType.Charge);
                     if(findRATE != null && findRATE.RATE1 != null)
                     {
                         if(findRATE.IsUsingGangRate)

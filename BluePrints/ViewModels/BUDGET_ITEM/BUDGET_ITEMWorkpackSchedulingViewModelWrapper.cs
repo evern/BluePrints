@@ -86,10 +86,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
-            if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID == live_PROGRESS.GUID_PROJECT);
-            else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.project_guid);
+            return query => query.Where(x => x.GUID == iHaveP6BaselinesEntity.project_guid);
         }
 
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
@@ -99,10 +96,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
-            if (isFromPROGRESS)
-                return query => query.Where(x => x.GUID_PROJECT == live_PROGRESS.GUID_PROJECT && x.STATUS == BaselineStatus.Live);
-            else
-                return query => query.Where(x => x.GUID == p6_baseline_entity.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == iHaveP6BaselinesEntity.project_guid && x.STATUS == BaselineStatus.Live);
         }
 
         private void assign_budget(ESTIMATE entity)
@@ -110,7 +104,6 @@ namespace BluePrints.ViewModels
             if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live budget not found")));
 
-            p6_baseline_entity = entity;
             loadESTIMATE = entity;
         }
 

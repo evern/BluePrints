@@ -63,7 +63,7 @@
                                     <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                     <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
@@ -72,9 +72,11 @@
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">

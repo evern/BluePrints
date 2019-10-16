@@ -112,7 +112,12 @@
                                         <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Total Costs" FieldName="TOTAL_COSTS" FixedWidth="True" Width="100" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
+                                <dxg:GridColumn Header="Total Charge" FieldName="TOTAL_COSTS" FixedWidth="True" Width="100" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Total Costs" FieldName="TOTAL_INTERNALCOSTS" FixedWidth="True" Width="100" HeaderToolTip="Total costs of this variation" FilterPopupMode="CheckedList" VisibleIndex="90">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
@@ -122,11 +127,13 @@
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="TOTAL_UNITS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="TOTAL_UNITS" SummaryType="SUM" />
                                 <dxg:GridSummaryItem FieldName="TOTAL_COSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_COSTS" SummaryType="SUM" />
+                                <dxg:GridSummaryItem FieldName="TOTAL_INTERNALCOSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_INTERNALCOSTS" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.GroupSummary>
                                 <dxg:GridSummaryItem FieldName="TOTAL_UNITS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:n}" ShowInColumn="TOTAL_UNITS" SummaryType="SUM" />
                                 <dxg:GridSummaryItem FieldName="TOTAL_COSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_COSTS" SummaryType="SUM" />
+                                <dxg:GridSummaryItem FieldName="TOTAL_INTERNALCOSTS" dx:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c}" ShowInColumn="TOTAL_INTERNALCOSTS" SummaryType="SUM" />
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>

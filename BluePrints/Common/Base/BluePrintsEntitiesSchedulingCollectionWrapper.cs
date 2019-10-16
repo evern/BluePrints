@@ -83,20 +83,10 @@ namespace BluePrints.Common.Base
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
         {
             string projectName;
-            if (isFromPROGRESS)
-            {
-                if (live_PROGRESS.P6PROGRESS_NAME == null)
-                {
-                    OnViewModelLoadFailed?.Invoke("P6 progress not set");
-                    projectName = string.Empty;
-                }
-                else
-                    projectName = live_PROGRESS.P6PROGRESS_NAME;
-            }
-            else if (mappingType == BaselineMappingSelectionType.Modified)
-                projectName = p6_baseline_entity.P6_Mod_Baseline_Name;
+            if (mappingType == BaselineMappingSelectionType.Modified)
+                projectName = iHaveP6BaselinesEntity.P6_Mod_Baseline_Name;
             else
-                projectName = p6_baseline_entity.P6_Baseline_Name;
+                projectName = iHaveP6BaselinesEntity.P6_Baseline_Name;
 
             return query => query.Where(x => x.proj_short_name == projectName);
         }
@@ -166,20 +156,14 @@ namespace BluePrints.Common.Base
         #region Used as Dependency Delegate
         public Action<IEnumerable<ICanAssignP6>> OnViewModelLoaded { get; set; }
         public Action<string> OnViewModelLoadFailed { get; set; }
-
-        protected bool isFromPROGRESS
-        {
-            get { return OnViewModelLoaded != null; }
-        }
         #endregion
 
         protected P6Data.PROJECT loadP6PROJECT;
         protected PROGRESS live_PROGRESS;
-        protected IHaveP6Baselines p6_baseline_entity { get; set; }
+        protected IHaveP6Baselines iHaveP6BaselinesEntity { get; set; }
         protected Data.PROJECT loadPROJECT;
         protected BaselineMappingSelectionType mappingType;
         protected BaselineMappingMode mappingMode;
-        protected bool isProject = false;
         protected IDialogService ActivityDetailDialogService
         {
             get { return this.GetRequiredService<IDialogService>("ActivityIdDialog"); }
@@ -189,16 +173,9 @@ namespace BluePrints.Common.Base
         {
             var obj = (object[])parameter;
 
-            if (isFromPROGRESS)
-                live_PROGRESS = (PROGRESS)obj[0];
-            else
-                p6_baseline_entity = (IHaveP6Baselines)obj[0];
-
+            iHaveP6BaselinesEntity = (IHaveP6Baselines)obj[0];
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
-
-            if(obj.Count() > 3)
-                isProject = ((bool)obj[3]);
 
             Selected_Deliverables = new ObservableCollection<ICanAssignP6>();
             Selected_P6_Assignments = new ObservableCollection<P6_ASSIGNMENTProjection>();
@@ -208,7 +185,7 @@ namespace BluePrints.Common.Base
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            if (isFromPROGRESS)
+            if (OnViewModelLoaded != null)
             {
                 mainThreadDispatcher.BeginInvoke(new Action(() => OnViewModelLoaded(entities)));
                 return;
@@ -295,6 +272,8 @@ namespace BluePrints.Common.Base
             {
                 decimal total_activity_assigned_units = deliverables.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
                                                         .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * x.Total_Units));
+
+                activity.Budgeted_Units = activity.Task == null ? (decimal?)null : activity.Task.act_work_qty;
                 activity.Assigned_Units = total_activity_assigned_units;
                 activity.RaisePropertiesChanged();
             }
@@ -346,6 +325,7 @@ namespace BluePrints.Common.Base
                     List<P6_Activity> iteration_activities = new List<P6_Activity>();
                     recurse_collect_child_activities(Activities_Source, activity, iteration_activities);
                     activity.Assigned_Units = iteration_activities.Sum(x => x.Assigned_Units);
+                    activity.Budgeted_Units = iteration_activities.Sum(x => x.Budgeted_Units);
                     activity.RaisePropertiesChanged();
                 }
         }
@@ -592,27 +572,66 @@ namespace BluePrints.Common.Base
             if (Selected_Deliverable == null)
                 return;
 
-            bool show_already_assigned_message = false;
-            bool show_multiple_deliverable_assignment_message = false;
-
             IEnumerable<ICanAssignP6> active_deliverables;
             active_deliverables = Selected_Deliverables;
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (ICanAssignP6 deliverable in active_deliverables)
             {
                 if (deliverable.Assigned_Percentage == Assignment_Value)
                 {
-                    show_already_assigned_message = true;
+                    string P6AssignmentsString = string.Empty;
+                    foreach(var p6Assignment in deliverable.P6_Assignments)
+                    {
+                        P6AssignmentsString += p6Assignment.P6_ACTIVITYID + "\n";
+                    }
+
+                    if (P6AssignmentsString.Length > 2)
+                        P6AssignmentsString = P6AssignmentsString.Substring(0, P6AssignmentsString.Length - 1);
+
+                    errorMessages.Add(new ErrorMessage(deliverable.ToString(), "Current percentage is already assigned to activity " + P6AssignmentsString));
                     continue;
                 }
 
                 //because when multiple deliverable's are assigned to a single activity the remaining units cannot be reliably pro-rated into jobs
                 if(disableMultipleDeliverablesToOneActivityAssignment)
                 {
-                    if (P6_ASSIGNMENTSCollectionViewModel.Entities.Any(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID))
+                    List<ICanAssignP6> assignedDeliverables = new List<ICanAssignP6>();
+                    IEnumerable<P6_ASSIGNMENT> otherAssignments = P6_ASSIGNMENTSCollectionViewModel.Entities.Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID);
+                    if (otherAssignments.Count() > 0)
                     {
-                        show_multiple_deliverable_assignment_message = true;
-                        continue;
+                        string assignedDeliverableNames = string.Empty;
+                        foreach(P6_ASSIGNMENT otherAssignment in otherAssignments)
+                        {
+                            ICanAssignP6 assignedDeliverable = DisplayEntities.FirstOrDefault(x => x.OriginalEntityKey == otherAssignment.GUID_ORIGINAL);
+                            if (assignedDeliverable != null)
+                            {
+                                assignedDeliverables.Add(assignedDeliverable);
+                                assignedDeliverableNames += assignedDeliverable.ToString() + "\n";
+                            }
+                        }
+
+                        if (assignedDeliverableNames.Length > 2)
+                            assignedDeliverableNames = assignedDeliverableNames.Substring(0, assignedDeliverableNames.Length - 1);
+
+                        if (MessageBoxService.ShowMessage("There are already assignment to activity from " + assignedDeliverableNames + "\n\nDo you wish to replace it with\n\n" + deliverable.ToString() + "?", "Error", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                            continue;
+
+                        //remove assignments on the deliverables
+                        foreach(ICanAssignP6 assignedDeliverable in assignedDeliverables)
+                        {
+                            List<P6_ASSIGNMENT> removeAssignments = new List<P6_ASSIGNMENT>();
+                            foreach(P6_ASSIGNMENT p6Assignments in assignedDeliverable.P6_Assignments)
+                            {
+                                if (p6Assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
+                                    removeAssignments.Add(p6Assignments);
+                            }
+
+                            foreach(P6_ASSIGNMENT removeAssignment in removeAssignments)
+                                assignedDeliverable.P6_Assignments.Remove(removeAssignment);
+                        }
+
+                        P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(otherAssignments);
                     }
                 }
 
@@ -629,11 +648,6 @@ namespace BluePrints.Common.Base
                 });
             }
 
-            if(show_multiple_deliverable_assignment_message)
-                MessageBoxService.ShowMessage("Cannot assign multiple job to a single activity for construction", "Error", MessageButton.OK, MessageIcon.Warning);
-            else if(show_already_assigned_message)
-                MessageBoxService.ShowMessage("Current percentage is already assigned to an activity", "Error", MessageButton.OK, MessageIcon.Warning);
-
             summarize_wbs_parent_unit(Selected_Activity);
 
             IEnumerable<P6_ASSIGNMENT> save_assignments = active_deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
@@ -646,6 +660,12 @@ namespace BluePrints.Common.Base
             SetMaxUnits();
             raise_deliverable_assignment_changes();
             raiseQuantityAssignmentPropertiesChanged();
+
+            if(errorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot create assignments due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+            }
         }
 
         public bool CanExportToExcel()
@@ -980,9 +1000,9 @@ namespace BluePrints.Common.Base
 
             string ProjectName;
             if (mappingType == BaselineMappingSelectionType.Modified)
-                ProjectName = p6_baseline_entity.P6_Mod_Baseline_Name;
+                ProjectName = iHaveP6BaselinesEntity.P6_Mod_Baseline_Name;
             else
-                ProjectName = p6_baseline_entity.P6_Baseline_Name;
+                ProjectName = iHaveP6BaselinesEntity.P6_Baseline_Name;
 
             P6Data.PROJECT P6_PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
 
@@ -1173,9 +1193,9 @@ namespace BluePrints.Common.Base
 
             string project_name;
             if (mappingType == BaselineMappingSelectionType.Modified)
-                project_name = p6_baseline_entity.P6_Baseline_Name;
+                project_name = iHaveP6BaselinesEntity.P6_Baseline_Name;
             else
-                project_name = p6_baseline_entity.P6_Mod_Baseline_Name;
+                project_name = iHaveP6BaselinesEntity.P6_Mod_Baseline_Name;
 
             List<P6_AssignmentProjection> missing_activities = new List<P6_AssignmentProjection>();
             foreach (ICanAssignP6 deliverable in Deliverables_Source)

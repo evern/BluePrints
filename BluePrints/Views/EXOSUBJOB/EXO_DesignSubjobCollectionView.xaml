@@ -14,6 +14,7 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
+                    <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding DataContext.AlignExoBudgetCommand, ElementName=userControl}" Content="Align Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align exo budget with budget calculated from deliverable's list" />
                     <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding DataContext.AutoAssignPermissionCommand, ElementName=userControl}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
                     <dxb:BarButtonItem x:Name="biLocalCopy" Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                     <dxb:BarButtonItem x:Name="biLocalPaste" Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
@@ -37,6 +38,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                     <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                     <dxb:BarButtonItemLink BarItemName="biViewReport1" />
+                                    <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
@@ -57,30 +59,44 @@
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
+                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" FilterPopupMode="CheckedList" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" FilterPopupMode="CheckedList" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxe:TextEdit x:Name="PART_Editor" NullText="{Binding RowData.Row.NullText}" ShowNullText="True" IsReadOnly="{Binding RowData.Row.IsLineExistsInExo, Converter={StaticResource BooleanNegationConverter}}" />
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
-                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" FilterPopupMode="CheckedList" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" FilterPopupMode="CheckedList" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
+                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" FilterPopupMode="CheckedList" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="VariationCode" Header="Variation" FilterPopupMode="CheckedList" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Budget" Header="Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget calculated from from deliverable's total">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                     <!--<dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>-->
-                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" FilterPopupMode="CheckedList" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
@@ -92,6 +108,8 @@
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>

@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public bool Visible { get; set; }
     }
 
-    public enum SettingsType { Default, POError, Budget, Number, ForecastPast, ForecastFuture, ForecastChild, FullCode }
+    public enum SettingsType { Default, POError, Budget, Number, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem }
     public class ColumnTemplateSelector : DataTemplateSelector
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)

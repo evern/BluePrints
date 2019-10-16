@@ -692,7 +692,7 @@ namespace BluePrints.Common.Base
 
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
-            ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original, loadPROJECT };
+            ParameterObj.Parameter = new object[] { loadPROGRESS, BaselineMappingSelectionType.Original };
         }
 
         public void SyncProgressP6_Loaded(IEnumerable<ICanAssignP6> entities)

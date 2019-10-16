@@ -133,7 +133,7 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodeStringCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Type in a budget">
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
@@ -143,11 +143,11 @@
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="SubJobCode" SummaryType="Count" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="SubJobCode" SummaryType="Count" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">

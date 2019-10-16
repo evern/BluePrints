@@ -25,6 +25,8 @@ namespace BluePrints.Common.Projections
 
         public RATE RATE { get; set; }
 
+        public RATE INTERNAL_RATE { get; set; }
+
         private IEnumerable<object> assignUserObject;
 
         public object AssignUserObject
@@ -116,6 +118,23 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Costs => Entity.Budget_Units * this.Budget_ItemRate;
 
+        public decimal Budget_ItemInternalRate
+        {
+            get
+            {
+                if (INTERNAL_RATE == null || INTERNAL_RATE.RATE1 == null)
+                    return 0;
+
+                return (decimal)INTERNAL_RATE.RATE1;
+            }
+        }
+
+        public decimal Budget_InternalCost => Entity.Budget_Units * this.Budget_ItemInternalRate;
+
+        public decimal Variation_InternalCosts => 0;
+
+        public decimal Total_InternalCosts => 0;
+
         public Guid OriginalEntityKey => Entity.OriginalEntityKey;
 
         public DELIVERABLES_STATUS Deliverable_Status => Entity.Deliverable_Status;
@@ -149,6 +168,8 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Adjustment_Units => 0;
 
         public decimal Budget_Adjustment_Costs => 0;
+
+        public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
 
         public void SetOriginalEntityKey(Guid newGuid)
         {
@@ -210,9 +231,13 @@ namespace BluePrints.Common.Projections
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES);
+                RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES, CostType.Charge);
                 if (findRATE != null)
                     newBASELINE_ITEM.RATE = findRATE;
+
+                RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_PHASE, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, baseline_item.GUID_DOCTYPE, RATES, CostType.Cost);
+                if (findInternalRate != null)
+                    newBASELINE_ITEM.INTERNAL_RATE = findInternalRate;
 
                 returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
 

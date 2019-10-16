@@ -144,7 +144,7 @@ namespace BluePrints.ViewModels
                     DisplayEntities.Insert(0, projection);
                 }
 
-                OnAfterNewRowAdded(projection);
+                OnAfterNewRowAdded(1);
                 if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);
             }

@@ -95,7 +95,12 @@
                                         <dxg:GridColumn FieldName="Entity.PONO" Fixed="Left" Header="PO Number" ReadOnly="True" VisibleIndex="10" />
                                         <!--<dxg:GridColumn FieldName="Entity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="11" />-->
                                         <dxg:GridColumn FieldName="Entity.Supplier" Fixed="Left" Header="Supplier" ReadOnly="True" VisibleIndex="12" />
-                                        <dxg:GridColumn FieldName="Entity.InvoiceDate" Fixed="Left" Header="Invoiced On" ReadOnly="True" VisibleIndex="20" >
+                                        <dxg:GridColumn FieldName="Entity.FirstActualDate" Fixed="Left" Header="First Raised" ReadOnly="True" VisibleIndex="20" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:DateEditSettings />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="Entity.FirstInvoiceDate" Fixed="Left" Header="First Invoiced" ReadOnly="True" VisibleIndex="30" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:DateEditSettings />
                                             </dxg:GridColumn.EditSettings>
