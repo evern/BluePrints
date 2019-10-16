@@ -71,6 +71,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         public CriteriaOperator FilterCriteria { get; set; }
+        public bool IsWeeks => false; //used by POForecastHeaderTemplate
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {

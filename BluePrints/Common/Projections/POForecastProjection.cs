@@ -51,7 +51,7 @@ namespace BluePrints.Common.Projections
                 if (ExoActuals == null || ExoActuals.Count == 0)
                     return null;
 
-                return ExoActuals.Min(x => x.ActualDate);
+                return ExoActuals.Min(x => x.InvoiceDate);
             }
         }
 
@@ -89,7 +89,7 @@ namespace BluePrints.Common.Projections
                         return null;
 
                     forecastPayments = new List<ExoDataPoint>();
-                    if (FirstInvoiceDate != null)
+                    if (ExoPOs != null)
                     {
                         var groupByDateFORECASTS = FORECAST_POs.GroupBy(x => x.FORECAST_DATE).Select(g => new { ForecastDate = g.Key, ForecastCost = g.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE) }).OrderBy(x => x.ForecastDate);
                         foreach (var groupByDateFORECAST in groupByDateFORECASTS)
