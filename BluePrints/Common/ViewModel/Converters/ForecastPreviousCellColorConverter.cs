@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.Resources;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Data;
@@ -33,11 +34,12 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal actualCosts = (decimal)childEntity.Rows[0][fieldname];
-                            decimal materialCosts = (decimal)childEntity.Rows[1][fieldname];
-                            decimal poForecastCosts = (decimal)childEntity.Rows[2][fieldname];
-                            decimal p6RemainingCosts = (decimal)childEntity.Rows[3][fieldname];
-                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                            //decimal actualCosts = (decimal)childEntity.Rows[0][fieldname];
+                            //decimal materialCosts = (decimal)childEntity.Rows[1][fieldname];
+                            decimal poForecastCosts = (decimal)childEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_POCostRow)][fieldname];
+                            decimal p6RemainingCosts = (decimal)childEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_P6CostRow)][fieldname];
+                            //decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                            decimal totalCosts = poForecastCosts + p6RemainingCosts;
                             decimal parentValue = (decimal)values[2];
 
                             if (parentValue <= totalCosts)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.Resources;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Data;
@@ -27,22 +28,22 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count > 5)
+                    if (compareEntity.Rows.Count == System.Convert.ToInt32(BluePrintsResources.ForecastCompare_TotalRow))
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
-                            decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
-                            decimal poForecastCosts = (decimal)compareEntity.Rows[2][fieldname];
-                            DataRow compareP6UnitsRemainingRow = compareEntity.Rows[4];
-                            decimal weeklyCosts = (decimal)compareEntity.Rows[5][fieldname];
+                            //decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
+                            //decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
+                            decimal poForecastCosts = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_POCostRow)][fieldname];
+                            DataRow compareP6UnitsRemainingRow = compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_P6HourRow)];
+                            decimal weeklyCosts = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_IndirectCostRow)][fieldname];
                             DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow["CompareEntities"];
-                            DataRow compareChildP6CostsRemainingRow = compareChildDataTable.Rows[0];
+                            DataRow compareChildP6CostsRemainingRow = compareChildDataTable.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRow)];
                             decimal p6RemainingCosts = (decimal)compareChildP6CostsRemainingRow[fieldname];
 
-                            decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts + weeklyCosts;
+                            decimal totalCosts = poForecastCosts + p6RemainingCosts + weeklyCosts;
                             totalCosts = Math.Round(totalCosts);
                             decimal currentValue = (decimal)values[2];
 

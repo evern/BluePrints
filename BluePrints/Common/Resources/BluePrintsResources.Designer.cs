@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class BluePrintsResources {
@@ -408,6 +408,78 @@ namespace BluePrints.Common.Resources {
         internal static string Exception_ValidationErrorCaption {
             get {
                 return ResourceManager.GetString("Exception_ValidationErrorCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string ForecastCompare_IndirectCostRow {
+            get {
+                return ResourceManager.GetString("ForecastCompare_IndirectCostRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string ForecastCompare_P6CostRow {
+            get {
+                return ResourceManager.GetString("ForecastCompare_P6CostRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3.
+        /// </summary>
+        internal static string ForecastCompare_P6HourRow {
+            get {
+                return ResourceManager.GetString("ForecastCompare_P6HourRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0.
+        /// </summary>
+        internal static string ForecastCompare_POCostRow {
+            get {
+                return ResourceManager.GetString("ForecastCompare_POCostRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4.
+        /// </summary>
+        internal static string ForecastCompare_TotalRow {
+            get {
+                return ResourceManager.GetString("ForecastCompare_TotalRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0.
+        /// </summary>
+        internal static string ForecastCompareChild_P6CostRow {
+            get {
+                return ResourceManager.GetString("ForecastCompareChild_P6CostRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string ForecastCompareChild_P6HourRow {
+            get {
+                return ResourceManager.GetString("ForecastCompareChild_P6HourRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string ForecastCompareChild_TotalRow {
+            get {
+                return ResourceManager.GetString("ForecastCompareChild_TotalRow", resourceCulture);
             }
         }
         

@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using System;
 using System.Data;
 using System.Windows;
@@ -38,7 +39,7 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            decimal p6RemainingHours = (decimal)compareEntity.Rows[1][fieldname];
+                            decimal p6RemainingHours = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRow)][fieldname];
                             decimal totalCosts = Math.Round(p6RemainingHours);
                             decimal currentValue = (decimal)values[2];
 
