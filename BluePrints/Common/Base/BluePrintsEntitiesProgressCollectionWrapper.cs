@@ -1174,7 +1174,7 @@ namespace BluePrints.Common.Base
             scheduling_view_model.OnViewModelLoaded = onSchedulingViewModelLoaded;
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             var ParameterObj = scheduling_view_model as ISupportParameter;
-            ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT };
+            ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, true };
         }
 
         private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, string errorMessage)
