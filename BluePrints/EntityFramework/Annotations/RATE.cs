@@ -188,6 +188,7 @@ namespace BluePrints.Data
         public decimal GraduateRate => this.GRADUATE_RATE == null ? 0 : (decimal)this.GRADUATE_RATE;
         public decimal UndergraduateRate => this.UNDERGRADUATE_RATE == null ? 0 : (decimal)this.UNDERGRADUATE_RATE;
 
+        public bool IsRateExists => GUID != Guid.Empty;
         public List<Tuple<decimal, decimal>> GetGangRateTable()
         {
             if (!IsGangRateCalculatable)
@@ -248,6 +249,8 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
+        public decimal AverageRate { get; set; }
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

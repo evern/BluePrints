@@ -8,6 +8,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
@@ -41,10 +42,16 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         protected override CostType loadCostType => CostType.Cost;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+
+            base.resolveParameters
         }
 
         protected override void addEntitiesLoader()
@@ -59,11 +66,31 @@ namespace BluePrints.ViewModels
 
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
-            //List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primero)
-            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
-            rateCollection.ForEach(x => x.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection));
+            List<RATE> returnRATES = new List<RATE>();
+            List<RATE> committedRATES = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
+            List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+            List<ExoDataPoint> materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
 
-            return rateCollection.AsQueryable();
+            burnedDataPoints.AddRange(materialDataPoints);
+            var burnedGroup = burnedDataPoints.GroupBy(x => new { DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new { group.Key.DisciplineCode, group.Key.CommodityCode, AverageCosts = group.Average(x => x.Costs)});
+
+
+            foreach (var burned in burnedGroup)
+            {
+                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == burned.DisciplineCode);
+                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.First(x => x.CODE == burned.CommodityCode);
+
+                if(findDISCIPLINE != null && findCOMMODITY_CODE != null)
+                {
+                    IEnumerable<RATE> findCommittedRATE = committedRATES.Where(x => x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.GUID_COMMODITY == findCOMMODITY_CODE.GUID);
+
+                }
+            }
+
+            //List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primero)
+            committedRATES.ForEach(x => x.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection));
+
+            return committedRATES.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
@@ -82,6 +109,19 @@ namespace BluePrints.ViewModels
         public override bool OnBeforeEntitySaved(RATE entity)
         {
             compulsoryOnBeforeEntitySaved(entity);
+
+            //need to map it back to doc type on design cost rates, because deliverable has got no commodity code definition, only doc type
+            if(entity.GUID_COMMODITY != null)
+            {
+                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == entity.GUID_COMMODITY);
+                if (findCOMMODITY_CODE != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == findCOMMODITY_CODE.CODE);
+                    if (findDOCTYPE != null)
+                        entity.GUID_DOCTYPE = findDOCTYPE.GUID;
+                }
+            }
+
             entity.COST_TYPE = CostType.Cost;
             populatePHASE(entity);
 

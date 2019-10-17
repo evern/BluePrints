@@ -31,6 +31,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_COMMODITY { get; set; }
 
+        public bool IS_FLOATING { get; set; }
+
         public decimal? MANAGER_RATE { get; set; }
 
         public decimal? PRINCIPAL_RATE { get; set; }

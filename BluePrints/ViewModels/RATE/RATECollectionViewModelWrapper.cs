@@ -46,15 +46,11 @@ namespace BluePrints.ViewModels
         protected ChargeType loadChargeType;
         protected virtual CostType loadCostType => CostType.Charge;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
-        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             loadChargeType = (ChargeType)PROJECTParameter.GetSecondEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()

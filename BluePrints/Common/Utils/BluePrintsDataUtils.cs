@@ -435,7 +435,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.BudgetedCosts = 0;
                         burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                         //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
-                        burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST;
+                        burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
                         //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
                         burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
                         burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
