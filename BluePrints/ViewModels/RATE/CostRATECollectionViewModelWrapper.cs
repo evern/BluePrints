@@ -61,7 +61,7 @@ namespace BluePrints.ViewModels
         {
             //List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primero)
             List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
-            rateCollection.ForEach(x => x.SetCommodityCodes(CombinedCommodityCodeCollection));
+            rateCollection.ForEach(x => x.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection));
 
             return rateCollection.AsQueryable();
         }
@@ -95,7 +95,7 @@ namespace BluePrints.ViewModels
                 //rate is not instantiated with commodity codes to be selected, hence initialization begins here
                 if (isNew && new_value != null)
                 {
-                    projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+                    projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
                 }
 
                 //Guid? oldValue = projection.GUID_COMMODITY_CODE;
@@ -132,8 +132,29 @@ namespace BluePrints.ViewModels
             if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_PHASE) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 populatePHASE(projection);
-                projection.SetCommodityCodes(CombinedCommodityCodeCollection);
+                projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
             }
+        }
+
+        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
+            {
+                if(projection.GUID_PHASE != null)
+                {
+                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == projection.GUID_PHASE);
+                    if(findPHASE != null)
+                    {
+                        if (findPHASE.PHASE_TYPE != PhaseType.Design)
+                            return "Department is only applicable for design phase";
+                    }
+                }
+
+                populatePHASE(projection);
+                projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
+            }
+
+            return base.UnifiedValueValidation(projection, field_name, new_value);
         }
 
         protected override void populatePHASE(RATE entity)

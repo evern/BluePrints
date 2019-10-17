@@ -113,8 +113,30 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidDISCIPLINES}" PopupMinWidth="300" ValueMember="GUID">
+                                                    <dxg:LookUpEdit.StyleSettings>
+                                                        <dxg:SearchLookUpEditStyleSettings />
+                                                    </dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:LookUpEdit.PopupContentTemplate>
+                                                        <ControlTemplate TargetType="ContentControl">
+                                                            <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                                <dxg:GridControl.Columns>
+                                                                    <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="CODE" Header="Code" ReadOnly="True" />
+                                                                </dxg:GridControl.Columns>
+                                                                <dxg:GridControl.View>
+                                                                    <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                                </dxg:GridControl.View>
+                                                            </dxg:GridControl>
+                                                        </ControlTemplate>
+                                                    </dxg:LookUpEdit.PopupContentTemplate>
+                                                </dxg:LookUpEdit>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
@@ -156,52 +178,6 @@
                                             <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsUsingGangRate" Header="Is Gang Rate" HeaderToolTip="Whether rate is derived from gang rate" ReadOnly="True" />
-                                </dxg:GridControlBand>
-                                <dxg:GridControlBand Header="Gang Rate Parameters">
-                                    <dxg:GridColumn FieldName="MANAGER_RATE" Header="Manager Rate" HeaderToolTip="Charge rate for manager per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="PRINCIPAL_RATE" Header="Principal Rate" HeaderToolTip="Charge rate for principal per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="LEAD_RATE" Header="Lead Rate" HeaderToolTip="Charge rate for lead per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="SENIOR_RATE" Header="Senior Rate" HeaderToolTip="Charge rate for senior per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="ENGINEER_RATE" Header="Engineer Rate" HeaderToolTip="Charge rate for engineer per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="GRADUATE_RATE" Header="Graduate Rate" HeaderToolTip="Charge rate for graduate per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="UNDERGRADUATE_RATE" Header="Undergraduate Rate" HeaderToolTip="Charge rate for undergraduate per hour" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings NullValueButtonPlacement="EditBox" MinValue="0" Increment="10" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="MANAGER_PERCENT" MinWidth="100" Header="Manager %" HeaderToolTip="Rate weighting for manager" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="PRINCIPAL_PERCENT" MinWidth="100" Header="Principal %" HeaderToolTip="Rate weighting for principal" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="LEAD_PERCENT" MinWidth="100" Header="Lead %" HeaderToolTip="Rate weighting for lead" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="SENIOR_PERCENT" MinWidth="100" Header="Senior %" HeaderToolTip="Rate weighting for senior" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="ENGINEER_PERCENT" MinWidth="100" Header="Engineer %" HeaderToolTip="Rate weighting for engineer" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="GRADUATE_PERCENT" MinWidth="100" Header="Graduate %" HeaderToolTip="Rate weighting for graduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="UNDERGRADUATE_PERCENT" MinWidth="100" Header="Undergraduate %" HeaderToolTip="Rate weighting for undergraduate" CellTemplate="{StaticResource PercentageCellTemplate}" />
-                                    <dxg:GridColumn FieldName="UniqueConstraint" Visible="False" Header="Constraint" HeaderToolTip="Unique Constraints" />
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.TotalSummary>
@@ -222,9 +198,6 @@
                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                     <dxg:TableView.FormatConditions>
-                                        <dxg:FormatCondition Expression="[IsUsingGangRate] = 'True'" ApplyToRow="True" >
-                                            <dxc:Format Background="LightGreen" />
-                                        </dxg:FormatCondition>
                                         <dxg:UniqueDuplicateRuleFormatCondition FieldName="UniqueConstraint" ApplyToRow="True">
                                             <dxc:Format Background="#FFFF9B98" />
                                         </dxg:UniqueDuplicateRuleFormatCondition>

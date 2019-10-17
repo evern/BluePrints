@@ -13,7 +13,7 @@ namespace BluePrints.Data
     using BaseModel.DataModel;
     using DevExpress.XtraEditors.DXErrorProvider;
 
-    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY, GUID_DOCTYPE")]
+    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DISCIPLINE, GUID_COMMODITY, GUID_DOCTYPE")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -37,12 +37,14 @@ namespace BluePrints.Data
         [NotMapped]
         public DOCTYPE ManualDOCTYPE { get; set; }
 
+        //so that user doesn't have to exit lookupedit to see property changes and description can be populated immediately
         [NotMapped]
         public DOCTYPE DisplayDOCTYPE => ManualDOCTYPE != null ? ManualDOCTYPE : DOCTYPE;
 
         [NotMapped]
         public COMMODITY_CODE ManualCOMMODITY_CODE { get; set; }
 
+        //so that user doesn't have to exit lookupedit to see property changes and description can be populated immediately
         [NotMapped]
         public COMMODITY_CODE DisplayCOMMODITY_CODE => ManualCOMMODITY_CODE != null ? ManualCOMMODITY_CODE : COMMODITY_CODE;
 
@@ -51,9 +53,12 @@ namespace BluePrints.Data
 
         [NotMapped]
         private IEnumerable<CombinedCommodityCode> allCommodityCodes;
-        [NotMapped]
-        private IEnumerable<CombinedCommodityCode> validCommodityCodes;
 
+        [NotMapped]
+        private IEnumerable<DISCIPLINE> allDISCIPLINES;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodes;
         public IEnumerable<CombinedCommodityCode> ValidCommodityCodes
         {
             get
@@ -64,7 +69,7 @@ namespace BluePrints.Data
                 if(GUID_PHASE == null)
                     return allCommodityCodes;
 
-                if (COST_TYPE == CostType.Charge && GUID_DEPARTMENT == null)
+                if (COST_TYPE == CostType.Charge && GUID_DISCIPLINE == null)
                     return allCommodityCodes;
 
                 if (validCommodityCodes == null)
@@ -74,7 +79,7 @@ namespace BluePrints.Data
                     //doc types doesn't have discipline
                     if(COST_TYPE == CostType.Charge)
                     {
-                        validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT).ToList();
+                        validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DISCIPLINE).ToList();
                     }
                     //commodity codes doesn't have department
                     else
@@ -90,10 +95,45 @@ namespace BluePrints.Data
             }
         }
 
-        public void SetCommodityCodes(IEnumerable<CombinedCommodityCode> commodityCodes)
+        [NotMapped]
+        private List<DISCIPLINE> validDISCIPLINES;
+        public IEnumerable<DISCIPLINE> ValidDISCIPLINES
+        {
+            get
+            {
+                if (allDISCIPLINES == null || allCommodityCodes == null)
+                    return new List<DISCIPLINE>();
+
+                if (GUID_PHASE == null)
+                    return allDISCIPLINES;
+                
+                if (validDISCIPLINES == null)
+                {
+                    IEnumerable<Guid?> validDISCIPLINESGuid = allCommodityCodes.Where(x => x.PhaseType == PHASE_TYPE).Select(x => x.GuidDiscipline);
+                    if (validDISCIPLINESGuid.Any(x => x == null))
+                        validDISCIPLINES = allDISCIPLINES.ToList();
+                    else
+                    {
+                        List<Guid?> tempValidUniqueDISCIPLINEGuids = validDISCIPLINESGuid.Where(x => x != null).Distinct().ToList();
+
+                        validDISCIPLINES = new List<DISCIPLINE>();
+                        foreach (DISCIPLINE department in allDISCIPLINES)
+                        {
+                            if (tempValidUniqueDISCIPLINEGuids.Any(x => x == department.GUID))
+                                validDISCIPLINES.Add(department);
+                        }
+                    }
+                }
+
+                return validDISCIPLINES;
+            }
+        }
+        public void SetLookupProperties(IEnumerable<CombinedCommodityCode> commodityCodes, IEnumerable<DISCIPLINE> disciplines)
         {
             validCommodityCodes = null;
+            validDISCIPLINES = null;
             this.allCommodityCodes = commodityCodes;
+            this.allDISCIPLINES = disciplines;
             Update();
         }
 
@@ -121,8 +161,8 @@ namespace BluePrints.Data
                 constraint += PHASE_TYPE.ToString();
                 constraint += CHARGE_TYPE.ToString();
 
-                if (GUID_DEPARTMENT != null)
-                    constraint += GUID_DEPARTMENT.ToString();
+                if (GUID_DISCIPLINE != null)
+                    constraint += GUID_DISCIPLINE.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
                 if (GUID_DOCTYPE != null)
@@ -169,7 +209,7 @@ namespace BluePrints.Data
         {
             if (GUID_DOCTYPE != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_DOCTYPE)))
             {
-                if (GUID_DEPARTMENT != null && !ValidCommodityCodes.Any(x => x.Key == GUID_DOCTYPE))
+                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_DOCTYPE))
                 {
                     info.ErrorText = "Document type is not valid for selected department";
                 }
