@@ -145,6 +145,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Unadjusted_Budget_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Unadjusted_Budget_Units);
 
+        public List<VariationAdjustment> ApprovedVariations => Reportables == null ? new List<VariationAdjustment>() : Reportables.SelectMany(x => x.ApprovedVariations).ToList();
+
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
             throw new NotImplementedException();

@@ -129,7 +129,8 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal Budget_InternalCost => Entity.Budget_Units * this.Budget_ItemInternalRate;
+        //always use budget hours for tracking budget internal costs (not including budget adjustments)
+        public decimal Budget_InternalCost => Entity.BUDGET_HOURS * this.Budget_ItemInternalRate;
 
         public decimal Variation_InternalCosts => 0;
 
@@ -170,6 +171,8 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Adjustment_Costs => 0;
 
         public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
+
+        public List<VariationAdjustment> ApprovedVariations => new List<VariationAdjustment>();
 
         public void SetOriginalEntityKey(Guid newGuid)
         {

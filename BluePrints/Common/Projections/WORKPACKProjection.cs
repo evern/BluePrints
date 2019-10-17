@@ -115,6 +115,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Unadjusted_Budget_Units => Deliverables == null ? 0 : Deliverables.Count == 0 ? 0 : Deliverables.Sum(x => x.Unadjusted_Budget_Units);
 
+        public List<VariationAdjustment> ApprovedVariations => Deliverables == null ? new List<VariationAdjustment>() : Deliverables.Count == 0 ? new List<VariationAdjustment>() : Deliverables.SelectMany(x => x.ApprovedVariations).ToList();
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

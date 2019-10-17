@@ -160,6 +160,8 @@ namespace BluePrints.Common.Projections
 
         Guid? IDeliverable.Subjob_Guid { get; set; }
 
+        public List<VariationAdjustment> ApprovedVariations => Deliverables == null || Deliverables.Count() == 0 ? new List<VariationAdjustment>() : Deliverables.SelectMany(x => x.ApprovedVariations).ToList();
+
         public decimal Budget_Adjustment_Units => 0;
 
         public decimal Budget_Adjustment_Costs => 0;

@@ -177,6 +177,7 @@ namespace BluePrints.Common.Projections
 
         public decimal Estimate_Units => Entity.STOCK_CODE == null ? ESTIMATE_STOCK_CODE == null ? 0 : ESTIMATE_STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY : Entity.STOCK_CODE.HOURS_INSTALL * Entity.ESTIMATE_QUANTITY;
 
+        public List<VariationAdjustment> ApprovedVariations => new List<VariationAdjustment>();
         //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
         //public decimal Budget_Units
         //{

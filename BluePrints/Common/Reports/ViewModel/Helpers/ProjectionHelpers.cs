@@ -61,7 +61,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                         else
                             variation_units = variation_item.VARIATION_UNITS * progressByQuantityDeliverable.UnitsPerQuantity;
 
-                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_units, AdjustmentRate = lookUpDeliverable.Budget_ItemRate, IsBudgetAdjustment = variation.ADJUSTMENT_TO_BUDGET });
+                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { VariationName = variation.NAME, AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_units, AdjustmentRate = lookUpDeliverable.Budget_ItemRate, AdjustmentInternalRate = lookUpDeliverable.Budget_ItemInternalRate, IsBudgetAdjustment = variation.ADJUSTMENT_TO_BUDGET });
                     }
                 }
             }

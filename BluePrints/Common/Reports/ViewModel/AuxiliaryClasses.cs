@@ -25,7 +25,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public DateTime AdjustmentDate { get; set; }
         public decimal AdjustmentUnits { get; set; }
         public decimal? AdjustmentRate { get; set; }
+        public decimal? AdjustmentInternalRate { get; set; }
         public bool IsBudgetAdjustment { get; set; }
+        public string VariationName { get; set; }
 
         public readonly Guid DeliverableOriginalGuid;
 
@@ -34,9 +36,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             DeliverableOriginalGuid = deliverableOriginalGuid;
         }
 
+        public decimal AdjustmentInternalCosts
+        {
+            get { return AdjustmentUnits * (AdjustmentInternalRate == null ? 0 : (decimal)AdjustmentInternalRate); }
+        }
+
         public decimal AdjustmentNativeCosts
         {
-            get { return AdjustmentUnits * AdjustmentRate == null ? 0 : (decimal)AdjustmentRate; }
+            get { return AdjustmentUnits * (AdjustmentRate == null ? 0 : (decimal)AdjustmentRate); }
         }
 
         public decimal AdjustmentCumulativeCosts { get; set; }

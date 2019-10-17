@@ -464,7 +464,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly SingleObjectSummarizer statsSummarizer;
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
         public ProgressStats Stats { get; set; }
-        public List<VariationAdjustment> ApprovedVariations;
+        public List<VariationAdjustment> ApprovedVariations { get; set; }
         public BluePrintsProgressableProjectionBase()
         {
             //Initialization without stats

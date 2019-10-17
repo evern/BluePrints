@@ -279,6 +279,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Total_Units { get; }
         decimal Total_Costs { get; }
         decimal Total_InternalCosts { get; }
+        List<VariationAdjustment> ApprovedVariations { get; }
     }
 
     public interface IHaveDeliverableStatus
