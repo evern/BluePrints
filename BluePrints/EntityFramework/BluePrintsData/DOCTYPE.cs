@@ -15,7 +15,6 @@ namespace BluePrints.Data
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             DSTATUS_DOCTYPE = new HashSet<DSTATUS_DOCTYPE>();
             ROLE_COMMODITY = new HashSet<ROLE_COMMODITY>();
-            RATE = new HashSet<RATE>();
         }
 
         [Key]
@@ -63,9 +62,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ROLE_COMMODITY> ROLE_COMMODITY { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RATE> RATE { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
     }

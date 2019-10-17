@@ -12,7 +12,6 @@ namespace BluePrints.Common
         public Guid Key { get; set; }
         public Guid? GuidDepartment { get; set; }
         public Guid? GuidDiscipline { get; set; }
-        public Guid? GuidCommodity { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

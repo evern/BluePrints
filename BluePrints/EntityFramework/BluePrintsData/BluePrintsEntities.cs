@@ -208,11 +208,6 @@ namespace BluePrints.Data
                 .WithOptional(e => e.COMMODITY_CODE)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
-            modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.RATE)
-                .WithOptional(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITY);
-
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);
@@ -330,12 +325,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.ROLE_COMMODITY)
                 .WithRequired(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_COMMODITY)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<DOCTYPE>()
-                .HasMany(e => e.RATE)
-                .WithRequired(e => e.DOCTYPE)
-                .HasForeignKey(e => e.GUID_DOCTYPE)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DOCTYPE>()

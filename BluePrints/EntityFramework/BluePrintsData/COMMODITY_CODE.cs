@@ -15,7 +15,6 @@ namespace BluePrints.Data
         {
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             STOCK_CODE = new HashSet<STOCK_CODE>();
-            RATE = new HashSet<RATE>();
         }
 
         [Key]
@@ -65,9 +64,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RATE> RATE { get; set; }
 
     }
 }

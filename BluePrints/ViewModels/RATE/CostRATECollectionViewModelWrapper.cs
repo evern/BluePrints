@@ -50,8 +50,6 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-
-            base.resolveParameters
         }
 
         protected override void addEntitiesLoader()
@@ -64,43 +62,76 @@ namespace BluePrints.ViewModels
             return query => query;
         }
 
+        List<TransactionRate> transactionRates = new List<TransactionRate>();
+        List<ExoDataPoint> actualDataPoints;
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
             List<RATE> returnRATES = new List<RATE>();
             List<RATE> committedRATES = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
-            List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
-            List<ExoDataPoint> materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
 
-            burnedDataPoints.AddRange(materialDataPoints);
-            var burnedGroup = burnedDataPoints.GroupBy(x => new { DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new { group.Key.DisciplineCode, group.Key.CommodityCode, AverageCosts = group.Average(x => x.Costs)});
-
-
-            foreach (var burned in burnedGroup)
+            if(actualDataPoints == null)
             {
-                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == burned.DisciplineCode);
-                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.First(x => x.CODE == burned.CommodityCode);
+                actualDataPoints = new List<ExoDataPoint>();
+                List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+                List<ExoDataPoint> materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
+
+                actualDataPoints.AddRange(burnedDataPoints);
+                actualDataPoints.AddRange(materialDataPoints);
+                transactionRates = actualDataPoints.GroupBy(x => new { DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new TransactionRate() { RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
+            }
+
+            foreach (RATE committedRATE in committedRATES)
+            {
+                initializeRATE(committedRATE);
+                setRecommendedRate(committedRATE);
+                returnRATES.Add(committedRATE);
+            }
+
+            foreach (var transactionRate in transactionRates)
+            {
+                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == transactionRate.DisciplineCode);
+                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == transactionRate.CommodityCode);
 
                 if(findDISCIPLINE != null && findCOMMODITY_CODE != null)
                 {
-                    IEnumerable<RATE> findCommittedRATE = committedRATES.Where(x => x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.GUID_COMMODITY == findCOMMODITY_CODE.GUID);
+                    IEnumerable<RATE> findCommittedRATES = committedRATES.Where(x => x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
+                    if(findCommittedRATES.Count() == 0)
+                    {
+                        PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == findCOMMODITY_CODE.PHASE_TYPE);
+                        RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE == null ? (Guid?)null : findPHASE.GUID, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE, RATE1 = transactionRate.AverageRate, Transactions = transactionRate.Transactions.ToList() };
+                        uncommittedRATE.PHASE_TYPE = findCOMMODITY_CODE.PHASE_TYPE;
 
+                        initializeRATE(uncommittedRATE);
+                        returnRATES.Add(uncommittedRATE);
+                    }
                 }
             }
 
             //List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primero)
-            committedRATES.ForEach(x => x.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection));
-
-            return committedRATES.AsQueryable();
+            return returnRATES.AsQueryable();
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
+        private void setRecommendedRate(RATE rate)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
-            MainViewModel.SetParentViewModel(this);
-            base.AssignCallBacksAndRaisePropertyChange(entities);
+            if (rate.DISCIPLINE != null && rate.COMMODITY_CODE != null)
+            {
+                List<TransactionRate> burned = transactionRates.Where(x => x.DisciplineCode == rate.DISCIPLINE.CODE && x.CommodityCode == rate.COMMODITY_CODE).ToList();
+                if (burned.Count > 0)
+                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+            }
+            else if(rate.COMMODITY_CODE != null && rate.DISCIPLINE == null)
+            {
+                List<TransactionRate> burned = transactionRates.Where(x => x.CommodityCode == rate.COMMODITY_CODE).ToList();
+                if (burned.Count > 0)
+                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+            }
+            else if (rate.COMMODITY_CODE == null && rate.DISCIPLINE != null)
+            {
+                List<TransactionRate> burned = transactionRates.Where(x => x.DisciplineCode == rate.DISCIPLINE.CODE).ToList();
+                if (burned.Count > 0)
+                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+            }
         }
-
         #region Collection Call Backs
 
         /// <summary>
@@ -109,19 +140,6 @@ namespace BluePrints.ViewModels
         public override bool OnBeforeEntitySaved(RATE entity)
         {
             compulsoryOnBeforeEntitySaved(entity);
-
-            //need to map it back to doc type on design cost rates, because deliverable has got no commodity code definition, only doc type
-            if(entity.GUID_COMMODITY != null)
-            {
-                COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == entity.GUID_COMMODITY);
-                if (findCOMMODITY_CODE != null)
-                {
-                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == findCOMMODITY_CODE.CODE);
-                    if (findDOCTYPE != null)
-                        entity.GUID_DOCTYPE = findDOCTYPE.GUID;
-                }
-            }
-
             entity.COST_TYPE = CostType.Cost;
             populatePHASE(entity);
 
@@ -137,7 +155,6 @@ namespace BluePrints.ViewModels
                 {
                     projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
                 }
-
                 //Guid? oldValue = projection.GUID_COMMODITY_CODE;
                 //Guid? newValue = null;
                 //projection.GUID_COMMODITY_CODE = newValue;
@@ -146,24 +163,8 @@ namespace BluePrints.ViewModels
                 //MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE), oldValue, newValue, EntityMessageType.Changed);
                 projection.Update();
             }
-            else if(field_name == BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY))
-            {
-                if (new_value != null)
-                {
-                    //need to set it immediately so CustomColumnDisplayText will show the updated value without user having to exit the cell
-                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.GUID == (Guid)new_value);
-                    if (findCOMMODITY_CODE != null)
-                        projection.ManualCOMMODITY_CODE = findCOMMODITY_CODE;
-                }
-                else
-                {
-                    projection.ManualCOMMODITY_CODE = null;
-                    projection.COMMODITY_CODE = null;
-                }
 
-                projection.Update();
-            }
-
+            projection.Update();
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
@@ -174,6 +175,8 @@ namespace BluePrints.ViewModels
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
             }
+
+            setRecommendedRate(projection);
         }
 
         public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
@@ -192,6 +195,7 @@ namespace BluePrints.ViewModels
 
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
+                setRecommendedRate(projection);
             }
 
             return base.UnifiedValueValidation(projection, field_name, new_value);
@@ -234,5 +238,17 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+    }
+
+    public class TransactionRate
+    {
+        public string RawDisciplineCode { get; set; }
+        public string RawCommodityCode { get; set; }
+        public decimal AverageRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);
+        public decimal TransactionCount => Transactions == null ? 0 : Transactions.Count;
+        public string DisciplineCode => RawDisciplineCode.Length >= 2 ? RawDisciplineCode.Substring(0, 2) : string.Empty;
+        public string CommodityCode => RawCommodityCode.Length >= 3 ? RawCommodityCode.Substring(0, 3) : string.Empty;
+
+        public List<ExoDataPoint> Transactions { get; set; }
     }
 }

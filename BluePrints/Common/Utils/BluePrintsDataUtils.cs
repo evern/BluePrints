@@ -436,11 +436,13 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                         //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
                         burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
+                        burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
                         //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
                         burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
                         burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
                         burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                         burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
+                        burnedDataPoint.Description = jobTransaction.RESOURCENAME;
                         burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
                         burnedDataPoint.Role = jobTransaction.TITLE;
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
@@ -515,6 +517,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     materialDataPoint.BudgetedCosts = 0;
                     materialDataPoint.Units = (decimal)jobMaterial.quantity;
                     materialDataPoint.Costs = (decimal)jobMaterial.LINECOST * currencyConversion;
+                    materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
                     if (alignedDataDates != null)
                         materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
@@ -1081,15 +1084,12 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? phaseGuid, Guid? disciplineGuid, Guid? departmentGuid, Guid? commodityGuid, IEnumerable<RATE> RATECollection, CostType CostType)
+        public static RATE CascadeRateSearch(Guid? phaseGuid, Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, IEnumerable<RATE> RATECollection, CostType CostType)
         {
             IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == CostType && (y.GUID_PHASE == phaseGuid));
             //order by descending places null GUID's at the end, so First() won't pick it up
             IEnumerable<RATE> rateByCommodities;
-            if(CostType == CostType.Cost)
-                rateByCommodities = rateByPhase.Where(y => (y.GUID_COMMODITY == commodityGuid) || (y.GUID_COMMODITY == null)).OrderByDescending(y => y.GUID_COMMODITY);
-            else
-                rateByCommodities = rateByPhase.Where(y => (y.GUID_DOCTYPE == commodityGuid) || (y.GUID_DOCTYPE == null)).OrderByDescending(y => y.GUID_DOCTYPE);
+            rateByCommodities = rateByPhase.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
 
             IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == disciplineGuid) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
             IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);

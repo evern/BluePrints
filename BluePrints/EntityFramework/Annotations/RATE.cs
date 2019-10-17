@@ -12,8 +12,9 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using BaseModel.DataModel;
     using DevExpress.XtraEditors.DXErrorProvider;
+    using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DISCIPLINE, GUID_COMMODITY, GUID_DOCTYPE")]
+    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -35,23 +36,6 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public DOCTYPE ManualDOCTYPE { get; set; }
-
-        //so that user doesn't have to exit lookupedit to see property changes and description can be populated immediately
-        [NotMapped]
-        public DOCTYPE DisplayDOCTYPE => ManualDOCTYPE != null ? ManualDOCTYPE : DOCTYPE;
-
-        [NotMapped]
-        public COMMODITY_CODE ManualCOMMODITY_CODE { get; set; }
-
-        //so that user doesn't have to exit lookupedit to see property changes and description can be populated immediately
-        [NotMapped]
-        public COMMODITY_CODE DisplayCOMMODITY_CODE => ManualCOMMODITY_CODE != null ? ManualCOMMODITY_CODE : COMMODITY_CODE;
-
-        [NotMapped]
-        public Guid? CommodityCodeId => COST_TYPE == CostType.Charge ? GUID_DOCTYPE : GUID_COMMODITY;
-
-        [NotMapped]
         private IEnumerable<CombinedCommodityCode> allCommodityCodes;
 
         [NotMapped]
@@ -59,6 +43,13 @@ namespace BluePrints.Data
 
         [NotMapped]
         private List<CombinedCommodityCode> validCommodityCodes;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodesByDiscipline;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodesByDepartment;
+
         public IEnumerable<CombinedCommodityCode> ValidCommodityCodes
         {
             get
@@ -69,25 +60,33 @@ namespace BluePrints.Data
                 if(GUID_PHASE == null)
                     return allCommodityCodes;
 
-                if (COST_TYPE == CostType.Charge && GUID_DISCIPLINE == null)
-                    return allCommodityCodes;
-
                 if (validCommodityCodes == null)
                 {
                     IEnumerable<CombinedCommodityCode> validCommodityCodesByPhase = allCommodityCodes.Where(x => x.PhaseType == PHASE_TYPE);
 
-                    //doc types doesn't have discipline
                     if(COST_TYPE == CostType.Charge)
-                    {
-                        validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DISCIPLINE).ToList();
+                    {  
+                        validCommodityCodesByDepartment = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT).ToList();
+                        validCommodityCodesByDiscipline =  validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == GUID_DISCIPLINE || x.GuidDiscipline == null)).ToList();
+                        if (GUID_DEPARTMENT != null && GUID_DISCIPLINE != null)
+                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT && (x.GuidDiscipline == GUID_DISCIPLINE || x.GuidDiscipline == null)).ToList();
+                        else if (GUID_DEPARTMENT == null && GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByPhase.ToList();
+                        else if (GUID_DEPARTMENT == null)
+                            validCommodityCodes = validCommodityCodesByDiscipline;
+                        else if (GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByDepartment;
                     }
-                    //commodity codes doesn't have department
                     else
                     {
+                        //commodity codes doesn't have department
+                        validCommodityCodesByDepartment = validCommodityCodesByPhase.ToList();
+                        validCommodityCodesByDiscipline = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == null || x.GuidDiscipline == GUID_DISCIPLINE)).ToList();
+
                         if (GUID_DISCIPLINE == null)
                             validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE).ToList();
                         else
-                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == null || x.GuidDiscipline == GUID_DISCIPLINE)).ToList();
+                            validCommodityCodes = validCommodityCodesByDiscipline;
                     }
                 }
 
@@ -165,8 +164,8 @@ namespace BluePrints.Data
                     constraint += GUID_DISCIPLINE.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
-                if (GUID_DOCTYPE != null)
-                    constraint += GUID_DOCTYPE.ToString();
+                if (COMMODITY_CODE != null)
+                    constraint += COMMODITY_CODE;
 
                 return constraint;
             }
@@ -208,21 +207,37 @@ namespace BluePrints.Data
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
-            if (GUID_DOCTYPE != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_DOCTYPE)))
+            if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)))
             {
-                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_DOCTYPE))
+                if (COMMODITY_CODE != string.Empty)
                 {
-                    info.ErrorText = "Document type is not valid for selected department";
-                }
-            }
-            if (GUID_COMMODITY != null && propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY)))
-            {
-                if (GUID_DISCIPLINE != null && !ValidCommodityCodes.Any(x => x.Key == GUID_COMMODITY))
-                {
-                    info.ErrorText = "Document type is not valid for selected discipline";
+                    if (GUID_DISCIPLINE != null && IsNotValidByDiscipline)
+                    {
+                        info.ErrorText = "Document type is not valid for selected discipline";
+                    }
+                    else if (GUID_DEPARTMENT != null && IsNotValidByDepartment)
+                    {
+                        info.ErrorText = "Document type is not valid for selected department";
+                    }
+                    else if (IsNotValidByAllAttributes)
+                    {
+                        string commodityName;
+                        if (COST_TYPE == CostType.Cost)
+                            commodityName = "Commodity code";
+                        else
+                            commodityName = "Document type";
+
+                        info.ErrorText = commodityName + " is not valid for selected department and discipline";
+                    }
                 }
             }
         }
+
+        private bool IsNotValidByAllAttributes => !ValidCommodityCodes.Any(x => x.Code == COMMODITY_CODE);
+
+        private bool IsNotValidByDepartment => validCommodityCodesByDepartment == null ? false : !validCommodityCodesByDepartment.Any(x => x.Code == COMMODITY_CODE);
+
+        private bool IsNotValidByDiscipline => validCommodityCodesByDiscipline == null ? false : !validCommodityCodesByDiscipline.Any(x => x.Code == COMMODITY_CODE);
 
         public void GetError(ErrorInfo info)
         {
@@ -250,7 +265,14 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal AverageRate { get; set; }
+        public decimal RecommendedRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);
+
+        [NotMapped]
+        public decimal TransactionCount => Transactions == null ? 0 : Transactions.Count;
+
+        [NotMapped]
+        public List<ExoDataPoint> Transactions { get; set; }
+
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }
