@@ -138,20 +138,23 @@ namespace BluePrints.ViewModels
         private void setRecommendedRate(RATE rate)
         {
             //try to retrieve rate's discipline if GUID_DISCIPLINE is not null
-            if(rate.DISCIPLINE == null && rate.GUID_DISCIPLINE != null)
-            {
-                rate.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == rate.GUID_DISCIPLINE);
-            }
+            DISCIPLINE findDISCIPLINE = rate.DISCIPLINE;
+            if(findDISCIPLINE == null && rate.GUID_DISCIPLINE != null)
+                findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == rate.GUID_DISCIPLINE);
 
-            if (rate.PHASE == null && rate.GUID_PHASE != null)
-                rate.PHASE = PHASECollection.FirstOrDefault(x => x.GUID == rate.GUID_PHASE);
+            PHASE findPHASE = rate.PHASE;
+            if (findPHASE == null && rate.GUID_PHASE != null)
+                findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == rate.GUID_PHASE);
 
-            IEnumerable<TransactionRate> transactionRatesByPhase = transactionRates.Where(x => (rate.PHASE == null || x.RawSubjobCode.Contains(rate.PHASE.INTERNAL_NUM)));
-            IEnumerable<TransactionRate> transactionRatesByDiscipline = transactionRatesByPhase.Where(x => (rate.DISCIPLINE == null || x.DisciplineCode == rate.DISCIPLINE.CODE));
+            IEnumerable<TransactionRate> transactionRatesByPhase = transactionRates.Where(x => (findPHASE == null || x.RawSubjobCode.Contains(findPHASE.INTERNAL_NUM)));
+            IEnumerable<TransactionRate> transactionRatesByDiscipline = transactionRatesByPhase.Where(x => (findDISCIPLINE == null || x.DisciplineCode == findDISCIPLINE.CODE));
             IEnumerable<TransactionRate> transactionRatesByCommodity = transactionRatesByDiscipline.Where(x => (rate.COMMODITY_CODE == string.Empty || rate.COMMODITY_CODE == null || x.CommodityCode == rate.COMMODITY_CODE));
             List <TransactionRate> burned = transactionRatesByCommodity.ToList();
             if (burned.Count > 0)
                 rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+
+            if (!rate.IsRateExists)
+                rate.RATE1 = rate.RecommendedRate;
         }
 
         #region Collection Call Backs
@@ -195,6 +198,14 @@ namespace BluePrints.ViewModels
                 entity.COMMODITY_CODE = string.Empty;
 
             return true;
+        }
+
+        public override void OnAfterEntitySaved(RATE projection, RATE entity, bool isNewEntity)
+        {
+            RATE uncommittedRATE = DisplayEntities.FirstOrDefault(x => !x.IsRateExists && x.GUID != entity.GUID && x.GUID_PHASE == entity.GUID_PHASE && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.COMMODITY_CODE == entity.COMMODITY_CODE);
+            if (uncommittedRATE != null)
+                DisplayEntities.Remove(uncommittedRATE);
+            base.OnAfterEntitySaved(projection, entity, isNewEntity);
         }
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, RATE projection, bool isNew)
@@ -253,12 +264,6 @@ namespace BluePrints.ViewModels
                 if(!isPaste && new_value != null && !(bool)new_value)
                 {
                     return "Cannot set inactive, please delete this rate instead";
-                }
-                else if(isPaste)
-                {
-                    RATE uncommittedRATE = DisplayEntities.FirstOrDefault(x => !x.IsRateExists && x.GUID_PHASE == projection.GUID_PHASE && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.COMMODITY_CODE == projection.COMMODITY_CODE);
-                    if (uncommittedRATE != null)
-                        DisplayEntities.Remove(uncommittedRATE);
                 }
             }
 
