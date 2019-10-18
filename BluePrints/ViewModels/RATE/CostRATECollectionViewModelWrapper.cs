@@ -60,7 +60,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query;
+            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Procurement);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
@@ -99,17 +99,18 @@ namespace BluePrints.ViewModels
             {
                 DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == transactionRate.DisciplineCode);
                 COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == transactionRate.CommodityCode);
+                PHASE findPHASE = PHASECollection.FirstOrDefault(x => transactionRate.RawSubjobCode.Contains(x.INTERNAL_NUM));
 
-                if(findDISCIPLINE != null && findCOMMODITY_CODE != null)
+                if(findPHASE != null && findPHASE.PHASE_TYPE != null && findPHASE.PHASE_TYPE != PhaseType.Procurement && findDISCIPLINE != null && findCOMMODITY_CODE != null)
                 {
-                    IEnumerable<RATE> findCommittedRATES = committedRATES.Where(x => x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
+                    IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_PHASE == findPHASE.GUID && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
                     if(findCommittedRATES.Count() == 0)
                     {
-                        PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == findCOMMODITY_CODE.PHASE_TYPE);
-                        RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE == null ? (Guid?)null : findPHASE.GUID, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE, RATE1 = transactionRate.AverageRate, Transactions = transactionRate.Transactions.ToList() };
-                        uncommittedRATE.PHASE_TYPE = findCOMMODITY_CODE.PHASE_TYPE;
+                        RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE.GUID, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE };
+                        uncommittedRATE.PHASE_TYPE = (PhaseType)findPHASE.PHASE_TYPE;
 
                         initializeRATE(uncommittedRATE);
+                        setRecommendedRate(uncommittedRATE);
                         returnRATES.Add(uncommittedRATE);
                     }
                 }
@@ -145,11 +146,14 @@ namespace BluePrints.ViewModels
             if (rate.PHASE == null && rate.GUID_PHASE != null)
                 rate.PHASE = PHASECollection.FirstOrDefault(x => x.GUID == rate.GUID_PHASE);
 
-
-            List<TransactionRate> burned = transactionRates.Where(x => (rate.PHASE == null || x.RawSubjobCode.Contains(rate.PHASE.INTERNAL_NUM)) && (rate.DISCIPLINE == null || x.DisciplineCode == rate.DISCIPLINE.CODE) && (rate.COMMODITY_CODE == string.Empty || x.CommodityCode == rate.COMMODITY_CODE)).ToList();
+            IEnumerable<TransactionRate> transactionRatesByPhase = transactionRates.Where(x => (rate.PHASE == null || x.RawSubjobCode.Contains(rate.PHASE.INTERNAL_NUM)));
+            IEnumerable<TransactionRate> transactionRatesByDiscipline = transactionRatesByPhase.Where(x => (rate.DISCIPLINE == null || x.DisciplineCode == rate.DISCIPLINE.CODE));
+            IEnumerable<TransactionRate> transactionRatesByCommodity = transactionRatesByDiscipline.Where(x => (rate.COMMODITY_CODE == string.Empty || rate.COMMODITY_CODE == null || x.CommodityCode == rate.COMMODITY_CODE));
+            List <TransactionRate> burned = transactionRatesByCommodity.ToList();
             if (burned.Count > 0)
                 rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
         }
+
         #region Collection Call Backs
         //skip inactive entity
         protected DeleteInterceptMode onBeforeEntityDeleted(RATE entity)
@@ -226,7 +230,7 @@ namespace BluePrints.ViewModels
             setRecommendedRate(projection);
         }
 
-        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
             {
@@ -246,13 +250,19 @@ namespace BluePrints.ViewModels
             }
             else if(field_name == BindableBase.GetPropertyName(() => new RATE().IsRateExists))
             {
-                if(new_value != null && !(bool)new_value)
+                if(!isPaste && new_value != null && !(bool)new_value)
                 {
                     return "Cannot set inactive, please delete this rate instead";
                 }
+                else if(isPaste)
+                {
+                    RATE uncommittedRATE = DisplayEntities.FirstOrDefault(x => !x.IsRateExists && x.GUID_PHASE == projection.GUID_PHASE && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.COMMODITY_CODE == projection.COMMODITY_CODE);
+                    if (uncommittedRATE != null)
+                        DisplayEntities.Remove(uncommittedRATE);
+                }
             }
 
-            return base.UnifiedValueValidation(projection, field_name, new_value);
+            return base.UnifiedValueValidation(projection, field_name, new_value, isPaste);
         }
 
         protected override void populatePHASE(RATE entity)

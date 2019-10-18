@@ -878,7 +878,7 @@ namespace BluePrints.ViewModels
         public void ValidateCellValue(GridCellValidationEventArgs e)
         {
             string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = UnifiedValueValidation((BASELINE_ITEMProgress)e.Row, fieldName, e.Value);
+            string error_message = UnifiedValueValidation((BASELINE_ITEMProgress)e.Row, fieldName, e.Value, false);
             if (error_message != string.Empty)
             {
                 e.IsValid = false;
@@ -887,7 +887,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string UnifiedValueValidation(BASELINE_ITEMProgress entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress entity, string column_name, object newValue, bool isPaste)
         {
             string fieldName = DataUtils.FormatColumnFieldname(column_name);
             //budget hours field is disabled but just in case

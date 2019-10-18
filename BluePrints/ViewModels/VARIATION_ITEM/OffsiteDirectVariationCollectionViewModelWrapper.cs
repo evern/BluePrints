@@ -130,7 +130,7 @@ namespace BluePrints.ViewModels
             //not calling base here because we do not want to assign baseline_guid;
         }
 
-        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object newValue)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object newValue, bool isPaste)
         {
             //budgeted hours field is disabled but just in case
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Variation_Units)))
@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            return base.UnifiedValueValidation(projection, field_name, newValue);
+            return base.UnifiedValueValidation(projection, field_name, newValue, isPaste);
         }
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)

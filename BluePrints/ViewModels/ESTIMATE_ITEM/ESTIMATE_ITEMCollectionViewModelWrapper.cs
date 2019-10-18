@@ -1120,7 +1120,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value, bool isPaste)
         {
             string fieldName = DataUtils.FormatColumnFieldname(field_name);
             //budgeted hours field is disabled but just in case

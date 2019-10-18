@@ -215,7 +215,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(AREAMasterDetailProjection projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(AREAMasterDetailProjection projection, string field_name, object new_value, bool isPaste)
         {
             string internalNumberFieldName = BindableBase.GetPropertyName(() => new AREAMasterDetailProjection().Entity.INTERNAL_NUM);
             if(field_name.Contains(internalNumberFieldName) && projection.Entity.GUID_PARENT != null)

@@ -83,7 +83,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(TENDER_PROFILE projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(TENDER_PROFILE projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }

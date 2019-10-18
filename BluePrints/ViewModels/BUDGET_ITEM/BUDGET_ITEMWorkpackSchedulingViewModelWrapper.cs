@@ -334,7 +334,7 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Estimate_Rev_" + loadESTIMATE.REVISION;
         }
 
-        public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }

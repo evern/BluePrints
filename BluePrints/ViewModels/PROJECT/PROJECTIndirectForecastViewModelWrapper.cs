@@ -754,7 +754,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
-        public override string UnifiedValueValidation(FORECAST_JOB projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(FORECAST_JOB projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }

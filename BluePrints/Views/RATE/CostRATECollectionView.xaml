@@ -94,7 +94,7 @@
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:LayoutSerializationService />
                         </dxmvvm:Interaction.Behaviors>
-                        <custom:GridControlEx x:Name="GridControl" MouseUp="gridControl_MouseUp" dx:DXSerializer.SerializationID="GridControlRATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
@@ -169,7 +169,7 @@
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Code" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="RATE1" Header="Cost Rate" HeaderToolTip="Cost rate per hour">

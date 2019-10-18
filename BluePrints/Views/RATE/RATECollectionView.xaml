@@ -138,7 +138,7 @@
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Code" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">

@@ -176,7 +176,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(RATE projection, string field_name, object new_value, bool isPaste)
         {
             string errorMessage = "Duplicate entries by phase type, charge type, department, discipline and commodity";
 
@@ -294,10 +294,10 @@ namespace BluePrints.ViewModels
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)) && e.Row != null)
             {
                 RATE projection = (RATE)e.Row;
-                if(projection.COMMODITY_CODE != string.Empty)
-                    e.DisplayText = projection.COMMODITY_CODE;
-                else
+                if(projection.COMMODITY_CODE == string.Empty || projection.COMMODITY_CODE == null)
                     e.DisplayText = "Any";
+                else
+                    e.DisplayText = projection.COMMODITY_CODE;
             }
         }
 

@@ -180,7 +180,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(COMMODITY_CODEProjection projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(COMMODITY_CODEProjection projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }

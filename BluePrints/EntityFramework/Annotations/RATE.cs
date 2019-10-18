@@ -14,7 +14,7 @@ namespace BluePrints.Data
     using DevExpress.XtraEditors.DXErrorProvider;
     using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE")]
+    [ConstraintAttributes("GUID_PHASE, GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
