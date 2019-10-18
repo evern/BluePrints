@@ -120,7 +120,7 @@
                                     <dxg:GridColumn FieldName="COMMODITY_CODE" Header="Doc Type" HeaderToolTip="Which commodity the current rate will be applied to">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" PopupMinWidth="600" ValueMember="Code" >
+                                                <custom:PopupBaseEditEx Name="PART_Editor" PopupMinWidth="600" ValueMember="Code" NullValueButtonPlacement="EditBox">
                                                     <custom:PopupBaseEditEx.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
                                                             <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" Width="600" MaxHeight="750" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">

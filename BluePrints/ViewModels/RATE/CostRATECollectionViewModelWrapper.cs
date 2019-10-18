@@ -1,5 +1,6 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -62,6 +63,13 @@ namespace BluePrints.ViewModels
             return query => query;
         }
 
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
+        {
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleted;
+            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
         List<TransactionRate> transactionRates = new List<TransactionRate>();
         List<ExoDataPoint> actualDataPoints;
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
@@ -77,7 +85,7 @@ namespace BluePrints.ViewModels
 
                 actualDataPoints.AddRange(burnedDataPoints);
                 actualDataPoints.AddRange(materialDataPoints);
-                transactionRates = actualDataPoints.GroupBy(x => new { DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new TransactionRate() { RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
+                transactionRates = actualDataPoints.GroupBy(x => new { SubjobCode = x.Subjob_Name, DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new TransactionRate() { RawSubjobCode = group.Key.SubjobCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
             }
 
             foreach (RATE committedRATE in committedRATES)
@@ -111,28 +119,64 @@ namespace BluePrints.ViewModels
             return returnRATES.AsQueryable();
         }
 
+        public void UpdateFloatingRates()
+        {
+            if (MessageBoxService.ShowMessage("This will update all rates that have floating ticked to recommended rate, do you wish to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            List<RATE> saveEntities = new List<RATE>();
+            foreach(RATE entity in DisplayEntities.Where(x => x.IsRateExists && x.IS_FLOATING))
+            {
+                entity.RATE1 = entity.RecommendedRate;
+                saveEntities.Add(entity);
+            }
+
+            MainViewModel.BulkSave(saveEntities);
+        }
+
         private void setRecommendedRate(RATE rate)
         {
-            if (rate.DISCIPLINE != null && rate.COMMODITY_CODE != null)
+            //try to retrieve rate's discipline if GUID_DISCIPLINE is not null
+            if(rate.DISCIPLINE == null && rate.GUID_DISCIPLINE != null)
             {
-                List<TransactionRate> burned = transactionRates.Where(x => x.DisciplineCode == rate.DISCIPLINE.CODE && x.CommodityCode == rate.COMMODITY_CODE).ToList();
-                if (burned.Count > 0)
-                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+                rate.DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == rate.GUID_DISCIPLINE);
             }
-            else if(rate.COMMODITY_CODE != null && rate.DISCIPLINE == null)
-            {
-                List<TransactionRate> burned = transactionRates.Where(x => x.CommodityCode == rate.COMMODITY_CODE).ToList();
-                if (burned.Count > 0)
-                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
-            }
-            else if (rate.COMMODITY_CODE == null && rate.DISCIPLINE != null)
-            {
-                List<TransactionRate> burned = transactionRates.Where(x => x.DisciplineCode == rate.DISCIPLINE.CODE).ToList();
-                if (burned.Count > 0)
-                    rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
-            }
+
+            if (rate.PHASE == null && rate.GUID_PHASE != null)
+                rate.PHASE = PHASECollection.FirstOrDefault(x => x.GUID == rate.GUID_PHASE);
+
+
+            List<TransactionRate> burned = transactionRates.Where(x => (rate.PHASE == null || x.RawSubjobCode.Contains(rate.PHASE.INTERNAL_NUM)) && (rate.DISCIPLINE == null || x.DisciplineCode == rate.DISCIPLINE.CODE) && (rate.COMMODITY_CODE == string.Empty || x.CommodityCode == rate.COMMODITY_CODE)).ToList();
+            if (burned.Count > 0)
+                rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
         }
         #region Collection Call Backs
+        //skip inactive entity
+        protected DeleteInterceptMode onBeforeEntityDeleted(RATE entity)
+        {
+            if (!entity.IsRateExists)
+                return DeleteInterceptMode.Skip;
+            else
+                return DeleteInterceptMode.Continue;
+        }
+
+        //disallow deletion of projection when it's not active
+        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<RATE> entities)
+        {
+            if (entities.All(x => x.IsRateExists))
+                return true;
+            else if (entities.All(x => !x.IsRateExists))
+            {
+                MessageBoxService.ShowMessage("Cannot delete selected rate(s) because they aren't active", "Error", MessageButton.OK);
+                return false;
+            }
+            else if (MessageBoxService.ShowMessage("Only active rate(s) will be deleted, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
+            {
+                return false;
+            }
+            else
+                return true;
+        }
 
         /// <summary>
         /// CallBack to apply global convention
@@ -142,6 +186,9 @@ namespace BluePrints.ViewModels
             compulsoryOnBeforeEntitySaved(entity);
             entity.COST_TYPE = CostType.Cost;
             populatePHASE(entity);
+
+            if (entity.COMMODITY_CODE == null)
+                entity.COMMODITY_CODE = string.Empty;
 
             return true;
         }
@@ -197,6 +244,13 @@ namespace BluePrints.ViewModels
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
                 setRecommendedRate(projection);
             }
+            else if(field_name == BindableBase.GetPropertyName(() => new RATE().IsRateExists))
+            {
+                if(new_value != null && !(bool)new_value)
+                {
+                    return "Cannot set inactive, please delete this rate instead";
+                }
+            }
 
             return base.UnifiedValueValidation(projection, field_name, new_value);
         }
@@ -242,6 +296,7 @@ namespace BluePrints.ViewModels
 
     public class TransactionRate
     {
+        public string RawSubjobCode { get; set; }
         public string RawDisciplineCode { get; set; }
         public string RawCommodityCode { get; set; }
         public decimal AverageRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);

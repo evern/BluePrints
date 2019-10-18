@@ -22,7 +22,6 @@ namespace BluePrints.Common.Projections
         public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate)
         {
-
         }
 
         BASELINE_ITEM ISupportVariation<BASELINE_ITEM>.Entity => this.Entity.Entity;

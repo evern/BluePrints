@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
         protected DeleteInterceptMode onBeforeEntityDeleted(ExoResourceProjection projection)
         {
             delete(projection);
-            return DeleteInterceptMode.Discontinue;
+            return DeleteInterceptMode.Skip;
         }
 
         /// <summary>

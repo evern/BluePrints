@@ -187,7 +187,18 @@ namespace BluePrints.Data
         public decimal GraduateRate => this.GRADUATE_RATE == null ? 0 : (decimal)this.GRADUATE_RATE;
         public decimal UndergraduateRate => this.UNDERGRADUATE_RATE == null ? 0 : (decimal)this.UNDERGRADUATE_RATE;
 
-        public bool IsRateExists => GUID != Guid.Empty;
+        [NotMapped]
+        private bool isRateExists;
+        [NotMapped]
+        public bool IsRateExists
+        {
+            get => GUID != Guid.Empty;
+            set
+            {
+                isRateExists = value;
+            }
+        }
+
         public List<Tuple<decimal, decimal>> GetGangRateTable()
         {
             if (!IsGangRateCalculatable)
@@ -209,7 +220,7 @@ namespace BluePrints.Data
         {
             if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)))
             {
-                if (COMMODITY_CODE != string.Empty)
+                if (COMMODITY_CODE != string.Empty && COMMODITY_CODE != null)
                 {
                     if (GUID_DISCIPLINE != null && IsNotValidByDiscipline)
                     {

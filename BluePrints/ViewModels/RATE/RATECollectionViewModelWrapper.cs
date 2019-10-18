@@ -118,6 +118,12 @@ namespace BluePrints.ViewModels
             compulsoryOnBeforeEntitySaved(entity);
             entity.COST_TYPE = loadCostType;
             entity.CHARGE_TYPE = loadChargeType;
+
+
+            //commodity code must be empty string to avoid ambiguity when querying
+            if (entity.COMMODITY_CODE == null)
+                entity.COMMODITY_CODE = string.Empty;
+
             populatePHASE(entity);
 
             return true;
@@ -302,10 +308,13 @@ namespace BluePrints.ViewModels
             for(int i = 0;i < Rates.Count;i++)
             {
                 RATE entity = Rates[i];
-                if (Rates.Any(x => x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.COMMODITY_CODE == entity.COMMODITY_CODE && x.GUID != entity.GUID))
+                if(entity.IsRateExists)
                 {
-                    Rates.Remove(entity);
-                    DeleteRates.Add(entity);
+                    if (Rates.Any(x => x.IsRateExists && x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.COMMODITY_CODE == entity.COMMODITY_CODE && x.GUID != entity.GUID))
+                    {
+                        Rates.Remove(entity);
+                        DeleteRates.Add(entity);
+                    }
                 }
             }
 

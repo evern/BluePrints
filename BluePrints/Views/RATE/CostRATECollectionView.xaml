@@ -55,6 +55,7 @@
             <dxb:BarManager>
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                    <dxb:BarButtonItem x:Name="biUpdateFloating" Command="{Binding DataContext.UpdateFloatingRatesCommand, ElementName=userControl}" Content="Align Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align exo budget with budget calculated from deliverable's list" />
                     <dxb:BarButtonItem x:Name="biRemoveDuplicates" Command="{Binding DataContext.RemoveDuplicatesCommand, ElementName=userControl}" Content="Remove Duplicates" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
                 </dxb:BarManager.Items>
                 <DockPanel>
@@ -75,6 +76,8 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="biUpdateFloating" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                     <dxb:BarButtonItemLink BarItemName="biRemoveDuplicates" />
@@ -91,7 +94,7 @@
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:LayoutSerializationService />
                         </dxmvvm:Interaction.Behaviors>
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <custom:GridControlEx x:Name="GridControl" MouseUp="gridControl_MouseUp" dx:DXSerializer.SerializationID="GridControlRATE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
@@ -115,7 +118,7 @@
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidDISCIPLINES}" PopupMinWidth="300" ValueMember="GUID">
+                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="EditBox"  AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidDISCIPLINES}" PopupMinWidth="300" ValueMember="GUID">
                                                     <dxg:LookUpEdit.StyleSettings>
                                                         <dxg:SearchLookUpEditStyleSettings />
                                                     </dxg:LookUpEdit.StyleSettings>
@@ -147,7 +150,7 @@
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="COMMODITY_CODE" Header="Commodity" HeaderToolTip="Which commodity the current rate will be applied to">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="Code" PopupMinWidth="600" >
+                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="Code" PopupMinWidth="600" NullValueButtonPlacement="EditBox">
                                                     <custom:PopupBaseEditEx.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
                                                             <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" Width="600" MaxHeight="750" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">
@@ -187,7 +190,7 @@
                                     <dxg:GridColumn Header="Transaction" HeaderToolTip="Show the transactions which the recommended rate were derived">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" PopupMinWidth="600" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Transactions}" >
+                                                <dxg:LookUpEdit Name="PART_Editor" NullText="Expand to Inspect" AutoComplete="True" PopupMinWidth="600" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Transactions}" >
                                                     <dxg:LookUpEdit.StyleSettings>
                                                         <dxg:SearchLookUpEditStyleSettings />
                                                     </dxg:LookUpEdit.StyleSettings>
@@ -216,7 +219,7 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsRateExists" Header="Is Active" HeaderToolTip="Whether rate is in use" />
+                                    <dxg:GridColumn FieldName="IsRateExists" Header="Active" HeaderToolTip="Whether rate is in use" />
                                     <dxg:GridColumn FieldName="IS_FLOATING" Header="Floating" HeaderToolTip="Whether recommended rate will be bulk edited by update recommended rate button" />
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
@@ -233,6 +236,8 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biUpdateFloating" />
                                         <dxb:BarItemLinkSeparator />
                                         <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
