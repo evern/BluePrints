@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(TENDER_PROFILE_ITEM projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(TENDER_PROFILE_ITEM projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_START_PERCENTAGE))
             {

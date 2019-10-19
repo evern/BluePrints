@@ -114,7 +114,7 @@ namespace BluePrints.Common.Projections
 
         public RATE FallBackRate { get; set; }
 
-        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
 
         //used by detailed rows so that only P6 hour row can be edited
         public bool IsP6HoursRow { get; set; }

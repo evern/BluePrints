@@ -683,7 +683,7 @@ namespace BluePrints.ViewModels
         }
 
 
-        public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.CLIENT_APPROVED))
             {

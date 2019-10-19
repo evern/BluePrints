@@ -11,9 +11,11 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     using BaseModel.DataModel;
+    using DevExpress.XtraEditors.DXErrorProvider;
+    using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("GUID_DEPARTMENT, GUID_DISCIPLINE, GUID_COMMODITY")]
-    public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE, IsRateExists")]
+    public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
         public DateTime EntityCreatedDate
@@ -34,34 +36,104 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public Guid? CommodityCodeId
+        private IEnumerable<CombinedCommodityCode> allCommodityCodes;
+
+        [NotMapped]
+        private IEnumerable<DISCIPLINE> allDISCIPLINES;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodes;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodesByDiscipline;
+
+        [NotMapped]
+        private List<CombinedCommodityCode> validCommodityCodesByDepartment;
+
+        public IEnumerable<CombinedCommodityCode> ValidCommodityCodes
         {
-            get { return GUID_COMMODITY; }
-            set
+            get
             {
-                if (CommodityCodes == null)
-                    GUID_COMMODITY = value;
-                else if (value == null || CommodityCodes.Any(x => x.Key.ToString().ToUpper() == value.ToString().ToUpper()))
-                    GUID_COMMODITY = value;
+                if (allCommodityCodes == null)
+                    return new List<CombinedCommodityCode>();
+
+                if(GUID_PHASE == null)
+                    return allCommodityCodes;
+
+                if (validCommodityCodes == null)
+                {
+                    IEnumerable<CombinedCommodityCode> validCommodityCodesByPhase = allCommodityCodes.Where(x => x.PhaseType == PHASE_TYPE);
+
+                    if(COST_TYPE == CostType.Charge)
+                    {  
+                        validCommodityCodesByDepartment = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT).ToList();
+                        validCommodityCodesByDiscipline =  validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == GUID_DISCIPLINE || x.GuidDiscipline == null)).ToList();
+                        if (GUID_DEPARTMENT != null && GUID_DISCIPLINE != null)
+                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && x.GuidDepartment == GUID_DEPARTMENT && (x.GuidDiscipline == GUID_DISCIPLINE || x.GuidDiscipline == null)).ToList();
+                        else if (GUID_DEPARTMENT == null && GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByPhase.ToList();
+                        else if (GUID_DEPARTMENT == null)
+                            validCommodityCodes = validCommodityCodesByDiscipline;
+                        else if (GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByDepartment;
+                    }
+                    else
+                    {
+                        //commodity codes doesn't have department
+                        validCommodityCodesByDepartment = validCommodityCodesByPhase.ToList();
+                        validCommodityCodesByDiscipline = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE && (x.GuidDiscipline == null || x.GuidDiscipline == GUID_DISCIPLINE)).ToList();
+
+                        if (GUID_DISCIPLINE == null)
+                            validCommodityCodes = validCommodityCodesByPhase.Where(x => x.PhaseType == PHASE_TYPE).ToList();
+                        else
+                            validCommodityCodes = validCommodityCodesByDiscipline;
+                    }
+                }
+
+                return validCommodityCodes;
             }
         }
 
         [NotMapped]
-        private IEnumerable<CombinedCommodityCode> commodityCodes;
-        public IEnumerable<CombinedCommodityCode> CommodityCodes
+        private List<DISCIPLINE> validDISCIPLINES;
+        public IEnumerable<DISCIPLINE> ValidDISCIPLINES
         {
             get
             {
-                if(commodityCodes != null)
-                    return commodityCodes;
+                if (allDISCIPLINES == null || allCommodityCodes == null)
+                    return new List<DISCIPLINE>();
 
-                return null;
+                if (GUID_PHASE == null)
+                    return allDISCIPLINES;
+                
+                if (validDISCIPLINES == null)
+                {
+                    IEnumerable<Guid?> validDISCIPLINESGuid = allCommodityCodes.Where(x => x.PhaseType == PHASE_TYPE).Select(x => x.GuidDiscipline);
+                    if (validDISCIPLINESGuid.Any(x => x == null))
+                        validDISCIPLINES = allDISCIPLINES.ToList();
+                    else
+                    {
+                        List<Guid?> tempValidUniqueDISCIPLINEGuids = validDISCIPLINESGuid.Where(x => x != null).Distinct().ToList();
+
+                        validDISCIPLINES = new List<DISCIPLINE>();
+                        foreach (DISCIPLINE department in allDISCIPLINES)
+                        {
+                            if (tempValidUniqueDISCIPLINEGuids.Any(x => x == department.GUID))
+                                validDISCIPLINES.Add(department);
+                        }
+                    }
+                }
+
+                return validDISCIPLINES;
             }
         }
-
-        public void SetCommodityCodes(IEnumerable<CombinedCommodityCode> commodityCodes)
+        public void SetLookupProperties(IEnumerable<CombinedCommodityCode> commodityCodes, IEnumerable<DISCIPLINE> disciplines)
         {
-            this.commodityCodes = commodityCodes;
+            validCommodityCodes = null;
+            validDISCIPLINES = null;
+            this.allCommodityCodes = commodityCodes;
+            this.allDISCIPLINES = disciplines;
+            Update();
         }
 
         public bool IsGangRateCalculatable
@@ -88,13 +160,14 @@ namespace BluePrints.Data
                 constraint += PHASE_TYPE.ToString();
                 constraint += CHARGE_TYPE.ToString();
 
-                if (GUID_DEPARTMENT != null)
-                    constraint += GUID_DEPARTMENT.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
-                if (GUID_COMMODITY != null)
-                    constraint += GUID_COMMODITY.ToString();
+                if (GUID_DISCIPLINE != null)
+                    constraint += GUID_DISCIPLINE.ToString();
+                if (COMMODITY_CODE != null)
+                    constraint += COMMODITY_CODE;
 
+                constraint += IsRateExists;
                 return constraint;
             }
         }
@@ -115,6 +188,18 @@ namespace BluePrints.Data
         public decimal GraduateRate => this.GRADUATE_RATE == null ? 0 : (decimal)this.GRADUATE_RATE;
         public decimal UndergraduateRate => this.UNDERGRADUATE_RATE == null ? 0 : (decimal)this.UNDERGRADUATE_RATE;
 
+        [NotMapped]
+        private bool isRateExists;
+        [NotMapped]
+        public bool IsRateExists
+        {
+            get => GUID != Guid.Empty;
+            set
+            {
+                isRateExists = value;
+            }
+        }
+
         public List<Tuple<decimal, decimal>> GetGangRateTable()
         {
             if (!IsGangRateCalculatable)
@@ -130,6 +215,44 @@ namespace BluePrints.Data
             ratesTable.Add(new Tuple<decimal, decimal>((decimal)this.UndergraduatePercent, (decimal)this.UndergraduateRate));
 
             return ratesTable;
+        }
+
+        public void GetPropertyError(string propertyName, ErrorInfo info)
+        {
+            if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)))
+            {
+                if (COMMODITY_CODE != string.Empty && COMMODITY_CODE != null)
+                {
+                    if (GUID_DISCIPLINE != null && IsNotValidByDiscipline)
+                    {
+                        info.ErrorText = "Document type is not valid for selected discipline";
+                    }
+                    else if (GUID_DEPARTMENT != null && IsNotValidByDepartment)
+                    {
+                        info.ErrorText = "Document type is not valid for selected department";
+                    }
+                    else if (IsNotValidByAllAttributes)
+                    {
+                        string commodityName;
+                        if (COST_TYPE == CostType.Cost)
+                            commodityName = "Commodity code";
+                        else
+                            commodityName = "Document type";
+
+                        info.ErrorText = commodityName + " is not valid for selected department and discipline";
+                    }
+                }
+            }
+        }
+
+        private bool IsNotValidByAllAttributes => !ValidCommodityCodes.Any(x => x.Code == COMMODITY_CODE);
+
+        private bool IsNotValidByDepartment => validCommodityCodesByDepartment == null ? false : !validCommodityCodesByDepartment.Any(x => x.Code == COMMODITY_CODE);
+
+        private bool IsNotValidByDiscipline => validCommodityCodesByDiscipline == null ? false : !validCommodityCodesByDiscipline.Any(x => x.Code == COMMODITY_CODE);
+
+        public void GetError(ErrorInfo info)
+        {
         }
 
         [NotMapped]
@@ -152,6 +275,15 @@ namespace BluePrints.Data
                 return GetGangRateTable().Sum(x => x.Item1 * x.Item2);
             }
         }
+
+        [NotMapped]
+        public decimal RecommendedRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);
+
+        [NotMapped]
+        public decimal TransactionCount => Transactions == null ? 0 : Transactions.Count;
+
+        [NotMapped]
+        public List<ExoDataPoint> Transactions { get; set; }
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }

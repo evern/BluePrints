@@ -214,7 +214,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress projection, string field_name, object new_value, bool isPaste)
         {
             //budget hours field is disabled but just in case
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity) + "." +

@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BaseModel.Attributes;
     using Common;
     using System;
     using System.Collections.Generic;
@@ -27,7 +28,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid? GUID_COMMODITY { get; set; }
+        [PasteSkipAttribute("ANY")]
+        public string COMMODITY_CODE { get; set; }
+
+        public bool IS_FLOATING { get; set; }
 
         public decimal? MANAGER_RATE { get; set; }
 

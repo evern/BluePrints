@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
         protected DeleteInterceptMode onBeforeEntityDeleted(ExoResourceProjection projection)
         {
             delete(projection);
-            return DeleteInterceptMode.Discontinue;
+            return DeleteInterceptMode.Skip;
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().RESOURCENAME))
             {

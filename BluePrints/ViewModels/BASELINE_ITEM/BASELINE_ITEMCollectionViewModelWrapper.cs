@@ -878,7 +878,7 @@ namespace BluePrints.ViewModels
         public void ValidateCellValue(GridCellValidationEventArgs e)
         {
             string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-            string error_message = UnifiedValueValidation((BASELINE_ITEMProgress)e.Row, fieldName, e.Value);
+            string error_message = UnifiedValueValidation((BASELINE_ITEMProgress)e.Row, fieldName, e.Value, false);
             if (error_message != string.Empty)
             {
                 e.IsValid = false;
@@ -887,7 +887,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string UnifiedValueValidation(BASELINE_ITEMProgress entity, string column_name, object newValue)
+        public override string UnifiedValueValidation(BASELINE_ITEMProgress entity, string column_name, object newValue, bool isPaste)
         {
             string fieldName = DataUtils.FormatColumnFieldname(column_name);
             //budget hours field is disabled but just in case
@@ -2173,7 +2173,7 @@ namespace BluePrints.ViewModels
                 {
                     string errorName = "Department: " + findDEPARTMENT.NAME + ", Discipline: " + findDISCIPLINE.NAME;
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DOCTYPE);
-                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, deliverable.GUID_DOCTYPE, RATECollection, CostType.Charge);
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE, RATECollection, CostType.Charge);
                     if(findRATE != null && findRATE.RATE1 != null)
                     {
                         if(findRATE.IsUsingGangRate)
@@ -2258,7 +2258,7 @@ namespace BluePrints.ViewModels
                         }
                         else
                         {
-                            if (findRATE.GUID_COMMODITY != null && findDOCTYPE != null)
+                            if (findRATE.COMMODITY_CODE != string.Empty && findDOCTYPE != null)
                                 errorName += ", Commodity: " + findDOCTYPE.NAME;
 
                             invalidDeliverables.Add(new ErrorMessage(errorName, "Not using gang rate"));

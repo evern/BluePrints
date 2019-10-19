@@ -117,37 +117,28 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="CommodityCodeId" Header="Doc Type" HeaderToolTip="Which commodity the current rate will be applied to">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxg:LookUpEditSettings Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" DisplayMember="Code" IsTextEditable="true" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" PopupMinWidth="500" ValueMember="Key">
-                                                <dxg:LookUpEditSettings.StyleSettings>
-                                                    <dxg:SearchLookUpEditStyleSettings />
-                                                </dxg:LookUpEditSettings.StyleSettings>
-                                                <dxg:LookUpEditSettings.PopupContentTemplate>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                            <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="Code" Header="Code" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" />
-                                                            </dxg:GridControl.Columns>
-                                                            <dxg:GridControl.View>
-                                                                <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
-                                                            </dxg:GridControl.View>
-                                                        </dxg:GridControl>
-                                                    </ControlTemplate>
-                                                </dxg:LookUpEditSettings.PopupContentTemplate>
-                                            </dxg:LookUpEditSettings>
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" ColumnFilterMode="DisplayText" ReadOnly="True" FieldName="CommodityCodeId" Header="Description (Read Only)" HeaderToolTip="Description of the selected commodity">
+                                    <dxg:GridColumn FieldName="COMMODITY_CODE" Header="Doc Type" HeaderToolTip="Which commodity the current rate will be applied to">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="Description" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.CommodityCodes}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="Key" />
+                                                <custom:PopupBaseEditEx Name="PART_Editor" PopupMinWidth="600" ValueMember="Code" NullValueButtonPlacement="EditBox">
+                                                    <custom:PopupBaseEditEx.PopupContentTemplate>
+                                                        <ControlTemplate TargetType="ContentControl">
+                                                            <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" Width="600" MaxHeight="750" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">
+                                                                <dxg:GridControl.Columns>
+                                                                    <dxg:GridColumn FieldName="Code" Header="Code" ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" />
+                                                                </dxg:GridControl.Columns>
+                                                                <dxg:GridControl.View>
+                                                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" AutoWidth="True" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                </dxg:GridControl.View>
+                                                            </dxg:GridControl>
+                                                        </ControlTemplate>
+                                                    </custom:PopupBaseEditEx.PopupContentTemplate>
+                                                </custom:PopupBaseEditEx>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
-                                        <!--  For Filtering  -->
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Description" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Key" />
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Code" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedCommodityCodeCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="Code" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="RATE1" Header="Charge Rate" HeaderToolTip="Charge rate per hour">
@@ -155,7 +146,7 @@
                                             <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase (Autofilled)" HeaderToolTip="Auto generated field to indicate which phase this rate belongs to" FilterPopupMode="CheckedList" >
+                                    <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase (ReadOnly)" HeaderToolTip="Auto generated field to indicate which phase this rate belongs to" FilterPopupMode="CheckedList" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
@@ -216,6 +207,9 @@
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding DataContext.InitNewRowCommand, ElementName=userControl}" EventName="InitNewRow" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                         <dxb:BarItemLinkSeparator />

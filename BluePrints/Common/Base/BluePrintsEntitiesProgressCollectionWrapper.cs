@@ -339,7 +339,7 @@ namespace BluePrints.Common.Base
             repositoryProjection.Stats = existingProjection.Stats;
         }
 
-        public override string UnifiedValueValidation(TMainProjectionEntity projection, string field_name, object new_value)
+        public override string UnifiedValueValidation(TMainProjectionEntity projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
             {
