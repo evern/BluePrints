@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -629,7 +629,6 @@
     <Compile Include="Common\Reports\UserReportDesigner.Designer.cs">
       <DependentUpon>UserReportDesigner.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\Reports\ViewModel\DisplayModel.cs" />
     <Compile Include="Common\Reports\ViewModel\Interfaces.cs" />
     <Compile Include="Common\Reports\ViewModel\Queries.cs" />
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.cs">
@@ -1021,7 +1020,6 @@
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
@@ -1163,9 +1161,6 @@
     </Compile>
     <Compile Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATE_ITEMCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
-      <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECTDashboardPreloadUserControl.xaml.cs">
       <DependentUpon>PROJECTDashboardPreloadUserControl.xaml</DependentUpon>
@@ -2128,10 +2123,6 @@
     <Page Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECTDashboardPreloadUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>

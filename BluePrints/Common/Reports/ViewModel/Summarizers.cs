@@ -148,111 +148,59 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
-                    ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
-                    if(reportablesDisplay != null)
+                    double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 : Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
+                    List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                    foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                     {
-                        IReportable_Group reportable_Group = reportablesDisplay.ProgressItem as IReportable_Group;
-                        if(reportable_Group != null)
+                        if(reportableObject.AssignedUsers.Count() > 0)
                         {
-                            List<StoredProcedure_PlannedDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                            List<StoredProcedure_PlannedDataPoint> currentGroupLateDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                            foreach (IReportable reportable in reportable_Group.Reportables)
-                            {
-                                IReportable_Quantity quantityReportable = reportable as IReportable_Quantity;
-                                IEnumerable<StoredProcedure_PlannedDataPoint> currentReportablePlannedDataPoints = plannedDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey);
-
-                                double qtyPerUnit = 1;
-                                if (quantityReportable != null)
-                                    qtyPerUnit = quantityReportable.Total_Units == 0 ? 0 : Convert.ToDouble(quantityReportable.Total_Quantity / quantityReportable.Total_Units);
-
-                                foreach (StoredProcedure_PlannedDataPoint dataPoint in currentReportablePlannedDataPoints)
-                                {
-                                    dataPoint.PeriodPlannedQuantity = dataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                }
-
-                                reportable.Stats.Budgeted.SetPlannedData(currentReportablePlannedDataPoints);
-                                reportable.Stats.BudgetedLate.SetPlannedData(currentReportablePlannedDataPoints);
-                                reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(currentReportablePlannedDataPoints);
-                                currentGroupLateDeliverableDataPoints.AddRange(currentReportablePlannedDataPoints);
-                            }
-
-                            reportable_Group.Stats.Budgeted.SetPlannedData(currentGroupDeliverableDataPoints);
-                            reportable_Group.Stats.BudgetedLate.SetPlannedData(currentGroupLateDeliverableDataPoints);
-                            reportable_Group.Update();
-                            continue;
-                        }
-                        else
-                        {
-                            IEnumerable<StoredProcedure_PlannedDataPoint> currentReportablePlannedDataPoints = plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey);
-                            double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 :Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
-
-                            foreach (StoredProcedure_PlannedDataPoint dataPoint in currentReportablePlannedDataPoints)
-                            {
-                                dataPoint.PeriodPlannedQuantity = dataPoint.PeriodPlannedUnits * qtyPerUnit;
-                            }
-
-                            reportablesDisplay.Stats.Budgeted.SetPlannedData(currentReportablePlannedDataPoints);
-                            reportablesDisplay.Stats.BudgetedLate.SetPlannedData(currentReportablePlannedDataPoints);
-                            reportablesDisplay.Update();
-                        }
-                    }
-                    else
-                    {
-                        double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 : Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
-                        List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                        foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
-                        {
-                            if(reportableObject.AssignedUsers.Count() > 0)
-                            {
-                                foreach (User_Weight user in reportableObject.AssignedUsers)
-                                {
-                                    StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                                    DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                    weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                    weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                    weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                    weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
-                                }
-                            }
-                            else
+                            foreach (User_Weight user in reportableObject.AssignedUsers)
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
                                 weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
                                 weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
                             }
                         }
-
-                        reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
-
-                        List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                        foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        else
                         {
-                            if (reportableObject.AssignedUsers.Count() > 0)
-                            {
-                                foreach (User_Weight user in reportableObject.AssignedUsers)
-                                {
-                                    StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
-                                    DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
-                                    weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                    weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                    weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                    weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
-                                }
-                            }
-                            else
+                            StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                            DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                            weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                            weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                        }
+                    }
+
+                    reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
+
+                    List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                    foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                    {
+                        if (reportableObject.AssignedUsers.Count() > 0)
+                        {
+                            foreach (User_Weight user in reportableObject.AssignedUsers)
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
+                                weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
                                 weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
                                 weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
                             }
                         }
-
-                        reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
-                        reportableObject.Update();
+                        else
+                        {
+                            StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
+                            DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
+                            weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                            weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                        }
                     }
+
+                    reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
+                    reportableObject.Update();
 
                     LoadingScreenManager.Progress();
                 }
@@ -272,57 +220,30 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
-                    ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
-                    if (reportablesDisplay != null)
+                    List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                    foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                     {
-                        IReportable_Group reportable_Group = reportablesDisplay.ProgressItem as IReportable_Group;
-                        if (reportable_Group != null)
+                        if (reportableObject.AssignedUsers.Count() > 0)
                         {
-                            List<StoredProcedure_PlannedDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                            foreach (IReportable reportable in reportable_Group.Reportables)
-                            {
-                                reportable.Stats.Current.SetPlannedData(currentDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(currentDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                            }
-
-                            reportable_Group.Stats.Current.SetPlannedData(currentGroupDeliverableDataPoints);
-                            reportable_Group.Update();
-                            continue;
-                        }
-                        else
-                        {
-                            reportablesDisplay.Stats.Current.SetPlannedData(currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey));
-                            reportablesDisplay.Update();
-                        }
-                    }
-                    else
-                    {
-                        List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                        foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
-                        {
-                            if (reportableObject.AssignedUsers.Count() > 0)
-                            {
-                                foreach (User_Weight user in reportableObject.AssignedUsers)
-                                {
-                                    StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                                    DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                    weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                    weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                    weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
-                                }
-                            }
-                            else
+                            foreach (User_Weight user in reportableObject.AssignedUsers)
                             {
                                 StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
                                 DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
                                 weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
                             }
                         }
-
-                        reportableObject.Stats.Current.SetPlannedData(weightedPlannedDataPoints);
-                        reportableObject.Update();
+                        else
+                        {
+                            StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
+                            DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
+                            weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                        }
                     }
+
+                    reportableObject.Stats.Current.SetPlannedData(weightedPlannedDataPoints);
+                    reportableObject.Update();
 
                     LoadingScreenManager.Progress();
                 }
@@ -378,58 +299,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
-                    ReportablesDisplay reportablesDisplay = reportableObject as ReportablesDisplay;
-                    if (reportablesDisplay != null)
+                    List<StoredProcedure_RemainingDataPoint> storedProcedure_RemainingDataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
+                    if (useProductivity)
                     {
-                        IReportable_Group reportable_Group = reportablesDisplay.ProgressItem as IReportable_Group;
-                        if (reportable_Group != null)
-                        {
-                            List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
-                            List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableLateDataPoints = new List<StoredProcedure_RemainingDataPoint>();
-                            foreach (IReportable reportable in reportable_Group.Reportables)
-                            {
-                                reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.GetData());
-                                //SummaryStats summaryStats = reportable.Stats as SummaryStats;
-                                //if(summaryStats != null)
-                                //    reportable.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), summaryStats.Burned.DataPoints);
-
-                                reportable.Update();
-                                currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                currentGroupDeliverableLateDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                            }
-
-                            reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.GetData());
-                            //SummaryStats groupSummaryStats = reportable_Group.Stats as SummaryStats;
-                            //if (groupSummaryStats != null)
-                            //    reportable_Group.Stats.RemainingActual.SetRemainingData(currentGroupDeliverableLateDataPoints, groupSummaryStats.Burned.DataPoints);
-
-                            reportable_Group.Update();
-                            continue;
-                        }
-                        else
-                        {
-                            reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.GetData());
-                            //SummaryStats summaryStats = reportablesDisplay.Stats as SummaryStats;
-                            //if (summaryStats != null)
-                            //    reportablesDisplay.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), summaryStats.Burned.DataPoints);
-
-                            reportablesDisplay.Update();
-                        }
+                        //not using this here but ref is required
+                        bool isOverride = false;
+                        decimal productivity = BluePrintsDataUtils.GetStockLevelProductivity(reportableObject, ref isOverride);
+                        storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, productivity));
                     }
-                    else
-                    {
-                        List<StoredProcedure_RemainingDataPoint> storedProcedure_RemainingDataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
-                        if (useProductivity)
-                        {
-                            //not using this here but ref is required
-                            bool isOverride = false;
-                            decimal productivity = BluePrintsDataUtils.GetStockLevelProductivity(reportableObject, ref isOverride);
-                            storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, productivity));
-                        }
 
-                        reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.GetData());
-                        reportableObject.Update();
-                    }
+                    reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.GetData());
+                    reportableObject.Update();
 
                     LoadingScreenManager.Progress();
                 }
