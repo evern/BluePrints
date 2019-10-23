@@ -366,10 +366,6 @@
                                             <dxg:GridControl.View>
                                                 <dxg:TableView x:Name="tableView" ColumnFilterPopupMode="ExcelSmart" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                     <dxg:TableView.FormatConditions>
-                                                        <!--<dxg:FormatCondition Expression="[Entity.IsPOError] = 'True'" FieldName="Entity.Projection.SubJob.Code">
-                                                        <dxc:Format Background="Salmon" />
-                                                    </dxg:FormatCondition>-->
-                                                        <!--Less than -1 to avoid any anomalies on formatting-->
                                                         <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                             <dxc:Format Background="#FFFF9B98"/>
                                                         </dxg:FormatCondition>

@@ -60,6 +60,9 @@ namespace BluePrints.Common.Projections
             Projection.ExoForecastRate = forecastRate;
         }
 
+        //construction job doesn't have deliverable total units, fall back to database stat total units
+        public decimal DeliverableUnits { get; set; }
+
         public decimal Budget { get; set; }
         public decimal Rate { get; set; }
         public decimal Revenue { get; set; }

@@ -413,7 +413,7 @@ namespace BluePrints.Common.Projections
 
         public Guid OriginalEntityKey => throw new NotImplementedException();
 
-        public decimal Budget_Units => throw new NotImplementedException();
+        public decimal Budget_Units { get; set; }
 
         public decimal Total_Units => throw new NotImplementedException();
 
