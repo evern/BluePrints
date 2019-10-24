@@ -1363,7 +1363,7 @@ namespace BluePrints.Common.Projections
                     {
                         ExoSubJobAuth newAuth = new ExoSubJobAuth();
                         newAuth.User = findUSER;
-                        newAuth.ShouldAssign = findUSER.ROLE.ROLE_COMMODITY.Any(x => x.DOCTYPE.CODE == exoUserAuth.CommodityCode);
+                        newAuth.ShouldAssign = findUSER.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => x.DOCTYPE.CODE == exoUserAuth.CommodityCode);
                         newAuth.IsAssigned = true;
                         bluePrintsUsers.Add(newAuth);
                     }
