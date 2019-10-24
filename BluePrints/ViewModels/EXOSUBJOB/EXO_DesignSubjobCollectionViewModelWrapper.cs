@@ -225,7 +225,7 @@ namespace BluePrints.ViewModels
                 {
                     ExoSubJobAuth newUser = new ExoSubJobAuth();
                     newUser.User = user;
-                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
+                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
                     if (newUser.ShouldAssign && subJob.SubJobId != null)
                     {
                         if (ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, newUser, (int)subJob.SubJobId))
@@ -271,7 +271,7 @@ namespace BluePrints.ViewModels
                     else
                         newUser.IsAssigned = false;
 
-                    if (newUser.User != null && newUser.User.ROLE != null && newUser.User.ROLE.ROLE_COMMODITY.Count > 0 && newUser.User.ROLE.ROLE_COMMODITY.Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE)))
+                    if (newUser.User != null && newUser.User.ROLE != null && newUser.User.ROLE.ROLE_COMMODITY.Count > 0 && newUser.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE)))
                         newUser.ShouldAssign = true;
 
                     permissions.Add(newUser);
