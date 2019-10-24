@@ -26,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Misc
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
             LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
-           LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+            LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
 
             foreach(var groupedDisciplineJob in groupedDisciplineJobs)
             {
@@ -123,6 +123,11 @@ namespace BluePrints.Common.ViewModel.Misc
                 budgetDataPoints.AddRange(budgetedStats.SelectMany(x => x.Budgeted.DataPoints));
                 decimal p6BudgetedUnits = budgetDataPoints.Sum(x => x.Units);
                 jobForecastSummary.P6BudgetedUnits = p6BudgetedUnits;
+
+                //IEnumerable<VariationAdjustment> variationAdjustments = budgetedStats.SelectMany(x => x.VariationAdjustments);
+                //decimal variationUnits = variationAdjustments.Sum(y => y.AdjustmentUnits);
+                decimal totalUnits = budgetedStats.Sum(x => x.Budgeted.TotalUnits);
+                jobForecastSummary.DeliverableUnits = totalUnits;
             }
 
             if (remainingStats.Count() > 0)

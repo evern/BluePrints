@@ -192,10 +192,10 @@ namespace BluePrints.ViewModels
         #region Events
         public void AlignExoBudget()
         {
-            if (MessageBoxService.ShowMessage("This will align budget for all design jobs in exo to aggregated budget in deliverable's list, do you wish to continue?", "Align Budget", MessageButton.OKCancel) == MessageResult.Cancel)
+            if (MessageBoxService.ShowMessage("This will align budget for selected design jobs in exo to aggregated budget in deliverable's list, do you wish to continue?", "Align Budget", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
-            foreach (ExoSubJobEditableProjection subJob in DisplayEntities.Where(x => x.IsLineExistsInExo))
+            foreach (ExoSubJobEditableProjection subJob in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.ExoBudget = subJob.Budget;
                 commitLineBudgetCost(subJob);

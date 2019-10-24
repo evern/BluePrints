@@ -132,8 +132,19 @@ namespace BluePrints.ViewModels
             DataUtils.ShallowCopy(remoteNewLine, newLine);
             remoteNewLines.Add(remoteNewLine);
 
-            commitToExo(newLines, primeroUnitOfWork);
-            commitToExo(remoteNewLines, pgaUnitOfWork);
+            string upperCaseName = projection.RESOURCENAME.ToUpper();
+            int primeroNameCount;
+            //use new unit of work to prevent concurrency issues
+            string generatedShortCodeFromPrimero = ExoQueries.GetStaffShortcode(primeroUnitOfWork, upperCaseName, out primeroNameCount);
+
+            int pgaNameCount;
+            //use new unit of work to prevent concurrency issues
+            string generatedShortCodeFromPga = ExoQueries.GetStaffShortcode(pgaUnitOfWork, upperCaseName, out pgaNameCount);
+
+
+            string newResourceShortCode = primeroNameCount > pgaNameCount ? generatedShortCodeFromPrimero : generatedShortCodeFromPga;
+            commitToExo(newLines, primeroUnitOfWork, newResourceShortCode);
+            commitToExo(remoteNewLines, pgaUnitOfWork, newResourceShortCode);
 
             //need to add post to capture generated id and properties
             //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
@@ -150,11 +161,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void commitToExo(IEnumerable<ExoResourceProjection> projections, IPrimeroEntitiesUnitOfWork primeroUOW)
+        private void commitToExo(IEnumerable<ExoResourceProjection> projections, IPrimeroEntitiesUnitOfWork primeroUOW, string newResourceShortCode)
         {
             foreach(ExoResourceProjection resource in projections)
             {
-                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID);
+                bool isNew;
+                STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID, out isNew);
                 if(addedStaff != null)
                 {
                     resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
@@ -162,8 +174,8 @@ namespace BluePrints.ViewModels
                     //do not map back because multiple contexts are involved
                     //resource.STAFFNO = addedStaff.STAFFNO;
                     resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
-
-                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, resource.SHORTCODE);
+                    string activeShortCode = isNew ? newResourceShortCode : resource.SHORTCODE;
+                    JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, activeShortCode);
 
                     //map back generated properties to projection
                     resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;

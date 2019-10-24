@@ -413,7 +413,7 @@ namespace BluePrints.Common.Projections
 
         public Guid OriginalEntityKey => throw new NotImplementedException();
 
-        public decimal Budget_Units => throw new NotImplementedException();
+        public decimal Budget_Units { get; set; }
 
         public decimal Total_Units => throw new NotImplementedException();
 
@@ -736,11 +736,11 @@ namespace BluePrints.Common.Projections
         }
 
 
-        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId)
+        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId, out bool isNew)
         {
             string uppercaseName = name.ToUpper();
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
-
+            
             STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, uppercaseName);
             if (staff != null)
             {
@@ -751,7 +751,7 @@ namespace BluePrints.Common.Projections
                 staff.USERPROFILEID = userProfileId;
                 staff.REPORTS_TO_STAFFNO = reportToStaffId == null ? staff.STAFFNO : reportToStaffId;
                 staff.PAYROLL_ID = payrollId;
-
+                isNew = false;
                 return staff;
             }
             else
@@ -766,7 +766,7 @@ namespace BluePrints.Common.Projections
                     newSTAFF.REPORTS_TO_STAFFNO = newSTAFF.STAFFNO;
                     pUnitOfWork.SaveChanges();
                 }
-
+                isNew = true;
                 return newSTAFF;
             }
         }
@@ -814,16 +814,15 @@ namespace BluePrints.Common.Projections
             newJOBCOST_RESOURCE.SELLRATE2 = 0;
             newJOBCOST_RESOURCE.SELLRATE3 = 0;
             newJOBCOST_RESOURCE.NORMALHOURS = 0;
-            Regex initials = new Regex(@"(\b[a-zA-Z])[a-zA-Z]* ?");
-            string init = initials.Replace(name, "$1");
             newJOBCOST_RESOURCE.TITLE = title;
             newJOBCOST_RESOURCE.ISACTIVE = "Y";
 
+            int nameCount;
             //use new unit of work to prevent concurrency issues
-            string generatedShortCode = ExoQueries.GetStaffShortcode(pUnitOfWork, init);
+            string generatedShortCode = ExoQueries.GetStaffShortcode(pUnitOfWork, name, out nameCount);
             newJOBCOST_RESOURCE.STAFFNO = staffId;
             newJOBCOST_RESOURCE.SHORTCODE = shortCode == string.Empty ? generatedShortCode : shortCode;
-            newJOBCOST_RESOURCE.DEFAULT_STOCKCODE = defaultStockCode == string.Empty ? generatedShortCode : defaultStockCode;
+            newJOBCOST_RESOURCE.DEFAULT_STOCKCODE = defaultStockCode == string.Empty ? shortCode != string.Empty ? shortCode : generatedShortCode : defaultStockCode;
 
             return newJOBCOST_RESOURCE;
         }
@@ -1669,15 +1668,18 @@ namespace BluePrints.Common.Projections
             return string.Concat(firstName, largestNumber.ToString());
         }
 
-        public static string GetStaffShortcode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string partialShortCode)
+        public static string GetStaffShortcode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string name, out int nameCount)
         {
+            nameCount = 0;
+            Regex initials = new Regex(@"(\b[a-zA-Z])[a-zA-Z]* ?");
+            string partialShortCode = initials.Replace(name, "$1");
+
             string formatPartialShortCode = partialShortCode.Length > 2 ? partialShortCode.Substring(0, 2) : partialShortCode;
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                             where JOBCOST_RESOURCE.SHORTCODE.StartsWith(formatPartialShortCode)
                             select JOBCOST_RESOURCE;
 
             List<JOBCOST_RESOURCE> allResources = resources.ToList();
-            int largestNumber = 0;
             foreach(var resource in allResources)
             {
                 string resultString = Regex.Match(resource.SHORTCODE, @"\d+").Value;
@@ -1685,12 +1687,12 @@ namespace BluePrints.Common.Projections
                 {
                     int affixValue = Int32.Parse(resultString);
                     affixValue += 1;
-                    if (affixValue > largestNumber)
-                        largestNumber = affixValue;
+                    if (affixValue > nameCount)
+                        nameCount = affixValue;
                 }
             }
 
-            return string.Concat(formatPartialShortCode, largestNumber.ToString());
+            return string.Concat(formatPartialShortCode, nameCount.ToString());
         }
 
         public static JOB_COSTTYPES GetCommodity(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string commodityCode)
