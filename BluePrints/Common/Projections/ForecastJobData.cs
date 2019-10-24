@@ -95,7 +95,7 @@ namespace BluePrints.Common.Projections
         public decimal OriginalEstimateAtCompletion => ActualCosts + Outstanding + OriginalUncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
-        public decimal PeriodMovement => EstimateAtCompletion - PreviousEAC;
+        public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
         public bool IsProcurement
         {
             get
