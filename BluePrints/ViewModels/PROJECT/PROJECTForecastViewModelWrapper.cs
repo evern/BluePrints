@@ -115,9 +115,15 @@ namespace BluePrints.ViewModels
 
             DateTime dataDate;
             if (LoadPROJECT.FORECAST_DATA_DATE == null)
+            {
                 dataDate = DateTime.Now;
+                LoadDataDate = null;
+            }
             else
+            {
                 dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
+                LoadDataDate = dataDate;
+            }
 
             FixedDataDate = dataDate;
 
@@ -317,6 +323,7 @@ namespace BluePrints.ViewModels
 
         public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
 
+        public DateTime? LoadDataDate { get; set; }
         public override DateTime? FixedDataDate { get; set; }
         public DateTime FixedEndDate { get; set; }
 
@@ -330,17 +337,41 @@ namespace BluePrints.ViewModels
             if(FixedDataDate != null)
             {
                 ForecastSummary.Reset();
-                DateTime? lastEACDataDate = null;
-                IEnumerable<FORECAST> EACForecasts = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC);
-                if(EACForecasts.Count() > 0)
+
+                if(FixedDataDate != LoadDataDate)
                 {
-                    lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
-                    if(FixedDataDate < lastEACDataDate)
+                    if (FixedDataDate < LoadDataDate)
                     {
-                        if (!LoginCredentials.hasPermission(PermissionResources.CanRewindDataDate))
+                        IEnumerable<FORECAST> EACForecasts = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC);
+                        if(EACForecasts.Count() > 0)
                         {
-                            MessageBoxService.ShowMessage("Cannot save because EAC if finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OKCancel, MessageIcon.Exclamation);
-                            return;
+                            DateTime lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
+                            if(FixedDataDate < lastEACDataDate)
+                            {
+                                if (!LoginCredentials.hasPermission(PermissionResources.CanRewindDataDate))
+                                {
+                                    MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
+                                    FixedDataDate = LoadDataDate;
+                                    this.RaisePropertyChanged(x => x.FixedDataDate);
+                                    return;
+                                }
+                            }
+
+                        }
+                    }
+                    //restrict user from moving data date forward if there are forecast but EAC isn't saved
+                    else if (FixedDataDate > LoadDataDate)
+                    {
+                        bool hasEACOnCurrentDataDate = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == LoadDataDate).Count() > 0;
+                        if (LoadDataDate != null && !hasEACOnCurrentDataDate)
+                        {
+                            if(!LoginCredentials.hasPermission(PermissionResources.CanForwardDataDate))
+                            {
+                                MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
+                                FixedDataDate = LoadDataDate;
+                                this.RaisePropertyChanged(x => x.FixedDataDate);
+                                return;
+                            }
                         }
                     }
                 }
@@ -349,6 +380,7 @@ namespace BluePrints.ViewModels
                 LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(1).AddDays(-1);
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
+                LoadDataDate = FixedDataDate;
                 FullRefresh();
             }
         }
@@ -2197,6 +2229,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
             MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved\nData date will be changed to next month after closing this dialog", "EAC Saved", MessageButton.OK, MessageIcon.Information);
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
+            LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
 

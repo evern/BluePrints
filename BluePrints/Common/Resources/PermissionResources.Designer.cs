@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class PermissionResources {
@@ -79,7 +79,16 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can rewind data date even if EAC is saved.
+        ///   Looks up a localized string similar to Allow user to change data date to a future date even if EAC is not saved.
+        /// </summary>
+        internal static string CanForwardDataDate {
+            get {
+                return ResourceManager.GetString("CanForwardDataDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can change forecast data date to a date in the paste even if EAC is saved.
         /// </summary>
         internal static string CanRewindDataDate {
             get {
