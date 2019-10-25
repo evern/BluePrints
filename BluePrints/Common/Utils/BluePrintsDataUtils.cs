@@ -211,9 +211,6 @@ namespace BluePrints.Common.ViewModel.Utils
         public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, ref List<string> narratives, List<ProjectUnitOfWorkContext> projectContexts)
             where TProjection : IReportable, IBookable
         {
-            if (exoAuthorisations != null && narratives != null)
-                return;
-
             List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
             List<string> cacheNarratives = new List<string>();
             foreach (var projectContext in projectContexts)
