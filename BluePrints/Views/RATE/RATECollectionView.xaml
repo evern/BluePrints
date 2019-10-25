@@ -146,7 +146,7 @@
                                             <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase (ReadOnly)" HeaderToolTip="Auto generated field to indicate which phase this rate belongs to" FilterPopupMode="CheckedList" >
+                                    <dxg:GridColumn FieldName="GUID_PHASE" Visible="False" Header="Phase (ReadOnly)" HeaderToolTip="Auto generated field to indicate which phase this rate belongs to" FilterPopupMode="CheckedList" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>

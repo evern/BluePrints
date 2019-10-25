@@ -100,11 +100,11 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Header="Default Columns">
-                                    <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" HeaderToolTip="Indicate which phase this rate belongs to" FilterPopupMode="CheckedList" Fixed="Left" >
+                                    <!--<dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" HeaderToolTip="Indicate which phase this rate belongs to" FilterPopupMode="CheckedList" Fixed="Left" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
+                                    </dxg:GridColumn>-->
                                     <dxg:GridColumn FieldName="Phase_Type" Visible="False" Header="Phase Type" HeaderToolTip="Indicate which phase this rate belongs to">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" />
@@ -116,7 +116,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
-                                        <dxg:GridColumn.CellTemplate>
+                                        <!--<dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" NullValueButtonPlacement="EditBox"  AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ValidDISCIPLINES}" PopupMinWidth="300" ValueMember="GUID">
                                                     <dxg:LookUpEdit.StyleSettings>
@@ -137,12 +137,12 @@
                                                     </dxg:LookUpEdit.PopupContentTemplate>
                                                 </dxg:LookUpEdit>
                                             </DataTemplate>
-                                        </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn.CellTemplate>-->
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
+                                    <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DEPARTMENT" Visible="{Binding DataContext.IsDepartmentVisible, ElementName=userControl}" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                         </dxg:GridColumn.EditSettings>

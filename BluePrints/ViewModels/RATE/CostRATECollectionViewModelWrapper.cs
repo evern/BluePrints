@@ -45,12 +45,14 @@ namespace BluePrints.ViewModels
         protected override CostType loadCostType => CostType.Cost;
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        PhaseType loadPhaseType = PhaseType.Construct;
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
+            var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
+            loadPROJECT = PROJECTParameter.GetFirstEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            loadPhaseType = (PhaseType)PROJECTParameter.GetSecondEntity();
         }
 
         protected override void addEntitiesLoader()
@@ -60,7 +62,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Procurement);
+            return query => query.Where(x => x.PHASE_TYPE == loadPhaseType);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
@@ -70,6 +72,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        public bool IsDepartmentVisible => loadPhaseType != PhaseType.Construct;
         List<TransactionRate> transactionRates = new List<TransactionRate>();
         List<ExoDataPoint> actualDataPoints;
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
@@ -101,7 +104,7 @@ namespace BluePrints.ViewModels
                 COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == transactionRate.CommodityCode);
                 PHASE findPHASE = PHASECollection.FirstOrDefault(x => transactionRate.RawSubjobCode.Contains(x.INTERNAL_NUM));
 
-                if(findPHASE != null && findPHASE.PHASE_TYPE != null && findPHASE.PHASE_TYPE != PhaseType.Procurement && findDISCIPLINE != null && findCOMMODITY_CODE != null)
+                if(findPHASE != null && findPHASE.PHASE_TYPE != null && findPHASE.PHASE_TYPE == loadPhaseType && findPHASE.CHARGE_TYPE == ChargeType.Chargeable && findDISCIPLINE != null && findCOMMODITY_CODE != null)
                 {
                     IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_PHASE == findPHASE.GUID && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
                     if(findCommittedRATES.Count() == 0)
@@ -272,15 +275,16 @@ namespace BluePrints.ViewModels
 
         protected override void populatePHASE(RATE entity)
         {
-            if (entity.GUID_PHASE != null)
+            //if (entity.GUID_PHASE != null)
+            //{
+            PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == ChargeType.Chargeable);
+            if (selectedPHASE != null)
             {
-                PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.GUID == (Guid)entity.GUID_PHASE);
-                if (selectedPHASE != null)
-                {
-                    entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
-                    entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
-                }
+                entity.GUID_PHASE = selectedPHASE.GUID;
+                entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
+                entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
             }
+            //}
         }
 
         #endregion
