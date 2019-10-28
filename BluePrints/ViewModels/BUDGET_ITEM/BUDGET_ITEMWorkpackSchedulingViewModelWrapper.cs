@@ -370,6 +370,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public override bool HasHoursOnDeliverables => true;
         #endregion
     }
 }

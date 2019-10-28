@@ -75,9 +75,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ESTIMATE_ITEMProgress> SelectedEntities { get; set; }
         public IEnumerable<ESTIMATE_ITEMProgress> EditableAllEntities { get; set; }
         public bool IsProcurementSubjobVisible { get; set; }
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory =
-            P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             Interface_InitializeParameters(parameter);
@@ -477,17 +475,24 @@ namespace BluePrints.ViewModels
             return findDISCIPLINE.GUID;
         }
 
-        public void Trim()
+        public void Align()
         {
-            if (MessageBoxService.ShowMessage("This will attempt to remove any duplicate entries, or entires that doesn't exists in exo and doesn't have P6 assignments, do you wish to continue?", "Warning", MessageButton.OKCancel, MessageIcon.Question) != MessageResult.OK)
+            if (MessageBoxService.ShowMessage("This will add EXO jobs that doesn't exist in BluePrints or remove BluePrints jobs that doesn't exists in EXO, do you wish to continue?", "Warning", MessageButton.OKCancel, MessageIcon.Question) != MessageResult.OK)
                 return;
 
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading EXO jobs...");
             List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
-            List<ESTIMATE_ITEMProgress> removeESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+            P6_ASSIGNMENTCollectionViewModel.Refresh();
+            Common.LoadingScreenManager.CloseLoadingScreen();
 
-            int removeCount = 0;
+            List<ESTIMATE_ITEMProgress> removeESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+            List<ESTIMATE_ITEMProgress> optionalRemoveESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+            List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+            List<ErrorMessage> messages = new List<ErrorMessage>();
+
             Common.LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
-            Common.LoadingScreenManager.SetMessage("Looking for invalid entries...");
+            Common.LoadingScreenManager.SetMessage("Parsing EXO jobs...");
             List<ESTIMATE_ITEMProgress> entities = DisplayEntities.ToList();
 
             for(int i=0;i < entities.Count;i++)
@@ -497,44 +502,100 @@ namespace BluePrints.ViewModels
                 IEnumerable<ExoTimeAuthorisation> findExoLines = exoLines.Where(x => x.SubJobCode == displayEntity.Subjob_Name && x.DisciplineCode == displayEntity.Discipline_Code && x.CommodityCode == displayEntity.Commodity_Code);
                 ExoTimeAuthorisation findExoLine;
                 if (displayEntity.Variation_Code != null && displayEntity.Variation_Code != string.Empty)
-                    findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == displayEntity.Variation_Code);
+                    findExoLine = findExoLines.FirstOrDefault(x => x.VariationCode == displayEntity.Variation_Code);
                 else
-                    findExoLine = exoLines.FirstOrDefault(x => x.VariationCode == string.Empty || x.VariationCode == null);
+                    findExoLine = findExoLines.FirstOrDefault(x => x.VariationCode == string.Empty || x.VariationCode == null);
 
                 if (findExoLine == null)
                 {
+                    //remove extra jobs in BluePrints that's not in exo
+                    messages.Add(new ErrorMessage(displayEntity.UniqueJobcode, "Remove"));
                     removeESTIMATE_ITEMS.Add(displayEntity);
                     entities.Remove(displayEntity);
+                    i--;
                 }
                 else
                 {
+                    //remove duplicates
                     IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = DisplayEntities.Where(x => x.GUID != displayEntity.GUID && x.UniqueJobcode == displayEntity.UniqueJobcode);
                     if (duplicateEntities.Count() > 0)
                     {
                         foreach (ESTIMATE_ITEMProgress duplicateEntity in duplicateEntities)
                         {
-                            IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == duplicateEntity.OriginalEntityKey);
-                            if (attachedP6Assignments.Count() == 0)
+                            if (!removeESTIMATE_ITEMS.Any(x => x.GUID == duplicateEntity.GUID))
                             {
-                                if (!removeESTIMATE_ITEMS.Any(x => x.GUID == duplicateEntity.GUID))
-                                {
-                                    removeESTIMATE_ITEMS.Add(displayEntity);
-
-                                    //must be removed or else displayEntity will be scanned later and all duplication will be removed
-                                    entities.Remove(displayEntity);
-                                }
+                                messages.Add(new ErrorMessage(displayEntity.UniqueJobcode, "Remove"));
+                                removeESTIMATE_ITEMS.Add(displayEntity);
+                                //must be removed or else displayEntity will be scanned later and all duplication will be removed
+                                entities.Remove(displayEntity);
+                                i--;
                             }
                         }
                     }
                 }
-
             }
+
+            foreach (ExoTimeAuthorisation exoLine in exoLines)
+            {
+                //add jobs in BluePrints
+                if (exoLine.SubJobCode.Length >= 15 && exoLine.DisciplineCode.Length >= 4 && exoLine.CommodityCode != string.Empty)
+                {
+                    string phaseCode = exoLine.SubJobCode.Substring(13, 2);
+                    if (!phaseCode.ToUpper().Contains("D") && !phaseCode.ToUpper().Contains("P"))
+                    {
+                        string disciplineCode = exoLine.DisciplineCode.Substring(0, 2);
+                        string disciplineNum = exoLine.DisciplineCode.Substring(2, 2);
+                        string areaName = exoLine.SubJobCode.Substring(6, 3);
+                        string subAreaName = exoLine.SubJobCode.Substring(10, 2);
+
+                        string fullDisciplineCode = string.Concat(disciplineCode, disciplineNum);
+                        string fullWBSCode = exoLine.SubJobCode + "-" + fullDisciplineCode + "-" + exoLine.CommodityCode;
+
+                        ESTIMATE_ITEMProgress findESTIMATE_ITEM = DisplayEntities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
+                        if (findESTIMATE_ITEM == null)
+                        {
+                            ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
+                            Data.PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
+                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                            int disciplineInt = 1;
+                            if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
+                            {
+                                newESTIMATE_ITEM.GUID = Guid.Empty;
+                                newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
+                                newESTIMATE_ITEM.GUID_AREA = FindExistingOrAddNewArea(areaName);
+                                newESTIMATE_ITEM.GUID_SUBAREA = FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
+                                newESTIMATE_ITEM.GUID_DISCIPLINE = FindExistingOrAddNewDiscipline(disciplineCode);
+                                newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
+                                newESTIMATE_ITEM.COMMODITY_CODE = exoLine.CommodityCode;
+                                newESTIMATE_ITEM.VARIATION_CODE = exoLine.VariationCode;
+
+                                ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
+                                projection.Entity = new ESTIMATE_ITEMProjection();
+                                projection.Entity.Entity = newESTIMATE_ITEM;
+
+                                newESTIMATE_ITEMS.Add(projection);
+                                messages.Add(new ErrorMessage(exoLine.SubJobCode + "-" + exoLine.DisciplineCode + "-" + exoLine.CommodityCode + " " + exoLine.VariationCode, "Add"));
+                            }
+                        }
+                    }
+                }
+            }
+
             Common.LoadingScreenManager.CloseLoadingScreen();
+            if(messages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(messages, "Do you wish to continue with adding/removing jobs in the following list?");
+                if(ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.OK)
+                {
+                    MainViewModel.BulkSave(newESTIMATE_ITEMS);
+                    MainViewModel.BaseBulkDelete(removeESTIMATE_ITEMS);
+                    MessageBoxService.ShowMessage("All job(s) are aligned between BluePrints and EXO", "Congratulation!", MessageButton.OK);
 
-            removeCount = removeESTIMATE_ITEMS.Count;
-            MainViewModel.BaseBulkDelete(removeESTIMATE_ITEMS);
-
-            MessageBoxService.ShowMessage(removeCount + " entries removed, all jobs are valid");
+                    FullRefresh();
+                }
+            }
+            else
+                MessageBoxService.ShowMessage("All job(s) are aligned between BluePrints and EXO", "Congratulation!", MessageButton.OK);
         }
 
         public bool FuncManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ESTIMATE_ITEMProgress pasteEntity, bool isLastRow)
@@ -735,7 +796,7 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
+                    //errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
                     deleteEntities.Add(entity);
                 }
             }
@@ -743,9 +804,9 @@ namespace BluePrints.ViewModels
             if (showErrorMessage)
             {
                 MainViewModel.BaseBulkDelete(deleteEntities);
-                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot delete job(s) due to the following error");
-                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
-                return false;
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "The following job(s) have P6 assignment(s), do you still wish to delete them?");
+                if(ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.Cancel)
+                    return false;
             }
 
             return true;
@@ -1793,6 +1854,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
+            }
+        }
+
+        public CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<P6_ASSIGNMENT>();
             }
         }
 

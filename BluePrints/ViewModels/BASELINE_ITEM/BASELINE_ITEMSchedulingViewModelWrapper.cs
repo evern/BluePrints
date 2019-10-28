@@ -804,6 +804,8 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public override bool HasHoursOnDeliverables => true;
         #endregion
     }
 }

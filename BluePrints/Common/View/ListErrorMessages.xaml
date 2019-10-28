@@ -23,7 +23,7 @@
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" />
+                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="True" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" />
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </dxlc:LayoutItem>

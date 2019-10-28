@@ -65,6 +65,7 @@ namespace BluePrints.Common.Base
 
         protected abstract PhaseType phase_type { get; }
         public bool IsBudget { get; set; }
+        public abstract bool HasHoursOnDeliverables { get; }
         private void assign_progress(PROGRESS progress)
         {
             if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
@@ -284,6 +285,9 @@ namespace BluePrints.Common.Base
 
         private decimal getUnits(ICanAssignP6 deliverable)
         {
+            if (!HasHoursOnDeliverables)
+                return 1;
+
             if (IsBudget)
                 return deliverable.Budget_Units;
             else
@@ -581,6 +585,13 @@ namespace BluePrints.Common.Base
             if (Selected_Deliverable == null)
                 return;
 
+
+            if (disableMultipleDeliverablesToOneActivityAssignment && Selected_Deliverables.Count() > 1)
+            {
+                MessageBoxService.ShowMessage("Cannot assign multiple deliverables to a single activity\n\nPlease select a single deliverable", "Error", MessageButton.OK);
+                return;
+            }
+
             IEnumerable<ICanAssignP6> active_deliverables;
             active_deliverables = Selected_Deliverables;
 
@@ -607,6 +618,7 @@ namespace BluePrints.Common.Base
                 {
                     List<ICanAssignP6> assignedDeliverables = new List<ICanAssignP6>();
                     IEnumerable<P6_ASSIGNMENT> otherAssignments = P6_ASSIGNMENTSCollectionViewModel.Entities.Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID);
+
                     if (otherAssignments.Count() > 0)
                     {
                         string assignedDeliverableNames = string.Empty;

@@ -183,7 +183,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         //because this is used in P6 mapping to show number of activities mapped
         public override decimal Total_Units => 1;
 
-        public string UniqueJobcode => Entity.Deliverable_Name + "-" + Entity.Variation_Code;
+        public string UniqueJobcode => Entity.Deliverable_Name + " " + Entity.Variation_Code;
 
         public decimal? DB_Productivity_Override { get => Entity.DB_Productivity_Override; set => Entity.DB_Productivity_Override = value; }
 

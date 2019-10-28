@@ -184,6 +184,7 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
+            MainViewModel.PasteListener = onAfterEntitiesPasted;
             MainViewModel.SetParentViewModel(this);
 
             mainThreadDispatcher.BeginInvoke(new Action(() => filterUser()));
@@ -288,13 +289,25 @@ namespace BluePrints.ViewModels
 
             if(errorMessage != string.Empty)
             {
-                if (errorMessage.ToUpper().Contains("UNIQUE"))
-                    MessageBoxService.ShowMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode + " is not unique\nCurrent row will be skipped", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                if (errorMessage.ToUpper().Contains("DUPLICATE"))
+                    pasteErrorMessages.Add(new ErrorMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode, "Already exists"));
                 else
-                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+                    pasteErrorMessages.Add(new ErrorMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode, errorMessage));
             }
 
             return false;
+        }
+
+        List<ErrorMessage> pasteErrorMessages = new List<ErrorMessage>();
+        private void onAfterEntitiesPasted(PasteStatus pasteStatus)
+        {
+            if (pasteStatus == PasteStatus.Start)
+                pasteErrorMessages.Clear();
+            else if(pasteErrorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(pasteErrorMessages, "The following jobs cannot be pasted");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
+            }
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, bool isNew)
@@ -887,6 +900,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => {
                 int saveCount = 0;
                 List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+                List<ErrorMessage> errorMessages = new List<ErrorMessage>();
                 foreach (var entity in DisplayEntities)
                 {
                     if (entity.SubJobCode.Length >= 15 && entity.DisciplineCode.Length >= 4 && entity.CommodityCode != string.Empty)
@@ -924,6 +938,7 @@ namespace BluePrints.ViewModels
                                     projection.Entity = new ESTIMATE_ITEMProjection();
                                     projection.Entity.Entity = newESTIMATE_ITEM;
                                     newESTIMATE_ITEMS.Add(projection);
+                                    errorMessages.Add(new ErrorMessage(entity.SubJobCode + "-" + entity.DisciplineCode + "-" + entity.CommodityCode, "Added"));
                                     saveCount += 1;
                                 }
                             }
@@ -935,10 +950,16 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.CloseLoadingScreen();
 
-
                 estimateItemViewModel.BulkSave(newESTIMATE_ITEMS);
                 estimateItemViewModel.Dispose();
-                MessageBoxService.ShowMessage(saveCount + " jobs generated in job setup", "Information", MessageButton.OK, MessageIcon.Information);
+
+                if (errorMessages.Count > 0)
+                {
+                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "The following jobs are added into job setup");
+                    ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                }
+                else
+                    MessageBoxService.ShowMessage("No new jobs were detected", "Information", MessageButton.OK, MessageIcon.Information);
             }));
         }
 

@@ -47,7 +47,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
-
         protected override PhaseType phase_type => PhaseType.Construct;
         private ESTIMATE loadESTIMATE;
         protected override void addEntitiesLoader()
@@ -300,6 +299,8 @@ namespace BluePrints.ViewModels
         }
 
         public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
+
+        public override bool HasHoursOnDeliverables => false;
         #endregion
     }
 }
