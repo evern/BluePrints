@@ -105,6 +105,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOURS, FORECAST_JOB_HOURSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<STOCK_ITEMS, STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
+            loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -255,9 +256,10 @@ namespace BluePrints.ViewModels
 
             //update commodity name
             ExoSubJobProjection projection = (ExoSubJobProjection)row[columnProjection];
-            COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == projection.Commodity.Code);
-            if (findCOMMODITY_CODE != null)
-                row[columnCommodityName] = findCOMMODITY_CODE.NAME;
+
+            JOB_COSTTYPES findCOST_TYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == projection.Commodity.Code);
+            if (findCOST_TYPE != null)
+                row[columnCommodityName] = findCOST_TYPE.COSTDESC;
             else
                 row[columnCommodityName] = string.Empty;
 
@@ -974,6 +976,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<STOCK_ITEMS>();
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                return GetEntities<JOB_COSTTYPES>();
             }
         }
 

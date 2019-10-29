@@ -23,7 +23,24 @@
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}">
                         <dxg:GridColumn.EditSettings>
-                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="FullCode" IsTextEditable="True" ItemsSource="{Binding DataContext.QueryJobs, ElementName=userControl}" ValueMember="FullCode" />
+                            <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="FullCode" IsTextEditable="true" ItemsSource="{Binding DataContext.QueryJobs, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="500" ValueMember="FullCode">
+                                <dxg:LookUpEditSettings.StyleSettings>
+                                    <dxg:SearchLookUpEditStyleSettings />
+                                </dxg:LookUpEditSettings.StyleSettings>
+                                <dxg:LookUpEditSettings.PopupContentTemplate>
+                                    <ControlTemplate TargetType="ContentControl">
+                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                            <dxg:GridControl.Columns>
+                                                <dxg:GridColumn FieldName="FullCode" Header="WBS Code" SortIndex="1" ReadOnly="True" />
+                                                <dxg:GridColumn FieldName="Commodity.Name" Header="Name" ReadOnly="True" />
+                                            </dxg:GridControl.Columns>
+                                            <dxg:GridControl.View>
+                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" AutoWidth="True" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                            </dxg:GridControl.View>
+                                        </dxg:GridControl>
+                                    </ControlTemplate>
+                                </dxg:LookUpEditSettings.PopupContentTemplate>
+                            </dxg:LookUpEditSettings>
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
