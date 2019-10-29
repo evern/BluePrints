@@ -46,6 +46,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             loadVARIATION = receiveParameter.GetSecondEntity();
             viewType = DeliverablesViewType.Both;
             isQueryForLiveStatus = true;

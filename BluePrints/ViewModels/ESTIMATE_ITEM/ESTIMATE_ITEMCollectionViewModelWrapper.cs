@@ -76,6 +76,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ESTIMATE_ITEMProgress> EditableAllEntities { get; set; }
         public bool IsProcurementSubjobVisible { get; set; }
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             Interface_InitializeParameters(parameter);
@@ -89,6 +90,7 @@ namespace BluePrints.ViewModels
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             IsProcurementSubjobVisible = false;
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -417,11 +419,11 @@ namespace BluePrints.ViewModels
             if (phaseType == null || chargeType == null)
                 return;
 
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, SUBJOBSCollectionViewModel, phaseType, chargeType);
-
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, bluePrintsUnitOfWork, phaseType, chargeType);
+            IEnumerable<SUBJOB> subJobs = bluePrintsUnitOfWork.SUBJOBS;
             //need to populate subjob for deliverable_name to be present
             if (entity.Entity.Entity.Subjob_Name == string.Empty && entity.Entity.Entity.GUID_SUBJOB != null)
-                entity.Entity.Entity.CachedSUBJOB = SUBJOBCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
+                entity.Entity.Entity.CachedSUBJOB = subJobs.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_SUBJOB);
 
             if (entity.Entity.Entity.Discipline_Code == string.Empty && entity.Entity.Entity.GUID_DISCIPLINE != null)
                 entity.Entity.Entity.CachedDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_DISCIPLINE);
@@ -528,7 +530,6 @@ namespace BluePrints.ViewModels
                                 removeESTIMATE_ITEMS.Add(displayEntity);
                                 //must be removed or else displayEntity will be scanned later and all duplication will be removed
                                 entities.Remove(displayEntity);
-                                i--;
                             }
                         }
                     }

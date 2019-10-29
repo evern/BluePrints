@@ -661,7 +661,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, CollectionViewModel<SUBJOB, SUBJOB, Guid, IBluePrintsEntitiesUnitOfWork> SUBJOBCollectionViewModel, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false, bool forceIgnore = false)
+        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false, bool forceIgnore = false)
         {
             //when user wish to override default subjob
             if (forceIgnore)
@@ -672,7 +672,7 @@ namespace BluePrints.Common.ViewModel.Utils
             bool assignToProcurementSubjob = (isProcurementSubjob && iHaveProcurementSubjobEntity != null);
 
             string internalNumber = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
-            IEnumerable<SUBJOB> SUBJOBCollection = SUBJOBCollectionViewModel.Entities;
+            IEnumerable<SUBJOB> SUBJOBCollection = bluePrintsUnitOfWork.SUBJOBS;
             ////provision for when subjob is manually assigned or using legacy subjob
             if (entity.Subjob_Guid != null)
             {
@@ -683,7 +683,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (internalNumber != string.Empty)
             {
-                SUBJOB existingSUBJOB = SUBJOBCollection.FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
+                SUBJOB existingSUBJOB = bluePrintsUnitOfWork.SUBJOBS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).FirstOrDefault(x => x.INTERNAL_NAME1 == internalNumber);
                 if (existingSUBJOB == null)
                 {
                     var newSUBJOB = new SUBJOB();
@@ -717,7 +717,9 @@ namespace BluePrints.Common.ViewModel.Utils
                         newSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
                     }
 
-                    SUBJOBCollectionViewModel.Save(newSUBJOB);
+                    bluePrintsUnitOfWork.SUBJOBS.Add(newSUBJOB);
+                    bluePrintsUnitOfWork.SaveChanges();
+                    Messenger.Default.Send(new EntityMessage<SUBJOB, Guid>(newSUBJOB.GUID, Guid.NewGuid(), EntityMessageType.Added));
 
                     if (assignToProcurementSubjob)
                         iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = newSUBJOB.GUID;
