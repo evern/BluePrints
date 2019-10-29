@@ -71,6 +71,7 @@
                                 </DataTemplate>
                             </dxb:BarButtonItem.GlyphTemplate>
                         </dxb:BarButtonItem>
+                        <dxb:BarButtonItem x:Name="biCopyWithHeader1" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
                         <dxb:BarButtonItem x:Name="biCheckUnits" Command="{Binding ChangeStatsTypeCommand}" DataContext="{Binding DataContext, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Units" Glyph="{dx:DXImageOffice2013 Image=Time_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Time_32x32.png}" ToolTip="S-Curve shows by units" />
                         <dxb:BarButtonItem x:Name="biCheckCosts" Command="{Binding ChangeStatsTypeCommand}" DataContext="{Binding DataContext, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Costs" Glyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Currency_32x32.png}" ToolTip="S-Curve shows by costs" />
                         <dxb:BarButtonItem x:Name="biCheckQty" Command="{Binding ChangeStatsTypeCommand}" DataContext="{Binding DataContext, ElementName=userControl}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Qty" Glyph="{dx:DXImage Image=Number_16x16.png}" LargeGlyph="{dx:DXImage Image=Number_32x32.png}" ToolTip="S-Curve shows by quantity" />
@@ -314,7 +315,7 @@
                                     <dxg:GridControl.View>
                                         <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" ScrollBarAnnotationMode="None" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
+                                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader" />
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>

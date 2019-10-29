@@ -206,6 +206,9 @@
                             <dxe:DateEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
+                    <dxb:BarButtonItem x:Name="biUpdateFloating" Command="{Binding DataContext.UpdateFloatingRatesCommand, ElementName=userControl}" Content="Update Floating Rates" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Apply recommended rate to floating rates" />
+                    <dxb:BarButtonItem x:Name="biFillUp2" Command="{Binding DataContext.FillUpCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from last selection" />
+                    <dxb:BarButtonItem x:Name="biFillDown2" Command="{Binding DataContext.FillDownCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from first selection" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -224,6 +227,8 @@
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarItemLinkSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="biUpdateFloating" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                     <dxb:BarEditItemLink BarItemName="beFixedDataDate" />
@@ -274,7 +279,9 @@
                                                     <dxg:TableView.RowCellMenuCustomizations>
                                                         <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
                                                         <dxb:BarItemLinkSeparator />
-                                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                                        <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
+                                                        <dxb:BarButtonItemLink BarItemName="biFillUp2" />
+                                                        <dxb:BarButtonItemLink BarItemName="biFillDown2" />
                                                         <dxb:BarItemLinkSeparator /> 
                                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                                     </dxg:TableView.RowCellMenuCustomizations>

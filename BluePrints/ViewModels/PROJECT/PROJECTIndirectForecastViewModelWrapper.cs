@@ -1,5 +1,6 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.View;
 using BaseModel.ViewModel.Base;
@@ -18,6 +19,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -196,7 +198,9 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnStockItemName, typeof(string));
             dataPointsTable.Columns.Add(columnReference, typeof(string));
             dataPointsTable.Columns.Add(columnNote, typeof(string));
+            dataPointsTable.Columns.Add(columnFloating, typeof(bool));
             dataPointsTable.Columns.Add(columnUOM, typeof(string));
+            DataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
             dataPointsTable.Columns.Add(columnForecastRate, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalCosts, typeof(decimal));
@@ -221,6 +225,7 @@ namespace BluePrints.ViewModels
                 newRow[columnDescription] = job.DESCRIPTION;
                 newRow[columnReference] = job.REFERENCE;
                 newRow[columnNote] = job.NOTE;
+                newRow[columnFloating] = job.IS_FLOATING_RATE;
                 newRow[columnStockItem] = job.STOCK_ITEM;
                 newRow[columnUOM] = job.UOM;
                 if (job.FORECAST_RATE == null)
@@ -268,7 +273,18 @@ namespace BluePrints.ViewModels
             {
                 STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMCollection.FirstOrDefault(x => x.STOCKCODE == row[columnStockItem].ToString());
                 if (findSTOCK_ITEM != null)
+                {
                     row[columnStockItemName] = findSTOCK_ITEM.DESCRIPTION;
+
+                    decimal? newDecimalValue = null;
+                    if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
+                        newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
+
+                    if (newDecimalValue == null)
+                        row[columnRecommendedForecastRate] = DBNull.Value;
+                    else
+                        row[columnRecommendedForecastRate] = newDecimalValue;
+                }
                 else
                     row[columnStockItemName] = string.Empty;
             }
@@ -387,6 +403,24 @@ namespace BluePrints.ViewModels
             return invalidRows;
         }
 
+        public void UpdateFloatingRates()
+        {
+            if (MessageBoxService.ShowMessage("This will update all rates that have floating ticked to recommended rate, do you wish to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            int floatingRateUpdateCount = 0;
+            foreach (DataRow dataRow in DataPointsTable.Rows)
+            {
+                if((bool)dataRow[columnFloating] && dataRow[columnRecommendedForecastRate] != DBNull.Value)
+                {
+                    commitCellValue(columnForecastRate, dataRow, dataRow[columnRecommendedForecastRate]);
+                    floatingRateUpdateCount += 1;
+                }
+            }
+
+            MessageBoxService.ShowMessage(floatingRateUpdateCount.ToString() + " record(s) updated", "Update", MessageButton.OK);
+        }
+
         private DataRow addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings)
         {
             DataRow newRow = DataPointsTable.NewRow();
@@ -414,7 +448,7 @@ namespace BluePrints.ViewModels
             if (DataPointsTable == null || pasteRowCount == 0)
                 return;
 
-            IEnumerable<DataRow> selectRows = DataPointsTable.AsEnumerable().Skip(Math.Max(0, DisplayEntities.Count() - pasteRowCount));
+            IEnumerable<DataRow> selectRows = DataPointsTable.AsEnumerable().Skip(Math.Max(0, DisplayEntities.Count() - (pasteRowCount + 1)));
             selectedDataRows.Clear();
 
             foreach (var selectRow in selectRows)
@@ -456,12 +490,21 @@ namespace BluePrints.ViewModels
             else if(copyColumn.FieldName == columnStockItem)
             {
                 string oldStockItem = newRow[copyColumn.FieldName].ToString();
-                stockItemValueChangedFromView(newRow, newRow[copyColumn.FieldName], pasteData, MainViewModel.IsPasteCellLevel);
                 newRow[copyColumn.FieldName] = pasteData;
 
                 commitCellValue(copyColumn.FieldName, newRow, pasteData, !isLastRow);
                 if (MainViewModel.IsPasteCellLevel)
                     EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldStockItem, pasteData, EntityMessageType.Changed);
+            }
+            else if (copyColumn.FieldName == columnFloating)
+            {
+                bool oldCheckedStatus = newRow[copyColumn.FieldName] == DBNull.Value ? false :(bool)newRow[copyColumn.FieldName];
+                bool newCheckedStatus = pasteData.ToUpper() == "CHECKED" ? true : false;
+                newRow[copyColumn.FieldName] = newCheckedStatus;
+
+                commitCellValue(copyColumn.FieldName, newRow, newCheckedStatus, !isLastRow);
+                if (MainViewModel.IsPasteCellLevel)
+                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldCheckedStatus, newCheckedStatus, EntityMessageType.Changed);
             }
             else if (copyColumn.FieldName == columnForecastRate || DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
             {
@@ -509,7 +552,8 @@ namespace BluePrints.ViewModels
                 DataRowView row = (DataRowView)e.Row;
 
                 addNewFORECAST_JOB(row.Row);
-
+                pasteRowCount += 1;
+                focusNewlyAddedProjectionTimer.Start();
                 //added not working well atm because when row is removed from datatable its itemarray is cleared
                 //EntitiesUndoRedoManager.AddUndo(row.Row, null, null, null, EntityMessageType.Added);
                 EntitiesUndoRedoManager.UnpauseActionId();
@@ -539,6 +583,11 @@ namespace BluePrints.ViewModels
                 newFORECAST_JOB.NOTE = row[columnNote].ToString();
                 newFORECAST_JOB.UOM = row[columnUOM].ToString();
                 newFORECAST_JOB.REFERENCE = row[columnReference].ToString();
+
+                if (row[columnFloating] == DBNull.Value)
+                    row[columnFloating] = false;
+
+                newFORECAST_JOB.IS_FLOATING_RATE = (bool)row[columnFloating];
                 if (row[columnForecastRate] != DBNull.Value)
                     newFORECAST_JOB.FORECAST_RATE = (decimal)row[columnForecastRate];
 
@@ -575,9 +624,6 @@ namespace BluePrints.ViewModels
             Guid guid = (Guid)dataRowView[columnGUID];
             string fieldName = e.Column.FieldName;
 
-            if (e.Column.FieldName == columnStockItem)
-                stockItemValueChangedFromView(dataRowView.Row, e.OldValue, e.Value, true);
-
             commitCellValue(fieldName, dataRowView.Row, e.Value);
             EntitiesUndoRedoManager.AddUndo(dataRowView.Row, fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
             EntitiesUndoRedoManager.UnpauseActionId();
@@ -585,29 +631,31 @@ namespace BluePrints.ViewModels
             e.Handled = true;
         }
 
-        private void stockItemValueChangedFromView(DataRow row, object oldValue, object newValue, bool addUndoRedo)
+        public void UpdateRecommendedRate()
         {
-            if (newValue == null)
-                return;
-
-            STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMCollection.FirstOrDefault(x => x.STOCKCODE == newValue.ToString());
-            if (findSTOCK_ITEM != null)
+            foreach(DataRowView row in SelectedDataRows)
             {
-                decimal? oldDecimalValue = null;
-                if (row[columnForecastRate] != DBNull.Value)
-                    oldDecimalValue = (decimal)row[columnForecastRate];
+                if (row[columnStockItem] != DBNull.Value)
+                {
+                    STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMCollection.FirstOrDefault(x => x.STOCKCODE == row[columnStockItem].ToString());
+                    if (findSTOCK_ITEM != null)
+                    {
+                        decimal? oldDecimalValue = null;
+                        if (row[columnForecastRate] != DBNull.Value)
+                            oldDecimalValue = (decimal)row[columnForecastRate];
 
-                decimal? newDecimalValue = null;
-                if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
-                    newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
+                        decimal? newDecimalValue = null;
+                        if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
+                            newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
 
-                if (newDecimalValue == null)
-                    row[columnForecastRate] = DBNull.Value;
-                else
-                    row[columnForecastRate] = newDecimalValue;
+                        if (newDecimalValue == null)
+                            row[columnForecastRate] = DBNull.Value;
+                        else
+                            row[columnForecastRate] = newDecimalValue;
 
-                if(addUndoRedo)
-                    EntitiesUndoRedoManager.AddUndo(row, columnForecastRate, oldDecimalValue, newDecimalValue, EntityMessageType.Changed);
+                        EntitiesUndoRedoManager.AddUndo(row.Row, columnForecastRate, oldDecimalValue, newDecimalValue, EntityMessageType.Changed);
+                    }
+                }
             }
         }
 
@@ -657,6 +705,8 @@ namespace BluePrints.ViewModels
                         editFORECAST_JOB.STOCK_ITEM = newValue.ToString();
                     else if (fieldName == columnNote)
                         editFORECAST_JOB.NOTE = newValue.ToString();
+                    else if (fieldName == columnFloating)
+                        editFORECAST_JOB.IS_FLOATING_RATE = (bool)newValue;
                     else if (fieldName == columnReference)
                         editFORECAST_JOB.REFERENCE = newValue.ToString();
                     else if (fieldName == columnUOM)
@@ -701,8 +751,10 @@ namespace BluePrints.ViewModels
         string columnStockItemName = "StockItemName";
         string columnReference = "REFERENCE";
         string columnNote = "NOTE";
+        string columnFloating = "IS_FLOATING_RATE";
         string columnUOM = "UOM";
         string columnForecastRate = "FORECAST_RATE";
+        string columnRecommendedForecastRate = "RecommendedRate";
         string columnTotalHours = "TOTAL_HOURS";
         string columnTotalCosts = "TOTAL_COSTS";
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
@@ -714,12 +766,14 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = columnFullCode, DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = columnCommodityName, ReadOnly = true, Header = "Commodity Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnDescription, ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = false, Header = "Source", HeaderToolTip="Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
-            columns.Add(new ColumnDescriptor() { FieldName = columnStockItemName, ReadOnly = true, Header = "Source Description (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = false, Header = "Stock Code", HeaderToolTip="Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
+            columns.Add(new ColumnDescriptor() { FieldName = columnStockItemName, ReadOnly = true, Header = "Stock Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnReference, ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnNote, ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnUOM, ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnRecommendedForecastRate, ReadOnly = true, Header = "Recommended Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnFloating, ReadOnly = false, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalHours, ReadOnly = false, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
@@ -909,6 +963,111 @@ namespace BluePrints.ViewModels
         public void KeyboardPaste()
         {
             System.Windows.Forms.SendKeys.SendWait("^v");
+        }
+
+        public bool CanFillDown(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            return SelectedDataRows != null && SelectedDataRows.Count > 1 && DataPointsTable != null && DataPointsTable.Rows.Count > 1 && !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly;
+        }
+
+        public bool CanFillUp(object button)
+        {
+            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            return SelectedDataRows != null && SelectedDataRows.Count > 1 && DataPointsTable != null && DataPointsTable.Rows.Count > 1 && !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly;
+        }
+
+        public void FillDown(object button)
+        {
+            Fill(button, false);
+        }
+
+        public void FillUp(object button)
+        {
+            Fill(button, true);
+        }
+
+        public void Fill(object button, bool isUp)
+        {
+            GridMenuInfo info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            object valueToFill;
+            object nextValueInSequence;
+
+            if (isUp)
+            {
+                valueToFill = SelectedDataRows[SelectedDataRows.Count - 1][info.Column.FieldName];
+                nextValueInSequence = SelectedDataRows[SelectedDataRows.Count - 2][info.Column.FieldName];
+            }
+            else
+            {
+                valueToFill = SelectedDataRows[0][info.Column.FieldName];
+                nextValueInSequence = SelectedDataRows[1][info.Column.FieldName];
+            }
+
+            EntitiesUndoRedoManager.PauseActionId();
+            var bulkSaveEntities = new List<DataRow>();
+
+            long? enumerationDifferences = null;
+            long? enumerator = null;
+            int? numericIndex = null;
+            int numericFieldLength = 0;
+            EnumerationType enumerationType;
+            if (valueToFill != null && valueToFill.GetType() == typeof(string) && nextValueInSequence != null)
+                enumerationType = DataUtils.GetEnumerateType(valueToFill.ToString(), nextValueInSequence.ToString(), out enumerationDifferences, out enumerator, out numericIndex, out numericFieldLength);
+            else
+                enumerationType = EnumerationType.None;
+
+            if (!isUp)
+            {
+                for (int i = 1; i < SelectedDataRows.Count; i++)
+                {
+                    if (enumerationType == EnumerationType.Increase)
+                        enumerator += enumerationDifferences;
+                    else
+                    {
+                        enumerator -= enumerationDifferences;
+                        if (enumerator < 0)
+                            enumerator = 0;
+                    }
+
+
+                    DataRowView seletedEntity = SelectedDataRows[i];
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator, numericFieldLength);
+                }
+            }
+            else
+            {
+                for (int i = SelectedDataRows.Count - 2; i >= 0; i--)
+                {
+                    if (enumerationType == EnumerationType.Increase)
+                        enumerator += enumerationDifferences;
+                    else
+                    {
+                        enumerator -= enumerationDifferences;
+                        if (enumerator < 0)
+                            enumerator = 0;
+                    }
+
+                    DataRowView seletedEntity = SelectedDataRows[i];
+                    setEntityProperty(seletedEntity, info, valueToFill, numericIndex, enumerator, numericFieldLength);
+                }
+            }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private void setEntityProperty(DataRowView editRow, GridMenuInfo info, object valueToFill, int? numericIndex, long? enumerator, int numericFieldLength)
+        {
+            if (numericIndex != null && enumerator != null)
+            {
+                string valueToFillStringOnly = valueToFill.ToString().Substring(0, valueToFill.ToString().Length - numericFieldLength);
+                valueToFill = StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, (long)enumerator, numericFieldLength);
+            }
+
+            
+            var OldValue = editRow[info.Column.FieldName];
+            EntitiesUndoRedoManager.AddUndo(editRow.Row, info.Column.FieldName, OldValue, valueToFill, EntityMessageType.Changed);
+            commitCellValue(info.Column.FieldName, editRow.Row, valueToFill);
         }
 
         public DataRowView SelectedDataRow { get; set; }

@@ -57,6 +57,8 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string UOM { get; set; }
 
+        public bool IS_FLOATING_RATE { get; set; }
+
         public decimal? FORECAST_RATE { get; set; }
 
         public DateTime CREATED { get; set; }

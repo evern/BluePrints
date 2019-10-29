@@ -260,6 +260,8 @@ namespace BluePrints.ViewModels
 
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
+
+                //set recommended rate here so that paste data will pick it up
                 setRecommendedRate(projection);
             }
             else if(field_name == BindableBase.GetPropertyName(() => new RATE().IsRateExists))

@@ -382,7 +382,7 @@
                                                         <dxb:BarButtonItemLink BarItemName="biResetForecast" />
                                                         <dxb:BarButtonItemLink BarItemName="biApplyPF" />
                                                         <dxb:BarItemLinkSeparator />
-                                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                                        <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                                         <dxb:BarItemLinkSeparator /> 
                                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                                     </dxg:TableView.RowCellMenuCustomizations>
