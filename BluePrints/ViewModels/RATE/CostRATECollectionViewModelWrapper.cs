@@ -277,8 +277,6 @@ namespace BluePrints.ViewModels
 
         protected override void populatePHASE(RATE entity)
         {
-            //if (entity.GUID_PHASE != null)
-            //{
             PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == ChargeType.Chargeable);
             if (selectedPHASE != null)
             {
@@ -286,7 +284,6 @@ namespace BluePrints.ViewModels
                 entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
                 entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
             }
-            //}
         }
 
         #endregion

@@ -337,7 +337,6 @@ namespace BluePrints.ViewModels
             if(FixedDataDate != null)
             {
                 ForecastSummary.Reset();
-
                 if(FixedDataDate != LoadDataDate)
                 {
                     if (FixedDataDate < LoadDataDate)

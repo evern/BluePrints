@@ -17,6 +17,7 @@ namespace BluePrints.Common.Projections
         public string PONO { get; set; }
         public string Description { get; set; }
         public string Supplier { get; set; }
+        public string VariationCode { get; set; }
         public List<ExoDataPoint> ExoPOs { get; set; }
         public List<ExoDataPoint> ExoActuals { get; set; }
         public DateTime ActualCutOffDate { get; set; }
@@ -61,12 +62,12 @@ namespace BluePrints.Common.Projections
             ExoActuals.Clear();
             FORECAST_POs.Clear();
             ResetPaymentDates();
-            IEnumerable<FORECAST_PO> currentPOForecasts = allFORECAST_POs.Where(x => x.PONO == this.PONO);
-            IEnumerable<ExoDataPoint> currentActuals = allActuals.Where(x => x.PONumber == this.PONO);
+            IEnumerable<FORECAST_PO> currentPOForecasts = allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode);
+            IEnumerable<ExoDataPoint> currentActuals = allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode);
             foreach(FORECAST_PO currentPOForecast in currentPOForecasts)
             {
                 //because forecast can sometimes store outdated job code, cost group and cost type, validation is required before adding, else forecast PO can show that it's forecasted but forecast module will pick it up on the wrong code
-                if(ExoPOs.Any(x => x.Subjob_Name == currentPOForecast.JOB_CODE && x.Discipline_Code == currentPOForecast.DISCIPLINE_CODE && x.Commodity_Code == currentPOForecast.COMMODITY_CODE))
+                if(ExoPOs.Any(x => x.Subjob_Name == currentPOForecast.JOB_CODE && x.Discipline_Code == currentPOForecast.DISCIPLINE_CODE && x.Commodity_Code == currentPOForecast.COMMODITY_CODE && x.Variation_Code == currentPOForecast.VARIATION_CODE))
                     FORECAST_POs.Add(currentPOForecast);
             }
 
