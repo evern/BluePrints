@@ -733,31 +733,14 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    //pro-rate cost type remaining units by comparing po number and variation remaining units
-                    //used for adjustment when po line item subjob, costgroup or cost type changes
-                    var groupedFORECAST_POs = projection.FORECAST_POs.GroupBy(x => x.JOB_CODE + x.DISCIPLINE_CODE + x.COMMODITY_CODE + x.VARIATION_CODE).Select(group => new { FirstJob = group.First(), Forecasts = group.ToList() });
-                    foreach (var groupedFORECAST_PO in groupedFORECAST_POs)
-                    {
-                        var firstFORECAST_PO = groupedFORECAST_PO.FirstJob;
-                        decimal poNumberRemainingUnits = projection.ExoPOs.Sum(x => x.Costs);
-                        decimal costTypeRemainingUnits = projection.ExoPOs.Where(x => x.Subjob_Name == firstFORECAST_PO.JOB_CODE && x.Discipline_Code == firstFORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == firstFORECAST_PO.COMMODITY_CODE && x.Variation_Code == firstFORECAST_PO.VARIATION_CODE).Sum(x => x.Costs);
-                        decimal groupUnits = groupedFORECAST_PO.Forecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
-
-                        if (costTypeRemainingUnits != poNumberRemainingUnits)
-                        {
-                            adjustmentFactor = costTypeRemainingUnits / poNumberRemainingUnits;
-                            foreach (FORECAST_PO forecast_po in groupedFORECAST_PO.Forecasts)
-                            {
-                                if (forecast_po.FORECAST_VALUE != null)
-                                    forecast_po.FORECAST_VALUE *= adjustmentFactor;
-                            }
-                        }
-                    }
-
-                    decimal viewForecastCosts = projection.FORECAST_POs.Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
-                    decimal costDifferences = projection.PO_RemainingPrice - viewForecastCosts;
                     foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
                     {
+                        //need to pro-rate costs by WBS
+                        decimal wbsRemainingCosts = projection.ExoPOs.Where(x => x.Subjob_Name == FORECAST_PO.JOB_CODE && x.Discipline_Code == FORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == FORECAST_PO.COMMODITY_CODE).Sum(x => x.Costs);
+                        //forecast POs already filtered by variation code
+                        decimal wbsForecastCosts = projection.FORECAST_POs.Where(x => x.JOB_CODE == FORECAST_PO.JOB_CODE && x.DISCIPLINE_CODE == FORECAST_PO.DISCIPLINE_CODE && x.COMMODITY_CODE == FORECAST_PO.COMMODITY_CODE).Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                        decimal wbsCostDifference = wbsRemainingCosts - wbsForecastCosts;
+
                         if (FORECAST_PO.FORECAST_DATE.Date <= ActualsCutOffDate.Date)
                         {
                             //store as 0 so that when we rewind and adjust actuals again this point will actually be used
@@ -766,40 +749,36 @@ namespace BluePrints.ViewModels
 
                             //when the previous date is adjusted as 0 and no existing record to move unforecasted amount anymore, default to adding forecast amount to forecast start date
                             if(projection.FORECAST_POs.Where(x => x.FORECAST_VALUE != null).Sum(x => x.FORECAST_VALUE) == 0)
+                            {
                                 findExistingOrAddNewFORECAST_PO(editing_row, (DateTime)ForecastStartDate, projection.PO_RemainingPrice);
+                                //no point to continue since the rest will be zero
+                                break;
+                            }
 
                             continue;
                         }
-
+                        
                         //cost adjustment
-                        if (costDifferences > 0)
+                        if (wbsCostDifference > 0)
                         {
-                            FORECAST_PO.FORECAST_VALUE += costDifferences;
+                            FORECAST_PO.FORECAST_VALUE += wbsCostDifference;
                             saveFORECAST_POs.Add(FORECAST_PO);
-                            break;
                         }
-                        else if (costDifferences < 0)
+                        else if (wbsCostDifference < 0)
                         {
                             decimal forecastValue = FORECAST_PO.FORECAST_VALUE == null ? 0 : (decimal)FORECAST_PO.FORECAST_VALUE;
-                            decimal postAdjustmentCosts = forecastValue + costDifferences;
+                            decimal postAdjustmentCosts = forecastValue + wbsCostDifference;
                             if (postAdjustmentCosts > 0)
                             {
-                                FORECAST_PO.FORECAST_VALUE += costDifferences;
+                                FORECAST_PO.FORECAST_VALUE += wbsCostDifference;
                                 saveFORECAST_POs.Add(FORECAST_PO);
-                                break;
                             }
                             else
                             {
-                                costDifferences += forecastValue;
+                                wbsCostDifference += forecastValue;
                                 FORECAST_PO.FORECAST_VALUE = 0.00m;
                                 saveFORECAST_POs.Add(FORECAST_PO);
                             }
-                        }
-                        else if (costDifferences == 0)
-                        {
-                            //need to save adjustment anyway
-                            if (adjustmentFactor != 0)
-                                saveFORECAST_POs.Add(FORECAST_PO);
                         }
                     }
                 }
