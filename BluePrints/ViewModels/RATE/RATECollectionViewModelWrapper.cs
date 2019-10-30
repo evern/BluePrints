@@ -171,15 +171,20 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DisplayEntities);
         }
 
+        string errorMessage = "Duplicate entries by phase type, charge type, department, discipline and commodity";
         public override string UnifiedRowValidation(RATE projection)
         {
+            //because projection commodity code is formatted to empty string when null before saving and this method is called before entity is going to be saved
+            string commodityCode = projection.COMMODITY_CODE == null ? string.Empty : projection.COMMODITY_CODE;
+            populatePHASE(projection);
+            if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == commodityCode) && x.GUID != projection.GUID))
+                return errorMessage;
+
             return string.Empty;
         }
 
         public override string UnifiedValueValidation(RATE projection, string field_name, object new_value, bool isPaste)
         {
-            string errorMessage = "Duplicate entries by phase type, charge type, department, discipline and commodity";
-
             //do not validate phase type on new row because when enum is instantiated with default values user might get stucked in the cell due to duplication error
             if (projection.GUID != Guid.Empty && field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
             {

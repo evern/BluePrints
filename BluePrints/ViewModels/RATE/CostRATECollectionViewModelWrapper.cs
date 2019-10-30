@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BulkSave(saveEntities);
         }
 
-        private void setRecommendedRate(RATE rate)
+        private void setRecommendedRate(RATE rate, bool isEditRateField = false)
         {
             //try to retrieve rate's discipline if GUID_DISCIPLINE is not null
             DISCIPLINE findDISCIPLINE = rate.DISCIPLINE;
@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
             if (burned.Count > 0)
                 rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
 
-            if (!rate.IsRateExists)
+            if (!rate.IsRateExists && !isEditRateField)
                 rate.RATE1 = rate.RecommendedRate;
         }
 
@@ -241,7 +241,7 @@ namespace BluePrints.ViewModels
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
             }
 
-            setRecommendedRate(projection);
+            setRecommendedRate(projection, field_name == BindableBase.GetPropertyName(() => new RATE().RATE1));
         }
 
         public override string UnifiedValueValidation(RATE projection, string field_name, object new_value, bool isPaste)
