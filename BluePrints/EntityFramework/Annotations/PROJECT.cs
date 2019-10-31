@@ -30,6 +30,7 @@ namespace BluePrints.Data
             FORECAST_JOB_SETTING = new HashSet<FORECAST_JOB_SETTING>();
             FORECAST = new HashSet<FORECAST>();
             FORECAST_PO = new HashSet<FORECAST_PO>();
+            FORECAST_PO_SETTING = new HashSet<FORECAST_PO_SETTING>();
             HOLIDAY = new HashSet<HOLIDAY>();
             HSE = new HashSet<HSE>();
             MEETING = new HashSet<MEETING>();

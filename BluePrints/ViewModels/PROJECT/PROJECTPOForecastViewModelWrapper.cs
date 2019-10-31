@@ -128,9 +128,15 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_PO_SETTINGS, FORECAST_PO_SETTINGProjectionFunc);
         }
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<FORECAST_PO_SETTING>, IQueryable<FORECAST_PO_SETTING>> FORECAST_PO_SETTINGProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -214,13 +220,13 @@ namespace BluePrints.ViewModels
                     newValueString = newValueString.Substring(1, newValueString.Length - 1);
                 }
 
-                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
-                pasteCellData(gridControl, gridTableView, RowData);
-
-                GridControlService.RefreshData();
-                e.Handled = true;
             }
 
+            string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+            pasteCellData(gridControl, gridTableView, RowData);
+
+            GridControlService.RefreshData();
+            e.Handled = true;
         }
 
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
@@ -254,6 +260,11 @@ namespace BluePrints.ViewModels
                 {
                     return false;
                 }
+            }
+            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            {
+                if (pasteData != null)
+                    findExistingOrAddNewFORECAST_JOB_SETTING(newRow, pasteData);
             }
             else if (copyColumn.FieldType == typeof(string))
             {
@@ -307,6 +318,11 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
                 }
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                {
+                    string oldValueString = entityProperty.OldValue == null ? string.Empty : entityProperty.OldValue.ToString();
+                    findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, oldValueString);
+                }
             }
 
             GridControlService.RefreshData();
@@ -330,6 +346,11 @@ namespace BluePrints.ViewModels
                         newValueDecimal = (decimal)entityProperty.NewValue;
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
+                }
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                {
+                    string newValueString = entityProperty.NewValue == null ? string.Empty : entityProperty.NewValue.ToString();
+                    findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, newValueString);
                 }
             }
 
@@ -375,6 +396,12 @@ namespace BluePrints.ViewModels
                         newForecast.Supplier = dataPoint.Supplier;
                         newForecast.ExoPOs = poLine.DataPoints;
                         newForecast.VariationCode = poLine.VariationCode;
+
+                        //populate comment
+                        FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode);
+                        if (forecastPOSetting != null)
+                            newForecast.Comments = forecastPOSetting.PO_COMMENTS;
+
                         projections.Add(newForecast);
                     }
 
@@ -395,6 +422,30 @@ namespace BluePrints.ViewModels
 
                 return dataPointsTable;
             }
+        }
+
+        private void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
+        {
+            POForecastProjection forecast = ((POForecastProjection)updateRow[columnEntity]);    
+            FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.VARIATION_CODE == forecast.VariationCode);
+            if (relevantFORECAST_PO_SETTING == null)
+            {
+                FORECAST_PO_SETTING newFORECAST_PO_SETTING = new FORECAST_PO_SETTING();
+                newFORECAST_PO_SETTING.GUID_PROJECT = loadPROJECT.GUID;
+                newFORECAST_PO_SETTING.PONO = forecast.PONO;
+                newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
+
+                if (forecast.VariationCode != null && forecast.VariationCode != string.Empty)
+                    newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
+                else
+                    newFORECAST_PO_SETTING.VARIATION_CODE = string.Empty;
+
+                relevantFORECAST_PO_SETTING = newFORECAST_PO_SETTING;
+            }
+
+            relevantFORECAST_PO_SETTING.PO_COMMENTS = comments;
+            FORECAST_PO_SETTINGCollectionViewModel.Save(relevantFORECAST_PO_SETTING);
+            forecast.Comments = comments;
         }
 
         private bool generateAlignedDataDates()
@@ -460,6 +511,12 @@ namespace BluePrints.ViewModels
 
                 updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
+            }
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            {
+                DataRowView dataRowView = (DataRowView)e.Row;
+                string commeentsValue = e.Value == null ? string.Empty : e.Value.ToString();
+                findExistingOrAddNewFORECAST_JOB_SETTING(dataRowView.Row, commeentsValue);
             }
         }
 
@@ -1166,7 +1223,6 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<IDialogService>("CustomPODialogService"); }
         }
 
-
         public IEnumerable<FORECAST> FORECASTCollection
         {
             get
@@ -1174,6 +1230,26 @@ namespace BluePrints.ViewModels
                 return GetEntities<FORECAST>();
             }
         }
+
+        public IEnumerable<FORECAST_PO_SETTING> FORECAST_PO_SETTINGCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_PO_SETTING>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_PO_SETTING, FORECAST_PO_SETTING, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_PO_SETTINGCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<FORECAST_PO_SETTING, FORECAST_PO_SETTING, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_PO_SETTING>();
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

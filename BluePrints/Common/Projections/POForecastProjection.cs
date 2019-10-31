@@ -18,6 +18,7 @@ namespace BluePrints.Common.Projections
         public string Description { get; set; }
         public string Supplier { get; set; }
         public string VariationCode { get; set; }
+        public string Comments { get; set; }
         public List<ExoDataPoint> ExoPOs { get; set; }
         public List<ExoDataPoint> ExoActuals { get; set; }
         public DateTime ActualCutOffDate { get; set; }

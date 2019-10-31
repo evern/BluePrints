@@ -96,6 +96,7 @@
                                         <dxg:GridColumn FieldName="Entity.VariationCode" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="11" />
                                         <!--<dxg:GridColumn FieldName="Entity.Description" Fixed="Left" Header="Description" ReadOnly="True" VisibleIndex="11" />-->
                                         <dxg:GridColumn FieldName="Entity.Supplier" Fixed="Left" Header="Supplier" ReadOnly="True" VisibleIndex="12" />
+                                        <dxg:GridColumn FieldName="Entity.Comments" Fixed="Left" Header="Supplier" VisibleIndex="13" />
                                         <dxg:GridColumn FieldName="Entity.FirstActualDate" Fixed="Left" Header="First Raised" ReadOnly="True" VisibleIndex="20" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:DateEditSettings />

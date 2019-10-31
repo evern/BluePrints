@@ -2777,6 +2777,7 @@ namespace BluePrints.ViewModels
                 return childSummaries;
             }
         }
+
         public CollectionViewModel<FORECAST_JOB_SETTING, FORECAST_JOB_SETTING, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_JOB_SETTINGCollectionViewModel
         {
             get
