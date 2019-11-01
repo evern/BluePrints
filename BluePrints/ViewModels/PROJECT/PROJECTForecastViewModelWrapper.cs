@@ -258,7 +258,7 @@ namespace BluePrints.ViewModels
             primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
-            forceRetrieveAllJobs = false; //force exo burned to retrieve subjobs that aren't defined
+            forceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
             forceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
             useProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
@@ -589,13 +589,12 @@ namespace BluePrints.ViewModels
                 List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
                 List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, AllProjectDashboards);
                 DetailedData.AddRange(allDataPoints);
-                commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
+                commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
                 isNewData = true;
             }
 
             LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
             LoadingScreenManager.SetMessage("Preparing View...");
-
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
             dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
@@ -659,7 +658,6 @@ namespace BluePrints.ViewModels
             if (isNew)
             {
                 Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.SubJob.PhaseCode);
-
                 string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
                 //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
@@ -673,13 +671,6 @@ namespace BluePrints.ViewModels
                         commodityCode = rateCOMMODITY.CODE;
 
                     commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(ratePHASE.GUID, rateDISCIPLINE.GUID, null, commodityCode, RATECollection, CostType.Cost);
-                    //IEnumerable<RATE> rateByPhaseCharge = RATECollection.Where(y => y.COST_TYPE == CostType.Cost && (y.GUID_PHASE == ratePHASE.GUID));
-                    //Guid? commodityGuid = rateCOMMODITY != null ? rateCOMMODITY.GUID : rateDOCTYPE != null ? rateDOCTYPE.GUID : (Guid?)null;
-
-                    ////order by descending places null GUID's at the end, so First() won't pick it up
-                    //IEnumerable<RATE> rateByCommodities = rateByPhaseCharge.Where(y => (y.GUID_DOCTYPE == commodityGuid) || (y.GUID_DOCTYPE == null)).OrderByDescending(y => y.GUID_DOCTYPE);
-                    //IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == rateDISCIPLINE.GUID) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
-                    //rateByDiscipline.FirstOrDefault();
                 }
             }
             #endregion
@@ -799,10 +790,10 @@ namespace BluePrints.ViewModels
             if (!isChild)
             {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.JobError });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.SubJob.Code", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Discipline.Code", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Name", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Variation_Code", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Budget", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
@@ -1553,12 +1544,16 @@ namespace BluePrints.ViewModels
 
         protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
         {
-            ExoSubJobProjection entity = ((ForecastJobData)row[columnEntity]).Projection;
+            ForecastJobData forecastJobData = ((ForecastJobData)row[columnEntity]);
+            ExoSubJobProjection entity = forecastJobData.Projection;
 
             fieldName = fieldName.Replace("Entity.", "");
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Budget) || fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Rate))
             {
                 commitBudget(primeroEntitiesUnitOfWork, row, newValue);
+                forecastJobData.JobErrorMessage = string.Empty;
+                entity.ForecastErrorString = string.Empty;
+                forecastJobData.RaisePropertiesChanged();
             }
             else if(fieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
             {

@@ -1,4 +1,6 @@
-﻿using BluePrints.Common.ViewModel.Reporting;
+﻿using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.ViewModels;
 using DevExpress.Mvvm.POCO;
@@ -114,7 +116,9 @@ namespace BluePrints.Common.Projections
         public bool IsBudgetReadOnly { get; set; }
         public bool IsPOError { get; set; }
         public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
-
+        public decimal IsCommodityCodeErrorImageWidth => IsCommodityCodeError ? 15 : 0;
+        public decimal IsErrorMessageImageWidth => JobErrorMessage == string.Empty ? 0 : 15;
+        public string JobErrorMessage { get; set; }
         public RATE FallBackRate { get; set; }
 
         public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
@@ -131,6 +135,52 @@ namespace BluePrints.Common.Projections
 
         //used in indirect job forecast
         public decimal? JobRate { get; set; }
+        #endregion
+
+        #region Commodity Codes
+        private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
+        public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
+        {
+            validCommodityCodes = null;
+            COMMODITY_CODES = COMMODITY_CODECollection;
+        }
+
+        public List<COMMODITY_CODE> validCommodityCodes = null;
+        public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
+        {
+            get
+            {
+                if (COMMODITY_CODES == null || Projection == null || Projection.PhaseType == null || Projection.Discipline == null || Projection.Discipline.Code.Length < 2)
+                    return new List<COMMODITY_CODE>();
+
+                if (validCommodityCodes == null)
+                {
+                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, Projection.PhaseType, Projection.Discipline.Code).ToList();
+                }
+
+                return validCommodityCodes;
+            }
+        }
+
+        public bool IsCommodityCodeError
+        {
+            get
+            {
+                if (Projection == null || Projection.Commodity == null || ValidCommodityCodes.Count() == 0 || Projection.Commodity.Code.Length < 2)
+                    return true;
+
+                if (Projection.PhaseType == Common.PhaseType.Tender)
+                {
+                    if (Projection.Commodity.Code.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
+                        return false;
+                    else
+                        return true;
+                }
+
+                bool isCommodityCodeError = !ValidCommodityCodes.Any(x => x.CODE == Projection.Commodity.Code);
+                return isCommodityCodeError;
+            }
+        }
         #endregion
     }
 

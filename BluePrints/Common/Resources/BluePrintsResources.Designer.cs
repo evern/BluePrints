@@ -133,6 +133,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CTG.
+        /// </summary>
+        internal static string ContingencyCostType {
+            get {
+                return ResourceManager.GetString("ContingencyCostType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to p4y57zcvp.
         /// </summary>
         internal static string Default_AdminPassword {
@@ -277,7 +286,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CO01.
+        ///   Looks up a localized string similar to CO.
         /// </summary>
         internal static string Default_TenderDisciplineCode {
             get {

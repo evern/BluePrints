@@ -23,6 +23,7 @@ using BaseModel.ViewModel.Dialogs;
 using System.Text.RegularExpressions;
 using System.Data.Linq.SqlClient;
 using BluePrints.Common.Misc;
+using BluePrints.Common.ViewModel.Utils;
 
 namespace BluePrints.Common.Projections
 {
@@ -152,12 +153,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (CommodityCode == null || ValidCommodityCodes.Count() == 0)
+                if (CommodityCode == null || ValidCommodityCodes.Count() == 0 || CommodityCode.Length < 2)
                     return false;
 
                 if (PhaseType == Common.PhaseType.Tender)
                 {
-                    if (CommodityCode == BluePrintsResources.Default_TenderCommodityCode)
+                    if (CommodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
                         return true;
                     else
                         return false;
@@ -197,21 +198,7 @@ namespace BluePrints.Common.Projections
 
                 if(validCommodityCodes == null)
                 {
-                    if (PhaseType == Common.PhaseType.Tender)
-                        validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).OrderBy(x => x.CODE).ToList();
-                    else
-                    {
-                        string disciplineCode = DisciplineCode.Substring(0, 2);
-                        IEnumerable<COMMODITY_CODE> phaseCommodityCodes;
-                        if (PhaseType == Common.PhaseType.Design)
-                            //because design deliverable's have indirect components also
-                            phaseCommodityCodes  = COMMODITY_CODES.Where(x => x.PHASE_TYPE == Common.PhaseType.Design || x.PHASE_TYPE == Common.PhaseType.Indirect);
-                        else
-                            phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType);
-                        
-                        validCommodityCodes = phaseCommodityCodes.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
-                    }
-
+                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, PhaseType, DisciplineCode).ToList();
                 }
 
                 return validCommodityCodes;
@@ -381,7 +368,7 @@ namespace BluePrints.Common.Projections
         public bool IsLineExistsInExo => LineId != null;
         public bool HasBudget { get; set; }
         //public bool IsLineExistsInExo => SubJob.Id != null;
-
+        public string ForecastErrorString { get; set; }
         //used to trick view model
         public Guid GUID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -438,6 +425,31 @@ namespace BluePrints.Common.Projections
         public decimal ExoForecastRate { get; set; }
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }
+
+        public PhaseType? PhaseType
+        {
+            get
+            {
+                if (SubJob == null)
+                    return null;
+
+                if (SubJob.Code.Length < 15)
+                    return Common.PhaseType.Tender;
+
+                string phaseTypeString = SubJob.Code.Substring(13, 1).ToUpper();
+                if (phaseTypeString == "I")
+                    return Common.PhaseType.Indirect;
+                else if (phaseTypeString == "P")
+                    return Common.PhaseType.Procurement;
+                else if (phaseTypeString == "D")
+                    return Common.PhaseType.Design;
+                else if (phaseTypeString == "C")
+                    return Common.PhaseType.Construct;
+
+                return null;
+            }
+        }
+
         public DateTime CREATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? UPDATED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public DateTime? DELETED { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

@@ -292,7 +292,7 @@
     <value>G00</value>
   </data>
   <data name="Default_TenderDisciplineCode" xml:space="preserve">
-    <value>CO01</value>
+    <value>CO</value>
   </data>
   <data name="Default_TenderStockCode" xml:space="preserve">
     <value>G00</value>
@@ -332,5 +332,8 @@
   </data>
   <data name="ForecastCompare_TotalRow" xml:space="preserve">
     <value>4</value>
+  </data>
+  <data name="ContingencyCostType" xml:space="preserve">
+    <value>CTG</value>
   </data>
 </root>

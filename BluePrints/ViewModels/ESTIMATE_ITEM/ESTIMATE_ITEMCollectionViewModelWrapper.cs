@@ -555,27 +555,35 @@ namespace BluePrints.ViewModels
                         ESTIMATE_ITEMProgress findESTIMATE_ITEM = DisplayEntities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
                         if (findESTIMATE_ITEM == null)
                         {
-                            ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
-                            Data.PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
-                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
-                            int disciplineInt = 1;
-                            if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
+                            if(findESTIMATE_ITEM == null)
                             {
-                                newESTIMATE_ITEM.GUID = Guid.Empty;
-                                newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
-                                newESTIMATE_ITEM.GUID_AREA = FindExistingOrAddNewArea(areaName);
-                                newESTIMATE_ITEM.GUID_SUBAREA = FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
-                                newESTIMATE_ITEM.GUID_DISCIPLINE = FindExistingOrAddNewDiscipline(disciplineCode);
-                                newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
-                                newESTIMATE_ITEM.COMMODITY_CODE = exoLine.CommodityCode;
-                                newESTIMATE_ITEM.VARIATION_CODE = exoLine.VariationCode;
+                                ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
+                                Data.PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
+                                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                                int disciplineInt = 1;
+                                if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
+                                {
+                                    newESTIMATE_ITEM.GUID = Guid.Empty;
+                                    newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
+                                    newESTIMATE_ITEM.GUID_AREA = FindExistingOrAddNewArea(areaName);
+                                    newESTIMATE_ITEM.GUID_SUBAREA = FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
+                                    newESTIMATE_ITEM.GUID_DISCIPLINE = FindExistingOrAddNewDiscipline(disciplineCode);
+                                    newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
+                                    newESTIMATE_ITEM.COMMODITY_CODE = exoLine.CommodityCode;
+                                    newESTIMATE_ITEM.VARIATION_CODE = exoLine.VariationCode;
 
-                                ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
-                                projection.Entity = new ESTIMATE_ITEMProjection();
-                                projection.Entity.Entity = newESTIMATE_ITEM;
+                                    ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
+                                    projection.Entity = new ESTIMATE_ITEMProjection();
+                                    projection.Entity.Entity = newESTIMATE_ITEM;
 
-                                newESTIMATE_ITEMS.Add(projection);
-                                messages.Add(new ErrorMessage(exoLine.SubJobCode + "-" + exoLine.DisciplineCode + "-" + exoLine.CommodityCode + " " + exoLine.VariationCode, "Add"));
+                                    //look into the register that's yet to be added because some exo jobs have same commodity code but different stock code
+                                    findESTIMATE_ITEM = newESTIMATE_ITEMS.FirstOrDefault(x => x.Entity.Entity.GUID_PHASE == findPHASE.GUID && x.Entity.Entity.GUID_AREA == newESTIMATE_ITEM.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == newESTIMATE_ITEM.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == newESTIMATE_ITEM.GUID_DISCIPLINE && x.Entity.Entity.COMMODITY_CODE == newESTIMATE_ITEM.COMMODITY_CODE && x.Entity.Entity.VARIATION_CODE == newESTIMATE_ITEM.VARIATION_CODE);
+                                    if(findESTIMATE_ITEM == null)
+                                    {
+                                        newESTIMATE_ITEMS.Add(projection);
+                                        messages.Add(new ErrorMessage(exoLine.SubJobCode + "-" + exoLine.DisciplineCode + "-" + exoLine.CommodityCode + " " + exoLine.VariationCode, "Add"));
+                                    }
+                                }
                             }
                         }
                     }
