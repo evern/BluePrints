@@ -19,7 +19,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
             decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
             IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool isRemaining = false)
-        {
+                        {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
                 return null;
 
@@ -40,6 +40,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 progressLastDataDate = filteredRawDataPoints.Max(dataPoint => dataPoint.ProgressDate);
 
+            DateTime zeroUnitsDataDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days);
             //Add zero UOM data point so that line graph starts at 0%
             summaryDataPoints.Add(new DataPoint()
             {
@@ -48,11 +49,11 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Units = 0,
                 Costs = 0,
                 Quantity = 0,
-                ProgressDate = firstAlignedDataDate.AddDays(-1 * progressInterval.Days)
+                ProgressDate = zeroUnitsDataDate.AddDays(-1 * progressInterval.Days)
             });
 
             //Start going through each progress items to retrieve cumulative data point per period
-            var scanDate = firstAlignedDataDate;
+            var scanDate = zeroUnitsDataDate;
             decimal cumulativeUnits = 0;
             decimal cumulativeCosts = 0;
             decimal cumulativeAdjustmentUnits = 0;
@@ -64,7 +65,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 DateTime floorDate = scanDate;
                 DateTime ceilingDate = scanDate.AddDays(progressInterval.Days);
-                if (floorDate == firstAlignedDataDate)
+                if (floorDate == zeroUnitsDataDate)
                 {
                     currentPeriodDataPoints =
                         filteredRawDataPoints.Where(
