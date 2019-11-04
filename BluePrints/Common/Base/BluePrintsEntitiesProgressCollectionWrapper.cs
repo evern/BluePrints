@@ -1207,7 +1207,6 @@ namespace BluePrints.Common.Base
                     isNullProgress = true;
 
                 DateTime? first_progress_date = isNullProgress ? (DateTime?)null :  current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
-                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
                 decimal total_percentage_to_date;
 
                 total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
@@ -1276,7 +1275,10 @@ namespace BluePrints.Common.Base
 
                         if ((P6TASK.act_start_date == null || !any_write_exclusions))
                             if (!isNullProgress)
-                                P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
+                            {
+                                if(P6TASK.act_start_date == null || P6TASK.act_start_date > ((DateTime)first_earned_week_start_date).Date)
+                                    P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
+                            }
 
                         //if this is the first time processing the task
                         //another way of doing this is to reset everything to zero and not started, but we do not want to override user changes on the p6 schedule
@@ -1320,6 +1322,7 @@ namespace BluePrints.Common.Base
                             //}
                         }
 
+
                         if (P6TASK.remain_work_qty == 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
@@ -1328,11 +1331,19 @@ namespace BluePrints.Common.Base
                             if (!any_write_exclusions)
                                 if (!isNullProgress)
                                 {
-                                    P6TASK.act_end_date = ((DateTime)last_progress_date).Date.AddHours(18);
-                                    P6TASK.late_start_date = null;
-                                    P6TASK.late_end_date = null;
-                                    P6TASK.early_start_date = null;
-                                    P6TASK.early_end_date = null;
+                                    IEnumerable<ICanAssignP6> currentActivityDeliverables = deliverables.Where(x => x.P6_Assignments.Any(y => y.P6_ACTIVITYID == p6_assignment.P6_ACTIVITYID));
+                                    IEnumerable<IReportable> currentActivityReportables = currentActivityDeliverables.Select(x => (IReportable)x);
+                                    IEnumerable<PROGRESS_ITEM> allToDateProgresses = currentActivityReportables.SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate).Where(x => x.EARNED_UNITS > 0);
+
+                                    if(allToDateProgresses.Count() > 0)
+                                    {
+                                        DateTime last_progress_date = allToDateProgresses.Max(x => x.EARNED_DATE);
+                                        P6TASK.act_end_date = last_progress_date.Date.AddHours(18);
+                                        P6TASK.late_start_date = null;
+                                        P6TASK.late_end_date = null;
+                                        P6TASK.early_start_date = null;
+                                        P6TASK.early_end_date = null;
+                                    }
                                 }
                         }
                         else if (P6TASK.remain_work_qty > 0)
