@@ -124,12 +124,11 @@ namespace BluePrints.ViewModels
         private void commitToExo(ExoResourceProjection projection, bool addedFromView = false)
         {
             List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
-            ExoResourceProjection newLine = projection;
-            newLines.Add(newLine);
+            newLines.Add(projection);
 
             List<ExoResourceProjection> remoteNewLines = new List<ExoResourceProjection>();
             ExoResourceProjection remoteNewLine = new ExoResourceProjection();
-            DataUtils.ShallowCopy(remoteNewLine, newLine);
+            DataUtils.ShallowCopy(remoteNewLine, projection);
             remoteNewLines.Add(remoteNewLine);
 
             string upperCaseName = projection.RESOURCENAME.ToUpper();
@@ -152,7 +151,7 @@ namespace BluePrints.ViewModels
             {
                 if(!addedFromView)
                 {
-                    DisplayEntities.Insert(0, projection);
+                    DisplayEntities.Add(projection);
                 }
 
                 OnAfterNewRowAdded(1);
@@ -169,6 +168,7 @@ namespace BluePrints.ViewModels
                 STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID, out isNew);
                 if(addedStaff != null)
                 {
+                    resource.STAFFNO = addedStaff.STAFFNO;
                     resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
                     //map back generated properties to projection
                     //do not map back because multiple contexts are involved

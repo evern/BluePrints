@@ -784,6 +784,7 @@ namespace BluePrints.Common.Projections
                     pUnitOfWork.SaveChanges();
                 }
                 isNew = true;
+
                 return newSTAFF;
             }
         }
