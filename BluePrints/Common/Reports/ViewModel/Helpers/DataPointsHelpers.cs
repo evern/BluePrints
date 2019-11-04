@@ -33,6 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (filteredRawDataPoints.Count() == 0)
                 return summaryDataPoints;
 
+            Guid deliverableGuid = filteredRawDataPoints.First().DeliverableGuid;
             DateTime progressLastDataDate;
             //In progress distribution we want to generate data points even if P6 or subjob says it's finished. i.e. 100% all the way until data date
             if (overrideLastPeriodDate != null)
@@ -44,6 +45,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Add zero UOM data point so that line graph starts at 0%
             summaryDataPoints.Add(new DataPoint()
             {
+                DeliverableGuid = deliverableGuid,
+                TotalUnits = budgetedUnits,
+                TotalCosts = budgetedCosts,
                 BudgetedUnits = budgetedUnits,
                 BudgetedCosts = budgetedCosts,
                 Units = 0,
@@ -101,6 +105,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                     
                 summaryDataPoints.Add(new DataPoint()
                 {
+                    DeliverableGuid = deliverableGuid,
+                    TotalUnits = budgetedUnits + cumulativeAdjustmentUnits,
+                    TotalCosts = budgetedCosts + cumulativeAdjustmentCosts,
                     BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
                     BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
                     Units = cumulativeUnits,

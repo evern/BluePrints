@@ -13,7 +13,7 @@ using BaseModel.DataModel;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ReportablesDisplay : EntityBase, IGuidEntityKey, IReportable, IBookable
+    public class ReportablesDisplay : EntityBase, ICanAssignP6, IGuidEntityKey, IReportable, IBookable
     {
         public Guid GUID { get => ProgressItem.GUID; set => ProgressItem.GUID = value; }
         public DisplayQuantityReportable ProgressItem { get; set; }
@@ -276,6 +276,22 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public List<VariationAdjustment> ApprovedVariations => ((IReportable)ProgressItem).ApprovedVariations;
 
+        public string P6AssignmentName => throw new NotImplementedException();
+
+        public string P6AssignmentDescription => throw new NotImplementedException();
+
+        public decimal Assigned_Percentage => throw new NotImplementedException();
+
+        public decimal Remaining_Percentage => throw new NotImplementedException();
+
+        public decimal P6_Assignment_Total_Quantity => throw new NotImplementedException();
+
+        public string P6_Assignment_UOM => throw new NotImplementedException();
+
+        public Guid? P6_WorkpackGuid => throw new NotImplementedException();
+
+        public string P6AssignmentDescription2 => throw new NotImplementedException();
+
         public override void Update()
         {
             ProgressItem.Update();
@@ -320,6 +336,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
             ((IReportable)ProgressItem).AppendProgressItem(currentProgress);
+        }
+
+        public void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null)
+        {
         }
     }
 

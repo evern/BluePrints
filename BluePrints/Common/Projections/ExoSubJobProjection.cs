@@ -422,6 +422,11 @@ namespace BluePrints.Common.Projections
             this.RaisePropertiesChanged();
         }
 
+        public void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null)
+        {
+            
+        }
+
         public decimal ExoForecastRate { get; set; }
         public decimal ExoBudgetQty { get; set; }
         public decimal ExoBudgetCosts { get; set; }

@@ -39,7 +39,7 @@ namespace BluePrints.Common.Base
         TMainEntityUnitOfWork> : BluePrintsEntitiesCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
         TMainEntityUnitOfWork>
         where TMainEntity : class, IGuidEntityKey, IDeliverable, new()
-        where TMainProjectionEntity : class, IGuidEntityKey, IReportable, IBookable, new()
+        where TMainProjectionEntity : class, IGuidEntityKey, ICanAssignP6, IReportable, IBookable, new()
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         #region Initialization
@@ -1331,14 +1331,26 @@ namespace BluePrints.Common.Base
                             if (!any_write_exclusions)
                                 if (!isNullProgress)
                                 {
-                                    IEnumerable<ICanAssignP6> currentActivityDeliverables = deliverables.Where(x => x.P6_Assignments.Any(y => y.P6_ACTIVITYID == p6_assignment.P6_ACTIVITYID));
+                                    //find all deliverable with relevant p6 assignment by id and percentage
+                                    IEnumerable<ICanAssignP6> currentActivityDeliverables = deliverables.Where(x => x.P6_Assignments.Any(y => y.P6_ACTIVITYID == p6_assignment.P6_ACTIVITYID && y.LOW_VALUE >= p6_assignment.LOW_VALUE && y.HIGH_VALUE <= p6_assignment.HIGH_VALUE));
                                     IEnumerable<IReportable> currentActivityReportables = currentActivityDeliverables.Select(x => (IReportable)x);
-                                    IEnumerable<PROGRESS_ITEM> allToDateProgresses = currentActivityReportables.SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate).Where(x => x.EARNED_UNITS > 0);
+                                    IEnumerable<IReportable> currentActivityValidReportables = currentActivityReportables.Where(x => x.Stats != null && x.Stats.Earned != null && x.Stats.Earned.CumulativeDataPoints != null);
 
-                                    if(allToDateProgresses.Count() > 0)
+                                    //find a date where all deliverables has achieved p6 assignment high value percentage
+                                    DateTime? latestFirstHighestPercentageOccuranceDate = null;
+                                    foreach(var currentActivityValidReportable in currentActivityValidReportables)
                                     {
-                                        DateTime last_progress_date = allToDateProgresses.Max(x => x.EARNED_DATE);
-                                        P6TASK.act_end_date = last_progress_date.Date.AddHours(18);
+                                        if(currentActivityValidReportable.Stats.Earned.CumulativeDataPoints.Any(x => x.UnitsPercentage >= p6_assignment.HIGH_VALUE))
+                                        {
+                                            DateTime firstPercentageOccuranceDate = currentActivityValidReportable.Stats.Earned.CumulativeDataPoints.OrderBy(x => x.ProgressDate).First(x => x.UnitsPercentage >= p6_assignment.HIGH_VALUE).ProgressDate;
+                                            if (latestFirstHighestPercentageOccuranceDate == null || latestFirstHighestPercentageOccuranceDate < firstPercentageOccuranceDate)
+                                                latestFirstHighestPercentageOccuranceDate = firstPercentageOccuranceDate;
+                                        }
+                                    }
+
+                                    if(latestFirstHighestPercentageOccuranceDate != null)
+                                    {
+                                        P6TASK.act_end_date = latestFirstHighestPercentageOccuranceDate;
                                         P6TASK.late_start_date = null;
                                         P6TASK.late_end_date = null;
                                         P6TASK.early_start_date = null;
@@ -1430,7 +1442,14 @@ namespace BluePrints.Common.Base
                 return;
             }
 
-            IEnumerable<ICanAssignP6> deliverables = entities;
+            List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+            calcTypes.Add(StatsCalculationType.Earned);
+            foreach(var displayEntity in DisplayEntities)
+            {
+                displayEntity.BuildStats(1, calcTypes);
+            }
+
+            IEnumerable<ICanAssignP6> deliverables = DisplayEntities;
             #region reset budgeted on progress
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 

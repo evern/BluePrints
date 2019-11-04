@@ -686,11 +686,26 @@ namespace BluePrints.ViewModels
                 return false;
             }
 
-            //if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
-            //{
-            //    MessageBoxService.ShowMessage("Uploading to EXO is disabled because this job is in tender phase\nPlease contact " + BluePrintsResources.Default_CFO + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-            //    return false;
-            //}
+            if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
+            {
+                string projectManagername = string.Empty;
+                USER pmUSER = null;
+
+                if(loadPROJECT.GUID_PROJUSER != null)
+                {
+                    pmUSER = USERCollection.FirstOrDefault(x => x.GUID == loadPROJECT.GUID_PROJUSER);
+                    if (pmUSER != null)
+                        projectManagername = pmUSER.Full_Name;
+                }
+
+                string defaultTenderPhaseErrorMessage = "Uploading to EXO is disabled because this job is in tender phase";
+                if (projectManagername != string.Empty)
+                    MessageBoxService.ShowMessage(defaultTenderPhaseErrorMessage + "\nPlease contact " + projectManagername + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                else
+                    MessageBoxService.ShowMessage(defaultTenderPhaseErrorMessage, "Warning", MessageButton.OK, MessageIcon.Exclamation);
+
+                return false;
+            }
 
             if (masterJob == null)
             {

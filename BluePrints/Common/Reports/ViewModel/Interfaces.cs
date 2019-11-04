@@ -147,6 +147,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         DateTime? TaskAssignmentStartDate { get; set; }
         decimal EarnedUnitsAccountedFor { get; set; }
         decimal Earned_Units_ToDate { get; }
+        void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null);
     }
 
     public interface ICanSetProgresses

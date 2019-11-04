@@ -126,6 +126,11 @@ namespace BluePrints.Common.Projections
             this.RaisePropertiesChanged();
             Deliverables.ForEach(x => x.Update());
         }
+
+        public void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null)
+        {
+
+        }
     }
 
     public static class WORKPACKQueries

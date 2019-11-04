@@ -480,7 +480,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             SetReportingDataDate(reporting_data_date);
             ApprovedVariations = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
             decimal variationUnits = ApprovedVariations.Sum(x => x.AdjustmentUnits);
-            decimal totalUnits = variationUnits + variationUnits;
+            decimal totalUnits = entity.Budget_Units + variationUnits;
             decimal unitsPerQuantity = entity.Budget_Quantity == 0 ? 0 : entity.Budget_Units / entity.Budget_Quantity;
             decimal totalQuantity = unitsPerQuantity == 0 ? 0 : totalUnits / unitsPerQuantity;
             decimal costsPerUnit = entity.Budget_Costs == 0 ? 0 : entity.Budget_Units / entity.Budget_Costs;

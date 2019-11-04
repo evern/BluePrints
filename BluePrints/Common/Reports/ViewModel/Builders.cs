@@ -108,6 +108,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             IEnumerable<DataPoint> progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
             {
+                DeliverableGuid = reportable.OriginalEntityKey,
+                TotalUnits = reportable.Stats.TotalUnits,
+                TotalCosts = reportable.Stats.TotalCosts * CurrencyConversion,
                 BudgetedUnits = reportable.Stats.BudgetedUnits,
                 BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
                 Units = x.EARNED_UNITS,

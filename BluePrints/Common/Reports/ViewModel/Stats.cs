@@ -570,10 +570,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (BudgetedUnits == 0 || Units == 0)
+                if (TotalUnits == 0 || Units == 0)
                     return 0;
                 else
-                    return Units / BudgetedUnits;
+                    return Units / TotalUnits;
             }
         }
 
@@ -581,10 +581,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (BudgetedCosts == 0 || Costs == 0)
+                if (TotalCosts == 0 || Costs == 0)
                     return 0;
                 else
-                    return Costs / BudgetedCosts;
+                    return Costs / TotalCosts;
             }
         }
     }
