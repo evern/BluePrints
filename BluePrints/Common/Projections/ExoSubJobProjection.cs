@@ -1755,16 +1755,9 @@ namespace BluePrints.Common.Projections
 
         public static JOBCOST_RESOURCE FindJOBCOST_RESOURCE(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? seqNo, string name)
         {
-            IQueryable<JOBCOST_RESOURCE> resources;
-            
-            if(seqNo == null)
-                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+            IQueryable<JOBCOST_RESOURCE> resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                               where JOBCOST_RESOURCE.RESOURCENAME == name
                               select JOBCOST_RESOURCE);
-            else
-                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                             where JOBCOST_RESOURCE.SEQNO == seqNo
-                             select JOBCOST_RESOURCE);
 
             if (resources.Count() > 0)
                 return resources.First();
@@ -1786,15 +1779,9 @@ namespace BluePrints.Common.Projections
 
         public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name)
         {
-            IQueryable<STAFF> staffs;
-            if(staffNo == null)
-                staffs = (from STAFF in primeroUnitOfWork.STAFF
+            IQueryable<STAFF> staffs = (from STAFF in primeroUnitOfWork.STAFF
                                                       where STAFF.NAME == name
                                                       select STAFF);
-            else
-                staffs = (from STAFF in primeroUnitOfWork.STAFF
-                          where STAFF.STAFFNO == staffNo
-                          select STAFF);
 
             if (staffs.Count() > 0)
                 return staffs.First();
@@ -2010,7 +1997,7 @@ namespace BluePrints.Common.Projections
                                      join STAFF in primeroUnitOfWork.STAFF
                                      on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
                                      join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
-                                     on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
+                                     on JOBCOST_RESOURCE.SHORTCODE equals STOCK_ITEMS.STOCKCODE
                                      where JOBCOST_RESOURCE.ISACTIVE == "Y"
                             select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, STAFF.PAYROLL_ID, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP };
 
