@@ -78,7 +78,7 @@ namespace BluePrints.ViewModels
         protected override IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
             List<RATE> returnRATES = new List<RATE>();
-            List<RATE> committedRATES = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost).ToList();
+            List<RATE> committedRATES = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.COST_TYPE == CostType.Cost && x.PHASE_TYPE == loadPhaseType).ToList();
 
             if(actualDataPoints == null)
             {
