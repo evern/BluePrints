@@ -336,4 +336,7 @@
   <data name="ContingencyCostType" xml:space="preserve">
     <value>CTG</value>
   </data>
+  <data name="ForecastUOMColumnName" xml:space="preserve">
+    <value>UOM</value>
+  </data>
 </root>

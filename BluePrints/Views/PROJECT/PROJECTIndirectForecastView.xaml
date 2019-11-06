@@ -3,6 +3,7 @@
              xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTIndirectForecastViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converter:CellNumericUOMMaskConverter x:Key="CellNumericUOMMaskConverter" />
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
@@ -106,7 +107,7 @@
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
-                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="###,##0 hrs" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
+                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="{Binding RowData.Row.Row, Converter={StaticResource CellNumericUOMMaskConverter}}" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
                                     <dxe:SpinEdit.Background>
                                         <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                                             <Binding Path="RowData.Row.Row" />

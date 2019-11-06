@@ -493,6 +493,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UOM.
+        /// </summary>
+        internal static string ForecastUOMColumnName {
+            get {
+                return ResourceManager.GetString("ForecastUOMColumnName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Global.
         /// </summary>
         internal static string GlobalOffice {

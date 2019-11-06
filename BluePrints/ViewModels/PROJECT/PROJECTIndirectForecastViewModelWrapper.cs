@@ -752,7 +752,7 @@ namespace BluePrints.ViewModels
         string columnReference = "REFERENCE";
         string columnNote = "NOTE";
         string columnFloating = "IS_FLOATING_RATE";
-        string columnUOM = "UOM";
+        string columnUOM = BluePrintsResources.ForecastUOMColumnName;
         string columnForecastRate = "FORECAST_RATE";
         string columnRecommendedForecastRate = "RecommendedRate";
         string columnTotalHours = "TOTAL_HOURS";
