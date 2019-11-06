@@ -2024,7 +2024,8 @@ namespace BluePrints.ViewModels
         public void P6BASELINE_ASSIGN()
         {
             string viewName = "BUDGET_ITEMSchedulingView";
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new object[] { loadPROJECT, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, P6ForecastProject + " Mapping");
+            string tabName = P6ForecastProject + " Mapping";
+            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { loadPROJECT, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
