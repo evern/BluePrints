@@ -173,7 +173,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             if(isWeeks)
             {
-                lastProgressDate = GetLastWeekdayOfMonth(firstAlignedDataDate, DayOfWeek.Sunday);
+                lastProgressDate = GetFirstWeekdayOfNextMonth(firstAlignedDataDate, DayOfWeek.Sunday);
             }
             else
             {
