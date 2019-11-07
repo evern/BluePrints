@@ -720,14 +720,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static JOBCOST_RESOURCE FindExistingOrAddResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffId, int? seqNo, string name, string title, string defaultStockCode, string shortCode)
+        public static JOBCOST_RESOURCE FindExistingOrAddResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffId, int? seqNo, string name, string title, string defaultStockCode, string shortCode, string forceSearchName)
         {
             string uppercaseName = name.ToUpper();
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
             string uppercaseDefaultStockCode = defaultStockCode == null ? string.Empty : defaultStockCode.ToUpper();
             string uppercaseShortCode = shortCode == null ? string.Empty : shortCode.ToUpper();
+            string searchName = forceSearchName == string.Empty ? uppercaseName : forceSearchName.ToUpper();
 
-            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, seqNo, uppercaseName);
+            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, seqNo, searchName);
             if(resource != null)
             {
                 resource.ISACTIVE = "Y";
@@ -753,12 +754,13 @@ namespace BluePrints.Common.Projections
         }
 
 
-        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId, out bool isNew)
+        public static STAFF FindExistingOrAddStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, int? staffNo, string name, string title, int securityProfileId, int userProfileId, int? reportToStaffId, string payrollId, string forceSearchName, out string primaryDbName, out bool isNew)
         {
             string uppercaseName = name.ToUpper();
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
-            
-            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, uppercaseName);
+            string searchName = forceSearchName == string.Empty ? uppercaseName : forceSearchName.ToUpper();
+
+            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, searchName, out primaryDbName);
             if (staff != null)
             {
                 staff.ISACTIVE = "Y";
@@ -775,7 +777,7 @@ namespace BluePrints.Common.Projections
             {
                 STAFF newSTAFF = createNewStaff(pUnitOfWork, uppercaseName, uppercaseTitle, securityProfileId, userProfileId, reportToStaffId, payrollId);
                 pUnitOfWork.STAFF.Add(newSTAFF);
-
+                primaryDbName = newSTAFF.NAME;
                 //need to save changes here to get new staff id;
                 pUnitOfWork.SaveChanges();
                 if (newSTAFF.REPORTS_TO_STAFFNO == null)
@@ -1790,7 +1792,7 @@ namespace BluePrints.Common.Projections
             return null;
         }
 
-        public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name)
+        public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name, out string primaryDbName)
         {
             IQueryable<STAFF> staffs = null;
             
@@ -1809,8 +1811,12 @@ namespace BluePrints.Common.Projections
             }
 
             if (staffs.Count() > 0)
+            {
+                primaryDbName = staffs.First().NAME;
                 return staffs.First();
+            }
 
+            primaryDbName = string.Empty;
             return null;
         }
 
