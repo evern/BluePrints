@@ -1,4 +1,5 @@
-﻿using BluePrints.Data;
+﻿using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -206,7 +207,43 @@ namespace BluePrints.Common.ViewModel.Reporting
             return alignedDataDatesCollection;
         }
 
-        private static DateTime GetLastWeekdayOfMonth(DateTime date, DayOfWeek day)
+        /// <summary>
+        /// Calculates the data date forward to get the last aligned data date as per the first aligned data date
+        /// </summary>
+        public static List<DateTime> GenerateWeekDayEndDatesCollection(DateTime firstAlignedDataDate,
+            DateTime lastDataPointDate, DayOfWeek dayOfWeek, bool isWeeks = false)
+        {
+            DateTime lastProgressDate = new DateTime(firstAlignedDataDate.Year, firstAlignedDataDate.Month, 1);
+            lastProgressDate = lastProgressDate.AddDays(-1);
+
+            //adjust last datapoint date to end of the month
+            DateTime lastEndOfMonthDate = new DateTime(lastDataPointDate.Year, lastDataPointDate.Month, 1);
+            lastEndOfMonthDate = lastEndOfMonthDate.AddMonths(1).AddDays(-1);
+
+            var alignedDataDatesCollection = new List<DateTime>();
+            DateTime currentProgressDate = lastProgressDate;
+            DateTime lastNearestDayOfWeekDate = BluePrintsUtils.GetNearestSundayOfTheMonth(lastProgressDate);
+            //forward the first progress date to scan to after the datadate aligned to end day of week
+            do
+            {
+                if (isWeeks)
+                {
+                    alignedDataDatesCollection.Add(lastNearestDayOfWeekDate);
+                    lastNearestDayOfWeekDate = lastNearestDayOfWeekDate.AddDays(7);
+                    currentProgressDate = lastNearestDayOfWeekDate;
+                }
+                else
+                {
+                    lastProgressDate = new DateTime(lastProgressDate.Year, lastProgressDate.Month, 1).AddMonths(1);
+                    currentProgressDate = BluePrintsUtils.GetNearestSundayOfTheMonth(lastProgressDate);
+                    alignedDataDatesCollection.Add(currentProgressDate);
+                }
+            } while (currentProgressDate < lastEndOfMonthDate);
+
+            return alignedDataDatesCollection;
+        }
+
+        public static DateTime GetLastWeekdayOfMonth(DateTime date, DayOfWeek day)
         {
             DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, 1)
                 .AddMonths(1).AddDays(-1);
@@ -214,6 +251,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             int lastDay = (int)lastDayOfMonth.DayOfWeek;
             return lastDayOfMonth.AddDays(
                 lastDay >= wantedDay ? wantedDay - lastDay : wantedDay - lastDay - 7);
+        }
+
+        public static DateTime GetFirstWeekdayOfNextMonth(DateTime date, DayOfWeek day)
+        {
+            DateTime firstDayNextMonth = date.AddDays(-date.Day + 1).AddMonths(1);
+            int wantedDay = (int)day;
+            int diff = (wantedDay - (int)firstDayNextMonth.DayOfWeek);
+
+            if (diff < 0)
+                diff += 7;
+
+            return firstDayNextMonth.AddDays(diff);
         }
     }
 }
