@@ -726,9 +726,8 @@ namespace BluePrints.Common.Projections
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
             string uppercaseDefaultStockCode = defaultStockCode == null ? string.Empty : defaultStockCode.ToUpper();
             string uppercaseShortCode = shortCode == null ? string.Empty : shortCode.ToUpper();
-            string searchName = forceSearchName == string.Empty ? uppercaseName : forceSearchName.ToUpper();
 
-            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, seqNo, searchName);
+            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, seqNo, forceSearchName);
             if(resource != null)
             {
                 resource.ISACTIVE = "Y";
@@ -758,9 +757,7 @@ namespace BluePrints.Common.Projections
         {
             string uppercaseName = name.ToUpper();
             string uppercaseTitle = title == null ? string.Empty : title.ToUpper();
-            string searchName = forceSearchName == string.Empty ? uppercaseName : forceSearchName.ToUpper();
-
-            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, searchName, out primaryDbName);
+            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, staffNo, forceSearchName, out primaryDbName);
             if (staff != null)
             {
                 staff.ISACTIVE = "Y";
@@ -791,34 +788,25 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static void RemoveStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
-        {
-            foreach (ExoResourceProjection projection in projections)
-            {
-                STOCK_ITEMS stockItem = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, projection.DEFAULT_STOCKCODE);
-                if (stockItem != null)
-                    stockItem.ISACTIVE = "N";
-            }
+        public static void RemoveStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoResourceProjection projection)
+    {
+            STOCK_ITEMS stockItem = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, projection.SHORTCODE);
+            if (stockItem != null)
+                stockItem.ISACTIVE = "N";
         }
 
-        public static void RemoveResources(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
+        public static void RemoveResources(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoResourceProjection projection, string forceSearchName)
         {
-            foreach(ExoResourceProjection projection in projections)
-            {
-                JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, projection.RESOURCE_SEQNO, projection.RESOURCENAME);
-                if (resource != null)
-                    resource.ISACTIVE = "N";
-            }
+            JOBCOST_RESOURCE resource = ExoQueries.FindJOBCOST_RESOURCE(pUnitOfWork, projection.RESOURCE_SEQNO, forceSearchName);
+            if (resource != null)
+                resource.ISACTIVE = "N";
         }
 
-        public static void RemoveStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, IEnumerable<ExoResourceProjection> projections)
+        public static void RemoveStaff(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoResourceProjection projection, string forceSearchName, out string primaryDbName)
         {
-            foreach (ExoResourceProjection projection in projections)
-            {
-                STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, projection.STAFFNO, projection.RESOURCENAME);
-                if (staff != null)
-                    staff.ISACTIVE = "N";
-            }
+            STAFF staff = ExoQueries.FindSTAFF(pUnitOfWork, projection.STAFFNO, forceSearchName, out primaryDbName);
+            if (staff != null)
+                staff.ISACTIVE = "N";
         }
 
         private static JOBCOST_RESOURCE createNewResource(IPrimeroEntitiesUnitOfWork pUnitOfWork, int staffId, string name, string title, string defaultStockCode, string shortCode)
@@ -1759,20 +1747,18 @@ namespace BluePrints.Common.Projections
         {
             IQueryable<JOBCOST_RESOURCE> resources = null;
             
-            if(seqNo != null)
-            {
-                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                                where JOBCOST_RESOURCE.SEQNO == seqNo
-                             select JOBCOST_RESOURCE);
-            }
-
-            if(resources == null || resources.Count() == 0)
+            if(name != string.Empty)
             {
                 resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                              where JOBCOST_RESOURCE.RESOURCENAME == name
                              select JOBCOST_RESOURCE);
             }
-
+            else
+            {
+                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                             where JOBCOST_RESOURCE.SEQNO == seqNo
+                             select JOBCOST_RESOURCE);
+            }
 
             if (resources.Count() > 0)
                 return resources.First();
@@ -1796,17 +1782,16 @@ namespace BluePrints.Common.Projections
         {
             IQueryable<STAFF> staffs = null;
             
-            if(staffNo != null)
-            {
-                staffs = (from STAFF in primeroUnitOfWork.STAFF
-                          where STAFF.STAFFNO == staffNo
-                          select STAFF);
-            }
-
-            if(staffs == null || staffs.Count() == 0)
+            if(name != string.Empty)
             {
                 staffs = (from STAFF in primeroUnitOfWork.STAFF
                           where STAFF.NAME == name
+                          select STAFF);
+            }
+            else
+            {
+                staffs = (from STAFF in primeroUnitOfWork.STAFF
+                          where STAFF.STAFFNO == staffNo
                           select STAFF);
             }
 

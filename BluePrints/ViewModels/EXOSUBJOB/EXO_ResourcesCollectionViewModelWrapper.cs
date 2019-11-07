@@ -138,7 +138,9 @@ namespace BluePrints.ViewModels
 
             string newResourceShortCode = primeroNameCount > pgaNameCount ? generatedShortCodeFromPrimero : generatedShortCodeFromPga;
             string primaryDbStaffName;
-            commitToExo(projection, primeroUnitOfWork, newResourceShortCode, string.Empty, out primaryDbStaffName);
+
+            string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;
+            commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName);
             string secondaryDbStaffName;
             commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName);
 
@@ -188,42 +190,35 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Are you sure you want to remove selected resource(s)\n\nThis will mark resource as inactive in EXO", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                 return;
 
-            delete(displaySelectedEntities, primeroUnitOfWork);
-            delete(displaySelectedEntities, pgaUnitOfWork);
+            foreach(ExoResourceProjection projection in DisplaySelectedEntities)
+            {
+                delete(projection);
+            }
         }
 
         private void delete(ExoResourceProjection projection)
         {
+            ExoResourceProjection remoteProjection = new ExoResourceProjection();
+            DataUtils.ShallowCopy(remoteProjection, projection);
 
-            List<ExoResourceProjection> newLines = new List<ExoResourceProjection>();
-            ExoResourceProjection newLine = projection;
-            newLines.Add(newLine);
-
-            List<ExoResourceProjection> remoteNewLines = new List<ExoResourceProjection>();
-            ExoResourceProjection remoteNewLine = new ExoResourceProjection();
-            DataUtils.ShallowCopy(remoteNewLine, newLine);
-            remoteNewLines.Add(remoteNewLine);
-
-            delete(newLines, primeroUnitOfWork);
-            delete(remoteNewLines, pgaUnitOfWork, true);
+            string primaryDbName;
+            delete(projection, primeroUnitOfWork, string.Empty, out primaryDbName);
+            string remoteDbName;
+            delete(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
         }
 
-        private void delete(IEnumerable<ExoResourceProjection> projections, IPrimeroEntitiesUnitOfWork primeroUOW, bool isRemoteOperation = false)
+        private void delete(ExoResourceProjection projection, IPrimeroEntitiesUnitOfWork primeroUOW, string forceSearchName, out string primaryDbName, bool isRemoteOperation = false)
         {
-            ExoMethods.RemoveStaff(primeroUOW, projections);
-            ExoMethods.RemoveResources(primeroUOW, projections);
-            ExoMethods.RemoveStockItem(primeroUOW, projections);
+            ExoMethods.RemoveStaff(primeroUOW, projection, forceSearchName, out primaryDbName);
+            ExoMethods.RemoveResources(primeroUOW, projection, forceSearchName);
+            ExoMethods.RemoveStockItem(primeroUOW, projection);
             primeroUOW.SaveChanges();
 
             if(!isRemoteOperation)
             {
-                List<ExoResourceProjection> removeProjections = projections.ToList();
-                foreach (ExoResourceProjection removeProjection in removeProjections)
-                {
-                    DisplayEntities.Remove(removeProjection);
-                    if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(removeProjection, null, null, null, EntityMessageType.Deleted);
-                }
+                DisplayEntities.Remove(projection);
+                if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Deleted);
             }
         }
 

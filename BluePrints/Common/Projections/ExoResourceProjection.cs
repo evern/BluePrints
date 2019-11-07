@@ -57,7 +57,6 @@ namespace BluePrints.Common.Projections
         public int? PURCH_GL_CODE { get; set; }
         public int? COS_GL_CODE { get; set; }
 
-        [Required]
         public double? STDCOST { get; set; }
 
         [Required]
