@@ -320,7 +320,8 @@ namespace BluePrints.Common.ViewModel.Misc
             List<string> dashboardConcatNames = new List<string>(); 
             foreach (DashboardFlatStructure dashboardJob in dashboardJobs)
             {
-                dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + dashboardJob.Variation_Code);
+                if(dashboardJob.Stats.Remaining.TotalUnits > 0)
+                    dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + dashboardJob.Variation_Code);
             }
 
             List<string> allExoJobConcatNames = dataPointsConcatNames.ToList();

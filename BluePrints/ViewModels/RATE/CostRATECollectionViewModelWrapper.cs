@@ -106,15 +106,19 @@ namespace BluePrints.ViewModels
 
                 if(findPHASE != null && findPHASE.PHASE_TYPE != null && findPHASE.PHASE_TYPE == loadPhaseType && findPHASE.CHARGE_TYPE == ChargeType.Chargeable && findDISCIPLINE != null && findCOMMODITY_CODE != null)
                 {
-                    IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_PHASE == findPHASE.GUID && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
-                    if(findCommittedRATES.Count() == 0)
+                    //indirects are only for design and should be recommending codes related to document type codes only
+                    if(findPHASE.PHASE_TYPE != PhaseType.Indirect || DOCTYPECollection.Any(x => x.CODE == findCOMMODITY_CODE.CODE))
                     {
-                        RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE.GUID, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE };
-                        uncommittedRATE.PHASE_TYPE = (PhaseType)findPHASE.PHASE_TYPE;
+                        IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_PHASE == findPHASE.GUID && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
+                        if (findCommittedRATES.Count() == 0)
+                        {
+                            RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE.GUID, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE };
+                            uncommittedRATE.PHASE_TYPE = (PhaseType)findPHASE.PHASE_TYPE;
 
-                        initializeRATE(uncommittedRATE);
-                        setRecommendedRate(uncommittedRATE);
-                        returnRATES.Add(uncommittedRATE);
+                            initializeRATE(uncommittedRATE);
+                            setRecommendedRate(uncommittedRATE);
+                            returnRATES.Add(uncommittedRATE);
+                        }
                     }
                 }
             }

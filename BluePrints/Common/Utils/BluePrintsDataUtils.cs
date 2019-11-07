@@ -164,6 +164,17 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
+        public static DateTime GetNearestSundayOfTheMonth(DateTime date)
+        {
+            DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, 1).AddMonths(1).AddDays(-1);
+            DayOfWeek dayOfWeek = lastDayOfMonth.DayOfWeek;
+
+            if (dayOfWeek > DayOfWeek.Wednesday)
+                return ChronologicalHelpers.GetFirstWeekdayOfNextMonth(date, DayOfWeek.Sunday);
+            else
+                return ChronologicalHelpers.GetLastWeekdayOfMonth(date, DayOfWeek.Sunday);
+        }
+
         public static void ApplyShowBookableFilter(IGridControlService gridControlService, bool bookableToggleValue)
         {
             if (gridControlService != null)

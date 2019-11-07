@@ -275,7 +275,7 @@ namespace BluePrints.Common.Base
                 decimal total_activity_assigned_units = deliverables.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
                                                         .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * getUnits(x)));
 
-                activity.Budgeted_Units = activity.Task == null ? (decimal?)null : activity.Task.act_work_qty;
+                activity.Budgeted_Units = activity.Task == null ? (decimal?)null : activity.Task.target_work_qty;
                 activity.Assigned_Units = total_activity_assigned_units;
                 activity.RaisePropertiesChanged();
             }
