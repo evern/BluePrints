@@ -1755,9 +1755,22 @@ namespace BluePrints.Common.Projections
 
         public static JOBCOST_RESOURCE FindJOBCOST_RESOURCE(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? seqNo, string name)
         {
-            IQueryable<JOBCOST_RESOURCE> resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                              where JOBCOST_RESOURCE.RESOURCENAME == name
-                              select JOBCOST_RESOURCE);
+            IQueryable<JOBCOST_RESOURCE> resources = null;
+            
+            if(seqNo != null)
+            {
+                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                where JOBCOST_RESOURCE.SEQNO == seqNo
+                             select JOBCOST_RESOURCE);
+            }
+
+            if(resources == null || resources.Count() == 0)
+            {
+                resources = (from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                             where JOBCOST_RESOURCE.RESOURCENAME == name
+                             select JOBCOST_RESOURCE);
+            }
+
 
             if (resources.Count() > 0)
                 return resources.First();
@@ -1779,9 +1792,21 @@ namespace BluePrints.Common.Projections
 
         public static STAFF FindSTAFF(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, string name)
         {
-            IQueryable<STAFF> staffs = (from STAFF in primeroUnitOfWork.STAFF
-                                                      where STAFF.NAME == name
-                                                      select STAFF);
+            IQueryable<STAFF> staffs = null;
+            
+            if(staffNo != null)
+            {
+                staffs = (from STAFF in primeroUnitOfWork.STAFF
+                          where STAFF.STAFFNO == staffNo
+                          select STAFF);
+            }
+
+            if(staffs == null || staffs.Count() == 0)
+            {
+                staffs = (from STAFF in primeroUnitOfWork.STAFF
+                          where STAFF.NAME == name
+                          select STAFF);
+            }
 
             if (staffs.Count() > 0)
                 return staffs.First();
