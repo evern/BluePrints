@@ -53,7 +53,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Units = 0,
                 Costs = 0,
                 Quantity = 0,
-                ProgressDate = zeroUnitsDataDate.AddDays(-1 * progressInterval.Days)
+                ProgressDate = zeroUnitsDataDate.AddDays(-1 * progressInterval.Days),
+                IsRemaining = isRemaining
             });
 
             //Start going through each progress items to retrieve cumulative data point per period
@@ -113,7 +114,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     Units = cumulativeUnits,
                     Costs = cumulativeCosts,
                     Quantity = cumulativeUnits * qtyPerUnit,
-                    ProgressDate = ceilingDate
+                    ProgressDate = ceilingDate,
+                    IsRemaining = isRemaining
                 });
 
                 if (currentPeriodAdjustmentUnits > 0)

@@ -320,7 +320,9 @@ namespace BluePrints.Common.ViewModel.Misc
             List<string> dashboardConcatNames = new List<string>(); 
             foreach (DashboardFlatStructure dashboardJob in dashboardJobs)
             {
-                if(dashboardJob.Stats.Remaining.TotalUnits > 0)
+                decimal remainingUnits = dashboardJob.Stats.Remaining.DataPoints == null ? 0 : dashboardJob.Stats.Remaining.GetData().Where(x => x.IsRemaining).Sum(x => x.Units);
+                //use more than 1 because of anomaly on duration based units which could amount up to 1
+                if(remainingUnits > 1)
                     dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + dashboardJob.Variation_Code);
             }
 
