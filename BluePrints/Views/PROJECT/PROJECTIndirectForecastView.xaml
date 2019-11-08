@@ -273,6 +273,7 @@
                                                         </dxg:FormatCondition>
                                                     </dxg:TableView.FormatConditions>
                                                     <dxmvvm:Interaction.Behaviors>
+                                                        <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateRowCommand, ElementName=userControl}" EventName="ValidateRow" PassEventArgsToCommand="True" />
                                                         <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedUpdateCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                         <dxmvvm:EventToCommand Command="{Binding DataContext.NewIndirectRowAddUndoAndSaveCommand, ElementName=userControl}" EventName="RowUpdated" PassEventArgsToCommand="True" />
                                                         <dxmvvm:KeyToCommand Command="{Binding DataContext.UndoCommand, ElementName=userControl}" KeyGesture="CTRL+Z" />
