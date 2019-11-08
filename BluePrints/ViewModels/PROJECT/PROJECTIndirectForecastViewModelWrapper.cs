@@ -806,6 +806,19 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
+        public virtual void ValidateRow(GridRowValidationEventArgs e)
+        {
+            DataRow dataRow = ((DataRowView)e.Row).Row;
+            string errorMessage = UnifiedRowValidation(dataRow);
+
+            if (errorMessage != string.Empty)
+            {
+                e.IsValid = false;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                e.ErrorContent = errorMessage;
+            }
+        }
+
         public override string UnifiedValueValidation(FORECAST_JOB projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
@@ -813,6 +826,24 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(FORECAST_JOB projection)
         {
+            return string.Empty;
+        }
+
+        public string UnifiedRowValidation(DataRow dataRow)
+        {
+            if (dataRow[columnFullCode] == DBNull.Value)
+            {
+                return "Full code must be entered";
+            }
+            else
+            {
+                ExoSubJobProjection projection = QueryJobs.FirstOrDefault(x => x.FullCode == dataRow[columnFullCode].ToString());
+                if (projection == null)
+                {
+                    return "Full code is invalid";
+                }
+            }
+
             return string.Empty;
         }
 
