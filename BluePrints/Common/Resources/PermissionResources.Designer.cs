@@ -88,7 +88,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can change forecast data date to a date in the paste even if EAC is saved.
+        ///   Looks up a localized string similar to Can change forecast data date to a date in the past even if EAC is saved.
         /// </summary>
         internal static string CanRewindDataDate {
             get {

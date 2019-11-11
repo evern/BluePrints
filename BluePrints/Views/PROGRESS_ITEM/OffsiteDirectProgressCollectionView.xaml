@@ -248,6 +248,7 @@
                                     <dxg:GridColumn.HeaderStyle>
                                         <Style TargetType="Control">
                                             <Setter Property="Background" Value="LightCyan" />
+                                            <Setter Property="Foreground" Value="Black" />
                                         </Style>
                                     </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
@@ -283,7 +284,7 @@
                                                         </MultiBinding>
                                                     </Image.Visibility>
                                                 </Image>
-                                                <dxe:SpinEdit Name="PART_Editor" Tag="{Binding RowData.Row.IsMaxPercentageRestrictedByFuturePercentage}" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}">
+                                                <dxe:SpinEdit Name="PART_Editor" Foreground="Black" Tag="{Binding RowData.Row.IsMaxPercentageRestrictedByFuturePercentage}" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}">
                                                     <dxe:SpinEdit.ErrorToolTipContentTemplate>
                                                         <DataTemplate>
                                                             <dxe:TextEdit>

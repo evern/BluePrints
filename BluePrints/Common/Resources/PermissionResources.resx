@@ -232,7 +232,7 @@
     <value>Allow user to save forecast EAC</value>
   </data>
   <data name="CanRewindDataDate" xml:space="preserve">
-    <value>Can change forecast data date to a date in the paste even if EAC is saved</value>
+    <value>Can change forecast data date to a date in the past even if EAC is saved</value>
   </data>
   <data name="ManageCostRate" xml:space="preserve">
     <value>Allow user to manage cost rates</value>

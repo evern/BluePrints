@@ -317,6 +317,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                         {
                             BudgetedUnits = CumulativeProgressOnDataDate.BudgetedUnits,
                             BudgetedCosts = CumulativeProgressOnDataDate.BudgetedCosts,
+                            TotalUnits = CumulativeProgressOnDataDate.TotalUnits,
+                            TotalCosts = CumulativeProgressOnDataDate.TotalCosts,
                             Units = CumulativeProgressOnDataDate.Units - CumulativeProgressOnDataDatePrevious.Units,
                             Costs = CumulativeProgressOnDataDate.Costs - CumulativeProgressOnDataDatePrevious.Costs,
                             Quantity = CumulativeProgressOnDataDate.Quantity - CumulativeProgressOnDataDatePrevious.Quantity,
