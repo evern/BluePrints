@@ -584,9 +584,10 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedRowValidation(ExoSubJobEditableProjection projection)
         {
+            projection.IgnoreExoBudgetError = true;
+
             if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
                 return "Sub Job not assigned";
-
             
             if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
                 return "Discipline code not assigned";

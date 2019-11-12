@@ -378,7 +378,7 @@ namespace BluePrints.ViewModels
 
         public void ViewReport()
         {
-            if (MessageBoxService.ShowMessage("Please make sure that you've recalculated this progress prior to this (Double clicking on the project and press recalculate)", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
+            if (MessageBoxService.ShowMessage("Please make sure that you've already recalculated planned and remaining data for w/e " + DataDate.ToShortDateString() + "\n\nYou can do this by double clicking on the project title in the navigation bar on the left and press refresh", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
             var progressReport = new XtraReportPROGRESS_ITEMS();

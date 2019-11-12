@@ -94,7 +94,6 @@ namespace BluePrints.ViewModels
             queryJobLines = jobLines;
             IsLoadingForecast = true;
 
-
             focusNewlyAddedProjectionTimer = new DispatcherTimer();
             focusNewlyAddedProjectionTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             focusNewlyAddedProjectionTimer.Tick += FocusNewlyAddedProjectionTimer_Tick;
@@ -295,7 +294,7 @@ namespace BluePrints.ViewModels
             //update total hours
             decimal rate = 0.00m;
             Guid guid = (Guid)row[columnGUID];
-            decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == guid && x.FORECAST_HOUR != null).Sum(x => (decimal)x.FORECAST_HOUR);
+            decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == guid && x.FORECAST_HOUR != null && x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
             row[columnTotalHours] = totalForecastHours;
 
             //update total costs
@@ -418,6 +417,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            GridControlService.GridControl.RefreshData();
             MessageBoxService.ShowMessage(floatingRateUpdateCount.ToString() + " record(s) updated", "Update", MessageButton.OK);
         }
 
