@@ -744,6 +744,7 @@ namespace BluePrints.Common.Base
             remove_assignments(Selected_P6_Assignments.ToList());
             SetMaxUnits();
             raise_deliverable_assignment_changes();
+            raiseQuantityAssignmentPropertiesChanged();
         }
 
         private void remove_assignments(IEnumerable<P6_ASSIGNMENTProjection> remove_p6_assignments)

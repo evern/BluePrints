@@ -61,8 +61,29 @@ namespace BluePrints.ViewModels
         #region Database Operations
         public PROJECT LoadPROJECT { get; set; }
         public DateTime FixedDataDateMonthEnd => new DateTime((FixedDataDate).Year, (FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
-        public DateTime FixedDataDate { get; set; }
-        public DateTime FixedEndDate { get; set; }
+
+        public DateTime fixedDataDate;
+        public DateTime FixedDataDate
+        {
+            get => fixedDataDate;
+            set
+            {
+                fixedDataDate = value;
+                this.RaisePropertyChanged(x => x.FixedDataDate);
+            }
+        }
+
+        public DateTime fixedEndDate;
+        public DateTime FixedEndDate
+        {
+            get => fixedEndDate;
+            set
+            {
+                fixedEndDate = value;
+                this.RaisePropertyChanged(x => x.FixedEndDate);
+            }
+        }
+
         protected List<DateTime> alignedDataDateCollection;
         public List<ExoSubJobProjection> QueryJobs { get; set; }
         protected List<ExoTimeAuthorisation> queryJobLines { get; set; }
