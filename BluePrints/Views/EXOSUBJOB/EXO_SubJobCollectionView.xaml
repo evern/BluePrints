@@ -165,11 +165,11 @@
                                             <dxb:BarButtonItemLink BarItemName="biRemoveSelected" />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                        <dxg:TableView.FormatConditions>
+                                        <!--<dxg:TableView.FormatConditions>
                                             <dxg:FormatCondition ApplyToRow="True" Expression="[IsLineExistsInExo] = 'False'">
                                                 <dxc:Format Background="LightSalmon" />
                                             </dxg:FormatCondition>
-                                        </dxg:TableView.FormatConditions>
+                                        </dxg:TableView.FormatConditions>-->
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
