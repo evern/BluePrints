@@ -1427,9 +1427,11 @@ namespace BluePrints.Common.Projections
                     continue;
 
                 exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedDeliverable.VariationCode, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection));
-                foreach(var deliverableVariation in groupedDeliverable.ApprovedVariations)
+
+                var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
+                foreach (var groupedVariation in groupedVariations)
                 {
-                    exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, deliverableVariation.VariationName, deliverableVariation.AdjustmentInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection));
+                    exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedVariation.VariationName, groupedVariation.VariationTotalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection));
                 }
             }
 
