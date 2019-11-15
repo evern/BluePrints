@@ -156,7 +156,7 @@
         </DataTemplate>
         <DataTemplate x:Key="ForecastHeaderTemplate">
             <TextBlock TextWrapping="WrapWithOverflow" 
-                           Width="80" FontFamily="Calibri" FontSize="12"
+                           Width="70" FontFamily="Calibri" FontSize="12"
                            VerticalAlignment="Center" TextAlignment="Center" 
                            HorizontalAlignment="Center">
                 <TextBlock.Text>
