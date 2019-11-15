@@ -1133,13 +1133,24 @@ namespace BluePrints.ViewModels
                 field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DOCTYPE)) ||
                 field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)))
             {
+                bool skipIrrelevantInternalNumberGeneration = false;
                 if (projection.IsInternalNumberEditable && !projection.IsInternalNumberManualOnly)
                 {
+                    if (projection.Entity.Entity.GUID_DOCTYPE != null)
+                    {
+                        DOCTYPE findDocType = DOCTYPECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_DOCTYPE);
+                        if (findDocType != null)
+                        {
+                            if (!findDocType.IS_AREA_SIGNIFICANT)
+                                skipIrrelevantInternalNumberGeneration = true;
+                        }
+                    }
+
                     //commit the latest value for internal number generation
                     DataUtils.SetNestedValue(field_name, projection, new_value);
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
                     string errorMessage = string.Empty;
-                    string newValue = generateInternalNumber(projection, out errorMessage);
+                    string newValue = skipIrrelevantInternalNumberGeneration ? oldValue : generateInternalNumber(projection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
                     string internalNumberFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM));
                     //when it's new this entity will be added as EntityMessageType.Added later
@@ -1423,13 +1434,27 @@ namespace BluePrints.ViewModels
             PauseUndoRedo();
             _isProcessingMultiple = true;
             var timesToDuplicate = 0;
-            List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
+            
             if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
             {
-                for(int i=0;i<timesToDuplicate;i++)
-                {
-                    Duplicate();
-                }
+
+                TableViewService.SetImmediateUpdateRowPosition(true);
+                if (!_isProcessingMultiple)
+                    PauseUndoRedo();
+
+                List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(timesToDuplicate, false, DisplayEntities, DisplaySelectedEntities);
+
+                //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
+                foreach (BASELINE_ITEMProgress newEntity in newEntities)
+                    MainViewModel.Save(newEntity);
+
+                //Add undo must happen after save so that variation can pick it up
+                foreach (BASELINE_ITEMProgress newEntity in newEntities)
+                    AddUndo(newEntity, null, null, null, EntityMessageType.Added);
+
+                if (!_isProcessingMultiple)
+                    UnpauseUndoRedo();
+
                 //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }

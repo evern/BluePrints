@@ -960,22 +960,9 @@ namespace BluePrints.Common.ViewModel.Utils
                     else
                     {
                         bool isExistsInAll = allEntitiesSimilarNames.Any(x => x == nextName);
-                        bool isExistsInOriginal = originalEntitiesSimilarNames.Any(x => x == nextName);
 
-                        //when current name exists in original it means that nextName is not safe to be used, use original duplicate internal number instead
-                        if (isExistsInOriginal)
-                        {
-                            //if current name exists in insert it means that user is aware of nextName being duplicated, continue to iterate new name
-                            if (isExistsInInsert)
-                                continue;
-                            //if it doesn't exists in insert it means that nextName is not safe to be used, use the previous name
-                            else
-                                return StringFormatUtils.AppendStringWithEnumerator(valueToFillStringOnly, valueToFillNumberOnly - 1, numericFieldLength);
-                        }
-                        //when it doesn't exists in all and doesn't exists is original it means that this number is safe to be used
-                        else if (!isExistsInAll)
+                        if (!isExistsInAll)
                             return nextName;
-                        //when it doesn't exist in original (no need to be identified for maximum series sequence) but exists in all means that it needs a new number not existing in the unsaved set yet
                         else
                             continue;
                     }

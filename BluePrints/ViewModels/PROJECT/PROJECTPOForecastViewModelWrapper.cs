@@ -154,8 +154,10 @@ namespace BluePrints.ViewModels
             }
             else
             {
+                showDataDateErrorMessage();
                 dataDate = DateTime.Now;
                 LoadDataDate = null;
+                return;
             }
 
             ForecastStartDate = new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
@@ -169,6 +171,16 @@ namespace BluePrints.ViewModels
             ForecastEndDate = endDate;
 
             this.RaisePropertiesChanged();
+        }
+
+        bool shownMessage;
+        private void showDataDateErrorMessage()
+        {
+            if(!shownMessage)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Data date not set, please set data date from in forecast")));
+                shownMessage = true;
+            }
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
