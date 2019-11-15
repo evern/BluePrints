@@ -491,7 +491,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading Materials...");
             }
 
-            DateTime invoiceCutOffDate = dataDate.AddDays(1).AddHours(-1);
+            DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddHours(-1);
             var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
                                join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
                                on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
@@ -583,7 +583,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading POs...");
             }
 
-            DateTime poCutOffDate = queryDate.AddDays(1).AddHours(-1);
+            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddHours(-1);
             var pos = from PURCHORD_LINES in primeroUOW.PURCHORD_LINES
                       join PURCHORD_HDR in primeroUOW.PURCHORD_HDR
                       on PURCHORD_LINES.HDR_SEQNO equals PURCHORD_HDR.SEQNO
