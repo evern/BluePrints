@@ -13,20 +13,20 @@ using BluePrints.Common.Projections;
 using DevExpress.Mvvm;
 using BluePrints.Common.Resources;
 using BluePrints.Common.Misc;
+using BluePrints.Common.ViewModel.Utils;
 
 namespace BaseModel.ViewModel.Dialogs
 {
     public class BookTimeSheetViewModel
     {
-        public static BookTimeSheetViewModel Create(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
+        public static BookTimeSheetViewModel Create(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative)
         {
-            return ViewModelSource.Create(() => new BookTimeSheetViewModel(deliverable, primeroUnitOfWork, exoAuthorisations, narratives));
+            return ViewModelSource.Create(() => new BookTimeSheetViewModel(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative));
         }
 
         public DateTime BookDate { get; set; }
         private readonly IDeliverable deliverable;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-        public List<string> Narratives { get; set; }
         public string Selected_VariationCode { get; set; }
         public string Selected_Narrative { get; set; }
         List<PrimeroResource> pResourceCollection;
@@ -238,14 +238,14 @@ namespace BaseModel.ViewModel.Dialogs
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
         private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
-        protected BookTimeSheetViewModel(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives)
+        protected BookTimeSheetViewModel(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();
             this.deliverable = deliverable;
             this.primeroUnitOfWork = primeroUnitOfWork;
             this.exoAuthorisations = exoAuthorisations;
-            this.Narratives = narratives;
+            this.Selected_Narrative = defaultNarrative;
 
             foreach (var availableLine in exoAuthorisations)
             {
@@ -347,11 +347,13 @@ namespace BaseModel.ViewModel.Dialogs
             TimesheetDate bookDate = GetTimesheetDate();
             PrimeroDiscipline bookCostGroup = GetCostGroup();
             PrimeroCommodity bookCostType = GetCostType();
+            string variationCode = GetVariationCode();
+            string narrative = GetNarratives();
             decimal bookTime = BookHours;
 
             if(bookResource != null && subJob != null && bookCostType != null && bookCostGroup != null)
             {
-                JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.WEEK_START_DATE == bookDate.WeekStartDate);
+                JOB_TIMESHEETS timesheet = BluePrintsUtils.FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookCostType.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
                 Existing_TimeSheet = timesheet;
                 if (Existing_TimeSheet != null)
                 {

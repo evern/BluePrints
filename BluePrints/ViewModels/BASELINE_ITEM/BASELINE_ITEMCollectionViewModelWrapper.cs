@@ -489,7 +489,6 @@ namespace BluePrints.ViewModels
         }
 
         protected List<ExoTimeAuthorisation> exoAuthorisations = null;
-        List<string> narratives = null;
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
@@ -511,7 +510,7 @@ namespace BluePrints.ViewModels
             List<ProjectUnitOfWorkContext> projectContexts = new List<ProjectUnitOfWorkContext>();
             projectContexts.Add(new ProjectUnitOfWorkContext(loadPROJECT.NUMBER, primeroUnitOfWork));
 
-            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, ref narratives, projectContexts);
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, projectContexts);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
@@ -1819,7 +1818,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null || narratives == null)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null)
                 return false;
 
             return true;
@@ -2344,11 +2343,11 @@ namespace BluePrints.ViewModels
 
         public void BookTime()
         {
-            if (exoAuthorisations == null || narratives == null)
+            if (exoAuthorisations == null)
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
             {
-                BluePrintsUtils.BookTime(DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+                BluePrintsUtils.BookTime(DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService);
             }
         }
 

@@ -219,24 +219,18 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, ref List<string> narratives, List<ProjectUnitOfWorkContext> projectContexts)
+        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, List<ProjectUnitOfWorkContext> projectContexts)
             where TProjection : IReportable, IBookable
         {
             List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
-            List<string> cacheNarratives = new List<string>();
             foreach (var projectContext in projectContexts)
             {
                 List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber, false);
-                List<string> projectNarratives = ExoQueries.GetJobNarratives(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber);
 
                 cacheExoAuthorisations.AddRange(projectExoTimeAuths);
-
-                cacheExoAuthorisations.AddRange(projectExoTimeAuths);
-                cacheNarratives.AddRange(projectNarratives);
             }
 
             exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
-            narratives = new List<string>(cacheNarratives);
 
             //view can be closed if this is a async task and projection can be disposed
             if(projections != null)
@@ -249,13 +243,12 @@ namespace BluePrints.Common.ViewModel.Utils
             else
             {
                 cacheExoAuthorisations.Clear();
-                cacheNarratives.Clear();
             }
         }
 
-        public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, List<string> narratives, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
+        public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(deliverable, primeroUnitOfWork, exoAuthorisations, narratives);
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative);
             if (bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
@@ -284,10 +277,10 @@ namespace BluePrints.Common.ViewModel.Utils
                 variationCode = variationCode == string.Empty ? null : variationCode;
                 if (bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
-                    JOB_TIMESHEETS timesheet = primeroUnitOfWork.JOB_TIMESHEETS.FirstOrDefault(x => x.STAFFNO == bookResource.SeqNo && x.JOBNO == subJob.Id && x.STOCKCODE == bookCostType.StockCode && x.COST_GROUP == bookCostGroup.Id && x.COST_TYPE == bookCostType.Id && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == bookDate.WeekStartDate);
-                    if (timesheet != null)
+                    JOB_TIMESHEETS findTimeSheetNarrative = FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookCostType.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
+                    if (findTimeSheetNarrative != null)
                     {
-                        AdjustTimeSheetHours(timesheet, bookDate, deliverable, bookTime, primeroUnitOfWork);
+                        AdjustTimeSheetHours(findTimeSheetNarrative, bookDate, deliverable, bookTime, primeroUnitOfWork);
                     }
                     else
                     {
@@ -329,6 +322,18 @@ namespace BluePrints.Common.ViewModel.Utils
                     primeroUnitOfWork.SaveChanges();
                 }
             }
+        }
+
+        public static JOB_TIMESHEETS FindJOB_TIMESHEETS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, int? subJobId, string stockCode, int? costGroup, int? costType, string variationCode, DateTime? weekStartDate, string narrative)
+        {
+            IQueryable<JOB_TIMESHEETS> findTimeSheets = primeroUnitOfWork.JOB_TIMESHEETS.Where(x => x.STAFFNO == staffNo && x.JOBNO == subJobId && x.STOCKCODE == stockCode && x.COST_GROUP == costGroup && x.COST_TYPE == costType && x.X_VARIATIONCODE == variationCode && x.WEEK_START_DATE == weekStartDate);
+            JOB_TIMESHEETS findTimeSheetNarrative;
+            if (narrative == null || narrative == string.Empty)
+                findTimeSheetNarrative = findTimeSheets.FirstOrDefault(x => x.X_NARRATIVE == null || x.X_NARRATIVE == string.Empty);
+            else
+                findTimeSheetNarrative = findTimeSheets.FirstOrDefault(x => x.X_NARRATIVE == narrative);
+
+            return findTimeSheetNarrative;
         }
 
         private static void AdjustTimeSheetHours(JOB_TIMESHEETS timesheet, TimesheetDate bookDate, IDeliverable deliverable, decimal bookTime, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)

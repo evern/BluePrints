@@ -244,7 +244,6 @@ namespace BluePrints.Common.Base
         }
 
         protected List<ExoTimeAuthorisation> exoAuthorisations = null;
-        List<string> narratives = null;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             isCompletelyLoaded = true;
@@ -257,7 +256,7 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, ref narratives, getProjectContexts());
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, getProjectContexts());
         }
 
         List<ProjectUnitOfWorkContext> projectContexts;
@@ -571,7 +570,7 @@ namespace BluePrints.Common.Base
         #region Book Time
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null || narratives == null)
+            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null)
                 return false;
 
             return true;
@@ -1807,13 +1806,13 @@ namespace BluePrints.Common.Base
 
         public void BookTime()
         {
-            if (exoAuthorisations == null || narratives == null)
+            if (exoAuthorisations == null)
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
             {
                 ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == DisplaySelectedEntity.Project_Number);
                 if(projectContext != null)
-                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, narratives, MessageBoxService, BookTimeDialogService);
+                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService);
             }
         }
         #endregion

@@ -45,7 +45,7 @@
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup Name="LayoutGroupNarratives" Height="50" Orientation="Horizontal" View="Group">
             <dxlc:LayoutItem Height="50" Label="Narratives:">
-                <dxe:ComboBoxEdit EditValue="{Binding Selected_Narrative, Mode=TwoWay}" AutoComplete="True" ItemsSource="{Binding Narratives}" />
+                <dxe:TextEdit EditValue="{Binding Selected_Narrative, Mode=TwoWay}" />
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="50" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />
