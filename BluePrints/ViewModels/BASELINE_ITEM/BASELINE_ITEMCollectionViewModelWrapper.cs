@@ -994,8 +994,7 @@ namespace BluePrints.ViewModels
             field_name = DataUtils.FormatColumnFieldname(field_name);
             if (isNew)
             {
-                projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
-                projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection, COMMODITY_CODECollection);
+                populateCompulsoryLookupCollection(projection);
             }
 
             //only new row will change department according to doc type selection
@@ -1050,6 +1049,12 @@ namespace BluePrints.ViewModels
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+
+        private void populateCompulsoryLookupCollection(BASELINE_ITEMProgress projection)
+        {
+            projection.Entity.Entity.OFFICE = loadPROJECT.OFFICE;
+            projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection, COMMODITY_CODECollection);
         }
 
         public override void UnifiedNewRowInitialization(BASELINE_ITEMProgress projection)
@@ -1241,7 +1246,10 @@ namespace BluePrints.ViewModels
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
 
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
+            {
                 MainViewModel.Save(newEntity);
+                populateCompulsoryLookupCollection(newEntity);
+            }
 
             //Add undo must happen after save so that variation can pick it up
             foreach (BASELINE_ITEMProgress newEntity in newEntities)
@@ -1306,7 +1314,10 @@ namespace BluePrints.ViewModels
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
+            {
                 MainViewModel.Save(newEntity);
+                populateCompulsoryLookupCollection(newEntity);
+            }
 
             //Add undo must happen after save so that variation can pick it up
             foreach (BASELINE_ITEMProgress newEntity in newEntities)

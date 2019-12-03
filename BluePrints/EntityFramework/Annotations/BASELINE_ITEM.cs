@@ -133,6 +133,36 @@ namespace BluePrints.Data
             List<DOCTYPE> validDocTypes = ValidDOCTYPES.ToList();
         }
 
+        public bool IsDeliverableTypeValid
+        {
+            get
+            {
+                if (DOC_TYPES == null)
+                    return true;
+
+                if (GUID_DOCTYPE == null)
+                    return true;
+
+                DOCTYPE findDOCTYPE = DOC_TYPES.FirstOrDefault(x => x.GUID == GUID_DOCTYPE);
+                if (findDOCTYPE == null)
+                    return true;
+
+                switch (DELIVERABLE_TYPE)
+                {
+                    case DeliverableType.Deliverable:
+                        return findDOCTYPE.FOR_NCR;
+                    case DeliverableType.DeliverableICR:
+                        return findDOCTYPE.FOR_DELIVERABLE;
+                    case DeliverableType.NonDeliverable:
+                        return findDOCTYPE.FOR_NONDELIVERABLE;
+                    case DeliverableType.Task:
+                        return findDOCTYPE.FOR_TASK;
+                    default:
+                        return true;
+                }
+            }
+        }
+
         public DocumentTypeValidStatus IsDocumentTypeValid
         {
             get
@@ -144,23 +174,19 @@ namespace BluePrints.Data
                 if (GUID_DOCTYPE == null)
                     return DocumentTypeValidStatus.Valid;
 
-                if (validDocTypesByDeliverableType == null || validDocTypesByCommodityCode == null)
+                if (validDocTypesByCommodityCode == null)
                     return DocumentTypeValidStatus.Valid;
 
-                bool isDocTypeValidByDeliverableType = validDocTypesByDeliverableType.Any(x => x.GUID == GUID_DOCTYPE);
                 bool isDocTypeValidByCommodityCode = validDocTypesByCommodityCode.Any(x => x.GUID == GUID_DOCTYPE);
 
-                if (isDocTypeValidByCommodityCode && isDocTypeValidByDeliverableType)
+                if (isDocTypeValidByCommodityCode)
                     return DocumentTypeValidStatus.Valid;
-                else if (!isDocTypeValidByCommodityCode)
-                    return DocumentTypeValidStatus.NotValidByCommodityCode;
                 else
-                    return DocumentTypeValidStatus.NotValidByDeliverableType;
+                    return DocumentTypeValidStatus.NotValidByCommodityCode;
             }
         }
 
         [NotMapped]
-        private List<DOCTYPE> validDocTypesByDeliverableType { get; set; }
         private List<DOCTYPE> validDocTypesByCommodityCode { get; set; }
         private List<DOCTYPE> validDocTypesByDeliverableTypeAndCommodityCode { get; set; }
         public IEnumerable<DOCTYPE> ValidDOCTYPES
@@ -170,44 +196,14 @@ namespace BluePrints.Data
                 if (DOC_TYPES == null)
                     return new List<DOCTYPE>();
 
-                if (validDocTypesByDeliverableTypeAndCommodityCode == null)
+                if (GUID_DISCIPLINE != null)
                 {
-                    validDocTypesByDeliverableTypeAndCommodityCode = new List<DOCTYPE>();
-                    IEnumerable<DOCTYPE> documentTypeByDeliverableType;
-
-                    switch (DELIVERABLE_TYPE)
-                    {
-                        case DeliverableType.Deliverable:
-                            documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_NCR);
-                            break;
-                        case DeliverableType.DeliverableICR:
-                            documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_DELIVERABLE);
-                            break;
-                        case DeliverableType.NonDeliverable:
-                            documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_NONDELIVERABLE);
-                            break;
-                        case DeliverableType.Task:
-                            documentTypeByDeliverableType = DOC_TYPES.Where(x => x.FOR_TASK);
-                            break;
-                        default:
-                            documentTypeByDeliverableType = new List<DOCTYPE>();
-                            break;
-                    }
-
-                    validDocTypesByDeliverableType = documentTypeByDeliverableType.OrderBy(x => x.NAME).ToList();
-                    if (GUID_DISCIPLINE == null)
-                        validDocTypesByDeliverableTypeAndCommodityCode = validDocTypesByDeliverableType.ToList();
-                    else
-                    {
-                        List<string> validCommodityCodeByDiscipline = COMMODITY_CODES.Where(x => x.GUID_DISCIPLINE == this.GUID_DISCIPLINE || x.GUID_DISCIPLINE == null).Select(x => x.CODE).ToList();
-                        HashSet<string> uniqueValidCommodityCode = new HashSet<string>(validCommodityCodeByDiscipline);
-                        validDocTypesByCommodityCode = DOC_TYPES.Where(x => uniqueValidCommodityCode.Any(y => y == x.CODE)).ToList();
-                        validDocTypesByDeliverableTypeAndCommodityCode = validDocTypesByDeliverableType.Where(x => uniqueValidCommodityCode.Any(y => y == x.CODE)).ToList();
-                    }
+                    List<string> validCommodityCodeByDiscipline = COMMODITY_CODES.Where(x => x.GUID_DISCIPLINE == this.GUID_DISCIPLINE || x.GUID_DISCIPLINE == null).Select(x => x.CODE).ToList();
+                    HashSet<string> uniqueValidCommodityCode = new HashSet<string>(validCommodityCodeByDiscipline);
+                    validDocTypesByCommodityCode = DOC_TYPES.Where(x => uniqueValidCommodityCode.Any(y => y == x.CODE)).ToList();
                 }
 
-                //currently show by deliverable type only because user might not be used to filtered by commodity code yet
-                return validDocTypesByDeliverableType;
+                return DOC_TYPES;
             }
         }
 
@@ -368,9 +364,7 @@ namespace BluePrints.Data
         public enum DocumentTypeValidStatus
         {
             Valid,
-            NotValidByDeliverableType,
-            NotValidByCommodityCode,
-            NotValidByDeliverableTypeAndCommodityCode
+            NotValidByCommodityCode
         }
     }
 }

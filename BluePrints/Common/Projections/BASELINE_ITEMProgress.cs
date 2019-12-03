@@ -343,12 +343,17 @@ namespace BluePrints.Common.Projections
 
                     string disciplineCode = Entity.Entity.DISCIPLINE == null ? string.Empty : Entity.Entity.DISCIPLINE.CODE;
                     errorText += " ";
-                    if (Entity.Entity.IsDocumentTypeValid == BASELINE_ITEM.DocumentTypeValidStatus.NotValidByDeliverableType)
-                        info.ErrorText = errorText + "is not valid for deliverable type of " + Entity.Entity.DELIVERABLE_TYPE.ToString();
                     if (Entity.Entity.IsDocumentTypeValid == BASELINE_ITEM.DocumentTypeValidStatus.NotValidByCommodityCode)
                         info.ErrorText = errorText + "is not valid for discipline of " + disciplineCode;
-                    if (Entity.Entity.IsDocumentTypeValid == BASELINE_ITEM.DocumentTypeValidStatus.NotValidByDeliverableTypeAndCommodityCode)
-                        info.ErrorText = errorText + "is not valid for deliverable type of " + Entity.Entity.DELIVERABLE_TYPE.ToString() + " and discipline of " + disciplineCode;
+                }
+            }
+            else if(propertyName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DELIVERABLE_TYPE)))
+            {
+                if(!Entity.Entity.IsDeliverableTypeValid)
+                {
+                    info.ErrorText = Entity.Entity.DELIVERABLE_TYPE.ToString() + " is not valid";
+                    if (Entity.Entity.DOCTYPE != null)
+                        info.ErrorText += " for doc type of " + Entity.Entity.DOCTYPE.CODE;
                 }
             }
         }
