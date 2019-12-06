@@ -427,7 +427,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                   join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
                                   on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
 
             var jobTransactionsList = jobTransactions.ToList();
             if (showLoadingScreen)
@@ -460,6 +460,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.Role = jobTransaction.TITLE;
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
+                        burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
                         burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
                         burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                         burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
@@ -545,6 +546,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     materialDataPoint.InvoiceNo = jobMaterial.invno;
                     materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
                     materialDataPoint.CostType = jobMaterial.CostTypeDesc;
+                    materialDataPoint.StockCode = jobMaterial.stockcode;
                     materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                     materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
                     materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
@@ -638,6 +640,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.InvoiceNo = string.Empty;
                     poDataPoint.CostGroup = po.COSTGROUPDESC;
                     poDataPoint.CostType = po.COSTTYPEDESC;
+                    poDataPoint.StockCode = po.STOCKCODE;
                     poDataPoint.Cost_GLName = string.Empty;
                     poDataPoint.Purchase_GLName = string.Empty;
                     poDataPoint.IsPO = true;

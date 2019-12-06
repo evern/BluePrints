@@ -37,13 +37,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
                 ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
 
-                //cannot use this anymore because of navigational property in FORECAST_JOB
-                //Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
-                //commodityJob =>
-                //{
-
-                //});
-
                 foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines, COMMODITY_CODECollection);

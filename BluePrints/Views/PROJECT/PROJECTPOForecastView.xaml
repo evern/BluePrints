@@ -193,8 +193,9 @@
                                             <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" FilterPopupMode="CheckedList" VisibleIndex="10" />
                                             <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" FilterPopupMode="CheckedList" VisibleIndex="20" />
                                             <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" FilterPopupMode="CheckedList" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" FilterPopupMode="CheckedList" VisibleIndex="40" />
-                                            <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="40" FilterPopupMode="CheckedList" VisibleIndex="50" />
+                                            <dxg:GridColumn FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="40" FilterPopupMode="CheckedList" VisibleIndex="40" />
+                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" FilterPopupMode="CheckedList" VisibleIndex="50" />
+                                            <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="50" FilterPopupMode="CheckedList" VisibleIndex="60" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
                                             <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="70" />

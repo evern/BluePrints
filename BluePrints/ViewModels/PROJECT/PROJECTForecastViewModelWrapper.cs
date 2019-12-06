@@ -576,7 +576,6 @@ namespace BluePrints.ViewModels
         private void updateDataPointsTable()
         {
             dataPointsTable = new DataTable();
-
             GridControlService.GridControl.BeginDataUpdate();
             //get immutable data
             alignedDataDateCollection = generateDates();
