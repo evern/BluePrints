@@ -87,7 +87,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 summaryStats = new List<SummaryStats>();
 
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
-
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
             if (poStats != null && poStats.Count() > 0)
             {

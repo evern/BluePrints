@@ -28,7 +28,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count == System.Convert.ToInt32(BluePrintsResources.ForecastCompare_TotalRow))
+                    if (compareEntity.Rows.Count != System.Convert.ToInt32(BluePrintsResources.ForecastCompareChild_TotalRows))
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;

@@ -310,16 +310,16 @@
     <value>PERTH</value>
   </data>
   <data name="ForecastCompare_IndirectCostRow" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="ForecastCompare_P6CostRow" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="ForecastCompare_P6HourRow" xml:space="preserve">
-    <value>3</value>
+    <value>0</value>
   </data>
   <data name="ForecastCompare_POCostRow" xml:space="preserve">
-    <value>0</value>
+    <value>2</value>
   </data>
   <data name="ForecastCompareChild_P6CostRow" xml:space="preserve">
     <value>0</value>
@@ -327,11 +327,8 @@
   <data name="ForecastCompareChild_P6HourRow" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="ForecastCompareChild_TotalRow" xml:space="preserve">
+  <data name="ForecastCompareChild_TotalRows" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="ForecastCompare_TotalRow" xml:space="preserve">
-    <value>4</value>
   </data>
   <data name="ContingencyCostType" xml:space="preserve">
     <value>CTG</value>
