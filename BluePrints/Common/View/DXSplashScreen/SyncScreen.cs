@@ -171,8 +171,6 @@ namespace BluePrints.Common
             this.RaisePropertyChanged(x => x.SyncReport);
         }
 
-        int qtPriority = 0;
-        int qtPriorityCompletionCount = 0;
         private void updateQueue()
         {
             qtPriorityCompletionCount += 1;
@@ -202,6 +200,8 @@ namespace BluePrints.Common
         }
 
         List<ThreadPriority> qt;
+        int qtPriority = 0;
+        int qtPriorityCompletionCount = 0;
         public void SyncData()
         {
             //ThreadPool.SetMaxThreads(1, 1);
