@@ -484,6 +484,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CompareChild.
+        /// </summary>
+        internal static string ForecastCompareChildTableName {
+            get {
+                return ResourceManager.GetString("ForecastCompareChildTableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CompareTable.
+        /// </summary>
+        internal static string ForecastCompareTableName {
+            get {
+                return ResourceManager.GetString("ForecastCompareTableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UOM.
         /// </summary>
         internal static string ForecastUOMColumnName {

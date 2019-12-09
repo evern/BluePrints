@@ -336,4 +336,10 @@
   <data name="ForecastUOMColumnName" xml:space="preserve">
     <value>UOM</value>
   </data>
+  <data name="ForecastCompareTableName" xml:space="preserve">
+    <value>CompareTable</value>
+  </data>
+  <data name="ForecastCompareChildTableName" xml:space="preserve">
+    <value>CompareChild</value>
+  </data>
 </root>

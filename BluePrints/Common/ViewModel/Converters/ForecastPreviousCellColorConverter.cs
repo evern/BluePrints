@@ -1,6 +1,8 @@
-﻿using BluePrints.Common.Resources;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using System;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -28,24 +30,28 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable childEntity = (DataTable)dataRow["CompareEntities"];
-                    if (childEntity.Rows.Count > 3)
+                    ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
+
+                    if (childEntity.TableName == BluePrintsResources.ForecastCompareTableName)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            //decimal actualCosts = (decimal)childEntity.Rows[0][fieldname];
-                            //decimal materialCosts = (decimal)childEntity.Rows[1][fieldname];
-                            decimal poForecastCosts = (decimal)childEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_POCostRow)][fieldname];
-                            decimal p6RemainingCosts = (decimal)childEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_P6CostRow)][fieldname];
-                            //decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
-                            decimal totalCosts = poForecastCosts + p6RemainingCosts;
-                            decimal parentValue = (decimal)values[2];
+                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                            if (dateCost != null)
+                            {
+                                decimal poForecastCosts = dateCost.POForecastCosts;
+                                decimal p6RemainingCosts = dateCost.P6Costs;
+                                //decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                                decimal totalCosts = poForecastCosts + p6RemainingCosts;
+                                decimal parentValue = (decimal)values[2];
 
-                            if (parentValue <= totalCosts)
-                                return paleGreenColor;
-                            else
-                                return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                if (parentValue <= totalCosts)
+                                    return paleGreenColor;
+                                else
+                                    return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                            }
                         }
                     }
                 }

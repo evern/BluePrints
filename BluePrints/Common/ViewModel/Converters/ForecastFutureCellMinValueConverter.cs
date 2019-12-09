@@ -1,6 +1,8 @@
-﻿using BluePrints.Common.Resources;
+﻿using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using System;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -26,22 +28,27 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
-                    DataTable compareEntity = (DataTable)dataRow["CompareEntities"];
-                    if (compareEntity.Rows.Count > 3)
+                    DataTable compareDataTable = (DataTable)dataRow["CompareEntities"];
+                    ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
+
+                    if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            //decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
-                            //decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
-                            decimal poForecastCosts = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_POCostRow)][fieldname];
-                            decimal p6RemainingCosts = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRow)][fieldname];
-                            //decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
-                            decimal totalCosts = poForecastCosts + p6RemainingCosts;
-                            totalCosts = Math.Round(totalCosts);
-
-                            return totalCosts;
+                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                            if (dateCost != null)
+                            {
+                                //decimal actualCosts = (decimal)compareEntity.Rows[0][fieldname];
+                                //decimal materialCosts = (decimal)compareEntity.Rows[1][fieldname];
+                                decimal poForecastCosts = dateCost.POForecastCosts;
+                                decimal p6RemainingCosts = dateCost.P6Costs;
+                                //decimal totalCosts = actualCosts + materialCosts + poForecastCosts + p6RemainingCosts;
+                                decimal totalCosts = poForecastCosts + p6RemainingCosts;
+                                totalCosts = Math.Round(totalCosts);
+                                return totalCosts;
+                            }
                         }
                     }
                 }

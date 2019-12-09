@@ -31,6 +31,8 @@ namespace BluePrints.Data
             }
         }
 
+        public string ViewStockCode => STOCK_CODE == string.Empty ? COMMODITY_CODE : STOCK_CODE;
+
         public string Office => PROJECT.Office;
     }
 }

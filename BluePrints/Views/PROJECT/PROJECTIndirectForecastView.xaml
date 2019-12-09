@@ -56,7 +56,7 @@
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.EditSettings>
-                            <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IsTextEditable="true" ItemsSource="{Binding DataContext.STOCK_ITEMCollection, ElementName=userControl}" NullValueButtonPlacement="None" PopupMinWidth="1500" ValueMember="STOCKCODE">
+                            <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IsTextEditable="true" ItemsSource="{Binding DataContext.STOCK_ITEMCollection, ElementName=userControl}" NullValueButtonPlacement="Popup"  PopupMinWidth="1500" ValueMember="STOCKCODE">
                                 <dxg:LookUpEditSettings.StyleSettings>
                                     <dxg:SearchLookUpEditStyleSettings />
                                 </dxg:LookUpEditSettings.StyleSettings>
