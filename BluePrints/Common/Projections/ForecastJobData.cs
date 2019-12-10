@@ -215,11 +215,18 @@ namespace BluePrints.Common.Projections
         public IEnumerable<Common.ViewModel.Reporting.DataPoint> P6RemainingDataPoints { get; set; }
         public IEnumerable<RemainingCost> IndirectRemainingCosts { get; set; }
 
+        //data points for each datecost period
         public IEnumerable<ExoDataPoint> CurrentPeriodActualDataPoints => ActualDataPoints.Where(x => x.ActualDate >= ActualFloorDate && x.ActualDate <= CeilingDate);
         public IEnumerable<ExoDataPoint> CurrentPeriodMaterialDataPoints => MaterialDataPoints.Where(x => x.ActualDate >= ActualFloorDate && x.ActualDate <= CeilingDate);
         public IEnumerable<FORECAST_PO> CurrentPeriodForecastPOs => POAndIndirectForecastFloorDate != null ? FORECAST_POS.Where(x => x.FORECAST_DATE >= POAndIndirectForecastFloorDate && x.FORECAST_DATE <= CeilingDate).Where(x => x.FORECAST_VALUE != null) : new List<FORECAST_PO>();
         public IEnumerable<RemainingCost> CurrentPeriodIndirectCosts => POAndIndirectForecastFloorDate != null ? IndirectRemainingCosts.Where(x => x.ForecastDate.Date >= POAndIndirectForecastFloorDate && x.ForecastDate.Date <= CeilingDate) : new List<RemainingCost>();
         public IEnumerable<Common.ViewModel.Reporting.DataPoint> CurrentPeriodP6DataPoints => P6RemainingFloorDate != null ? P6RemainingDataPoints.Where(x => x.ProgressDate.Date >= P6RemainingFloorDate && x.ProgressDate.Date <= CeilingDate) : new List<Common.ViewModel.Reporting.DataPoint>();
+
+        //relevant data points used to get unique stock item
+        public IEnumerable<ExoDataPoint> RelevantActualDataPoints => ActualDataPoints.Where(x => x.ActualDate >= firstViewDate);
+        public IEnumerable<ExoDataPoint> RelevantMaterialDataPoints => MaterialDataPoints.Where(x => x.ActualDate >= firstViewDate);
+        public IEnumerable<FORECAST_PO> RelevantForecastPOs => FORECAST_POS.Where(x => x.FORECAST_DATE > firstViewDate).Where(x => x.FORECAST_VALUE != null);
+        public IEnumerable<RemainingCost> RelevantIndirectCosts => IndirectRemainingCosts.Where(x => x.ForecastDate.Date > firstViewDate);
 
         //show actuals by summing up from beginning of time on first date
         private DateTime ActualFloorDate => Date == firstViewDate ? new DateTime(1) : FloorDate;

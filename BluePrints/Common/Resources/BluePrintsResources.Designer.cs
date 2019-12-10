@@ -421,11 +421,29 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3.
+        ///   Looks up a localized string similar to Actual.
         /// </summary>
-        internal static string ForecastCompare_IndirectCostRow {
+        internal static string ForecastCompare_ActualRowPhase {
             get {
-                return ResourceManager.GetString("ForecastCompare_IndirectCostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_ActualRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Indirect.
+        /// </summary>
+        internal static string ForecastCompare_IndirectRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_IndirectRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Material.
+        /// </summary>
+        internal static string ForecastCompare_MaterialRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_MaterialRowPhase", resourceCulture);
             }
         }
         
@@ -448,16 +466,16 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to PO Forecast.
         /// </summary>
-        internal static string ForecastCompare_POCostRow {
+        internal static string ForecastCompare_PORowPhase {
             get {
-                return ResourceManager.GetString("ForecastCompare_POCostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_PORowPhase", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0.
+        ///   Looks up a localized string similar to 1.
         /// </summary>
         internal static string ForecastCompareChild_P6CostRow {
             get {
@@ -466,20 +484,11 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string ForecastCompareChild_P6HourRow {
             get {
                 return ResourceManager.GetString("ForecastCompareChild_P6HourRow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 2.
-        /// </summary>
-        internal static string ForecastCompareChild_TotalRows {
-            get {
-                return ResourceManager.GetString("ForecastCompareChild_TotalRows", resourceCulture);
             }
         }
         

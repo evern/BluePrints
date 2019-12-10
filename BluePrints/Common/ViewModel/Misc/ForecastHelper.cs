@@ -382,6 +382,6 @@ namespace BluePrints.Common.ViewModel.Misc
 
         public string CommodityCode { get; set; }
         public string StockCode { get; set; }
-        public string ViewStockCode => StockCode == string.Empty ? CommodityCode : StockCode;
+        public string ViewStockCode => StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
     }
 }

@@ -309,26 +309,17 @@
   <data name="OfficePerth" xml:space="preserve">
     <value>PERTH</value>
   </data>
-  <data name="ForecastCompare_IndirectCostRow" xml:space="preserve">
-    <value>3</value>
-  </data>
   <data name="ForecastCompare_P6CostRow" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="ForecastCompare_P6HourRow" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="ForecastCompare_POCostRow" xml:space="preserve">
-    <value>2</value>
-  </data>
   <data name="ForecastCompareChild_P6CostRow" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="ForecastCompareChild_P6HourRow" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="ForecastCompareChild_TotalRows" xml:space="preserve">
-    <value>2</value>
+  <data name="ForecastCompareChild_P6HourRow" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="ContingencyCostType" xml:space="preserve">
     <value>CTG</value>
@@ -341,5 +332,17 @@
   </data>
   <data name="ForecastCompareChildTableName" xml:space="preserve">
     <value>CompareChild</value>
+  </data>
+  <data name="ForecastCompare_ActualRowPhase" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="ForecastCompare_IndirectRowPhase" xml:space="preserve">
+    <value>Indirect</value>
+  </data>
+  <data name="ForecastCompare_MaterialRowPhase" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="ForecastCompare_PORowPhase" xml:space="preserve">
+    <value>PO Forecast</value>
   </data>
 </root>
