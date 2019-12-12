@@ -545,7 +545,7 @@
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Budget %" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.Budget_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.Budget_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Current" View="GroupBox" >
@@ -568,7 +568,7 @@
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.EAC_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.EAC_Margin, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.EAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.EAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.EAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.EAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutGroup Header="Non-PF Influenced" View="GroupBox" Orientation="Vertical">
                                                 <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
@@ -578,7 +578,7 @@
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.OriginalEAC_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.OriginalEAC_Margin, ElementName=userControl, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
-                                                    <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.OriginalEAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.OriginalEAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                    <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.OriginalEAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.OriginalEAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                             </dxlc:LayoutGroup>
                                             <dxlc:LayoutGroup Header="PF Influenced" View="GroupBox" Orientation="Vertical">
@@ -589,7 +589,7 @@
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.CurrentEAC_Margin_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.CurrentEAC_Margin, ElementName=userControl, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
-                                                    <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.CurrentEAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.CurrentEAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
+                                                    <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding DataContext.ForecastSummary.CurrentEAC_Margin_Percent_Background, ElementName=userControl}" Text="{Binding DataContext.ForecastSummary.CurrentEAC_Margin_Percent, ElementName=userControl, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                             </dxlc:LayoutGroup>
                                         </dxlc:LayoutGroup>
