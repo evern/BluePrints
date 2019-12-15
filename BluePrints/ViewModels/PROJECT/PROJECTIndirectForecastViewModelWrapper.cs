@@ -68,6 +68,10 @@ namespace BluePrints.ViewModels
             get => fixedDataDate;
             set
             {
+                //when switching tabs this value will be anonymously set by new DateTime()
+                if (value.Year == new DateTime().Year)
+                    return;
+
                 fixedDataDate = value;
                 this.RaisePropertyChanged(x => x.FixedDataDate);
             }
@@ -78,7 +82,11 @@ namespace BluePrints.ViewModels
         {
             get => fixedEndDate;
             set
-            {
+            {                
+                //when switching tabs this value will be anonymously set by new DateTime()
+                if (value.Year == new DateTime().Year)
+                    return;
+
                 fixedEndDate = value;
                 this.RaisePropertyChanged(x => x.FixedEndDate);
             }
@@ -308,6 +316,8 @@ namespace BluePrints.ViewModels
                 else
                     row[columnStockItemName] = string.Empty;
             }
+            else
+                row[columnStockItemName] = string.Empty;
 
             if (row[columnGUID] == DBNull.Value)
                 return;
@@ -685,7 +695,24 @@ namespace BluePrints.ViewModels
             Guid guid = (Guid)row[columnGUID];
 
             DateTime dateTime;
-            if (DateTime.TryParse(fieldName, out dateTime))
+            if(fieldName == columnFullCode)
+            {
+                if(newValue != null && newValue.ToString() != string.Empty)
+                {
+                    ExoSubJobProjection job = QueryJobs.FirstOrDefault(x => x.FullCode == newValue.ToString());
+                    if (job != null)
+                    {
+                        row[columnFullCode] = job.ToString();
+                        row[columnProjection] = job;
+                    }
+                    else
+                    {
+                        row[columnFullCode] = string.Empty;
+                        row[columnProjection] = DBNull.Value;
+                    }
+                }
+            }
+            else if (DateTime.TryParse(fieldName, out dateTime))
             {
                 decimal? forecastHours = null;
                 decimal convertUnits = 0;

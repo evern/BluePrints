@@ -40,17 +40,14 @@ namespace BluePrints.Common.ViewModel.Converters
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
                             decimal p6RemainingHours = (decimal)compareEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRow)][fieldname];
-                            decimal totalCosts = Math.Round(p6RemainingHours);
+                            decimal totalHours = Math.Round(p6RemainingHours);
                             decimal currentValue = (decimal)values[2];
 
-                            if(totalCosts != 0)
-                            {
-                                currentValue = Math.Round(currentValue);
-                                if(currentValue > totalCosts)
-                                    return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
-                                else if (currentValue < totalCosts)
-                                    return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
-                            }
+                            currentValue = Math.Round(currentValue);
+                            if(currentValue > totalHours)
+                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                            else if (currentValue < totalHours)
+                                return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                         }
                     }
                 }

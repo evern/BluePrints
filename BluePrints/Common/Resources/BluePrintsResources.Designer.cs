@@ -421,11 +421,29 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to Actual.
         /// </summary>
-        internal static string ForecastCompare_IndirectCostRow {
+        internal static string ForecastCompare_ActualRowPhase {
             get {
-                return ResourceManager.GetString("ForecastCompare_IndirectCostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_ActualRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Indirect.
+        /// </summary>
+        internal static string ForecastCompare_IndirectRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_IndirectRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Material.
+        /// </summary>
+        internal static string ForecastCompare_MaterialRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_MaterialRowPhase", resourceCulture);
             }
         }
         
@@ -439,7 +457,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string ForecastCompare_P6HourRow {
             get {
@@ -448,25 +466,16 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0.
+        ///   Looks up a localized string similar to PO Forecast.
         /// </summary>
-        internal static string ForecastCompare_POCostRow {
+        internal static string ForecastCompare_PORowPhase {
             get {
-                return ResourceManager.GetString("ForecastCompare_POCostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_PORowPhase", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 4.
-        /// </summary>
-        internal static string ForecastCompare_TotalRow {
-            get {
-                return ResourceManager.GetString("ForecastCompare_TotalRow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 0.
+        ///   Looks up a localized string similar to 1.
         /// </summary>
         internal static string ForecastCompareChild_P6CostRow {
             get {
@@ -475,7 +484,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string ForecastCompareChild_P6HourRow {
             get {
@@ -484,11 +493,20 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to CompareChild.
         /// </summary>
-        internal static string ForecastCompareChild_TotalRow {
+        internal static string ForecastCompareChildTableName {
             get {
-                return ResourceManager.GetString("ForecastCompareChild_TotalRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompareChildTableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CompareTable.
+        /// </summary>
+        internal static string ForecastCompareTableName {
+            get {
+                return ResourceManager.GetString("ForecastCompareTableName", resourceCulture);
             }
         }
         

@@ -3,6 +3,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
 using BluePrints.ViewModels;
 using DevExpress.Mvvm.POCO;
 using System;
@@ -36,13 +37,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 //create the discipline level forecast summary
                 List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
                 ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
-
-                //cannot use this anymore because of navigational property in FORECAST_JOB
-                //Parallel.ForEach(groupedDisciplineJob.CommodityJobs,
-                //commodityJob =>
-                //{
-
-                //});
 
                 foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
                 {
@@ -81,20 +75,21 @@ namespace BluePrints.Common.ViewModel.Misc
                 relevantDashboards = DashboardCollection.ToList();
 
             jobForecastSummary.DateCosts.Clear();
+
+            DateTime firstViewDate = dates.First();
+            DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
             foreach (DateTime date in dates)
             {
-                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, isWeeks));
+                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, firstViewDate, firstForecastDate, isWeeks));
             }
 
             IEnumerable<SummaryStats> summaryStats;
-
             if (relevantDashboards != null && relevantDashboards.Count() > 0)
                 summaryStats = relevantDashboards.Select(x => (SummaryStats)x.Stats);
             else
                 summaryStats = new List<SummaryStats>();
 
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
-
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
             if (poStats != null && poStats.Count() > 0)
             {
@@ -166,19 +161,16 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
 
-            DateTime firstViewDate = dates.First();
-            DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
-
             //the first remaining date will be the second month in the view because data date will end on the first month
             DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
 
-            List<RemainingCost> weeklyForecastRemainingCosts = new List<RemainingCost>();
+            List<RemainingCost> indirectRemainingCosts = new List<RemainingCost>();
             List<FORECAST_JOB> relevantFORECAST_JOBS = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
             foreach(FORECAST_JOB relevantFORECAST_JOB in relevantFORECAST_JOBS.Where(x => x.FORECAST_RATE != null))
             {
                 foreach(FORECAST_JOB_HOUR relevantFORECAST_JOB_HOUR in relevantFORECAST_JOB.FORECAST_JOB_HOUR.Where(x => x.FORECAST_HOUR != null))
                 {
-                    weeklyForecastRemainingCosts.Add(new RemainingCost() { ForecastDate = relevantFORECAST_JOB_HOUR.FORECAST_DATE, ForecastRemainingCosts = (decimal)relevantFORECAST_JOB.FORECAST_RATE * (decimal)relevantFORECAST_JOB_HOUR.FORECAST_HOUR });
+                    indirectRemainingCosts.Add(new RemainingCost() { CommodityCode = relevantFORECAST_JOB.COMMODITY_CODE, StockCode = relevantFORECAST_JOB.STOCK_ITEM, ForecastDate = relevantFORECAST_JOB_HOUR.FORECAST_DATE, ForecastRemainingCosts = (decimal)relevantFORECAST_JOB.FORECAST_RATE * (decimal)relevantFORECAST_JOB_HOUR.FORECAST_HOUR });
                 }
             }
 
@@ -188,46 +180,11 @@ namespace BluePrints.Common.ViewModel.Misc
 
             foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
             {
-                //override floor date to the beginning of time because we want to get everything
-                if (dateCost.Date == firstViewDate)
-                    dateCost.ActualFloorDate = new DateTime(1);
-                else
-                    dateCost.ActualFloorDate = dateCost.FloorDate;
-
-                decimal materialCosts = materialDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
-                decimal actualCosts = actualDataPoints.Where(x => x.ActualDate >= dateCost.ActualFloorDate && x.ActualDate <= dateCost.CeilingDate).Sum(x => x.Costs);
-                decimal p6RemainingCosts = 0;
-                decimal p6RemainingHours = 0;
-                decimal poForecastCosts = 0;
-                decimal weeklyForecastCosts = 0;
-
-                //prevent population of values from PO forecast before forecast date
-                if (dateCost.FloorDate > firstViewDate)
-                {
-                    poForecastCosts = currentJobPOForecasts.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
-                }
-
-                //prevet population of values from remaining before forecast date
-                if(dateCost.FloorDate > firstViewDate)
-                {
-                    //accumulate hours and costs in the first forecast date
-                    if (dateCost.CeilingDate == firstForecastDate)
-                        dateCost.RemainingFloorDate = new DateTime(1);
-                    else
-                        dateCost.RemainingFloorDate = dateCost.FloorDate;
-
-                    p6RemainingCosts = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Costs);
-                    p6RemainingHours = remainingDataPoints.Where(x => x.ProgressDate.Date >= dateCost.RemainingFloorDate && x.ProgressDate.Date <= dateCost.CeilingDate).Sum(x => x.Units);
-                    weeklyForecastCosts = weeklyForecastRemainingCosts.Where(x => x.ForecastDate.Date >= dateCost.FloorDate && x.ForecastDate.Date <= dateCost.CeilingDate).Sum(x => x.ForecastRemainingCosts);
-                }
-
-                dateCost.MaterialCosts = Math.Round(materialCosts);
-                dateCost.ActualCosts = Math.Round(actualCosts);
-                dateCost.P6Costs = p6RemainingCosts;
-                dateCost.P6Hours = p6RemainingHours;
-                dateCost.POForecastCosts = Math.Round(poForecastCosts);
-                dateCost.WeeklyForecastCosts = weeklyForecastCosts;
-                dateCost.TotalCosts = Math.Round(materialCosts + actualCosts + p6RemainingCosts + poForecastCosts + weeklyForecastCosts);
+                dateCost.MaterialDataPoints = materialDataPoints;
+                dateCost.ActualDataPoints = actualDataPoints;
+                dateCost.FORECAST_POS = currentJobPOForecasts;
+                dateCost.P6RemainingDataPoints = remainingDataPoints;
+                dateCost.IndirectRemainingCosts = indirectRemainingCosts;
             }
         }
 
@@ -292,7 +249,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
+        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
             ConcurrentBag<ExoSubJobProjection> combinedSubJobs = new ConcurrentBag<ExoSubJobProjection>();
             LoadingScreenManager.ShowLoadingScreen(queriedJobs.Count());
@@ -302,7 +259,7 @@ namespace BluePrints.Common.ViewModel.Misc
             queriedJob =>
             {
                 //jobs from query are added as it is
-                addExoSubJob(combinedSubJobs, queriedJob.SubJobCode, queriedJob.DisciplineCode, queriedJob.CommodityCode, queriedJob.VariationCode, COMMODITY_CODELookup, queriedJobs, queriedJob.SubJobTitle, queriedJob.DisciplineName, false);
+                addExoSubJob(combinedSubJobs, queriedJob.SubJobCode, queriedJob.DisciplineCode, queriedJob.CommodityCode, queriedJob.VariationCode, COMMODITY_CODELookup, queriedJobs, JOB_COSTTYPESCollection, queriedJob.SubJobTitle, queriedJob.DisciplineName, false);
                 LoadingScreenManager.Progress();
             });
             LoadingScreenManager.CloseLoadingScreen();
@@ -354,7 +311,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 string variationCode = delimited[3];
                 
                 //data points from exo requires lookup and is filtered by unique code string
-                addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs, "", "", true, possibleErrorMessage);
+                addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs, JOB_COSTTYPESCollection, "", "", true, possibleErrorMessage);
                 LoadingScreenManager.Progress();
             });
 
@@ -366,7 +323,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals
         /// </summary>
         private static void addExoSubJob(ConcurrentBag<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
-            IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, 
+            IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
@@ -375,7 +332,10 @@ namespace BluePrints.Common.ViewModel.Misc
             string commodityCodeUOM = string.Empty;
             if (findCOMMODITY_CODE != null)
             {
-                commodityCodeName = findCOMMODITY_CODE.NAME;
+                JOB_COSTTYPES findJOB_COSTTYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == commodityCode);
+                if(findJOB_COSTTYPE != null)
+                    commodityCodeName = findJOB_COSTTYPE.COSTDESC;
+
                 commodityCodeDescription = findCOMMODITY_CODE.DESCRIPTION;
                 commodityCodeUOM = findCOMMODITY_CODE.UOM;
             }
@@ -421,5 +381,9 @@ namespace BluePrints.Common.ViewModel.Misc
     {
         public DateTime ForecastDate { get; set; }
         public decimal ForecastRemainingCosts { get; set; }
+
+        public string CommodityCode { get; set; }
+        public string StockCode { get; set; }
+        public string ViewStockCode => StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
     }
 }

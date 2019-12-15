@@ -68,7 +68,7 @@ namespace BluePrints.Common.Projections
             foreach(FORECAST_PO currentPOForecast in currentPOForecasts)
             {
                 //because forecast can sometimes store outdated job code, cost group and cost type, validation is required before adding, else forecast PO can show that it's forecasted but forecast module will pick it up on the wrong code
-                if(ExoPOs.Any(x => x.Subjob_Name == currentPOForecast.JOB_CODE && x.Discipline_Code == currentPOForecast.DISCIPLINE_CODE && x.Commodity_Code == currentPOForecast.COMMODITY_CODE && x.Variation_Code == currentPOForecast.VARIATION_CODE))
+                if(ExoPOs.Any(x => x.Subjob_Name == currentPOForecast.JOB_CODE && x.Discipline_Code == currentPOForecast.DISCIPLINE_CODE && x.Commodity_Code == currentPOForecast.COMMODITY_CODE && x.StockCode == currentPOForecast.STOCK_CODE && x.Variation_Code == currentPOForecast.VARIATION_CODE))
                     FORECAST_POs.Add(currentPOForecast);
             }
 

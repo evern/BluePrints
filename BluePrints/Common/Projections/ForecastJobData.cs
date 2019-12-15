@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -186,9 +187,16 @@ namespace BluePrints.Common.Projections
 
     public class ForecastDateCost
     {
-        public ForecastDateCost(DateTime date, bool isWeeks)
+        public readonly DateTime FloorDate;
+        public readonly DateTime CeilingDate;
+        private readonly DateTime firstViewDate;
+        private readonly DateTime firstForecastDate;
+        public ForecastDateCost(DateTime date, DateTime firstViewDate, DateTime firstForecastDate, bool isWeeks)
         {
             Date = date;
+            this.firstViewDate = firstViewDate;
+            this.firstForecastDate = firstForecastDate;
+
             if (isWeeks)
             {
                 FloorDate = date.Date.AddDays(-6);
@@ -201,23 +209,42 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public DateTime ActualFloorDate { get; set; }
-        public DateTime RemainingFloorDate { get; set; }
-        public DateTime FloorDate { get; set; }
-        public DateTime CeilingDate { get; set; }
-        public DateTime Date { get; set; }
-        //not using this as a measure because user can override it
-        public decimal TotalCosts { get; set; }
-        public decimal ActualCosts { get; set; }
-        public decimal MaterialCosts { get; set; }
-        public decimal P6Hours { get; set; }
-        public decimal P6Costs { get; set; }
-        public decimal POForecastCosts { get; set; }
-        public decimal WeeklyForecastCosts { get; set; }
+        public IEnumerable<ExoDataPoint> MaterialDataPoints { get; set; }
+        public IEnumerable<ExoDataPoint> ActualDataPoints { get; set; }
+        public IEnumerable<FORECAST_PO> FORECAST_POS { get; set; }
+        public IEnumerable<Common.ViewModel.Reporting.DataPoint> P6RemainingDataPoints { get; set; }
+        public IEnumerable<RemainingCost> IndirectRemainingCosts { get; set; }
 
-        //weekly forecast costs is uncommitted costs
-        //public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + WeeklyForecastCosts;
-        //public decimal CommittedCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts;
+        //data points for each datecost period
+        public IEnumerable<ExoDataPoint> CurrentPeriodActualDataPoints => ActualDataPoints.Where(x => x.ActualDate >= ActualFloorDate && x.ActualDate <= CeilingDate);
+        public IEnumerable<ExoDataPoint> CurrentPeriodMaterialDataPoints => MaterialDataPoints.Where(x => x.ActualDate >= ActualFloorDate && x.ActualDate <= CeilingDate);
+        public IEnumerable<FORECAST_PO> CurrentPeriodForecastPOs => POAndIndirectForecastFloorDate != null ? FORECAST_POS.Where(x => x.FORECAST_DATE >= POAndIndirectForecastFloorDate && x.FORECAST_DATE <= CeilingDate).Where(x => x.FORECAST_VALUE != null) : new List<FORECAST_PO>();
+        public IEnumerable<RemainingCost> CurrentPeriodIndirectCosts => POAndIndirectForecastFloorDate != null ? IndirectRemainingCosts.Where(x => x.ForecastDate.Date >= POAndIndirectForecastFloorDate && x.ForecastDate.Date <= CeilingDate) : new List<RemainingCost>();
+        public IEnumerable<Common.ViewModel.Reporting.DataPoint> CurrentPeriodP6DataPoints => P6RemainingFloorDate != null ? P6RemainingDataPoints.Where(x => x.ProgressDate.Date >= P6RemainingFloorDate && x.ProgressDate.Date <= CeilingDate) : new List<Common.ViewModel.Reporting.DataPoint>();
+
+        //relevant data points used to get unique stock item
+        public IEnumerable<ExoDataPoint> RelevantActualDataPoints => ActualDataPoints.Where(x => x.ActualDate > firstViewDate);
+        public IEnumerable<ExoDataPoint> RelevantMaterialDataPoints => MaterialDataPoints.Where(x => x.ActualDate > firstViewDate);
+        public IEnumerable<FORECAST_PO> RelevantForecastPOs => FORECAST_POS.Where(x => x.FORECAST_DATE > firstViewDate).Where(x => x.FORECAST_VALUE != null);
+        public IEnumerable<RemainingCost> RelevantIndirectCosts => IndirectRemainingCosts.Where(x => x.ForecastDate.Date > firstViewDate);
+
+        //show actuals by summing up from beginning of time on first date
+        private DateTime ActualFloorDate => Date == firstViewDate ? new DateTime(1) : FloorDate;
+        //only show po forecast after actuals date without it summing up from beginning of time on first date
+        private DateTime? POAndIndirectForecastFloorDate => FloorDate > firstViewDate ? FloorDate : (DateTime?)null;
+        //only show p6 remaining after actuals date and have it summing up from beginning of time on first date
+        private DateTime? P6RemainingFloorDate => FloorDate > firstViewDate ? CeilingDate == firstForecastDate ? new DateTime(1) : FloorDate : (DateTime?)null;
+
+        public DateTime Date { get; set; }
+
+        //not using this as a measure because user can override it
+        public decimal ActualCosts => CurrentPeriodActualDataPoints.Sum(x => x.Costs);
+        public decimal MaterialCosts => CurrentPeriodMaterialDataPoints.Sum(x => x.Costs);
+        public decimal P6Hours => CurrentPeriodP6DataPoints.Sum(x => x.Units);
+        public decimal P6Costs => CurrentPeriodP6DataPoints.Sum(x => x.Costs);
+        public decimal POForecastCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);
+        public decimal IndirectForecastCosts => CurrentPeriodIndirectCosts.Sum(x => x.ForecastRemainingCosts);
+        public decimal TotalCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + IndirectForecastCosts;
 
         //p6 costs needs to be categorised as uncommitted
         public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;

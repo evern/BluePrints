@@ -107,6 +107,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
+            loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
 
         private void setProject(Data.PROJECT project)
@@ -576,7 +577,6 @@ namespace BluePrints.ViewModels
         private void updateDataPointsTable()
         {
             dataPointsTable = new DataTable();
-
             GridControlService.GridControl.BeginDataUpdate();
             //get immutable data
             alignedDataDateCollection = generateDates();
@@ -587,7 +587,7 @@ namespace BluePrints.ViewModels
             if (commodityJobs == null)
             {
                 List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, AllProjectDashboards);
+                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, JOB_COSTTYPESCollection, AllProjectDashboards);
                 DetailedData.AddRange(allDataPoints);
                 commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
                 isNewData = true;
@@ -678,43 +678,88 @@ namespace BluePrints.ViewModels
             DataTable compareDataTable;
             //DataRow compareActualsRow;
             //DataRow compareMaterialRow;
-            DataRow comparePOForecastRow;
             DataRow compareP6CostsRemainingRow;
             DataRow compareP6UnitsRemainingRow;
-            DataRow compareWeeklyCostsRemainingRow;
             DataTable compareChildDataTable;
             DataRow compareChildP6CostsRemainingRow;
             DataRow compareChildP6UnitsRemainingRow;
 
             compareDataTable = dataPointsTable.Clone();
+            compareDataTable.TableName = BluePrintsResources.ForecastCompareTableName;
             //compareActualsRow = compareDataTable.NewRow();
             //compareMaterialRow = compareDataTable.NewRow();
-            comparePOForecastRow = compareDataTable.NewRow();
             compareP6CostsRemainingRow = compareDataTable.NewRow();
-            compareWeeklyCostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
             //compareActualsRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" });
             //compareMaterialRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" });
-            comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "PO Forecast $", CompareMask = "c0" });
-            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
-            compareWeeklyCostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Indirect $", CompareMask = "c0" });
             compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", FallBackRate = commodityJob.FallBackRate, Projection = commodityJob.Projection, DateCosts = commodityJob.DateCosts, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
+            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
+
+            List<string> uniquePOStockCodes = new List<string>();
+            List<string> uniqueIndirectStockCodes = new List<string>();
+            List<string> uniqueMaterialStockCodes = new List<string>();
+            List<string> uniqueActualStockCodes = new List<string>();
+
+            if (commodityJob.DateCosts.Count > 0)
+            {
+                ForecastDateCost commodityDateCost = commodityJob.DateCosts.First();
+                uniquePOStockCodes = commodityDateCost.RelevantForecastPOs.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueIndirectStockCodes = commodityDateCost.RelevantIndirectCosts.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueMaterialStockCodes = commodityDateCost.RelevantMaterialDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+                uniqueActualStockCodes = commodityDateCost.RelevantActualDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+            }
 
             compareChildDataTable = dataPointsTable.Clone();
+            compareChildDataTable.TableName = BluePrintsResources.ForecastCompareChildTableName;
             compareChildP6CostsRemainingRow = compareChildDataTable.NewRow();
             compareChildP6UnitsRemainingRow = compareChildDataTable.NewRow();
 
-            compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
             compareChildDataTable.Rows.Add(compareChildP6UnitsRemainingRow);
+            compareChildDataTable.Rows.Add(compareChildP6CostsRemainingRow);
 
             compareP6UnitsRemainingRow[columnCompare] = compareChildDataTable;
             //compareDataTable.Rows.Add(compareActualsRow);
             //compareDataTable.Rows.Add(compareMaterialRow);
-            compareDataTable.Rows.Add(comparePOForecastRow);
-            compareDataTable.Rows.Add(compareP6CostsRemainingRow);
-            compareDataTable.Rows.Add(compareWeeklyCostsRemainingRow);
             compareDataTable.Rows.Add(compareP6UnitsRemainingRow);
+            compareDataTable.Rows.Add(compareP6CostsRemainingRow);
+
+            Dictionary<string, DataRow> poForecastRows = new Dictionary<string, DataRow>();
+            Dictionary<string, DataRow> indirectForecastRows = new Dictionary<string, DataRow>();
+            Dictionary<string, DataRow> materialForecastRows = new Dictionary<string, DataRow>();
+            Dictionary<string, DataRow> actualForecastRows = new Dictionary<string, DataRow>();
+            foreach (string uniquePOStockCode in uniquePOStockCodes)
+            {
+                DataRow comparePOForecastRow = compareDataTable.NewRow();
+                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCode + "] $", CompareMask = "c0" });
+                poForecastRows.Add(uniquePOStockCode, comparePOForecastRow);
+                compareDataTable.Rows.Add(comparePOForecastRow);
+            }
+
+            foreach (string uniqueIndirectStockCode in uniqueIndirectStockCodes)
+            {
+                DataRow compareIndirectRemainingRow = compareDataTable.NewRow();
+                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", CompareMask = "c0" });
+                indirectForecastRows.Add(uniqueIndirectStockCode, compareIndirectRemainingRow);
+                compareDataTable.Rows.Add(compareIndirectRemainingRow);
+            }
+
+            foreach (string uniqueMaterialStockCode in uniqueMaterialStockCodes)
+            {
+                DataRow compareMaterialRemainingRow = compareDataTable.NewRow();
+                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode + "] $", CompareMask = "c0" });
+                materialForecastRows.Add(uniqueMaterialStockCode, compareMaterialRemainingRow);
+                compareDataTable.Rows.Add(compareMaterialRemainingRow);
+            }
+
+            foreach (string uniqueActualStockCode in uniqueActualStockCodes)
+            {
+                DataRow compareActualRemainingRow = compareDataTable.NewRow();
+                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode + "] $", CompareMask = "c0" });
+                actualForecastRows.Add(uniqueActualStockCode, compareActualRemainingRow);
+                compareDataTable.Rows.Add(compareActualRemainingRow);
+            }
+
             commodityRow[columnCompare] = compareDataTable;
             dataPointsTable.Rows.Add(commodityRow);
 
@@ -729,10 +774,32 @@ namespace BluePrints.ViewModels
             decimal P6TotalCurrentRemainingUnits = 0;
             foreach (ForecastDateCost dateCost in commodityJob.DateCosts)
             {
-                //compareActualsRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
-                //compareMaterialRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.MaterialCosts;
-                comparePOForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.POForecastCosts;
-                compareWeeklyCostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.WeeklyForecastCosts;
+                //dynamically generated rows
+                foreach(string uniquePOStockCode in uniquePOStockCodes)
+                {
+                    DataRow poStockCodeDataRow = poForecastRows.First(x => x.Key == uniquePOStockCode).Value;
+                    poStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodForecastPOs.Where(x => x.ViewStockCode == uniquePOStockCode).Sum(x => (decimal)x.FORECAST_VALUE);
+                }
+
+                foreach(string uniqueIndirectStockCode in uniqueIndirectStockCodes)
+                {
+                    DataRow indirectStockCodeDataRow = indirectForecastRows.First(x => x.Key == uniqueIndirectStockCode).Value;
+                    indirectStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodIndirectCosts.Where(x => x.ViewStockCode == uniqueIndirectStockCode).Sum(x => x.ForecastRemainingCosts);
+                }
+
+                foreach (string uniqueMaterialStockCode in uniqueMaterialStockCodes)
+                {
+                    DataRow materialStockCodeDataRow = materialForecastRows.First(x => x.Key == uniqueMaterialStockCode).Value;
+                    materialStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodMaterialDataPoints.Where(x => x.StockCode == uniqueMaterialStockCode).Sum(x => x.Costs);
+                }
+
+                foreach (string uniqueActualStockCode in uniqueActualStockCodes)
+                {
+                    DataRow actualStockCodeDataRow = actualForecastRows.First(x => x.Key == uniqueActualStockCode).Value;
+                    actualStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodActualDataPoints.Where(x => x.StockCode == uniqueActualStockCode).Sum(x => x.Costs);
+                }
+
+                //static rows
                 compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                 compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
@@ -1369,9 +1436,8 @@ namespace BluePrints.ViewModels
                     if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
                     {
                         DataTable compareDataTable = (DataTable)newRow["CompareEntities"];
-
                         //when this is called from parent grid
-                        if (compareDataTable.Rows.Count > Convert.ToInt32(BluePrintsResources.ForecastCompareChild_TotalRow))
+                        if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                         {
                             ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                             decimal totalCosts = 0;
@@ -1776,34 +1842,41 @@ namespace BluePrints.ViewModels
                 if (compareDataTable.Columns.Contains(dateFieldName))
                 {
                     decimal totalValue = 0;
-                    if (compareDataTable.Rows.Count == Convert.ToInt32(BluePrintsResources.ForecastCompare_TotalRow))
+                    if(compareDataTable.TableName == BluePrintsResources.ForecastCompareChildTableName)
                     {
-                        //DataRow compareActualsRow = compareDataTable.Rows[0];
-                        //DataRow compareMaterialRow = compareDataTable.Rows[1];
-                        DataRow comparePOForecastRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_POCostRow)];
+                        //when delete button is pressed on the P6 units cell
+                        DataRow compareP6HoursRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRow)];
+                        totalValue = compareP6HoursRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareP6HoursRemainingRow[dateFieldName];
+                    }
+                    else
+                    {
+                        List<DataRow> costRows = new List<DataRow>();
+                        foreach(DataRow costRow in compareDataTable.Rows)
+                        {
+                            ForecastJobData job = (ForecastJobData)costRow[columnEntity];
+                            string dropDownPhase = job.DropDownPhase;
+                            if(dropDownPhase.Contains(BluePrintsResources.ForecastCompare_PORowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase)
+                               || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_MaterialRowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase))
+                            {
+                                costRows.Add(costRow);
+                            }
+                        }
+
                         DataRow compareP6CostsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6CostRow)];
                         DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6HourRow)];
-                        DataRow compareWeeklyCostsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_IndirectCostRow)];
 
                         DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
                         DataRow compareChildP6CostsRemainingRow = compareChildDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRow)];
                         DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRow)];
 
-                        decimal childP6UnitsValue = compareChildP6UnitsRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareChildP6UnitsRemainingRow[dateFieldName];
-
-                        //decimal actualValue = compareActualsRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareActualsRow[dateFieldName];
-                        //decimal materialValue = compareMaterialRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareMaterialRow[dateFieldName];
-                        decimal poValue = comparePOForecastRow[dateFieldName] == DBNull.Value ? 0 : (decimal)comparePOForecastRow[dateFieldName];
                         decimal p6CostValue = compareChildP6CostsRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareChildP6CostsRemainingRow[dateFieldName];
-                        decimal weeklyCostValue = compareWeeklyCostsRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareWeeklyCostsRemainingRow[dateFieldName];
+                        decimal dynamicCostsFromCostRows = 0;
+                        foreach (DataRow costRow in costRows)
+                        {
+                            dynamicCostsFromCostRows += (decimal)costRow[dateFieldName];
+                        }
 
-                        totalValue = poValue + p6CostValue + weeklyCostValue;
-                    }
-                    else
-                    {
-                        //when delete button is pressed on the P6 units cell
-                        DataRow compareP6HoursRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRow)];
-                        totalValue = compareP6HoursRemainingRow[dateFieldName] == DBNull.Value ? 0 : (decimal)compareP6HoursRemainingRow[dateFieldName];
+                        totalValue = p6CostValue + dynamicCostsFromCostRows;
                     }
 
                     return totalValue;
@@ -1819,7 +1892,7 @@ namespace BluePrints.ViewModels
             {
                 if (compareDataTable.Columns.Contains(dateFieldName))
                 {
-                    if (compareDataTable.Rows.Count == Convert.ToInt32(BluePrintsResources.ForecastCompare_TotalRow))
+                    if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                     {
                         DataRow compareP6CostsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6CostRow)];
                         DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6HourRow)];
@@ -1849,7 +1922,7 @@ namespace BluePrints.ViewModels
             DataTable compareDataTable = (DataTable)parentRow[columnCompare];
             if (compareDataTable != null && compareDataTable.Rows.Count > 0)
             {
-                if (compareDataTable.Rows.Count == Convert.ToInt32(BluePrintsResources.ForecastCompare_TotalRow))
+                if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                 {
                     DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6HourRow)];
                     DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
@@ -2665,6 +2738,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<DOCTYPE>();
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                return GetEntities<JOB_COSTTYPES>();
             }
         }
 
