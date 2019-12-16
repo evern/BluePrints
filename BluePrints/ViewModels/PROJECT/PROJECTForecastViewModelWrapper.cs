@@ -858,6 +858,8 @@ namespace BluePrints.ViewModels
             {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.JobError });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Title", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+                
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.SubJob.Code", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Discipline.Code", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
