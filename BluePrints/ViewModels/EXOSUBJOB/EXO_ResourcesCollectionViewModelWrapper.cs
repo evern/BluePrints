@@ -176,6 +176,7 @@ namespace BluePrints.ViewModels
             //map back generated properties to projection
             resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
             resource.SHORTCODE = addedResource.SHORTCODE;
+            resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
             STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
 
