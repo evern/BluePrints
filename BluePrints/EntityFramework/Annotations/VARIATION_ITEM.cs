@@ -16,6 +16,6 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
-        public string Office => this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OfficeName;
+        public string Office => this.VARIATION == null ? string.Empty : this.VARIATION.PROJECT.NUMBER + " " + this.VARIATION.PROJECT.OfficeName;
     }
 }

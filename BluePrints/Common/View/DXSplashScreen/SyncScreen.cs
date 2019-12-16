@@ -171,8 +171,6 @@ namespace BluePrints.Common
             this.RaisePropertyChanged(x => x.SyncReport);
         }
 
-        int qtPriority = 0;
-        int qtPriorityCompletionCount = 0;
         private void updateQueue()
         {
             qtPriorityCompletionCount += 1;
@@ -202,6 +200,8 @@ namespace BluePrints.Common
         }
 
         List<ThreadPriority> qt;
+        int qtPriority = 0;
+        int qtPriorityCompletionCount = 0;
         public void SyncData()
         {
             //ThreadPool.SetMaxThreads(1, 1);
@@ -219,9 +219,14 @@ namespace BluePrints.Common
             qt.Add(createThread<RA_GUIDE_PROMPT>(4));
             qt.Add(createThread<RA_STUDY>(5));
             qt.Add(createThread<FORECAST>(5));
+            qt.Add(createThread<FORECAST_JOB>(6));
+            qt.Add(createThread<FORECAST_PO>(6));
             qt.Add(createThread<BASELINE>(6));
             qt.Add(createThread<DELIVERABLES_STATUS>(6));
             qt.Add(createThread<DOCTYPE>(6));
+            qt.Add(createThread<FORECAST_JOB_HOUR>(7));
+            qt.Add(createThread<FORECAST_JOB_SETTING>(7));
+            qt.Add(createThread<FORECAST_PO_SETTING>(7));
             qt.Add(createThread<PHASE>(7));
             qt.Add(createThread<SUBJOB>(7));
             qt.Add(createThread<USER>(7));
