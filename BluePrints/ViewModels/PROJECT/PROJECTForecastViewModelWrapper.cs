@@ -2699,6 +2699,13 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Information);
             }
         }
+
+        public override void ExportToExcel()
+        {
+            skipDashboardExcelFomatting = true;
+            exportFileName = LoadPROJECT.NUMBER + "_" + "Forecast_" + ((DateTime)FixedDataDate).ToString("yyyyMMdd");
+            base.ExportToExcel();
+        }
         #endregion
 
         protected override void OnClose(CancelEventArgs e)
