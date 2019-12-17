@@ -340,15 +340,23 @@ namespace BluePrints.ViewModels
             return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Subjob_Dashboards != null;
         }
 
-        string exportFileName = string.Empty;
+        protected string exportFileName = string.Empty;
         protected override string ExportFilename()
         {
             return exportFileName;
         }
 
         public bool IsExportInternalNameVisible { get; set; }
-
+        protected bool skipDashboardExcelFomatting;
         public override void ExportToExcel()
+        {
+            if (!skipDashboardExcelFomatting)
+                dashboardExcelFomatting();
+
+            base.ExportToExcel();
+        }
+
+        private void dashboardExcelFomatting()
         {
             if (hierarchicalDashboard == null)
                 return;
@@ -361,8 +369,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ExcelExportData);
             LoadingScreenManager.CloseLoadingScreen();
 
-            exportFileName = LoadPROJECT.NUMBER + "_" + "All_BP_Export" + ((DateTime)designDataDate).ToString("yyyymmdd");
-            base.ExportToExcel();
+            exportFileName = LoadPROJECT.NUMBER + "_" + "All_BP_Export" + ((DateTime)designDataDate).ToString("yyyyMMdd");
         }
 
         public bool CanExportRemaining()
