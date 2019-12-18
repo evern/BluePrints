@@ -143,37 +143,6 @@ namespace BluePrints.ViewModels
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        //protected override void CellValueExistingRowChanging(CellValueChangedEventArgs e)
-        //{
-        //    string fieldName = DataUtils.FormatColumnFieldname(e.Column.FieldName);
-        //    if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DeliverableStatusGuid))
-        //    {
-        //        BASELINE_ITEMProgress deliverable = (BASELINE_ITEMProgress)e.Row;
-
-        //        if(e.Value != null)
-        //        {
-        //            Guid current_deliverable_status_guid = (Guid)e.Value;
-        //            DELIVERABLES_STATUS current_deliverable_status = deliverable.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == current_deliverable_status_guid);
-        //            if (current_deliverable_status != null && current_deliverable_status.AUTO_PERCENTAGE != null)
-        //            {
-        //                decimal auto_percentage = (decimal)current_deliverable_status.AUTO_PERCENTAGE;
-        //                if (current_deliverable_status.AUTO_PERCENTAGE > deliverable.Total_Earned_Percentage)
-        //                {
-        //                    decimal oldValue = deliverable.Total_Earned_Percentage;
-        //                    deliverable.Total_Earned_Percentage = auto_percentage;
-
-        //                    string undo_redo_fieldname = BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage);
-
-        //                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-        //                    MainViewModel.EntitiesUndoRedoManager.AddUndo(deliverable, undo_redo_fieldname, oldValue, auto_percentage, EntityMessageType.Changed);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    base.CellValueExistingRowChanging(e);
-        //}
         #region Collection Call Backs
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
@@ -199,42 +168,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        //public void OnCustomColumnSort(CustomColumnSortEventArgs e)
-        //{
-        //    string baseEntityString = "Entity.Entity.";
-        //    if (e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.BUDGET_HOURS) ||
-        //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DC_HOURS) ||
-        //        e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.Total_Units) ||
-        //        e.Column.FieldName == "Entity." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.ItemRate) || 
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Percentage_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Units_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Costs_ToDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Units_OnDataDate) ||
-        //        e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Costs_OnDataDate))
-        //    {
-        //        decimal decimal_value1 = e.Value1 == null ? 0 : (decimal)e.Value1;
-        //        decimal decimal_value2 = e.Value2 == null ? 0 : (decimal)e.Value2;
-
-        //        e.Result = decimal_value1.CompareTo(decimal_value2);
-        //        e.Handled = true;
-        //    }
-        //    else if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ForecastDate) ||
-        //            e.Column.FieldName == baseEntityString + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.TARGET_DATE) ||
-        //            e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DueDate))
-        //    {
-        //        DateTime datetime_value1 = e.Value1 == null ? new DateTime() : (DateTime)e.Value1;
-        //        DateTime datetime_value2 = e.Value2 == null ? new DateTime() : (DateTime)e.Value2;
-
-        //        e.Result = datetime_value1.CompareTo(datetime_value2);
-        //        e.Handled = true;
-        //    }
-        //}
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

@@ -28,6 +28,7 @@
                     <dxb:BarButtonItem x:Name="biUpdateUser" Command="{Binding DataContext.Update_UserCommand, ElementName=userControl}" Content="Update User(s)" ToolTip="Get user department, discipline and description from active directory" Glyph="{dx:DXImage Image=BODetails_16x16.png}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
                     <dxb:BarButtonItem x:Name="biMatchExoStaffId" Command="{Binding DataContext.MatchExoStaffIdCommand, ElementName=userControl}" Content="Update EXO Name" ToolTip="Auto populate user's EXO name" Glyph="{dx:DXImage Image=Merge_16x16.png}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" />
                     <dxb:BarCheckItem x:Name="bcHideUser" Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding DataContext.HideLeave, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" />
+                    <dxb:BarButtonItem x:Name="biImpersonate" Command="{Binding DataContext.ImpersonateCommand, ElementName=userControl}" IsVisible="{Binding DataContext.IsImpersonateVisible, ElementName=userControl}" Content="Impersonate" ToolTip="Impersonate selected user" Glyph="{dx:DXImage Images/Business Objects/BORole_16x16.png}" LargeGlyph="{dx:DXImage Images/Business Objects/BORole_32x32.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -53,6 +54,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biUpdateUser" />
                                     <dxb:BarButtonItemLink BarItemName="biMatchExoStaffId" />
                                     <dxb:BarCheckItemLink BarItemName="bcHideUser" />
+                                    <dxb:BarButtonItemLink BarItemName="biImpersonate" />
                                     <!--<dxb:BarEditItem EditValue="{Binding DataContext.SelectedCOMPort, ElementName=userControl}" Content="Arduino Port" Glyph="{dx:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dx:DXImage Image=Satellite_32x32.png}">
                                     <dxb:BarEditItem.EditSettings>
                                         <dxe:ComboBoxEditSettings IsTextEditable="False" ItemsSource="{Binding DataContext.AvailablePorts, ElementName=userControl}" />
@@ -100,31 +102,14 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="EXO_STAFF_ID" Header="Exo Name" HeaderToolTip="User name in Exo">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" ValueMember="STAFFNO" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.ExoSTAFFS}" NullValueButtonPlacement="Popup" PopupMinWidth="500" >
-                                                <dxg:LookUpEdit.StyleSettings>
-                                                    <dxg:SearchLookUpEditStyleSettings />
-                                                </dxg:LookUpEdit.StyleSettings>
-                                                <dxg:LookUpEdit.PopupContentTemplate>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                            <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="Office" Header="Office" ReadOnly="True" />
-                                                            </dxg:GridControl.Columns>
-                                                            <dxg:GridControl.View>
-                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
-                                                            </dxg:GridControl.View>
-                                                        </dxg:GridControl>
-                                                    </ControlTemplate>
-                                                </dxg:LookUpEdit.PopupContentTemplate>
-                                            </dxg:LookUpEdit>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                <dxg:GridColumn FieldName="EXO_STAFF_ID" Header="Perth EXO" HeaderToolTip="User name in Perth's Exo">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.CombinedSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.PerthSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="EXO_STAFF_ID_REMOTE" Header="Montreal EXO" HeaderToolTip="User name in Montreal's Exo">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.MontrealSTAFFCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="GUID_APPROVER" Header="Approver" HeaderToolTip="Approver">
@@ -147,6 +132,8 @@
                                         <dxe:DateEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="MEMBERSHIP_TYPE" Header="Professional Membership" />
+                                <dxg:GridColumn FieldName="MEMBERSHIP_NUM" Header="Membership Number" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

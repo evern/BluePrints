@@ -508,9 +508,17 @@ namespace BluePrints.ViewModels
                 return;
 
             List<ProjectUnitOfWorkContext> projectContexts = new List<ProjectUnitOfWorkContext>();
-            projectContexts.Add(new ProjectUnitOfWorkContext(loadPROJECT.NUMBER, primeroUnitOfWork));
+            projectContexts.Add(new ProjectUnitOfWorkContext(loadPROJECT, primeroUnitOfWork));
+            List<UserIdsAuthorisationContext> contextIdForAuthorisation = new List<UserIdsAuthorisationContext>();
 
-            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, projectContexts);
+            int? authorisationId = null;
+            if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_REMOTE;
+            else
+                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID;
+
+            contextIdForAuthorisation.Add(new UserIdsAuthorisationContext(loadPROJECT.OfficeNameForExo, authorisationId));
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(DisplayEntities, ref exoAuthorisations, projectContexts, contextIdForAuthorisation);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
@@ -2358,7 +2366,7 @@ namespace BluePrints.ViewModels
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
             {
-                BluePrintsUtils.BookTime(DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService);
+                BluePrintsUtils.BookTime(DisplaySelectedEntity, primeroUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService, loadPROJECT, USERCollection);
             }
         }
 

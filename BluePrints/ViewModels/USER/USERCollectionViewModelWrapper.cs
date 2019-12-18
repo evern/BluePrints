@@ -34,7 +34,6 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new USERCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
-
         /// <summary>
         /// Initializes a new instance of the USERCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the USERCollectionViewModelWrapper type without the POCO proxy factory.
@@ -46,167 +45,17 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
         //timer to scan serial port
-        private DispatcherTimer serialPortScanTimer;
-        private DispatcherTimer serialPortWriteTimer;
-        public string SelectedCOMPort { get; set; }
-        public string ConnectButtonContent { get; set; }
-        public List<string> AvailablePorts { get; set; }
-        private SerialPort serialPort1;
         protected override void resolveParameters(object parameter)
         {
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
-            serialPortScanTimer = new DispatcherTimer();
-            serialPortScanTimer.Interval = new TimeSpan(0, 0, 1);
-            serialPortScanTimer.Tick += SerialPortScanTimer_Tick;
-
-            serialPortWriteTimer = new DispatcherTimer();
-            serialPortWriteTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-            serialPortWriteTimer.Tick += SerialPortWriteTimer_Tick;
-
-
-            serialPort1 = new SerialPort();
-            serialPort1.DataReceived += SerialPort1_DataReceived;
-
-            AvailablePorts = GetAllPorts();
-            SelectedCOMPort = AvailablePorts.FirstOrDefault();
-            connectToSerialPort();
-
-            serialPortScanTimer.Start();
         }
-
-        private void SerialPortWriteTimer_Tick(object sender, EventArgs e)
-        {
-            if (SelectedCOMPort == null || SelectedCOMPort == string.Empty)
-                return;
-
-            if (DisplaySelectedEntity == null || DisplaySelectedEntity.EXO_STAFF_ID == null)
-                return;
-
-            string incoming = string.Empty;
-            try
-            {
-                incoming = serialPort1.ReadExisting();
-                if (incoming == null)
-                    return;
-                else if (incoming.Contains("Input name, ending with #"))
-                {
-
-                    serialPort1.WriteLine(DisplaySelectedEntity.EXO_STAFF_ID.ToString() + "#");
-                    MessageBoxService.ShowMessage("Write success");
-                }
-                //else if (incoming.Contains(DisplaySelectedEntity.EXO_STAFF_ID.ToString()))
-            }
-            catch
-            {
-                MessageBoxService.ShowMessage("Error: Serial Port read timed out.");
-            }
-        }
-
-        private void SerialPortScanTimer_Tick(object sender, EventArgs e)
-        {
-            AvailablePorts = GetAllPorts();
-            SelectedCOMPort = AvailablePorts.FirstOrDefault();
-            this.RaisePropertyChanged(x => x.SelectedCOMPort);
-        }
-
-        public void PortConnect()
-        {
-            if(ConnectButtonContent == "Disconnect")
-            {
-                serialPort1.Close();
-                serialPortWriteTimer.Stop();
-                ConnectButtonContent = "Connect";
-                this.RaisePropertyChanged(x => x.ConnectButtonContent);
-            }
-            else
-            {
-                connectToSerialPort();
-                this.RaisePropertyChanged(x => x.ConnectButtonContent);
-            }
-        }
-
-        private void connectToSerialPort()
-        {
-            if (SelectedCOMPort != null && SelectedCOMPort != string.Empty)
-            {
-                serialPort1.Close();
-                serialPort1.PortName = SelectedCOMPort;
-                serialPort1.BaudRate = 9600;
-                serialPort1.DataBits = 8;
-                serialPort1.Parity = Parity.None;
-                serialPort1.StopBits = StopBits.One;
-                serialPort1.Handshake = Handshake.None;
-                serialPort1.Encoding = System.Text.Encoding.Default;
-                serialPort1.ReadTimeout = 10000;
-                serialPortWriteTimer.Stop();
-                try
-                {
-
-                    serialPort1.Open();
-                }
-                catch
-                {
-                    return;
-                }
-
-                ConnectButtonContent = "Disconnect";
-            }
-            else if(!IsLoading)
-                MessageBoxService.ShowMessage("Please select a port");
-        }
-
-        private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            if (DisplaySelectedEntity == null || DisplaySelectedEntity.EXO_STAFF_ID == null)
-                return;
-
-            string incoming = string.Empty;
-            try
-            {
-                incoming = serialPort1.ReadExisting();
-                if (incoming == null)
-                    return;
-                else if (incoming.Contains("#"))
-                {
-                    serialPort1.WriteLine(DisplaySelectedEntity.EXO_STAFF_ID.ToString() + "#");
-                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.ShowLoadingScreen(1)));
-                    //mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write success")));
-                }
-                else if (incoming.Contains("?"))
-                {
-                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.CloseLoadingScreen()));
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write Failed, please try again")));
-                }
-                else if (incoming.Contains("@"))
-                {
-                    mainThreadDispatcher.BeginInvoke(new Action(() => LoadingScreenManager.CloseLoadingScreen()));
-                    mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Write success")));
-                }
-            }
-            catch
-            {
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Error: Serial Port read timed out.")));
-            }
-        }
-
-        public List<string> GetAllPorts()
-        {
-            List<String> allPorts = new List<String>();
-            foreach (String portName in System.IO.Ports.SerialPort.GetPortNames())
-            {
-                allPorts.Add(portName);
-            }
-            return allPorts;
-        }
-
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
@@ -229,7 +78,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<USER>, IQueryable<USER>> specifyMainViewModelProjection()
         {
-            if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername)
+            if (LoginCredentials.IsAdmin)
                 return query => USERCollectionPopulation(query.OrderBy(x => x.NAME));
             else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                 return query => query.Where(x => x.GUID == Guid.Empty);
@@ -242,17 +91,15 @@ namespace BluePrints.ViewModels
         public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
         {
             List<USER> userList = USERS.ToList();
-            userList.ForEach(x => populateUSERStaff(x, PerthSTAFFCollection, MontrealSTAFFCollection, OFFICECollection));
+            userList.ForEach(x => populateUserProperties(x, OFFICECollection));
             return userList.AsQueryable();
         }
 
-        private void populateUSERStaff(USER user, IEnumerable<STAFF> perthSTAFF, IEnumerable<STAFF> montrealSTAFF, IEnumerable<OFFICE> OFFICECollection)
+        private void populateUserProperties(USER user, IEnumerable<OFFICE> OFFICECollection)
         {
             if (user.OFFICE == null && user.GUID_OFFICE != null)
                 user.OFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
 
-            user.PerthStaffs = perthSTAFF;
-            user.MontrealStaffs = montrealSTAFF;
             user.Update();
         }
 
@@ -272,7 +119,7 @@ namespace BluePrints.ViewModels
         {
             if(field_name == BindableBase.GetPropertyName(() => new USER().GUID_OFFICE))
             {
-                populateUSERStaff(projection, PerthSTAFFCollection, MontrealSTAFFCollection, OFFICECollection);
+                populateUserProperties(projection, OFFICECollection);
             }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
@@ -297,33 +144,32 @@ namespace BluePrints.ViewModels
         /// </summary>
         public void OnAfterEntitySaved(USER projection, USER entity, bool isNewEntity)
         {
-            if(isNewEntity && entity.EXO_STAFF_ID == null)
+            if(isNewEntity && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null))
             {
                 entity.START_DATE = DateTime.Now;
-                entity.EXO_STAFF_ID = getExoStaffId(entity);
+
+                if(entity.EXO_STAFF_ID == null)
+                    entity.EXO_STAFF_ID = getExoStaffId(entity, PerthSTAFFCollection);
+
+                if(entity.EXO_STAFF_ID_REMOTE == null)
+                    entity.EXO_STAFF_ID_REMOTE = getExoStaffId(entity, MontrealSTAFFCollection);
             }
         }
         #endregion
 
         #region View Properties
 
-        private int? getExoStaffId(USER bluePrintsUser)
+        private int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
         {
             if (bluePrintsUser.GUID_OFFICE == null)
                 return null;
 
             string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
-            IEnumerable<STAFF> officeSpecificCollection;
             OFFICE findOffice = OFFICECollection.FirstOrDefault(x => x.GUID == bluePrintsUser.GUID_OFFICE);
             if (findOffice == null)
                 return null;
 
-            if (findOffice.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
-                officeSpecificCollection = MontrealSTAFFCollection;
-            else
-                officeSpecificCollection = PerthSTAFFCollection;
-
-            STAFF exoSTAFF = officeSpecificCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
+            STAFF exoSTAFF = officeSpecificStaffCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
             {
                 return exoSTAFF.STAFFNO;
@@ -366,10 +212,17 @@ namespace BluePrints.ViewModels
                     continue;
                 }
 
-                int? exoId = getExoStaffId(entity);
-                if(exoId != null)
+                int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
+                if(exoPerthId != null)
                 {
-                    entity.EXO_STAFF_ID = exoId;
+                    entity.EXO_STAFF_ID = exoPerthId;
+                    userToSave.Add(entity);
+                }
+
+                int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
+                if (exoMontrealId != null)
+                {
+                    entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
                     userToSave.Add(entity);
                 }
             }
@@ -444,7 +297,7 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<ROLE>();
                 if (collection != null)
                 {
-                    if (LoginCredentials.CurrentUser.NAME == BluePrintsResources.Default_AdminUsername)
+                    if (LoginCredentials.IsAdmin)
                         collection = collection.OrderBy(x => x.NAME);
                     else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
                         collection = collection.Where(x => x.GUID == Guid.Empty);
@@ -497,6 +350,19 @@ namespace BluePrints.ViewModels
         private IDialogService USERImportDialogService
         {
             get { return this.GetRequiredService<IDialogService>("USERImportDialogService"); }
+        }
+
+        public bool IsImpersonateVisible => LoginCredentials.IsAdmin;
+
+        public bool CanImpersonate()
+        {
+            return IsImpersonateVisible;
+        }
+
+        public void Impersonate()
+        {
+            LoginCredentials.CurrentUser = DisplaySelectedEntity;
+            MessageBoxService.ShowMessage("Context user account has been changed to " + LoginCredentials.CurrentUser.NAME);
         }
 
         public void Update_User()
@@ -563,20 +429,9 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-
         public override string UnifiedValueValidation(USER projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
-        }
-
-        protected override void OnClose(CancelEventArgs e)
-        {
-            if(serialPort1 != null)
-                serialPort1.Close();
-
-            serialPortScanTimer.Stop();
-            serialPortWriteTimer.Stop();
-            base.OnClose(e);
         }
 
         bool hideLeaved;

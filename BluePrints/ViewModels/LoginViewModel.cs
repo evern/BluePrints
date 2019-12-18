@@ -98,6 +98,7 @@ namespace BluePrints.ViewModels
         {
             //if (Environment.MachineName == "EVERN-PC")
             //{
+            LoginCredentials.IsAdmin = true;
             UserName = BluePrintsResources.Default_AdminUsername;
             UserPassword = BluePrintsResources.Default_AdminPassword;
             delayedHideDispatcher.Start();
@@ -110,10 +111,13 @@ namespace BluePrints.ViewModels
             UserAuthenticationResult authenticationResult = UserAuthenticate;
             if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
             {
-                if (UserName == BluePrintsResources.Default_AdminUsername)
+                if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
+                    LoginCredentials.IsAdmin = true;
+
+                if (LoginCredentials.IsAdmin)
                 {
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
-                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "NATASHA.BRANCO");
+                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "GEORGE.EDWARDS");
                     Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else
@@ -214,12 +218,12 @@ namespace BluePrints.ViewModels
             }
             else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned)
             {
-                errorText = "Please email su.bing-wen@primero.com.au to assign a role to you";
+                errorText = "Please email " + BluePrintsResources.ITEmail + " to assign a role to you";
                 ShowError(false, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.UsernameNotAdded)
             {
-                errorText = "Please email su.bing-wen@primero.com.au to add you as a BluePrint user";
+                errorText = "Please email " + BluePrintsResources.ITEmail + " to add you as a BluePrint user";
                 ShowError(false, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)

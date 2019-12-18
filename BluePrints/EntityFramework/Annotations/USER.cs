@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BaseModel.Attributes;
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common.Base;
@@ -34,32 +35,35 @@ namespace BluePrints.Data
             }
         }
 
-        [NotMapped]
-        public IEnumerable<STAFF> PerthStaffs { get; set; }
-
-        [NotMapped]
-        public IEnumerable<STAFF> MontrealStaffs { get; set; }
-
-        public IEnumerable<STAFF> ExoSTAFFS
-        {
-            get
-            {
-                if (OFFICE == null)
-                    return null;
-
-                if (OFFICE.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
-                    return MontrealStaffs;
-
-                else if (OFFICE.NAME.ToUpper() == BluePrintsResources.OfficePerth)
-                    return PerthStaffs;
-
-                return null;
-            }
-        }
-
         //for use in EXO_SubJobCollectionView
         [NotMapped]
         public int SecurityProfileID { get; set; }
+
+        [NotMapped]
+        public string ProjectLocale { get; set; }
+
+        [NotMapped]
+        [ProjectionPropertyAttribute]
+        public int? ProjectLocaleExoId
+        {
+            get
+            {
+                if (ProjectLocale == string.Empty || ProjectLocale == null)
+                    return null;
+                
+;               return ProjectLocale == BluePrintsResources.OfficeMontreal ? EXO_STAFF_ID_REMOTE : EXO_STAFF_ID;
+            }
+            set
+            {
+                if (ProjectLocale == string.Empty || ProjectLocale == null)
+                    return;
+
+                if (ProjectLocale == BluePrintsResources.OfficePerth)
+                    EXO_STAFF_ID = value;
+                else
+                    EXO_STAFF_ID_REMOTE = value;
+            }
+        }
 
         public string Office => BluePrintsResources.GlobalOffice;
     }

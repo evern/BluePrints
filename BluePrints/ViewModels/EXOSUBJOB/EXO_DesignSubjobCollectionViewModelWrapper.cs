@@ -7,30 +7,15 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
-using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
-using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
-using BluePrints.P6Data;
-using BluePrints.P6EntitiesDataModel;
-using BluePrints.PrimeroData;
-using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
-using BluePrints.Reports;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Xpf.Bars;
-using DevExpress.Xpf.Grid;
-using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Forms;
 
 namespace BluePrints.ViewModels
 {
@@ -77,6 +62,7 @@ namespace BluePrints.ViewModels
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             tryCombineLocalUsers = true;
+            
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -226,9 +212,9 @@ namespace BluePrints.ViewModels
                     ExoSubJobAuth newUser = new ExoSubJobAuth();
                     newUser.User = user;
                     newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => DisplaySelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
-                    if (newUser.ShouldAssign && subJob.SubJobId != null)
+                    if (newUser.ShouldAssign && subJob.SubJobId != null && user.ProjectLocaleExoId != null)
                     {
-                        if (ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, newUser, (int)subJob.SubJobId))
+                        if (ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)subJob.SubJobId, (int)user.ProjectLocaleExoId))
                             addedCount += 1;
 
                         newUser.IsAssigned = true;
@@ -264,9 +250,9 @@ namespace BluePrints.ViewModels
                     IEnumerable<ExoSubJobAuth> findUsers = DisplaySelectedEntities.SelectMany(x => x.AuthUsers);
                     ExoSubJobAuth newUser = new ExoSubJobAuth();
                     newUser.User = user;
-                    if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == user.EXO_STAFF_ID)))
+                    if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == user.ProjectLocaleExoId)))
                         newUser.IsAssigned = true;
-                    else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.EXO_STAFF_ID == user.EXO_STAFF_ID)))
+                    else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == user.ProjectLocaleExoId)))
                         newUser.IsAssigned = null;
                     else
                         newUser.IsAssigned = false;

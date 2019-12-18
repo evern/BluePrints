@@ -256,7 +256,7 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, getProjectContexts());
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
         }
 
         List<ProjectUnitOfWorkContext> projectContexts;
@@ -280,13 +280,39 @@ namespace BluePrints.Common.Base
                             else
                                 uow = perthUOW;
 
-                            projectContexts.Add(new ProjectUnitOfWorkContext(entity.Project_Number, uow));
+                            projectContexts.Add(new ProjectUnitOfWorkContext(project, uow));
                         }
                     }
                 }
             }
 
             return projectContexts;
+        }
+
+        List<UserIdsAuthorisationContext> userIdContexts;
+        private List<UserIdsAuthorisationContext> getContextUserIds()
+        {
+            if (userIdContexts == null)
+            {
+                userIdContexts = new List<UserIdsAuthorisationContext>();
+                foreach (var entity in MainViewModel.Entities)
+                {
+                    Data.PROJECT project = bluePrintsUOW.PROJECTS.FirstOrDefault(x => x.NUMBER == entity.Project_Number);
+                    if (project != null)
+                    {
+                        int? userIdForAuthorisation = null;
+                        if (project.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID_REMOTE;
+                        else
+                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID;
+
+                        if (!userIdContexts.Any(x => x.Id == userIdForAuthorisation))
+                            userIdContexts.Add(new UserIdsAuthorisationContext(project.OfficeNameForExo, userIdForAuthorisation));
+                    }
+                }
+            }
+
+            return userIdContexts;
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
@@ -1812,7 +1838,9 @@ namespace BluePrints.Common.Base
             {
                 ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == DisplaySelectedEntity.Project_Number);
                 if(projectContext != null)
-                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService);
+                {
+                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService, projectContext.Project, USERCollection);
+                }
             }
         }
         #endregion

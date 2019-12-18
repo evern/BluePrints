@@ -538,6 +538,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to su.bing-wen@primero.com.au.
+        /// </summary>
+        internal static string ITEmail {
+            get {
+                return ResourceManager.GetString("ITEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health check completed without any issues.
         /// </summary>
         internal static string Notify_HealthCheck_OK {
