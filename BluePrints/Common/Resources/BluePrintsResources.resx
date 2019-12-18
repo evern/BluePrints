@@ -345,4 +345,7 @@
   <data name="ForecastCompare_PORowPhase" xml:space="preserve">
     <value>PO Forecast</value>
   </data>
+  <data name="ITEmail" xml:space="preserve">
+    <value>su.bing-wen@primero.com.au</value>
+  </data>
 </root>

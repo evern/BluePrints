@@ -219,24 +219,23 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, List<ProjectUnitOfWorkContext> projectContexts)
+        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, List<ProjectUnitOfWorkContext> projectContexts, List<UserIdsAuthorisationContext> userIdForCanBook)
             where TProjection : IReportable, IBookable
         {
             List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
             foreach (var projectContext in projectContexts)
             {
-                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber, false);
-
+                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber);
+                projectExoTimeAuths.ForEach(x => x.OfficeName = projectContext.OfficeName);
                 cacheExoAuthorisations.AddRange(projectExoTimeAuths);
             }
 
             exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
-
             //view can be closed if this is a async task and projection can be disposed
             if(projections != null)
                 foreach (var deliverable in projections)
                 {
-                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => x.ResourceStaffId == LoginCredentials.CurrentUser.EXO_STAFF_ID).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
+                    ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => userIdForCanBook.Any(y => y.Id == x.ResourceStaffId && y.OfficeName == x.OfficeName)).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
                     deliverable.CanBook = findAuthorisation != null;
                     deliverable.Update();
                 }
@@ -246,22 +245,45 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService)
+        public static int? GetUpdatedProjectLocaleUserExoId(PROJECT loadPROJECT, IEnumerable<USER> USERCollection, Guid currentUserGuid)
         {
-            var bookTimeViewModel = BookTimeSheetViewModel.Create(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative);
+            USER currentUser = USERCollection.FirstOrDefault(x => x.GUID == currentUserGuid);
+            if (currentUser == null)
+                return null;
+
+            if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+                return currentUser.EXO_STAFF_ID_REMOTE;
+            else
+                return currentUser.EXO_STAFF_ID;
+        }
+
+        public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService, PROJECT project, IEnumerable<USER> USERCollection)
+        {
+            string pmName = project.USER == null ? string.Empty : project.USER.NAME;
+            int? currentUserExoId = BluePrintsUtils.GetUpdatedProjectLocaleUserExoId(project, USERCollection, LoginCredentials.CurrentUserGuid);
+            if (currentUserExoId == null)
+            {
+                MessageBoxService.ShowMessage(project.OfficeName + " EXO account is not set for user " + LoginCredentials.CurrentUser.NAME + "\nPlease email " + BluePrintsResources.ITEmail);
+                return;
+            }
+
+            var bookTimeViewModel = BookTimeSheetViewModel.Create(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative, (int)currentUserExoId);
             if (bookTimeViewModel.GetResource() == null)
             {
                 MessageBoxService.ShowMessage("You are not authorised to book time on this subjob, please contact the project manager for assistance");
+                return;
             }
             else if (bookTimeViewModel.GetCostType() == null)
             {
-                MessageBoxService.ShowMessage("You do not have \nSub Job: " + deliverable.Subjob_Name + "\nCost Group: " + deliverable.Discipline_Code + "\nCost Type: " + deliverable.Commodity_Code + "\nAdded in exo, please contact the project manager for assistance");
+                MessageBoxService.ShowMessage("You do not have authorisation to book time to\nSub Job: " + deliverable.Subjob_Name + "\nCost Group: " + deliverable.Discipline_Code + "\nCost Type: " + deliverable.Commodity_Code + "\n\nPlease contact " + pmName + " for assistance");
+                return;
             }
 
             PrimeroSubJob subJob = bookTimeViewModel.GetSubJob();
             if(subJob != null && subJob.JobStatus.ToUpper() == "G")
             {
                 MessageBoxService.ShowMessage("Job " + subJob.Code + " has already been closed, please contact cost control to open the job");
+                return;
             }
             else if (BookTimeDialogService.ShowDialog(MessageButton.OKCancel, "Enter time to book", "BookTimeDialog", bookTimeViewModel) == MessageResult.OK)
             {

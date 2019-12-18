@@ -66,6 +66,8 @@ namespace BluePrints.Data
 
         public int? EXO_STAFF_ID { get; set; }
 
+        public int? EXO_STAFF_ID_REMOTE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -83,6 +85,10 @@ namespace BluePrints.Data
         public DateTime? START_DATE { get; set; }
 
         public DateTime? LEAVE_DATE { get; set; }
+
+        public string MEMBERSHIP_TYPE { get; set; }
+
+        public string MEMBERSHIP_NUM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROJECT> PROJECT { get; set; }

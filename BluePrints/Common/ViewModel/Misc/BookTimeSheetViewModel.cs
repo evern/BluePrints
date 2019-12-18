@@ -19,9 +19,9 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class BookTimeSheetViewModel
     {
-        public static BookTimeSheetViewModel Create(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative)
+        public static BookTimeSheetViewModel Create(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, int currentUserExoId)
         {
-            return ViewModelSource.Create(() => new BookTimeSheetViewModel(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative));
+            return ViewModelSource.Create(() => new BookTimeSheetViewModel(deliverable, primeroUnitOfWork, exoAuthorisations, defaultNarrative, currentUserExoId));
         }
 
         public DateTime BookDate { get; set; }
@@ -238,7 +238,8 @@ namespace BaseModel.ViewModel.Dialogs
         private JOB_TIMESHEETS Existing_TimeSheet { get; set; }
         public decimal BookHours { get; set; }
         private readonly IEnumerable<ExoTimeAuthorisation> exoAuthorisations;
-        protected BookTimeSheetViewModel(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative)
+        private readonly int currentUserExoId;
+        protected BookTimeSheetViewModel(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, int currentUserExoId)
         {
             BookDate = DateTime.Now.Date;
             initializeCollection();
@@ -246,6 +247,7 @@ namespace BaseModel.ViewModel.Dialogs
             this.primeroUnitOfWork = primeroUnitOfWork;
             this.exoAuthorisations = exoAuthorisations;
             this.Selected_Narrative = defaultNarrative;
+            this.currentUserExoId = currentUserExoId;
 
             foreach (var availableLine in exoAuthorisations)
             {
@@ -307,7 +309,7 @@ namespace BaseModel.ViewModel.Dialogs
 
         private void setDefaultResource()
         {
-            Selected_Resource = pResourceCollection.FirstOrDefault(x => x.Id == LoginCredentials.CurrentUser.EXO_STAFF_ID);
+            Selected_Resource = pResourceCollection.FirstOrDefault(x => x.Id == currentUserExoId);
         }
 
         private void trySetDefaultAfterResourceChange()
