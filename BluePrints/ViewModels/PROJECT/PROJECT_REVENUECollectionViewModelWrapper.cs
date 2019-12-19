@@ -160,6 +160,12 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(PROJECT_REVENUEProjection projection, string field_name, object new_value, bool isPaste)
         {
+            if(field_name == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().ViewRevenue))
+            {
+                if (projection.IsRevenueReadOnly)
+                    return "Cannot set revenue for " + projection.DisplayMonth.ToString("yy MMM") + " because it's already claimed";
+            }
+
             return string.Empty;
         }
 

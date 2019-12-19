@@ -60,7 +60,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (this.Entity.GUID == Guid.Empty)
+                if (IsRevenueReadOnly)
                     return Revenue;
 
                 return Entity.REVENUE_PRICE;
