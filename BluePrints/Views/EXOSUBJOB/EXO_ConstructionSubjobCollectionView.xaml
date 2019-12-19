@@ -32,8 +32,6 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                    <dxb:BarButtonItemLink BarItemName="biEditReport1" />
-                                    <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Exo">
                                     <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
