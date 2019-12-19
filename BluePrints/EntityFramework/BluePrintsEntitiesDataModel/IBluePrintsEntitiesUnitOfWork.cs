@@ -180,6 +180,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROJECT_REPORT, Guid> PROJECT_REPORTS { get; }
 
         /// <summary>
+        /// The PROJECT_REVENUE entities repository.
+        /// </summary>
+        IRepository<PROJECT_REVENUE, Guid> PROJECT_REVENUES { get; }
+
+        /// <summary>
         /// The PROJECT entities repository.
         /// </summary>
         IRepository<PROJECT, Guid> PROJECTS { get; }

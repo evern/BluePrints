@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.3.50</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.3.51</MinimumRequiredVersion>
     <ApplicationRevision>51</ApplicationRevision>
     <ApplicationVersion>1.0.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -606,6 +606,7 @@
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\POForecastProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
+    <Compile Include="Common\Projections\PROJECT_REVENUEProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
     <Compile Include="Common\Projections\MEETING_MINUTEProjection.cs" />
@@ -813,6 +814,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_JOB_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_JOB_HOUR.cs" />
@@ -873,6 +875,7 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB.cs" />
@@ -1009,6 +1012,7 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
@@ -1115,6 +1119,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml.cs">
+      <DependentUpon>PROJECT_REVENUECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\POSpreadView.xaml.cs">
       <DependentUpon>POSpreadView.xaml</DependentUpon>
@@ -2061,6 +2068,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

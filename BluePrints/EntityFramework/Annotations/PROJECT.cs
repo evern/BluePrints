@@ -42,6 +42,7 @@ namespace BluePrints.Data
             STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
+            PROJECT_REVENUE = new HashSet<PROJECT_REVENUE>();
             RATE = new HashSet<RATE>();
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();

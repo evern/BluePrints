@@ -426,6 +426,61 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
+        public static List<ExoDataPoint> GetRevenue(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        {
+            ConcurrentBag<ExoDataPoint> revenueDataPoints = new ConcurrentBag<ExoDataPoint>();
+            HashSet<string> missingSubJobNames = new HashSet<string>();
+
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.SetMessage("Loading Revenue...");
+            }
+
+            var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
+                                  join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                  join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
+                                  where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "C" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.STOCKCODE == "@" && JOBTRANS.TRANSDATE <= dataDate
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+
+            var jobTransactionsList = jobTransactions.ToList();
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.CloseLoadingScreen();
+                LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count);
+                LoadingScreenManager.SetMessage("Loading Revenue...");
+            }
+
+            foreach (var jobTransaction in jobTransactionsList)
+            {
+                ExoDataPoint revenueDataPoint = new ExoDataPoint();
+                revenueDataPoint.BudgetedUnits = 0;
+                revenueDataPoint.BudgetedCosts = 0;
+                revenueDataPoint.Units = (decimal)jobTransaction.QUANTITY;
+                //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
+                revenueDataPoint.Costs = jobTransaction.LINETOTAL == null ? 0 : (decimal)jobTransaction.LINETOTAL * currencyConversion;
+                revenueDataPoint.CostPerQty = revenueDataPoint.Units == 0 ? 0 : revenueDataPoint.Costs / revenueDataPoint.Units;
+                //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                revenueDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
+                revenueDataPoint.ProgressDate = revenueDataPoint.ActualDate;
+                revenueDataPoint.Subjob_Name = jobTransaction.JOBCODE;
+                revenueDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+                revenueDataPoint.StockCode = jobTransaction.STOCKCODE;
+                revenueDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
+                revenueDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
+                revenueDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
+                revenueDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
+
+                revenueDataPoints.Add(revenueDataPoint);
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
+            }
+
+            return revenueDataPoints.ToList();
+        }
+
         public static List<ExoDataPoint> GetBurned(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             ConcurrentBag<ExoDataPoint> burnedDataPoints = new ConcurrentBag<ExoDataPoint>();

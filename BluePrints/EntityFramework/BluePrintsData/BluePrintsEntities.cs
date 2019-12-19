@@ -54,6 +54,7 @@ namespace BluePrints.Data
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
+        public virtual DbSet<PROJECT_REVENUE> PROJECT_REVENUE { get; set; }
         public virtual DbSet<PROJECT_SUMMARY> PROJECT_SUMMARY { get; set; }
         public virtual DbSet<PROJECT_SUMMARY_SETTING> PROJECT_SUMMARY_SETTING { get; set; }
         public virtual DbSet<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
@@ -461,6 +462,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.AREA)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.PROJECT_REVENUE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
