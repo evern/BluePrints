@@ -92,8 +92,11 @@
                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                     </dxg:TableView.RowCellMenuCustomizations>
                                     <dxg:TableView.FormatConditions>
-                                        <dxg:FormatCondition Expression="[Nett] &lt; '0'" FieldName="Nett">
+                                        <dxg:FormatCondition Expression="[Nett] &lt; 0 And Not IsNullOrEmpty([Nett])" FieldName="Nett">
                                             <dx:Format Background="LightSalmon" />
+                                        </dxg:FormatCondition>
+                                        <dxg:FormatCondition Expression="[Nett] &gt; 0 And Not IsNullOrEmpty([Nett])" FieldName="Nett">
+                                            <dx:Format Background="Chartreuse"/>
                                         </dxg:FormatCondition>
                                     </dxg:TableView.FormatConditions>
                                 </dxg:TableView>

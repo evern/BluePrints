@@ -41,7 +41,19 @@ namespace BluePrints.Common.Projections
         }
 
         public bool IsRevenueReadOnly => monthFloor < maxClaimDate;
-        public SolidColorBrush Revenue_Background => IsRevenueReadOnly ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
+        public SolidColorBrush Revenue_Background
+        {
+            get
+            {
+                if (IsRevenueReadOnly)
+                    return new SolidColorBrush(Colors.Transparent);
+                        
+                if (ViewRevenue <= 0)
+                    return new SolidColorBrush(Colors.LightSalmon);
+                else
+                    return new SolidColorBrush(Colors.Chartreuse);
+            }
+        }
 
         public decimal ActualCosts => actualsDataPoints.Where(x => x.ActualDate >= monthFloor && x.ActualDate <= monthCeiling).Sum(x => x.Costs);
         public decimal ActualCostsToDate => actualsDataPoints.Where(x => x.ActualDate <= monthCeiling).Sum(x => x.Costs);
@@ -79,7 +91,7 @@ namespace BluePrints.Common.Projections
             return viewRevenue;
         }
 
-        public decimal Nett => Revenue - TotalCosts;
-        public decimal NettToDate => RevenueToDate - TotalCostsToDate;
+        public decimal? Nett => !IsRevenueReadOnly ? (decimal?)null : Revenue - TotalCosts;
+        public decimal? NettToDate => !IsRevenueReadOnly ? (decimal?)null : RevenueToDate - TotalCostsToDate;
     }
 }
