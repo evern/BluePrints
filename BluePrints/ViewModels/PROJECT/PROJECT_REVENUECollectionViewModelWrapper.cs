@@ -94,12 +94,19 @@ namespace BluePrints.ViewModels
             if(!isFirstLoaded)
             {
                 List<DateTime> earliestDates = new List<DateTime>();
-                DateTime firstRecordedActualDate = actualDataPoints.Min(x => x.ActualDate);
-                DateTime firstRecordedMaterialDate = materialDataPoints.Min(x => x.ActualDate);
-                DateTime firstRecordedRevenueDate = revenueDataPoints.Min(x => x.ActualDate);
-                earliestDates.Add(firstRecordedActualDate);
-                earliestDates.Add(firstRecordedMaterialDate);
-                earliestDates.Add(firstRecordedRevenueDate);
+                DateTime? firstRecordedActualDate = actualDataPoints.Count == 0 ? (DateTime?)null : actualDataPoints.Min(x => x.ActualDate);
+                DateTime? firstRecordedMaterialDate = materialDataPoints.Count == 0 ? (DateTime?)null : materialDataPoints.Min(x => x.ActualDate);
+                DateTime? firstRecordedRevenueDate = revenueDataPoints.Count == 0 ? (DateTime?)null : revenueDataPoints.Min(x => x.ActualDate);
+
+                if(firstRecordedActualDate != null)
+                    earliestDates.Add((DateTime)firstRecordedActualDate);
+
+                if (firstRecordedMaterialDate != null)
+                    earliestDates.Add((DateTime)firstRecordedMaterialDate);
+
+                if (firstRecordedRevenueDate != null)
+                    earliestDates.Add((DateTime)firstRecordedRevenueDate);
+
                 DateTime earliestDate = earliestDates.Min(x => x);
                 earliestDate = new DateTime(earliestDate.Year, earliestDate.Month, 1);
 

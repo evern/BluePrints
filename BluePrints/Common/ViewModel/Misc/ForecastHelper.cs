@@ -222,7 +222,7 @@ namespace BluePrints.Common.ViewModel.Misc
             previousEACDataDate = previousEACDataDate.AddDays(-1);
 
             //populate previous estimate to completion
-            FORECAST previousEAC = FORECASTCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == previousEACDataDate);
+            FORECAST previousEAC = FORECASTCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE.Date == previousEACDataDate.Date);
             if (previousEAC != null)
             {
                 if (previousEAC.FORECAST_UNITS != null)
