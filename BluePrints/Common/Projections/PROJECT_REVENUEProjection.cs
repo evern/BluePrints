@@ -37,7 +37,10 @@ namespace BluePrints.Common.Projections
             else
                 this.Entity = projectRevenue;
 
-            maxClaimDate = revenueDataPoints.Max(x => x.ActualDate);
+            if (revenueDataPoints.Count() == 0)
+                maxClaimDate = new DateTime();
+            else
+                maxClaimDate = revenueDataPoints.Max(x => x.ActualDate);
         }
 
         public bool IsRevenueReadOnly => monthFloor < maxClaimDate;
