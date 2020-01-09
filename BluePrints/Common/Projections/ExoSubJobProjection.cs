@@ -1402,7 +1402,7 @@ namespace BluePrints.Common.Projections
         public static List<ExoSubJobEditableProjection> GetProactiveExoSubJobs(IEnumerable<IReportable> deliverables, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null, bool ignoreExoBudgetError = false)
         {
             var groupedDeliverables = deliverables.GroupBy(x => new { ChargeType = x.Charge, SubJob = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, VariationCode = x.Variation_Code })
-                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, ApprovedVariations = group.SelectMany(x => x.ApprovedVariations), BudgetInternalCosts = group.Sum(x => x.Budget_InternalCost) });
+                          .Select(group => new { group.Key.SubJob, group.Key.ChargeType, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, ApprovedVariations = group.SelectMany(x => x.ApprovedVariations), BudgetInternalCosts = group.Sum(x => x.Budget_InternalCost), TotalHours = group.Sum(x => x.Total_Units) });
 
             List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, project.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, project.NUMBER);
@@ -1413,7 +1413,12 @@ namespace BluePrints.Common.Projections
                 if (groupedDeliverable.SubJob == null || groupedDeliverable.CommodityCode == null)
                     continue;
 
-                exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedDeliverable.VariationCode, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
+                decimal baseTotalUnits = groupedDeliverable.TotalHours;
+                decimal variationTotalUnits = groupedDeliverable.ApprovedVariations.Sum(x => x.AdjustmentUnits);
+
+                //only add codes when the WBS code is not entirely variation
+                if(baseTotalUnits != variationTotalUnits)
+                    exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedDeliverable.VariationCode, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
 
                 var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
                 foreach (var groupedVariation in groupedVariations)
