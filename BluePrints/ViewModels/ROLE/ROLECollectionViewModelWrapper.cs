@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
                 permissions.AddRange(DisplaySelectedEntity.ROLE_COMMODITIES.Select(x => new DocTypePermissionAssignment() { DocType = findDOCTYPE(x.GUID_COMMODITY), IsAssigned = true }).ToList());
                 foreach (DOCTYPE docType in DOCTYPECollection)
                 {
-                    DocTypePermissionAssignment findPermission = permissions.FirstOrDefault(x => x.DocType.GUID == docType.GUID);
+                    DocTypePermissionAssignment findPermission = permissions.Where(x => x.DocType != null).FirstOrDefault(x => x.DocType.GUID == docType.GUID);
                     if (findPermission == null)
                         permissions.Add(new DocTypePermissionAssignment() { DocType = docType, IsAssigned = false });
                 }

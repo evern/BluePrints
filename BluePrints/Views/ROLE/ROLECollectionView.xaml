@@ -15,9 +15,10 @@
         <Grid DataContext="{Binding MainViewModel}">
             <dxb:BarManager>
                 <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
-                    <dxb:BarButtonItem x:Name="biLocalBulkDelete" Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                    <dxb:BarButtonItem x:Name="biFullRefresh1" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                    <dxb:BarButtonItem x:Name="biBulkDelete1" Command="{Binding BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+                    <dxb:BarButtonItem x:Name="biSaveLayout1" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" Content="Save Layout" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Save current table filters, sorting, grouping and expanded group" />
+                    <dxb:BarButtonItem x:Name="biResetLayout1" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                     <dxb:BarButtonItem x:Name="biAddRowBefore" Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
                     <dxb:BarButtonItem x:Name="biAddRowAfter" Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
                 </dxb:BarManager.Items>
@@ -27,16 +28,9 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
-                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 </dxr:RibbonPageGroup>
@@ -95,9 +89,10 @@
                                 <dxg:GridControl.View>
                                     <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
                                         <dxg:TreeListView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                             <dxb:BarButtonItemLink BarItemName="biAddRowBefore" />
                                             <dxb:BarButtonItemLink BarItemName="biAddRowAfter"  />
-                                            <dxb:BarButtonItemLink BarItemName="biLocalBulkDelete" />
+                                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                         </dxg:TreeListView.RowCellMenuCustomizations>
                                     </dxg:TreeListView>
                                 </dxg:GridControl.View>

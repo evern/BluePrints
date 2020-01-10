@@ -44,6 +44,8 @@
                             </dxb:BarEditItem.EditSettings>
                         </dxb:BarEditItem>
                     </dxb:BarSubItem>
+                    <dxb:BarButtonItem x:Name="biEditReport1" Command="{Binding DataContext.EditReportCommand, ElementName=userControl}" Content="Edit Report" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redesign the current report layout" />
+                    <dxb:BarButtonItem x:Name="biViewReport1" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="View Report" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" RibbonStyle="SmallWithText" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
                     <dxb:BarButtonItem x:Name="biSendToChangeRegister" Content="Change Register" ToolTip="Send selected issue to change register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
                     <dxb:BarButtonItem x:Name="biSendToHoldRegister" Content="Hold Register" ToolTip="Send selected issue to hold register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToHoldRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dx:DXImage Image=BORules_16x16.png}" />
                 </dxb:BarManager.Items>
@@ -65,6 +67,8 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                    <dxb:BarButtonItemLink BarItemName="biEditReport1" />
+                                    <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Send To">
                                     <dxb:BarButtonItemLink BarItemName="biSendToChangeRegister" />
