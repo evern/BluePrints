@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTViewModelWrapper()
         {
-            useProductivityFactorOnRemaining = false;
+            UseProductivityFactorOnRemaining = false;
         }
 
         protected IDialogService ActivityDetailDialogService
@@ -83,10 +83,10 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected bool isCompletelyLoaded { get; set; }
-        protected bool forceRetrieveAllJobs { get; set; }
-        protected bool forceRetrieveAllUnits { get; set; }
-        protected bool useProductivityFactorOnRemaining { get; set; }
-        protected bool isVariationSeparated { get; set; }
+        public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
+        public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
+        public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
+        public bool IsVariationSeparated { get; set; } //whether to split variation out from main job
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
@@ -221,7 +221,8 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected bool forceRetrieveRemainingDataPoints;
+        public bool ForceRetrieveRemainingDataPoints;
+        public bool ShowLoadingScreen = true;
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
             specifyMainViewModelProjection()
         {
@@ -233,7 +234,7 @@ namespace BluePrints.ViewModels
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, forceRetrieveRemainingDataPoints);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, ShowLoadingScreen);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -280,7 +281,6 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        protected bool showStatsBuildingLoadingScreen = false;
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var argumentObject = (object[])e.Argument;
@@ -288,9 +288,9 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(showStatsBuildingLoadingScreen, false, 1, forceRetrieveAllJobs, forceRetrieveAllUnits, getForecastTypes(), useProductivityFactorOnRemaining);
+                project.BuildStats(ShowLoadingScreen, false, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, getForecastTypes(), UseProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
-                project.Subjob_Dashboards = getDashboardStructure(project, isVariationSeparated, forceRetrieveRemainingDataPoints);
+                project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();
 
                 foreach (var subjobDashboard in project.Subjob_Dashboards)
@@ -317,7 +317,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated, bool forceRetrieveRemainingDataPoints = false)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, isVariationSeparated, forceRetrieveRemainingDataPoints);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

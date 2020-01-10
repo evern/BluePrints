@@ -788,7 +788,6 @@ namespace BluePrints.ViewModels
             //fix codes mis-alignment
             LoadingScreenManager.ShowLoadingScreen(projections.Count());
             LoadingScreenManager.SetMessage("Aligning Actuals...");
-            decimal adjustmentFactor = 0;
             //fix dates mis-alignment
             foreach (POForecastProjection projection in projections)
             {

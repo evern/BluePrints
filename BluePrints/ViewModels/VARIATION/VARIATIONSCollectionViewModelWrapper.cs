@@ -1116,6 +1116,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnClose(CancelEventArgs e)
         {
+            variationSummaryBackgroundWorker.CancelAsync();
             exoJobCollectionViewModel.Dispose();
             base.OnClose(e);
         }

@@ -15,6 +15,8 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -52,6 +54,7 @@ namespace BluePrints.ViewModels
         List<ExoDataPoint> materialDataPoints;
         List<ExoDataPoint> revenueDataPoints;
 
+        protected BackgroundWorker summaryBackgroundWorker;
         //indicate whether projection transformation should run first loaded or refreshed
         bool isFirstLoaded;
         protected override void resolveParameters(object parameter)
@@ -61,12 +64,12 @@ namespace BluePrints.ViewModels
 
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
-
             loadExoData();
         }
 
         protected override void addEntitiesLoader()
         {
+
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -82,8 +85,8 @@ namespace BluePrints.ViewModels
 
         private void loadExoData()
         {
-            actualDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
-            materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
+            //actualDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+            //materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
             revenueDataPoints = BluePrintsDataUtils.GetRevenue(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, 1, true);
         }
 
@@ -94,6 +97,9 @@ namespace BluePrints.ViewModels
             if(!isFirstLoaded)
             {
                 List<DateTime> earliestDates = new List<DateTime>();
+                actualDataPoints = new List<ExoDataPoint>();
+                materialDataPoints = new List<ExoDataPoint>();
+                
                 DateTime? firstRecordedActualDate = actualDataPoints.Count == 0 ? (DateTime?)null : actualDataPoints.Min(x => x.ActualDate);
                 DateTime? firstRecordedMaterialDate = materialDataPoints.Count == 0 ? (DateTime?)null : materialDataPoints.Min(x => x.ActualDate);
                 DateTime? firstRecordedRevenueDate = revenueDataPoints.Count == 0 ? (DateTime?)null : revenueDataPoints.Min(x => x.ActualDate);
@@ -107,7 +113,7 @@ namespace BluePrints.ViewModels
                 if (firstRecordedRevenueDate != null)
                     earliestDates.Add((DateTime)firstRecordedRevenueDate);
 
-                DateTime earliestDate = earliestDates.Min(x => x);
+                DateTime earliestDate = earliestDates.Count == 0 ? DateTime.Now : earliestDates.Min(x => x);
                 earliestDate = new DateTime(earliestDate.Year, earliestDate.Month, 1);
 
                 DateTime latestDate = loadPROJECT.FORECAST_END_DATE == null ? DateTime.Now : (DateTime)loadPROJECT.FORECAST_END_DATE;
@@ -144,6 +150,38 @@ namespace BluePrints.ViewModels
             }
 
             return projections.AsQueryable();
+        }
+
+        PROJECTForecastViewModelWrapper projectForecastViewModel;
+        protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_REVENUEProjection> entities)
+        {
+            summaryBackgroundWorker = new BackgroundWorker();
+            summaryBackgroundWorker.DoWork += SummaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.WorkerSupportsCancellation = true;
+            summaryBackgroundWorker.RunWorkerAsync();
+
+            return base.OnMainViewModelLoaded(entities);
+        }
+
+        private void SummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (summaryBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            projectForecastViewModel = PROJECTForecastViewModelWrapper.Create();
+            projectForecastViewModel.ShowLoadingScreen = false;
+            projectForecastViewModel.OnDataTableLoaded = onForecastDataTableLoaded;
+            projectForecastViewModel.SetParentViewModel(this);
+            var projectForecastParameter = projectForecastViewModel as ISupportParameter;
+            projectForecastParameter.Parameter = new DualEntitiesParameter<PROJECT, Action<object>>(loadPROJECT, obj => { });
+        }
+
+        private void onForecastDataTableLoaded(DataTable dataTable)
+        {
+
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_REVENUEProjection> entities)
@@ -220,6 +258,12 @@ namespace BluePrints.ViewModels
             get { return "PROJECT_REVENUECollectionViewModelWrapper"; }
         }
 
+        protected override void OnClose(CancelEventArgs e)
+        {
+            summaryBackgroundWorker.CancelAsync();
+            projectForecastViewModel.Dispose();
+            base.OnClose(e);
+        }
         #endregion
     }
 }
