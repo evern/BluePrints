@@ -4,6 +4,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -163,7 +164,23 @@
                                 <dxg:GridColumn Header="Date Raised" FieldName="DATE_RAISED" AllowMoving="false" />
                                 <dxg:GridColumn Header="Responsible Person" FieldName="GUID_RESPONSIBLE_PERSON" AllowMoving="false">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
+                                        <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" >
+                                            <dxg:LookUpEditSettings.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEditSettings.StyleSettings>
+                                            <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEditSettings.PopupContentTemplate>
+                                        </dxg:LookUpEditSettings>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Final Resolution" FieldName="FINAL_RESOLUTION" AllowMoving="false">
