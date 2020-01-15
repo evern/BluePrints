@@ -70,7 +70,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected PROJECTForecastViewModelWrapper()
         {
-            forceRetrieveRemainingDataPoints = true;
+            ForceRetrieveRemainingDataPoints = true;
+            ShowLoadingScreen = true;
 
             delayedProjectSaveTimer = new DispatcherTimer();
             delayedProjectSaveTimer.Interval = new TimeSpan(0, 0, 0, 1);
@@ -243,15 +244,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
             dataPointsTable = null;
             commodityJobs = null;
 
             updateDataPointsTable();
+            OnDataTableLoaded?.Invoke(DataPointsTable);
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
+        public bool FullScreenView = true;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
@@ -259,9 +263,9 @@ namespace BluePrints.ViewModels
             primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
-            forceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
-            forceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
-            useProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
+            ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
+            ForceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
+            UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             LoadingScreenManager.DisableLoadingScreen = false;
             skipBindingSwitch = true;
@@ -274,10 +278,11 @@ namespace BluePrints.ViewModels
             IsHidden = true;
             delayPostLoadedTimer = true;
             //isExcelExportDataAware = false;
-            isVariationSeparated = true;
-            showStatsBuildingLoadingScreen = true;
+            IsVariationSeparated = true;
 
-            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+            if(FullScreenView)
+                GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+
             this.RaisePropertiesChanged();
         }
 
@@ -436,11 +441,9 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
             if (summaryBackgroundWorker != null)
                 summaryBackgroundWorker.CancelAsync();
-
-            //LoadingScreenManager.ShowLoadingScreen(1);
+            
             await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
             await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
-            //LoadingScreenManager.Progress();
             FullRefresh();
         }
 
@@ -509,8 +512,12 @@ namespace BluePrints.ViewModels
             {
                 mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
                 LoadingScreenManager.DisableLoadingScreen = false;
-                LoadingScreenManager.ShowLoadingScreen(0);
-                LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
+                if(ShowLoadingScreen)
+                {
+                    LoadingScreenManager.ShowLoadingScreen(0);
+                    LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
+                }
+
                 postLoadedDispatcherTimer = new Timer();
                 postLoadedDispatcherTimer.Interval = 10;
                 postLoadedDispatcherTimer.Elapsed += post_loaded_dispatcher_timer_tick;
@@ -587,14 +594,17 @@ namespace BluePrints.ViewModels
             if (commodityJobs == null)
             {
                 List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, JOB_COSTTYPESCollection, AllProjectDashboards);
+                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
                 DetailedData.AddRange(allDataPoints);
-                commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks);
+                commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks, ShowLoadingScreen);
                 isNewData = true;
             }
 
-            LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
-            LoadingScreenManager.SetMessage("Preparing View...");
+            if(ShowLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
+                LoadingScreenManager.SetMessage("Preparing View...");
+            }
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
             dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));

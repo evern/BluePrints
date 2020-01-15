@@ -22,12 +22,16 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks)
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
         {
             ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
-            LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
-            LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+
+            if(showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(groupedDisciplineJobs.Count());
+                LoadingScreenManager.SetMessage("Summarizing Jobs Data...");
+            }
 
             foreach(var groupedDisciplineJob in groupedDisciplineJobs)
             {
@@ -55,10 +59,13 @@ namespace BluePrints.Common.ViewModel.Misc
                     forecastProjections.Add(commodityJob);
                 }
 
-                LoadingScreenManager.Progress();
+                if(showLoadingScreen)
+                    LoadingScreenManager.Progress();
             }
 
-            LoadingScreenManager.CloseLoadingScreen();
+            if(showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
+
             return forecastProjections.ToList();
         }
 
@@ -249,20 +256,29 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
+        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
             ConcurrentBag<ExoSubJobProjection> combinedSubJobs = new ConcurrentBag<ExoSubJobProjection>();
-            LoadingScreenManager.ShowLoadingScreen(queriedJobs.Count());
-            LoadingScreenManager.SetMessage("Constructing Queried Jobs...");
+
+            if(showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(queriedJobs.Count());
+                LoadingScreenManager.SetMessage("Constructing Queried Jobs...");
+            }
+
             //assume queried jobs are already unique
             Parallel.ForEach(queriedJobs,
             queriedJob =>
             {
                 //jobs from query are added as it is
                 addExoSubJob(combinedSubJobs, queriedJob.SubJobCode, queriedJob.DisciplineCode, queriedJob.CommodityCode, queriedJob.VariationCode, COMMODITY_CODELookup, queriedJobs, JOB_COSTTYPESCollection, queriedJob.SubJobTitle, queriedJob.DisciplineName, false);
+
+            if (showLoadingScreen)
                 LoadingScreenManager.Progress();
             });
-            LoadingScreenManager.CloseLoadingScreen();
+
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
 
             if(dashboardJobs != null)
             {
@@ -289,8 +305,12 @@ namespace BluePrints.Common.ViewModel.Misc
             allExoJobConcatNames.AddRange(dashboardConcatNames);
             List<string> uniqueExoJobsConcatNames = allExoJobConcatNames.Distinct().ToList();
 
-            LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
-            LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(uniqueExoJobsConcatNames.Count);
+                LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
+            }
+
             Parallel.ForEach(uniqueExoJobsConcatNames,
             uniqueJobsConcatName =>
             {
@@ -312,10 +332,13 @@ namespace BluePrints.Common.ViewModel.Misc
                 
                 //data points from exo requires lookup and is filtered by unique code string
                 addExoSubJob(combinedSubJobs, subjobCode, disciplineCode, commodityCode, variationCode, COMMODITY_CODELookup, queriedJobs, JOB_COSTTYPESCollection, "", "", true, possibleErrorMessage);
-                LoadingScreenManager.Progress();
+
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
             });
 
-            LoadingScreenManager.CloseLoadingScreen();
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
             return combinedSubJobs.ToList();
         }
 

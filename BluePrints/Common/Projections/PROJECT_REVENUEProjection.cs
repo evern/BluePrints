@@ -13,24 +13,25 @@ namespace BluePrints.Common.Projections
     public class PROJECT_REVENUEProjection : BluePrintsProjectionBase<PROJECT_REVENUE>
     {
         readonly IEnumerable<ExoDataPoint> revenueDataPoints;
-        readonly IEnumerable<ExoDataPoint> actualsDataPoints;
-        readonly IEnumerable<ExoDataPoint> materialsDataPoints;
+        IEnumerable<ExoDataPoint> actualsDataPoints;
+        IEnumerable<ExoDataPoint> materialsDataPoints;
         readonly DateTime maxClaimDate;
-        readonly DateTime monthFloor;
-        readonly DateTime monthCeiling;
-        public DateTime DisplayMonth => monthCeiling;
+        public DateTime MonthFloor { get; set; }
+        public DateTime MonthCeiling { get; set; }
+        IEnumerable<PROJECT_REVENUEProjection> allRevenues;
         public PROJECT_REVENUEProjection()
         {
-
+            Editor = "progressEditor";
+            actualsDataPoints = new List<ExoDataPoint>();
+            materialsDataPoints = new List<ExoDataPoint>();
         }
 
-        public PROJECT_REVENUEProjection(DateTime revenuePeriod, IEnumerable<ExoDataPoint> revenueDataPoints, IEnumerable<ExoDataPoint> actualsDataPoints, IEnumerable<ExoDataPoint> materialsDataPoints, PROJECT_REVENUE projectRevenue = null)
+        public PROJECT_REVENUEProjection(DateTime revenuePeriod, IEnumerable<ExoDataPoint> revenueDataPoints, PROJECT_REVENUE projectRevenue = null)
+            : this()
         {
-            monthFloor = new DateTime(revenuePeriod.Year, revenuePeriod.Month, 1);
-            monthCeiling = monthFloor.AddMonths(1).AddDays(-1);
+            MonthFloor = new DateTime(revenuePeriod.Year, revenuePeriod.Month, 1);
+            MonthCeiling = MonthFloor.AddMonths(1).AddDays(-1);
             this.revenueDataPoints = revenueDataPoints;
-            this.actualsDataPoints = actualsDataPoints;
-            this.materialsDataPoints = materialsDataPoints;
 
             if (projectRevenue == null)
                 this.Entity = new PROJECT_REVENUE();
@@ -43,7 +44,7 @@ namespace BluePrints.Common.Projections
                 maxClaimDate = revenueDataPoints.Max(x => x.ActualDate);
         }
 
-        public bool IsRevenueReadOnly => monthFloor < maxClaimDate;
+        public bool IsRevenueReadOnly => MonthFloor < maxClaimDate;
         public SolidColorBrush Revenue_Background
         {
             get
@@ -58,17 +59,36 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public decimal ActualCosts => actualsDataPoints.Where(x => x.ActualDate >= monthFloor && x.ActualDate <= monthCeiling).Sum(x => x.Costs);
-        public decimal ActualCostsToDate => actualsDataPoints.Where(x => x.ActualDate <= monthCeiling).Sum(x => x.Costs);
+        public void SetRevenues(IEnumerable<PROJECT_REVENUEProjection> projections)
+        {
+            allRevenues = projections;
+        }
 
-        public decimal MaterialCosts => materialsDataPoints.Where(x => x.ActualDate >= monthFloor && x.ActualDate <= monthCeiling).Sum(x => x.Costs);
-        public decimal MaterialCostsToDate => materialsDataPoints.Where(x => x.ActualDate <= monthCeiling).Sum(x => x.Costs);
+        public void SetActualDataPoints(IEnumerable<ExoDataPoint> actualDataPoints)
+        {
+            actualsDataPoints = actualDataPoints;
+        }
 
-        public decimal TotalCosts => ActualCosts + MaterialCosts;
-        public decimal TotalCostsToDate => ActualCostsToDate + MaterialCostsToDate;
+        public void SetMaterialDataPoints(IEnumerable<ExoDataPoint> materialDataPoints)
+        {
+            materialsDataPoints = materialDataPoints;
+            Editor = "numberEditor";
+        }
 
-        public decimal Revenue => revenueDataPoints.Where(x => x.ActualDate >= monthFloor && x.ActualDate <= monthCeiling).Sum(x => x.Costs);
-        public decimal RevenueToDate => revenueDataPoints.Where(x => x.ActualDate <= monthCeiling).Sum(x => x.Costs);
+        public decimal ActualCosts => actualsDataPoints.Where(x => x.ActualDate >= MonthFloor && x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+        public decimal ActualCostsToDate => actualsDataPoints.Where(x => x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+
+        public decimal MaterialCosts => materialsDataPoints.Where(x => x.ActualDate >= MonthFloor && x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+        public decimal MaterialCostsToDate => materialsDataPoints.Where(x => x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+
+        public decimal ForecastCosts { get; set; }
+        public decimal ForecastCostsToDate { get; set; }
+
+        public decimal TotalCosts => ActualCosts + MaterialCosts + ForecastCosts;
+        public decimal TotalCostsToDate => ActualCostsToDate + MaterialCostsToDate + ForecastCostsToDate;
+
+        public decimal Revenue => revenueDataPoints.Where(x => x.ActualDate >= MonthFloor && x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+        public decimal RevenueToDate => allRevenues == null ? 0 : allRevenues.Where(x => x.MonthCeiling <= MonthCeiling).Sum(x => x.ViewRevenue);
 
         decimal viewRevenue;
         public decimal ViewRevenue
@@ -94,7 +114,8 @@ namespace BluePrints.Common.Projections
             return viewRevenue;
         }
 
-        public decimal? Nett => !IsRevenueReadOnly ? (decimal?)null : Revenue - TotalCosts;
-        public decimal? NettToDate => !IsRevenueReadOnly ? (decimal?)null : RevenueToDate - TotalCostsToDate;
+        public string Editor { get; set; }
+        public decimal? Nett => ViewRevenue - TotalCosts;
+        public decimal? NettToDate => RevenueToDate - TotalCostsToDate;
     }
 }

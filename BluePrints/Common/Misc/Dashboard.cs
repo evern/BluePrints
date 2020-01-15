@@ -482,7 +482,7 @@ namespace BluePrints.Common.Misc
         /// <param name="project_summary_stats">The summary stats to subdivide</param>
         /// <param name="isVariationSeparated">Whether to separater variation</param>
         /// <returns></returns>
-        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
+        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
         {
             if (project_summary_stats == null)
                 return new List<DashboardTreeStructure>();
@@ -493,7 +493,9 @@ namespace BluePrints.Common.Misc
             //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
             project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name, forceRetrieveRemainingDataPoints);
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
-            LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
+
+            if(showLoadingScreen)
+                LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
             //child dashboards are now subdivided into subjob dashboard
 
             Parallel.ForEach(
@@ -505,7 +507,10 @@ namespace BluePrints.Common.Misc
                 if (isVariationSeparated)
                 {
                     loadingScreenMessage = "Dividing Variation from SubJob: " + subjob_dashboard.Code;
-                    LoadingScreenManager.SetMessage(loadingScreenMessage);
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.SetMessage(loadingScreenMessage);
+
                     subjob_dashboard.SubDivideDashboardStats(x => x.Variation_Code, x => x.Variation_Code, forceRetrieveRemainingDataPoints);
 
                     Parallel.ForEach(
@@ -513,7 +518,10 @@ namespace BluePrints.Common.Misc
                     variation_dashboard =>
                     {
                         loadingScreenMessage = "Dividing Discipline from Variation: " + variation_dashboard.Code;
-                        LoadingScreenManager.SetMessage(loadingScreenMessage);
+
+                        if (showLoadingScreen)
+                            LoadingScreenManager.SetMessage(loadingScreenMessage);
+
                         variation_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code, forceRetrieveRemainingDataPoints);
 
                         foreach (var childDashboard in variation_dashboard.Child_Dashboards)
@@ -523,7 +531,10 @@ namespace BluePrints.Common.Misc
                 else
                 {
                     loadingScreenMessage = "Dividing Discipline from SubJob: " + subjob_dashboard.Code;
-                    LoadingScreenManager.SetMessage(loadingScreenMessage);
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.SetMessage(loadingScreenMessage);
+
                     subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code, forceRetrieveRemainingDataPoints);
 
                     foreach (var childDashboard in subjob_dashboard.Child_Dashboards)
@@ -535,22 +546,27 @@ namespace BluePrints.Common.Misc
                 discipline_dashboard =>
                 {
                     loadingScreenMessage = "Dividing Commodity from Discipline: " + discipline_dashboard.Code;
-                    LoadingScreenManager.SetMessage(loadingScreenMessage);
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.SetMessage(loadingScreenMessage);
                     //child dashboards are now subdivided into discipline dashboard
                     discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code, forceRetrieveRemainingDataPoints);
                 });
 
-                LoadingScreenManager.Progress();
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
             });
 
-            LoadingScreenManager.CloseLoadingScreen();
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
+
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
-            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, isVariationSeparated, forceRetrieveRemainingDataPoints);
+            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, showLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints);
 
             IEnumerable<SUBJOB> designSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> constructionSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
