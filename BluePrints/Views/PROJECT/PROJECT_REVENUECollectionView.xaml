@@ -1,6 +1,18 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECT_REVENUECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECT_REVENUECollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECT_REVENUECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:local="clr-namespace:BluePrints.ViewModels" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECT_REVENUECollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <DataTemplate x:Key="numberEditor" >
+                <dxe:TextEdit x:Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+            </DataTemplate>
+            <DataTemplate x:Key="progressEditor" x:Name="PART_Editor">
+                <dxe:ProgressBarEdit x:Name="PART_Editor" Grid.Row="1" 
+                             HorizontalAlignment="Center" VerticalAlignment="Center" 
+                             Width="100" Height="15">
+                    <dxe:ProgressBarEdit.StyleSettings>
+                        <dxe:ProgressBarMarqueeStyleSettings/>
+                    </dxe:ProgressBarEdit.StyleSettings>
+                </dxe:ProgressBarEdit>
+            </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -46,10 +58,9 @@
                         <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlRevenue" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.CustomSummaryCommand, ElementName=userControl}" EventName="CustomSummary" PassEventArgsToCommand="True" />
-                                <!--<dxmvvm:EventToCommand Command="{Binding DataContext.OnCustomColumnSortCommand, ElementName=userControl}" EventName="CustomColumnSort" PassEventArgsToCommand="True" />-->
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="Date" FieldName="DisplayMonth" ReadOnly="True">
+                                <dxg:GridColumn Header="Date" FieldName="MonthCeiling" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings DisplayFormat="MMM-yy" />
                                     </dxg:GridColumn.EditSettings>
@@ -61,20 +72,30 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Header="Cumulative Revenue" FieldName="RevenueToDate" ReadOnly="True">
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <local:EditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn Header="Cost" FieldName="TotalCosts" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <local:EditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Cumulative Cost" FieldName="TotalCostsToDate" ReadOnly="True">
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <local:EditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Nett" FieldName="Nett" ReadOnly="True">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <local:EditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cumulative Nett" FieldName="NettToDate">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
+                                <dxg:GridColumn Header="Cumulative Nett" FieldName="NettToDate" ReadOnly="True">
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <local:EditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>

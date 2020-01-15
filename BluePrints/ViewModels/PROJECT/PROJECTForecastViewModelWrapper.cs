@@ -255,6 +255,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
+        public bool FullScreenView = true;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
@@ -279,7 +280,9 @@ namespace BluePrints.ViewModels
             //isExcelExportDataAware = false;
             IsVariationSeparated = true;
 
-            GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+            if(FullScreenView)
+                GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+
             this.RaisePropertiesChanged();
         }
 

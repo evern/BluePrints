@@ -18,6 +18,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Web.UI.WebControls;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace BluePrints.ViewModels
 {
@@ -50,8 +53,6 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
 
-        List<ExoDataPoint> actualDataPoints;
-        List<ExoDataPoint> materialDataPoints;
         List<ExoDataPoint> revenueDataPoints;
 
         protected BackgroundWorker summaryBackgroundWorker;
@@ -97,18 +98,7 @@ namespace BluePrints.ViewModels
             if(!isFirstLoaded)
             {
                 List<DateTime> earliestDates = new List<DateTime>();
-                actualDataPoints = new List<ExoDataPoint>();
-                materialDataPoints = new List<ExoDataPoint>();
-                
-                DateTime? firstRecordedActualDate = actualDataPoints.Count == 0 ? (DateTime?)null : actualDataPoints.Min(x => x.ActualDate);
-                DateTime? firstRecordedMaterialDate = materialDataPoints.Count == 0 ? (DateTime?)null : materialDataPoints.Min(x => x.ActualDate);
                 DateTime? firstRecordedRevenueDate = revenueDataPoints.Count == 0 ? (DateTime?)null : revenueDataPoints.Min(x => x.ActualDate);
-
-                if(firstRecordedActualDate != null)
-                    earliestDates.Add((DateTime)firstRecordedActualDate);
-
-                if (firstRecordedMaterialDate != null)
-                    earliestDates.Add((DateTime)firstRecordedMaterialDate);
 
                 if (firstRecordedRevenueDate != null)
                     earliestDates.Add((DateTime)firstRecordedRevenueDate);
@@ -123,7 +113,7 @@ namespace BluePrints.ViewModels
                 do
                 {
                     PROJECT_REVENUE findRevenue = query.FirstOrDefault(x => x.REVENUE_MONTH.Year == loopDate.Year && x.REVENUE_MONTH.Month == loopDate.Month);
-                    PROJECT_REVENUEProjection newPROJECT_REVENUEProjection = new PROJECT_REVENUEProjection(loopDate, revenueDataPoints, actualDataPoints, materialDataPoints, findRevenue);
+                    PROJECT_REVENUEProjection newPROJECT_REVENUEProjection = new PROJECT_REVENUEProjection(loopDate, revenueDataPoints, findRevenue);
                     projections.Add(newPROJECT_REVENUEProjection);
                     loopDate = loopDate.AddMonths(1);
                 } while (loopDate <= latestDate);
@@ -133,18 +123,12 @@ namespace BluePrints.ViewModels
                 PROJECT_REVENUE editedRevenue = query.FirstOrDefault();
                 if(editedRevenue != null)
                 {
-                    PROJECT_REVENUEProjection findProjection = DisplayEntities.FirstOrDefault(x => x.DisplayMonth.Year == editedRevenue.REVENUE_MONTH.Year && x.DisplayMonth.Month == editedRevenue.REVENUE_MONTH.Month);
+                    PROJECT_REVENUEProjection findProjection = DisplayEntities.FirstOrDefault(x => x.MonthCeiling.Year == editedRevenue.REVENUE_MONTH.Year && x.MonthCeiling.Month == editedRevenue.REVENUE_MONTH.Month);
                     if (findProjection != null)
                     {
                         findProjection.Entity = editedRevenue;
                         findProjection.Update();
                         projections.Add(findProjection);
-                    }
-                    else
-                    {
-                        //when message comes from another machine (Needs to be tested)
-                        findProjection = new PROJECT_REVENUEProjection(editedRevenue.REVENUE_MONTH, revenueDataPoints, actualDataPoints, materialDataPoints, editedRevenue);
-                        DisplayEntities.Add(findProjection);
                     }
                 }
             }
@@ -172,6 +156,7 @@ namespace BluePrints.ViewModels
             }
 
             projectForecastViewModel = PROJECTForecastViewModelWrapper.Create();
+            projectForecastViewModel.FullScreenView = false;
             projectForecastViewModel.ShowLoadingScreen = false;
             projectForecastViewModel.OnDataTableLoaded = onForecastDataTableLoaded;
             projectForecastViewModel.SetParentViewModel(this);
@@ -181,7 +166,34 @@ namespace BluePrints.ViewModels
 
         private void onForecastDataTableLoaded(DataTable dataTable)
         {
+            List<DatatableDateCost> dateCosts = new List<DatatableDateCost>();
+            foreach(DataColumn column in dataTable.Columns)
+            {
+                string columnName = column.ColumnName;
 
+                DateTime parseDateTime;
+                if (DateTime.TryParse(columnName, out parseDateTime))
+                {
+                    decimal sum = dataTable.AsEnumerable().Sum(row => row.Field<decimal>(columnName));
+                    dateCosts.Add(new DatatableDateCost() { Cost = sum, Date = parseDateTime });
+                }
+            }
+
+            IEnumerable<Stats> actualStats = projectForecastViewModel.AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+            IEnumerable<Stats> materialStats = projectForecastViewModel.AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
+
+            IEnumerable<ExoDataPoint> actualDataPoints = actualStats.SelectMany(x => x.ExoDataPoints);
+            IEnumerable<ExoDataPoint> materialDataPoints = materialStats.SelectMany(x => x.ExoDataPoints);
+
+            foreach (PROJECT_REVENUEProjection displayEntity in DisplayEntities)
+            {
+                displayEntity.SetRevenues(DisplayEntities);
+                displayEntity.SetActualDataPoints(actualDataPoints);
+                displayEntity.SetMaterialDataPoints(materialDataPoints);
+                displayEntity.ForecastCosts = dateCosts.Where(x => x.Date >= displayEntity.MonthFloor && x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
+                displayEntity.ForecastCostsToDate = dateCosts.Where(x => x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
+                displayEntity.Update();
+            }
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_REVENUEProjection> entities)
@@ -197,10 +209,21 @@ namespace BluePrints.ViewModels
         /// </summary>
         public bool OnBeforeEntitySaved(PROJECT_REVENUEProjection projection)
         {
-            projection.Entity.REVENUE_MONTH = new DateTime(projection.DisplayMonth.Year, projection.DisplayMonth.Month, 1);
+            projection.Entity.REVENUE_MONTH = new DateTime(projection.MonthCeiling.Year, projection.MonthCeiling.Month, 1);
             projection.Entity.REVENUE_PRICE = projection.GetNewEntityRevenuePrice();
             projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
             return true;
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECT_REVENUEProjection projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().ViewRevenue))
+            {
+                foreach (PROJECT_REVENUEProjection displayEntity in DisplayEntities)
+                {
+                    displayEntity.Update();
+                }
+            }
         }
 
         public override string UnifiedValueValidation(PROJECT_REVENUEProjection projection, string field_name, object new_value, bool isPaste)
@@ -208,7 +231,7 @@ namespace BluePrints.ViewModels
             if(field_name == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().ViewRevenue))
             {
                 if (projection.IsRevenueReadOnly)
-                    return "Cannot set revenue for " + projection.DisplayMonth.ToString("yy MMM") + " because it's already claimed";
+                    return "Cannot set revenue for " + projection.MonthCeiling.ToString("yy MMM") + " because it's already claimed";
             }
 
             return string.Empty;
@@ -232,7 +255,7 @@ namespace BluePrints.ViewModels
                     eacRevenue = (decimal)loadPROJECT.EAC_REVENUE;
 
                 GridSummaryItem gridSummaryItem = e.Item as GridSummaryItem;
-                bool isEAC = gridSummaryItem.ShowInColumn == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().DisplayMonth);
+                bool isEAC = gridSummaryItem.ShowInColumn == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().MonthCeiling);
                 if (!isEAC)
                     e.TotalValue = totalRevenue - eacRevenue;
                 else
@@ -265,5 +288,21 @@ namespace BluePrints.ViewModels
             base.OnClose(e);
         }
         #endregion
+    }
+
+    public class EditorTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            GridCellData data = (GridCellData)item;
+            var dataItem = data.RowData.Row as PROJECT_REVENUEProjection;
+            return string.IsNullOrEmpty(dataItem.Editor) ? null : (DataTemplate)((FrameworkElement)container).FindResource(dataItem.Editor);
+        }
+    }
+
+    public class DatatableDateCost
+    {
+        public decimal Cost { get; set; }
+        public DateTime Date { get; set; }
     }
 }
