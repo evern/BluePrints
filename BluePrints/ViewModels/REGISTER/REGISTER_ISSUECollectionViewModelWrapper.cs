@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
 
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
+            var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
             delayedRefreshTimer = new DispatcherTimer();
@@ -74,7 +74,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD, REGISTER_HOLDProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -85,6 +85,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
+        {
+            return query => query.Where(x => x.LEAVE_DATE == null);
         }
 
         private Func<IRepositoryQuery<REGISTER_CHANGE>, IQueryable<REGISTER_CHANGE>> REGISTER_CHANGEProjectionFunc()
@@ -298,7 +303,7 @@ namespace BluePrints.ViewModels
         private string getChangeRegisterNewNumber()
         {
             IEnumerable<REGISTER_CHANGE> entitiesInOrder = REGISTER_CHANGEViewModel.Entities.OrderBy(x => x.EntityNumber);
-            if(entitiesInOrder.Count() == 0)
+            if (entitiesInOrder.Count() == 0)
                 return StringFormatUtils.AppendStringWithEnumerator(string.Empty, 0, DefaultNumericFieldLength());
 
             REGISTER_CHANGE largestNumberEntity = entitiesInOrder.Last();
@@ -373,8 +378,8 @@ namespace BluePrints.ViewModels
                 }
             }
 
-//set paperkind depending on project location
-            if(loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
+            //set paperkind depending on project location
+            if (loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
                 issuesRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.A3;
             else
                 issuesRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
