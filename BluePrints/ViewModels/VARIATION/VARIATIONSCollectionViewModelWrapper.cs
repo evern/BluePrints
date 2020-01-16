@@ -897,19 +897,14 @@ namespace BluePrints.ViewModels
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
                     string commodityCode = deliverable.Commodity_Code;
-                    decimal variationCost = deliverable.Forecast_InternalCosts;
 
                     ExoSubJobEditableProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
                     if (exoVariation == null)
                     {
-                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode, ExoBudget = variationCost };
+                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
                         //set commodity code convention so that error can be raised natively within model with GetPropertyError
                         newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
                         exoVariations.Add(newVariationSubJob);
-                    }
-                    else
-                    {
-                        exoVariation.ExoBudget += variationCost;
                     }
                 }
 

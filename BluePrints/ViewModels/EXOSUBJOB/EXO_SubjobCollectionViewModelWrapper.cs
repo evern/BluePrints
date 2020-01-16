@@ -618,10 +618,10 @@ namespace BluePrints.ViewModels
         {
             if (field_name.ToUpper().Contains("BUDGET"))
             {
-                if(projection.guid != Guid.Empty)
+                if(new_value != null && new_value.ToString() != "0")
                 {
                     if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
-                        return "You do not have authority to change the budget";
+                        return "You do not have authority to set or change budget";
                     else if (!projection.IsLineExistsInExo)
                         return "Budget must be changed on bookable entries only";
                 }

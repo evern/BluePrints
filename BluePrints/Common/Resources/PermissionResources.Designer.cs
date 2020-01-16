@@ -61,7 +61,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to approve internal and client numbers.
+        ///   Looks up a localized string similar to Approve internal and client numbers.
         /// </summary>
         internal static string ApproveInternalNumbers {
             get {
@@ -70,7 +70,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to book time for others.
+        ///   Looks up a localized string similar to Book time for others.
         /// </summary>
         internal static string BookOtherTime {
             get {
@@ -79,7 +79,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to change data date to a future date even if EAC is not saved.
+        ///   Looks up a localized string similar to Move forecast data date forward.
         /// </summary>
         internal static string CanForwardDataDate {
             get {
@@ -88,7 +88,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can change forecast data date to a date in the past even if EAC is saved.
+        ///   Looks up a localized string similar to Move forecast data date backward.
         /// </summary>
         internal static string CanRewindDataDate {
             get {
@@ -97,7 +97,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to change construction budget.
+        ///   Looks up a localized string similar to Change project budget.
         /// </summary>
         internal static string ChangeBudget {
             get {
@@ -106,7 +106,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to finalise internal and client numbers.
+        ///   Looks up a localized string similar to Finalise internal and client numbers.
         /// </summary>
         internal static string FinaliseNumbers {
             get {
@@ -115,7 +115,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage areas.
+        ///   Looks up a localized string similar to Manage areas.
         /// </summary>
         internal static string ManageArea {
             get {
@@ -124,7 +124,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage baselines.
+        ///   Looks up a localized string similar to Manage baselines.
         /// </summary>
         internal static string ManageBaseline {
             get {
@@ -133,7 +133,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage commodities.
+        ///   Looks up a localized string similar to Manage commodities.
         /// </summary>
         internal static string ManageCommodity {
             get {
@@ -142,7 +142,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage cost rates.
+        ///   Looks up a localized string similar to Manage cost rates.
         /// </summary>
         internal static string ManageCostRate {
             get {
@@ -151,7 +151,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage deliverable statuses.
+        ///   Looks up a localized string similar to Manage deliverable statuses.
         /// </summary>
         internal static string ManageDeliverableStatuses {
             get {
@@ -160,7 +160,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage departments.
+        ///   Looks up a localized string similar to Manage departments.
         /// </summary>
         internal static string ManageDepartment {
             get {
@@ -169,7 +169,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage disciplines.
+        ///   Looks up a localized string similar to Manage disciplines.
         /// </summary>
         internal static string ManageDiscipline {
             get {
@@ -178,7 +178,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage document types.
+        ///   Looks up a localized string similar to Manage document types.
         /// </summary>
         internal static string ManageDocType {
             get {
@@ -187,7 +187,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage estimations.
+        ///   Looks up a localized string similar to Manage estimations.
         /// </summary>
         internal static string ManageEstimation {
             get {
@@ -196,7 +196,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage exo users (Confidential Information).
+        ///   Looks up a localized string similar to Manage exo users (Confidential Information).
         /// </summary>
         internal static string ManageEXOUsers {
             get {
@@ -205,7 +205,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage forecast.
+        ///   Looks up a localized string similar to Manage forecast.
         /// </summary>
         internal static string ManageForecast {
             get {
@@ -214,7 +214,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage S-Curve holidays.
+        ///   Looks up a localized string similar to Manage S-Curve holidays.
         /// </summary>
         internal static string ManageHoliday {
             get {
@@ -223,7 +223,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage construction job setup.
+        ///   Looks up a localized string similar to Manage construction job setup.
         /// </summary>
         internal static string ManageJobSetup {
             get {
@@ -232,7 +232,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage office.
+        ///   Looks up a localized string similar to Manage office.
         /// </summary>
         internal static string ManageOffice {
             get {
@@ -241,7 +241,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage phase.
+        ///   Looks up a localized string similar to Manage phase.
         /// </summary>
         internal static string ManagePhase {
             get {
@@ -250,7 +250,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage progress.
+        ///   Looks up a localized string similar to Manage progress.
         /// </summary>
         internal static string ManageProgress {
             get {
@@ -259,7 +259,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage progress distribution.
+        ///   Looks up a localized string similar to Manage progress distribution.
         /// </summary>
         internal static string ManageProgressDistribution {
             get {
@@ -268,7 +268,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage projects.
+        ///   Looks up a localized string similar to Manage projects.
         /// </summary>
         internal static string ManageProject {
             get {
@@ -277,7 +277,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage chargeout rates.
+        ///   Looks up a localized string similar to Manage chargeout rates.
         /// </summary>
         internal static string ManageRate {
             get {
@@ -286,7 +286,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage registers.
+        ///   Looks up a localized string similar to Manage registers.
         /// </summary>
         internal static string ManageRegisters {
             get {
@@ -295,7 +295,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage roles.
+        ///   Looks up a localized string similar to Manage roles.
         /// </summary>
         internal static string ManageRole {
             get {
@@ -304,7 +304,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage stock codes.
+        ///   Looks up a localized string similar to Manage stock codes.
         /// </summary>
         internal static string ManageStockCode {
             get {
@@ -313,7 +313,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage study types.
+        ///   Looks up a localized string similar to Manage study types.
         /// </summary>
         internal static string ManageStudyType {
             get {
@@ -322,7 +322,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage subjobs.
+        ///   Looks up a localized string similar to Manage subjobs.
         /// </summary>
         internal static string ManageSubjob {
             get {
@@ -331,7 +331,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage tender profile.
+        ///   Looks up a localized string similar to Manage tender profile.
         /// </summary>
         internal static string ManageTenderProfile {
             get {
@@ -340,7 +340,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage transactions.
+        ///   Looks up a localized string similar to Manage transactions.
         /// </summary>
         internal static string ManageTransactions {
             get {
@@ -349,7 +349,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage other users.
+        ///   Looks up a localized string similar to Manage other users.
         /// </summary>
         internal static string ManageUser {
             get {
@@ -358,7 +358,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage variation.
+        ///   Looks up a localized string similar to Manage variation.
         /// </summary>
         internal static string ManageVariation {
             get {
@@ -367,7 +367,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage variation register.
+        ///   Looks up a localized string similar to Manage variation register.
         /// </summary>
         internal static string ManageVariationRegister {
             get {
@@ -376,7 +376,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to manage workpack.
+        ///   Looks up a localized string similar to Manage workpack.
         /// </summary>
         internal static string ManageWorkpack {
             get {
@@ -385,7 +385,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to update progress percentage by deliverable status.
+        ///   Looks up a localized string similar to Update progress percentage by deliverable status.
         /// </summary>
         internal static string ProgressUpdatePercentageByStatus {
             get {
@@ -394,7 +394,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to save forecast EAC.
+        ///   Looks up a localized string similar to Save forecast EAC.
         /// </summary>
         internal static string SaveEAC {
             get {
@@ -403,7 +403,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to standardize subjobs in exo.
+        ///   Looks up a localized string similar to Standardize subjobs in exo.
         /// </summary>
         internal static string StandardizeSubJobs {
             get {
@@ -412,7 +412,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to modify internal and client numbers.
+        ///   Looks up a localized string similar to Modify internal and client numbers.
         /// </summary>
         internal static string UnapproveInternalNumbers {
             get {
@@ -421,7 +421,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow user to view dashboard.
+        ///   Looks up a localized string similar to View dashboard.
         /// </summary>
         internal static string ViewDashboard {
             get {

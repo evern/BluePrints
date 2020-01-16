@@ -2269,7 +2269,10 @@ namespace BluePrints.ViewModels
             job.OriginalUncommitted = uncommittedPOValues + job.P6RemainingCosts;
         }
 
-        public bool CanSaveEAC => isCompletelyLoaded;
+        public bool CanSaveEAC()
+        {
+            return isCompletelyLoaded;
+        }
 
         public void SaveEAC()
         {

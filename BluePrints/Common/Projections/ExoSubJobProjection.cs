@@ -1442,8 +1442,8 @@ namespace BluePrints.Common.Projections
             newSubJobProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
             newSubJobProjection.Budget = budgetInternalCosts;
 
-            //this line will get overridden if exo budget is found
-            newSubJobProjection.ExoBudget = newSubJobProjection.Budget;
+            //do not allow engineering to set budget
+            //newSubJobProjection.ExoBudget = newSubJobProjection.Budget;
             if (exoSubJobLine != null)
             {
                 newSubJobProjection.SubJobId = exoSubJobLine.SubJobNo;

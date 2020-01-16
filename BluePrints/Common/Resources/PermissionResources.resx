@@ -118,126 +118,126 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ManageArea" xml:space="preserve">
-    <value>Allow user to manage areas</value>
+    <value>Manage areas</value>
   </data>
   <data name="ManageBaseline" xml:space="preserve">
-    <value>Allow user to manage baselines</value>
+    <value>Manage baselines</value>
   </data>
   <data name="ManageCommodity" xml:space="preserve">
-    <value>Allow user to manage commodities</value>
+    <value>Manage commodities</value>
   </data>
   <data name="ManageDeliverableStatuses" xml:space="preserve">
-    <value>Allow user to manage deliverable statuses</value>
+    <value>Manage deliverable statuses</value>
   </data>
   <data name="ManageDepartment" xml:space="preserve">
-    <value>Allow user to manage departments</value>
+    <value>Manage departments</value>
   </data>
   <data name="ManageDiscipline" xml:space="preserve">
-    <value>Allow user to manage disciplines</value>
+    <value>Manage disciplines</value>
   </data>
   <data name="ManageDocType" xml:space="preserve">
-    <value>Allow user to manage document types</value>
+    <value>Manage document types</value>
   </data>
   <data name="ManageEstimation" xml:space="preserve">
-    <value>Allow user to manage estimations</value>
+    <value>Manage estimations</value>
   </data>
   <data name="ManageHoliday" xml:space="preserve">
-    <value>Allow user to manage S-Curve holidays</value>
+    <value>Manage S-Curve holidays</value>
   </data>
   <data name="ManagePhase" xml:space="preserve">
-    <value>Allow user to manage phase</value>
+    <value>Manage phase</value>
   </data>
   <data name="ManageProgress" xml:space="preserve">
-    <value>Allow user to manage progress</value>
+    <value>Manage progress</value>
   </data>
   <data name="ManageProject" xml:space="preserve">
-    <value>Allow user to manage projects</value>
+    <value>Manage projects</value>
   </data>
   <data name="ManageRate" xml:space="preserve">
-    <value>Allow user to manage chargeout rates</value>
+    <value>Manage chargeout rates</value>
   </data>
   <data name="ManageRegisters" xml:space="preserve">
-    <value>Allow user to manage registers</value>
+    <value>Manage registers</value>
   </data>
   <data name="ManageRole" xml:space="preserve">
-    <value>Allow user to manage roles</value>
+    <value>Manage roles</value>
   </data>
   <data name="ManageStockCode" xml:space="preserve">
-    <value>Allow user to manage stock codes</value>
+    <value>Manage stock codes</value>
   </data>
   <data name="ManageUser" xml:space="preserve">
-    <value>Allow user to manage other users</value>
+    <value>Manage other users</value>
   </data>
   <data name="ManageVariation" xml:space="preserve">
-    <value>Allow user to manage variation</value>
+    <value>Manage variation</value>
   </data>
   <data name="ManageSubjob" xml:space="preserve">
-    <value>Allow user to manage subjobs</value>
+    <value>Manage subjobs</value>
   </data>
   <data name="ProgressUpdatePercentageByStatus" xml:space="preserve">
-    <value>Allow user to update progress percentage by deliverable status</value>
+    <value>Update progress percentage by deliverable status</value>
   </data>
   <data name="ViewDashboard" xml:space="preserve">
-    <value>Allow user to view dashboard</value>
+    <value>View dashboard</value>
   </data>
   <data name="ManageWorkpack" xml:space="preserve">
-    <value>Allow user to manage workpack</value>
+    <value>Manage workpack</value>
   </data>
   <data name="ManageJobSetup" xml:space="preserve">
-    <value>Allow user to manage construction job setup</value>
+    <value>Manage construction job setup</value>
   </data>
   <data name="ManageProgressDistribution" xml:space="preserve">
-    <value>Allow user to manage progress distribution</value>
+    <value>Manage progress distribution</value>
   </data>
   <data name="BookOtherTime" xml:space="preserve">
-    <value>Allow user to book time for others</value>
+    <value>Book time for others</value>
   </data>
   <data name="ManageStudyType" xml:space="preserve">
-    <value>Allow user to manage study types</value>
+    <value>Manage study types</value>
   </data>
   <data name="ManageOffice" xml:space="preserve">
-    <value>Allow user to manage office</value>
+    <value>Manage office</value>
   </data>
   <data name="StandardizeSubJobs" xml:space="preserve">
-    <value>Allow user to standardize subjobs in exo</value>
+    <value>Standardize subjobs in exo</value>
   </data>
   <data name="ManageTenderProfile" xml:space="preserve">
-    <value>Allow user to manage tender profile</value>
+    <value>Manage tender profile</value>
   </data>
   <data name="ManageForecast" xml:space="preserve">
-    <value>Allow user to manage forecast</value>
+    <value>Manage forecast</value>
   </data>
   <data name="ManageVariationRegister" xml:space="preserve">
-    <value>Allow user to manage variation register</value>
+    <value>Manage variation register</value>
   </data>
   <data name="UnapproveInternalNumbers" xml:space="preserve">
-    <value>Allow user to modify internal and client numbers</value>
+    <value>Modify internal and client numbers</value>
   </data>
   <data name="FinaliseNumbers" xml:space="preserve">
-    <value>Allow user to finalise internal and client numbers</value>
+    <value>Finalise internal and client numbers</value>
   </data>
   <data name="ApproveInternalNumbers" xml:space="preserve">
-    <value>Allow user to approve internal and client numbers</value>
+    <value>Approve internal and client numbers</value>
   </data>
   <data name="ManageEXOUsers" xml:space="preserve">
-    <value>Allow user to manage exo users (Confidential Information)</value>
+    <value>Manage exo users (Confidential Information)</value>
   </data>
   <data name="ManageTransactions" xml:space="preserve">
-    <value>Allow user to manage transactions</value>
+    <value>Manage transactions</value>
   </data>
   <data name="ChangeBudget" xml:space="preserve">
-    <value>Allow user to change construction budget</value>
+    <value>Change project budget</value>
   </data>
   <data name="SaveEAC" xml:space="preserve">
-    <value>Allow user to save forecast EAC</value>
+    <value>Save forecast EAC</value>
   </data>
   <data name="CanRewindDataDate" xml:space="preserve">
-    <value>Can change forecast data date to a date in the past even if EAC is saved</value>
+    <value>Move forecast data date backward</value>
   </data>
   <data name="ManageCostRate" xml:space="preserve">
-    <value>Allow user to manage cost rates</value>
+    <value>Manage cost rates</value>
   </data>
   <data name="CanForwardDataDate" xml:space="preserve">
-    <value>Allow user to change data date to a future date even if EAC is not saved</value>
+    <value>Move forecast data date forward</value>
   </data>
 </root>

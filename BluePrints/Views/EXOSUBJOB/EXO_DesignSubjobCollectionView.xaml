@@ -36,7 +36,6 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                    <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
@@ -71,14 +70,14 @@
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" FilterPopupMode="CheckedList" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="Budget" Header="Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget calculated from from deliverable's total">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="False" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
+                                    <!--<dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
+                                    </dxg:GridColumn>-->
                                     <!--<dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -106,8 +105,6 @@
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>
