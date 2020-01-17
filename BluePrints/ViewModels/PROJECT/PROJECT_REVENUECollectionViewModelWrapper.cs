@@ -166,7 +166,7 @@ namespace BluePrints.ViewModels
 
         private void onForecastDataTableLoaded(DataTable dataTable)
         {
-            List<DatatableDateCost> dateCosts = new List<DatatableDateCost>();
+            List<DatatableDateCost> forecastDateCosts = new List<DatatableDateCost>();
             foreach(DataColumn column in dataTable.Columns)
             {
                 string columnName = column.ColumnName;
@@ -174,8 +174,11 @@ namespace BluePrints.ViewModels
                 DateTime parseDateTime;
                 if (DateTime.TryParse(columnName, out parseDateTime))
                 {
-                    decimal sum = dataTable.AsEnumerable().Sum(row => row.Field<decimal>(columnName));
-                    dateCosts.Add(new DatatableDateCost() { Cost = sum, Date = parseDateTime });
+                    if(parseDateTime > projectForecastViewModel.FixedDataDateMonthEnd)
+                    {
+                        decimal sum = dataTable.AsEnumerable().Sum(row => row.Field<decimal>(columnName));
+                        forecastDateCosts.Add(new DatatableDateCost() { Cost = sum, Date = parseDateTime });
+                    }
                 }
             }
 
@@ -190,8 +193,8 @@ namespace BluePrints.ViewModels
                 displayEntity.SetRevenues(DisplayEntities);
                 displayEntity.SetActualDataPoints(actualDataPoints);
                 displayEntity.SetMaterialDataPoints(materialDataPoints);
-                displayEntity.ForecastCosts = dateCosts.Where(x => x.Date >= displayEntity.MonthFloor && x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
-                displayEntity.ForecastCostsToDate = dateCosts.Where(x => x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
+                displayEntity.ForecastCosts = forecastDateCosts.Where(x => x.Date >= displayEntity.MonthFloor && x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
+                displayEntity.ForecastCostsToDate = forecastDateCosts.Where(x => x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
                 displayEntity.Update();
             }
         }
