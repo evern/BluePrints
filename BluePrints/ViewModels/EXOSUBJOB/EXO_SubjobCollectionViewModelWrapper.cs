@@ -618,7 +618,7 @@ namespace BluePrints.ViewModels
         {
             if (field_name.ToUpper().Contains("BUDGET"))
             {
-                if(new_value != null)
+                if(new_value != null && new_value.ToString() != string.Empty)
                 {
                     if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
                         return "You do not have authority to set or change budget";
