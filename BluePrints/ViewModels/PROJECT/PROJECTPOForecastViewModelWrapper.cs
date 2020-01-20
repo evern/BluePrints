@@ -77,6 +77,7 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            setProject(loadPROJECT);
 
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
@@ -108,7 +109,6 @@ namespace BluePrints.ViewModels
         private void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
         {
             isExoDataLoaded = false;
-            setProject(loadPROJECT);
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
             allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
