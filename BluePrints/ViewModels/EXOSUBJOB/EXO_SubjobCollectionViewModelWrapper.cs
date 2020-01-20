@@ -622,8 +622,6 @@ namespace BluePrints.ViewModels
                 {
                     if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
                         return "You do not have authority to set or change budget";
-                    else if (!projection.IsLineExistsInExo)
-                        return "Budget must be changed on bookable entries only";
                 }
             }
 
