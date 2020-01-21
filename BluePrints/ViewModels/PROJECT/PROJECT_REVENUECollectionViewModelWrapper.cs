@@ -113,7 +113,7 @@ namespace BluePrints.ViewModels
                 do
                 {
                     PROJECT_REVENUE findRevenue = query.FirstOrDefault(x => x.REVENUE_MONTH.Year == loopDate.Year && x.REVENUE_MONTH.Month == loopDate.Month);
-                    PROJECT_REVENUEProjection newPROJECT_REVENUEProjection = new PROJECT_REVENUEProjection(loopDate, revenueDataPoints, findRevenue);
+                    PROJECT_REVENUEProjection newPROJECT_REVENUEProjection = new PROJECT_REVENUEProjection(loopDate, revenueDataPoints, loopDate == earliestDate, findRevenue);
                     projections.Add(newPROJECT_REVENUEProjection);
                     loopDate = loopDate.AddMonths(1);
                 } while (loopDate <= latestDate);
@@ -197,6 +197,13 @@ namespace BluePrints.ViewModels
                 displayEntity.ForecastCostsToDate = forecastDateCosts.Where(x => x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
                 displayEntity.Update();
             }
+
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_REVENUEProjection> entities)
@@ -301,11 +308,5 @@ namespace BluePrints.ViewModels
             var dataItem = data.RowData.Row as PROJECT_REVENUEProjection;
             return string.IsNullOrEmpty(dataItem.Editor) ? null : (DataTemplate)((FrameworkElement)container).FindResource(dataItem.Editor);
         }
-    }
-
-    public class DatatableDateCost
-    {
-        public decimal Cost { get; set; }
-        public DateTime Date { get; set; }
     }
 }

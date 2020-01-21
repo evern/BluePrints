@@ -44,6 +44,18 @@ namespace BluePrints.Common.Projections
         }
     }
 
+    public class ForecastEACProjection
+    {
+        public ExoSubJobEditableProjection Job { get; set; }
+        public List<DatatableDateCost> DateCosts { get; set; }
+    }
+
+    public class DatatableDateCost
+    {
+        public decimal Cost { get; set; }
+        public DateTime Date { get; set; }
+    }
+
     [ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, StockCode, VariationCode")]
     //ExoSubJobProjection is not flat so this is created
     public class ExoSubJobEditableProjection : EntityBase, IGuidEntityKey, IDXDataErrorInfo
@@ -76,6 +88,8 @@ namespace BluePrints.Common.Projections
 
         [Required]
         public string SubJobCode { get; set; }
+
+        public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(SubJobCode);
 
         [Required]
         public string SubJobTitle { get; set; }

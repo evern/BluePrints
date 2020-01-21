@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="BluePrints.Views.PROJECTForecastEACReportView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+             xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal"
+             xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastEACReportViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
+            <DataTemplate x:Key="DefaultColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="ForecastPastColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn FilterPopupMode="CheckedList" AllowBestFit="False" dx:DXSerializer.StoreLayoutMode="None" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
+                                </dxe:SpinEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="SummaryTemplate">
+                <ContentControl>
+                    <dxg:GridSummaryItem FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}"
+                                         SummaryType="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Type, RelativeSource={RelativeSource Self}}"
+                                         DisplayFormat="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayFormat, RelativeSource={RelativeSource Self}}"/>
+                </ContentControl>
+            </DataTemplate>
+            <converter:DynamicDateColumnDisplayStringConverter x:Key="DynamicDateColumnDisplayStringConverter" />
+            <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
+            <Style x:Key="TableRowStyle" TargetType="dxg:RowControl">
+                <Setter Property="Height" Value="5"/>
+                <Setter Property="FontFamily" Value="Calibri"/>
+                <Setter Property="FontSize" Value="12"/>
+            </Style>
+            <Style x:Key="GroupSummaryStyle" TargetType="dxg:GroupColumnSummaryControl">
+                <Setter Property="TextBlock.FontFamily" Value="Calibri"/>
+                <Setter Property="TextBlock.FontSize" Value="12"/>
+                <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            </Style>
+            <Style x:Key="TotalSummaryStyle" TargetType="dx:DataContentPresenter">
+                <Setter Property="TextBlock.FontFamily" Value="Calibri"/>
+                <Setter Property="TextBlock.FontSize" Value="12"/>
+                <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            </Style>
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="DistributionDialogService">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
+            <dxmvvm:OpenFileDialogService RestorePreviouslySelectedDirectory="True" />
+        </dxmvvm:Interaction.Behaviors>
+        <Grid DataContext="{Binding MainViewModel}">
+            <dxb:BarManager>
+                <dxb:BarManager.Items>
+                    <dxb:BarButtonItem x:Name="biFullRefresh1" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
+                    <dxb:BarCheckItem x:Name="biCellSelection1" Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
+                    <dxb:BarButtonItem x:Name="biSaveLayout1" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" Content="Save Layout" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Save current table filters, sorting, grouping and expanded group" />
+                    <dxb:BarButtonItem x:Name="biResetLayout1" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
+                    <dxb:BarButtonItem x:Name="biExpandAllGroups1" Command="{Binding DataContext.ExpandAllGroupsCommand, ElementName=userControl}" Content="Expand All Groups" Glyph="{dx:DXImage Image=ExpandFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=ExpandFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Expand all groups, only works when grid is grouped" />
+                    <dxb:BarButtonItem x:Name="biCollapseAllGroups1" Command="{Binding DataContext.CollapseAllGroupsCommand, ElementName=userControl}" Content="Collapse All Groups" Glyph="{dx:DXImage Image=CollapseFieldPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=CollapseFieldPivotTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Collapse all groups, only works when grid is grouped" />
+                    <dxb:BarButtonItem x:Name="biExportToExcel1" Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences" />
+                    <dxb:BarButtonItem x:Name="biExportToPDF1" Command="{Binding DataContext.ExportToPDFCommand, ElementName=userControl}" Content="Export" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to PDF. Includes grouping, sorting and column visibility preferences" />
+                </dxb:BarManager.Items>
+                <DockPanel>
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
+                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                        </dxr:RibbonDefaultPageCategory>
+                    </dxr:RibbonControl>
+                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
+                        <dxr:RibbonStatusBarControl.LeftItems>
+                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
+                        </dxr:RibbonStatusBarControl.LeftItems>
+                    </dxr:RibbonStatusBarControl>
+                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
+                            <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
+                                <dxdo:LayoutPanel>
+                                    <Grid>
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:LayoutSerializationService />
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
+                                             TotalSummarySource="{Binding DataContext.ViewSummaries, ElementName=userControl}"
+                                             TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                             GroupSummarySource="{Binding DataContext.ViewSummaries, ElementName=userControl}"
+                                             GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ViewColumns, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectionMode="{Binding SelectMode}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                                            </dxmvvm:Interaction.Behaviors>
+                                            <dxg:GridControl.View>
+                                                <dxg:TableView x:Name="tableView" ColumnFilterPopupMode="ExcelSmart" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                    <dxg:TableView.RowCellMenuCustomizations>
+                                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                                    </dxg:TableView.RowCellMenuCustomizations>
+                                                </dxg:TableView>
+                                            </dxg:GridControl.View>
+                                        </local:GridControlEx>
+                                    </Grid>
+                                </dxdo:LayoutPanel>
+                            </dxdo:LayoutGroup>
+                        </dxdo:LayoutGroup>
+                    </dxdo:DockLayoutManager>
+                </DockPanel>
+            </dxb:BarManager>
+        </Grid>
+    </Grid>
+</UserControl>

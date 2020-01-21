@@ -647,6 +647,8 @@ namespace BluePrints.ViewModels
                 forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IndirectForecast" + keyString, projectKey, childTitlePrefix + "Indirects Forecast", "PROJECTIndirectForecastView", new EntitiesParameter<PROJECT>(entity), null, "Indirects Forecast", false, false, @"Function Library\Information_16x16.png"));
                 forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
                 forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Claims" + keyString, projectKey, childTitlePrefix + "Claims", "PROJECT_REVENUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Claims", false, false, @"Number Formats\Accounting_16x16.png"));
+                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_AllEACView" + keyString, projectKey, childTitlePrefix + "View EAC's", "PROJECTForecastEACReportView", new EntitiesParameter<PROJECT>(entity), null, "View EAC's", false, false, @"Scheduling\FullWeekView_16x16.png"));
+
                 //exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSummary" + keyString, projectKey, childTitlePrefix + "Summary", "PROJECTSummaryView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Summary", false, false, @"Programming\ProjectDirectory_16x16.png"));
             }
 
