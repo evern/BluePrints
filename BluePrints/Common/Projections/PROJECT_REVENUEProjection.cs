@@ -26,11 +26,11 @@ namespace BluePrints.Common.Projections
             materialsDataPoints = new List<ExoDataPoint>();
         }
 
-        public PROJECT_REVENUEProjection(DateTime revenuePeriod, IEnumerable<ExoDataPoint> revenueDataPoints, PROJECT_REVENUE projectRevenue = null)
+        public PROJECT_REVENUEProjection(DateTime revenuePeriod, IEnumerable<ExoDataPoint> revenueDataPoints, bool isFirstRow = false, PROJECT_REVENUE projectRevenue = null)
             : this()
         {
-            MonthFloor = new DateTime(revenuePeriod.Year, revenuePeriod.Month, 1);
-            MonthCeiling = MonthFloor.AddMonths(1).AddDays(-1);
+            MonthFloor = isFirstRow ? new DateTime() : new DateTime(revenuePeriod.Year, revenuePeriod.Month, 1);
+            MonthCeiling = new DateTime(revenuePeriod.Year, revenuePeriod.Month, 1).AddMonths(1).AddDays(-1);
             this.revenueDataPoints = revenueDataPoints;
 
             if (projectRevenue == null)

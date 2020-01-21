@@ -2269,12 +2269,12 @@ namespace BluePrints.ViewModels
             job.OriginalUncommitted = uncommittedPOValues + job.P6RemainingCosts;
         }
 
-        public bool CanSaveEAC()
+        public bool CanSaveCurrentMonthEAC()
         {
             return isCompletelyLoaded;
         }
 
-        public void SaveEAC()
+        public void SaveCurrentMonthEAC()
         {
             if (!LoginCredentials.hasPermission(PermissionResources.SaveEAC))
             {

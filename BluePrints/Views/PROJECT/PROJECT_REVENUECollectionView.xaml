@@ -65,34 +65,34 @@
                                         <dxe:DateEditSettings DisplayFormat="MMM-yy" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Revenue" FieldName="ViewRevenue" >
+                                <dxg:GridColumn Header="Revenue" FieldName="ViewRevenue" Width="100">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.IsRevenueReadOnly}" Background="{Binding RowData.Row.Revenue_Background}"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cumulative Revenue" FieldName="RevenueToDate" ReadOnly="True">
+                                <dxg:GridColumn Header="Cumulative Revenue" FieldName="RevenueToDate" Width="100" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <local:EditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cost" FieldName="TotalCosts" ReadOnly="True">
+                                <dxg:GridColumn Header="Cost" FieldName="TotalCosts" Width="100" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <local:EditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cumulative Cost" FieldName="TotalCostsToDate" ReadOnly="True">
+                                <dxg:GridColumn Header="Cumulative Cost" FieldName="TotalCostsToDate" Width="100" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <local:EditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Nett" FieldName="Nett" ReadOnly="True">
+                                <dxg:GridColumn Header="Nett" FieldName="Nett" Width="100" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <local:EditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cumulative Nett" FieldName="NettToDate" ReadOnly="True">
+                                <dxg:GridColumn Header="Cumulative Nett" FieldName="NettToDate" Width="100" ReadOnly="True">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <local:EditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
