@@ -632,13 +632,21 @@ namespace BluePrints.ViewModels
                 projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectKey, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs", false, false, @"Programming\ProjectFile_16x16.png"));
                 construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructionExoJobSetup" + keyString, projectKey, childTitlePrefix + "Resource Allocation", "EXO_ConstructionSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Resource Allocation", false, false, @"Business Objects\BOUser_16x16.png"));
                 design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"));
-                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"));
-                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"));
             }
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageTransactions))
             {
                 exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"));
+            }
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageTimesheets))
+            {
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"));
+            }
+
+            if (LoginCredentials.hasPermission(PermissionResources.ManageEXOJobs))
+            {
+                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))

@@ -196,6 +196,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage EXO jobs.
+        /// </summary>
+        internal static string ManageEXOJobs {
+            get {
+                return ResourceManager.GetString("ManageEXOJobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage exo users (Confidential Information).
         /// </summary>
         internal static string ManageEXOUsers {
@@ -322,7 +331,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage subjobs.
+        ///   Looks up a localized string similar to Manage design and construction subjobs.
         /// </summary>
         internal static string ManageSubjob {
             get {
@@ -340,7 +349,16 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage transactions.
+        ///   Looks up a localized string similar to Manage timesheets.
+        /// </summary>
+        internal static string ManageTimesheets {
+            get {
+                return ResourceManager.GetString("ManageTimesheets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage EXO transactions.
         /// </summary>
         internal static string ManageTransactions {
             get {

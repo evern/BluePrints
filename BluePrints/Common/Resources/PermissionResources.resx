@@ -172,7 +172,7 @@
     <value>Manage variation</value>
   </data>
   <data name="ManageSubjob" xml:space="preserve">
-    <value>Manage subjobs</value>
+    <value>Manage design and construction subjobs</value>
   </data>
   <data name="ProgressUpdatePercentageByStatus" xml:space="preserve">
     <value>Update progress percentage by deliverable status</value>
@@ -223,7 +223,7 @@
     <value>Manage exo users (Confidential Information)</value>
   </data>
   <data name="ManageTransactions" xml:space="preserve">
-    <value>Manage transactions</value>
+    <value>Manage EXO transactions</value>
   </data>
   <data name="ChangeBudget" xml:space="preserve">
     <value>Change project budget</value>
@@ -239,5 +239,11 @@
   </data>
   <data name="CanForwardDataDate" xml:space="preserve">
     <value>Move forecast data date forward</value>
+  </data>
+  <data name="ManageEXOJobs" xml:space="preserve">
+    <value>Manage EXO jobs</value>
+  </data>
+  <data name="ManageTimesheets" xml:space="preserve">
+    <value>Manage timesheets</value>
   </data>
 </root>
