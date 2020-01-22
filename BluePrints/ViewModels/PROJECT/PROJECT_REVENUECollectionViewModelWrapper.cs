@@ -140,14 +140,14 @@ namespace BluePrints.ViewModels
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_REVENUEProjection> entities)
         {
             summaryBackgroundWorker = new BackgroundWorker();
-            summaryBackgroundWorker.DoWork += SummaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
             summaryBackgroundWorker.RunWorkerAsync();
 
             return base.OnMainViewModelLoaded(entities);
         }
 
-        private void SummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             if (summaryBackgroundWorker.CancellationPending)
             {
