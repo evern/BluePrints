@@ -123,7 +123,7 @@ namespace BluePrints.ViewModels
         {
             IsLoaded = true;
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
-            MainThreadDispatcher.BeginInvoke(new Action(() => preloadAssemblies(entities)));
+            MainThreadDispatcher.BeginInvoke(new Action(() => loadNavigationTree(entities)));
             myDeliverablesDispatcher.Start();
         }
 
@@ -135,38 +135,37 @@ namespace BluePrints.ViewModels
                 NavigateCore(myDeliverablesDescription);
         }
 
-        private void CreateProjectModules(IEnumerable<PROJECT> entities)
+        private void CreateProjectModules(IEnumerable<PROJECT> entities, bool isSample)
         {
-            List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             BluePrintsEntitiesModuleDescription projectCategoryHeader;
             if (LoginCredentials.hasPermission(PermissionResources.ManageProject))
                 projectCategoryHeader = projectEditableCategoryDescription;
             else
                 projectCategoryHeader = projectCategoryDescription;
 
-            newModules.Add(projectCategoryHeader);
-
-            if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
+            Modules.Add(projectCategoryHeader);
+            if(!isSample)
             {
-                IEnumerable<PROJECT> userProjects = entities.Where(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid);
-                if(userProjects.Any(x => x.STATUS == ProjectStatus.Active))
-                    projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
+                if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
+                {
+                    IEnumerable<PROJECT> userProjects = entities.Where(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid);
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Active))
+                        moduleAdder(projectCategoryHeader.ChildModules, Modules, myProjectsCategoryDescription, isSample);
 
-                if(userProjects.Any(x => x.STATUS == ProjectStatus.Tender))
-                    projectCategoryHeader.ChildModules.Add(myTendersCategoryDescription);
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender))
+                        moduleAdder(projectCategoryHeader.ChildModules, Modules, myTendersCategoryDescription, isSample);
+                }
             }
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Active))
-                projectCategoryHeader.ChildModules.Add(projectActiveCategoryDescription);
+                moduleAdder(projectCategoryHeader.ChildModules, Modules, projectActiveCategoryDescription, isSample);
 
             if (entities.Any(x => x.STATUS == ProjectStatus.TenderSubmitted))
-                projectCategoryHeader.ChildModules.Add(projectSubmittedTenderCategoryDescription);
+                moduleAdder(projectCategoryHeader.ChildModules, Modules, projectSubmittedTenderCategoryDescription, isSample);
 
             if (entities.Any(x => x.STATUS == ProjectStatus.Tender))
-                projectCategoryHeader.ChildModules.Add(projectWIPTenderCategoryDescription);
+                moduleAdder(projectCategoryHeader.ChildModules, Modules, projectWIPTenderCategoryDescription, isSample);
 
-            projectCategoryHeader.ChildModules.Add(companyHSECategoryDescription);
-            newModules.AddRange(CreateDataModules());
             var projects =
             entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.TenderSubmitted || x.STATUS == ProjectStatus.Tender)
                 .OrderBy(x => x.NUMBER)
@@ -177,20 +176,32 @@ namespace BluePrints.ViewModels
             {
                 foreach (var project in projects)
                 {
-                    CreateProjectTree(project);
+                    CreateProjectTree(project, isSample);
                 }
             }
 
-            Modules.AddRange(newModules);
+            moduleAdder(projectCategoryHeader.ChildModules, Modules, companyHSECategoryDescription, isSample);
+            Modules.AddRange(CreateDataModules(isSample));
+        }
+        
+        private void loadNavigationTree(IEnumerable<PROJECT> PROJECTS)
+        {
+            CreateProjectModules(PROJECTS, false);
         }
 
         /// <summary>
-        /// Used for preloading assemblies
+        /// Used for roles
         /// </summary>
-        private void preloadAssemblies(IEnumerable<PROJECT> entities)
+        public void LoadSampleNavigationTree()
         {
             //if (!LoginCredentials.isPreloadMode())
-            CreateProjectModules(entities);
+            List<PROJECT> samplePROJECTS = new List<PROJECT>();
+            PROJECT project = new PROJECT();
+            project.NUMBER = "00000";
+            project.STATUS = ProjectStatus.Active;
+            samplePROJECTS.Add(project);
+
+            CreateProjectModules(samplePROJECTS, true);
             //startPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
             //else
         }
@@ -243,7 +254,7 @@ namespace BluePrints.ViewModels
                 return;
 
             clearAllProjectModules();
-            CreateProjectModules(_projectCollectionViewModel.Entities);
+            CreateProjectModules(_projectCollectionViewModel.Entities, false);
         }
         public void LogOut()
         {
@@ -360,76 +371,76 @@ namespace BluePrints.ViewModels
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }
 
-        private List<BluePrintsEntitiesModuleDescription> CreateDataModules()
+        private RangeObservableCollection<BluePrintsEntitiesModuleDescription> CreateDataModules(bool isSample)
         {
-            List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
+            RangeObservableCollection<BluePrintsEntitiesModuleDescription> dataModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
 
-            bluePrintsEntitiesModuleDescriptions.Add(dataCategoryDescription);
+            dataModules.Add(dataCategoryDescription);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageOffice))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Offices", dataCategoryId, "Offices", "OFFICECollectionView", null, null, null, false, false, @"Maps\GeoPointMap_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Offices", dataCategoryId, "Offices", "OFFICECollectionView", null, null, null, false, false, @"Maps\GeoPointMap_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDepartment))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Departments", dataCategoryId, "Departments", "DEPARTMENTCollectionView", null, null, null, false, false, @"Business Objects\BOPosition_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Departments", dataCategoryId, "Departments", "DEPARTMENTCollectionView", null, null, null, false, false, @"Business Objects\BOPosition_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDiscipline))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Disciplines", dataCategoryId, "Disciplines", "DISCIPLINECollectionView", null, null, null, false, false, @"Business Objects\BOContact2_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Disciplines", dataCategoryId, "Disciplines", "DISCIPLINECollectionView", null, null, null, false, false, @"Business Objects\BOContact2_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDocType))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DocTypes", dataCategoryId, "Document Types", "DOCTYPECollectionView", null, null, null, false, false, @"Business Objects\BOReport2_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_DocTypes", dataCategoryId, "Document Types", "DOCTYPECollectionView", null, null, null, false, false, @"Business Objects\BOReport2_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManagePhase))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Phases", dataCategoryId, "Phases", "PHASECollectionView", null, null, null, false, false, @"Filter Elements\TreeView_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Phases", dataCategoryId, "Phases", "PHASECollectionView", null, null, null, false, false, @"Filter Elements\TreeView_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageUser))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Users", dataCategoryId, "Users", "USERCollectionView", null, null, null, false, false, @"Business Objects\BOPerson_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Users", dataCategoryId, "Users", "USERCollectionView", null, null, null, false, false, @"Business Objects\BOPerson_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRole))
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roles", dataCategoryId, "Roles", "ROLECollectionView", null, null, null, false, false, @"Business Objects\BORole_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_Roles", dataCategoryId, "Roles", "ROLECollectionView", null, null, null, false, false, @"Business Objects\BORole_16x16.png"), isSample);
 
             //if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
-            //    dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Gates", "DELIVERABLES_STATUSCollectionView"));
+            //    dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_DeliverableStatuses", dataCategoryId, "Deliverable Gates", "DELIVERABLES_STATUSCollectionView"));
 
-            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"));
+            moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_UOMs", dataCategoryId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEXOUsers))
             {
-                //dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "Exo Master Jobs", "EXO_MasterJobCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ExoAllResources", dataCategoryId, "Exo Resources", "EXO_ResourcesCollectionView", null, null, null, false, false, @"Business Objects\BOPosition2_16x16.png"));
+                //dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ExoAllSubjobs", dataCategoryId, "Exo Master Jobs", "EXO_MasterJobCollectionView", null, null, null, false, false, @"RichEdit\EditRangePermission_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ExoAllResources", dataCategoryId, "Exo Resources", "EXO_ResourcesCollectionView", null, null, null, false, false, @"Business Objects\BOPosition2_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Commodity Codes", "COMMODITY_CODECollectionView", null, null, null, false, false, @"Business Objects\BOOrder_16x16.png"));
-                //dataCategoryDescription.ChildModules.Add(commodityCategoryDescription);
-                //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
-                //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
-                //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
-                //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
-                //commodityCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Code", dataCategoryId, "Commodity Codes", "COMMODITY_CODECollectionView", null, null, null, false, false, @"Business Objects\BOOrder_16x16.png"), isSample);
+                //dataCategoryDescription.ChildModules, dataModules, commodityCategoryDescription);
+                //commodityCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Design", commodityCodeCategoryId, "Commodity Code [Design]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Design)), null, "Design"));
+                //commodityCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Direct", commodityCodeCategoryId, "Commodity Code [Direct]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Direct)), null, "Direct"));
+                //commodityCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_DirectGroup", commodityCodeCategoryId, "Commodity Group [Direct]", "COMMODITY_GROUP_DIRECTCollectionView", null, null, "Direct Group"));
+                //commodityCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Indirect", commodityCodeCategoryId, "Commodity Code [Indirect]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Indirect)), null, "Indirect"));
+                //commodityCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageCommodity_Overhead", commodityCodeCategoryId, "Commodity Code [Overhead]", "STOCK_GROUPCollectionView", new OptionalEntitiesParameter<PROJECT, CommodityCodeTypeClass>(null, new CommodityCodeTypeClass(CommodityCodeType.Overhead)), null, "Overhead"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStockCode))
             {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Stock Groups", "STOCK_GROUPCollectionView", null, null, null, false, false, @"Business Objects\BOProductGroup_16x16.png"));
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Estimate)), null, null, false, false, @"Business Objects\BOProduct_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageStock_Group", dataCategoryId, "Stock Groups", "STOCK_GROUPCollectionView", null, null, null, false, false, @"Business Objects\BOProductGroup_16x16.png"), isSample);
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageStock_Direct", dataCategoryId, "Stock Codes", "STOCK_CODECollectionView", new DualEntitiesParameter<PROJECT, StockCodeTypeClass>(null, new StockCodeTypeClass(StockCodeType.Estimate)), null, null, false, false, @"Business Objects\BOProduct_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
             {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageStudyType", dataCategoryId, "Study Types", "RA_STUDY_TYPECollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageSubPrompt", dataCategoryId, "Sub Prompts", "RA_GUIDE_SUBPROMPTCollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageStudyType", dataCategoryId, "Study Types", "RA_STUDY_TYPECollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"), isSample);
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageSubPrompt", dataCategoryId, "Sub Prompts", "RA_GUIDE_SUBPROMPTCollectionView", null, null, null, false, false, @"Scheduling\AgendaView_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageTenderProfile))
             {
-                dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageTenderProfile", dataCategoryId, "Tender Profiles", "TENDER_PROFILECollectionView", null, null, null, false, false, @"Dashboards\PieLabelsDataLabels2_16x16.png"));
+                moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageTenderProfile", dataCategoryId, "Tender Profiles", "TENDER_PROFILECollectionView", null, null, null, false, false, @"Dashboards\PieLabelsDataLabels2_16x16.png"), isSample);
             }
 
-            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView", null, null, null, false, false, @"Business Objects\BOCustomer_16x16.png"));
-            dataCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView", null, null, null, false, false, @"Reports\Parameters_16x16.png"));
+            moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_ManageClient", dataCategoryId, "Clients", "CLIENTCollectionView", null, null, null, false, false, @"Business Objects\BOCustomer_16x16.png"), isSample);
+            moduleAdder(dataCategoryDescription.ChildModules, dataModules, new BluePrintsEntitiesModuleDescription("View_MeetingAction", dataCategoryId, "Meeting Actions", "MEETING_ACTIONCollectionView", null, null, null, false, false, @"Reports\Parameters_16x16.png"), isSample);
 
-            return bluePrintsEntitiesModuleDescriptions;
+            return dataModules;
         }
 
 
@@ -499,7 +510,7 @@ namespace BluePrints.ViewModels
             ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
-        private void CreateProjectTree(PROJECT entity)
+        private void CreateProjectTree(PROJECT entity, bool isSample)
         {
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
@@ -552,33 +563,33 @@ namespace BluePrints.ViewModels
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
             BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(projectKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
-            projectStatusDescription.ChildModules.Add(projectModuleDescription);
 
-            BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription("Category_Design" + keyString, null, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
-            BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription("Category_Construct" + keyString, null, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
-            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription("Category_EXO" + keyString, null, "EXO", null, null, null, null, false, false, @"Function Library\Financial_16x16.png");
-            BluePrintsEntitiesModuleDescription forecast_category_description = new BluePrintsEntitiesModuleDescription("Category_Forecast" + keyString, null, "Forecast", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
+            moduleAdder(projectStatusDescription.ChildModules, Modules, projectModuleDescription, isSample);
+
+            BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription("Category_Design" + keyString, projectKey, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
+            BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription("Category_Construct" + keyString, projectKey, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
+            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription("Category_EXO" + keyString, null, "EXO", projectKey, null, null, null, false, false, @"Function Library\Financial_16x16.png");
+            BluePrintsEntitiesModuleDescription forecast_category_description = new BluePrintsEntitiesModuleDescription("Category_Forecast" + keyString, projectKey, "Forecast", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
 
             //BluePrintsEntitiesModuleDescription queries_category_description = new BluePrintsEntitiesModuleDescription("Category_Queries" + keyString, null, "Queries", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
-
-            projectModuleDescription.ChildModules.Add(design_category_description);
-            projectModuleDescription.ChildModules.Add(construct_category_description);
-            projectModuleDescription.ChildModules.Add(exo_category_description);
-            projectModuleDescription.ChildModules.Add(forecast_category_description);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, design_category_description, isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, construct_category_description, isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, exo_category_description, isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, forecast_category_description, isSample);
 
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageArea))
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png"));
+                moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectAreas" + keyString, projectModuleDescription.Id, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageWorkpack) && entity.USE_WORKPACKS)
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks", false, false, @"Support\PackageProduct_16x16.png"));
+                moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectWorkpacks" + keyString, projectModuleDescription.Id, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks", false, false, @"Support\PackageProduct_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageBaseline))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Both), null, "Deliverables", false, false, @"Spreadsheet\NameManager_16x16.png"));
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverables" + keyString, design_category_description.Id, childTitlePrefix + "Deliverables", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Both), null, "Deliverables", false, false, @"Spreadsheet\NameManager_16x16.png"), isSample);
                 //queries_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectDeliverablesRate" + keyString, projectKey, childTitlePrefix + "Rate Report", "BASELINE_ITEMRATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rate Report", false, false, @"Analysis\SeriesLines_16x16.png"));
                 //design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectDeliverables" + keyString, projectKey, childTitlePrefix + "Deliverables [Indirect]", "BASELINE_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, DeliverablesViewType.Indirect), null, "Deliverables [Indirect]", false, false, @"Business Objects\BOCustomer_16x16.png"));
             }
@@ -593,13 +604,13 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageJobSetup))
             {
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectBudgets" + keyString, projectKey, childTitlePrefix + "Job Setup", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)), null, "Job Setup", false, false, @"Business Objects\BOEmployee_16x16.png"));
+                moduleAdder(construct_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_LiveProjectDirectBudgets" + keyString, construct_category_description.Id, childTitlePrefix + "Job Setup", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)), null, "Job Setup", false, false, @"Business Objects\BOEmployee_16x16.png"), isSample);
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectIndirectBudgets" + keyString, projectKey, childTitlePrefix + "Indirect Jobs", "BUDGET_ITEMCollectionView", new TripleEntitiesParameter<PROJECT, IAmBaseline, object>(entity, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Indirect, EstimateViewMode.Budget)), null, "Indirect Jobs", false, false, @"Business Objects\BOCustomer_16x16.png"));
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgress))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, projectKey, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgress" + keyString, design_category_description.Id, childTitlePrefix + "Design Progress", "OffsiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"), isSample);
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSiteDirectProgress" + keyString, projectKey, childTitlePrefix + "Site Direct Progress", "SiteDirectProgressCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress", false, false, @"Chart\Bar2_16x16.png"));
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Daywork" + keyString, projectKey, childTitlePrefix + "Daywork", "DAYWORKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork", false, false, @"Tasks\Task_16x16.png"));
                 //construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_DayworkStaff" + keyString, projectKey, childTitlePrefix + "Daywork Staff", "DAYWORK_STAFF_ROLECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Daywork Staff", false, false, @"Business Objects\BOEmployee_16x16.png"));
@@ -607,16 +618,16 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgressDistribution" + keyString, projectKey, childTitlePrefix + "Design Progress Distribution", "OffsiteDirectDistributionCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress Distribution", false, false, @"Chart\Area2_16x16.png"));
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_LiveProjectOffsiteProgressDistribution" + keyString, design_category_description.Id, childTitlePrefix + "Design Progress Distribution", "OffsiteDirectDistributionCollectionView", new DualEntitiesParameter<PROJECT, PROGRESS>(entity, null), null, "Progress Distribution", false, false, @"Chart\Area2_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageVariation))
             {
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, projectKey, childTitlePrefix + "Variations", "VARIATIONCollectionView", new DualEntitiesParameter<PROJECT, PhaseTypeClass>(entity, new PhaseTypeClass(PhaseType.Design)), null, "Variations", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"));
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectDesignVariations" + keyString, design_category_description.Id, childTitlePrefix + "Variations", "VARIATIONCollectionView", new DualEntitiesParameter<PROJECT, PhaseTypeClass>(entity, new PhaseTypeClass(PhaseType.Design)), null, "Variations", false, false, @"Scheduling\ShowWorkTimeOnly_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageDeliverableStatuses))
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDeliverableStatuses" + keyString, projectKey, childTitlePrefix + "Deliverable Gates", "DELIVERABLES_STATUSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Deliverable Gates", false, false, @"Business Objects\BORules_16x16.png"));
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectDeliverableStatuses" + keyString, design_category_description.Id, childTitlePrefix + "Deliverable Gates", "DELIVERABLES_STATUSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Deliverable Gates", false, false, @"Business Objects\BORules_16x16.png"), isSample);
 
             //if (LoginCredentials.hasPermission(PermissionResources.ManageCommodity))
             //    construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectCommodity_Codes" + keyString, projectKey, childTitlePrefix + "Commodity Codes", "COMMODITY_CODECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Commodity Codes", false, false, @"Business Objects\BOOrder_16x16.png"));
@@ -629,88 +640,95 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageSubjob))
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectKey, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs", false, false, @"Programming\ProjectFile_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructionExoJobSetup" + keyString, projectKey, childTitlePrefix + "Resource Allocation", "EXO_ConstructionSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Resource Allocation", false, false, @"Business Objects\BOUser_16x16.png"));
-                design_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, projectKey, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"));
+                moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectSubjobs" + keyString, projectModuleDescription.Id, childTitlePrefix + "Subjobs", "SUBJOBCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Subjobs", false, false, @"Programming\ProjectFile_16x16.png"), isSample);
+                moduleAdder(construct_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectConstructionExoJobSetup" + keyString, construct_category_description.Id, childTitlePrefix + "Resource Allocation", "EXO_ConstructionSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Resource Allocation", false, false, @"Business Objects\BOUser_16x16.png"), isSample);
+                moduleAdder(design_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectDesignExoJobSetup" + keyString, design_category_description.Id, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"), isSample);
             }
 
             if(LoginCredentials.hasPermission(PermissionResources.ManageTransactions))
             {
-                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, projectKey, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"));
+                moduleAdder(exo_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_Transaction" + keyString, exo_category_description.Id, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageTimesheets))
             {
-                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, projectKey, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"));
+                moduleAdder(exo_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectTimesheetEntry" + keyString, exo_category_description.Id, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageEXOJobs))
             {
-                exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, projectKey, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"));
+                moduleAdder(exo_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectNativeExoJobSetup" + keyString, exo_category_description.Id, childTitlePrefix + "Jobs", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Jobs", false, false, @"Function Library\MoreFunctions_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageForecast))
             {
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_POForecast" + keyString, projectKey, childTitlePrefix + "PO Forecast", "PROJECTPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png"));
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IndirectForecast" + keyString, projectKey, childTitlePrefix + "Indirects Forecast", "PROJECTIndirectForecastView", new EntitiesParameter<PROJECT>(entity), null, "Indirects Forecast", false, false, @"Function Library\Information_16x16.png"));
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, projectKey, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"));
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Claims" + keyString, projectKey, childTitlePrefix + "Claims", "PROJECT_REVENUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Claims", false, false, @"Number Formats\Accounting_16x16.png"));
-                forecast_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_AllEACView" + keyString, projectKey, childTitlePrefix + "View EAC's", "PROJECTForecastEACReportView", new EntitiesParameter<PROJECT>(entity), null, "View EAC's", false, false, @"Scheduling\FullWeekView_16x16.png"));
+                moduleAdder(forecast_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_POForecast" + keyString, forecast_category_description.Id, childTitlePrefix + "PO Forecast", "PROJECTPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png"), isSample);
+                moduleAdder(forecast_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_IndirectForecast" + keyString, forecast_category_description.Id, childTitlePrefix + "Indirects Forecast", "PROJECTIndirectForecastView", new EntitiesParameter<PROJECT>(entity), null, "Indirects Forecast", false, false, @"Function Library\Information_16x16.png"), isSample);
+                moduleAdder(forecast_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_Forecast" + keyString, forecast_category_description.Id, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"), isSample);
+                moduleAdder(forecast_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_Claims" + keyString, forecast_category_description.Id, childTitlePrefix + "Claims", "PROJECT_REVENUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Claims", false, false, @"Number Formats\Accounting_16x16.png"), isSample);
+                moduleAdder(forecast_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_AllEACView" + keyString, forecast_category_description.Id, childTitlePrefix + "View EAC's", "PROJECTForecastEACReportView", new EntitiesParameter<PROJECT>(entity), null, "View EAC's", false, false, @"Scheduling\FullWeekView_16x16.png"), isSample);
 
-                //exo_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LiveProjectSummary" + keyString, projectKey, childTitlePrefix + "Summary", "PROJECTSummaryView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Summary", false, false, @"Programming\ProjectDirectory_16x16.png"));
+                //exo_category_description.ChildModules, new BluePrintsEntitiesModuleDescription("View_LiveProjectSummary" + keyString, projectKey, childTitlePrefix + "Summary", "PROJECTSummaryView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Summary", false, false, @"Programming\ProjectDirectory_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageHoliday))
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Holidays" + keyString, projectKey, childTitlePrefix + "Holidays", "HOLIDAYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Holidays", false, false, @"Scheduling\Calendar_16x16.png"));
+                moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_Holidays" + keyString, projectModuleDescription.Id, childTitlePrefix + "Holidays", "HOLIDAYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Holidays", false, false, @"Scheduling\Calendar_16x16.png"), isSample);
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageRegisters))
             {
                 string registerCategoryId = "View_RegisterCategory" + keyString;
 
-                BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, projectKey, "Registers", null, null, null, null, false, false, @"Miscellaneous\Content_16x16.png");
-                design_category_description.ChildModules.Add(registerCategoryDescription);
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issues Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issues Register", false, false, @"Support\Issue_16x16.png"));
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register", false, false, @"Scheduling\ChangeStatus_16x16.png"));
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_RiskRegister" + keyString, registerCategoryId, childTitlePrefix + "Risk Register", "REGISTER_RISKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Risk Register", false, false, @"Support\BreakingChange_16x16.png"));
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register", false, false, @"Business Objects\BORules_16x16.png"));
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_LLRegister" + keyString, registerCategoryId, childTitlePrefix + "Lesson's Learned Register", "REGISTER_LLCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Lesson's Learned Register", false, false, @"Business Objects\BOTask_16x16.png"));
-                registerCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_NCRegister" + keyString, registerCategoryId, childTitlePrefix + "Non-Conformance Register", "REGISTER_NCCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Non-Conformance Register", false, false, @"Programming\BugReport_16x16.png"));
+                BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(registerCategoryId, design_category_description.Id, "Registers", null, null, null, null, false, false, @"Miscellaneous\Content_16x16.png");
+                moduleAdder(design_category_description.ChildModules, Modules, registerCategoryDescription, isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_IssueRegister" + keyString, registerCategoryId, childTitlePrefix + "Issues Register", "REGISTER_ISSUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Issues Register", false, false, @"Support\Issue_16x16.png"), isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ChangeRegister" + keyString, registerCategoryId, childTitlePrefix + "Change Register", "REGISTER_CHANGECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Change Register", false, false, @"Scheduling\ChangeStatus_16x16.png"), isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_RiskRegister" + keyString, registerCategoryId, childTitlePrefix + "Risk Register", "REGISTER_RISKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Risk Register", false, false, @"Support\BreakingChange_16x16.png"), isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_HoldRegister" + keyString, registerCategoryId, childTitlePrefix + "Hold Register", "REGISTER_HOLDCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Hold Register", false, false, @"Business Objects\BORules_16x16.png"), isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_LLRegister" + keyString, registerCategoryId, childTitlePrefix + "Lesson's Learned Register", "REGISTER_LLCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Lesson's Learned Register", false, false, @"Business Objects\BOTask_16x16.png"), isSample);
+                moduleAdder(registerCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_NCRegister" + keyString, registerCategoryId, childTitlePrefix + "Non-Conformance Register", "REGISTER_NCCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Non-Conformance Register", false, false, @"Programming\BugReport_16x16.png"), isSample);
             }
 
             string registerRateId = "View_RegisterRate" + keyString;
-            BluePrintsEntitiesModuleDescription rateCategoryDescription = new BluePrintsEntitiesModuleDescription(registerRateId, projectKey, "Rates", null, null, null, null, false, false, @"Spreadsheet\FunctionsFinancial_16x16.png");
-            design_category_description.ChildModules.Add(rateCategoryDescription);
+            BluePrintsEntitiesModuleDescription rateCategoryDescription = new BluePrintsEntitiesModuleDescription(registerRateId, design_category_description.Id, "Rates", null, null, null, null, false, false, @"Spreadsheet\FunctionsFinancial_16x16.png");
+            moduleAdder(design_category_description.ChildModules, Modules, rateCategoryDescription, isSample);
             if (LoginCredentials.hasPermission(PermissionResources.ManageRate))
             {
-                rateCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectChargeRatesDirect" + keyString, projectKey, childTitlePrefix + " Charge Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.Chargeable), null, "Charge Rates [Direct]", false, false, @"Business Objects\BOPerson_16x16.png"));
-                rateCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectChargeRatesIndirect" + keyString, projectKey, childTitlePrefix + "Charge Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.NotChargeable), null, "Charge Rates [Indirect]", false, false, @"Business Objects\BODetails_16x16.png"));
+                moduleAdder(rateCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectChargeRatesDirect" + keyString, rateCategoryDescription.Id, childTitlePrefix + " Charge Rates [Direct]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.Chargeable), null, "Charge Rates [Direct]", false, false, @"Business Objects\BOPerson_16x16.png"), isSample);
+                moduleAdder(rateCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectChargeRatesIndirect" + keyString, rateCategoryDescription.Id, childTitlePrefix + "Charge Rates [Indirect]", "RATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, ChargeType.NotChargeable), null, "Charge Rates [Indirect]", false, false, @"Business Objects\BODetails_16x16.png"), isSample);
             }
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageCostRate))
             {
-                rateCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectDirectCostRates" + keyString, projectKey, childTitlePrefix + "Design Cost Rates [Direct]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Design), null, "Cost Rates [Direct]", false, false, @"Business Objects\BOPerson_16x16.png"));
-                rateCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectIndirectCostRates" + keyString, projectKey, childTitlePrefix + "Design Cost Rates [Indirect]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Indirect), null, "Cost Rates [Indirect]", false, false, @"Business Objects\BODetails_16x16.png"));
-                construct_category_description.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectConstructionCostRates" + keyString, projectKey, childTitlePrefix + "Construction Cost Rates [Direct]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Construct), null, "Cost Rates [Direct]", false, false, @"Business Objects\BOEmployee_16x16.png"));
+                moduleAdder(rateCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectDirectCostRates" + keyString, rateCategoryDescription.Id, childTitlePrefix + "Design Cost Rates [Direct]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Design), null, "Cost Rates [Direct]", false, false, @"Business Objects\BOPerson_16x16.png"), isSample);
+                moduleAdder(rateCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectIndirectCostRates" + keyString, rateCategoryDescription.Id, childTitlePrefix + "Design Cost Rates [Indirect]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Indirect), null, "Cost Rates [Indirect]", false, false, @"Business Objects\BODetails_16x16.png"), isSample);
+                moduleAdder(construct_category_description.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectConstructionCostRates" + keyString, construct_category_description.Id, childTitlePrefix + "Construction Cost Rates [Direct]", "CostRATECollectionView", new DualEntitiesParameter<PROJECT, object>(entity, PhaseType.Construct), null, "Cost Rates [Direct]", false, false, @"Business Objects\BOEmployee_16x16.png"), isSample);
             }
             //if (LoginCredentials.hasPermission(PermissionResources.ManageVariationRegister))
             //{
-            //    projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_VariationRegister" + keyString, projectKey, childTitlePrefix + "Variation Register", "VARIATION_REGISTERCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variation Register", false, false, @"Reports\GroupFieldCollection_16x16.png"));
+            //    projectModuleDescription.ChildModules, new BluePrintsEntitiesModuleDescription("View_VariationRegister" + keyString, projectKey, childTitlePrefix + "Variation Register", "VARIATION_REGISTERCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Variation Register", false, false, @"Reports\GroupFieldCollection_16x16.png"), isSample);
             //}
 
             if (LoginCredentials.hasPermission(PermissionResources.ManageStudyType))
             {
-                projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, projectKey, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"));
+                moduleAdder(rateCategoryDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectStudies" + keyString, rateCategoryDescription.Id, childTitlePrefix + "Studies", "RA_STUDYCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Studies", false, false, @"Find\Find_16x16.png"), isSample);
             }
 
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetings" + keyString, projectKey, childTitlePrefix + "Meetings", "MEETINGCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meetings", false, false, @"Business Objects\BOPosition2_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectKey, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types", false, false, @"Business Objects\BOFileAttachment_16x16.png"));
+            moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectMeetings" + keyString, projectModuleDescription.Id, childTitlePrefix + "Meetings", "MEETINGCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meetings", false, false, @"Business Objects\BOPosition2_16x16.png"), isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_ProjectMeetingTypes" + keyString, projectModuleDescription.Id, childTitlePrefix + "Meeting Types", "MEETING_TYPECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Meeting Types", false, false, @"Business Objects\BOFileAttachment_16x16.png"), isSample);
 
-            //design_category_description.ChildModules.Add(queries_category_description);
-            //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectKey, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"));
-            projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectKey, childTitlePrefix + "Monthly HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Monthly HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"));
+            //design_category_description.ChildModules, queries_category_description);
+            //projectModuleDescription.ChildModules, new BluePrintsEntitiesModuleDescription("View_Roster" + keyString, projectKey, childTitlePrefix + "Roster", "RosterCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Roster", false, false, @"Scheduling\FullWeekView_16x16.png"), isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_HSE" + keyString, projectModuleDescription.Id, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"), isSample);
+            moduleAdder(projectModuleDescription.ChildModules, Modules, new BluePrintsEntitiesModuleDescription("View_HSE_Report" + keyString, projectModuleDescription.Id, childTitlePrefix + "Monthly HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Monthly HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"), isSample);
         }
 
+        private void moduleAdder(RangeObservableCollection<BluePrintsEntitiesModuleDescription> moduleCollection, RangeObservableCollection<BluePrintsEntitiesModuleDescription> sampleModuleCollection, BluePrintsEntitiesModuleDescription newModule, bool isSample)
+        {
+            if (isSample)
+                Modules.Add(newModule);
+            else
+                moduleCollection.Add(newModule);
+        }
     }
 }
 

@@ -21,6 +21,7 @@ using BluePrints.Common.Projections;
 using BaseModel.Data.Helpers;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.ViewModel;
 
 namespace BluePrints.ViewModels
 {
@@ -119,15 +120,19 @@ namespace BluePrints.ViewModels
                 if (DisplaySelectedEntity == null)
                     return null;
 
-                foreach (System.Collections.DictionaryEntry permission in resourceSet)
+                BluePrintsEntitiesViewModel bluePrintsEntitiesViewModel = BluePrintsEntitiesViewModel.Create();
+                bluePrintsEntitiesViewModel.LoadSampleNavigationTree();
+
+                foreach (BluePrintsEntitiesModuleDescription permission in bluePrintsEntitiesViewModel.Modules)
                 {
                     //don't allow current user to set permission to him/herself
-                    bool isCurrentUserHavePermission = LoginCredentials.CurrentUserPermission.Any(x => x.PERMISSION == permission.Key.ToString());
-                    if (!isCurrentUserHavePermission)
-                        continue;
+                    //bool isCurrentUserHavePermission = LoginCredentials.CurrentUserPermission.Any(x => x.PERMISSION == permission.Key.ToString());
+                    //if (!isCurrentUserHavePermission)
+                    //    continue;
 
-                    bool isPermissionExistsInSelectedEntity = DisplaySelectedEntity.ROLE_PERMISSIONS.Any(x => x.PERMISSION == permission.Key.ToString());
-                    permissions.Add(new RolePermissionAssignment() { PermissionKey = permission.Key.ToString(), IsAssigned = isPermissionExistsInSelectedEntity });
+                    //bool isPermissionExistsInSelectedEntity = DisplaySelectedEntity.ROLE_PERMISSIONS.Any(x => x.PERMISSION == permission.Key.ToString());
+
+                    permissions.Add(new RolePermissionAssignment() { PermissionName = permission.NavigationTitle, PermissionKey = permission.Id, PermissionParentKey = permission.ParentId, IsAssigned = true });
                 }
 
                 return permissions.OrderBy(x => x.PermissionKey);
@@ -183,31 +188,31 @@ namespace BluePrints.ViewModels
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
         {
-            RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
-            //don't need to validate fieldname since only this field is changeable in role permission grid control
+            //RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
+            ////don't need to validate fieldname since only this field is changeable in role permission grid control
 
-            bool newValue = (bool)e.Value;
-            if (newValue)
-            {
-                ROLE_PERMISSION newROLE_PERMISSION = new ROLE_PERMISSION();
-                newROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
-                newROLE_PERMISSION.PERMISSION = editingRolePermissionAssignment.PermissionKey;
-                ROLE_PERMISSIONViewModel.Save(newROLE_PERMISSION);
-                DisplaySelectedEntity.ROLE_PERMISSIONS.Add(newROLE_PERMISSION);
-                e.Handled = true;
-            }
-            else
-            {
-                ROLE_PERMISSION existingROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editingRolePermissionAssignment.PermissionKey);
-                if (existingROLE_PERMISSION != null)
-                {
-                    ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
-                    DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
-                    e.Handled = true;
-                }
-            }
+            //bool newValue = (bool)e.Value;
+            //if (newValue)
+            //{
+            //    ROLE_PERMISSION newROLE_PERMISSION = new ROLE_PERMISSION();
+            //    newROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
+            //    newROLE_PERMISSION.PERMISSION = editingRolePermissionAssignment.PermissionKey;
+            //    ROLE_PERMISSIONViewModel.Save(newROLE_PERMISSION);
+            //    DisplaySelectedEntity.ROLE_PERMISSIONS.Add(newROLE_PERMISSION);
+            //    e.Handled = true;
+            //}
+            //else
+            //{
+            //    ROLE_PERMISSION existingROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editingRolePermissionAssignment.PermissionKey);
+            //    if (existingROLE_PERMISSION != null)
+            //    {
+            //        ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
+            //        DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
+            //        e.Handled = true;
+            //    }
+            //}
 
-            refreshPermissions();
+            //refreshPermissions();
 
             base.CellValueChanging(e);
         }
@@ -365,7 +370,9 @@ namespace BluePrints.ViewModels
 
     public class RolePermissionAssignment
     {
-        public string PermissionKey { get; set; }
+        public string PermissionName { get; set; }
+        public object PermissionKey { get; set; }
+        public object PermissionParentKey { get; set; }
         public bool IsAssigned { get; set; }
     }
 

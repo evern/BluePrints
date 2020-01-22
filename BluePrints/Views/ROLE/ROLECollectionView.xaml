@@ -101,10 +101,10 @@
                         <dxlc:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
                             <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn MinWidth="300" AllowEditing="False" FieldName="PermissionKey" Header="Permission" HeaderToolTip="Permissions within the system">
-                                        <dxg:GridColumn.EditSettings>
+                                    <dxg:GridColumn MinWidth="300" AllowEditing="False" FieldName="PermissionName" Header="Permission" HeaderToolTip="Permissions within the system">
+                                        <!--<dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings DisplayMember="Value" IsTextEditable="False" ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" ValueMember="Key" />
-                                        </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn.EditSettings>-->
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether selected role have the permission">
                                         <dxg:GridColumn.EditSettings>
@@ -119,11 +119,13 @@
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowSearchPanelMode="Always">
+                                    <dxg:TreeListView x:Name="permissionTreeListView" AutoExpandAllNodes="True" KeyFieldName="PermissionKey" ParentFieldName="PermissionParentKey">
+                                    </dxg:TreeListView>
+                                    <!--<dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowSearchPanelMode="Always">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
-                                    </dxg:TableView>
+                                    </dxg:TableView>-->
                                 </dxg:GridControl.View>
                             </custom:GridControlEx>
                         </dxlc:LayoutGroup>
