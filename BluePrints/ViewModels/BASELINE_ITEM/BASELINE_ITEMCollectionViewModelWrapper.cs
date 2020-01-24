@@ -1258,10 +1258,6 @@ namespace BluePrints.ViewModels
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
                 populateCompulsoryLookupCollection(newEntity);
 
-            //Add undo must happen after save so that variation can pick it up
-            foreach (BASELINE_ITEMProgress newEntity in newEntities)
-                AddUndo(newEntity, null, null, null, EntityMessageType.Added);
-
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);
@@ -1320,10 +1316,6 @@ namespace BluePrints.ViewModels
                 MainViewModel.Save(newEntity);
                 populateCompulsoryLookupCollection(newEntity);
             }
-
-            //Add undo must happen after save so that variation can pick it up
-            foreach (BASELINE_ITEMProgress newEntity in newEntities)
-                AddUndo(newEntity, null, null, null, EntityMessageType.Added);
 
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
