@@ -55,7 +55,7 @@ namespace BluePrints.Common
             else if (CurrentUserPermission == null || CurrentUserPermission.Count == 0)
                 return false;
 
-            var permissionKey = PermissionDictionary.First(x => x.Value == permissionName).Key;
+            var permissionKey = PermissionDictionary.FirstOrDefault(x => x.Value == permissionName).Key;
             return CurrentUserPermission.Any(x => x.PERMISSION == permissionKey);
         }
 
@@ -75,7 +75,7 @@ namespace BluePrints.Common
         public static Dictionary<string, string> GetPermissionLookUpInDictionary()
         {
             var returnPermissions = new Dictionary<string, string>();
-            var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture,
+            var resourceSet = NavigationResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture,
                 true, true);
             foreach (System.Collections.DictionaryEntry permission in resourceSet)
                 returnPermissions.Add(permission.Key.ToString(), permission.Value.ToString());

@@ -123,7 +123,15 @@ namespace BluePrints.ViewModels
                 BluePrintsEntitiesViewModel bluePrintsEntitiesViewModel = BluePrintsEntitiesViewModel.Create();
                 bluePrintsEntitiesViewModel.LoadSampleNavigationTree();
 
-                foreach (BluePrintsEntitiesModuleDescription permission in bluePrintsEntitiesViewModel.Modules)
+                //foreach (System.Collections.DictionaryEntry permission in resourceSet)
+                //{
+                //    RolePermissionAssignment findPermission = permissions.FirstOrDefault(x => x.PermissionKey == permission.Key.ToString());
+                //    if (findPermission == null)
+                //        permissions.Add(new RolePermissionAssignment() { PermissionKey = permission.Key.ToString(), IsAssigned = false });
+                //}
+
+
+                foreach (BluePrintsEntitiesModuleDescription module in bluePrintsEntitiesViewModel.Modules)
                 {
                     //don't allow current user to set permission to him/herself
                     //bool isCurrentUserHavePermission = LoginCredentials.CurrentUserPermission.Any(x => x.PERMISSION == permission.Key.ToString());
@@ -132,10 +140,10 @@ namespace BluePrints.ViewModels
 
                     //bool isPermissionExistsInSelectedEntity = DisplaySelectedEntity.ROLE_PERMISSIONS.Any(x => x.PERMISSION == permission.Key.ToString());
 
-                    permissions.Add(new RolePermissionAssignment() { PermissionName = permission.NavigationTitle, PermissionKey = permission.Id, PermissionParentKey = permission.ParentId, IsAssigned = true });
+                    permissions.Add(new RolePermissionAssignment() { PermissionName = module.NavigationTitle, PermissionKey = module.NavigationId, PermissionParentKey = module.ParentId, IsAssigned = true, CanAssign = module.DocumentType != string.Empty });
                 }
 
-                return permissions.OrderBy(x => x.PermissionKey);
+                return permissions;
             }
         }
 
@@ -374,6 +382,7 @@ namespace BluePrints.ViewModels
         public object PermissionKey { get; set; }
         public object PermissionParentKey { get; set; }
         public bool IsAssigned { get; set; }
+        public bool CanAssign { get; set; }
     }
 
     public class DocTypePermissionAssignment
