@@ -65,7 +65,7 @@
                     <dxb:BarButtonItem x:Name="biViewReport1" Command="{Binding DataContext.ViewReportCommand, ElementName=userControl}" Content="View Report" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" RibbonStyle="SmallWithText" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
                     <dxb:BarButtonItem x:Name="biViewCostReport" Command="{Binding DataContext.ViewRoleCostReportCommand, ElementName=userControl}" Content="Cost Report"  Glyph="{dxc:DXImage Images/People/UserGroup_32x32.png}" LargeGlyph="{dx:DXImage Images/People/UserGroup_16x16.png}" RibbonStyle="SmallWithText" ToolTip="View report of the deliverables list. Report will be sorted and filtered according to what is shown in this table" />
                     <dxb:BarButtonItem x:Name="biBookTime" Command="{Binding DataContext.BookTimeCommand, ElementName=userControl}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
-                    <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverables and assign the same internal number">
+                    <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected deliverable(s) and rename their internal number affix(es) to the next largest number(s)">
                         <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
                             <dxb:BarEditItem.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
@@ -80,7 +80,7 @@
                             </dxb:BarEditItem.EditSettings>
                         </dxb:BarEditItem>
                     </dxb:BarSubItem>
-                    <dxb:BarSubItem x:Name="biInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverables with continuing internal number affix. Also renames deliverables with internal number larger than the largest internal number affix to continue from the newly inserted deliverables">
+                    <dxb:BarSubItem x:Name="biInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new deliverable(s) and rename their internal number affix(es) to the number right after selected deliverable(s)">
                         <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
                             <dxb:BarEditItem.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">

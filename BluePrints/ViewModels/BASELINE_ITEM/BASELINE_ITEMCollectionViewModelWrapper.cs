@@ -1251,13 +1251,12 @@ namespace BluePrints.ViewModels
                 PauseUndoRedo();
 
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, DisplayEntities, DisplaySelectedEntities);
-            newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities, EditableAllEntities);
+            //datacontext savechanges will save existing renamed entities
+            renameExistingEntitiesByReferencingNewEntities(newEntities, EditableAllEntities);
 
+            MainViewModel.BulkSave(newEntities);
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
-            {
-                MainViewModel.Save(newEntity);
                 populateCompulsoryLookupCollection(newEntity);
-            }
 
             //Add undo must happen after save so that variation can pick it up
             foreach (BASELINE_ITEMProgress newEntity in newEntities)
@@ -1271,9 +1270,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Concatenate entities to be saved and entities to be renamed.
         /// </summary>
-        /// <param name="newEntities">Entities to be saved.</param>
-        /// <returns></returns>
-        private List<BASELINE_ITEMProgress> concatenateNewEntitiesWithExistingRenameEntities(List<BASELINE_ITEMProgress> newEntities, IEnumerable<BASELINE_ITEMProgress> existingEntities)
+        private void renameExistingEntitiesByReferencingNewEntities(List<BASELINE_ITEMProgress> newEntities, IEnumerable<BASELINE_ITEMProgress> existingEntities)
         {
             List<BASELINE_ITEMProgress> concatenatedEntities = new List<BASELINE_ITEMProgress>();
             concatenatedEntities.AddRange(newEntities);
@@ -1288,7 +1285,7 @@ namespace BluePrints.ViewModels
                 long arbitraryNumericValue = 0;
                 string valueToFill = entity.Entity.Entity.INTERNAL_NUM;
                 if (valueToFill == string.Empty)
-                    return concatenatedEntities;
+                    return;
 
                 string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(valueToFill, out numericFieldLength, out arbitraryNumericValue);
 
@@ -1304,12 +1301,9 @@ namespace BluePrints.ViewModels
                 if(!processedValueToFillStringOnly.Contains(valueToFillStringOnly))
                 {
                     processedValueToFillStringOnly.Add(valueToFillStringOnly);
-                    List<BASELINE_ITEMProgress> renameEntities = getRenameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existingEntities, formatFieldNameForProjectionProperty);
-                    concatenatedEntities.AddRange(renameEntities);
+                    renameExistingEntities(valueToFillStringOnly, lowestUnsavedNumericValue, highestUnsavedNumericValue, existingEntities, formatFieldNameForProjectionProperty);
                 }
             }
-
-            return concatenatedEntities;
         }
 
         public void Duplicate()
@@ -1340,11 +1334,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Identify entities which internal number require to be named.
         /// </summary>
-        /// <param name="renameStringOnly">Rename internal number string component only.</param>
-        /// <param name="startNumber">Start of internal number to be named</param>
-        /// <param name="endNumber">End if internal number to be named</param>
-        /// <returns></returns>
-        private List<BASELINE_ITEMProgress> getRenameExistingEntities(string renameStringOnly, long startNumber, long endNumber, IEnumerable<BASELINE_ITEMProgress> existingEditableEntities, Func<string, string>formatFieldNameFunc)
+        private void renameExistingEntities(string renameStringOnly, long startNumber, long endNumber, IEnumerable<BASELINE_ITEMProgress> existingEditableEntities, Func<string, string>formatFieldNameFunc)
         {
             long valueToAdd = (endNumber - startNumber) + 1;
             List<BASELINE_ITEMProgress> renameEntities = new List<BASELINE_ITEMProgress>();
@@ -1375,8 +1365,6 @@ namespace BluePrints.ViewModels
                     renameEntities.Add(entity);
                 }
             }
-
-            return renameEntities;
         }
 
         private List<BASELINE_ITEMProgress> getNewProgressEntities(int timesToDuplicate, bool isInsert, IEnumerable<BASELINE_ITEMProgress> all_entities, IEnumerable<BASELINE_ITEMProgress> selected_entities)

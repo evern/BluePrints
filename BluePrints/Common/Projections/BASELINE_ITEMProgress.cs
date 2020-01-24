@@ -82,7 +82,7 @@ namespace BluePrints.Common.Projections
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal DisplayTotalUnits => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units);
+        public decimal DisplayTotalUnits => IsByDuration ? 0 : IsApproved ? (base.Budget_Units + Variation_Units) : (base.Budget_Units + Variation_Units + Forecast_Units);
 
         public virtual decimal Forecast_Total_Costs => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemRate;
 
