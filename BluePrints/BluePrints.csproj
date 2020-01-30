@@ -24,7 +24,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>\\Fileserver\General\BLUEPRINTS\</UpdateUrl>
-    <MinimumRequiredVersion>1.0.4.76</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.4.77</MinimumRequiredVersion>
     <ApplicationRevision>77</ApplicationRevision>
     <ApplicationVersion>1.0.4.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
