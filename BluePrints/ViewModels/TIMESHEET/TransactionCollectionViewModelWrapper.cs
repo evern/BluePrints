@@ -60,6 +60,12 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new TransactionCollectionViewModelWrapper());
         }
 
+        protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
+        protected TransactionCollectionViewModelWrapper()
+        {
+            IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
+        }
+        
         #region Database Operation
         private Data.PROJECT loadPROJECT;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -125,22 +131,8 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.IsPasteCellLevel = true;
-            //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySavedIsContinue;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        private bool OnBeforeEntitySavedIsContinue(JOB_TRANSACTIONS projection)
-        {
-            JOB_TRANSACTIONS actualJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
-            if(actualJOB_TRANSACTION != null)
-            {
-                DataUtils.ShallowCopy(actualJOB_TRANSACTION, projection);
-                primeroUnitOfWork.SaveChanges();
-                projection.Update();
-            }
-
-            return false;
         }
         #endregion
 

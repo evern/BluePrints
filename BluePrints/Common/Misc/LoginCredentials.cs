@@ -48,15 +48,20 @@ namespace BluePrints.Common
 
         public static string CurrentHWID { get; set; }
 
-        public static bool hasPermission(string permissionName)
+        public static PermissionStatus getPermissionStatus(string permissionKey)
         {
             if (CurrentUser == null)
-                return false;
+                return PermissionStatus.None;
             else if (CurrentUserPermission == null || CurrentUserPermission.Count == 0)
-                return false;
+                return PermissionStatus.None;
 
-            var permissionKey = PermissionDictionary.FirstOrDefault(x => x.Value == permissionName).Key;
-            return CurrentUserPermission.Any(x => x.PERMISSION == permissionKey);
+            ROLE_PERMISSION permission = CurrentUserPermission.FirstOrDefault(x => x.PERMISSION == permissionKey);
+            if (permission == null)
+                return PermissionStatus.None;
+            else if (permission.ISREADONLY)
+                return PermissionStatus.ReadOnly;
+            else
+                return PermissionStatus.All;
         }
 
         public static Guid CurrentUserGuid
@@ -81,6 +86,13 @@ namespace BluePrints.Common
                 returnPermissions.Add(permission.Key.ToString(), permission.Value.ToString());
 
             return returnPermissions;
+        }
+
+        public enum PermissionStatus
+        {
+            None,
+            All,
+            ReadOnly
         }
     }
 }

@@ -367,6 +367,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project dashboard menu.
+        /// </summary>
+        internal static string Menu_Project_Dashboard {
+            get {
+                return ResourceManager.GetString("Menu_Project_Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project design deliverables maintenance menu.
         /// </summary>
         internal static string Menu_Project_DesignDeliverables {
@@ -475,7 +484,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project EXO transactions maintenance menu.
+        ///   Looks up a localized string similar to Project EXO transactions maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_Transactions {
             get {
@@ -741,6 +750,87 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Users {
             get {
                 return ResourceManager.GetString("Menu_Users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Book time for other users.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_BookTimeForOthers {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_BookTimeForOthers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finalise deliverable&apos;s internal and client numbers.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_FinaliseNumbers {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_FinaliseNumbers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approve deliverable&apos;s internal and client numbers.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_InternalNumbersApproval {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_InternalNumbersApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unapprove deliverable&apos;s internal and client numbers.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_InternalNumbersUnapproval {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_InternalNumbersUnapproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update deliverable&apos;s progress by gate/status.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_UpdateProgressByStatus {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_UpdateProgressByStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change budget in EXO.
+        /// </summary>
+        internal static string Permission_EXO_ChangeBudget {
+            get {
+                return ResourceManager.GetString("Permission_EXO_ChangeBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow commit to EXO.
+        /// </summary>
+        internal static string Permission_EXO_Timesheets_Commit {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Timesheets_Commit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move forecast data date forward and backward.
+        /// </summary>
+        internal static string Permission_Forecast_MoveDataDate {
+            get {
+                return ResourceManager.GetString("Permission_Forecast_MoveDataDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save forecast EAC.
+        /// </summary>
+        internal static string Permission_Forecast_SaveEAC {
+            get {
+                return ResourceManager.GetString("Permission_Forecast_SaveEAC", resourceCulture);
             }
         }
     }

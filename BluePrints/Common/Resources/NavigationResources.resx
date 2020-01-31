@@ -256,7 +256,7 @@
     <value>Project EXO timesheet maintenance menu</value>
   </data>
   <data name="Menu_Project_EXO_Transactions" xml:space="preserve">
-    <value>Project EXO transactions maintenance menu</value>
+    <value>Project EXO transactions maintenance menu read/write</value>
   </data>
   <data name="Menu_Project_Forecast" xml:space="preserve">
     <value>Project forecast menu</value>
@@ -344,5 +344,35 @@
   </data>
   <data name="Menu_Users" xml:space="preserve">
     <value>Users maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Dashboard" xml:space="preserve">
+    <value>Project dashboard menu</value>
+  </data>
+  <data name="Permission_DesignDeliverables_InternalNumbersApproval" xml:space="preserve">
+    <value>Approve deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_BookTimeForOthers" xml:space="preserve">
+    <value>Book time for other users</value>
+  </data>
+  <data name="Permission_DesignDeliverables_FinaliseNumbers" xml:space="preserve">
+    <value>Finalise deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_InternalNumbersUnapproval" xml:space="preserve">
+    <value>Unapprove deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_UpdateProgressByStatus" xml:space="preserve">
+    <value>Update deliverable's progress by gate/status</value>
+  </data>
+  <data name="Permission_EXO_ChangeBudget" xml:space="preserve">
+    <value>Change budget in EXO</value>
+  </data>
+  <data name="Permission_Forecast_MoveDataDate" xml:space="preserve">
+    <value>Move forecast data date forward and backward</value>
+  </data>
+  <data name="Permission_Forecast_SaveEAC" xml:space="preserve">
+    <value>Save forecast EAC</value>
+  </data>
+  <data name="Permission_EXO_Timesheets_Commit" xml:space="preserve">
+    <value>Allow commit to EXO</value>
   </data>
 </root>

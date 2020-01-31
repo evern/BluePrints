@@ -22,6 +22,11 @@ using BaseModel.Data.Helpers;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.ViewModel;
+using System.Resources;
+using System.Collections;
+using System.Collections.ObjectModel;
+using DevExpress.Xpf.Bars;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -50,12 +55,12 @@ namespace BluePrints.ViewModels
         protected ROLECollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            SelectedPermissions = new ObservableCollection<RolePermissionAssignment>();
         }
 
         #region Database Operations
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> BluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        ResourceSet resourceSet = NavigationResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
         protected override void resolveParameters(object parameter)
         {
         }
@@ -105,46 +110,62 @@ namespace BluePrints.ViewModels
 
         #region Permissions
         public RolePermissionAssignment SelectedPermission { get; set; }
-        public IEnumerable<RolePermissionAssignment> Permissions
+        public ObservableCollection<RolePermissionAssignment> SelectedPermissions { get; set; }
+        BluePrintsEntitiesViewModel bluePrintsEntitiesViewModel;
+        private List<RolePermissionAssignment> permissions;
+        public List<RolePermissionAssignment> Permissions
         {
             get
             {
                 if (MainViewModel == null)
                     return null;
 
-                var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-                var permissions = new List<RolePermissionAssignment>();
                 if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
                     DisplaySelectedEntity = MainViewModel.Entities.First();
 
                 if (DisplaySelectedEntity == null)
                     return null;
 
-                BluePrintsEntitiesViewModel bluePrintsEntitiesViewModel = BluePrintsEntitiesViewModel.Create();
-                bluePrintsEntitiesViewModel.LoadSampleNavigationTree();
-
-                //foreach (System.Collections.DictionaryEntry permission in resourceSet)
-                //{
-                //    RolePermissionAssignment findPermission = permissions.FirstOrDefault(x => x.PermissionKey == permission.Key.ToString());
-                //    if (findPermission == null)
-                //        permissions.Add(new RolePermissionAssignment() { PermissionKey = permission.Key.ToString(), IsAssigned = false });
-                //}
-
-
-                foreach (BluePrintsEntitiesModuleDescription module in bluePrintsEntitiesViewModel.Modules)
+                if (permissions == null)
                 {
-                    //don't allow current user to set permission to him/herself
-                    //bool isCurrentUserHavePermission = LoginCredentials.CurrentUserPermission.Any(x => x.PERMISSION == permission.Key.ToString());
-                    //if (!isCurrentUserHavePermission)
-                    //    continue;
+                    permissions = new List<RolePermissionAssignment>();
+                    if(bluePrintsEntitiesViewModel == null)
+                    {
+                        bluePrintsEntitiesViewModel = new BluePrintsEntitiesViewModel(false);
+                        bluePrintsEntitiesViewModel.LoadSecurityEntries();
+                    }
 
-                    //bool isPermissionExistsInSelectedEntity = DisplaySelectedEntity.ROLE_PERMISSIONS.Any(x => x.PERMISSION == permission.Key.ToString());
+                    foreach (BluePrintsEntitiesModuleDescription module in bluePrintsEntitiesViewModel.Modules)
+                    {
+                        //don't allow current user to set permission to him/herself
+                        if (LoginCredentials.getPermissionStatus(module.SecurityKey) == LoginCredentials.PermissionStatus.None)
+                            continue;
 
-                    permissions.Add(new RolePermissionAssignment() { PermissionName = module.NavigationTitle, PermissionKey = module.NavigationId, PermissionParentKey = module.ParentId, IsAssigned = true, CanAssign = module.DocumentType != string.Empty });
+                        ROLE_PERMISSION findROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == module.SecurityKey);
+                        bool isSelectedRoleHasPermission = findROLE_PERMISSION != null;
+                        bool isPermissionReadOnly = false;
+                        if (isSelectedRoleHasPermission)
+                            isPermissionReadOnly = findROLE_PERMISSION.ISREADONLY;
+
+                        permissions.Add(ViewModelSource.Create(() => new RolePermissionAssignment() { DisplayName = module.ModuleTitle, SecurityKey = module.SecurityKey, PermissionId = module.NavigationId, PermissionParentId = module.ParentId, IsAssigned = isSelectedRoleHasPermission, IsReadOnly = isPermissionReadOnly, CanAssign = module.DocumentType != string.Empty, CanAssignReadOnly = permissionHasReadOnlyMode(module.SecurityKey) }));
+                    }
                 }
 
                 return permissions;
             }
+        }
+
+        private bool permissionHasReadOnlyMode(string securityKey)
+        {
+            foreach (System.Collections.DictionaryEntry permission in resourceSet)
+            {
+                if(permission.Key.ToString() == securityKey)
+                {
+                    return permission.Value.ToString().ToUpper().Contains(@"READ/WRITE");
+                }
+            }
+
+            return false;
         }
 
         public DocTypePermissionAssignment SelectedDocTypePermission { get; set; }
@@ -155,7 +176,6 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return null;
 
-                var resourceSet = PermissionResources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
                 var permissions = new List<DocTypePermissionAssignment>();
                 if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
                     DisplaySelectedEntity = MainViewModel.Entities.First();
@@ -182,10 +202,15 @@ namespace BluePrints.ViewModels
 
         private void refreshPermissions()
         {
+            permissions = null;
             this.RaisePropertyChanged(x => x.Permissions);
             this.RaisePropertyChanged(x => x.DocTypePermissions);
-            //remove the selection instead of having it focused on first row
-            SelectedPermission = null;
+        }
+
+        //because tree list doesn't update when property changed is raised, use refreshdata as workaround
+        private void refreshPermissionsViewOnly()
+        {
+            GridControlService.RefreshData();
         }
 
         public override void OnDisplaySelectedEntityChanged(ROLEProjection entity)
@@ -194,35 +219,76 @@ namespace BluePrints.ViewModels
             base.OnDisplaySelectedEntityChanged(entity);
         }
 
-        public void PermissionCellValueChanging(CellValueChangedEventArgs e)
+        public void PermissionCellValueChanging(TreeListCellValueChangedEventArgs e)
         {
-            //RolePermissionAssignment editingRolePermissionAssignment = (RolePermissionAssignment)e.Row;
-            ////don't need to validate fieldname since only this field is changeable in role permission grid control
+            RolePermissionAssignment editPermission = (RolePermissionAssignment)e.Row;
+            changePermission(editPermission, e.Column.FieldName, (bool)e.Value);
+            refreshPermissionsViewOnly();
+        }
 
-            //bool newValue = (bool)e.Value;
-            //if (newValue)
-            //{
-            //    ROLE_PERMISSION newROLE_PERMISSION = new ROLE_PERMISSION();
-            //    newROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
-            //    newROLE_PERMISSION.PERMISSION = editingRolePermissionAssignment.PermissionKey;
-            //    ROLE_PERMISSIONViewModel.Save(newROLE_PERMISSION);
-            //    DisplaySelectedEntity.ROLE_PERMISSIONS.Add(newROLE_PERMISSION);
-            //    e.Handled = true;
-            //}
-            //else
-            //{
-            //    ROLE_PERMISSION existingROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editingRolePermissionAssignment.PermissionKey);
-            //    if (existingROLE_PERMISSION != null)
-            //    {
-            //        ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
-            //        DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
-            //        e.Handled = true;
-            //    }
-            //}
+        private void changePermission(RolePermissionAssignment editPermission, string fieldName, bool newValue)
+        {
+            bool isAssign = false;
+            bool isAssignReadOnly = false;
 
-            //refreshPermissions();
+            if (newValue)
+                isAssign = true;
 
-            base.CellValueChanging(e);
+            //because the same permission can exists in different areas in the list, all of them should be updated equally
+            List<RolePermissionAssignment> editPermissions = Permissions.Where(x => x.SecurityKey == editPermission.SecurityKey).ToList();
+            if (fieldName == BindableBase.GetPropertyName(() => new RolePermissionAssignment().IsReadOnly))
+            {
+                if (newValue)
+                    isAssignReadOnly = true;
+                else //when read only checkbox is clicked is assign should still hold true
+                {
+                    isAssign = true;
+                    editPermissions.ForEach(x => x.IsReadOnly = false);
+                }
+            }
+
+            if (isAssign)
+            {
+                ROLE_PERMISSION editROLE_PERMISSION = ROLE_PERMISSIONViewModel.Entities.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                if (editROLE_PERMISSION == null)
+                    editROLE_PERMISSION = new ROLE_PERMISSION();
+
+                editROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
+                editROLE_PERMISSION.PERMISSION = editPermission.SecurityKey;
+                editROLE_PERMISSION.ISREADONLY = isAssignReadOnly;
+                editPermissions.ForEach(x => x.IsAssigned = true);
+                editPermissions.ForEach(x => x.IsReadOnly = isAssignReadOnly);
+
+                //must add from collection before saving because it'll invoke OnPersistentAfterAuxiliaryEntitiesChanges, and trigger OnDisplaySelectedEntityChanged 
+                ROLE_PERMISSION findNavigationalROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                if (findNavigationalROLE_PERMISSION == null)
+                    DisplaySelectedEntity.ROLE_PERMISSIONS.Add(editROLE_PERMISSION);
+                else
+                    DataUtils.ShallowCopy(findNavigationalROLE_PERMISSION, editROLE_PERMISSION);
+
+                ROLE_PERMISSIONViewModel.Save(editROLE_PERMISSION);
+            }
+            else
+            {
+                ROLE_PERMISSION existingROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                if (existingROLE_PERMISSION != null)
+                {
+                    //must remove from collection before deletion because it'll invoke OnPersistentAfterAuxiliaryEntitiesChanges, and trigger OnDisplaySelectedEntityChanged 
+                    DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
+                    ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
+                }
+
+                editPermissions.ForEach(x => x.IsAssigned = false);
+                editPermissions.ForEach(x => x.IsReadOnly = false);
+            }
+        }
+
+        protected override void OnPersistentAfterAuxiliaryEntitiesChanges(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if (changedType == typeof(ROLE_PERMISSION))
+                return;
+
+            base.OnPersistentAfterAuxiliaryEntitiesChanges(key, changedType, messageType, sender, isBulkRefresh);
         }
 
         public void DocTypePermissionCellValueChanging(CellValueChangedEventArgs e)
@@ -252,8 +318,51 @@ namespace BluePrints.ViewModels
             }
 
             refreshPermissions();
-
             base.CellValueChanging(e);
+        }
+
+        public bool CanUncheckPermissions(object button)
+        {
+            GridMenuInfo info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            if (IsLoading || button == null || info == null)
+                return false;
+
+            if (info.Column.FieldName != BindableBase.GetPropertyName(() => new RolePermissionAssignment().IsAssigned) && info.Column.FieldName != BindableBase.GetPropertyName(() => new RolePermissionAssignment().IsReadOnly))
+                return false;
+            else
+                return true;
+        }
+
+        public void UncheckPermissions(object button)
+        {
+            BulkEditPermission(button, false);
+        }
+
+        public bool CanCheckPermissions(object button)
+        {
+            return CanUncheckPermissions(button);
+        }
+
+        public void CheckPermissions(object button)
+        {
+            BulkEditPermission(button, true);
+        }
+
+        public void BulkEditPermission(object button, bool isChecked)
+        {
+            GridMenuInfo info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            bool valueToFill = isChecked;
+
+            //because bulk save isn't used SelectedPermissions will be changed after saving, so cache it first
+            List<RolePermissionAssignment> fillPermissions = SelectedPermissions.ToList();
+            var bulkSaveEntities = new List<BASELINE_ITEMProgress>();
+
+            for (int i = 0; i < fillPermissions.Count; i++)
+            {
+                changePermission(fillPermissions[i], info.Column.FieldName, valueToFill);
+            }
+
+            refreshPermissionsViewOnly();
         }
         #endregion
 
@@ -378,11 +487,19 @@ namespace BluePrints.ViewModels
 
     public class RolePermissionAssignment
     {
-        public string PermissionName { get; set; }
-        public object PermissionKey { get; set; }
-        public object PermissionParentKey { get; set; }
+        public RolePermissionAssignment()
+        {
+
+        }
+
+        public string DisplayName { get; set; }
+        public string SecurityKey { get; set; }
+        public string PermissionId { get; set; }
+        public string PermissionParentId { get; set; }
         public bool IsAssigned { get; set; }
         public bool CanAssign { get; set; }
+        public bool IsReadOnly { get; set; }
+        public bool CanAssignReadOnly { get; set; }
     }
 
     public class DocTypePermissionAssignment

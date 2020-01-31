@@ -921,7 +921,7 @@ namespace BluePrints.ViewModels
                         DateTime lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
                         if (ForecastStartDate < lastEACDataDate)
                         {
-                            if (!LoginCredentials.hasPermission(PermissionResources.CanRewindDataDate))
+                            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                             {
                                 MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                 ForecastStartDate = LoadDataDate;
@@ -938,7 +938,7 @@ namespace BluePrints.ViewModels
                     bool hasEACOnCurrentDataDate = FORECASTCollection.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == LoadDataDate).Count() > 0;
                     if (LoadDataDate != null && !hasEACOnCurrentDataDate)
                     {
-                        if (!LoginCredentials.hasPermission(PermissionResources.CanForwardDataDate))
+                        if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                         {
                             MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                             ForecastStartDate = LoadDataDate;

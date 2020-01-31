@@ -10,6 +10,7 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.BaseRootContainer}">
         <dxmvvm:Interaction.Behaviors>
+            <services:GridControlService Name="DefaultGridControlService" GridControl="{Binding ElementName=GridControlPermission}" />
             <services:GridControlService Name="TreeGridControlService" GridControl="{Binding ElementName=GridControlTree}" />
         </dxmvvm:Interaction.Behaviors>
         <Grid DataContext="{Binding MainViewModel}">
@@ -21,6 +22,8 @@
                     <dxb:BarButtonItem x:Name="biResetLayout1" Command="{Binding DataContext.ResetLayoutCommand, ElementName=userControl}" Content="Reset Layout" Glyph="{dx:DXImage Image=SaveAndClose_16x16.png}" LargeGlyph="{dx:DXImage Image=SaveAndClose_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset layout to default. Please reopen current view for default layout to take effect" />
                     <dxb:BarButtonItem x:Name="biAddRowBefore" Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" Content="Insert Before" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
                     <dxb:BarButtonItem x:Name="biAddRowAfter" Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" Content="Insert After" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" />
+                    <dxb:BarButtonItem x:Name="biCheckPermissions" Command="{Binding DataContext.CheckPermissionsCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Check" Glyph="{dx:DXImage Images/Conditional Formatting/IconSetSymbols3_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values in the permission grid for selected rows starting from last selection" />
+                    <dxb:BarButtonItem x:Name="biUncheckPermissions" Command="{Binding DataContext.UncheckPermissionsCommand, ElementName=userControl}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Uncheck" Glyph="{dx:DXImage Images/Edit/Delete_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values in the permission grid for selected rows starting from first selection" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -101,19 +104,29 @@
                                     </dxg:GridControl>
                                 </dxdo:LayoutPanel>
                             </dxdo:LayoutGroup>
-                            <dxdo:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}">
+                            <dxdo:LayoutGroup DataContext="{Binding DataContext, ElementName=userControl}" Orientation="Vertical">
+                                <dxdo:LayoutPanel ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
+                                    <dxlc:LayoutItem HorizontalAlignment="Center" VerticalAlignment="Center" Label="Hold shift + left mouse click to select multiple checkboxes and then right click on the desired checkbox column to bring up additional options to set checkbox values" LabelPosition="Left" />
+                                </dxdo:LayoutPanel>
                                 <dxdo:LayoutPanel>
-                                    <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}">
+                                    <custom:GridControlEx x:Name="GridControlPermission" MaxHeight="2000" SelectionMode="Row" dx:DXSerializer.SerializationID="GridControlROLE_PERMISSION" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Permissions}" SelectedItem="{Binding SelectedPermission, Mode=TwoWay}" SelectedItems="{Binding SelectedPermissions, Mode=TwoWay}">
                                         <dxg:GridControl.Columns>
-                                            <dxg:GridColumn Width="600" AllowEditing="False" FieldName="PermissionName" Header="Permission" HeaderToolTip="Permissions within the system">
+                                            <dxg:GridColumn Width="600" AllowEditing="False" FieldName="DisplayName" Header="Permission" HeaderToolTip="Permissions within the system">
                                                 <!--<dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings DisplayMember="Value" IsTextEditable="False" ItemsSource="{Binding DataContext.PermissionLookUp, ElementName=userControl}" ValueMember="Key" />
                                         </dxg:GridColumn.EditSettings>-->
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="IsAssigned" MaxWidth="100" Header="Assigned" HeaderToolTip="Indicate whether selected role have the permission">
+                                            <dxg:GridColumn FieldName="IsAssigned" MaxWidth="100" Header="Assigned" HeaderToolTip="Indicate whether selected role have the permission to read/write">
                                                 <dxg:GridColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <dxe:CheckEdit x:Name="PART_Editor" Visibility="{Binding RowData.Row.CanAssign, Converter={dxmvvm:BooleanToVisibilityConverter}}"  ToolTip="Specify whether selected role on the left have access to current permission"/>
+                                                        <dxe:CheckEdit x:Name="PART_Editor" Visibility="{Binding RowData.Row.CanAssign, Converter={dxmvvm:BooleanToVisibilityConverter}}"  ToolTip="Specify whether selected role on the left have access to current permission as read/write"/>
+                                                    </DataTemplate>
+                                                </dxg:GridColumn.CellTemplate>
+                                            </dxg:GridColumn>
+                                            <dxg:GridColumn FieldName="IsReadOnly" MaxWidth="100" Header="Read Only" HeaderToolTip="Indicate whether selected role have the permission but in read only mode">
+                                                <dxg:GridColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <dxe:CheckEdit x:Name="PART_Editor" Visibility="{Binding RowData.Row.CanAssignReadOnly, Converter={dxmvvm:BooleanToVisibilityConverter}}"  ToolTip="Specify whether selected role on the left have access to current permission as read only"/>
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
@@ -125,13 +138,15 @@
                                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                         </dxg:GridControl.GroupSummary>
                                         <dxg:GridControl.View>
-                                            <dxg:TreeListView x:Name="permissionTreeListView" AutoWidth="True" AutoExpandAllNodes="True" KeyFieldName="PermissionKey" ParentFieldName="PermissionParentKey">
+                                            <dxg:TreeListView x:Name="permissionTreeListView" ShowSearchPanelMode="Always" AutoWidth="True" AutoExpandAllNodes="True" KeyFieldName="PermissionId" ParentFieldName="PermissionParentId">
+                                                <dxmvvm:Interaction.Behaviors>
+                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                                </dxmvvm:Interaction.Behaviors>
+                                                <dxg:TreeListView.RowCellMenuCustomizations>
+                                                    <dxb:BarButtonItemLink BarItemName="biCheckPermissions" />
+                                                    <dxb:BarButtonItemLink BarItemName="biUncheckPermissions" />
+                                                </dxg:TreeListView.RowCellMenuCustomizations>
                                             </dxg:TreeListView>
-                                            <!--<dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowSearchPanelMode="Always">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.PermissionCellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                        </dxmvvm:Interaction.Behaviors>
-                                    </dxg:TableView>-->
                                         </dxg:GridControl.View>
                                     </custom:GridControlEx>
                                 </dxdo:LayoutPanel>

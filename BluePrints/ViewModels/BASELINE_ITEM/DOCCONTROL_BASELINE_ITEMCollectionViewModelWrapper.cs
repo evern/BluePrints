@@ -139,7 +139,7 @@ namespace BluePrints.ViewModels
         public bool CanApproveSelectedInternalNumbers => DisplaySelectedEntities.Count() > 0;
         public void ApproveSelectedInternalNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.ApproveInternalNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to approve internal numbers", "Unauthorised");
                 return;
@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
         public bool CanApproveSelectedClientNumbers => DisplaySelectedEntities.Count() > 0;
         public void ApproveSelectedClientNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.ApproveInternalNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to approve client numbers", "Unauthorised");
                 return;

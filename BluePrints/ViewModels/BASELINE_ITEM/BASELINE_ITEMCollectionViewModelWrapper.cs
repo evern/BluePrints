@@ -97,7 +97,7 @@ namespace BluePrints.ViewModels
         public bool CanFinaliseClientNumbers => BASELINEViewModel != null;
         public void FinaliseClientNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.FinaliseNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to finalise client numbers", "Unauthorised");
                 return;
@@ -125,7 +125,7 @@ namespace BluePrints.ViewModels
         public bool CanFinaliseInternalNumbers => BASELINEViewModel != null;
         public void FinaliseInternalNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.FinaliseNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to finalise internal numbers", "Unauthorised");
                 return;
@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
         public bool CanUnapproveSelectedInternalNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedInternalNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to unapprove internal numbers", "Unauthorised");
                 return;
@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
         public bool CanUnapproveSelectedClientNumbers => DisplaySelectedEntities.Count() > 0;
         public void UnapproveSelectedClientNumbers()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.UnapproveInternalNumbers))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You do not have the authority to unapprove client numbers", "Unauthorised");
                 return;

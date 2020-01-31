@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Misc;
+﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
@@ -202,7 +203,7 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             ForecastJobData forecastProjection = ViewModelSource.Create(() => new ForecastJobData());
             forecastProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            forecastProjection.IsBudgetReadOnly = !LoginCredentials.hasPermission(PermissionResources.ChangeBudget);
+            forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             variationCode = NormalizeVariationCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityName, Description = commodityDescription, UOM = commodityUOM }, Variation_Code = variationCode };
 

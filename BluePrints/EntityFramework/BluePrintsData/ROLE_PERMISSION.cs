@@ -17,6 +17,8 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PERMISSION { get; set; }
 
+        public bool ISREADONLY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

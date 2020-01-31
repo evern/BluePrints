@@ -353,7 +353,7 @@ namespace BluePrints.ViewModels
                             DateTime lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
                             if(FixedDataDate < lastEACDataDate)
                             {
-                                if (!LoginCredentials.hasPermission(PermissionResources.CanRewindDataDate))
+                                if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                                 {
                                     MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                     FixedDataDate = LoadDataDate;
@@ -370,7 +370,7 @@ namespace BluePrints.ViewModels
                         bool hasEACOnCurrentDataDate = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == LoadDataDate).Count() > 0;
                         if (LoadDataDate != null && !hasEACOnCurrentDataDate)
                         {
-                            if(!LoginCredentials.hasPermission(PermissionResources.CanForwardDataDate))
+                            if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                             {
                                 MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                 FixedDataDate = LoadDataDate;
@@ -1709,7 +1709,7 @@ namespace BluePrints.ViewModels
                 }
                 else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Budget)))
                 {
-                    if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                    if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None)
                     {
                         e.ErrorContent = "You do not have permission to change the budget";
                         e.IsValid = false;
@@ -2276,7 +2276,7 @@ namespace BluePrints.ViewModels
 
         public void SaveCurrentMonthEAC()
         {
-            if (!LoginCredentials.hasPermission(PermissionResources.SaveEAC))
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC)) == LoginCredentials.PermissionStatus.None)
             {
                 MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
                 return;

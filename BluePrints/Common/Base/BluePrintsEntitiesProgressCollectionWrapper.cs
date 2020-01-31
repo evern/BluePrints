@@ -650,7 +650,7 @@ namespace BluePrints.Common.Base
         {
             get
             {
-                return LoginCredentials.hasPermission(PermissionResources.ManageProgressDistribution);
+                return true;
             }
         }
 
