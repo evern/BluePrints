@@ -120,9 +120,6 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return null;
 
-                if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
-                    DisplaySelectedEntity = MainViewModel.Entities.First();
-
                 if (DisplaySelectedEntity == null)
                     return null;
 
@@ -177,8 +174,6 @@ namespace BluePrints.ViewModels
                     return null;
 
                 var permissions = new List<DocTypePermissionAssignment>();
-                if (DisplaySelectedEntity == null && MainViewModel.Entities.Count > 0)
-                    DisplaySelectedEntity = MainViewModel.Entities.First();
 
                 if (DisplaySelectedEntity == null)
                     return null;
