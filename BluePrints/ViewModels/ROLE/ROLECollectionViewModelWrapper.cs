@@ -244,7 +244,7 @@ namespace BluePrints.ViewModels
 
             if (isAssign)
             {
-                ROLE_PERMISSION editROLE_PERMISSION = ROLE_PERMISSIONViewModel.Entities.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                ROLE_PERMISSION editROLE_PERMISSION = ROLE_PERMISSIONViewModel.Entities.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey && x.GUID_ROLE == DisplaySelectedEntity.GUID);
                 if (editROLE_PERMISSION == null)
                     editROLE_PERMISSION = new ROLE_PERMISSION();
 
