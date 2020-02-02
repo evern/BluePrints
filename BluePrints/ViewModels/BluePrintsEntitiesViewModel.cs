@@ -145,17 +145,16 @@ namespace BluePrints.ViewModels
         private void MyDeliverablesDispatcher_Tick(object sender, EventArgs e)
         {
             myDeliverablesDispatcher.Stop();
-            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
+            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
                 NavigateCore(myDeliverablesDescription);
         }
 
         private void CreateModules(IEnumerable<PROJECT> entities, bool isSecurityModule)
         {
-            dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
             Modules.Add(dashboardCategoryDescription);
 
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDashboard), string.Empty, dashboardCategoryDescription.NavigationId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"), isSecurityModule);
-            moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png"), isSecurityModule);
+            moduleAdder(dashboardCategoryDescription, myDeliverablesDescription, isSecurityModule);
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl), string.Empty, dashboardCategoryDescription.NavigationId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"), isSecurityModule);
 
             BluePrintsEntitiesModuleDescription projectCategoryHeader;
@@ -316,6 +315,8 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
         private void initializeCategoryDescription()
         {
+            dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
+            myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
