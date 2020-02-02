@@ -24,8 +24,8 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>\\Fileserver\General\BLUEPRINTS\</UpdateUrl>
-    <MinimumRequiredVersion>1.0.4.72</MinimumRequiredVersion>
-    <ApplicationRevision>72</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.4.77</MinimumRequiredVersion>
+    <ApplicationRevision>77</ApplicationRevision>
     <ApplicationVersion>1.0.4.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -718,10 +718,10 @@
       <DependentUpon>BluePrintsResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Common\Misc\SignalR.cs" />
-    <Compile Include="Common\Resources\NavigationResources.Designer.cs">
+    <Compile Include="Common\Resources\PermissionResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>NavigationResources.resx</DependentUpon>
+      <DependentUpon>PermissionResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
@@ -2429,9 +2429,10 @@
       <LastGenOutput>BluePrintsResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Common\Resources\NavigationResources.resx">
+    <EmbeddedResource Include="Common\Resources\PermissionResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NavigationResources.Designer.cs</LastGenOutput>
+      <LastGenOutput>PermissionResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
