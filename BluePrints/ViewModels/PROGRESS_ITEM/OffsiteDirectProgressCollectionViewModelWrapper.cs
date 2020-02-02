@@ -121,7 +121,7 @@ namespace BluePrints.ViewModels
 
         public bool CanUpdateAllPercentagesByStatus()
         {
-            return LoginCredentials.hasPermission(PermissionResources.ProgressUpdatePercentageByStatus);
+            return LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus)) != LoginCredentials.PermissionStatus.None;
         }
 
         public void UpdateAllPercentagesByStatus()

@@ -1,0 +1,378 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_ActiveProjects" xml:space="preserve">
+    <value>Active projects category</value>
+  </data>
+  <data name="Category_Data" xml:space="preserve">
+    <value>Data category menu</value>
+  </data>
+  <data name="Category_Project_Construct" xml:space="preserve">
+    <value>Project construct category</value>
+  </data>
+  <data name="Category_Project_Design" xml:space="preserve">
+    <value>Project design category</value>
+  </data>
+  <data name="Category_Project_EXO" xml:space="preserve">
+    <value>Project EXO data maintenance category</value>
+  </data>
+  <data name="Category_Project_Forecast" xml:space="preserve">
+    <value>Project forecast category</value>
+  </data>
+  <data name="Category_Project_Rate" xml:space="preserve">
+    <value>Project rates category</value>
+  </data>
+  <data name="Category_Register" xml:space="preserve">
+    <value>Project registers category</value>
+  </data>
+  <data name="Category_StockGroup" xml:space="preserve">
+    <value>Stock group category</value>
+  </data>
+  <data name="Category_SubmittedProjects" xml:space="preserve">
+    <value>Submitted tender category</value>
+  </data>
+  <data name="Category_UserProjects" xml:space="preserve">
+    <value>User project category</value>
+  </data>
+  <data name="Category_UserTenders" xml:space="preserve">
+    <value>User tendering project category</value>
+  </data>
+  <data name="Category_WIPProjects" xml:space="preserve">
+    <value>Work in progress category</value>
+  </data>
+  <data name="ContextMenu_ProjectAreas" xml:space="preserve">
+    <value>Project area right click context menu</value>
+  </data>
+  <data name="ContextMenu_ProjectBaselines" xml:space="preserve">
+    <value>Project baselines right click context menu</value>
+  </data>
+  <data name="ContextMenu_ProjectEstimates" xml:space="preserve">
+    <value>Project estimates right click context menu</value>
+  </data>
+  <data name="ContextMenu_ProjectProgresses" xml:space="preserve">
+    <value>Project progresses right click context menu</value>
+  </data>
+  <data name="Menu_AllProjects" xml:space="preserve">
+    <value>Main project menu</value>
+  </data>
+  <data name="Menu_Client" xml:space="preserve">
+    <value>Client maintenance menu</value>
+  </data>
+  <data name="Menu_CommodityCode" xml:space="preserve">
+    <value>Commodity code maintenance menu</value>
+  </data>
+  <data name="Menu_Dashboard" xml:space="preserve">
+    <value>Dashboard menu</value>
+  </data>
+  <data name="Menu_Departments" xml:space="preserve">
+    <value>Department maintenance menu</value>
+  </data>
+  <data name="Menu_Disciplines" xml:space="preserve">
+    <value>Discipline maintenance menu</value>
+  </data>
+  <data name="Menu_DocumentControl" xml:space="preserve">
+    <value>Document control menu</value>
+  </data>
+  <data name="Menu_DocumentTypes" xml:space="preserve">
+    <value>Document types maintenance menu</value>
+  </data>
+  <data name="Menu_EXO_Users" xml:space="preserve">
+    <value>EXO users maintenance menu</value>
+  </data>
+  <data name="Menu_HSE" xml:space="preserve">
+    <value>Company wide HSE menu</value>
+  </data>
+  <data name="Menu_MeetingActions" xml:space="preserve">
+    <value>Meeting actions maintenance menu</value>
+  </data>
+  <data name="Menu_Offices" xml:space="preserve">
+    <value>Office maintenance menu</value>
+  </data>
+  <data name="Menu_Phases" xml:space="preserve">
+    <value>Phases maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Areas" xml:space="preserve">
+    <value>Project areas menu</value>
+  </data>
+  <data name="Menu_Project_ConstructionDirectCostRate" xml:space="preserve">
+    <value>Project construction direct cost rate maintenance</value>
+  </data>
+  <data name="Menu_Project_ConstructionJobs" xml:space="preserve">
+    <value>Project construction job setup maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructionResourceAllocation" xml:space="preserve">
+    <value>Project construction resource allocation menu</value>
+  </data>
+  <data name="Menu_Project_DesignDeliverables" xml:space="preserve">
+    <value>Project design deliverables maintenance menu</value>
+  </data>
+  <data name="Menu_Project_DesignDirectChargeRate" xml:space="preserve">
+    <value>Project design direct charge rate maintenance</value>
+  </data>
+  <data name="Menu_Project_DesignDirectCostRate" xml:space="preserve">
+    <value>Project design direct cost rate maintenance</value>
+  </data>
+  <data name="Menu_Project_DesignIndirectChargeRate" xml:space="preserve">
+    <value>Project design indirect charge rate maintenance</value>
+  </data>
+  <data name="Menu_Project_DesignIndirectCostRate" xml:space="preserve">
+    <value>Project design indirect cost rate maintenance</value>
+  </data>
+  <data name="Menu_Project_DesignProgress" xml:space="preserve">
+    <value>Project design progress maintenance menu</value>
+  </data>
+  <data name="Menu_Project_DesignProgressDistribution" xml:space="preserve">
+    <value>Project design progress distribution maintenance menu</value>
+  </data>
+  <data name="Menu_Project_DesignResourceAllocation" xml:space="preserve">
+    <value>Project design resource allocation menu</value>
+  </data>
+  <data name="Menu_Project_DesignStatuses" xml:space="preserve">
+    <value>Project design deliverable status maintenance menu</value>
+  </data>
+  <data name="Menu_Project_DesignVariation" xml:space="preserve">
+    <value>Project design variation maintenance menu</value>
+  </data>
+  <data name="Menu_Project_EXO_Jobs" xml:space="preserve">
+    <value>Project EXO jobs maintenance menu</value>
+  </data>
+  <data name="Menu_Project_EXO_Timesheets" xml:space="preserve">
+    <value>Project EXO timesheet maintenance menu</value>
+  </data>
+  <data name="Menu_Project_EXO_Transactions" xml:space="preserve">
+    <value>Project EXO transactions maintenance menu read/write</value>
+  </data>
+  <data name="Menu_Project_Forecast" xml:space="preserve">
+    <value>Project forecast menu</value>
+  </data>
+  <data name="Menu_Project_Forecast_AllEAC" xml:space="preserve">
+    <value>Project all EAC view</value>
+  </data>
+  <data name="Menu_Project_Forecast_Claims" xml:space="preserve">
+    <value>Project claims menu</value>
+  </data>
+  <data name="Menu_Project_Forecast_Indirect" xml:space="preserve">
+    <value>Project indirect forecast maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Forecast_PO" xml:space="preserve">
+    <value>Project PO forecast maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Holidays" xml:space="preserve">
+    <value>Project holidays maintenance</value>
+  </data>
+  <data name="Menu_Project_HSE" xml:space="preserve">
+    <value>Project HSE maintenance</value>
+  </data>
+  <data name="Menu_Project_HSEReport" xml:space="preserve">
+    <value>Project HSE report maintenance</value>
+  </data>
+  <data name="Menu_Project_Meetings" xml:space="preserve">
+    <value>Project meetings maintenance</value>
+  </data>
+  <data name="Menu_Project_MeetingTypes" xml:space="preserve">
+    <value>Project meeting types maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_Change" xml:space="preserve">
+    <value>Project change register maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_Hold" xml:space="preserve">
+    <value>Project hold register maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_Issue" xml:space="preserve">
+    <value>Project issue register maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_LessonsLearned" xml:space="preserve">
+    <value>Project lessons learned register maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_NonConformance" xml:space="preserve">
+    <value>Project non-conformance register maintenance</value>
+  </data>
+  <data name="Menu_Project_Register_Risk" xml:space="preserve">
+    <value>Project risk register maintenance</value>
+  </data>
+  <data name="Menu_Project_Studies" xml:space="preserve">
+    <value>Project studies maintenance</value>
+  </data>
+  <data name="Menu_Project_Subjob" xml:space="preserve">
+    <value>Project subjobs maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Workpacks" xml:space="preserve">
+    <value>Project workpacks menu</value>
+  </data>
+  <data name="Menu_Roles" xml:space="preserve">
+    <value>Roles maintenance menu</value>
+  </data>
+  <data name="Menu_StockCode" xml:space="preserve">
+    <value>Stock code maintenance menu</value>
+  </data>
+  <data name="Menu_StockGroup" xml:space="preserve">
+    <value>Stock group maintenance menu</value>
+  </data>
+  <data name="Menu_StudyType" xml:space="preserve">
+    <value>Study type maintenance menu</value>
+  </data>
+  <data name="Menu_SubPrompt" xml:space="preserve">
+    <value>Sub prompt maintenance menu</value>
+  </data>
+  <data name="Menu_TenderProfiles" xml:space="preserve">
+    <value>Tender profiles maintenance menu</value>
+  </data>
+  <data name="Menu_UOMs" xml:space="preserve">
+    <value>UOMs maintenance menu</value>
+  </data>
+  <data name="Menu_UserDashboard" xml:space="preserve">
+    <value>User's dashboard menu</value>
+  </data>
+  <data name="Menu_UserDeliverables" xml:space="preserve">
+    <value>User's deliverables menu</value>
+  </data>
+  <data name="Menu_Users" xml:space="preserve">
+    <value>Users maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Dashboard" xml:space="preserve">
+    <value>Project dashboard menu</value>
+  </data>
+  <data name="Permission_DesignDeliverables_InternalNumbersApproval" xml:space="preserve">
+    <value>Approve deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_BookTimeForOthers" xml:space="preserve">
+    <value>Book time for other users</value>
+  </data>
+  <data name="Permission_DesignDeliverables_FinaliseNumbers" xml:space="preserve">
+    <value>Finalise deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_InternalNumbersUnapproval" xml:space="preserve">
+    <value>Unapprove deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_UpdateProgressByStatus" xml:space="preserve">
+    <value>Update deliverable's progress by gate/status</value>
+  </data>
+  <data name="Permission_EXO_ChangeBudget" xml:space="preserve">
+    <value>Change budget in EXO</value>
+  </data>
+  <data name="Permission_Forecast_MoveDataDate" xml:space="preserve">
+    <value>Move forecast data date forward and backward</value>
+  </data>
+  <data name="Permission_Forecast_SaveEAC" xml:space="preserve">
+    <value>Save forecast EAC</value>
+  </data>
+  <data name="Permission_EXO_Timesheets_Commit" xml:space="preserve">
+    <value>Allow commit to EXO</value>
+  </data>
+</root>

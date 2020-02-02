@@ -14,6 +14,7 @@ using DevExpress.Mvvm;
 using BluePrints.Common.Resources;
 using BluePrints.Common.Misc;
 using BluePrints.Common.ViewModel.Utils;
+using BaseModel.Data.Helpers;
 
 namespace BaseModel.ViewModel.Dialogs
 {
@@ -442,7 +443,7 @@ namespace BaseModel.ViewModel.Dialogs
         {
             get
             {
-                return LoginCredentials.hasPermission(PermissionResources.BookOtherTime);
+                return LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers)) != LoginCredentials.PermissionStatus.None;
             }
         }
     }

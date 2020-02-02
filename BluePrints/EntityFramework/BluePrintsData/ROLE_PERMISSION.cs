@@ -14,8 +14,10 @@ namespace BluePrints.Data
         public Guid GUID_ROLE { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(500)]
         public string PERMISSION { get; set; }
+
+        public bool ISREADONLY { get; set; }
 
         public DateTime CREATED { get; set; }
 

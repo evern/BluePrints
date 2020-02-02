@@ -446,6 +446,12 @@ namespace BluePrints.ViewModels
 
         public void CommitToExo()
         {
+            if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Timesheets_Commit)) == LoginCredentials.PermissionStatus.None)
+            {
+                MessageBoxService.ShowMessage("You do not have authority to commit to exo", "Unauthorised", MessageButton.OK);
+                return;
+            }
+
             if (MessageBoxService.ShowMessage("Are you sure you want to commit current table to exo?", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
                 return;
 

@@ -60,24 +60,24 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultLightGridControlTemplate}">
                                         <dxg:GridControl.Columns>
-                                            <dxg:GridColumn FieldName="JOBNO" FilterPopupMode="CheckedList" Header="Sub Job">
+                                            <dxg:GridColumn FieldName="JOBNO" FilterPopupMode="CheckedList" Header="Sub Job" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="COST_GROUP" FilterPopupMode="CheckedList" Header="Cost Group">
+                                            <dxg:GridColumn FieldName="COST_GROUP" FilterPopupMode="CheckedList" Header="Cost Group" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="COST_TYPE" FilterPopupMode="CheckedList" Header="Cost Type">
+                                            <dxg:GridColumn FieldName="COST_TYPE" FilterPopupMode="CheckedList" Header="Cost Type" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" />
-                                            <dxg:GridColumn FieldName="DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
-                                            <dxg:GridColumn FieldName="STAFFNO" FilterPopupMode="CheckedList" Header="Resource">
+                                            <dxg:GridColumn FieldName="X_VARIATIONCODE" FilterPopupMode="CheckedList" Header="Variation Code" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" />
+                                            <dxg:GridColumn FieldName="DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" />
+                                            <dxg:GridColumn FieldName="STAFFNO" FilterPopupMode="CheckedList" Header="Resource" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
                                                 </dxg:GridColumn.EditSettings>

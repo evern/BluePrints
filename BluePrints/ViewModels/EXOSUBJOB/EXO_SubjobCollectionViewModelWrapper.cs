@@ -620,7 +620,7 @@ namespace BluePrints.ViewModels
             {
                 if(new_value != null && new_value.ToString() != string.Empty)
                 {
-                    if (!LoginCredentials.hasPermission(PermissionResources.ChangeBudget))
+                    if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None)
                         return "You do not have authority to set or change budget";
                 }
             }
