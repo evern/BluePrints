@@ -219,6 +219,9 @@
   <data name="Menu_Project_ConstructionResourceAllocation" xml:space="preserve">
     <value>Project construction resource allocation menu</value>
   </data>
+  <data name="Menu_Project_Dashboard" xml:space="preserve">
+    <value>Project dashboard menu</value>
+  </data>
   <data name="Menu_Project_DesignDeliverables" xml:space="preserve">
     <value>Project design deliverables maintenance menu</value>
   </data>
@@ -345,17 +348,14 @@
   <data name="Menu_Users" xml:space="preserve">
     <value>Users maintenance menu</value>
   </data>
-  <data name="Menu_Project_Dashboard" xml:space="preserve">
-    <value>Project dashboard menu</value>
-  </data>
-  <data name="Permission_DesignDeliverables_InternalNumbersApproval" xml:space="preserve">
-    <value>Approve deliverable's internal and client numbers</value>
-  </data>
   <data name="Permission_DesignDeliverables_BookTimeForOthers" xml:space="preserve">
     <value>Book time for other users</value>
   </data>
   <data name="Permission_DesignDeliverables_FinaliseNumbers" xml:space="preserve">
     <value>Finalise deliverable's internal and client numbers</value>
+  </data>
+  <data name="Permission_DesignDeliverables_InternalNumbersApproval" xml:space="preserve">
+    <value>Approve deliverable's internal and client numbers</value>
   </data>
   <data name="Permission_DesignDeliverables_InternalNumbersUnapproval" xml:space="preserve">
     <value>Unapprove deliverable's internal and client numbers</value>
@@ -366,13 +366,13 @@
   <data name="Permission_EXO_ChangeBudget" xml:space="preserve">
     <value>Change budget in EXO</value>
   </data>
+  <data name="Permission_EXO_Timesheets_Commit" xml:space="preserve">
+    <value>Allow commit to EXO</value>
+  </data>
   <data name="Permission_Forecast_MoveDataDate" xml:space="preserve">
     <value>Move forecast data date forward and backward</value>
   </data>
   <data name="Permission_Forecast_SaveEAC" xml:space="preserve">
     <value>Save forecast EAC</value>
-  </data>
-  <data name="Permission_EXO_Timesheets_Commit" xml:space="preserve">
-    <value>Allow commit to EXO</value>
   </data>
 </root>
