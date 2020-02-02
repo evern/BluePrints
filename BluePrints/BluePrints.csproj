@@ -718,11 +718,6 @@
       <DependentUpon>BluePrintsResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Common\Misc\SignalR.cs" />
-    <Compile Include="Common\Resources\PermissionResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PermissionResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
@@ -2429,11 +2424,7 @@
       <LastGenOutput>BluePrintsResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Common\Resources\PermissionResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PermissionResources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Resources\NavigationResources.resx" />
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
