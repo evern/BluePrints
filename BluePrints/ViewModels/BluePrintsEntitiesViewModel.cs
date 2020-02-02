@@ -86,12 +86,11 @@ namespace BluePrints.ViewModels
 
         private void clearAllProjectModules()
         {
-            List<BluePrintsEntitiesModuleDescription> bluePrintsModules = CreateBluePrintsModules().ToList();
+            //cannot clear modules so remove one by one
             List<BluePrintsEntitiesModuleDescription> removeModules = new List<BluePrintsEntitiesModuleDescription>();
             foreach(BluePrintsEntitiesModuleDescription bluePrintsModule in Modules)
             {
-                if (!bluePrintsModules.Any(x => x.NavigationId.ToString() == bluePrintsModule.NavigationId.ToString()))
-                    removeModules.Add(bluePrintsModule);
+                removeModules.Add(bluePrintsModule);
             }
 
             foreach(BluePrintsEntitiesModuleDescription removeModule in removeModules)
@@ -150,8 +149,15 @@ namespace BluePrints.ViewModels
                 NavigateCore(myDeliverablesDescription);
         }
 
-        private void CreateProjectModules(IEnumerable<PROJECT> entities, bool isSecurityModule)
+        private void CreateModules(IEnumerable<PROJECT> entities, bool isSecurityModule)
         {
+            dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
+            Modules.Add(dashboardCategoryDescription);
+
+            moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDashboard), string.Empty, dashboardCategoryDescription.NavigationId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"), isSecurityModule);
+            moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png"), isSecurityModule);
+            moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl), string.Empty, dashboardCategoryDescription.NavigationId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"), isSecurityModule);
+
             BluePrintsEntitiesModuleDescription projectCategoryHeader;
             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard)) != LoginCredentials.PermissionStatus.None)
                 projectCategoryHeader = projectEditableCategoryDescription;
@@ -201,7 +207,7 @@ namespace BluePrints.ViewModels
         
         private void loadNavigationModules(IEnumerable<PROJECT> PROJECTS)
         {
-            CreateProjectModules(PROJECTS, false);
+            CreateModules(PROJECTS, false);
         }
 
         /// <summary>
@@ -216,7 +222,7 @@ namespace BluePrints.ViewModels
             project.STATUS = ProjectStatus.Active;
             samplePROJECTS.Add(project);
 
-            CreateProjectModules(samplePROJECTS, true);
+            CreateModules(samplePROJECTS, true);
             //startPreloading(new BluePrintsEntitiesModuleDescription("View_PreloadDashboard", null, "Preloading...", "PROJECTDashboardView", new ActionObject(this.ClosePreloadDocument)));
             //else
         }
@@ -235,27 +241,6 @@ namespace BluePrints.ViewModels
         private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             RefreshProjectNavigations();
-            //Guid primaryKey = (Guid)key;
-            //RemoveProjectModule(primaryKey);
-
-            //if (messageType == EntityMessageType.Added || messageType == EntityMessageType.Changed)
-            //{
-            //    PROJECT project = _projectCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == primaryKey);
-            //    if (project != null)
-            //    {
-            //        if (messageType == EntityMessageType.Added)
-            //        {
-            //            CreateProjectTree(project);
-            //        }
-            //        else if (messageType == EntityMessageType.Changed)
-            //        {
-            //            if (project.STATUS == ProjectStatus.Active || project.STATUS == ProjectStatus.Tender)
-            //            {
-            //                CreateProjectTree(project);
-            //            }
-            //        }
-            //    }
-            //}
         }
 
         public bool CanRefreshProjectNavigations()
@@ -269,7 +254,7 @@ namespace BluePrints.ViewModels
                 return;
 
             clearAllProjectModules();
-            CreateProjectModules(_projectCollectionViewModel.Entities, false);
+            CreateModules(_projectCollectionViewModel.Entities, false);
         }
 
         public void LogOut()
@@ -345,34 +330,15 @@ namespace BluePrints.ViewModels
 
         protected override BluePrintsEntitiesModuleDescription[] CreateModules()
         {
-            return CreateBluePrintsModules();
+            //dummy impletation of abstract module
+            return new List<BluePrintsEntitiesModuleDescription>().ToArray();
         }
 
-        private BluePrintsEntitiesModuleDescription[] CreateBluePrintsModules()
-        {
-            List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
-
-            dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
-            bluePrintsEntitiesModuleDescriptions.Add(dashboardCategoryDescription);
-
-            //failure to load in multithreaded environment
-            //if (LoginCredentials.hasPermission(PermissionResources.ViewDashboard))
-            //    dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_Dashboard", dashboardCategoryId, "Dashboard", "PROJECTDashboardView", null, null, null, true, false, @"Chart\Chart_16x16.png"));
-
-            dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDashboard), string.Empty, dashboardCategoryDescription.NavigationId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"));
-            myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
-            dashboardCategoryDescription.ChildModules.Add(myDeliverablesDescription);
-
-            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl)) != LoginCredentials.PermissionStatus.None)
-                dashboardCategoryDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl), string.Empty, dashboardCategoryDescription.NavigationId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"));
-
-            return bluePrintsEntitiesModuleDescriptions.ToArray();
-        }
-
+        BluePrintsEntitiesModuleDescription allProjectsDashboardModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), null, "Dashboard", "PROJECTDashboardView");
         private BluePrintsEntitiesModuleDescription[] CreatePreloadModules()
         {
             List<BluePrintsEntitiesModuleDescription> bluePrintsEntitiesModuleDescriptions = new List<BluePrintsEntitiesModuleDescription>();
-            bluePrintsEntitiesModuleDescriptions.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), null, "Dashboard", "PROJECTDashboardView"));
+            bluePrintsEntitiesModuleDescriptions.Add(allProjectsDashboardModuleDescription);
             return bluePrintsEntitiesModuleDescriptions.ToArray();
         }
 
@@ -531,10 +497,10 @@ namespace BluePrints.ViewModels
 
             moduleAdder(projectStatusDescription, projectModuleDescription, isSample);
 
-            BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectSpecificKey, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
-            BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct), projectSpecificKey, projectSpecificKey, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
-            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_EXO), projectSpecificKey, projectSpecificKey, "EXO", null, null, null, null, false, false, @"Function Library\Financial_16x16.png");
-            BluePrintsEntitiesModuleDescription forecast_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Forecast), projectSpecificKey, projectSpecificKey, "Forecast", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
+            BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectModuleDescription.NavigationId, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
+            BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct), projectSpecificKey, projectModuleDescription.NavigationId, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
+            BluePrintsEntitiesModuleDescription exo_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_EXO), projectSpecificKey, projectModuleDescription.NavigationId, "EXO", null, null, null, null, false, false, @"Function Library\Financial_16x16.png");
+            BluePrintsEntitiesModuleDescription forecast_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Forecast), projectSpecificKey, projectModuleDescription.NavigationId, "Forecast", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
 
             //BluePrintsEntitiesModuleDescription queries_category_description = new BluePrintsEntitiesModuleDescription("Category_Queries" + keyString, null, "Queries", null, null, null, null, false, false, @"Data\SelectData_16x16.png");
             moduleAdder(projectModuleDescription, design_category_description, isSample);
@@ -543,7 +509,7 @@ namespace BluePrints.ViewModels
             moduleAdder(projectModuleDescription, forecast_category_description, isSample);
 
             //projectModuleDescription.ChildModules.Add(new BluePrintsEntitiesModuleDescription("View_ProjectUserDashboard", dashboardCategoryId, "Resourcing", "PROJECT_USERDashboardView", new EntitiesParameter<PROJECT>(entity), null, "Resourcing", false, false, @"Toolbox Items\Sparkline_16x16.png"));
-            moduleAdder(projectModuleDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Areas), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png"), isSample);
+            moduleAdder(projectModuleDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Areas), projectSpecificKey, projectModuleDescription.NavigationId, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png"), isSample);
 
             if (entity.USE_WORKPACKS)
                 moduleAdder(projectModuleDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Workpacks), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Workpacks", "WORKPACKCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Workpacks", false, false, @"Support\PackageProduct_16x16.png"), isSample);
