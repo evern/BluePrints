@@ -135,7 +135,12 @@ namespace BluePrints.ViewModels
                     foreach (BluePrintsEntitiesModuleDescription module in bluePrintsEntitiesViewModel.Modules)
                     {
                         //don't allow current user to set permission to him/herself
-                        if (LoginCredentials.getPermissionStatus(module.SecurityKey) == LoginCredentials.PermissionStatus.None)
+                        if (!module.SecurityKey.ToUpper().Contains("CATEGORY"))
+                        {
+                            if (LoginCredentials.getPermissionStatus(module.SecurityKey) == LoginCredentials.PermissionStatus.None)
+                                continue;
+                        }
+                        else if (!bluePrintsEntitiesViewModel.Modules.Any(x => x.ParentId == module.NavigationId))
                             continue;
 
                         ROLE_PERMISSION findROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == module.SecurityKey);
@@ -144,7 +149,7 @@ namespace BluePrints.ViewModels
                         if (isSelectedRoleHasPermission)
                             isPermissionReadOnly = findROLE_PERMISSION.ISREADONLY;
 
-                        permissions.Add(ViewModelSource.Create(() => new RolePermissionAssignment() { DisplayName = module.ModuleTitle, SecurityKey = module.SecurityKey, PermissionId = module.NavigationId, PermissionParentId = module.ParentId, IsAssigned = isSelectedRoleHasPermission, IsReadOnly = isPermissionReadOnly, CanAssign = module.DocumentType != string.Empty, CanAssignReadOnly = permissionHasReadOnlyMode(module.SecurityKey) }));
+                        permissions.Add(ViewModelSource.Create(() => new RolePermissionAssignment() { DisplayName = module.NavigationTitle, SecurityKey = module.SecurityKey, PermissionId = module.NavigationId, PermissionParentId = module.ParentId, IsAssigned = isSelectedRoleHasPermission, IsReadOnly = isPermissionReadOnly, CanAssign = module.DocumentType != string.Empty, CanAssignReadOnly = permissionHasReadOnlyMode(module.SecurityKey) }));
                     }
                 }
 
