@@ -1198,6 +1198,7 @@ namespace BluePrints.Common.Base
             MainViewModel.Refresh();
             scheduling_view_model.OnViewModelLoaded = onSchedulingViewModelLoaded;
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
+            scheduling_view_model.SetParentViewModel(this);
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
         }
