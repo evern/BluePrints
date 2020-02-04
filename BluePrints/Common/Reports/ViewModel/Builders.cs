@@ -57,7 +57,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 DateTime queryDataDate = DateTime.Now;
                 if (!forceRetrieveAllUnits)
-                    queryDataDate = CurrentDataDate.AddDays(1).AddMinutes(-1);
+                    queryDataDate = CurrentDataDate;
 
 
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
