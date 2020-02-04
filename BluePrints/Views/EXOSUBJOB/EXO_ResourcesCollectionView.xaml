@@ -114,6 +114,9 @@
                                                 <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" AllowDrop="{Binding RowData.Row.IsNewRow}" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
+                                        </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" >
                                         <dxg:GridColumn.CellTemplate>
