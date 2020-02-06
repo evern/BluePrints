@@ -7,6 +7,7 @@
                 </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -100,10 +101,26 @@
                                     <dxg:GridColumn FieldName="PAYROLL_ID" Header="Payroll Id" />
                                     <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" >
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
+                                            <dxg:LookUpEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" AutoPopulateColumns="False" IsTextEditable="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" ValueMember="REPORTS_TO_STAFFNO" NullText="Leave empty to autogenerate" >
+                                                <dxg:LookUpEditSettings.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEditSettings.StyleSettings>
+                                                <dxg:LookUpEditSettings.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn FieldName="RESOURCENAME" Header="Name1" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEditSettings.PopupContentTemplate>
+                                            </dxg:LookUpEditSettings>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="RESOURCE_STAFFNO" Header="Linked to Staff" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                    <dxg:GridColumn FieldName="STAFFNO" Header="Linked to Staff" Visible="False" HeaderToolTip="Cannot be changed once entered, please double check" >
                                         <dxg:GridColumn.HeaderStyle>
                                             <Style TargetType="Control">
                                                 <Setter Property="Background" Value="Salmon" />

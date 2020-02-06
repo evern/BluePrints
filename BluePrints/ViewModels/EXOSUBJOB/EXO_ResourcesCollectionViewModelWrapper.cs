@@ -165,13 +165,12 @@ namespace BluePrints.ViewModels
             STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID, forceSearchName, out primaryDbStaffName, out isNew);
 
             resource.STAFFNO = addedStaff.STAFFNO;
-            resource.RESOURCE_STAFFNO = resource.RESOURCE_STAFFNO == null ? addedStaff.STAFFNO : resource.RESOURCE_STAFFNO;
             //map back generated properties to projection
             //do not map back because multiple contexts are involved
             //resource.STAFFNO = addedStaff.STAFFNO;
             resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
             string activeShortCode = isNew ? newResourceShortCode : resource.SHORTCODE;
-            JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.RESOURCE_STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, activeShortCode, forceSearchName);
+            JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, activeShortCode, forceSearchName);
 
             //map back generated properties to projection
             resource.DEFAULT_STOCKCODE = addedResource.DEFAULT_STOCKCODE;
