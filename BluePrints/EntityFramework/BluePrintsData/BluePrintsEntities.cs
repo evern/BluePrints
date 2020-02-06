@@ -35,8 +35,7 @@ namespace BluePrints.Data
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
-        public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
-        public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual DbSet<CONSTRUCTION_JOB> CONSTRUCTION_JOB { get; set; }
         public virtual DbSet<FORECAST_PO> FORECAST_PO { get; set; }
         public virtual DbSet<FORECAST_JOB> FORECAST_JOB { get; set; }
         public virtual DbSet<FORECAST_JOB_SETTING> FORECAST_JOB_SETTING { get; set; }
@@ -117,12 +116,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_SUBAREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.AREA)
                 .HasForeignKey(e => e.GUID_AREA);
 
             modelBuilder.Entity<AREA>()
-                .HasMany(e => e.ESTIMATE_ITEM1)
+                .HasMany(e => e.CONSTRUCTION_JOB1)
                 .WithOptional(e => e.AREA1)
                 .HasForeignKey(e => e.GUID_SUBAREA);
 
@@ -200,7 +199,7 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.COMMODITY_CODES)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
 
@@ -245,7 +244,7 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DEPARTMENT>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
@@ -270,7 +269,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
             modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
 
@@ -333,11 +332,6 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DOCTYPE)
                 .HasForeignKey(e => e.GUID_DOCTYPE)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ESTIMATE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.ESTIMATE)
-                .HasForeignKey(e => e.GUID_ESTIMATE);
 
             modelBuilder.Entity<FORECAST_JOB>()
                 .HasMany(e => e.FORECAST_JOB_HOUR)
@@ -526,7 +520,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.ESTIMATE)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -838,14 +832,9 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_SUBJOB);
 
             modelBuilder.Entity<SUBJOB>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.SUBJOB)
                 .HasForeignKey(e => e.GUID_SUBJOB);
-
-            modelBuilder.Entity<SUBJOB>()
-                .HasMany(e => e.ESTIMATE_ITEM1)
-                .WithOptional(e => e.SUBJOB1)
-                .HasForeignKey(e => e.GUID_PSUBJOB);
 
             modelBuilder.Entity<SUBJOB>()
                 .HasMany(e => e.SUBJOB_ASSIGNMENT)
@@ -948,7 +937,7 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_WORKPACK);
 
             modelBuilder.Entity<WORKPACK>()
-                .HasMany(e => e.ESTIMATE_ITEM)
+                .HasMany(e => e.CONSTRUCTION_JOB)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
         }

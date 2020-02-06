@@ -13,7 +13,7 @@ namespace BluePrints.Data
         public DEPARTMENT()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
+            CONSTRUCTION_JOB = new HashSet<CONSTRUCTION_JOB>();
             DOCTYPE = new HashSet<DOCTYPE>();
             RATE = new HashSet<RATE>();
             USER = new HashSet<USER>();
@@ -49,7 +49,7 @@ namespace BluePrints.Data
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual ICollection<CONSTRUCTION_JOB> CONSTRUCTION_JOB { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DOCTYPE> DOCTYPE { get; set; }

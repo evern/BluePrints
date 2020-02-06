@@ -1,5 +1,4 @@
 ﻿using BaseModel.Misc;
-using BluePrints.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +17,11 @@ using System.Windows.Shapes;
 namespace BluePrints.Views
 {
     /// <summary>
-    /// Interaction logic for BASELINE_ITEMCollectionView.xaml
+    /// Interaction logic for ESTIMATE_ITEMCollectionView.xaml
     /// </summary>
-    public partial class BUDGET_ITEMWorkpackSchedulingView : UserControl
+    public partial class CONSTRUCTION_JOBCollectionView : UserControl
     {
-        public BUDGET_ITEMWorkpackSchedulingView()
+        public CONSTRUCTION_JOBCollectionView()
         {
             InitializeComponent();
         }

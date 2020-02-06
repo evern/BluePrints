@@ -1386,7 +1386,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, IEnumerable<STOCK_CODE> STOCK_CODES,
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            List<ESTIMATE_ITEMProgress> estimateItems = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES).ToList();
+            List<FORECAST_ITEMProjection> estimateItems = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES).ToList();
             List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(estimateItems, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, null, ExoSTAFFS, true);
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();

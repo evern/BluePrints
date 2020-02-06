@@ -131,12 +131,12 @@ namespace BluePrints.ViewModels
             baselineSupportParameterObj.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, EstimateViewMode.Both));
         }
 
-        private void trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
+        private void trim_unused_stock_code(IEnumerable<FORECAST_ITEMProjection> estimation_direct_items, object parentId)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => main_thread_trim_unused_stock_code(estimation_direct_items, parentId)));
         }
 
-        private void main_thread_trim_unused_stock_code(IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_items, object parentId)
+        private void main_thread_trim_unused_stock_code(IEnumerable<FORECAST_ITEMProjection> estimation_direct_items, object parentId)
         {
             List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();

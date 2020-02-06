@@ -34,16 +34,16 @@ using System.Windows.Input;
 
 namespace BluePrints.ViewModels
 {
-    public class BUDGET_ITEMSchedulingViewModelWrapper :
-        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
+    public class CONSTRUCTION_JOBSchedulingViewModelWrapper :
+        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATE_ITEM, FORECAST_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static BUDGET_ITEMSchedulingViewModelWrapper Create()
+        public static CONSTRUCTION_JOBSchedulingViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new BUDGET_ITEMSchedulingViewModelWrapper());
+            return ViewModelSource.Create(() => new CONSTRUCTION_JOBSchedulingViewModelWrapper());
         }
 
         #region Database Operation
@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
+        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<FORECAST_ITEMProjection>>
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
@@ -132,12 +132,12 @@ namespace BluePrints.ViewModels
 
         }
 
-        public override string UnifiedRowValidation(ESTIMATE_ITEMProgress projection)
+        public override string UnifiedRowValidation(FORECAST_ITEMProjection projection)
         {
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(FORECAST_ITEMProjection projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
             IEnumerable<P6_ASSIGNMENT> delete_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments);
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(delete_assignments);
 
-            foreach(ESTIMATE_ITEMProgress displayEntity in DisplayEntities)
+            foreach(FORECAST_ITEMProjection displayEntity in DisplayEntities)
             {
                 displayEntity.P6_Assignments.Clear();
             }
@@ -161,7 +161,7 @@ namespace BluePrints.ViewModels
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
-                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea = DisplayEntities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
+                IEnumerable<FORECAST_ITEMProjection> estimateItemsBySubArea = DisplayEntities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
                 decimal lowValue = 0.01m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {
@@ -201,8 +201,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            //get { return "BUDGET_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
-            get { return "BUDGET_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
+            //get { return "CONSTRUCTION_JOBSchedulingViewModelWrapper" + view_project_specific_affix; }
+            get { return "CONSTRUCTION_JOBSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

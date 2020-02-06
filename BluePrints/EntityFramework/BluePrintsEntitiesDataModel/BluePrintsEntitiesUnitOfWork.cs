@@ -105,9 +105,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<DataPoint>(), (DataPoint x) => x.Guid_DataPoint); }
         }
 
-        IRepository<ESTIMATE, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATES
+        IRepository<CONSTRUCTION_JOB, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_JOBS
         {
-            get { return GetRepository(x => x.Set<ESTIMATE>(), (ESTIMATE x) => x.GUID); }
+            get { return GetRepository(x => x.Set<CONSTRUCTION_JOB>(), (CONSTRUCTION_JOB x) => x.GUID); }
         }
 
         IRepository<FORECAST, Guid> IBluePrintsEntitiesUnitOfWork.FORECASTS
@@ -139,12 +139,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository(x => x.Set<FORECAST_PO_SETTING>(), (FORECAST_PO_SETTING x) => x.GUID); }
         }
-
-        IRepository<ESTIMATE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATE_ITEMS
-        {
-            get { return GetRepository(x => x.Set<ESTIMATE_ITEM>(), (ESTIMATE_ITEM x) => x.GUID); }
-        }
-
+        
         IRepository<HOLIDAY, Guid> IBluePrintsEntitiesUnitOfWork.HOLIDAYS
         {
             get { return GetRepository(x => x.Set<HOLIDAY>(), (HOLIDAY x) => x.GUID); }

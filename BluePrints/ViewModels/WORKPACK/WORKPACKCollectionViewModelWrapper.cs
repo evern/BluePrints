@@ -145,9 +145,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.BASELINE.GUID_PROJECT == loadPROJECT.GUID && x.BASELINE.STATUS == BaselineStatus.Live);
         }
 
-        private Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> ESTIMATE_ITEMProjectionFunc()
+        private Func<IRepositoryQuery<CONSTRUCTION_JOB>, IQueryable<CONSTRUCTION_JOB>> CONSTRUCTION_JOBProjectionFunc()
         {
-            return query => query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()

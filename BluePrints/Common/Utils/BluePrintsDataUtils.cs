@@ -759,16 +759,13 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate subjob name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IDeliverable entity, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool isProcurementSubjob = false, bool forceIgnore = false)
+        public static void OnBeforeSavedGenerateAndAssignSubjob(PROJECT loadPROJECT, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, ICanAssignSubJobAndWorkpack entity, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork, PhaseType? PhaseType = null, ChargeType? ChargeType = null, bool forceIgnore = false)
         {
             //when user wish to override default subjob
             if (forceIgnore)
                 return;
 
             Guid? existingOrNewPhaseGuid;
-            IHaveProcurementSubjob iHaveProcurementSubjobEntity = entity as IHaveProcurementSubjob;
-            bool assignToProcurementSubjob = (isProcurementSubjob && iHaveProcurementSubjobEntity != null);
-
             string internalNumber = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
             IEnumerable<SUBJOB> SUBJOBCollection = bluePrintsUnitOfWork.SUBJOBS;
             ////provision for when subjob is manually assigned or using legacy subjob
@@ -819,30 +816,18 @@ namespace BluePrints.Common.ViewModel.Utils
                     bluePrintsUnitOfWork.SaveChanges();
                     Messenger.Default.Send(new EntityMessage<SUBJOB, Guid>(newSUBJOB.GUID, Guid.NewGuid(), EntityMessageType.Added));
 
-                    if (assignToProcurementSubjob)
-                        iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = newSUBJOB.GUID;
-                    else
-                    {
-                        entity.Subjob_Guid = newSUBJOB.GUID;
-                        entity.Phase_Guid = existingOrNewPhaseGuid;
-                    }
+                    entity.Subjob_Guid = newSUBJOB.GUID;
+                    entity.Phase_Guid = existingOrNewPhaseGuid;
                 }
                 else
                 {
-                    if (assignToProcurementSubjob)
-                        iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = existingSUBJOB.GUID;
-                    else
-                    {
-                        entity.Phase_Guid = existingOrNewPhaseGuid;
-                        entity.Subjob_Guid = existingSUBJOB.GUID;
-                    }
+                    entity.Phase_Guid = existingOrNewPhaseGuid;
+                    entity.Subjob_Guid = existingSUBJOB.GUID;
                 }
             }
             else
             {
                 entity.Subjob_Guid = null;
-                if (assignToProcurementSubjob)
-                    iHaveProcurementSubjobEntity.Procurement_Subjob_Guid = null;
             }
         }
 
@@ -889,7 +874,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate workpack name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignWorkpack(IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, bool forceIgnore = false)
+        public static void OnBeforeSavedGenerateAndAssignWorkpack(ICanAssignSubJobAndWorkpack entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, bool forceIgnore = false)
         {
             //provision for when workpack is manually assigned or using legacy workpack
             if (forceIgnore || (entity.Subjob_Guid == null || entity.Discipline_Guid == null))

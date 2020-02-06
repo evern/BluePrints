@@ -909,11 +909,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void onEstimateLoaded(IEnumerable<ESTIMATE_ITEMProgress> estimateItems, object parent_id)
+        private void onEstimateLoaded(IEnumerable<FORECAST_ITEMProjection> estimateItems, object parent_id)
         {
             mainThreadDispatcher.BeginInvoke(new Action(() => {
                 int saveCount = 0;
-                List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
+                List<FORECAST_ITEMProjection> newESTIMATE_ITEMS = new List<FORECAST_ITEMProjection>();
                 List<ErrorMessage> errorMessages = new List<ErrorMessage>();
                 foreach (var entity in DisplayEntities)
                 {
@@ -930,7 +930,7 @@ namespace BluePrints.ViewModels
                             string fullDisciplineCode = string.Concat(disciplineCode, disciplineNum);
                             string fullWBSCode = entity.SubJobCode + "-" + fullDisciplineCode + "-" + entity.CommodityCode;
 
-                            ESTIMATE_ITEMProgress findESTIMATE_ITEM = estimateItems.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == entity.VariationCode.ToUpper());
+                            FORECAST_ITEMProjection findESTIMATE_ITEM = estimateItems.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == entity.VariationCode.ToUpper());
                             if (findESTIMATE_ITEM == null)
                             {
                                 ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
@@ -948,7 +948,7 @@ namespace BluePrints.ViewModels
                                     newESTIMATE_ITEM.COMMODITY_CODE = entity.CommodityCode;
                                     newESTIMATE_ITEM.VARIATION_CODE = entity.VariationCode;
 
-                                    ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
+                                    FORECAST_ITEMProjection projection = new FORECAST_ITEMProjection();
                                     projection.Entity = new ESTIMATE_ITEMProjection();
                                     projection.Entity.Entity = newESTIMATE_ITEM;
                                     newESTIMATE_ITEMS.Add(projection);

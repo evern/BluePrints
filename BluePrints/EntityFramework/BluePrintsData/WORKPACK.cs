@@ -38,7 +38,7 @@
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual ICollection<CONSTRUCTION_JOB> CONSTRUCTION_JOB { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 

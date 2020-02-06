@@ -35,6 +35,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<CONSTRUCTION_CONFIG, Guid> CONSTRUCTION_CONFIGS { get; }
 
         /// <summary>
+        /// The CONSTRUCTION_JOB entities repository.
+        /// </summary>
+        IRepository<CONSTRUCTION_JOB, Guid> CONSTRUCTION_JOBS { get; }
+
+        /// <summary>
         /// The STOCK_GROUP entities repository.
         /// </summary>
         IRepository<STOCK_GROUP, Guid> STOCK_GROUPS { get; }
@@ -95,11 +100,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DOCTYPE, Guid> DOCTYPES { get; }
 
         /// <summary>
-        /// The ESTIMATE entities repository.
-        /// </summary>
-        IRepository<ESTIMATE, Guid> ESTIMATES { get; }
-
-        /// <summary>
         /// The FORECAST entities repository.
         /// </summary>
         IRepository<FORECAST, Guid> FORECASTS { get; }
@@ -128,11 +128,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The FORECAST_PO_SETTING entities repository.
         /// </summary>
         IRepository<FORECAST_PO_SETTING, Guid> FORECAST_PO_SETTINGS { get; }
-
-        /// <summary>
-        /// The ESTIMATE_ITEM entities repository.
-        /// </summary>
-        IRepository<ESTIMATE_ITEM, Guid> ESTIMATE_ITEMS { get; }
 
         /// <summary>
         /// The HOLIDAY entities repository.

@@ -1,4 +1,5 @@
 ﻿using BaseModel.Misc;
+using BluePrints.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,9 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for ESTIMATE_ITEMCollectionView.xaml
     /// </summary>
-    public partial class BUDGET_ITEMCollectionView : UserControl
+    public partial class CONSTRUCTION_JOBSchedulingView : UserControl
     {
-        public BUDGET_ITEMCollectionView()
+        public CONSTRUCTION_JOBSchedulingView()
         {
             InitializeComponent();
         }

@@ -620,7 +620,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public IEnumerable<User_Weight> AssignedUsers => Reportable.AssignedUsers;
 
-        public ESTIMATE_ITEMProgress ReadOnlyEstimate => Reportable as ESTIMATE_ITEMProgress;
+        public FORECAST_ITEMProjection ReadOnlyEstimate => Reportable as FORECAST_ITEMProjection;
 
         public bool IsByDuration { get => Reportable.IsByDuration; set => Reportable.IsByDuration = value; }
 

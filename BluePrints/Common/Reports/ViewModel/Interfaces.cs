@@ -66,21 +66,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         bool CanBook { get; set; }
     }
 
-    public interface IEstimateItem
-    {
-        ESTIMATE_ITEMProgress ReadOnlyEstimate { get; }
-    }
-
-    public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
-    {
-        IEnumerable<IDeliverable_Quantity> Deliverables { get; }
-    }
-
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack
-    {
-        
-    }
-
     public interface IDeliverable_Rates_Group : IReportable
     {
         IEnumerable<IReportable> DeliverableRates { get; }
@@ -91,7 +76,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
-    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, IHaveCommodity_Code, IHaveHours
+    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, ICanAssignSubJobAndWorkpack, IHaveCommodity_Code, IHaveHours
     {
         string Project_Number { get; }
         string Subjob_Name { get; }
@@ -101,14 +86,18 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Department_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
+        bool IsByDuration { get; set; }
+    }
+
+    public interface ICanAssignSubJobAndWorkpack
+    {
         Guid? Phase_Guid { get; set; }
-        Guid? Subjob_Guid { get; set; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }
+        Guid? Subjob_Guid { get; }
         Guid? Discipline_Guid { get; }
-        decimal Discipline_Number { get; }
         Guid? Workpack_Guid { get; set; }
-        bool IsByDuration { get; set; }
+        decimal Discipline_Number { get; }
     }
 
     public interface IHaveProcurementSubjob

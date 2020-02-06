@@ -132,21 +132,13 @@ namespace BluePrints.Common.Projections
             foreach (var current_project in project_single_or_active_selection)
             {
                 BASELINE live_baseline = BASELINES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
-                ESTIMATE live_estimation_direct = ESTIMATES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
                 PROGRESS live_baseline_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
-                PROGRESS live_estimation_direct_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Construct);
 
                 IEnumerable<PROGRESS_ITEM> live_baseline_progresses;
                 if (live_baseline_progress != null)
                     live_baseline_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_baseline_progress.GUID);
                 else
                     live_baseline_progresses = null;
-
-                IEnumerable<PROGRESS_ITEM> live_estimation_direct_progresses;
-                if (live_estimation_direct_progress != null)
-                    live_estimation_direct_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_estimation_direct_progress.GUID);
-                else
-                    live_estimation_direct_progresses = null;
 
                 IEnumerable<RATE> project_rates = RATES.Where(x => x.GUID_PROJECT == current_project.GUID);
                 IEnumerable<VARIATION> approved_project_variations = VARIATIONS.Where(x => x.GUID_PROJECT == current_project.GUID);
@@ -155,43 +147,11 @@ namespace BluePrints.Common.Projections
                 List<PROGRESS> current_project_progresses = new List<PROGRESS>();
                 if (live_baseline != null && live_baseline_progresses != null)
                 {
-                    //IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                     IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM;
-
-                    //prefetch attributes so that parallel operation won't attempt to retrieve from a db with closed connection for navigational properties
-                    string preloadCode = string.Empty;
-                    foreach (BASELINE_ITEM liveBaselineItem in live_baseline_items)
-                    {
-                        preloadCode = liveBaselineItem.Discipline_Code;
-                        preloadCode = liveBaselineItem.Subjob_Name;
-                        preloadCode = liveBaselineItem.Commodity_Code;
-                        preloadCode = liveBaselineItem.Phase_Code;
-                    }
-
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
                     live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, false, null, null, null, null, null, null, showLoadingScreen).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
                     current_project_progresses.Add(live_baseline_progress);
-                }
-
-                if (live_estimation_direct != null && live_estimation_direct_progress != null)
-                {
-                    IEnumerable<ESTIMATE_ITEM> live_estimation_direct_items = live_estimation_direct.ESTIMATE_ITEM;
-
-                    //prefetch attributes so that parallel operation won't attempt to retrieve from a db with closed connection for navigational properties
-                    string preloadCode = string.Empty;
-                    foreach (ESTIMATE_ITEM liveEstimateItem in live_estimation_direct_items)
-                    {
-                        preloadCode = liveEstimateItem.Discipline_Code;
-                        preloadCode = liveEstimateItem.Subjob_Name;
-                        preloadCode = liveEstimateItem.Commodity_Code;
-                        preloadCode = liveEstimateItem.Phase_Code;
-                    }
-
-                    IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, STOCKCODECollection, null, approved_project_variations, false, null, showLoadingScreen, null, forceRetrieveRemainingDataPoints);
-                    reportables.AddRange(project_estimation_direct_item_progresses);
-                    current_project_progresses.Add(live_estimation_direct_progress);
                 }
 
                 IPrimeroEntitiesUnitOfWork primeroUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(current_project.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();

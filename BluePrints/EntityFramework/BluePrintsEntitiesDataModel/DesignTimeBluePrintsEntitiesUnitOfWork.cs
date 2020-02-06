@@ -52,6 +52,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((COMMODITY_CODE x) => x.GUID); }
         }
 
+        IRepository<CONSTRUCTION_JOB, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_JOBS
+        {
+            get { return GetRepository((CONSTRUCTION_JOB x) => x.GUID); }
+        }
+
         IRepository<DEPARTMENT, Guid> IBluePrintsEntitiesUnitOfWork.DEPARTMENTS
         {
             get { return GetRepository((DEPARTMENT x) => x.GUID); }
@@ -107,11 +112,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((DataPoint x) => x.Guid_DataPoint); }
         }
 
-        IRepository<ESTIMATE, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATES
-        {
-            get { return GetRepository((ESTIMATE x) => x.GUID); }
-        }
-
         IRepository<FORECAST, Guid> IBluePrintsEntitiesUnitOfWork.FORECASTS
         {
             get { return GetRepository((FORECAST x) => x.GUID); }
@@ -140,11 +140,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_PO_SETTING, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_PO_SETTINGS
         {
             get { return GetRepository((FORECAST_PO_SETTING x) => x.GUID); }
-        }
-
-        IRepository<ESTIMATE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATE_ITEMS
-        {
-            get { return GetRepository((ESTIMATE_ITEM x) => x.GUID); }
         }
 
         IRepository<HOLIDAY, Guid> IBluePrintsEntitiesUnitOfWork.HOLIDAYS

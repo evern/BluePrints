@@ -19,8 +19,7 @@ namespace BluePrints.Data
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
             SUBJOB_ASSIGNMENT = new HashSet<SUBJOB_ASSIGNMENT>();
             WORKPACK = new HashSet<WORKPACK>();
-            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
-            ESTIMATE_ITEM1 = new HashSet<ESTIMATE_ITEM>();
+            CONSTRUCTION_JOB = new HashSet<CONSTRUCTION_JOB>();
             BELLCURVESHAPE = Common.BellCurveShape.Balanced;
         }
 
