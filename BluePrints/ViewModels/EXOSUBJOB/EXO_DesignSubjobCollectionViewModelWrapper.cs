@@ -178,6 +178,12 @@ namespace BluePrints.ViewModels
         #region Events
         public void AlignExoBudget()
         {
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None)
+            {
+                MessageBoxService.ShowMessage("You do not have authority to change budget", "Not Authorised", MessageButton.OK);
+                return;
+            }
+
             if (MessageBoxService.ShowMessage("This will align budget for selected design jobs in exo to aggregated budget in deliverable's list, do you wish to continue?", "Align Budget", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
@@ -185,9 +191,8 @@ namespace BluePrints.ViewModels
             {
                 subJob.ExoBudget = subJob.Budget;
                 commitLineBudgetCost(subJob);
+                subJob.Update();
             }
-
-            FullRefresh();
         }
 
         public void UploadToExo()

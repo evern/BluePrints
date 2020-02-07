@@ -36,6 +36,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                    <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
@@ -54,7 +55,7 @@
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                            <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Cell" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Row" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" FilterPopupMode="CheckedList" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
                                     <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" FilterPopupMode="CheckedList" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
@@ -68,21 +69,21 @@
                                     <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" FilterPopupMode="CheckedList" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
                                     <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" FilterPopupMode="CheckedList" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" FilterPopupMode="CheckedList" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget calculated from from deliverable's total">
+                                    <!--<dxg:GridColumn FieldName="Budget" Header="Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget calculated from from deliverable's total">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="False" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <!--<dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
+                                    </dxg:GridColumn>-->
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>-->
-                                    <!--<dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>-->
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" FilterPopupMode="CheckedList" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
@@ -103,6 +104,8 @@
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                            <dxb:BarItemLinkSeparator />
+                                            <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
                                             <dxb:BarItemLinkSeparator />

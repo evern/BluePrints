@@ -307,7 +307,7 @@ namespace BluePrints.Common.Projections
 
                 if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget))
                 {
-                    if (IsLineExistsInExo && !IgnoreExoBudgetError && ExoBudget != Budget)
+                    if (IsLineExistsInExo && !IgnoreExoBudgetError && Math.Round(ExoBudget, 0) != Math.Round(Budget, 0))
                         info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
                 }
             }
