@@ -1382,12 +1382,10 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<ExoSubJobEditableProjection> GetExoConstructionSubJobProjection(
-            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT,
-            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, IEnumerable<STOCK_CODE> STOCK_CODES,
+            IQueryable<CONSTRUCTION_JOB> CONSTRUCTION_JOBS, PROJECT PROJECT, List<ExoTimeAuthorisation> exoLines, List<ExoTimeAuthorisation> exoAuthorisations,
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STAFF> ExoSTAFFS = null)
         {
-            List<FORECAST_ITEMProjection> estimateItems = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES).ToList();
-            List<ExoSubJobEditableProjection> exoSubJobs = GetProactiveExoSubJobs(estimateItems, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, null, ExoSTAFFS, true);
+            List<ExoSubJobEditableProjection> exoSubJobs = GetConstructionExoSubJobs(CONSTRUCTION_JOBS, primeroUnitOfWork, PROJECT, exoLines, exoAuthorisations, COMMODITY_CODECollection, null, ExoSTAFFS, true);
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
         }
@@ -1442,6 +1440,20 @@ namespace BluePrints.Common.Projections
             }
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).ToList();
+        }
+
+        public static List<ExoSubJobEditableProjection> GetConstructionExoSubJobs(IEnumerable<CONSTRUCTION_JOB> jobs, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, PROJECT project, List<ExoTimeAuthorisation> exoLines, List<ExoTimeAuthorisation> exoAuthorisations, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<USER> USERCollection = null, IEnumerable<STAFF> ExoSTAFFS = null, bool ignoreExoBudgetError = false)
+        {
+            List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
+            foreach (CONSTRUCTION_JOB job in jobs)
+            {
+                if (job.Subjob_Name == null || job.Commodity_Code == null)
+                    continue;
+
+                exoSubJobs.Add(getProactiveSubJob(project.NUMBER, job.Subjob_Name, job.Discipline_Code, job.Commodity_Code, job.Variation_Code, 0, job.Charge, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
+            }
+
+            return exoSubJobs;
         }
 
         private static ExoSubJobEditableProjection getProactiveSubJob(string projectNumber, string subJobCode, string disciplineCode, string commodityCode, string variationCode, decimal budgetInternalCosts, ChargeType? chargeType, bool ignoreExoBudgetError, List<ExoTimeAuthorisation> exoLines, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<ExoTimeAuthorisation> exoAuthorisations, IEnumerable<STAFF> ExoSTAFFS, IEnumerable<USER> USERCollection, string officeName)

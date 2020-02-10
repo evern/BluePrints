@@ -64,6 +64,10 @@ namespace BluePrints.ViewModels
         private ESTIMATE liveESTIMATE;
         private PROGRESS livePROGRESS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
+        private List<ExoTimeAuthorisation> exoLines;
+        private List<ExoTimeAuthorisation> exoAuthorisations;
         #endregion
 
         #region Loading Operations
@@ -76,6 +80,10 @@ namespace BluePrints.ViewModels
             initializeOptionalViewCollectionsOnRefresh = false;
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
+
+            primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            exoLines = ExoQueries.GetProjectLines(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
+            exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -84,8 +92,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, x => assign_estimation_direct(x));
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS, ESTIMATE_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.CONSTRUCTION_JOBS, CONSTRUCTION_JOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => assign_progress(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
@@ -133,15 +140,10 @@ namespace BluePrints.ViewModels
             else
                 return query => query.Where(x => x.GUID_PROGRESS == livePROGRESS.GUID);
         }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
+        
+        private Func<IRepositoryQuery<CONSTRUCTION_JOB>, IQueryable<CONSTRUCTION_JOB>> CONSTRUCTION_JOBProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> ESTIMATE_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_ESTIMATE == liveESTIMATE.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOB>> SUBJOBProjectionFunc()
@@ -182,7 +184,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, localPrimeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
+            return query => ExoQueries.GetExoConstructionSubJobProjection(CONSTRUCTION_JOBCollection.AsQueryable(), loadPROJECT, exoLines, exoAuthorisations, primeroEntitiesUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
@@ -251,11 +253,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<ESTIMATE_ITEM> ESTIMATE_ITEMCollection
+        public IEnumerable<CONSTRUCTION_JOB> CONSTRUCTION_JOBCollection
         {
             get
             {
-                return GetEntities<ESTIMATE_ITEM>();
+                return GetEntities<CONSTRUCTION_JOB>();
             }
         }
 

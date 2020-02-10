@@ -14,7 +14,7 @@ using DevExpress.XtraEditors.DXErrorProvider;
 
 namespace BluePrints.Data
 {
-    public partial class CONSTRUCTION_JOB : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveDBProductivityOverride, ICanAssignSubJobAndWorkpack
+    public partial class CONSTRUCTION_JOB : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveDBProductivityOverride, ICategorisable
     {
         public CONSTRUCTION_JOB()
         {
@@ -266,5 +266,7 @@ namespace BluePrints.Data
                 return string.Empty;
             }
         }
+
+        public string Variation_Code => VARIATION_CODE;
     }
 }

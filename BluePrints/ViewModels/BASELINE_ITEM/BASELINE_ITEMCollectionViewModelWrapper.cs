@@ -769,7 +769,7 @@ namespace BluePrints.ViewModels
             if (entity.GUID == Guid.Empty && entity.Entity.Entity.INTERNAL_NUM == string.Empty && entity.IsInternalNumberEditable)
                 entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity, out errorMessage);
 
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, bluePrintsUnitOfWork, phaseType, chargeType, allowSubJobDeletion);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             entity.Update();
             //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
@@ -779,17 +779,6 @@ namespace BluePrints.ViewModels
         public Action<BASELINE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
         protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
-            //if (projectionEntity.Entity.Entity.GUID_PHASE == null)
-            //{
-            //    IEnumerable<PHASE> phase_collection = loaderCollection.GetCollection<PHASE>();
-            //    if (phase_collection != null)
-            //    {
-            //        PHASE default_design_phase = phase_collection.FirstOrDefault(x => x.INTERNAL_NUM == DefaultPhaseInternalNumber);
-            //        if (default_design_phase != null)
-            //            projectionEntity.Entity.Entity.GUID_PHASE = default_design_phase.GUID;
-            //    }
-            //}
-
             if (ApplyViewSpecificPropertiesToEntityCallBack == null)
                 projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
             else
@@ -803,20 +792,9 @@ namespace BluePrints.ViewModels
         public Action<BASELINE_ITEMProgress> OnAfterDuplicateCallBack { get; set; }
         public virtual void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            #region Send Email
-            if (!InVariationMode)
-            {
-                //if (isNewEntity && DisplayEntities.Any(x => x.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Approved))
-                //{
-                //    ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable with internal number " + entity.INTERNAL_NUM + " has been added to project " + loadPROJECT.NUMBER + ", please review", "Deliverable Added in " + loadPROJECT.NUMBER, true);
-                //}
-            }
-
-            #endregion
             projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
             if (isNewEntity)
                 OnAfterDuplicateCallBack?.Invoke(projectionEntity);
-            //save_deliverable_users(projectionEntity);
         }
         #endregion
 

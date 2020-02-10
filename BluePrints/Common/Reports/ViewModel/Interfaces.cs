@@ -53,7 +53,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IReportable> Reportables { get; }
     }
 
-    public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate, IHaveVariation
+    public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate, IHaveVariationMeasurables
     {
         SingleObjectSummarizer StatSummarizer { get; }
         decimal Current_Productivity { get; }
@@ -71,22 +71,27 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IReportable> DeliverableRates { get; }
     }
 
-    public interface IDeliverable_Rates : IDeliverable, IHaveCosts, IHaveVariation
+    public interface IDeliverable_Rates : IDeliverable, IHaveCosts, IHaveVariationMeasurables
     {
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
-    public interface IDeliverable : IGuidEntityKey, IOriginalGuidEntityKey, ICanAssignSubJobAndWorkpack, IHaveCommodity_Code, IHaveHours
+    public interface IDeliverable : ICategorisable, IGuidEntityKey, IOriginalGuidEntityKey, ICanAssignSubJobAndWorkpack, IHaveCommodity_Code, IHaveHours
+    {
+        PhaseType? Phase { get; }
+        ChargeType? Charge { get; }
+        bool IsByDuration { get; set; }
+    }
+
+    public interface ICategorisable
     {
         string Project_Number { get; }
         string Subjob_Name { get; }
-        PhaseType? Phase { get; }
-        ChargeType? Charge { get; }
         string Phase_Code { get; }
         string Department_Code { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
-        bool IsByDuration { get; set; }
+        string Variation_Code { get; }
     }
 
     public interface ICanAssignSubJobAndWorkpack
@@ -94,7 +99,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? Phase_Guid { get; set; }
         Guid? Area_Guid { get; }
         Guid? SubArea_Guid { get; }
-        Guid? Subjob_Guid { get; }
+        Guid? Subjob_Guid { get; set; }
         Guid? Discipline_Guid { get; }
         Guid? Workpack_Guid { get; set; }
         decimal Discipline_Number { get; }
@@ -120,7 +125,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
 
-    public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours, IHaveVariation
+    public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours, IHaveVariationMeasurables
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; }
         IEnumerable<PROGRESS_ITEM> Progresses { get; }
@@ -258,9 +263,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Commodity_Code { get; }
     }
 
-    public interface IHaveVariation
+    public interface IHaveVariationMeasurables
     {
-        string Variation_Code { get; }
         decimal Variation_Units { get; }
         decimal Budget_Adjustment_Units { get; }
         decimal Budget_Adjustment_Costs { get; }
