@@ -1034,7 +1034,6 @@
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMRATECollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMRATECollectionView.xaml</DependentUpon>
@@ -1855,9 +1854,6 @@
     <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SUBJOB\SUBJOBDashboardView.xaml.cs">
-      <DependentUpon>SUBJOBDashboardView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
     </Compile>
@@ -2302,10 +2298,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SUBJOB\SUBJOBDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

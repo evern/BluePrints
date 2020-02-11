@@ -77,6 +77,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
+        [NotMapped]
         public IEnumerable<COMMODITY_CODE> CommodityCodeCollection
         {
             get
@@ -278,7 +279,9 @@ namespace BluePrints.Data
             throw new NotImplementedException();
         }
 
+        [NotMapped]
         private List<P6_ASSIGNMENT> p6_assignments;
+        [NotMapped]
         public List<P6_ASSIGNMENT> P6_Assignments
         {
             get
@@ -294,7 +297,9 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         List<PROGRESS_ITEM> progresses;
+        [NotMapped]
         public IEnumerable<PROGRESS_ITEM> Progresses
         {
             get
@@ -348,7 +353,9 @@ namespace BluePrints.Data
 
         public decimal Total_InternalCosts => 1;
 
+        [NotMapped]
         List<VariationAdjustment> approvedVariations;
+        [NotMapped]
         public List<VariationAdjustment> ApprovedVariations
         {
             get
