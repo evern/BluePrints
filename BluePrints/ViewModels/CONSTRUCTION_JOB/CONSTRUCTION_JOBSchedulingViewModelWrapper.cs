@@ -35,7 +35,7 @@ using System.Windows.Input;
 namespace BluePrints.ViewModels
 {
     public class CONSTRUCTION_JOBSchedulingViewModelWrapper :
-        BluePrintsEntitiesSchedulingCollectionWrapper<ESTIMATE_ITEM, FORECAST_ITEMProjection, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
+        BluePrintsEntitiesSchedulingCollectionWrapper<CONSTRUCTION_JOB, CONSTRUCTION_JOB, Guid, IBluePrintsEntitiesUnitOfWork>, IHaveCanvasWidth
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -48,26 +48,14 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         protected override PhaseType phase_type => PhaseType.Construct;
-        private ESTIMATE loadESTIMATE;
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc, assign_estimation);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
 
             base.addEntitiesLoader();
-        }
-
-        private void assign_estimation(ESTIMATE entity)
-        {
-            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live estimation not found")));
-
-            loadESTIMATE = entity;
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -80,24 +68,9 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
         }
 
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == iHaveP6BaselinesEntity.project_guid && x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
-        }
-
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.PHASE_TYPE == PhaseType.Construct);
-        }
-
-        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
-        {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -107,15 +80,14 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.CONSTRUCTION_JOBS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
-        protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<FORECAST_ITEMProjection>>
-            specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<CONSTRUCTION_JOB>, IQueryable<CONSTRUCTION_JOB>> specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID), loadPROJECT, loaderCollection.GetCollection<RATE>(), live_PROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, P6_ASSIGNMENTS, false, COMMODITY_CODECollection);
+            return query => CONSTRUCTION_JOBQueries.CONSTRUCTION_JOBP6Assignment(query, loadPROJECT, P6_ASSIGNMENTS, COMMODITY_CODECollection);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -132,12 +104,12 @@ namespace BluePrints.ViewModels
 
         }
 
-        public override string UnifiedRowValidation(FORECAST_ITEMProjection projection)
+        public override string UnifiedRowValidation(CONSTRUCTION_JOB projection)
         {
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(FORECAST_ITEMProjection projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(CONSTRUCTION_JOB projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
@@ -153,7 +125,7 @@ namespace BluePrints.ViewModels
             IEnumerable<P6_ASSIGNMENT> delete_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments);
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(delete_assignments);
 
-            foreach(FORECAST_ITEMProjection displayEntity in DisplayEntities)
+            foreach(CONSTRUCTION_JOB displayEntity in DisplayEntities)
             {
                 displayEntity.P6_Assignments.Clear();
             }
@@ -161,7 +133,7 @@ namespace BluePrints.ViewModels
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
-                IEnumerable<FORECAST_ITEMProjection> estimateItemsBySubArea = DisplayEntities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
+                IEnumerable<CONSTRUCTION_JOB> estimateItemsBySubArea = DisplayEntities.Where(x => x != null && x.P6ACTIVITYMAP == activity_id);
                 decimal lowValue = 0.01m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {
@@ -220,61 +192,6 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<RATE>();
-            }
-        }
-
-        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_GROUP>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_GROUP> ProjectSTOCK_GROUPCollection
-        {
-            get
-            {
-                if (loadPROJECT == null)
-                    return null;
-
-                return STOCK_GROUPCollection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> GlobalSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
-                return collection;
             }
         }
 

@@ -407,7 +407,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                     BudgetedCosts = 0,
                     Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
                     Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
-                    Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedQuantity),
 
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
                     IsFromP6 = deliverablesDataPoint.IsFromP6, 

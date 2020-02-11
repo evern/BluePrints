@@ -308,6 +308,8 @@ namespace BluePrints.Data
 
         public string Deliverable_Name => INTERNAL_NUM;
 
+        public string Variation_Code => string.Empty;
+
         [NotMapped]
         public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
 

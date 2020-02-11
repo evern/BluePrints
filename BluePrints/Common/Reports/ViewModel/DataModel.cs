@@ -38,13 +38,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             ApprovedVariations = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
             decimal variationUnits = ApprovedVariations.Sum(x => x.AdjustmentUnits);
             decimal totalUnits = entity.Budget_Units + variationUnits;
-            decimal unitsPerQuantity = entity.Budget_Quantity == 0 ? 0 : entity.Budget_Units / entity.Budget_Quantity;
-            decimal totalQuantity = unitsPerQuantity == 0 ? 0 : totalUnits / unitsPerQuantity;
             decimal costsPerUnit = entity.Budget_Costs == 0 ? 0 : entity.Budget_Units / entity.Budget_Costs;
             decimal totalCosts = totalUnits * costsPerUnit;
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -623,10 +621,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<User_Weight> AssignedUsers => Entity.AssignedUsers;
 
         public Guid DeliverableKey => Entity.GUID;
-
-        public decimal Budget_Quantity => Entity.Budget_Quantity;
-
-        public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
 

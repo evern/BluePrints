@@ -14,7 +14,7 @@ namespace BluePrints.Data
         public PHASE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
+            CONSTRUCTION_JOB = new HashSet<CONSTRUCTION_JOB>();
             SUBJOB = new HashSet<SUBJOB>();
             RATE = new HashSet<RATE>();
         }
@@ -56,7 +56,7 @@ namespace BluePrints.Data
         public virtual ICollection<SUBJOB> SUBJOB { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
+        public virtual ICollection<CONSTRUCTION_JOB> CONSTRUCTION_JOB { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RATE> RATE { get; set; }

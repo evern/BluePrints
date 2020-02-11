@@ -73,7 +73,6 @@ namespace BluePrints.ViewModels
         public PROJECT LoadPROJECT { get; set; }
         public Action<BASELINECollectionViewModelWrapper> AssignBASELINEDelegates;
         public Action<PROGRESSCollectionViewModelWrapper> AssignPROGRESSDelegates;
-        public Action<ESTIMATECollectionViewModelWrapper> AssignESTIMATEDelegates;
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private DispatcherTimer selectAllDispatcher;
@@ -146,7 +145,6 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -156,20 +154,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID).OrderBy(x => x.REVISION);
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID).OrderBy(x => x.REVISION);
         }
@@ -227,14 +214,13 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             var BASELINE = loaderCollection.GetObject<BASELINE>();
-            var ESTIMATE = loaderCollection.GetObject<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
             var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
             var RATES = loaderCollection.GetCollection<RATE>();
             var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, ShowLoadingScreen);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, ShowLoadingScreen);
 
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
@@ -1335,25 +1321,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private ESTIMATECollectionViewModelWrapper estimationDirectViewModel;
-
-        public ESTIMATECollectionViewModelWrapper ESTIMATEViewModel
-        {
-            get
-            {
-                if (estimationDirectViewModel == null && LoadPROJECT != null)
-                {
-                    estimationDirectViewModel = ESTIMATECollectionViewModelWrapper.Create();
-                    estimationDirectViewModel.SetParentViewModel(this);
-                    var baselineSupportParameterObj = estimationDirectViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(LoadPROJECT);
-                    AssignESTIMATEDelegates?.Invoke(estimationDirectViewModel);
-                }
-
-                return estimationDirectViewModel;
-            }
-        }
-
         public virtual bool CanEditReport()
         {
             if (MainViewModel == null || MainViewModel.Entities.Count == 0)
@@ -1595,14 +1562,6 @@ namespace BluePrints.ViewModels
                     return "N/A";
                 else
                     return ((DateTime)constructDataDate).ToString("dd-MMM-yy");
-            }
-        }
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                return collection;
             }
         }
 

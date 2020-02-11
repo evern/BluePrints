@@ -94,21 +94,17 @@ namespace BluePrints.Common.Projections
 
     public static class DashboardQueries
     {
-        public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATE ESTIMATE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false, bool showLoadingScreen = true)
+        public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false, bool showLoadingScreen = true)
         {
             List<PROJECT> PROJECTS = new List<PROJECT>();
             List<BASELINE> BASELINES = new List<BASELINE>();
-            List<ESTIMATE> ESTIMATES = new List<ESTIMATE>();
 
             PROJECTS.Add(PROJECT);
             if (BASELINE != null)
                 BASELINES.Add(BASELINE);
 
-            if (ESTIMATE != null)
-                ESTIMATES.Add(ESTIMATE);
-
-            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, STOCKCODECollection, fixedStartDate, fixedDataDate, showLoadingScreen, forceRetrieveRemainingDataPoints);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, fixedStartDate, fixedDataDate, showLoadingScreen, forceRetrieveRemainingDataPoints);
 
             if (project_dashboard.Count() == 0)
                 return null;
@@ -117,10 +113,10 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<PROJECT_Dashboard> Multiple_Project_DashboardTransformation(IQueryable<PROJECT> PROJECTS,
-            IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATE> ESTIMATES, IEnumerable<PROGRESS> PROGRESSES,
+            IEnumerable<BASELINE> BASELINES, IEnumerable<PROGRESS> PROGRESSES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
             IEnumerable<VARIATION> VARIATIONS = null,
-            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool showLoadingScreen = false, bool forceRetrieveRemainingDataPoints = false)
+            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool showLoadingScreen = false, bool forceRetrieveRemainingDataPoints = false)
         {
             IQueryable<PROJECT> project_single_or_active_selection;
             if (project_guid != null)

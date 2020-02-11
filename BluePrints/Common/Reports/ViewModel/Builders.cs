@@ -104,7 +104,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             CurrencyConversion = currencyConversion;
         }
 
-        public void BuildEarnedDataPoints(IReportable reportable, decimal qtyPerUnit)
+        public void BuildEarnedDataPoints(IReportable reportable)
         {
             IEnumerable<DataPoint> progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
             {
@@ -114,7 +114,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 BudgetedUnits = reportable.Stats.BudgetedUnits,
                 BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
                 Units = x.EARNED_UNITS,
-                Quantity = x.EARNED_UNITS * qtyPerUnit,
                 Costs = x.EARNED_UNITS * reportable.Budget_ItemRate * CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();

@@ -23,9 +23,7 @@ namespace BluePrints.Data
             BASELINE = new HashSet<BASELINE>();
             BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
-            STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
-            ESTIMATE = new HashSet<ESTIMATE>();
             FORECAST_JOB = new HashSet<FORECAST_JOB>();
             FORECAST_JOB_SETTING = new HashSet<FORECAST_JOB_SETTING>();
             FORECAST = new HashSet<FORECAST>();
@@ -39,7 +37,6 @@ namespace BluePrints.Data
             PROGRESS = new HashSet<PROGRESS>();
             PROJECT_SUMMARY = new HashSet<PROJECT_SUMMARY>();
             PROJECT_SUMMARY_SETTINGS = new HashSet<PROJECT_SUMMARY_SETTING>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
             PROJECT_REVENUE = new HashSet<PROJECT_REVENUE>();

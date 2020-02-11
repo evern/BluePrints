@@ -78,7 +78,6 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<RATE, RATE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.RATES);
@@ -88,11 +87,6 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.STATUS == BaselineStatus.Live);
         }
@@ -127,7 +121,6 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             var BASELINES = loaderCollection.GetCollection<BASELINE>();
-            var ESTIMATES = loaderCollection.GetCollection<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
             var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
             var RATES = loaderCollection.GetCollection<RATE>();
@@ -135,7 +128,7 @@ namespace BluePrints.ViewModels
             var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
-                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATES, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
+                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)

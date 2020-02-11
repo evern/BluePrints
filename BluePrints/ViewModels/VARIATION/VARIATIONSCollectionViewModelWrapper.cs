@@ -76,7 +76,6 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_ITEMS, VARIATION_ITEMProjectionFunc);
@@ -94,11 +93,6 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -203,7 +197,7 @@ namespace BluePrints.ViewModels
 
         public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
         {
-            if (LiveBASELINE == null && LiveESTIMATE == null)
+            if (LiveBASELINE == null)
                 return false;
 
             return true;
@@ -227,10 +221,7 @@ namespace BluePrints.ViewModels
 
             if (entity.Entity.APPROVED != null)
             {
-                if (phaseType == PhaseType.Design)
-                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
-                else
-                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATE.GUID;
+                entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
             }
             else
                 entity.Entity.GUID_ORIBASELINE = null;
@@ -308,14 +299,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATEViewModel
-        {
-            get
-            {
-                return (CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<ESTIMATE>();
-            }
-        }
-
         public CollectionViewModel<VARIATION_ITEM, VARIATION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_ITEMSViewModel
         {
             get
@@ -332,17 +315,6 @@ namespace BluePrints.ViewModels
                     return null;
                 else
                     return BASELINECollection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
-            }
-        }
-
-        public ESTIMATE LiveESTIMATE
-        {
-            get
-            {
-                if (ESTIMATECollection == null || BASELINECollection.Count() == 0)
-                    return null;
-                else
-                    return ESTIMATECollection.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
             }
         }
 
@@ -370,26 +342,6 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<BASELINE>();
-            }
-        }
-
-        public IEnumerable<IAmBaseline> IAmBaselineCollection
-        {
-            get
-            {
-                if(phaseType == PhaseType.Design)
-                    return BASELINECollection;
-                else
-                    return ESTIMATECollection;
-            }
-        }
-
-        public IEnumerable<ESTIMATE> ESTIMATECollection
-        {
-            get
-            {
-                var collection = GetEntities<ESTIMATE>();
-                return collection;
             }
         }
 
@@ -468,7 +420,7 @@ namespace BluePrints.ViewModels
                 if (DisplaySelectedEntity == null)
                     errorMessage = messageEntityNotSelected;
 
-                if (LiveBASELINE == null && LiveESTIMATE == null)
+                if (LiveBASELINE == null)
                     errorMessage = messageBaselineDoesntExists;
 
                 if (!value && DisplaySelectedEntity.Entity.APPROVED != null)
@@ -629,50 +581,6 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Are you sure you want to unapprove the selected variation?", "Unapprove Variation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
-            //if (MessageBoxService.ShowMessage("This will revert from the latest variation onwards.\nCurrent live baseline will be superseded with suffix '_Reverted'\nAre you sure you want to revert changes to the baseline?", "Revert Baseline", MessageButton.OKCancel) == MessageResult.Cancel)
-            //    return;
-
-            //string liveBaselineRevision = LiveBASELINE.Revision;
-
-            //string lastBaselineRevision = string.Empty;
-            //string valueToFill = liveBaselineRevision;
-            //int numericFieldLength = 0;
-            //int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
-            //if (numericIndex == null)
-            //    lastBaselineRevision = ((char)(liveBaselineRevision.Last() - 1)).ToString();
-            //else
-            //{
-            //    string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
-            //    long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
-            //    if(valueToFillNumberOnly == 1)
-            //        lastBaselineRevision = ((char)(valueToFillStringOnly.Last())).ToString();
-            //    else
-            //        lastBaselineRevision = valueToFillStringOnly + (valueToFillNumberOnly - 1).ToString();
-            //}
-
-            //VARIATIONProjection lastVariation = MainViewModel.Entities.FirstOrDefault(x => getBaselineRevision(x.Entity.GUID_BASELINE) == liveBaselineRevision);
-            //if(lastVariation == null)
-            //{
-            //    MessageBoxService.ShowMessage("Last variation revision does not match latest baseline revision");
-            //    return;
-            //}
-
-            //BASELINE lastBaseline = BASELINECollection.FirstOrDefault(x => x.REVISION == lastBaselineRevision);
-            //if(lastBaseline == null)
-            //{
-            //    MessageBoxService.ShowMessage("Last baseline not found");
-            //    return;
-            //}
-
-            //BASELINE live_baseline = new BASELINE();
-            //DataUtils.ShallowCopy(live_baseline, LiveBASELINE);
-            //live_baseline.REVISION = live_baseline.REVISION + "_Reverted";
-            //live_baseline.STATUS = BaselineStatus.Superseded;
-            //BASELINEViewModel.Save(live_baseline);
-
-            //lastBaseline.STATUS = BaselineStatus.Live;
-            //BASELINEViewModel.Save(lastBaseline);
-
             isApproving = true;
             CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
         }
@@ -681,7 +589,6 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
-
 
         public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value, bool isPaste)
         {
@@ -718,6 +625,7 @@ namespace BluePrints.ViewModels
                         return "Variation must be approved, please check the approve button above to approve this variation, if you wish to edit the date you can do so after approving it.";
                 }
             }
+
             return string.Empty;
         }
 

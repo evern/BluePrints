@@ -61,7 +61,6 @@ namespace BluePrints.ViewModels
         }
 
         #region Code Properties
-        private ESTIMATE liveESTIMATE;
         private PROGRESS livePROGRESS;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -95,19 +94,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.CONSTRUCTION_JOBS, CONSTRUCTION_JOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => assign_progress(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             base.addEntitiesLoader();
-        }
-
-        private void assign_estimation_direct(ESTIMATE estimation_direct)
-        {
-            liveESTIMATE = estimation_direct;
         }
 
         private void assign_progress(PROGRESS progress)
@@ -151,11 +143,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.PHASE != null);
         }
 
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
-        }
-
         private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
         {
             return query => query.Where(x => x.PHASE_TYPE != PhaseType.Design);
@@ -169,11 +156,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
-        {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -228,17 +210,6 @@ namespace BluePrints.ViewModels
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
                 return "ExoConsructionSubJobViewModelWrapper";
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
             }
         }
 

@@ -48,11 +48,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Earned_Total_Costs_OnDataDate { get; }
     }
 
-    public interface IReportable_Group : IReportable
-    {
-        IEnumerable<IReportable> Reportables { get; }
-    }
-
     public interface IReportable : IDeliverable_Rates, IHaveStats, IHaveProgresses, ICanSetProgresses, ICanUpdate, IHaveVariationMeasurables
     {
         SingleObjectSummarizer StatSummarizer { get; }
@@ -130,17 +125,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         List<P6_ASSIGNMENT> P6_Assignments { get; }
         IEnumerable<PROGRESS_ITEM> Progresses { get; }
         Guid DeliverableKey { get; }
-        string P6AssignmentName { get; }
-        string P6AssignmentDescription { get; }
-        string P6AssignmentDescription2 { get; }
         decimal Assigned_Percentage { get; }
-        decimal Remaining_Percentage { get; }
         decimal P6_Assignment_Total_Quantity { get; }
         string P6_Assignment_UOM { get; }
         Guid? P6_WorkpackGuid { get; }
         DateTime? TaskAssignmentStartDate { get; set; }
-        decimal EarnedUnitsAccountedFor { get; set; }
         decimal Earned_Units_ToDate { get; }
+        string P6AssignmentName { get; }
         void BuildStats(decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null);
     }
 
@@ -291,8 +282,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IHaveHours
     {
         decimal Budget_Units { get; }
-        decimal Budget_Quantity { get; }
-        decimal Total_Quantity { get; }
         decimal Unadjusted_Budget_Units { get; }
     }
 

@@ -84,7 +84,6 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
@@ -168,14 +167,6 @@ namespace BluePrints.ViewModels
         /// BASELINE is used for write only so just load a single entry for repository to be initialized
         /// </summary>
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Take(1);
-        }
-
-        /// <summary>
-        /// ESTIMATE is used for write only so just load a single entry for repository to be initialized
-        /// </summary>
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Take(1);
         }
@@ -280,15 +271,6 @@ namespace BluePrints.ViewModels
                 newBASELINE.REVISION = "A";
                 newBASELINE.STATUS = BaselineStatus.Live;
                 unitOfWork.BASELINES.Add(newBASELINE);
-                //BASELINEViewModel.Save(newBASELINE);
-
-                ESTIMATE newESTIMATE_DIRECT = new ESTIMATE();
-                newESTIMATE_DIRECT.GUID_PROJECT = entity.GUID;
-                newESTIMATE_DIRECT.NAME = entity.NUMBER + "_001";
-                newESTIMATE_DIRECT.REVISION = "A";
-                newESTIMATE_DIRECT.STATUS = BaselineStatus.Live;
-                unitOfWork.ESTIMATES.Add(newESTIMATE_DIRECT);
-                //ESTIMATEViewModel.Save(newESTIMATE_DIRECT);
 
                 PROGRESS newDesignPROGRESS = new PROGRESS();
                 newDesignPROGRESS.GUID_PROJECT = entity.GUID;
@@ -300,7 +282,6 @@ namespace BluePrints.ViewModels
                 newDesignPROGRESS.STATUS = ProgressStatus.Live;
                 newDesignPROGRESS.TYPE = PhaseType.Design;
                 unitOfWork.PROGRESSES.Add(newDesignPROGRESS);
-                //PROGRESSViewModel.Save(newDesignPROGRESS);
 
                 PROGRESS newConstructionPROGRESS = new PROGRESS();
                 newConstructionPROGRESS.GUID_PROJECT = entity.GUID;
@@ -312,7 +293,6 @@ namespace BluePrints.ViewModels
                 newConstructionPROGRESS.STATUS = ProgressStatus.Live;
                 newConstructionPROGRESS.TYPE = PhaseType.Construct;
                 unitOfWork.PROGRESSES.Add(newConstructionPROGRESS);
-                //PROGRESSViewModel.Save(newConstructionPROGRESS);
 
                 AREA defaultArea = new AREA();
                 defaultArea.GUID_PROJECT = entity.GUID;
@@ -320,7 +300,6 @@ namespace BluePrints.ViewModels
                 defaultArea.CLIENT_NUM = "000";
                 defaultArea.TITLE = "General";
                 unitOfWork.AREAS.Add(defaultArea);
-                //AREAViewModel.Save(defaultArea);
                 unitOfWork.SaveChanges();
 
                 PHASE defaultDirectPhase = unitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == "D1");
@@ -339,7 +318,6 @@ namespace BluePrints.ViewModels
                         newRATE.GUID = Guid.Empty;
                         newRATE.GUID_PROJECT = entity.GUID;
                         unitOfWork.RATES.Add(newRATE);
-                        //RATEViewModel.Save(newRATE);
                     }
 
                     foreach(DELIVERABLES_STATUS status in defaultCopyProject.DELIVERABLES_STATUS)
@@ -358,7 +336,6 @@ namespace BluePrints.ViewModels
                             newSTATUS_DOCTYPE.GUID_STATUS = Guid.Empty;
                             newSTATUS.DSTATUS_DOCTYPE.Add(newSTATUS_DOCTYPE);
                         }
-                        //DELIVERABLES_STATUSViewModel.Save(newSTATUS);
                     }
 
                     foreach(HOLIDAY holiday in defaultCopyProject.HOLIDAY)
@@ -388,14 +365,9 @@ namespace BluePrints.ViewModels
                 newSUBJOB.GUID_DAREA = defaultArea.GUID;
                 newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
                 unitOfWork.SUBJOBS.Add(newSUBJOB);
-                //SUBJOBViewModel.Save(newSUBJOB);
 
                 if (defaultDirectPhase != null)
                 {
-                    //if (defaultDepartment != null && defaultDiscipline != null)
-                    //{
-
-                    //}
 
                     SUBJOB defaultDesignSUBJOB = new SUBJOB();
                     defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
@@ -413,7 +385,6 @@ namespace BluePrints.ViewModels
                     }
                     unitOfWork.SUBJOBS.Add(defaultDesignSUBJOB);
                     unitOfWork.SaveChanges();
-                    //SUBJOBViewModel.Save(defaultDesignSUBJOB);
 
                     DISCIPLINE PMDiscipline = unitOfWork.DISCIPLINES.FirstOrDefault(x => x.CODE == "PM");
                     if (PMDiscipline != null)
@@ -423,7 +394,6 @@ namespace BluePrints.ViewModels
                         pmWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
                         pmWORKPACK.NAME = entity.NUMBER + "-000-00-D1-PM01";
                         unitOfWork.WORKPACKS.Add(pmWORKPACK);
-                        //WORKPACKViewModel.Save(pmWORKPACK);
                         unitOfWork.SaveChanges();
 
                         DOCTYPE manDOCTYPE = unitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "MAN");
@@ -442,7 +412,6 @@ namespace BluePrints.ViewModels
                             dmBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
                             dmBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             unitOfWork.BASELINE_ITEMS.Add(dmBASELINE_ITEM);
-                            //BASELINE_ITEMViewModel.Save(dmBASELINE_ITEM);
                         }
                     }
 
@@ -454,7 +423,6 @@ namespace BluePrints.ViewModels
                         geWORKPACK.GUID_DISCIPLINE = GEDiscipline.GUID;
                         geWORKPACK.NAME = entity.NUMBER + "-000-00-D1-GE01";
                         unitOfWork.WORKPACKS.Add(geWORKPACK);
-                        //WORKPACKViewModel.Save(geWORKPACK);
                         unitOfWork.SaveChanges();
 
                         DOCTYPE mtgDOCTYPE = unitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "MTG");
@@ -474,7 +442,6 @@ namespace BluePrints.ViewModels
                             meetBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
                             meetBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             unitOfWork.BASELINE_ITEMS.Add(meetBASELINE_ITEM);
-                            //BASELINE_ITEMViewModel.Save(meetBASELINE_ITEM);
                         }
 
                         if(repDOCTYPE != null && enDEPARTMENT != null)
@@ -491,7 +458,6 @@ namespace BluePrints.ViewModels
                             rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
                             rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
                             unitOfWork.BASELINE_ITEMS.Add(rptBASELINE_ITEM);
-                            //BASELINE_ITEMViewModel.Save(rptBASELINE_ITEM);
                         }
                     }
                 }
@@ -515,7 +481,6 @@ namespace BluePrints.ViewModels
                     }
 
                     unitOfWork.SUBJOBS.Add(indirectDesignSUBJOB);
-                    //SUBJOBViewModel.Save(indirectDesignSUBJOB);
 
                     unitOfWork.SaveChanges();
                     DOCTYPE g02DOCTYPE = unitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "G02");
@@ -529,7 +494,6 @@ namespace BluePrints.ViewModels
                         pmWORKPACK.NAME = entity.NUMBER + "-000-00-I1-PM01";
                         unitOfWork.WORKPACKS.Add(pmWORKPACK);
                         unitOfWork.SaveChanges();
-                        //WORKPACKViewModel.Save(pmWORKPACK);
 
                         if (g02DOCTYPE != null && adDEPARTMENT != null)
                         {
@@ -545,7 +509,6 @@ namespace BluePrints.ViewModels
                             dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
                             dcBASELINE_ITEM.GUID_PHASE = defaultIndirectPhase.GUID;
                             unitOfWork.BASELINE_ITEMS.Add(dcBASELINE_ITEM);
-                            //BASELINE_ITEMViewModel.Save(dcBASELINE_ITEM);
                         }
                     }
                 }
@@ -838,19 +801,6 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<BASELINE>();
-            }
-        }
-
-        public CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork> ESTIMATEViewModel
-        {
-            get
-            {
-                if (loaderCollection == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<ESTIMATE>();
             }
         }
 

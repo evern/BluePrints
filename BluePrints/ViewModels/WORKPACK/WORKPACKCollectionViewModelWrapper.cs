@@ -63,11 +63,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS, ESTIMATE_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS, ESTIMATE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, TASKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.P6_ASSIGNMENTS, P6_ASSIGNMENTProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
@@ -90,11 +86,6 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
         }
@@ -129,16 +120,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
-        {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
-        }
-
         private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
         {
 
@@ -153,14 +134,9 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<P6Data.PROJECT>, IQueryable<P6Data.PROJECT>> P6PROJECTProjectionFunc()
         {
             BASELINE liveBASELINE = loadPROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
-            ESTIMATE liveESTIMATE = loadPROJECT.ESTIMATE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
 
-            if (liveBASELINE != null && liveESTIMATE != null)
-                return query => query.Where(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME || x.proj_short_name == liveESTIMATE.P6BASELINE_NAME);
-            else if (liveBASELINE != null)
+            if (liveBASELINE != null)
                 return query => query.Where(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME);
-            else if (liveESTIMATE != null)
-                return query => query.Where(x => x.proj_short_name == liveESTIMATE.P6BASELINE_NAME);
             else
                 return query => query.Where(x => x.proj_short_name == "N/A");
         }
@@ -193,7 +169,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACKProjection>> specifyMainViewModelProjection()
         {
-            return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, VARIATIONCollection, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
+            return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, VARIATIONCollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
         }
 
         //Do not refresh because it is refresh heavy
@@ -225,15 +201,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<TASK>();
-                return collection;
-            }
-        }
-
-        public IEnumerable<ESTIMATE_ITEM> ESTIMATE_ITEMCollection
-        {
-            get
-            {
-                var collection = GetEntities<ESTIMATE_ITEM>();
                 return collection;
             }
         }
@@ -270,24 +237,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<VARIATION>();
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_GROUP>();
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
                 return collection;
             }
         }

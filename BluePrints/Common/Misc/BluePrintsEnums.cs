@@ -261,8 +261,7 @@ namespace BluePrints.Common
     public enum DashboardViewType
     {
         Costs,
-        Units, 
-        Quantity
+        Units
     }
 
     public enum BaselineMappingSelectionType
@@ -445,14 +444,6 @@ namespace BluePrints.Common
         Construct = 1,
         [Display(Name = "Procurement")]
         Procurement = 2
-    }
-
-    public enum STOCK_GROUPProjectionType
-    {
-        [Display(Name = "Grouped Project Specific")] ProjectSpecificGrouped,
-        [Display(Name = "Not Grouped Project Specific")] ProjectSpecificNotGrouped,
-        [Display(Name = "Grouped Not Project Specific")] GeneralGrouped,
-        [Display(Name = "Not Grouped Not Project Specific")] GeneralNotGrouped
     }
 
     public enum Register_ImpactType
@@ -812,11 +803,6 @@ namespace BluePrints.Common
             }
         }
 
-        public string INTERNAL_NUM
-        {
-            get { return deliverableProjection.P6AssignmentName; }
-        }
-
         public string P6_ACTIVITY
         {
             get { return deliverable_assignment.P6_ACTIVITYID; }
@@ -838,8 +824,6 @@ namespace BluePrints.Common
         {
             get { return deliverableProjection.DeliverableKey; }
         }
-
-        public string Deliverable_Description { get; set; }
 
         public string P6_Description { get; set; }
 

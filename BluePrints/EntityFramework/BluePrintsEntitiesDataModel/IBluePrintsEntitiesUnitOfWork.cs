@@ -40,11 +40,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<CONSTRUCTION_JOB, Guid> CONSTRUCTION_JOBS { get; }
 
         /// <summary>
-        /// The STOCK_GROUP entities repository.
-        /// </summary>
-        IRepository<STOCK_GROUP, Guid> STOCK_GROUPS { get; }
-
-        /// <summary>
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }
@@ -313,11 +308,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The SETTINGS_GLOBALS entities repository.
         /// </summary>
         IRepository<SETTINGS_GLOBAL, Guid> SETTINGS_GLOBALS { get; }
-
-        /// <summary>
-        /// The STOCK_CODES entities repository.
-        /// </summary>
-        IRepository<STOCK_CODE, Guid> STOCK_CODES { get; }
 
         /// <summary>
         /// The TENDER_PROFILE entities repository.

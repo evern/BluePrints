@@ -10,19 +10,11 @@ using System.Linq.Expressions;
 namespace BluePrints.Common.Projections
 {
     [ConstraintAttributes("Entity.GUID_PROJECT, Entity.INTERNAL_NAME1")]
-    public class SUBJOBProjection : BluePrintsProjectionBase<SUBJOB>, IReportable_Group
+    public class SUBJOBProjection : BluePrintsProjectionBase<SUBJOB>
     {
         public IEnumerable<IReportable> DeliverableRates { get; set; }
 
         public IEnumerable<IReportable> Reportables => DeliverableRates;
-
-        public SingleObjectSummarizer StatSummarizer => throw new NotImplementedException();
-
-        public decimal Current_Productivity => throw new NotImplementedException();
-
-        public decimal? Override_Productivity { get => 0; set => throw new NotImplementedException(); }
-
-        public decimal? Remaining_Productivity => throw new NotImplementedException();
 
         public IEnumerable<User_Weight> AssignedUsers => Reportables == null ? new List<User_Weight>() : Reportables.SelectMany(x => x.AssignedUsers);
 
@@ -146,31 +138,6 @@ namespace BluePrints.Common.Projections
         public decimal Unadjusted_Budget_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Unadjusted_Budget_Units);
 
         public List<VariationAdjustment> ApprovedVariations => Reportables == null ? new List<VariationAdjustment>() : Reportables.SelectMany(x => x.ApprovedVariations).ToList();
-
-        public void AppendProgressItem(PROGRESS_ITEM currentProgress)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetOriginalEntityKey(Guid newGuid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetProgressItems(List<PROGRESS_ITEM> progresses)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetReportingDataDate(DateTime dataDate)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public static class SUBJOBProjectionQueries

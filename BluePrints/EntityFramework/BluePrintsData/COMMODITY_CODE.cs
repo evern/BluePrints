@@ -14,7 +14,6 @@ namespace BluePrints.Data
         public COMMODITY_CODE()
         {
             CONSTRUCTION_JOB = new HashSet<CONSTRUCTION_JOB>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
         }
 
         [Key]
@@ -61,9 +60,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CONSTRUCTION_JOB> CONSTRUCTION_JOB { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
 
     }
 }

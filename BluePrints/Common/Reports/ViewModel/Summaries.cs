@@ -137,14 +137,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal PeriodEarned_Units => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Units;
         public decimal CumulativeBurned_Units => (Burned == null || Burned.CurrentPeriodCumulativeDataPoint == null) ? 0 : Burned.CurrentPeriodCumulativeDataPoint.Units;
         public decimal PeriodBurned_Units => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Units;
-        public decimal CumulativeEarned_Quantity => (Earned == null || Earned.CurrentPeriodCumulativeDataPoint == null) ? 0 : Earned.CurrentPeriodCumulativeDataPoint.Quantity;
 
         public decimal CumulativeEarned_Costs => (Earned == null || Earned.CurrentPeriodCumulativeDataPoint == null) ? 0 : Earned.CurrentPeriodCumulativeDataPoint.Costs;
         public decimal PeriodEarned_Costs => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Costs;
         public decimal CumulativeBurned_Costs => (Burned == null || Burned.CurrentPeriodCumulativeDataPoint == null) ? 0 : Burned.CurrentPeriodCumulativeDataPoint.Costs;
         public decimal PeriodBurned_Costs => (Burned == null || Burned.CurrentPeriodDataPoint == null) ? 0 : Burned.CurrentPeriodDataPoint.Costs;
-        public decimal PeriodEarned_Quantity => (Earned == null || Earned.CurrentPeriodDataPoint == null) ? 0 : Earned.CurrentPeriodDataPoint.Quantity;
-
 
         public decimal CumulativeEarnedVsBurned_Units => CumulativeEarned_Units - CumulativeBurned_Units;
         public decimal CumulativeEarnedVsBurned_Costs => CumulativeEarned_Costs - CumulativeBurned_Costs;
@@ -158,7 +155,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal PeriodPerformanceRatio_Units => PeriodBurned_Units == 0 ? 1 : PeriodEarned_Units / PeriodBurned_Units;
         public decimal PeriodPerformanceRatio_Costs => PeriodBurned_Costs == 0 ? 1 : PeriodEarned_Costs / PeriodBurned_Costs;
 
-        public decimal Remaining_Quantity => TotalQty - CumulativeEarned_Quantity;
         public decimal Remaining_Units => TotalUnits - CumulativeEarned_Units;
         public decimal Remaining_Costs => TotalCosts - CumulativeEarned_Costs;
 
@@ -177,7 +173,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false)
-            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Quantity), progressItem.Sum(x => x.Total_Quantity), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments, null, forceRetrieveRemainingDataPoints)
+            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), projectVariationAdjustments, null, forceRetrieveRemainingDataPoints)
         {
             Reportables = progressItem;
 
@@ -430,7 +426,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false)
+        public ProgressStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedCosts, decimal totalCosts, IEnumerable<VariationAdjustment> variationAdjustments, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false)
         {
             this.ReportingDataDate = reporting_data_date;
             this.ReportingInterval = reporting_interval;
@@ -438,23 +434,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             this.budgetedUnits = budgetedUnits;
             this.totalUnits = totalUnits;
-            this.budgetedQty = budgetedQty;
-            this.totalQty = totalQty;
             this.budgetedCosts = budgetedCosts;
             this.totalCosts = totalCosts;
             this.VariationAdjustments = variationAdjustments.ToList();
 
-            //Budgeted = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true);
             Budgeted = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedQty, budgetedQty, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
             BudgetedLate = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedQty, budgetedQty, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
-            //Current = new Stats(ReportingDataDate, totalUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, null, false, true, extrapolateDate);
-            //Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
             Current = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, false, true, extrapolateDate);
             Earned = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, false, extrapolateDate);
             TenderEarned = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedQty, budgetedQty, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, false, true, extrapolateDate);
 
             Remaining = new Stats(ReportingDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, !forceRetrieveRemainingDataPoints, false, extrapolateDate, forceRetrieveRemainingDataPoints);
-            //RemainingActual = new Stats(ReportingDataDate, budgetedUnits, budgetedUnits, budgetedCosts, budgetedCosts, FirstAlignedDataDate, ReportingInterval, variationAdjustments, true);
         }
 
         public ProgressStats(IEnumerable<ProgressStats> progressStats)

@@ -57,29 +57,4 @@ namespace BluePrints.Common.Projections
         }
         #endregion
     }
-
-    public static class SUBJOB_DashboardQueries
-    {
-        public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard(IQueryable<SUBJOB> SUBJOBS,
-            IEnumerable<PROGRESS> PROGRESSES, BASELINE BASELINE, ESTIMATE ESTIMATE, 
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES)
-        {
-            var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, null, true);
-            return Subjob_Dashboard_Summary(SUBJOBS, projectDashboard);
-        }
-
-        public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard_Summary(IQueryable<SUBJOB> SUBJOBS,
-            PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
-        {
-            IEnumerable<SUBJOB_Dashboard> subjob_dashboards = SUBJOBS.Where(x => x.GUID_PROJECT == projectDashboard.GUID).Select(x => new SUBJOB_Dashboard() {GUID = x.GUID, Entity = x});
-            List<SUBJOB_Dashboard> newSUBJOBDashboards = subjob_dashboards.ToList();
-            newSUBJOBDashboards.ForEach(x => x.GroupProjectStats((SummaryStats)projectDashboard.Stats));
-            if (subAreaCollection != null)
-                newSUBJOBDashboards.ForEach(x => x.SetAvailableSubAreas(subAreaCollection));
-
-            return newSUBJOBDashboards.AsQueryable();
-        }
-    }
 }

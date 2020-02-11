@@ -94,8 +94,8 @@ namespace BluePrints.Common
                 ReceiveMessage<DISCIPLINE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(DOCTYPE).ToString())
                 ReceiveMessage<DOCTYPE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
-            else if (entityName == typeof(ESTIMATE).ToString())
-                ReceiveMessage<ESTIMATE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
+            else if (entityName == typeof(CONSTRUCTION_JOB).ToString())
+                ReceiveMessage<CONSTRUCTION_JOB, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PHASE).ToString())
                 ReceiveMessage<PHASE, Guid>(PrimaryKey, key, MessageType, sender, hwid);
             else if (entityName == typeof(PROGRESS_ITEM).ToString())

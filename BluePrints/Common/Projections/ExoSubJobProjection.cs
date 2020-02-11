@@ -422,10 +422,6 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Costs => throw new NotImplementedException();
 
-        decimal IHaveHours.Budget_Quantity => throw new NotImplementedException();
-
-        public decimal Total_Quantity => throw new NotImplementedException();
-
         public void SetOriginalEntityKey(Guid newGuid)
         {
 

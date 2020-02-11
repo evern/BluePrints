@@ -705,7 +705,6 @@ namespace BluePrints.Common.Base
                 foreach(P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
                 {
                     P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(entity, assignment, IsBudget);
-                    p6_assignment.Deliverable_Description = entity.P6AssignmentDescription;
                     P6_Activity p6_Activity = activities_source.FirstOrDefault(x => x.P6_ActivityId == assignment.P6_ACTIVITYID);
                     p6_assignment.P6_Description = p6_Activity == null ? string.Empty : p6_Activity.Description;
                     excelExportData.Add(p6_assignment);

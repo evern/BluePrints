@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<CONSTRUCTION_JOB>, IQueryable<CONSTRUCTION_JOB>> specifyMainViewModelProjection()
         {
-            return query => CONSTRUCTION_JOBProjectionQueries.IDeliverable_Progress_Transformation(query, loadPROJECT, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, loaderCollection.GetCollection<STOCK_GROUP>(), null, false, null, false, COMMODITY_CODECollection);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<CONSTRUCTION_JOB> entities)

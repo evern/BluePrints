@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     foreach (User_Weight userWeight in projection.AssignedUsers)
                     {
                         BASELINE_ITEMProgress userProjection = new BASELINE_ITEMProgress(project, live_progress, projection.Entity, new List<VariationAdjustment>(), false);
-                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, projection.Stats.BudgetedCosts * userWeight.AggregateWeight, projection.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
+                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, new List<VariationAdjustment>());
                         DataUtils.ShallowCopy(userProjection, projection);
                         userProjection.Entity = projection.Entity;
                         userProjection.User_Name = userWeight.UserName;

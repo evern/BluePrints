@@ -14,7 +14,7 @@ using DevExpress.XtraEditors.DXErrorProvider;
 
 namespace BluePrints.Data
 {
-    public partial class CONSTRUCTION_JOB : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveDBProductivityOverride, ICategorisable
+    public partial class CONSTRUCTION_JOB : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveDBProductivityOverride, ICategorisable, ICanAssignP6, ICanAssignSubJobAndWorkpack
     {
         public CONSTRUCTION_JOB()
         {
@@ -73,7 +73,7 @@ namespace BluePrints.Data
         public PHASE CachedPHASE { get; set; }
 
         [NotMapped]
-        public PhaseType? PhaseType =>  CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
+        public PhaseType? PhaseType => CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
 
         [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
@@ -124,7 +124,7 @@ namespace BluePrints.Data
         {
             get
             {
-                if(PhaseType != null && COMMODITY_CODE != null)
+                if (PhaseType != null && COMMODITY_CODE != null)
                 {
                     //when commodity code collection is not set, don't show any error
                     if (CommodityCodeCollection == null)
@@ -239,7 +239,6 @@ namespace BluePrints.Data
 
         public string UniqueJobcode => Deliverable_Name + " " + VARIATION_CODE;
 
-
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
 
         [NotMapped]
@@ -268,5 +267,114 @@ namespace BluePrints.Data
         }
 
         public string Variation_Code => VARIATION_CODE;
+
+        public void BuildStats(decimal weightingPortion, List<StatsCalculationType> calcTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetOriginalEntityKey(Guid newGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        private List<P6_ASSIGNMENT> p6_assignments;
+        public List<P6_ASSIGNMENT> P6_Assignments
+        {
+            get
+            {
+                if (p6_assignments == null)
+                    p6_assignments = new List<P6_ASSIGNMENT>();
+
+                return p6_assignments;
+            }
+            set
+            {
+                p6_assignments = value;
+            }
+        }
+
+        List<PROGRESS_ITEM> progresses;
+        public IEnumerable<PROGRESS_ITEM> Progresses
+        {
+            get
+            {
+                if (progresses == null)
+                    progresses = new List<PROGRESS_ITEM>();
+
+                return progresses;
+            }
+        }
+
+        public Guid DeliverableKey => GUID;
+
+        public decimal Assigned_Percentage
+        {
+            get
+            {
+                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+            }
+        }
+
+        public decimal P6_Assignment_Total_Quantity => 1;
+
+        public string P6_Assignment_UOM => "Job";
+
+        public Guid? P6_WorkpackGuid => GUID_WORKPACK;
+
+        public DateTime? TaskAssignmentStartDate { get; set; }
+
+        public decimal Earned_Units_ToDate => 0;
+
+        public Guid OriginalEntityKey => GUID;
+
+        public decimal Budget_Units => 1;
+
+        public decimal Unadjusted_Budget_Units => 1;
+
+        public decimal Variation_Units => 0;
+
+        public decimal Budget_Adjustment_Units => 1;
+
+        public decimal Budget_Adjustment_Costs => 1;
+
+        public decimal Variation_Costs => 0;
+
+        public decimal Variation_InternalCosts => 0;
+
+        public decimal Total_Units => 1;
+
+        public decimal Total_Costs => 1;
+
+        public decimal Total_InternalCosts => 1;
+
+        List<VariationAdjustment> approvedVariations;
+        public List<VariationAdjustment> ApprovedVariations
+        {
+            get
+            {
+                if (approvedVariations == null)
+                    approvedVariations = new List<VariationAdjustment>();
+
+                return approvedVariations;
+            }
+        }
+
+        public string P6AssignmentName => Deliverable_Name;
+    }
+
+
+    public static class CONSTRUCTION_JOBQueries
+    {
+        public static IQueryable<CONSTRUCTION_JOB> CONSTRUCTION_JOBP6Assignment(IQueryable<CONSTRUCTION_JOB> CONSTRUCTION_JOBS, PROJECT PROJECT, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS, IEnumerable<COMMODITY_CODE> COMMODITY_CODES)
+        {
+            foreach (CONSTRUCTION_JOB CONSTRUCTION_JOB in CONSTRUCTION_JOBS.Where(x => x.GUID_PROJECT == PROJECT.GUID))
+            {
+                CONSTRUCTION_JOB.P6_Assignments = P6_ASSIGNMENTS.Where(assignment => assignment.GUID_ORIGINAL == CONSTRUCTION_JOB.OriginalEntityKey).ToList();
+                CONSTRUCTION_JOB.FullCOMMODITY_CODECollection = COMMODITY_CODES;
+            }
+
+            return CONSTRUCTION_JOBS;
+        }
     }
 }
