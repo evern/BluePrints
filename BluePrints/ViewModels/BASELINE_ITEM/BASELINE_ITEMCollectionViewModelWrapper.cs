@@ -1653,6 +1653,12 @@ namespace BluePrints.ViewModels
 
         private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity, out string errorMessage)
         {
+            if (projectionEntity.Entity.Entity.INTERNAL_NUM != string.Empty)
+            {
+                errorMessage = string.Empty;
+                return projectionEntity.Entity.Entity.INTERNAL_NUM;
+            }
+
             AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA));
             DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
             DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
