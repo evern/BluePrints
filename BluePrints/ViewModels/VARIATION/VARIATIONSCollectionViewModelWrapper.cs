@@ -718,6 +718,13 @@ namespace BluePrints.ViewModels
                         return "Variation must be approved, please check the approve button above to approve this variation, if you wish to edit the date you can do so after approving it.";
                 }
             }
+
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.NAME))
+            {
+                if (projection.Entity.NAME.Length > 50)
+                    return "Variation name must be less than 50 characters";
+            }
+
             return string.Empty;
         }
 

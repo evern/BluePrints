@@ -19,7 +19,7 @@ namespace BluePrints.Data
         public Guid? GUID_BASELINE { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(50)]
         public string NAME { get; set; }
 
         [StringLength(500)]
