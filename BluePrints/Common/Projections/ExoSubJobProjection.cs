@@ -1431,7 +1431,7 @@ namespace BluePrints.Common.Projections
                 decimal variationTotalUnits = groupedDeliverable.ApprovedVariations.Sum(x => x.AdjustmentUnits);
 
                 //only add codes when the WBS code is not entirely variation
-                if(baseTotalUnits != variationTotalUnits)
+                if(baseTotalUnits == 0 || baseTotalUnits != variationTotalUnits)
                     exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedDeliverable.VariationCode, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
 
                 var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
