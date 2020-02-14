@@ -41,7 +41,7 @@ namespace BluePrints.Common.Projections
             if (revenueDataPoints.Count() == 0)
                 maxClaimDate = new DateTime();
             else
-                maxClaimDate = revenueDataPoints.Max(x => x.ActualDate);
+                maxClaimDate = revenueDataPoints.Where(x => x.InvoiceDate != null).Max(x => (DateTime)x.InvoiceDate);
         }
 
         public bool IsRevenueReadOnly => MonthFloor < maxClaimDate;
@@ -87,7 +87,7 @@ namespace BluePrints.Common.Projections
         public decimal TotalCosts => ActualCosts + MaterialCosts + ForecastCosts;
         public decimal TotalCostsToDate => ActualCostsToDate + MaterialCostsToDate + ForecastCostsToDate;
 
-        public decimal Revenue => revenueDataPoints.Where(x => x.ActualDate >= MonthFloor && x.ActualDate <= MonthCeiling).Sum(x => x.Costs);
+        public decimal Revenue => revenueDataPoints.Where(x => x.InvoiceDate >= MonthFloor && x.InvoiceDate <= MonthCeiling).Sum(x => x.Costs);
         public decimal RevenueToDate => allRevenues == null ? 0 : allRevenues.Where(x => x.MonthCeiling <= MonthCeiling).Sum(x => x.ViewRevenue);
 
         decimal viewRevenue;
