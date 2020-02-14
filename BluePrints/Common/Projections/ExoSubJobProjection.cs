@@ -1430,14 +1430,18 @@ namespace BluePrints.Common.Projections
                 decimal baseTotalUnits = groupedDeliverable.TotalHours;
                 decimal variationTotalUnits = groupedDeliverable.ApprovedVariations.Sum(x => x.AdjustmentUnits);
 
-                //only add codes when the WBS code is not entirely variation
-                if(baseTotalUnits == 0 || baseTotalUnits != variationTotalUnits)
+                //add main job when there are no approved variations
+                //or only add codes when the WBS code is not entirely variation
+                if(groupedDeliverable.ApprovedVariations.Count() == 0 || baseTotalUnits != variationTotalUnits)
                     exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedDeliverable.VariationCode, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
 
-                var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
-                foreach (var groupedVariation in groupedVariations)
+                if(groupedDeliverable.ApprovedVariations.Count() > 0)
                 {
-                    exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedVariation.VariationName, groupedVariation.VariationTotalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
+                    var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
+                    foreach (var groupedVariation in groupedVariations)
+                    {
+                        exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, groupedVariation.VariationName, groupedVariation.VariationTotalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations, ExoSTAFFS, USERCollection, project.OfficeNameForExo));
+                    }
                 }
             }
 
