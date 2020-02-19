@@ -134,7 +134,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOURS, FORECAST_JOB_HOURSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
-            loaderCollection.AddLoaderDescription<STOCK_ITEMS, STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
 
@@ -147,9 +147,15 @@ namespace BluePrints.ViewModels
         {
             return query => query.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID);
         }
+
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == null);
+        }
+
+        private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
+        {
+            return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
         private void setProject(Data.PROJECT project)
