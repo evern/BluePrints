@@ -131,7 +131,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //IEnumerable<VariationAdjustment> variationAdjustments = budgetedStats.SelectMany(x => x.VariationAdjustments);
                 //decimal variationUnits = variationAdjustments.Sum(y => y.AdjustmentUnits);
-                decimal totalUnits = budgetedStats.Sum(x => x.Budgeted.TotalUnits);
+                decimal totalUnits = budgetedStats.Sum(x => x.TotalUnits);
                 jobForecastSummary.DeliverableUnits = totalUnits;
             }
 
