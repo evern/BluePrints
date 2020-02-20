@@ -721,7 +721,7 @@ namespace BluePrints.ViewModels
 
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.NAME))
             {
-                if (projection.Entity.NAME.Length > 50)
+                if (projection.Entity != null && projection.Entity.NAME != null && projection.Entity.NAME.Length > 50)
                     return "Variation name must be less than 50 characters";
             }
 
