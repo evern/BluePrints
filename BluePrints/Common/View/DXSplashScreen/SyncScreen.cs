@@ -223,6 +223,7 @@ namespace BluePrints.Common
             qt.Add(createThread<FORECAST>(5));
             qt.Add(createThread<FORECAST_JOB>(6));
             qt.Add(createThread<FORECAST_PO>(6));
+            qt.Add(createThread<FORECAST_EAC>(6));
             qt.Add(createThread<BASELINE>(6));
             qt.Add(createThread<DELIVERABLES_STATUS>(6));
             qt.Add(createThread<DOCTYPE>(6));

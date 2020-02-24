@@ -547,7 +547,7 @@ namespace BluePrints.ViewModels
             {
                 if (copyColumn.FieldType == typeof(decimal))
                 {
-                    var rgx = new Regex(BluePrintsResources.NumbersOnlyRegex);
+                    var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
                     var cleanColumnString = rgx.Replace(pasteData, string.Empty);
                     decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
                     decimal decimal_value;
