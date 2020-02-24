@@ -348,4 +348,7 @@
   <data name="ITEmail" xml:space="preserve">
     <value>su.bing-wen@primero.com.au</value>
   </data>
+  <data name="NumbersOnlyRegex" xml:space="preserve">
+    <value>[^0-9a-z\\.\\-]</value>
+  </data>
 </root>
