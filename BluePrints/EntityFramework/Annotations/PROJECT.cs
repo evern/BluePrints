@@ -33,6 +33,7 @@ namespace BluePrints.Data
             FORECAST_PO_SETTING = new HashSet<FORECAST_PO_SETTING>();
             HOLIDAY = new HashSet<HOLIDAY>();
             HSE = new HashSet<HSE>();
+            FORECAST_EAC = new HashSet<FORECAST_EAC>();
             MEETING = new HashSet<MEETING>();
             MEETING_TYPE = new HashSet<MEETING_TYPE>();
             MINUTE_AGENDA = new HashSet<MINUTE_AGENDA>();

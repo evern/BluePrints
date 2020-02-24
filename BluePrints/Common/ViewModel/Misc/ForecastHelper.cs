@@ -224,17 +224,17 @@ namespace BluePrints.Common.ViewModel.Misc
             return forecastProjection;
         }
 
-        public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
+        public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime dataDate)
         {
             DateTime previousEACDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
             previousEACDataDate = previousEACDataDate.AddDays(-1);
 
             //populate previous estimate to completion
-            FORECAST previousEAC = FORECASTCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE.Date == previousEACDataDate.Date);
+            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_DATE.Date == previousEACDataDate.Date);
             if (previousEAC != null)
             {
-                if (previousEAC.FORECAST_UNITS != null)
-                    forecastProjection.PreviousEAC = (decimal)previousEAC.FORECAST_UNITS;
+                if (previousEAC.FORECAST_COSTS != null)
+                    forecastProjection.PreviousEAC = (decimal)previousEAC.FORECAST_COSTS;
             }
             else
             {
@@ -259,7 +259,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// </summary>
         public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
-            ConcurrentBag<ExoSubJobProjection> combinedSubJobs = new ConcurrentBag<ExoSubJobProjection>();
+            List<ExoSubJobProjection> combinedSubJobs = new List<ExoSubJobProjection>();
 
             if(showLoadingScreen)
             {
@@ -268,15 +268,14 @@ namespace BluePrints.Common.ViewModel.Misc
             }
 
             //assume queried jobs are already unique
-            Parallel.ForEach(queriedJobs,
-            queriedJob =>
+            foreach(ExoTimeAuthorisation queriedJob in queriedJobs)
             {
                 //jobs from query are added as it is
                 addExoSubJob(combinedSubJobs, queriedJob.SubJobCode, queriedJob.DisciplineCode, queriedJob.CommodityCode, queriedJob.VariationCode, COMMODITY_CODELookup, queriedJobs, JOB_COSTTYPESCollection, queriedJob.SubJobTitle, queriedJob.DisciplineName, false);
 
-            if (showLoadingScreen)
-                LoadingScreenManager.Progress();
-            });
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
+            }
 
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
@@ -292,14 +291,14 @@ namespace BluePrints.Common.ViewModel.Misc
                 allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
             }
 
-            List<string> dataPointsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + x.Variation_Code).ToList();
+            List<string> dataPointsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + NormalizeVariationCode(x.Variation_Code)).ToList();
             List<string> dashboardConcatNames = new List<string>(); 
             foreach (DashboardFlatStructure dashboardJob in dashboardJobs)
             {
                 decimal remainingUnits = dashboardJob.Stats.Remaining.DataPoints == null ? 0 : dashboardJob.Stats.Remaining.GetData().Where(x => x.IsRemaining).Sum(x => x.Units);
                 //use more than 1 because of anomaly on duration based units which could amount up to 1
                 if(remainingUnits > 1)
-                    dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + dashboardJob.Variation_Code);
+                    dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + NormalizeVariationCode(dashboardJob.Variation_Code));
             }
 
             List<string> allExoJobConcatNames = dataPointsConcatNames.ToList();
@@ -312,11 +311,10 @@ namespace BluePrints.Common.ViewModel.Misc
                 LoadingScreenManager.SetMessage("Constructing Unique Jobs from Actuals...");
             }
 
-            Parallel.ForEach(uniqueExoJobsConcatNames,
-            uniqueJobsConcatName =>
+            foreach(string uniqueExoJobsConcatName in uniqueExoJobsConcatNames)
             {
-                bool isExistInActuals = dataPointsConcatNames.Any(x => x == uniqueJobsConcatName);
-                bool isExistInRemaining = dashboardConcatNames.Any(x => x == uniqueJobsConcatName);
+                bool isExistInActuals = dataPointsConcatNames.Any(x => x == uniqueExoJobsConcatName);
+                bool isExistInRemaining = dashboardConcatNames.Any(x => x == uniqueExoJobsConcatName);
                 string possibleErrorMessage = string.Empty;
                 if (isExistInActuals && isExistInRemaining)
                     possibleErrorMessage = "Job have actuals and remaining costs";
@@ -325,7 +323,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 else if (isExistInRemaining)
                     possibleErrorMessage = "Job have remaining costs";
 
-                List<string> delimited = uniqueJobsConcatName.Split(';').ToList();
+                List<string> delimited = uniqueExoJobsConcatName.Split(';').ToList();
                 string subjobCode = delimited[0];
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
@@ -336,7 +334,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 if (showLoadingScreen)
                     LoadingScreenManager.Progress();
-            });
+            };
 
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
@@ -346,7 +344,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals
         /// </summary>
-        private static void addExoSubJob(ConcurrentBag<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
+        private static void addExoSubJob(List<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
             IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {

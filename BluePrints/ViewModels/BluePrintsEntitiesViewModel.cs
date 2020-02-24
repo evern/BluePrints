@@ -619,6 +619,7 @@ namespace BluePrints.ViewModels
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget), securityKey, parentNavigationId, NavigationResources.Permission_EXO_ChangeBudget, NavigationResources.Permission_EXO_ChangeBudget));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate), string.Empty, parentNavigationId, NavigationResources.Permission_Forecast_MoveDataDate, NavigationResources.Permission_Forecast_MoveDataDate));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC), string.Empty, parentNavigationId, NavigationResources.Permission_Forecast_SaveEAC, NavigationResources.Permission_Forecast_SaveEAC));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC), securityKey, parentNavigationId, NavigationResources.Permission_Forecast_EditPreviousEAC, NavigationResources.Permission_Forecast_EditPreviousEAC));
             }
         }
     }

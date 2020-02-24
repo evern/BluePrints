@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class NavigationResources {
@@ -813,6 +813,15 @@ namespace BluePrints.Common.Resources {
         internal static string Permission_EXO_Timesheets_Commit {
             get {
                 return ResourceManager.GetString("Permission_EXO_Timesheets_Commit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit previous EAC.
+        /// </summary>
+        internal static string Permission_Forecast_EditPreviousEAC {
+            get {
+                return ResourceManager.GetString("Permission_Forecast_EditPreviousEAC", resourceCulture);
             }
         }
         
