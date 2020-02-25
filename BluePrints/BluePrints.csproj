@@ -814,6 +814,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\FORECAST_EAC.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_PO_SETTING.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_JOB_SETTING.cs" />
@@ -875,6 +876,7 @@
     <Compile Include="EntityFramework\Annotations\ESTIMATE.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_GROUP.cs" />
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />

@@ -107,6 +107,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
@@ -171,6 +172,11 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB>, IQueryable<FORECAST_JOB>> FORECAST_JOBProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -617,7 +623,7 @@ namespace BluePrints.ViewModels
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
-                ForecastHelper.PopulateEAC(commodityJob, FORECASTCollectionViewModel.Entities, (DateTime)FixedDataDate);
+                ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, (DateTime)FixedDataDate);
                 updateAdditionalJobInfo(commodityJob);
                 updateDataTable(commodityJob, isNewData);
                 LoadingScreenManager.Progress();
@@ -866,6 +872,9 @@ namespace BluePrints.ViewModels
 
             if (!isChild)
             {
+                bool isBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
+                bool isPreviousEACReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC)) == LoginCredentials.PermissionStatus.None;
+
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.JobError });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Title", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
@@ -875,7 +884,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Name", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Variation_Code", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = isBudgetReadOnly, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DeliverableUnits", ReadOnly = true, Visible = false, Header = "Total Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours including variation, available for design only" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.DeliverableUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
@@ -899,7 +908,7 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.CurrentUncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.EstimateToComplete", ReadOnly = true, Visible = false, Header = "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousEAC", ReadOnly = true, Header = "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousEAC", ReadOnly = isPreviousEACReadOnly, Header = "Prev. EAC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PreviousEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.EstimateAtCompletion", ReadOnly = true, Header = "EAC (E) (B + C + D)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1417,57 +1426,64 @@ namespace BluePrints.ViewModels
 
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
         {
-            if(copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
+            if (copyColumn.FieldType == typeof(decimal))
             {
-                //currently disabled on paste because view doesn't reflect changes
-                //return commitBudget(newRow, pasteData);
-            }
-            else if(copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
-            {
-                decimal decimal_value;
-                var rgx = new Regex("[^0-9a-z\\.]");
-                var cleanColumnString = rgx.Replace(pasteData, string.Empty);
-                if (decimal.TryParse(cleanColumnString, out decimal_value))
-                {
-                    ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
-                    decimal oldValue = job.Productivity;
-
-                    commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
-                    findExistingOrAddNewForecastJobSetting(newRow, false);
-                }
-            }
-            else if (copyColumn.FieldType == typeof(decimal))
-            {
-                decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
-                var rgx = new Regex("[^0-9a-z\\.]");
+                var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
                 var cleanColumnString = rgx.Replace(pasteData, string.Empty);
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
                 {
-                    DateTime columnDateTime;
-                    if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+                    if (copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
                     {
-                        DataTable compareDataTable = (DataTable)newRow["CompareEntities"];
-                        //when this is called from parent grid
-                        if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
-                        {
-                            ForecastJobData job = (ForecastJobData)newRow[columnEntity];
-                            decimal totalCosts = 0;
-                            if (job.IsProcurement)
-                                totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
+                        ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
+                        decimal oldValue = job.Budget;
 
-                            if (decimal_value >= totalCosts)
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
+                    }
+                    else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+                    {
+                        ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
+                        decimal oldValue = job.Productivity;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
+                        findExistingOrAddNewForecastJobSetting(newRow, false);
+                    }
+                    else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
+                    {
+                        ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
+                        decimal oldValue = job.PreviousEAC;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
+                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                    }
+                    else
+                    {
+                        decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
+                        DateTime columnDateTime;
+                        if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+                        {
+                            DataTable compareDataTable = (DataTable)newRow["CompareEntities"];
+                            //when this is called from parent grid
+                            if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
+                            {
+                                ForecastJobData job = (ForecastJobData)newRow[columnEntity];
+                                decimal totalCosts = 0;
+                                if (job.IsProcurement)
+                                    totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
+
+                                if (decimal_value >= totalCosts)
+                                {
+                                    findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
+                                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                                    newRow[copyColumn.FieldName] = decimal_value;
+                                }
+                            }
+                            //when this called from child grid no validation required
+                            else
                             {
                                 findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
-                                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
                                 newRow[copyColumn.FieldName] = decimal_value;
                             }
-                        }
-                        //when this called from child grid no validation required
-                        else
-                        {
-                            findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
-                            newRow[copyColumn.FieldName] = decimal_value;
                         }
                     }
                 }
@@ -1631,9 +1647,23 @@ namespace BluePrints.ViewModels
                 commitBudget(primeroEntitiesUnitOfWork, row, newValue);
                 forecastJobData.JobErrorMessage = string.Empty;
                 entity.ForecastErrorString = string.Empty;
+
                 forecastJobData.RaisePropertiesChanged();
             }
-            else if(fieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
+            else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
+            {
+                decimal newPreviousEAC;
+                if (decimal.TryParse(newValue.ToString(), out newPreviousEAC))
+                {
+                    DateTime previousEACDataDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1);
+                    previousEACDataDate = previousEACDataDate.AddDays(-1);
+
+                    findExistingOrAddNewEAC(previousEACDataDate, forecastJobData, bluePrintsUnitOfWork, newPreviousEAC, true);
+                    forecastJobData.PreviousEAC = newPreviousEAC;
+                    forecastJobData.RaisePropertiesChanged();
+                }
+            }
+            else if (fieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
             {
                 if(newValue != null)
                 {
@@ -1818,6 +1848,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
+                    job.Budget = newDecimalValue;
                     projection.Update();
                 }
                 else
@@ -1831,6 +1862,9 @@ namespace BluePrints.ViewModels
                     {
                         recurseCalculateBudget(disciplineRow);
                     }
+
+                    job.Budget = newDecimalValue;
+                    projection.Update();
                 }
 
                 refreshGridData();
@@ -2162,42 +2196,6 @@ namespace BluePrints.ViewModels
                 return variationRows.FirstOrDefault();
         }
 
-        private void removeProjectEACOnDate(DateTime forecastDate)
-        {
-            List<FORECAST> projectDateEACs = bluePrintsUnitOfWork.FORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date && x.FORECAST_TYPE == ForecastDataType.EAC).ToList();
-            LoadingScreenManager.ShowLoadingScreen(projectDateEACs.Count);
-            foreach(FORECAST projectDateEAC in projectDateEACs)
-            {
-                string eacName;
-                if (projectDateEAC.COMMODITY_CODE != string.Empty)
-                    eacName = projectDateEAC.SUBJOB_CODE + "-" + projectDateEAC.DISCIPLINE_CODE + "-" + projectDateEAC.COMMODITY_CODE;
-                else
-                    eacName = projectDateEAC.SUBJOB_CODE + "-" + projectDateEAC.DISCIPLINE_CODE;
-
-                LoadingScreenManager.SetMessage("Removing old EAC on " + forecastDate.ToString(BluePrintsResources.ColumnDateFormat) + " for job: " + eacName);
-                bluePrintsUnitOfWork.FORECASTS.Remove(projectDateEAC);
-                LoadingScreenManager.Progress();
-            }
-
-            bluePrintsUnitOfWork.SaveChanges();
-            LoadingScreenManager.CloseLoadingScreen();
-        }
-
-        private void findExistingOrAddNewEAC(ExoSubJobProjection entity, DateTime forecastDate, decimal eacAmount)
-        {
-            FORECAST newFORECAST = new FORECAST();
-            newFORECAST.GUID = Guid.Empty;
-            newFORECAST.GUID_PROJECT = LoadPROJECT.GUID;
-            newFORECAST.SUBJOB_CODE = entity.SubJob.Code;
-            newFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
-            newFORECAST.COMMODITY_CODE = entity.Commodity.Code;
-            newFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
-            newFORECAST.FORECAST_DATE = forecastDate.Date;
-            newFORECAST.FORECAST_UNITS = eacAmount;
-            newFORECAST.FORECAST_TYPE = ForecastDataType.EAC;
-            bluePrintsUnitOfWork.FORECASTS.Add(newFORECAST);
-        }
-
         /// <summary>
         /// Sum uncommitted values, need to be run after any updates to dates value
         /// </summary>
@@ -2289,30 +2287,63 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            removeProjectEACOnDate(FixedDataDateMonthEnd);
-
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
                 ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
-                if (entity.EstimateAtCompletion > 0)
-                {
-                    LoadingScreenManager.SetMessage("Adding EAC for Job: " + entity.ToString());
-                    findExistingOrAddNewEAC(entity.Projection, FixedDataDateMonthEnd, entity.EstimateAtCompletion);
-                }
-
+                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsEntitiesUnitOfWork, entity.EstimateAtCompletion, false);
                 LoadingScreenManager.Progress();
             }
 
             LoadingScreenManager.CloseLoadingScreen();
             LoadingScreenManager.ShowLoadingScreen(1);
             LoadingScreenManager.SetMessage("Saving changes...");
-            bluePrintsUnitOfWork.SaveChanges();
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
             MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved\nData date will be changed to next month after closing this dialog", "EAC Saved", MessageButton.OK, MessageIcon.Information);
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
+        }
+
+        private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobProjection projection, decimal newPreviousEAC)
+        {
+            FORECAST_EAC newFORECAST_EAC = new FORECAST_EAC();
+            newFORECAST_EAC.GUID = Guid.Empty;
+            newFORECAST_EAC.GUID_PROJECT = LoadPROJECT.GUID;
+            newFORECAST_EAC.SUBJOB_CODE = projection.SubJob.Code;
+            newFORECAST_EAC.DISCIPLINE_CODE = projection.Discipline.Code;
+            newFORECAST_EAC.COMMODITY_CODE = projection.Commodity.Code;
+            newFORECAST_EAC.VARIATION_CODE = normalizeVariationCode(projection.Variation_Code);
+            newFORECAST_EAC.FORECAST_DATE = forecastDate.Date;
+            newFORECAST_EAC.FORECAST_COSTS = newPreviousEAC;
+
+            return newFORECAST_EAC;
+        }
+
+        private void findExistingOrAddNewEAC(DateTime forecastDate, ForecastJobData entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, decimal newPreviousEAC, bool save)
+        {
+            ExoSubJobProjection projection = entity.Projection;
+            if (projection.SubJob == null || projection.Discipline == null || projection.Commodity == null)
+                return;
+
+            string normalizedVariationCode = normalizeVariationCode(projection.Variation_Code);
+            FORECAST_EAC forecast_EAC = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && 
+            x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJob.Code && 
+            x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == normalizedVariationCode);
+
+            if(forecast_EAC != null)
+            {
+                forecast_EAC.FORECAST_COSTS = newPreviousEAC;
+            }
+            else
+            {
+                FORECAST_EAC newForecast_EAC = createNewEAC(forecastDate, entity.Projection, newPreviousEAC);
+                bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Add(newForecast_EAC);
+                if (save)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
         }
 
         public bool CanUndo()
@@ -2394,7 +2425,7 @@ namespace BluePrints.ViewModels
         {
             //when view is closed halfway
             if (PROJECTCollectionViewModel != null)
-                PROJECTCollectionViewModel.Save(LoadPROJECT);
+                mainThreadDispatcher.BeginInvoke(new Action(() => PROJECTCollectionViewModel.Save(LoadPROJECT)));
         }
 
         /// <summary>
@@ -2800,6 +2831,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_EAC> FORECAST_EACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>();
+            }
+        }
+
         public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
         {
             get
@@ -2931,7 +2970,7 @@ namespace BluePrints.ViewModels
             Current_Cost = 0;
             Uncommitted_Forecast = 0;
             EstimateAtCompletion = 0;
-            //TotalClaims = 0;
+            Commitments = 0;
 
             OriginalEstimateAtCompletion = 0;
             CurrentEstimateAtCompletion = 0;

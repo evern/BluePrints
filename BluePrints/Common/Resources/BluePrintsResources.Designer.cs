@@ -709,6 +709,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [^0-9a-z\\.\\-].
+        /// </summary>
+        internal static string Regex_NumbersOnly {
+            get {
+                return ResourceManager.GetString("Regex_NumbersOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -\d{3}-\d{2}-[D,C,I,P]{1}\d{1}.
         /// </summary>
         internal static string Regex_SUBJOB {

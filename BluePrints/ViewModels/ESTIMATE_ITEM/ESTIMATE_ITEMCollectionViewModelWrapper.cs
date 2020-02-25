@@ -659,7 +659,7 @@ namespace BluePrints.ViewModels
 
                 if (supply_rate_data.Key != null && install_rate_data.Key != null)
                 {
-                    Regex rgx = new Regex("[^0-9a-z\\.]");
+                    Regex rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
                     string clean_supply_rate = rgx.Replace(supply_rate_data.Value, string.Empty);
                     string clean_install_rate = rgx.Replace(install_rate_data.Value, string.Empty);
                     if (clean_supply_rate == string.Empty)

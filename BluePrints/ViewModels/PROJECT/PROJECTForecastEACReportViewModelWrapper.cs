@@ -26,7 +26,7 @@ namespace BluePrints.ViewModels
 {
     public class PROJECTForecastEACReportViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>
+        <FORECAST_EAC, FORECAST_EAC, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of FORECASTCollectionViewModelWrapper as a POCO view model.
@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECASTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS);
             mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
                 foreach (var dateCost in groupedJob.DateCosts)
                 {
                     DatatableDateCost jobDateCost = new DatatableDateCost();
-                    jobDateCost.Cost = dateCost.FORECAST_UNITS == null ? 0 : (decimal)dateCost.FORECAST_UNITS;
+                    jobDateCost.Cost = dateCost.FORECAST_COSTS == null ? 0 : (decimal)dateCost.FORECAST_COSTS;
                     jobDateCost.Date = dateCost.FORECAST_DATE;
                     jobCostsProjection.DateCosts.Add(jobDateCost);
                 }
@@ -236,12 +236,12 @@ namespace BluePrints.ViewModels
             e.Allow = false;
         }
 
-        protected override Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.FORECAST_TYPE == Common.ForecastDataType.EAC);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_EAC> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -253,12 +253,12 @@ namespace BluePrints.ViewModels
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
-        public override string UnifiedValueValidation(FORECAST projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(FORECAST_EAC projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(FORECAST projection)
+        public override string UnifiedRowValidation(FORECAST_EAC projection)
         {
             return string.Empty;
         }

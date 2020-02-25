@@ -705,7 +705,7 @@ namespace BluePrints.ViewModels
             }
             else if (copyColumn.FieldType == typeof(decimal))
             {
-                var rgx = new Regex("[^0-9a-z\\.]");
+                var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
                 var cleanColumnString = rgx.Replace(pasteData, string.Empty);
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
