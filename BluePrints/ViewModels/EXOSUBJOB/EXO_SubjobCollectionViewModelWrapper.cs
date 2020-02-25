@@ -787,7 +787,7 @@ namespace BluePrints.ViewModels
                                     projection.LineId = findExistingOrAddLine.SEQNO;
                                     if (projection.LineId != null)
                                     {
-                                        ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.SubJobId == projection.SubJobId);
+                                        ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.GUID != Guid.Empty && x.SubJobId == projection.SubJobId);
                                         if (existingSameSubJobLine != null)
                                         {
                                             foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
