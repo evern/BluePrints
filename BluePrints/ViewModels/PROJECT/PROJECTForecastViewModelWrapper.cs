@@ -1837,18 +1837,12 @@ namespace BluePrints.ViewModels
                         isError = true;
                     }
 
+                    job.Budget = newDecimalValue;
                     if (isError)
                         projection.ExoBudget = 0;
                     else
-                    {
-                        DataRow disciplineRow = findRow(entity, false);
-                        if (disciplineRow != null)
-                        {
-                            recurseCalculateBudget(disciplineRow);
-                        }
-                    }
+                        recurseCalculateBudget(dataRow);
 
-                    job.Budget = newDecimalValue;
                     projection.Update();
                 }
                 else
@@ -1857,13 +1851,10 @@ namespace BluePrints.ViewModels
                     findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
 
                     primeroUnitOfWork.SaveChanges();
-                    DataRow disciplineRow = findRow(entity, false);
-                    if (disciplineRow != null)
-                    {
-                        recurseCalculateBudget(disciplineRow);
-                    }
 
                     job.Budget = newDecimalValue;
+                    recurseCalculateBudget(dataRow);
+
                     projection.Update();
                 }
 
