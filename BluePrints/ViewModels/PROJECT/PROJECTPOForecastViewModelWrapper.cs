@@ -71,12 +71,19 @@ namespace BluePrints.ViewModels
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         public CriteriaOperator FilterCriteria { get; set; }
+        DispatcherTimer delayedProjectSaveTimer;
         public bool IsWeeks => false; //used by POForecastHeaderTemplate
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
+        BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            delayedProjectSaveTimer = new DispatcherTimer();
+            delayedProjectSaveTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
+            projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
+
             setProject(loadPROJECT);
 
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
@@ -155,10 +162,12 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                showDataDateErrorMessage();
-                dataDate = DateTime.Now;
-                LoadDataDate = null;
-                return;
+                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+
+                loadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
+                dataDate = endOfCurrentMonth;
+                LoadDataDate = dataDate;
+                savePROJECT();
             }
 
             ForecastStartDate = new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
@@ -172,6 +181,27 @@ namespace BluePrints.ViewModels
             ForecastEndDate = endDate;
 
             this.RaisePropertiesChanged();
+        }
+
+        private void savePROJECT()
+        {
+            delayedProjectSaveTimer.Tick -= DelayedProjectSaveTimer_Tick;
+            delayedProjectSaveTimer.Tick += DelayedProjectSaveTimer_Tick;
+
+            delayedProjectSaveTimer.Start();
+        }
+
+        private void DelayedProjectSaveTimer_Tick(object sender, EventArgs e)
+        {
+            delayedProjectSaveTimer.Stop();
+            projectSavingBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void ProjectSavingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //when view is closed halfway
+            if (PROJECTCollectionViewModel != null)
+                mainThreadDispatcher.BeginInvoke(new Action(() => PROJECTCollectionViewModel.Save(loadPROJECT)));
         }
 
         bool shownMessage;
