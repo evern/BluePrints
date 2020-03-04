@@ -1031,6 +1031,17 @@ namespace BluePrints.Common.Base
             IEnumerable<TASK> actual_tasks = P6_PROJECT.TASK.Where(x => TASK_Source.Any(task => task.task_code == x.task_code)).AsEnumerable();
             foreach (TASK Task in actual_tasks)
             {
+                TASKRSRC primaryTASKRSRC = P6_PROJECT.TASKRSRC.FirstOrDefault(x => x.task_id == Task.task_id);
+                if(primaryTASKRSRC != null)
+                {
+                    primaryTASKRSRC.remain_qty = 0;
+                    primaryTASKRSRC.target_qty = 0;
+                    primaryTASKRSRC.remain_qty_per_hr = 0;
+                    primaryTASKRSRC.remain_cost = 0;
+                    primaryTASKRSRC.target_cost = 0;
+                    primaryTASKRSRC.act_reg_qty = 0;
+                }
+
                 Task.act_work_qty = 0;
                 Task.remain_work_qty = 0;
                 Task.target_work_qty = 0;
@@ -1060,6 +1071,15 @@ namespace BluePrints.Common.Base
                             //{
                             //    ExistingTaskResource.Add(task_resource);
                             //}
+                            TASKRSRC actual_context_taskrsrc = P6_PROJECT.TASKRSRC.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+                            if(actual_context_taskrsrc != null)
+                            {
+                                actual_context_taskrsrc.remain_qty += p6_assignment.UNITS;
+                                actual_context_taskrsrc.target_qty += p6_assignment.UNITS;
+
+                                if(actual_context_task.target_drtn_hr_cnt != null && actual_context_task.target_drtn_hr_cnt != 0)
+                                    actual_context_taskrsrc.remain_qty_per_hr = actual_context_taskrsrc.target_qty / actual_context_task.target_drtn_hr_cnt;
+                            }
                         }
                         else
                         {

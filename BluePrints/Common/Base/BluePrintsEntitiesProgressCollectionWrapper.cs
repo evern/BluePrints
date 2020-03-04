@@ -1321,6 +1321,13 @@ namespace BluePrints.Common.Base
                             break;
                         }
 
+                        TASKRSRC P6TASKRSRC = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == P6TASK.task_id);
+                        if(P6TASKRSRC != null)
+                        {
+                            P6TASKRSRC.act_reg_qty = P6TASK.act_work_qty;
+                            P6TASKRSRC.remain_qty = P6TASK.remain_work_qty;
+                        }
+
                         if (P6TASK.target_work_qty <= 0)
                         {
                             if(!isDeliverableCancelled)
@@ -1490,8 +1497,19 @@ namespace BluePrints.Common.Base
                 task.act_end_date = null;
                 task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
                 task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+
+                TASKRSRC primaryTASKRSRC = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == task.task_id);
+                if (primaryTASKRSRC != null)
+                {
+                    primaryTASKRSRC.act_reg_qty = 0;
+                    primaryTASKRSRC.remain_qty = 0;
+                    primaryTASKRSRC.target_qty = 0;
+                    primaryTASKRSRC.remain_qty_per_hr = 0;
+                    primaryTASKRSRC.remain_cost = 0;
+                    primaryTASKRSRC.target_cost = 0;
+                }
             }
-            
+
             foreach (ICanAssignP6 deliverable in deliverables)
             {
                 IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
@@ -1507,6 +1525,16 @@ namespace BluePrints.Common.Base
 
                         TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
                         DataUtils.ShallowCopy(repositoryTASK, actual_context_task);
+
+                        TASKRSRC actual_context_taskrsrc = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+                        if (actual_context_taskrsrc != null)
+                        {
+                            actual_context_taskrsrc.remain_qty += p6_assignment.UNITS;
+                            actual_context_taskrsrc.target_qty += p6_assignment.UNITS;
+
+                            if (actual_context_task.target_drtn_hr_cnt != null && actual_context_task.target_drtn_hr_cnt != 0)
+                                actual_context_taskrsrc.remain_qty_per_hr = actual_context_taskrsrc.target_qty / actual_context_task.target_drtn_hr_cnt;
+                        }
                     }
                 }
             }
