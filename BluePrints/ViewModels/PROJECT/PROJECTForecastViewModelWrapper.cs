@@ -44,9 +44,6 @@ using System.Windows.Media;
 using DevExpress.Xpf.Core.Serialization;
 using System.Windows.Input;
 using BluePrints.Common.ViewModel.Utils;
-using DevExpress.Xpf.Editors.Settings;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace BluePrints.ViewModels
 {
@@ -119,8 +116,12 @@ namespace BluePrints.ViewModels
             DateTime dataDate;
             if (LoadPROJECT.FORECAST_DATA_DATE == null)
             {
-                dataDate = DateTime.Now;
-                LoadDataDate = null;
+                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+
+                LoadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
+                dataDate = endOfCurrentMonth;
+                LoadDataDate = dataDate;
+                savePROJECT();
             }
             else
             {
