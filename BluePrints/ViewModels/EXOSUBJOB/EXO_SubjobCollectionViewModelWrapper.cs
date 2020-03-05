@@ -180,6 +180,7 @@ namespace BluePrints.ViewModels
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
+            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinue;
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
             MainViewModel.PasteListener = onAfterEntitiesPasted;
@@ -187,6 +188,11 @@ namespace BluePrints.ViewModels
 
             mainThreadDispatcher.BeginInvoke(new Action(() => filterUser()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        private bool onBeforeEntitySavedIsContinue(ExoSubJobEditableProjection entity)
+        {
+            return false;
         }
 
         //filter out user's that have default security profile
