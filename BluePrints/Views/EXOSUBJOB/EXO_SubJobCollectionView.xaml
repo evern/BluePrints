@@ -16,6 +16,9 @@
                     <dxb:BarButtonItem x:Name="biCopyToJobSetup" Command="{Binding DataContext.CopyToJobCommand, ElementName=userControl}" Content="Copy to Job Setup" Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}" LargeGlyph="{dx:DXImage Image=ConvertToRange_32x32.png}" ToolTip="This will copy jobs in exo that doesn't exists in job setup yet, safe to click whenever as it won't create duplicates" />
                     <dxb:BarButtonItem x:Name="biRemoveSelected" Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete entry from exo" />
                     <dxb:BarButtonItem x:Name="biPopulateActuals" Command="{Binding DataContext.PopulateActualsCommand, ElementName=userControl}" Content="Get Actuals" Glyph="{dxc:DXImage Images/Function Library/Financial_16x16.png}" LargeGlyph="{dx:DXImage Images/Function Library/Financial_32x32.png}" ToolTip="Get actuals summary by job from EXO and show it in the grid" />
+                    <dxb:BarButtonItem x:Name="biSetIndirectFilter" Command="{Binding DataContext.SetIndirectFilterCommand, ElementName=userControl}" Content="Show Indirect Only" Glyph="{dxc:DXImage Images/Business Objects/BODetails_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BODetails_32x32.png}" ToolTip="Show indirect jobs only" />
+                    <dxb:BarButtonItem x:Name="biSetDesignFilter" Command="{Binding DataContext.SetDesignFilterCommand, ElementName=userControl}" Content="Show Design Only" Glyph="{dxc:DXImage Images/Business Objects/BOPerson_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOPerson_32x32.png}" ToolTip="Show design jobs only" />
+                    <dxb:BarButtonItem x:Name="biSetConstructionFilter" Command="{Binding DataContext.SetConstructionFilterCommand, ElementName=userControl}" Content="Show Construction Only" Glyph="{dxc:DXImage Images/Business Objects/BOEmployee_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOEmployee_32x32.png}" ToolTip="Show construction jobs only" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -34,6 +37,9 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                     <dxb:BarButtonItemLink BarItemName="biPopulateActuals" />
+                                    <dxb:BarButtonItemLink BarItemName="biSetIndirectFilter" />
+                                    <dxb:BarButtonItemLink BarItemName="biSetDesignFilter" />
+                                    <dxb:BarButtonItemLink BarItemName="biSetConstructionFilter" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                     <dxb:BarButtonItemLink BarItemName="biCopyToJobSetup" />
@@ -48,7 +54,7 @@
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                            <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
