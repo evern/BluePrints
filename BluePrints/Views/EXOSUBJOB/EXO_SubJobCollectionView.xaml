@@ -19,7 +19,7 @@
                     <dxb:BarButtonItem x:Name="biSetIndirectFilter" Command="{Binding DataContext.SetIndirectFilterCommand, ElementName=userControl}" Content="Show Indirect Only" Glyph="{dxc:DXImage Images/Business Objects/BODetails_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BODetails_32x32.png}" ToolTip="Show indirect jobs only" />
                     <dxb:BarButtonItem x:Name="biSetDesignFilter" Command="{Binding DataContext.SetDesignFilterCommand, ElementName=userControl}" Content="Show Design Only" Glyph="{dxc:DXImage Images/Business Objects/BOPerson_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOPerson_32x32.png}" ToolTip="Show design jobs only" />
                     <dxb:BarButtonItem x:Name="biSetProcurementFilter" Command="{Binding DataContext.SetProcurementFilterCommand, ElementName=userControl}" Content="Show Construction Only" Glyph="{dxc:DXImage Images/Business Objects/BOProduct_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOProduct_32x32.png}" ToolTip="Show procurement jobs only" />
-                    <dxb:BarButtonItem x:Name="biSetConstructionFilter" Command="{Binding DataContext.SetConstructionFilterCommand, ElementName=userControl}" Content="Show Construction Only" Glyph="{dxc:DXImage Images/Business Objects/BOEmployee_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOEmployee_32x32.png}" ToolTip="Show construction jobs only" />
+                    <dxb:BarButtonItem x:Name="biSetConstructionFilter" Command="{Binding DataContext.SetConstructionFilterCommand, ElementName=userControl}" Content="Show Procurement Only" Glyph="{dxc:DXImage Images/Business Objects/BOEmployee_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOEmployee_32x32.png}" ToolTip="Show construction jobs only" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
@@ -40,6 +40,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biPopulateActuals" />
                                     <dxb:BarButtonItemLink BarItemName="biSetIndirectFilter" />
                                     <dxb:BarButtonItemLink BarItemName="biSetDesignFilter" />
+                                    <dxb:BarButtonItemLink BarItemName="biSetProcurementFilter" />
                                     <dxb:BarButtonItemLink BarItemName="biSetConstructionFilter" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
