@@ -579,8 +579,6 @@ namespace BluePrints.ViewModels
             {
                 DisplayEntities.Remove(viewRemoveProjection);
             }
-
-            this.FullRefresh();
         }
 
         public override string UnifiedRowValidation(ExoSubJobEditableProjection projection)
