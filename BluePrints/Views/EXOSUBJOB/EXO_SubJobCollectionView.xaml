@@ -154,7 +154,7 @@
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="SubJobMaterialsSummary" Header="Material Costs" HeaderToolTip="Material costs from EXO" ReadOnly="True" Visible="{Binding DataContext.IsMaterialCostSummaryVisible, ElementName=userControl}">
+                                    <dxg:GridColumn FieldName="SubJobMaterialCostSummary" Header="Material Costs" HeaderToolTip="Material costs from EXO" ReadOnly="True" Visible="{Binding DataContext.IsMaterialCostSummaryVisible, ElementName=userControl}">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -168,10 +168,16 @@
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="SubJobCode" SummaryType="Count" />
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobActualCostSummary" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobMaterialCostSummary" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobRemainingPOCostSummary" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="SubJobCode" SummaryType="Count" />
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobActualCostSummary" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobMaterialCostSummary" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobRemainingPOCostSummary" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">

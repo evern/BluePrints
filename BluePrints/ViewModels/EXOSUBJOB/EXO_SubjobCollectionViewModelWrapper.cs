@@ -990,8 +990,8 @@ namespace BluePrints.ViewModels
             foreach (ExoSubJobEditableProjection projection in MainViewModel.Entities)
             {
                 projection.SubJobActualCostSummary = burnedDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
-                projection.SubJobMaterialCostSummary = materialDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
-                projection.SubJobRemainingPOCostSummary = materialDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
+                projection.SubJobMaterialCostSummary = materialDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.StockCode == projection.StockCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
+                projection.SubJobRemainingPOCostSummary = poDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.StockCode == projection.StockCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
             }
 
             IsActualCostSummaryVisible = true;
