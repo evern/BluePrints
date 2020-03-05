@@ -60,7 +60,7 @@
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
+                                    <dxg:GridColumn FieldName="SubJobCode" ColumnFilterMode="DisplayText" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
                                         <!--<dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:PopupBaseEdit Name="PART_Editor" Width="150" Height="24" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False">
@@ -81,13 +81,13 @@
                                             <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Select from combo box and then change last two numbers">
+                                    <dxg:GridColumn FieldName="DisciplineCode" ColumnFilterMode="DisplayText" Header="Cost Group" HeaderToolTip="Select from combo box and then change last two numbers">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINE_CODEStringCollection, ElementName=userControl}" Mask="{Binding DataContext.DisciplineRegex, ElementName=userControl}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo, type in free text" />
-                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
+                                    <dxg:GridColumn FieldName="CommodityCode" ColumnFilterMode="DisplayText" Header="Cost Type" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" >
@@ -113,7 +113,7 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="StockCode" Header="Stock Code" HeaderToolTip="Select from combobox">
+                                    <dxg:GridColumn FieldName="StockCode" Header="Stock Code" ColumnFilterMode="DisplayText" HeaderToolTip="Select from combobox">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="STOCKCODE" >
