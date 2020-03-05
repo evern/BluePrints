@@ -128,6 +128,12 @@ namespace BluePrints.Common.Projections
 
         public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
 
+        #region Summary in EXO_SubJobCollectionView
+        public decimal SubJobActualCostSummary { get; set; }
+        public decimal SubJobMaterialCostSummary { get; set; }
+        public decimal SubJobRemainingPOCostSummary { get; set; }
+        #endregion
+
         public string PhaseTypeStr
         {
             get
