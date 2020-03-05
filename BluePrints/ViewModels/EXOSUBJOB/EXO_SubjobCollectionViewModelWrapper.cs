@@ -1014,6 +1014,11 @@ namespace BluePrints.ViewModels
             setFilter("-I");
         }
 
+        public void SetProcurementFilter()
+        {
+            setFilter("-P");
+        }
+
         public void SetConstructionFilter()
         {
             setFilter("-D");
