@@ -523,7 +523,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         ExoDataPoint burnedDataPoint = new ExoDataPoint();
                         burnedDataPoint.BudgetedUnits = 0;
                         burnedDataPoint.BudgetedCosts = 0;
-                        burnedDataPoint.Units = (decimal)jobTransaction.QUANTITY;
+                        burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
                         //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
                         burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
                         burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
@@ -533,7 +533,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                         burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
                         burnedDataPoint.Description = jobTransaction.RESOURCENAME;
-                        burnedDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
+                        burnedDataPoint.Quantity = jobTransaction.QUANTITY == null ? 0 :(decimal)jobTransaction.QUANTITY;
                         burnedDataPoint.Role = jobTransaction.TITLE;
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
@@ -607,8 +607,11 @@ namespace BluePrints.Common.ViewModel.Utils
                     ExoDataPoint materialDataPoint = new ExoDataPoint();
                     materialDataPoint.BudgetedUnits = 0;
                     materialDataPoint.BudgetedCosts = 0;
-                    materialDataPoint.Units = (decimal)jobMaterial.quantity;
-                    materialDataPoint.Costs = (decimal)jobMaterial.LINECOST * currencyConversion;
+
+                    decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
+                    decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
+                    materialDataPoint.Units = qty;
+                    materialDataPoint.Costs = lineCost * currencyConversion;
                     materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
                     if (alignedDataDates != null)
@@ -617,7 +620,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     materialDataPoint.ActualDate = jobMaterial.transdate == null ? DateTime.Now : (DateTime)jobMaterial.transdate;
                     materialDataPoint.Subjob_Name = jobMaterial.jobcode;
                     materialDataPoint.ResourceName = string.Empty;
-                    materialDataPoint.Quantity = (decimal)jobMaterial.quantity;
+                    materialDataPoint.Quantity = qty;
                     materialDataPoint.Description = jobMaterial.description;
                     materialDataPoint.Supplier = jobMaterial.name;
                     materialDataPoint.InvoiceNo = jobMaterial.invno;
@@ -700,10 +703,14 @@ namespace BluePrints.Common.ViewModel.Utils
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
                     poDataPoint.BudgetedCosts = 0;
-                    poDataPoint.TotalUnits = ((decimal)po.ORD_QUANT);
-                    poDataPoint.Units = ((decimal)po.ORD_QUANT) - ((decimal)po.SUP_QUANT);
-                    poDataPoint.Costs = poDataPoint.Units * ((decimal)po.UNITPRICE);
-                    poDataPoint.CostPerQty = ((decimal)po.UNITPRICE);
+                    decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
+                    decimal supplyQty = po.SUP_QUANT == null ? 0 : ((decimal)po.SUP_QUANT);
+                    decimal unitPrice = po.UNITPRICE == null ? 0 : ((decimal)po.UNITPRICE);
+                    poDataPoint.TotalUnits = orderQty;
+
+                    poDataPoint.Units = orderQty - supplyQty;
+                    poDataPoint.Costs = poDataPoint.Units * unitPrice;
+                    poDataPoint.CostPerQty = unitPrice;
                     poDataPoint.TotalCosts = poDataPoint.TotalUnits * poDataPoint.CostPerQty;
                     if (alignedDataDates != null)
                         poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
