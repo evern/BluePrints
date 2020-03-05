@@ -177,6 +177,32 @@ namespace BluePrints.ViewModels
             return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo);
         }
 
+        public bool IsActualCostSummaryVisible { get; set; }
+        public bool IsMaterialCostSummaryVisible { get; set; }
+        public bool IsRemainingPOCostSummaryVisible { get; set; }
+        public void PopulateActuals()
+        {
+            List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(localPrimeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+            List<ExoDataPoint> materialDataPoints = BluePrintsDataUtils.GetMaterials(localPrimeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
+            List<ExoDataPoint> poDataPoints = BluePrintsDataUtils.GetEXOPO(localPrimeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, true);
+
+            foreach(ExoSubJobEditableProjection projection in MainViewModel.Entities)
+            {
+                projection.SubJobActualCostSummary = burnedDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
+                projection.SubJobMaterialCostSummary = materialDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
+                projection.SubJobRemainingPOCostSummary = materialDataPoints.Where(x => x.Subjob_Name == projection.SubJobCode && x.Discipline_Code == projection.DisciplineCode && x.Commodity_Code == projection.CommodityCode && x.Variation_Code == projection.VariationCode).Sum(x => x.Costs);
+            }
+
+            IsActualCostSummaryVisible = true;
+            IsMaterialCostSummaryVisible = true;
+            IsRemainingPOCostSummaryVisible = true;
+
+            this.RaisePropertyChanged(x => x.IsActualCostSummaryVisible);
+            this.RaisePropertyChanged(x => x.IsMaterialCostSummaryVisible);
+            this.RaisePropertyChanged(x => x.IsRemainingPOCostSummaryVisible);
+            GridControlService.RefreshData();
+        }
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
