@@ -2328,6 +2328,8 @@ namespace BluePrints.ViewModels
             if(forecast_EAC != null)
             {
                 forecast_EAC.FORECAST_COSTS = newPreviousEAC;
+                if (save)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
             }
             else
             {
