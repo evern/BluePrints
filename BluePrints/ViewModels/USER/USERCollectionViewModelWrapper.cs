@@ -385,16 +385,20 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private List<PROJECT> authorisedPROJECTS;
         public IEnumerable<PROJECT> AuthorisedPROJECTCollection
         {
             get
             {
-                List<PROJECT> authorisedPROJECTS = new List<PROJECT>();
-                if (LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count == 0)
-                    authorisedPROJECTS = PROJECTCollection.ToList();
-                else
-                    //need to pick from current project list so that hashcode is the same and project display property can be shown
-                    authorisedPROJECTS = PROJECTCollection.Where(project => LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == project.GUID)).ToList();
+                if(authorisedPROJECTS == null)
+                {
+                    authorisedPROJECTS = new List<PROJECT>();
+                    if (LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count == 0)
+                        authorisedPROJECTS = PROJECTCollection.ToList();
+                    else
+                        //need to pick from current project list so that hashcode is the same and project display property can be shown
+                        authorisedPROJECTS = PROJECTCollection.Where(project => LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == project.GUID)).ToList();
+                }
 
                 return authorisedPROJECTS;
             }
