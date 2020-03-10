@@ -99,7 +99,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn Header="Authorised Projects" FieldName="Projects">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings NullText="All" DisplayMember="NUMBER" IncrementalFiltering="True" ItemsSource="{Binding DataContext.PROJECTCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                        <dxe:ComboBoxEditSettings NullText="All" DisplayMember="NUMBER" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AuthorisedPROJECTCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                             <dxe:ComboBoxEditSettings.StyleSettings>
                                                 <dxe:CheckedComboBoxStyleSettings />
                                             </dxe:ComboBoxEditSettings.StyleSettings>

@@ -115,9 +115,7 @@ namespace BluePrints.ViewModels
 
         private void populateUserAuthorisedProjects(USER user, IEnumerable<PROJECT> PROJECTCollection)
         {
-            //need to call ToList for tokenComboBoxEditSettings to work
             user.Projects = PROJECTCollection.Where(project => PROJECT_PERMISSIONCollection.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
-
             user.Update();
         }
 
@@ -384,6 +382,20 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NUMBER);
                 return collection;
+            }
+        }
+
+        public IEnumerable<PROJECT> AuthorisedPROJECTCollection
+        {
+            get
+            {
+                List<PROJECT> authorisedPROJECTS = new List<PROJECT>();
+                if (LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count == 0)
+                    authorisedPROJECTS = PROJECTCollection.ToList();
+                else
+                    authorisedPROJECTS = LoginCredentials.CurrentUser.PROJECT_PERMISSION.Select(x => x.PROJECT).ToList();
+
+                return authorisedPROJECTS;
             }
         }
 
