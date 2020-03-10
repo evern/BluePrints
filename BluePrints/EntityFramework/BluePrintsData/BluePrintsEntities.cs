@@ -58,6 +58,7 @@ namespace BluePrints.Data
         public virtual DbSet<PROJECT_SUMMARY> PROJECT_SUMMARY { get; set; }
         public virtual DbSet<PROJECT_SUMMARY_SETTING> PROJECT_SUMMARY_SETTING { get; set; }
         public virtual DbSet<PROJECT_DISCIPLINE> PROJECT_DISCIPLINE { get; set; }
+        public virtual DbSet<PROJECT_PERMISSION> PROJECT_PERMISSION { get; set; }
         public virtual DbSet<PROJECT_REPORT> PROJECT_REPORT { get; set; }
         public virtual DbSet<RA_GUIDE_PROMPT> RA_GUIDE_PROMPT { get; set; }
         public virtual DbSet<RA_GUIDE_SUBPROMPT> RA_GUIDE_SUBPROMPT { get; set; }
@@ -719,6 +720,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.PROJECT_PERMISSION)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<RA_GUIDE_PROMPT>()
                 .HasMany(e => e.RA_GUIDE_SUBPROMPT)
                 .WithRequired(e => e.RA_GUIDE_PROMPT)
@@ -931,6 +938,12 @@ namespace BluePrints.Data
                 .HasMany(e => e.REGISTER_ISSUE)
                 .WithOptional(e => e.USER)
                 .HasForeignKey(e => e.GUID_RESPONSIBLE_PERSON);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.PROJECT_PERMISSION)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.GUID_USER)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.BASELINE_ITEM)

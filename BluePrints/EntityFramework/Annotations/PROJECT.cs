@@ -40,6 +40,7 @@ namespace BluePrints.Data
             PROGRESS = new HashSet<PROGRESS>();
             PROJECT_SUMMARY = new HashSet<PROJECT_SUMMARY>();
             PROJECT_SUMMARY_SETTINGS = new HashSet<PROJECT_SUMMARY_SETTING>();
+            PROJECT_PERMISSION = new HashSet<PROJECT_PERMISSION>();
             STOCK_CODE = new HashSet<STOCK_CODE>();
             REGISTER = new HashSet<REGISTER>();
             PROJECT_REPORT = new HashSet<PROJECT_REPORT>();
