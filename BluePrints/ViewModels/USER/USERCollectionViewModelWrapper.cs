@@ -393,7 +393,8 @@ namespace BluePrints.ViewModels
                 if (LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count == 0)
                     authorisedPROJECTS = PROJECTCollection.ToList();
                 else
-                    authorisedPROJECTS = LoginCredentials.CurrentUser.PROJECT_PERMISSION.Select(x => x.PROJECT).ToList();
+                    //need to pick from current project list so that hashcode is the same and project display property can be shown
+                    authorisedPROJECTS = PROJECTCollection.Where(project => LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == project.GUID)).ToList();
 
                 return authorisedPROJECTS;
             }
