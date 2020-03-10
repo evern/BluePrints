@@ -500,7 +500,7 @@ namespace BluePrints.ViewModels
             if(!isSecurityModule && LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count > 0 && !LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == entity.GUID))
             {
                 BluePrintsEntitiesModuleDescription unauthorisedProjectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, @"Programming\ProjectDirectory_16x16.png");
-                BluePrintsEntitiesModuleDescription unauthorisedMessageModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Unauthorised), projectSpecificKey, unauthorisedProjectModuleDescription.NavigationId, "Contact su.bing-wen@primero.com.au for authorisation", null, null, null, null, false, false, @"Business Objects\BORules_16x16.png");
+                BluePrintsEntitiesModuleDescription unauthorisedMessageModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Unauthorised), projectSpecificKey, unauthorisedProjectModuleDescription.NavigationId, "Contact " + BluePrintsResources.ITEmail + " for authorisation", null, null, null, null, false, false, @"Business Objects\BORules_16x16.png");
 
                 moduleAdder(projectStatusDescription, unauthorisedProjectModuleDescription, isSecurityModule, true);
                 moduleAdder(unauthorisedProjectModuleDescription, unauthorisedMessageModuleDescription, isSecurityModule, true);
