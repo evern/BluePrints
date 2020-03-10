@@ -113,6 +113,8 @@ namespace BluePrints.ViewModels
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
                     LoginCredentials.IsAdmin = true;
+                else
+                    LoginCredentials.IsAdmin = false;
 
                 if (LoginCredentials.IsAdmin)
                 {
