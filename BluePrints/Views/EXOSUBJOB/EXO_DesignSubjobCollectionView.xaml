@@ -57,24 +57,24 @@
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Row" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" FilterPopupMode="CheckedList" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" FilterPopupMode="CheckedList" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
+                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
                                                 <dxe:TextEdit x:Name="PART_Editor" NullText="{Binding RowData.Row.NullText}" ShowNullText="True" IsReadOnly="{Binding RowData.Row.IsLineExistsInExo, Converter={StaticResource BooleanNegationConverter}}" />
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" FilterPopupMode="CheckedList" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" FilterPopupMode="CheckedList" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
-                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" FilterPopupMode="CheckedList" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="VariationCode" Header="Variation" FilterPopupMode="CheckedList" ReadOnly="True" />
-                                    <!--<dxg:GridColumn FieldName="Budget" Header="Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget calculated from from deliverable's total">
+                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
+                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
+                                    <!--<dxg:GridColumn FieldName="Budget" Header="Budget" HeaderToolTip="Budget calculated from from deliverable's total">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="False" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>-->
-                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" FilterPopupMode="CheckedList" HeaderToolTip="Budget in Exo">
+                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" HeaderToolTip="Budget in Exo">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
@@ -84,7 +84,7 @@
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" FilterPopupMode="CheckedList" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
@@ -119,14 +119,14 @@
                             <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                                 <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" Width="90" FilterPopupMode="CheckedList" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                        <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" Width="90" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" FilterPopupMode="CheckedList" Header="User" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" FilterPopupMode="CheckedList" Header="Role" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" FilterPopupMode="CheckedList" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" Header="User" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" Header="Role" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>

@@ -189,29 +189,29 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.Bands>
                                         <dxg:GridControlBand Header="General">
-                                            <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="1" />
-                                            <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" FilterPopupMode="CheckedList" VisibleIndex="10" />
-                                            <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" FilterPopupMode="CheckedList" VisibleIndex="20" />
-                                            <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" FilterPopupMode="CheckedList" VisibleIndex="30" />
-                                            <dxg:GridColumn FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="40" FilterPopupMode="CheckedList" VisibleIndex="40" />
-                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" FilterPopupMode="CheckedList" VisibleIndex="50" />
-                                            <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="50" FilterPopupMode="CheckedList" VisibleIndex="60" />
+                                            <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="1" />
+                                            <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
+                                            <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
+                                            <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
+                                            <dxg:GridColumn FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="40" VisibleIndex="40" />
+                                            <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" VisibleIndex="50" />
+                                            <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="50" VisibleIndex="60" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
-                                            <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="70" />
-                                            <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="80" />
+                                            <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Actuals (Data is shown only on actual entries)">
-                                            <dxg:GridColumn FieldName="DisplayActualQty" Header="Actual Quantity" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="90" />
-                                            <dxg:GridColumn FieldName="DisplayActualCost" Header="Actual Costs" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="100" >
+                                            <dxg:GridColumn FieldName="DisplayActualQty" Header="Actual Quantity" ReadOnly="True" VisibleIndex="90" />
+                                            <dxg:GridColumn FieldName="DisplayActualCost" Header="Actual Costs" ReadOnly="True" VisibleIndex="100" >
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Remaining (Data is shown only on forecast entries)">
-                                            <dxg:GridColumn FieldName="DisplayRemainingQty" Header="Remaining Quantity" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="90" />
-                                            <dxg:GridColumn FieldName="DisplayRemainingCost" Header="Remaining Costs" ReadOnly="True" FilterPopupMode="CheckedList" VisibleIndex="100" >
+                                            <dxg:GridColumn FieldName="DisplayRemainingQty" Header="Remaining Quantity" ReadOnly="True" VisibleIndex="90" />
+                                            <dxg:GridColumn FieldName="DisplayRemainingCost" Header="Remaining Costs" ReadOnly="True" VisibleIndex="100" >
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>

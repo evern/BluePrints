@@ -70,19 +70,19 @@
                                 <dxmvvm:EventToCommand Command="{Binding DataContext.GenerateJobCodeColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="EXO_STAFFNO" FilterPopupMode="CheckedList" Fixed="Left" Header="Staff">
+                                <dxg:GridColumn FieldName="EXO_STAFFNO" Fixed="Left" Header="Staff">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.STAFFCollection, ElementName=userControl}" ValueMember="STAFFNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="TRADE" FilterPopupMode="CheckedList" Fixed="Left" Header="Trade" />
-                                <dxg:GridColumn FieldName="TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Title" />
-                                <dxg:GridColumn FieldName="PHONE" FilterPopupMode="CheckedList" Fixed="Left" Header="Phone">
+                                <dxg:GridColumn FieldName="TRADE" Fixed="Left" Header="Trade" />
+                                <dxg:GridColumn FieldName="TITLE" Fixed="Left" Header="Title" />
+                                <dxg:GridColumn FieldName="PHONE" Fixed="Left" Header="Phone">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="(999) 999-9999" MaskType="Simple" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="EMAIL" FilterPopupMode="CheckedList" Fixed="Left" Header="Email" />
+                                <dxg:GridColumn FieldName="EMAIL" Fixed="Left" Header="Email" />
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary />
                             <dxg:GridControl.TotalSummary />

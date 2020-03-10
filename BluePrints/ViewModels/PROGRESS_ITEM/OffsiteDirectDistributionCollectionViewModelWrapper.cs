@@ -299,7 +299,7 @@ namespace BluePrints.ViewModels
 
                 if(!systemColumnFieldNames.Any(x => x == e.Column.FieldName))
                 {
-                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    e.Column.FilterPopupMode = FilterPopupMode.Excel;
 
                     if (e.Column.FieldName.ToUpper().Contains("PERCENT"))
                     {

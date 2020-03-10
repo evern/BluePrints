@@ -76,43 +76,43 @@
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="Resource_SeqNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Resource" VisibleIndex="1">
+                                    <dxg:GridColumn FieldName="Resource_SeqNo" Fixed="Left" Header="Resource" VisibleIndex="1">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_RESOURCECollection, ElementName=userControl}" ValueMember="SEQNO" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="JobNo" FilterPopupMode="CheckedList" Fixed="Left" Header="Job" VisibleIndex="2">
+                                    <dxg:GridColumn FieldName="JobNo" Fixed="Left" Header="Job" VisibleIndex="2">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOBCOST_HDRCollection, ElementName=userControl}" ValueMember="JOBNO" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="CostGroup" FilterPopupMode="CheckedList" Fixed="Left" Header="Discipline" VisibleIndex="3">
+                                    <dxg:GridColumn FieldName="CostGroup" Fixed="Left" Header="Discipline" VisibleIndex="3">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="CostType" FilterPopupMode="CheckedList" Fixed="Left" Header="Commodity" VisibleIndex="4">
+                                    <dxg:GridColumn FieldName="CostType" Fixed="Left" Header="Commodity" VisibleIndex="4">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="StockCode" FilterPopupMode="CheckedList" Fixed="Left" Header="StockCode" VisibleIndex="5">
+                                    <dxg:GridColumn FieldName="StockCode" Fixed="Left" Header="StockCode" VisibleIndex="5">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings NullText="Leave empty to autopopulate with rsc code" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="VariationCode" FilterPopupMode="CheckedList" Fixed="Left" Header="Variation" VisibleIndex="6">
+                                    <dxg:GridColumn FieldName="VariationCode" Fixed="Left" Header="Variation" VisibleIndex="6">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.VariationCodes, ElementName=userControl}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Narrative" FilterPopupMode="CheckedList" Fixed="Left" Header="Narrative" VisibleIndex="7">
+                                    <dxg:GridColumn FieldName="Narrative" Fixed="Left" Header="Narrative" VisibleIndex="7">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="Duplicate" ReadOnly="True" UnboundType="Boolean" Fixed="Right" VisibleIndex="80" />
-                                    <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" FilterPopupMode="CheckedList" Fixed="Left" VisibleIndex="99">
+                                    <dxg:GridColumn FieldName="UniqueCode" ReadOnly="True" Visible="False" Fixed="Left" VisibleIndex="99">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings />
                                         </dxg:GridColumn.EditSettings>

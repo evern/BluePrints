@@ -126,9 +126,9 @@
                             <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
                                 <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" SelectedItem="{Binding DataContext.Selected_Activity, Mode=TwoWay, ElementName=userControl}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" FilterPopupMode="CheckedList" IsSmart="True" />
-                                        <dxg:GridColumn Header="Task" FieldName="Description" FilterPopupMode="CheckedList" IsSmart="True" />
-                                        <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
+                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" IsSmart="True" />
+                                        <dxg:GridColumn Header="Task" FieldName="Description" IsSmart="True" />
+                                        <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FixedWidth="True" IsSmart="True" />
                                         <dxg:GridColumn Header="Begin" FieldName="Start" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
                                         <dxg:GridColumn Header="End" FieldName="End" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
                                         <dxg:GridColumn Header="Assigned Units" FieldName="Assigned_Units" Width="100" IsSmart="True">

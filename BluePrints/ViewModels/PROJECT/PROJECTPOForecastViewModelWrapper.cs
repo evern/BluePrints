@@ -535,7 +535,7 @@ namespace BluePrints.ViewModels
                     e.Column.CellTemplate = System.Windows.Application.Current.Resources["POForecastTemplate"] as DataTemplate;
                     e.Column.HeaderTemplate = System.Windows.Application.Current.Resources["POForecastHeaderTemplate"] as DataTemplate;
                     GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
-                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    e.Column.FilterPopupMode = FilterPopupMode.Excel;
                     e.Column.ReadOnly = false;
                     e.Column.FixedWidth = true;
                     e.Column.Width = 60;

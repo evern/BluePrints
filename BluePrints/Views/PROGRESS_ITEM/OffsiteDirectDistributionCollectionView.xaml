@@ -91,40 +91,40 @@
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Fixed="Left" Header="Area" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Fixed="Left" Header="Area" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" FilterPopupMode="CheckedList" Fixed="Left" Header="Document Type" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Fixed="Left" Header="Document Type" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Fixed="Left" Header="Discipline" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Fixed="Left" Header="Discipline" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" FilterPopupMode="CheckedList" Fixed="Left" Header="Department" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Fixed="Left" Header="Department" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" FilterPopupMode="CheckedList" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Primary Title" IsEnabled="False" />
-                                    <dxg:GridColumn FieldName="Entity.Total_Units" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" Fixed="Left" Header="Primary Title" IsEnabled="False" />
+                                    <dxg:GridColumn FieldName="Entity.Total_Units" Fixed="Left" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Earned_Units_ToDate" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Earn" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Earned_Units_ToDate" Fixed="Left" Header="Total Earn" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Earned_Units_OnDataDate" FilterPopupMode="CheckedList" Fixed="Left" Header="Period Earn" HeaderToolTip="Units earned on this period" IsEnabled="False" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Earned_Units_OnDataDate" Fixed="Left" Header="Period Earn" HeaderToolTip="Units earned on this period" IsEnabled="False" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -140,20 +140,20 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DELIVERABLES_STATUSCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" FilterPopupMode="CheckedList" Fixed="Left" Header="Subjob" ReadOnly="True" Visible="False">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" Fixed="Left" Header="Subjob" ReadOnly="True" Visible="False">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NAME1" IsTextEditable="False" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Fixed="Left" Header="Workpack" ReadOnly="True" Visible="False">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_WORKPACK" Fixed="Left" Header="Workpack" ReadOnly="True" Visible="False">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" FilterPopupMode="CheckedList" Fixed="Left" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" Visible="False" />
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE" FilterPopupMode="CheckedList" Fixed="Left" Header="Secondary Title" IsEnabled="False" ReadOnly="True" Visible="False" />
-                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Fixed="Left" Header="Comments" ReadOnly="True" Visible="False" />
-                                    <dxg:GridColumn FieldName="Total_Earned_Percentage" FilterPopupMode="CheckedList" Fixed="Left" Header="Total Earned %" ReadOnly="True" Visible="False">
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.DELIVERABLE_TYPE" Fixed="Left" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" Visible="False" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.SECONDARY_TITLE" Fixed="Left" Header="Secondary Title" IsEnabled="False" ReadOnly="True" Visible="False" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.Entity.COMMENTS" Fixed="Left" Header="Comments" ReadOnly="True" Visible="False" />
+                                    <dxg:GridColumn FieldName="Total_Earned_Percentage" Fixed="Left" Header="Total Earned %" ReadOnly="True" Visible="False">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>

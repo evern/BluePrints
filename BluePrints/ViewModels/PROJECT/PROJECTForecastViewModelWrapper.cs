@@ -1308,7 +1308,7 @@ namespace BluePrints.ViewModels
                 }
 
                 GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
-                e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                e.Column.FilterPopupMode = FilterPopupMode.Excel;
                 e.Column.Width = 60;
                 e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
                 e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
@@ -1356,7 +1356,7 @@ namespace BluePrints.ViewModels
                         e.Column.Width = 75;
                         e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
                         //GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "n0");
-                        e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                        e.Column.FilterPopupMode = FilterPopupMode.Excel;
                     }
                 }
                 else

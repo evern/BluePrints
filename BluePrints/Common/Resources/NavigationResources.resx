@@ -378,4 +378,7 @@
   <data name="Permission_Forecast_EditPreviousEAC" xml:space="preserve">
     <value>Edit previous EAC</value>
   </data>
+  <data name="Menu_Project_EXO_AllPO" xml:space="preserve">
+    <value>Project POs maintenance menu</value>
+  </data>
 </root>

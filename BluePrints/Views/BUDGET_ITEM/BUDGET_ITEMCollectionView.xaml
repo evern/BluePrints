@@ -73,17 +73,17 @@
                     <Grid>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBUDGET_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" HeaderToolTip="Phase code to be concatenated with area and subarea to form job code">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" HeaderToolTip="Phase code to be concatenated with area and subarea to form job code">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area" HeaderToolTip="Area code to be concatenated after phase code to form job code">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" HeaderToolTip="Area code to be concatenated after phase code to form job code">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area" HeaderToolTip="Sub area code to be concatenated after area code to form job code">
+                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" Header="Sub-Area" HeaderToolTip="Sub area code to be concatenated after area code to form job code">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -94,7 +94,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" HeaderToolTip="Discipline code to be concatenated with discipline number to form cost group">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline code to be concatenated with discipline number to form cost group">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsTextEditable="true" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DisciplineCollection}" NullValueButtonPlacement="Popup"  ValueMember="GUID" />
@@ -105,12 +105,12 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" HeaderToolTip="Number to concatenate after discipline to form cost group">
+                                <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" HeaderToolTip="Number to concatenate after discipline to form cost group">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" HeaderToolTip="Cost type, type in free text or select from combo box" >
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Cost type, type in free text or select from combo box" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" >
@@ -138,16 +138,16 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="CODE" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" FilterPopupMode="CheckedList" Header="Budget">
+                                <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" Header="Budget">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="True" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>-->
-                                <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" FilterPopupMode="CheckedList" Header="Variation Code"/>
-                                <dxg:GridColumn FieldName="Entity.Entity.P6ACTIVITYMAP" FilterPopupMode="CheckedList" Header="P6 Activity (Optional)"/>
-                                <dxg:GridColumn Header="UniqueCode" Visible="False" FieldName="UniqueJobcode" FilterPopupMode="CheckedList" />
+                                <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" Header="Variation Code"/>
+                                <dxg:GridColumn FieldName="Entity.Entity.P6ACTIVITYMAP" Header="P6 Activity (Optional)"/>
+                                <dxg:GridColumn Header="UniqueCode" Visible="False" FieldName="UniqueJobcode" />
                                 <!--<dxg:GridControlBand Header="Automatically Generated">
-                                <dxg:GridColumn Header="Name" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" />
+                                <dxg:GridColumn Header="Name" FieldName="Entity.Entity.Deliverable_Name" />
                                 -->
                                 <!--<dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job" HeaderToolTip="Sub job category for reporting. Automatically assigned field" ReadOnly="False">
                                     <dxg:GridColumn.EditSettings>
@@ -158,7 +158,7 @@
                             </dxg:GridControlBand>-->
                             </dxg:GridControl.Columns>
                             <!--<dxg:GridControl.Columns>-->
-                            <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Visible="False" FilterPopupMode="CheckedList" Header="Budget Hours">
+                            <!--<dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Visible="False" Header="Budget Hours">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings MinValue="0" Increment="1" DisplayFormat="n2" />
                                 </dxg:GridColumn.EditSettings>
@@ -172,12 +172,12 @@
                             <!--</dxg:GridControl.Columns>-->
                             <!--<dxg:GridControl.Bands>
                             <dxg:GridControlBand Header="General">
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" FilterPopupMode="CheckedList" Header="Area">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" FilterPopupMode="CheckedList" Header="Sub-Area">
+                                <dxg:GridColumn ColumnFilterMode="DisplayText" FieldName="Entity.Entity.SubAreaGuid" Header="Sub-Area">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -189,7 +189,7 @@
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBAREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline">
+                                </dxg:GridColumn>                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -204,7 +204,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.ProcurementSUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Budget_StockCodeGuid" FilterPopupMode="CheckedList" Header="Stock Code">
+                                <dxg:GridColumn FieldName="Entity.Budget_StockCodeGuid" Header="Stock Code">
                                     <dxg:GridColumn.EditSettings>
                                           -->
                             <!--took this out because stock code is no longer filtered by discipline  
@@ -245,7 +245,7 @@
                                         </dxg:LookUpEditSettings>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -265,11 +265,11 @@
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.NAME" FilterPopupMode="CheckedList" Header="Name" />
-                                <dxg:GridColumn FieldName="Entity.Entity.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
-                                <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" FilterPopupMode="CheckedList" Header="Comments" />
-                                <dxg:GridColumn FieldName="Entity.Entity.SEQNO" FilterPopupMode="CheckedList" Header="Seq No" />
-                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" FilterPopupMode="CheckedList" Header="Quantity">
+                                <dxg:GridColumn FieldName="Entity.Entity.NAME" Header="Name" />
+                                <dxg:GridColumn FieldName="Entity.Entity.DESCRIPTION" Header="Description" />
+                                <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="Comments" />
+                                <dxg:GridColumn FieldName="Entity.Entity.SEQNO" Header="Seq No" />
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Header="Quantity">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -313,89 +313,89 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.DC_QUANTITY" FilterPopupMode="CheckedList" Header="Variation Quantity" HeaderToolTip="Variation quantities have to be added from the variation page and approved to be shown here" ReadOnly="True" />
-                                <dxg:GridColumn FieldName="Entity.Rate_Per_Truck" FilterPopupMode="CheckedList" Header="Rate Per Truck" HeaderToolTip="Rates are retrived from rates table with group of [Site] and department of [Procurement] and discipline of this commodity. Please refresh the view after changing rates in rates table" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.DC_QUANTITY" Header="Variation Quantity" HeaderToolTip="Variation quantities have to be added from the variation page and approved to be shown here" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Rate_Per_Truck" Header="Rate Per Truck" HeaderToolTip="Rates are retrived from rates table with group of [Site] and department of [Procurement] and discipline of this commodity. Please refresh the view after changing rates in rates table" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" IsTextEditable="True" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_TRUCK_PERCENTAGE" FilterPopupMode="CheckedList" Header="Truck % Per Qty" HeaderToolTip="How many percentage will a single quantity occupy a truck">
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_TRUCK_PERCENTAGE" Header="Truck % Per Qty" HeaderToolTip="How many percentage will a single quantity occupy a truck">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="0.1" IsFloatValue="True" IsTextEditable="True" Mask="p3" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" FilterPopupMode="CheckedList" Header="Install Rate" HeaderToolTip="Default value is standard rates by discipline">
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" Header="Install Rate" HeaderToolTip="Default value is standard rates by discipline">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="True" IsTextEditable="True" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" NullValueButtonPlacement="EditBox" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.IsByDuration" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
+                                <dxg:GridColumn FieldName="Entity.Entity.IsByDuration" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock Code Customization">
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.RATE_SUPPLY" FilterPopupMode="CheckedList" Header="Supply Rate" HeaderToolTip="Supply rate per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.RATE_SUPPLY" Header="Supply Rate" HeaderToolTip="Supply rate per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.HOURS_INSTALL" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.HOURS_INSTALL" Header="Install Hours" HeaderToolTip="Installation hours per quantity. Changing this value will invoke a dialog to ask whether to update current stock item or create a new stock item with the updated rate">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Progress Specifications">
-                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" FilterPopupMode="CheckedList" Header="Progress Type" ReadOnly="True" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
+                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" Header="Progress Type" ReadOnly="True" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PARENT" FilterPopupMode="CheckedList" Header="Parent" HeaderToolTip="Progress will follow parent, drag row(s) into parent row to assign" >
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PARENT" Header="Parent" HeaderToolTip="Progress will follow parent, drag row(s) into parent row to assign" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="Entity.Entity.NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.DisplayEntities, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" FilterPopupMode="CheckedList" Header="Progress Type" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
+                                <dxg:GridColumn FieldName="Entity.PROGRESS_TYPE" Header="Progress Type" HeaderToolTip="[Standalone] stock item will be progressed by itself only\n[Trackable] primary progressable stock item in the group\n[Auto] % will follow primary stock item i.e. trackable item">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:EstimateProgressType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Totals">
-                                <dxg:GridColumn FieldName="Budget_Install_Hours" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="Budgetd install hours required" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Budget_Install_Hours" Header="Install Hours" HeaderToolTip="Budgetd install hours required" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Budget_Freight_Cost" FilterPopupMode="CheckedList" Header="Freight Cost" HeaderToolTip="Total freight cost for this stock item" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Budget_Freight_Cost" Header="Freight Cost" HeaderToolTip="Total freight cost for this stock item" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Budget_Supply_Cost" FilterPopupMode="CheckedList" Header="Supply Cost" HeaderToolTip="Total supply cost for this stock item" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Budget_Supply_Cost" Header="Supply Cost" HeaderToolTip="Total supply cost for this stock item" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Budget_Install_Cost" FilterPopupMode="CheckedList" Header="Install Cost" HeaderToolTip="Total installation cost for this stock item. Rates are specified in the rates table by discipline. Rates can also be overriden in 'Rate Override' column" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Budget_Install_Cost" Header="Install Cost" HeaderToolTip="Total installation cost for this stock item. Rates are specified in the rates table by discipline. Rates can also be overriden in 'Rate Override' column" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Total_Budget_Cost" FilterPopupMode="CheckedList" Header="Total Cost" HeaderToolTip="Total cost includes freight, supply and install" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Total_Budget_Cost" Header="Total Cost" HeaderToolTip="Total cost includes freight, supply and install" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock Code Details">
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.UOM" FilterPopupMode="CheckedList" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.NAME" FilterPopupMode="CheckedList" Header="Name" HeaderToolTip="For information only. Current selected stock code name" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.TYPE" FilterPopupMode="CheckedList" Header="Type" HeaderToolTip="For information only. Current selected stock code type" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.SPEC" FilterPopupMode="CheckedList" Header="Specification" HeaderToolTip="For information only. Current selected stock code specification" />
-                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" HeaderToolTip="For information only. Current selected stock code additional description" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.UOM" Header="UOM" HeaderToolTip="For information only. Current selected stock code unit of measure" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.NAME" Header="Name" HeaderToolTip="For information only. Current selected stock code name" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.TYPE" Header="Type" HeaderToolTip="For information only. Current selected stock code type" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.SPEC" Header="Specification" HeaderToolTip="For information only. Current selected stock code specification" />
+                                <dxg:GridColumn FieldName="Entity.BUDGET_STOCK_CODE.DESCRIPTION" Header="Description" HeaderToolTip="For information only. Current selected stock code additional description" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Reporting">
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" FilterPopupMode="CheckedList" Header="Phase" HeaderToolTip="Automatically assigned field" ReadOnly="True" VisibleIndex="0">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" HeaderToolTip="Automatically assigned field" ReadOnly="True" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.ConstructionPHASECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -410,76 +410,76 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.ProcurementSUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
+                                <dxg:GridColumn Tag="True;True;Autofill from workpack, discipline and discipline number" FieldName="Entity.Entity.GUID_WORKPACK" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" Visible="true">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATED" FilterPopupMode="CheckedList" Header="Created" ReadOnly="True">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATED" Header="Created" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" FilterPopupMode="CheckedList" Header="Created By" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" Header="Created By" ReadOnly="True" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATED" FilterPopupMode="CheckedList" Header="Updated" ReadOnly="True">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATED" Header="Updated" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="CheckedList" Header="Updated By" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" Header="Updated By" ReadOnly="True" Visible="False">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.USERCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" HeaderToolTip="Automatically assigned field">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Automatically assigned field">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="CODE" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock Code Variance">
-                                <dxg:GridColumn FieldName="Variance_Stock_Code_Install_Hours" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="For information only. Stock code install hours variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Stock_Code_Install_Hours" Header="Install Hours" HeaderToolTip="For information only. Stock code install hours variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_Stock_Code_Supply_Rate" FilterPopupMode="CheckedList" Header="Supply Rate" HeaderToolTip="For information only. Supply rate variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Stock_Code_Supply_Rate" Header="Supply Rate" HeaderToolTip="For information only. Supply rate variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Variance">
-                                <dxg:GridColumn FieldName="Variance_Quantity" FilterPopupMode="CheckedList" Header="Quantity" HeaderToolTip="For information only. Quantity variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Quantity" Header="Quantity" HeaderToolTip="For information only. Quantity variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_Supply_Cost" FilterPopupMode="CheckedList" Header="Supply Cost" HeaderToolTip="For information only. [Quantity * Supply Rate] variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Supply_Cost" Header="Supply Cost" HeaderToolTip="For information only. [Quantity * Supply Rate] variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_Install_Cost" FilterPopupMode="CheckedList" Header="Install Cost" HeaderToolTip="For information only. [Quantity * Install Hours * Install Rate] variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Install_Cost" Header="Install Cost" HeaderToolTip="For information only. [Quantity * Install Hours * Install Rate] variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_Install_Hours" FilterPopupMode="CheckedList" Header="Install Hours" HeaderToolTip="For information only. [Quantity * Install Hours] variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Install_Hours" Header="Install Hours" HeaderToolTip="For information only. [Quantity * Install Hours] variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_FreightRate" FilterPopupMode="CheckedList" Header="Freight Rate" HeaderToolTip="For information only. [Truck % * Freight Rate] variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_FreightRate" Header="Freight Rate" HeaderToolTip="For information only. [Truck % * Freight Rate] variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Variance_Freight_Cost" FilterPopupMode="CheckedList" Header="Freight Cost" HeaderToolTip="For information only. [Quantity * Truck % * Freight Rate] Freight cost variance between estimate and budget" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Variance_Freight_Cost" Header="Freight Cost" HeaderToolTip="For information only. [Quantity * Truck % * Freight Rate] Freight cost variance between estimate and budget" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>

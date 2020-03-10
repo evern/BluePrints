@@ -95,9 +95,9 @@
                                 <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
                                     <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" SelectionMode="Row" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" SelectedItem="{Binding DataContext.Selected_Activity, Mode=TwoWay, ElementName=userControl}">
                                         <dxg:GridControl.Columns>
-                                            <dxg:GridColumn Width="50" FieldName="P6_ActivityId" FilterPopupMode="CheckedList" Header="Activity Id" IsSmart="True" />
-                                            <dxg:GridColumn FieldName="Description" FilterPopupMode="CheckedList" Header="Task" IsSmart="True" />
-                                            <dxg:GridColumn FieldName="DisplayActivityType" FilterPopupMode="CheckedList" Header="Task" IsSmart="True" />
+                                            <dxg:GridColumn Width="50" FieldName="P6_ActivityId" Header="Activity Id" IsSmart="True" />
+                                            <dxg:GridColumn FieldName="Description" Header="Task" IsSmart="True" />
+                                            <dxg:GridColumn FieldName="DisplayActivityType" Header="Task" IsSmart="True" />
                                             <dxg:GridColumn CellTemplate="{StaticResource TimeTemplate}" FieldName="Start" Header="Begin" IsSmart="True" />
                                             <dxg:GridColumn CellTemplate="{StaticResource TimeTemplate}" FieldName="End" Header="End" IsSmart="True" />
                                             <dxg:GridColumn FieldName="Budgeted_Units" Header="Budget" IsSmart="True" >
@@ -260,24 +260,24 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" ReadOnly="True">
+                                    <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" FilterPopupMode="CheckedList" ReadOnly="True">
+                                    <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" FilterPopupMode="CheckedList" Header="Commodity Code" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Width="400" FilterPopupMode="CheckedList" Header="Commodity Code Name" ReadOnly="True" >
+                                    <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Header="Commodity Code" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Width="400" Header="Commodity Code Name" ReadOnly="True" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="CODE" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" FilterPopupMode="CheckedList" Header="Variation Code" ReadOnly="True"/>
-                                    <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" FilterPopupMode="CheckedList" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" Header="Variation Code" ReadOnly="True"/>
+                                    <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" ReadOnly="True" />
                                     <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

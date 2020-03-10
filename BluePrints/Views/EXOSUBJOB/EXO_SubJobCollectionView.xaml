@@ -209,21 +209,21 @@
                             <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                                 <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" FilterCriteria="{Binding UserFilterCriteria, Mode=TwoWay}" SelectionMode="Cell">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="IsAssigned" Width="90" FilterPopupMode="CheckedList" Header="Can Book" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                        <dxg:GridColumn FieldName="IsAssigned" Width="90" Header="Can Book" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.NAME" FilterPopupMode="CheckedList" Header="User" SortIndex="1" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.NAME" Header="User" SortIndex="1" />
                                         <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Profile" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" FilterPopupMode="CheckedList" Header="Department" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" FilterPopupMode="CheckedList" Header="Discipline" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" FilterPopupMode="CheckedList" Header="Title" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" FilterPopupMode="CheckedList" Header="Description" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" Header="Department" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" Header="Discipline" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" Header="Title" />
+                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" Header="Description" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.TotalSummary>
                                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

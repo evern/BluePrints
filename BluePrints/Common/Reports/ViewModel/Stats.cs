@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BaseModel.Misc;
 using BluePrints.Common.ViewModel.Utils;
 using DevExpress.Mvvm;
 using System;
@@ -444,7 +445,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ExoDataPoint : DataPoint
+    public class ExoDataPoint : DataPoint, ICanUpdate
     {
         public ExoDataPoint()
         {
@@ -541,6 +542,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 return CostType.Substring(0, 3);
             }
+        }
+
+        public bool NewEntityFromView { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public void Update()
+        {
+            //for compliance in collection view model wrapper, but we never call this
+            throw new NotImplementedException();
         }
     }
 

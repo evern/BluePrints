@@ -94,7 +94,7 @@
                                         <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="ProgressItem.IsByDuration" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
+                                <dxg:GridColumn FieldName="ProgressItem.IsByDuration" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" />
                                 <dxg:GridColumn FieldName="ProgressItem.Trackable_Total_Quantity" Header="Total Trackable Qty" HeaderToolTip="Only estimate items marked as trackable will be summed up here" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -229,7 +229,7 @@
                                                     <dxe:TextEditSettings DisplayTextConverter="{StaticResource HoursToTextConverter}" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn Binding="{Binding IsByDuration}" FilterPopupMode="CheckedList" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" ReadOnly="True"/>
+                                            <dxg:GridColumn Binding="{Binding IsByDuration}" Header="By Duration" HeaderToolTip="Check this so that deliverable can be mapped to P6 activity without increasing it's budgeted units" IsEnabled="False" ReadOnly="True"/>
                                             <dxg:GridColumn Binding="{Binding Trackable_Total_Quantity}" Header="Total Trackable Qty" HeaderToolTip="Only estimate items marked as trackable will be summed up here" IsEnabled="False" ReadOnly="True">
                                                 <dxg:GridColumn.EditSettings>
                                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

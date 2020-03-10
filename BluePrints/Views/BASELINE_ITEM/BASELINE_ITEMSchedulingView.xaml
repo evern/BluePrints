@@ -143,9 +143,9 @@
                                 <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
                                     <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" SelectionMode="Row" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding DataContext.Activities_Source, ElementName=userControl}" SelectedItem="{Binding DataContext.Selected_Activity, Mode=TwoWay, ElementName=userControl}">
                                         <dxg:GridControl.Columns>
-                                            <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" FilterPopupMode="CheckedList" IsSmart="True" />
-                                            <dxg:GridColumn Header="Task" FieldName="Description" FilterPopupMode="CheckedList" IsSmart="True" />
-                                            <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FilterPopupMode="CheckedList" FixedWidth="True" IsSmart="True" />
+                                            <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" IsSmart="True" />
+                                            <dxg:GridColumn Header="Task" FieldName="Description" IsSmart="True" />
+                                            <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FixedWidth="True" IsSmart="True" />
                                             <dxg:GridColumn Header="Begin" FieldName="Start" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
                                             <dxg:GridColumn Header="End" FieldName="End" Width="100" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
                                             <dxg:GridColumn Header="Assigned Units" FieldName="Assigned_Units" Width="100" IsSmart="True">
@@ -308,7 +308,7 @@
                                             <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" FilterPopupMode="CheckedList" VisibleIndex="2">
+                                    <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" VisibleIndex="2">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.WORKPACKCollection, ElementName=userControl}" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>
@@ -386,13 +386,13 @@
                                             <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Budget_Units" FilterPopupMode="CheckedList" Header="Adjusted Budget" Visible="{Binding DataContext.IsBudget, ElementName=userControl}" HeaderToolTip="Additional hours added from the variation approved and checked as budget adjustment" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" Visible="{Binding DataContext.IsBudget, ElementName=userControl}" HeaderToolTip="Additional hours added from the variation approved and checked as budget adjustment" ReadOnly="True" />
                                     <dxg:GridColumn Header="Variation Hours" Visible="{Binding DataContext.IsBudget, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" FieldName="Variation_Units" ReadOnly="True" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Total_Units" Visible="{Binding DataContext.IsBudget, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" FilterPopupMode="CheckedList" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" >
+                                    <dxg:GridColumn FieldName="Total_Units" Visible="{Binding DataContext.IsBudget, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -404,7 +404,7 @@
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE">
+                                    <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="DateAlt">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                         </dxg:GridColumn.EditSettings>

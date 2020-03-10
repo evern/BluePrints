@@ -108,7 +108,7 @@
                                 </dxg:GridControlBand.Bands>
                             </dxg:GridControlBand>-->
                                 <dxg:GridControlBand Header="Validation">
-                                    <dxg:GridColumn FieldName="ErrorMessage" UnboundType="String" ReadOnly="True" FilterPopupMode="CheckedList" Fixed="Left" />
+                                    <dxg:GridColumn FieldName="ErrorMessage" UnboundType="String" ReadOnly="True" Fixed="Left" />
                                 </dxg:GridControlBand>
                             </dxg:GridControl.Bands>
                             <dxg:GridControl.TotalSummary>

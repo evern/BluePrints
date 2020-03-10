@@ -216,7 +216,7 @@ namespace BluePrints.ViewModels
                 e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
                 e.Column.ReadOnly = true;
                 GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
-                e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                e.Column.FilterPopupMode = FilterPopupMode.Excel;
                 e.Column.Width = 60;
                 e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
                 e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));

@@ -100,7 +100,7 @@
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Bands>
                                 <dxg:GridControlBand Header="Default Columns">
-                                    <!--<dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" HeaderToolTip="Indicate which phase this rate belongs to" FilterPopupMode="CheckedList" Fixed="Left" >
+                                    <!--<dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" HeaderToolTip="Indicate which phase this rate belongs to" Fixed="Left" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                         </dxg:GridColumn.EditSettings>

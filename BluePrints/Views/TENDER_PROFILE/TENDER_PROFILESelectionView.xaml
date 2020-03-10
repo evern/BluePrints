@@ -71,12 +71,12 @@
                         </dxmvvm:Interaction.Behaviors>
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
                             <custom:GridControlEx.Columns>
-                                <dxg:GridColumn FieldName="GUID_DEPARTMENT" FilterPopupMode="CheckedList" Header="Department" HeaderToolTip="Department of the profile">
+                                <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Department of the profile">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="GUID_DISCIPLINE" FilterPopupMode="CheckedList" Header="Discipline" HeaderToolTip="Discipline of the profile">
+                                <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline of the profile">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>

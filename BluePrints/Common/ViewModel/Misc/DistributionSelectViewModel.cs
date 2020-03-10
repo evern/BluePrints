@@ -227,7 +227,7 @@ namespace BaseModel.ViewModel.Dialogs
                 if (DateTime.TryParse(e.Column.FieldName, out parsedate))
                 {
                     e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
-                    e.Column.FilterPopupMode = FilterPopupMode.CheckedList;
+                    e.Column.FilterPopupMode = FilterPopupMode.Excel;
                 }
                 else
                 {
