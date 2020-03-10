@@ -10,6 +10,7 @@ namespace BluePrints.Data
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     public partial class USER : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -19,6 +20,36 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
+
+        #region Token Selection
+        [NotMapped]
+        private IEnumerable<object> projects;
+
+        [NotMapped]
+        public object Projects
+        {
+            get { return projects; }
+            set
+            {
+                if (value != projects)
+                {
+                    projects = value as IEnumerable<object>;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<PROJECT> Project_Assignments
+        {
+            get
+            {
+                if (projects == null)
+                    return null;
+
+                return projects.Select(x => (PROJECT)x);
+            }
+        }
+        #endregion
 
         [NotMapped]
         public string Full_Name

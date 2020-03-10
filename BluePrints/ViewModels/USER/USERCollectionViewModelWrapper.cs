@@ -17,6 +17,7 @@ using System.IO.Ports;
 using System.Windows.Threading;
 using System.ComponentModel;
 using DevExpress.Data.Filtering;
+using BaseModel.ViewModel.Base;
 
 namespace BluePrints.ViewModels
 {
@@ -63,11 +64,18 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STAFF, STAFFProjectionFunc);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
+            loaderCollection.AddLoaderDescription<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECT_PERMISSIONS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc);
         }
 
         private Func<IRepositoryQuery<STAFF>, IQueryable<STAFF>> STAFFProjectionFunc()
         {
             return query => query.Where(x => x.ISACTIVE == "Y");
+        }
+
+        private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.STATUS == ProjectStatus.Active);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -92,6 +100,8 @@ namespace BluePrints.ViewModels
         {
             List<USER> userList = USERS.ToList();
             userList.ForEach(x => populateUserProperties(x, OFFICECollection));
+            userList.ForEach(x => populateUserAuthorisedProjects(x, PROJECTCollection));
+
             return userList.AsQueryable();
         }
 
@@ -99,6 +109,14 @@ namespace BluePrints.ViewModels
         {
             if (user.OFFICE == null && user.GUID_OFFICE != null)
                 user.OFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
+
+            user.Update();
+        }
+
+        private void populateUserAuthorisedProjects(USER user, IEnumerable<PROJECT> PROJECTCollection)
+        {
+            //need to call ToList for tokenComboBoxEditSettings to work
+            user.Projects = PROJECTCollection.Where(project => PROJECT_PERMISSIONCollection.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
 
             user.Update();
         }
@@ -153,6 +171,44 @@ namespace BluePrints.ViewModels
 
                 if(entity.EXO_STAFF_ID_REMOTE == null)
                     entity.EXO_STAFF_ID_REMOTE = getExoStaffId(entity, MontrealSTAFFCollection);
+            }
+
+            saveProjectAssignments(entity);
+        }
+        #endregion
+
+        #region Token Saving Behavior
+        private void saveProjectAssignments(USER entity)
+        {
+            if (entity.Project_Assignments != null)
+            {
+                List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
+                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                {
+                    if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID))
+                        remove_projects.Add(assignment);
+                }
+
+                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
+
+                List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
+                foreach (PROJECT project in entity.Project_Assignments)
+                {
+                    if (!entity.PROJECT_PERMISSION.Any(x => x.GUID == project.GUID))
+                        add_projects.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
+                }
+
+                PROJECT_PERMISSIONCollectionViewModel.BulkSave(add_projects);
+            }
+            else
+            {
+                List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
+                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                {
+                    remove_projects.Add(assignment);
+                }
+
+                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
             }
         }
         #endregion
@@ -320,6 +376,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<PROJECT> PROJECTCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJECT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NUMBER);
+                return collection;
+            }
+        }
+
         public IEnumerable<DISCIPLINE> DISCIPLINECollection
         {
             get
@@ -328,6 +395,27 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
+        {
+            get
+            {
+                return GetEntities<PROJECT_PERMISSION>();
+            }
+        }
+
+        public CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_PERMISSIONCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROJECT_PERMISSION>();
             }
         }
 

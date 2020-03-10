@@ -97,6 +97,15 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.RestrictedROLECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn Header="Authorised Projects" FieldName="Projects">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings NullText="All" DisplayMember="NUMBER" IncrementalFiltering="True" ItemsSource="{Binding DataContext.PROJECTCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                            <dxe:ComboBoxEditSettings.StyleSettings>
+                                                <dxe:CheckedComboBoxStyleSettings />
+                                            </dxe:ComboBoxEditSettings.StyleSettings>
+                                        </dxe:ComboBoxEditSettings>
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="GUID_OFFICE" Header="Office">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.OFFICECollection, ElementName=userControl}" ValueMember="GUID" />

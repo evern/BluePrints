@@ -494,8 +494,20 @@ namespace BluePrints.ViewModels
             projectModuleContextMenuItems.Add(projectBaselineMenuItem);
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
-            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
 
+            myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
+
+            if(LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count > 0 && !LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == entity.GUID))
+            {
+                BluePrintsEntitiesModuleDescription unauthorisedProjectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, @"Programming\ProjectDirectory_16x16.png");
+                BluePrintsEntitiesModuleDescription unauthorisedMessageModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Unauthorised), projectSpecificKey, unauthorisedProjectModuleDescription.NavigationId, "Contact su.bing-wen@primero.com.au for authorisation", null, null, null, null, false, false, @"Business Objects\BORules_16x16.png");
+
+                moduleAdder(projectStatusDescription, unauthorisedProjectModuleDescription, isSecurityModule, true);
+                moduleAdder(unauthorisedProjectModuleDescription, unauthorisedMessageModuleDescription, isSecurityModule, true);
+                return;
+            }
+
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
             moduleAdder(projectStatusDescription, projectModuleDescription, isSecurityModule, true);
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectModuleDescription.NavigationId, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
@@ -559,6 +571,7 @@ namespace BluePrints.ViewModels
             moduleAdder(projectModuleDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_HSE), projectSpecificKey, projectModuleDescription.NavigationId, childTitlePrefix + "HSE", "HSESingleObjectView", new EntitiesParameter<PROJECT>(entity), null, "HSE", false, false, @"Function Library\Statistical_16x16.png"), isSecurityModule);
             moduleAdder(projectModuleDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_HSEReport), projectSpecificKey, projectModuleDescription.NavigationId, childTitlePrefix + "Monthly HSE Report", "HSECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Monthly HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png"), isSecurityModule);
 
+            //remove category when there isn't any child assigned
             moduleRemover(projectModuleDescription, design_category_description, isSecurityModule);
             moduleRemover(projectModuleDescription, construct_category_description, isSecurityModule);
             moduleRemover(projectModuleDescription, exo_category_description, isSecurityModule);

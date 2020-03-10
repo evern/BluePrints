@@ -151,6 +151,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unauthorised category.
+        /// </summary>
+        internal static string Category_Unauthorised {
+            get {
+                return ResourceManager.GetString("Category_Unauthorised", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User project category.
         /// </summary>
         internal static string Category_UserProjects {
