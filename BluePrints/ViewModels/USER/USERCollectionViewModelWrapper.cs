@@ -390,6 +390,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (IsLoading)
+                    return new List<PROJECT>();
+
                 if(authorisedPROJECTS == null)
                 {
                     authorisedPROJECTS = new List<PROJECT>();
