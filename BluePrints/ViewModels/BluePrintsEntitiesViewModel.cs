@@ -495,8 +495,6 @@ namespace BluePrints.ViewModels
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
 
-            myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
-
             if(!isSecurityModule && LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count > 0 && !LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == entity.GUID))
             {
                 BluePrintsEntitiesModuleDescription unauthorisedProjectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, @"Programming\ProjectDirectory_16x16.png");
