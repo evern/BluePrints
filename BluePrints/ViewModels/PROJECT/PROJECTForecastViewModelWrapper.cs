@@ -251,6 +251,19 @@ namespace BluePrints.ViewModels
             }
         }
 
+        bool isShowActualsHistory;
+        public bool IsShowActualsHistory
+        {
+            get => isShowActualsHistory;
+            set
+            {
+                isShowActualsHistory = value;
+                ForecastSummary.Reset();
+                EntitiesUndoRedoManager.Clear();
+                mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
+            }
+        }
+
         public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
@@ -335,7 +348,7 @@ namespace BluePrints.ViewModels
         }
 
         public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
-
+        private DateTime? firstDataPointsDate { get; set; }
         public DateTime? LoadDataDate { get; set; }
         public override DateTime? FixedDataDate { get; set; }
         public DateTime FixedEndDate { get; set; }
@@ -590,9 +603,24 @@ namespace BluePrints.ViewModels
 
         private void updateDataPointsTable()
         {
+            DetailedData.Clear();
             dataPointsTable = new DataTable();
             GridControlService.GridControl.BeginDataUpdate();
+
             //get immutable data
+            List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+            if (AllProjectDashboards != null)
+            {
+                IEnumerable<Stats> actualStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
+                IEnumerable<Stats> materialStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
+                IEnumerable<Stats> poStats = AllProjectDashboards.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
+
+                allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
+                allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
+                allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
+            }
+
+            firstDataPointsDate = allDataPoints.Min(x => x.ActualDate);
             alignedDataDateCollection = generateDates();
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
             InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
@@ -600,14 +628,14 @@ namespace BluePrints.ViewModels
             bool isNewData = false;
             if (commodityJobs == null)
             {
-                List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
-                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, ref allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
+                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
                 DetailedData.AddRange(allDataPoints);
+
                 commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks, ShowLoadingScreen);
                 isNewData = true;
             }
 
-            if(ShowLoadingScreen)
+            if (ShowLoadingScreen)
             {
                 LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
                 LoadingScreenManager.SetMessage("Preparing View...");
@@ -660,10 +688,16 @@ namespace BluePrints.ViewModels
             else
                 endDateToGenerate = FixedEndDate;
 
-            if (IsWeeks)
-                return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate, true);
+            DateTime firstDateToGenerateFrom = new DateTime();
+            if (IsShowActualsHistory)
+                firstDateToGenerateFrom = (DateTime)firstDataPointsDate;
             else
-                return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, endDateToGenerate);
+                firstDateToGenerateFrom = (DateTime)FixedDataDate;
+
+            if (IsWeeks)
+                return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate, true);
+            else
+                return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate);
         }
 
         private void updateDataTable(ForecastJobData commodityJob, bool isNew)
@@ -928,7 +962,7 @@ namespace BluePrints.ViewModels
                 if (alignedDate <= FixedDataDateMonthEnd)
                 {
                     //do not show actuals
-                    //columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 }
                 else
                 {
@@ -1159,81 +1193,81 @@ namespace BluePrints.ViewModels
             if (gridColumn == null || dataRowView == null)
                 return;
 
-            //if (gridColumn.ReadOnly)
-            //{
-                DateTime parseEndDate;
-                if (DateTime.TryParse(gridColumn.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
-                {
-                    ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                    parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
-                    EndSelectionDate = parseEndDate;
+            DateTime parseEndDate;
+            if (DateTime.TryParse(gridColumn.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
+            {
+                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
+                EndSelectionDate = parseEndDate;
+
+                if (IsWeeks)
+                    StartSelectionDate = EndSelectionDate.AddDays(-6);
+                else
                     StartSelectionDate = new DateTime(EndSelectionDate.Year, EndSelectionDate.Month, 1);
-                    if(parseEndDate.Date == alignedDataDateCollection.First().Date)
-                    {
-                        if(entity.Commodity.Code != string.Empty)
-                            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
-                        else
-                            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
-                    }
-                    else
-                    {
-                        if(entity.Commodity.Code != string.Empty)
-                            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
-                        else
-                            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
-                    }
 
-                    IsHidden = false;
-                    IsPOColumnsVisible = false;
-                    this.RaisePropertyChanged(x => x.FilterCriteria);
-                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
-                }
-                else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
+                if(parseEndDate.Date == alignedDataDateCollection.First().Date)
                 {
-                    ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                     if(entity.Commodity.Code != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'");
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'");
-
-                    IsHidden = false;
-                    IsPOColumnsVisible = false;
-                    this.RaisePropertyChanged(x => x.FilterCriteria);
-                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
-                }
-                else if (gridColumn.FieldName.ToUpper().Contains("INVOICED"))
-                {
-                    ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                    if (entity.Commodity.Code != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
-                    else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
-
-                    IsHidden = false;
-                    IsPOColumnsVisible = false;
-                    this.RaisePropertyChanged(x => x.FilterCriteria);
-                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
-                }
-                else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
-                {
-                    ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                    if (entity.Commodity.Code != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'True'");
-                    else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'True'");
-                    IsHidden = false;
-
-                    IsPOColumnsVisible = true;
-                    this.RaisePropertyChanged(x => x.FilterCriteria);
-                    this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
                 else
                 {
-                    IsHidden = true;
+                    if(entity.Commodity.Code != string.Empty)
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    else
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
-            //}
-            //else
-            //    IsHidden = true;
+
+                IsHidden = false;
+                IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.FilterCriteria);
+                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            }
+            else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
+            {
+                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if(entity.Commodity.Code != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'");
+                else
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'");
+
+                IsHidden = false;
+                IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.FilterCriteria);
+                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            }
+            else if (gridColumn.FieldName.ToUpper().Contains("INVOICED"))
+            {
+                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if (entity.Commodity.Code != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                else
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+
+                IsHidden = false;
+                IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.FilterCriteria);
+                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            }
+            else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
+            {
+                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if (entity.Commodity.Code != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'True'");
+                else
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'True'");
+                IsHidden = false;
+
+                IsPOColumnsVisible = true;
+                this.RaisePropertyChanged(x => x.FilterCriteria);
+                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            }
+            else
+            {
+                IsHidden = true;
+            }
 
             //this.RaisePropertyChanged(x => x.IsHidden);
         }

@@ -25,7 +25,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <returns></returns>
         public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
         {
-            ConcurrentBag<ForecastJobData> forecastProjections = new ConcurrentBag<ForecastJobData>();
+            List<ForecastJobData> forecastProjections = new List<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
 
             if(showLoadingScreen)
@@ -41,7 +41,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //create the discipline level forecast summary
                 List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
-                ConcurrentBag<ForecastJobData> commodityJobs = new ConcurrentBag<ForecastJobData>();
+                List<ForecastJobData> commodityJobs = new List<ForecastJobData>();
 
                 foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
                 {
@@ -257,7 +257,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, ref List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
+        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
             List<ExoSubJobProjection> combinedSubJobs = new List<ExoSubJobProjection>();
 
@@ -279,17 +279,6 @@ namespace BluePrints.Common.ViewModel.Misc
 
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
-
-            if(dashboardJobs != null)
-            {
-                IEnumerable<Stats> actualStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Actual != null).Select(x => ((SummaryStats)x.Stats).Actual);
-                IEnumerable<Stats> materialStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).Material != null).Select(x => ((SummaryStats)x.Stats).Material);
-                IEnumerable<Stats> poStats = dashboardJobs.Where(x => x.Stats != null && ((SummaryStats)x.Stats).PO != null).Select(x => ((SummaryStats)x.Stats).PO);
-
-                allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
-                allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
-                allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
-            }
 
             List<string> dataPointsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + NormalizeVariationCode(x.Variation_Code)).ToList();
             List<string> dashboardConcatNames = new List<string>(); 

@@ -567,7 +567,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
-            ConcurrentBag<ExoDataPoint> materialDataPoints = new ConcurrentBag<ExoDataPoint>();
+            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             if (showLoadingScreen)
             {
                 LoadingScreenManager.ShowLoadingScreen(1);
@@ -662,7 +662,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
         {
-            ConcurrentBag<ExoDataPoint> poDataPoints = new ConcurrentBag<ExoDataPoint>();
+            List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
 
             if (showLoadingScreen)
             {
@@ -747,7 +747,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static List<ExoDataPoint> GetAllEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber)
         {
-            ConcurrentBag<ExoDataPoint> poDataPoints = new ConcurrentBag<ExoDataPoint>();
+            List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
 
             var pos = from PURCHORD_LINES in primeroUOW.PURCHORD_LINES
                       join PURCHORD_HDR in primeroUOW.PURCHORD_HDR
@@ -799,6 +799,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.PONumber = po.SEQNO.ToString();
                     poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
                     poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
+                    poDataPoint.POStatus = po.STATUS;
                     poDataPoint.Variation_Code = normalizeVariationCode(po.X_VARIATIONCODE);
                     poDataPoints.Add(poDataPoint);
                 }

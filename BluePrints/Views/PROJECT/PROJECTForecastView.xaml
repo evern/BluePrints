@@ -296,26 +296,32 @@
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
                     <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding DataContext.ReloadP6ForecastCommand, ElementName=userControl}" Content="Reload P6" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                    <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding DataContext.IsShowActualsHistory, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 </dxb:BarManager.Items>
                 <DockPanel>
-                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2019">
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
-                                    <dxb:BarButtonItemLink BarItemName="biLocalKeyboardPaste" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                    <dxb:BarSubItem Content="Grid Functions" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
+                                        <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
+                                        <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
+                                        <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
+                                        <dxb:BarButtonItemLink BarItemName="biLocalKeyboardPaste" />
+                                        <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                        <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                        <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                        <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                        <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                        <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    </dxb:BarSubItem>
+                                    <dxb:BarSubItem Content="PF Functions" Glyph="{dx:DXImage Image=GaugeStyleFullCircular_16x16.png}" LargeGlyph="{dx:DXImage Image=GaugeStyleFullCircular_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
+                                        <dxb:BarButtonItemLink BarItemName="biApplyPF" />
+                                        <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
+                                    </dxb:BarSubItem>
                                     <dxb:BarCheckItemLink BarItemName="biWeeks" />
-                                    <dxb:BarButtonItemLink BarItemName="biApplyPF" />
-                                    <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
-                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarCheckItemLink BarItemName="biShowActuals" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                     <dxb:BarButtonItemLink BarItemName="biSaveEAC" />

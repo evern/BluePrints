@@ -471,9 +471,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string PONumber { get; set; }
         public decimal POOrderQty { get; set; }
         public decimal POSuppliedQty { get; set; }
+        public int? POStatus { get; set; }
 
         public decimal DisplayActualCost => IsPO ? 0 : Costs;
         public decimal DisplayRemainingCost => IsPO ? Costs : 0;
+        public decimal DisplayReceiptCost => IsPO ? POSuppliedQty * CostPerQty : 0;
 
         public decimal DisplayActualQty => IsPO ? 0 : Quantity;
         public decimal DisplayRemainingQty => IsPO ? Quantity : 0;
