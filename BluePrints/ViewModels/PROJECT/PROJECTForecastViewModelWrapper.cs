@@ -1128,9 +1128,7 @@ namespace BluePrints.ViewModels
                             }
 
                             parentRow[alignedDateField] = p6RemainingCostsOnDataDate;
-
-                            if (currentRowP6OverrideFORECAST.Count() > 0)
-                                p6CostRow[alignedDateField] = p6RemainingCostsOnDataDate;
+                            p6CostRow[alignedDateField] = p6RemainingCostsOnDataDate;
                         }
                     }
                 }
@@ -1727,7 +1725,7 @@ namespace BluePrints.ViewModels
                         if (originalP6Units > 0)
                         {
                             decimal newP6Units = originalP6Units / newProductivity;
-                            findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, newP6Units, oldP6Units);
+                            findExistingOrAddNewForecast(compareP6UnitsRemainingRow, dateCost.Date, newP6Units, oldP6Units, true);
                         }
                         else
                         {
@@ -1735,6 +1733,7 @@ namespace BluePrints.ViewModels
                         }
                     }
 
+                    updateViewForecastsOnDatesFromDb(compareP6UnitsRemainingRow, true);
                     EntitiesUndoRedoManager.UnpauseActionId();
                 }
             }
