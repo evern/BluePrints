@@ -106,7 +106,7 @@
             </DataTemplate>
             <DataTemplate x:Key="NumberColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="Value" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -295,7 +295,7 @@
                             <dxe:DateEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
-                    <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding DataContext.ReloadP6ForecastCommand, ElementName=userControl}" Content="Reload P6" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                    <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding DataContext.ReloadP6ForecastCommand, ElementName=userControl}" Content="Calculate Forecast" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
                     <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding DataContext.IsShowActualsHistory, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 </dxb:BarManager.Items>
                 <DockPanel>
