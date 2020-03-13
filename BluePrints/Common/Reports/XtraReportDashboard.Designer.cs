@@ -114,11 +114,11 @@
             this.xrLabelCumulative = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand2 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
             this.useLate = new DevExpress.XtraReports.Parameters.Parameter();
             this.showAbsolute = new DevExpress.XtraReports.Parameters.Parameter();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -184,7 +184,7 @@
             // 
             // xrPictureBox1
             // 
-            this.xrPictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("xrPictureBox1.Image")));
+            this.xrPictureBox1.ImageSource = new DevExpress.XtraPrinting.Drawing.ImageSource("img", resources.GetString("xrPictureBox1.ImageSource"));
             this.xrPictureBox1.LocationFloat = new DevExpress.Utils.PointFloat(0F, 10.00001F);
             this.xrPictureBox1.Name = "xrPictureBox1";
             this.xrPictureBox1.SizeF = new System.Drawing.SizeF(286.4583F, 56.33334F);
@@ -913,7 +913,6 @@
             lineSeriesView6.LineMarkerOptions.Size = 6;
             lineSeriesView6.MarkerVisibility = DevExpress.Utils.DefaultBoolean.True;
             series11.View = lineSeriesView6;
-            series11.Visible = false;
             series12.ArgumentDataMember = "RemainingActual.DataPoints.ProgressDate";
             series12.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series12.Name = "Period Remaining Actual";
@@ -925,7 +924,6 @@
             sideBySideBarSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             sideBySideBarSeriesView6.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             series12.View = sideBySideBarSeriesView6;
-            series12.Visible = false;
             series13.ArgumentDataMember = "Current.DataPoints.ProgressDate";
             series13.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series13.Name = "Period Current";
@@ -973,6 +971,11 @@
         series15};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1503.148F, 889.5601F);
             // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
+            // 
             // reportBy
             // 
             this.reportBy.Description = "Report By";
@@ -1003,11 +1006,6 @@
             this.showAbsolute.Name = "showAbsolute";
             this.showAbsolute.Type = typeof(bool);
             this.showAbsolute.ValueInfo = "False";
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportDashboard
             // 
@@ -1050,7 +1048,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "18.1";
+            this.Version = "19.1";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).EndInit();

@@ -460,6 +460,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string StockCode { get; set; }
         public decimal CostPerQty { get; set; }
         public string Description { get; set; }
+        public string Narrative { get; set; }
         public string Supplier { get; set; }
         public string InvoiceNo { get; set; }
         public decimal InvoiceAmount { get; set; }

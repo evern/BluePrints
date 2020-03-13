@@ -199,6 +199,7 @@
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
                                             <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="Narrative" Header="Narrative" ReadOnly="True" VisibleIndex="71" />
                                             <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Actuals (Data is shown only on actual entries)">

@@ -484,6 +484,8 @@
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="PO Only columns (Only populated when data is PO as indicated by a tick on 'Is PO')">
                                                 <dxg:GridColumn FieldName="IsPO" Header="Is PO" ReadOnly="True" Visible="True" VisibleIndex="100" />
+                                                <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="110" />
+                                                <dxg:GridColumn FieldName="Narrative" Header="Narrative" ReadOnly="True" VisibleIndex="120" />
                                                 <dxg:GridColumn FieldName="POOrderQty" Header="PO Order Qty" ReadOnly="True" Visible="True" VisibleIndex="150" />
                                                 <dxg:GridColumn FieldName="POSuppliedQty" Header="PO Supplied Qty" ReadOnly="True" Visible="True" VisibleIndex="160" />
                                                 <dxg:GridColumn FieldName="DisplayRemainingQty" Header="PO Remaining Quantity" ReadOnly="True" VisibleIndex="171" />

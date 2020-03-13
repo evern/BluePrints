@@ -52,6 +52,7 @@
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="Commodity">
                                                 <dxg:GridColumn FieldName="Description" Width="200" Header="Description" ReadOnly="True" VisibleIndex="70" />
+                                                <dxg:GridColumn FieldName="Narrative" Width="200" Header="Narrative" ReadOnly="True" VisibleIndex="71" />
                                                 <dxg:GridColumn FieldName="Supplier" Width="200" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="Quantity">
