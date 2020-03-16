@@ -363,6 +363,13 @@ namespace BluePrints.Common
         Cancel
     }
 
+    public enum EarnedDataDateRealignmentAction
+    {
+        Forward,
+        Backward,
+        Cancel
+    }
+
     public enum TimesheetDateDialogAction
     {
         Ok,

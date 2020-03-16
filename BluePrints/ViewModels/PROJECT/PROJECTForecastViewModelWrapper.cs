@@ -964,7 +964,8 @@ namespace BluePrints.ViewModels
                 if (alignedDate <= FixedDataDateMonthEnd)
                 {
                     //do not show actuals
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                    if(isShowActualsHistory)
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 }
                 else
                 {

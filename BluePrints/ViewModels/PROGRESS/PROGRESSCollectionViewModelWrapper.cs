@@ -1,12 +1,15 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -15,6 +18,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PROJECT = BluePrints.Data.PROJECT;
 
@@ -249,7 +253,7 @@ namespace BluePrints.ViewModels
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
-
+        
         public override string UnifiedRowValidation(PROGRESS projection)
         {
             return string.Empty;
@@ -264,6 +268,86 @@ namespace BluePrints.ViewModels
                 if (otherPROGRESSES.Any(x => x.STATUS == ProgressStatus.Live) && newStatus == ProgressStatus.Live)
                     return "There can be only one live progress";
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
+            {
+                if(projection.PROGRESS_ITEM != null && projection.PROGRESS_ITEM.Count > 0)
+                {
+                    DateTime newDateTime = (DateTime)new_value;
+                    DateTime currentDateTime = projection.DATA_DATE;
+
+                    if(newDateTime.DayOfWeek != currentDateTime.DayOfWeek)
+                    {
+                        UICommand backwardCommand = new UICommand()
+                        {
+                            Id = EarnedDataDateRealignmentAction.Forward,
+                            Caption = "Backward",
+                            IsCancel = true,
+                            IsDefault = false,
+                        };
+
+                        UICommand forwardCommand = new UICommand()
+                        {
+                            Id = EarnedDataDateRealignmentAction.Backward,
+                            Caption = "Forward",
+                            IsCancel = true,
+                            IsDefault = false,
+                        };
+
+                        UICommand cancelCommand = new UICommand()
+                        {
+                            Id = EarnedDataDateRealignmentAction.Cancel,
+                            Caption = "Cancel",
+                            IsCancel = true,
+                            IsDefault = false,
+                        };
+
+                        TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(projection);
+                        DateTime lastDataDate = (DateTime)new_value;
+                        DateTime firstAlignedDataDate = ChronologicalHelpers.RewindDataDate(projection.PROGRESS_START, lastDataDate, interval);
+                        List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
+                        List<EarnedDataDateRealignModel> earnedDataDateRealignModels = new List<EarnedDataDateRealignModel>();
+
+                        IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+                        IQueryable<BASELINE_ITEM> baselineItems = bluePrintsUnitOfWork.BASELINE_ITEMS.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.GUID_PROJECT == loadPROJECT.GUID);
+
+                        foreach (PROGRESS_ITEM progress_item in projection.PROGRESS_ITEM)
+                        {
+                            DateTime? backwardDate = alignedDataDateCollection.OrderByDescending(x => x).FirstOrDefault(x => progress_item.EARNED_DATE > x);
+                            DateTime? forwardDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x > progress_item.EARNED_DATE);
+
+                            if (backwardDate == null || forwardDate == null)
+                                return "Some earned dates cannot be readjusted";
+
+                            EarnedDataDateRealignModel earnedDataDateRealignModel = new EarnedDataDateRealignModel() { Guid = progress_item.GUID, EarnedUnits = progress_item.EARNED_UNITS, CurrentEarnedDate = progress_item.EARNED_DATE, BackwardEarnedDate = (DateTime)backwardDate, ForwardEarnedDate = (DateTime)forwardDate };
+                            earnedDataDateRealignModels.Add(earnedDataDateRealignModel);
+                        }
+
+                        var culture = new System.Globalization.CultureInfo("de-DE");
+                        string label = "All earned units are currently set on the week ending " + CultureInfo.CurrentUICulture.DateTimeFormat.GetDayName(currentDateTime.DayOfWeek) + " will be changed to " + CultureInfo.CurrentUICulture.DateTimeFormat.GetDayName(newDateTime.DayOfWeek);
+                        EarnedDataDateRealignmentViewModel earnedDataDateRealignmentViewModel = EarnedDataDateRealignmentViewModel.Create(earnedDataDateRealignModels, label);
+                        UICommand result = EarnedDataDateRealignmentDialogService.ShowDialog(new List<UICommand>() { backwardCommand, forwardCommand, cancelCommand }, "Earned Date Realignment", "EarnedDataDateRealignment", earnedDataDateRealignmentViewModel);
+                        if (result == null || result == cancelCommand)
+                            return "Date date change cancelled";
+                        else
+                        {
+                            foreach (EarnedDataDateRealignModel earnedDataDateRealignModel in earnedDataDateRealignModels)
+                            {
+                                PROGRESS_ITEM findPROGRESS_ITEM = bluePrintsUnitOfWork.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == earnedDataDateRealignModel.Guid);
+                                if (findPROGRESS_ITEM != null)
+                                {
+                                    if (result == backwardCommand)
+                                        findPROGRESS_ITEM.EARNED_DATE = earnedDataDateRealignModel.BackwardEarnedDate;
+                                    else if (result == forwardCommand)
+                                        findPROGRESS_ITEM.EARNED_DATE = earnedDataDateRealignModel.ForwardEarnedDate;
+                                }
+                            }
+
+                            bluePrintsUnitOfWork.SaveChanges();
+                        }
+                    }
+                }
+            }
+
             //else if(field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
             //{
             //    DayOfWeek progressStartDayOfWeek = projection.PROGRESS_START.DayOfWeek;
@@ -282,6 +366,11 @@ namespace BluePrints.ViewModels
             //}
 
             return string.Empty;
+        }
+
+        private DevExpress.Mvvm.IDialogService EarnedDataDateRealignmentDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("EarnedDataDateRealignmentDialogService"); }
         }
 
         public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity, bool isLastRow)

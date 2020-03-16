@@ -18,7 +18,7 @@ namespace BluePrints.Views
 
         private void RibbonControl1_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (e.ClickCount == 3)
             {
                 if ((ResizeMode == ResizeMode.CanResize) || (ResizeMode == ResizeMode.CanResizeWithGrip))
                 {
@@ -28,7 +28,7 @@ namespace BluePrints.Views
                 return;
             }
 
-            else if (WindowState == WindowState.Maximized)
+            if (WindowState == WindowState.Maximized)
             {
                 mRestoreIfMove = true;
                 return;

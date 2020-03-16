@@ -254,14 +254,13 @@ namespace BluePrints.ViewModels
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             BASELINE_ITEMProgress deliverable = null;
-            //only recalculate on progress item when undo/redo operation is being performed, because normal operation will be recalculated on Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>
-            if (isUndoRedoOperation && changedType == typeof(PROGRESS_ITEM))
-                deliverable = DisplayEntities.FirstOrDefault(x => x.PROGRESS_ITEMS.Any(y => y.GUID == (Guid)key));
-            else if (changedType == typeof(BASELINE_ITEM))
+            if (changedType == typeof(BASELINE_ITEM))
                 deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
 
             if (deliverable != null)
             {
+                IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
+                deliverable.SetProgressItems(progressItems.ToList());
                 List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
                 calcTypes.Add(StatsCalculationType.Earned);
                 deliverable.BuildStats(1, calcTypes);
@@ -354,6 +353,7 @@ namespace BluePrints.ViewModels
         {
             isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
+            MainViewModel.EntitiesUndoRedoManager.Undo();
             isUndoRedoOperation = false;
         }
 
@@ -361,6 +361,7 @@ namespace BluePrints.ViewModels
         {
             isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
+            MainViewModel.EntitiesUndoRedoManager.Redo();
             isUndoRedoOperation = false;
         }
 
@@ -617,8 +618,14 @@ namespace BluePrints.ViewModels
                     IEnumerable<PROGRESS_ITEM> unalignedDataDatePROGRESS_ITEMS = entity.PROGRESS_ITEMS.Where(x => !alignedDataDateCollection.Any(y => y.Date == x.EARNED_DATE.Date));
                     foreach(PROGRESS_ITEM unalignedPROGRESS_ITEM in unalignedDataDatePROGRESS_ITEMS)
                     {
-                        unalignedPROGRESS_ITEM.EARNED_UNITS = 0;
-                        progressToSave.Add(unalignedPROGRESS_ITEM);
+                        if(alignedDataDateCollection.Count > 0)
+                        {
+                            DateTime? alignDateTime = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date > unalignedPROGRESS_ITEM.EARNED_DATE);
+                            if (alignDateTime != null)
+                                unalignedPROGRESS_ITEM.EARNED_DATE = (DateTime)alignDateTime;
+
+                            progressToSave.Add(unalignedPROGRESS_ITEM);
+                        }
                     }
 
                     IEnumerable<PROGRESS_ITEM> previousProgresses = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
@@ -696,7 +703,6 @@ namespace BluePrints.ViewModels
                         }
 
                         progress.EARNED_UNITS = postEditEarnUnits;
-
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(progress, earnedUnitsFieldName, oldProgressValue, postEditEarnUnits, EntityMessageType.Changed);
                         progressToSave.Add(progress);
                     }
@@ -707,6 +713,8 @@ namespace BluePrints.ViewModels
                     PROGRESS_ITEMSCollectionViewModel.Save(progress);
                 }
 
+                //add a dummy undo so that during undo/redo operation a baseline item message will be sent
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed);
                 //do this so that deliverable goes through the projection refresh
                 Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
                 PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
