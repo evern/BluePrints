@@ -250,7 +250,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsCalculating);
         }
 
-        bool isUndoRedoOperation;
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             BASELINE_ITEMProgress deliverable = null;
@@ -351,18 +350,14 @@ namespace BluePrints.ViewModels
 
         public void ProgressUndo()
         {
-            isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
             MainViewModel.EntitiesUndoRedoManager.Undo();
-            isUndoRedoOperation = false;
         }
 
         public void ProgressRedo()
         {
-            isUndoRedoOperation = true;
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
             MainViewModel.EntitiesUndoRedoManager.Redo();
-            isUndoRedoOperation = false;
         }
 
         private void reselectDeliverable()
