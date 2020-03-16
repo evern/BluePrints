@@ -15,6 +15,8 @@
 
         public int? master_jobno { get; set; }
 
+        public double? EXCHRATE { get; set; }
+
         [StringLength(15)]
         public string jobcode { get; set; }
 
