@@ -1398,5 +1398,35 @@ namespace BluePrints.Common.ViewModel.Utils
 
             PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
         }
+
+        public static void SaveUserPreference(string preferenceName, string preferenceValue)
+        {
+            if (LoginCredentials.IsAdmin)
+                return;
+
+            if (LoginCredentials.CurrentUser == null || LoginCredentials.CurrentUser.USER_PREFERENCE == null)
+                return;
+
+            USER_PREFERENCE currentUserPreference = LoginCredentials.CurrentUser.USER_PREFERENCE.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
+            if(currentUserPreference != null)
+            {
+                currentUserPreference.PREFERENCE_VALUE = preferenceValue;
+            }
+
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            USER_PREFERENCE dbCurrentUserPreference = bluePrintsEntitiesUnitOfWork.USER_PREFERENCES.FirstOrDefault(x => x.GUID_USER == LoginCredentials.CurrentUserGuid && x.PREFERENCE_NAME == preferenceName);
+            if (dbCurrentUserPreference != null)
+                dbCurrentUserPreference.PREFERENCE_VALUE = preferenceValue;
+            else
+            {
+                USER_PREFERENCE newCurrentUserPreference = new USER_PREFERENCE();
+                newCurrentUserPreference.PREFERENCE_NAME = preferenceName;
+                newCurrentUserPreference.PREFERENCE_VALUE = preferenceValue;
+                newCurrentUserPreference.GUID_USER = LoginCredentials.CurrentUserGuid;
+                bluePrintsEntitiesUnitOfWork.USER_PREFERENCES.Add(newCurrentUserPreference);
+            }
+
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
+        }
     }
 }

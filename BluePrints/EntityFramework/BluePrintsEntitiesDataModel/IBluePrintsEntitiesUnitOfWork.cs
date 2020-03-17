@@ -360,6 +360,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<USER, Guid> USERS { get; }
 
         /// <summary>
+        /// The USER_PREFERENCE entities repository.
+        /// </summary>
+        IRepository<USER_PREFERENCE, Guid> USER_PREFERENCES { get; }
+
+        /// <summary>
         /// The VARIATION_ITEMS entities repository.
         /// </summary>
         IRepository<VARIATION_ITEM, Guid> VARIATION_ITEMS { get; }

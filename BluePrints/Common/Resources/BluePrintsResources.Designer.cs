@@ -430,6 +430,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to EAC.
+        /// </summary>
+        internal static string ForecastCompare_EACRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_EACRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Indirect.
         /// </summary>
         internal static string ForecastCompare_IndirectRowPhase {
@@ -450,18 +459,18 @@ namespace BluePrints.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to 1.
         /// </summary>
-        internal static string ForecastCompare_P6CostRow {
+        internal static string ForecastCompare_P6CostRowIndex {
             get {
-                return ResourceManager.GetString("ForecastCompare_P6CostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_P6CostRowIndex", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 0.
         /// </summary>
-        internal static string ForecastCompare_P6HourRow {
+        internal static string ForecastCompare_P6HourRowIndex {
             get {
-                return ResourceManager.GetString("ForecastCompare_P6HourRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompare_P6HourRowIndex", resourceCulture);
             }
         }
         
@@ -475,20 +484,38 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string ForecastCompare_UncommittedRowIndex {
+            get {
+                return ResourceManager.GetString("ForecastCompare_UncommittedRowIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncommitted.
+        /// </summary>
+        internal static string ForecastCompare_UncommittedRowPhase {
+            get {
+                return ResourceManager.GetString("ForecastCompare_UncommittedRowPhase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 1.
         /// </summary>
-        internal static string ForecastCompareChild_P6CostRow {
+        internal static string ForecastCompareChild_P6CostRowIndex {
             get {
-                return ResourceManager.GetString("ForecastCompareChild_P6CostRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompareChild_P6CostRowIndex", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 0.
         /// </summary>
-        internal static string ForecastCompareChild_P6HourRow {
+        internal static string ForecastCompareChild_P6HourRowIndex {
             get {
-                return ResourceManager.GetString("ForecastCompareChild_P6HourRow", resourceCulture);
+                return ResourceManager.GetString("ForecastCompareChild_P6HourRowIndex", resourceCulture);
             }
         }
         

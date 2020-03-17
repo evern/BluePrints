@@ -8,27 +8,26 @@ using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    public class ForecastFutureChildCellColorConverter : IMultiValueConverter
+    public class ForecastFutureChildCellToolTipConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            SolidColorBrush transparentColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)
-                    return transparentColor;
+                    return null;
 
                 if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
-                    return transparentColor;
+                    return null;
 
                 DataRow dataRow = (DataRow)values[0];
                 if(!dataRow.Table.Columns.Contains("CompareEntities"))
-                    return transparentColor;
+                    return null;
 
                 ForecastJobData jobData = (ForecastJobData)dataRow["Entity"];
                 if (!jobData.IsP6HoursRow)
-                    return transparentColor;
+                    return null;
 
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
@@ -45,9 +44,9 @@ namespace BluePrints.Common.ViewModel.Converters
 
                             currentValue = Math.Round(currentValue);
                             if(currentValue > totalHours)
-                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                return "Color is green because value has been overridden and it's higher than P6 calculated value of " + totalHours;
                             else if (currentValue < totalHours)
-                                return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                return "Color is red because value has been overridden and it's lower than P6 calculated value of " + totalHours;
                         }
                     }
                 }
@@ -57,7 +56,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 string s = ex.ToString();
             }
 
-             return transparentColor;
+             return null;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter,

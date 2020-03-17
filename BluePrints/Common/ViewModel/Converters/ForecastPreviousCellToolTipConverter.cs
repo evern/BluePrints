@@ -9,24 +9,22 @@ using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
-    public class ForecastPreviousCellColorConverter : IMultiValueConverter
+    public class ForecastPreviousCellToolTipConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            SolidColorBrush paleGreenColor = new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
-            SolidColorBrush transparentColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)
-                    return transparentColor;
+                    return null;
 
                 if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
-                    return transparentColor;
+                    return null;
 
                 DataRow dataRow = (DataRow)values[0];
                 if (!dataRow.Table.Columns.Contains("CompareEntities"))
-                    return transparentColor;
+                    return null;
 
                 //return transparent color if it's got nothing to compare with
                 if (dataRow["CompareEntities"] != DBNull.Value)
@@ -46,13 +44,10 @@ namespace BluePrints.Common.ViewModel.Converters
                                 decimal eacCosts = dateCost.EACCosts;
                                 decimal parentValue = (decimal)values[2];
 
-                                if (eacCosts == 0)
-                                    return transparentColor;
-
                                 if (parentValue <= eacCosts)
-                                    return paleGreenColor;
+                                    return "Color is green because actuals are less than EAC";
                                 else
-                                    return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                    return "Color is red because actuals are more than EAC";
                             }
                         }
                     }
@@ -63,7 +58,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 string s = ex.ToString();
             }
 
-            return transparentColor;
+            return null;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter,

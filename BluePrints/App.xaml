@@ -6,8 +6,11 @@
         <converter:ForecastChildCellMaskConverter x:Key="ForecastChildCellMaskConverter" />
         <converter:NumericCompareToVisibilityConverter x:Key="NumericCompareToVisibilityConverter" />
         <converter:ForecastPreviousCellColorConverter x:Key="ForecastPreviousCellColorConverter" />
+        <converter:ForecastPreviousCellToolTipConverter x:Key="ForecastPreviousCellToolTipConverter" />
         <converter:ForecastFutureCellColorConverter x:Key="ForecastFutureCellColorConverter" />
+        <converter:ForecastFutureCellToolTipConverter x:Key="ForecastFutureCellToolTipConverter" />
         <converter:ForecastFutureChildCellColorConverter x:Key="ForecastFutureChildCellColorConverter" />
+        <converter:ForecastFutureChildCellToolTipConverter x:Key="ForecastFutureChildCellToolTipConverter" />
         <converter:ValueOutOfRangeMessageConverter x:Key="ValueOutOfRangeMessageConverter" />
         <dx:EmbeddedResourceImageConverter x:Key="EmbeddedResourceImageConverter" />
         <DataTemplate x:Key="GridPrintHeaderTemplate">
@@ -110,7 +113,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplatePast">
-            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
+            <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />

@@ -366,6 +366,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<USER>(), (USER x) => x.GUID); }
         }
 
+        IRepository<USER_PREFERENCE, Guid> IBluePrintsEntitiesUnitOfWork.USER_PREFERENCES
+        {
+            get { return GetRepository(x => x.Set<USER_PREFERENCE>(), (USER_PREFERENCE x) => x.GUID); }
+        }
+
         IRepository<VARIATION_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_ITEMS
         {
             get { return GetRepository(x => x.Set<VARIATION_ITEM>(), (VARIATION_ITEM x) => x.GUID); }

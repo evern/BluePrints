@@ -20,6 +20,7 @@ namespace BluePrints.Data
             RA_STUDY1 = new HashSet<RA_STUDY>();
             RA_STUDY_DATA = new HashSet<RA_STUDY_DATA>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
+            USER_PREFERENCE = new HashSet<USER_PREFERENCE>();
             PROJECT = new HashSet<PROJECT>();
             PROJECT_PERMISSION = new HashSet<PROJECT_PERMISSION>();
         }
@@ -123,6 +124,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RA_STUDY_DATA> RA_STUDY_DATA { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<USER_PREFERENCE> USER_PREFERENCE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_ISSUE> REGISTER_ISSUE { get; set; }

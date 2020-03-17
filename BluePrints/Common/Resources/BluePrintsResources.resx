@@ -309,16 +309,16 @@
   <data name="OfficePerth" xml:space="preserve">
     <value>PERTH</value>
   </data>
-  <data name="ForecastCompare_P6CostRow" xml:space="preserve">
+  <data name="ForecastCompare_P6CostRowIndex" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="ForecastCompare_P6HourRow" xml:space="preserve">
+  <data name="ForecastCompare_P6HourRowIndex" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="ForecastCompareChild_P6CostRow" xml:space="preserve">
+  <data name="ForecastCompareChild_P6CostRowIndex" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="ForecastCompareChild_P6HourRow" xml:space="preserve">
+  <data name="ForecastCompareChild_P6HourRowIndex" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="ContingencyCostType" xml:space="preserve">
@@ -350,5 +350,14 @@
   </data>
   <data name="Regex_NumbersOnly" xml:space="preserve">
     <value>[^0-9a-z\\.\\-]</value>
+  </data>
+  <data name="ForecastCompare_EACRowPhase" xml:space="preserve">
+    <value>EAC</value>
+  </data>
+  <data name="ForecastCompare_UncommittedRowIndex" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="ForecastCompare_UncommittedRowPhase" xml:space="preserve">
+    <value>Uncommitted</value>
   </data>
 </root>

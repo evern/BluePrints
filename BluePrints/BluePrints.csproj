@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -711,6 +711,11 @@
     <Compile Include="Common\Reports\XtraReportPROGRESS_ITEMS.Designer.cs">
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Resources\UserPreferences.Designer.cs">
+      <DependentUpon>UserPreferences.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Common\Resources\BluePrintsResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -730,8 +735,11 @@
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\CellNumericUOMMaskConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellToolTipConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureChildCellToolTipConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureChildCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellMinValueConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellToolTipConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
@@ -819,6 +827,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\USER_PREFERENCE.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_PERMISSION.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_EAC.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_REVENUE.cs" />
@@ -961,6 +970,7 @@
     <Compile Include="EntityFramework\BluePrintsData\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\UOM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\USER_PREFERENCE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SUBJOB.cs" />
@@ -2449,6 +2459,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportPROGRESS_ITEMS.resx">
       <DependentUpon>XtraReportPROGRESS_ITEMS.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Resources\UserPreferences.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserPreferences.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Resources\BluePrintsResources.resx">

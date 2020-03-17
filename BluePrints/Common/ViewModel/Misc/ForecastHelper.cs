@@ -23,7 +23,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
         {
             List<ForecastJobData> forecastProjections = new List<ForecastJobData>();
             var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
@@ -49,7 +49,7 @@ namespace BluePrints.Common.ViewModel.Misc
                     commodityJobForecastSummary.JobErrorMessage = commodityJob.ForecastErrorString;
 
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
-                    PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true);
+                    PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true);
                     //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load
                     //PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
@@ -73,7 +73,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Populates data row with dashboards summary
         /// </summary>
-        public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered)
+        public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered)
         {
             ExoSubJobProjection projection = jobForecastSummary.Projection;
             List<DashboardFlatStructure> relevantDashboards;
@@ -97,6 +97,7 @@ namespace BluePrints.Common.ViewModel.Misc
             else
                 summaryStats = new List<SummaryStats>();
 
+            //get po and populate forecasts
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
             if (poStats != null && poStats.Count() > 0)
@@ -114,6 +115,10 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
             }
+
+            //get relevant forecast EACs
+            List<FORECAST_EAC> currentJobEACs = new List<FORECAST_EAC>();
+            currentJobEACs = FORECAST_EACCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
 
             //get remaining data points
             List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
@@ -191,6 +196,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 dateCost.MaterialDataPoints = materialDataPoints;
                 dateCost.ActualDataPoints = actualDataPoints;
                 dateCost.FORECAST_POS = currentJobPOForecasts;
+                dateCost.FORECAST_EACS = currentJobEACs;
                 dateCost.P6RemainingDataPoints = remainingDataPoints;
                 dateCost.IndirectRemainingCosts = indirectRemainingCosts;
             }
