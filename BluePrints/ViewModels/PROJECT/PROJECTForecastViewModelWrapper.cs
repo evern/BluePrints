@@ -3049,7 +3049,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string ViewName => "PROJECTForecastView_v1.00";
+        public override string ViewName => "PROJECTForecastView_v2.00";
 
         public void LoadLayout()
         {
