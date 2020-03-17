@@ -96,6 +96,27 @@ namespace BluePrints.Data
             }
         }
 
+        List<USER_PREFERENCE> userPreferences;
+        public List<USER_PREFERENCE> UserPreferences
+        {
+            get
+            {
+                if (userPreferences == null)
+                {
+                    userPreferences = new List<USER_PREFERENCE>();
+                    if(USER_PREFERENCE != null && USER_PREFERENCE.Count > 0)
+                    {
+                        foreach(USER_PREFERENCE userPreference in USER_PREFERENCE)
+                        {
+                            userPreferences.Add(userPreference);
+                        }
+                    }
+                }
+
+                return userPreferences;
+            }
+        }
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }

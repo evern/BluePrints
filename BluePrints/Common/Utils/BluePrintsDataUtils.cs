@@ -1404,14 +1404,8 @@ namespace BluePrints.Common.ViewModel.Utils
             if (LoginCredentials.IsAdmin)
                 return;
 
-            if (LoginCredentials.CurrentUser == null || LoginCredentials.CurrentUser.USER_PREFERENCE == null)
+            if (LoginCredentials.CurrentUser == null)
                 return;
-
-            USER_PREFERENCE currentUserPreference = LoginCredentials.CurrentUser.USER_PREFERENCE.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
-            if(currentUserPreference != null)
-            {
-                currentUserPreference.PREFERENCE_VALUE = preferenceValue;
-            }
 
             IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             USER_PREFERENCE dbCurrentUserPreference = bluePrintsEntitiesUnitOfWork.USER_PREFERENCES.FirstOrDefault(x => x.GUID_USER == LoginCredentials.CurrentUserGuid && x.PREFERENCE_NAME == preferenceName);
@@ -1419,14 +1413,19 @@ namespace BluePrints.Common.ViewModel.Utils
                 dbCurrentUserPreference.PREFERENCE_VALUE = preferenceValue;
             else
             {
-                USER_PREFERENCE newCurrentUserPreference = new USER_PREFERENCE();
-                newCurrentUserPreference.PREFERENCE_NAME = preferenceName;
-                newCurrentUserPreference.PREFERENCE_VALUE = preferenceValue;
-                newCurrentUserPreference.GUID_USER = LoginCredentials.CurrentUserGuid;
-                bluePrintsEntitiesUnitOfWork.USER_PREFERENCES.Add(newCurrentUserPreference);
+                dbCurrentUserPreference = new USER_PREFERENCE();
+                dbCurrentUserPreference.PREFERENCE_NAME = preferenceName;
+                dbCurrentUserPreference.PREFERENCE_VALUE = preferenceValue;
+                dbCurrentUserPreference.GUID_USER = LoginCredentials.CurrentUserGuid;
+                bluePrintsEntitiesUnitOfWork.USER_PREFERENCES.Add(dbCurrentUserPreference);
             }
-
             bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+            USER_PREFERENCE currentUserPreference = LoginCredentials.CurrentUser.UserPreferences.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
+            if (currentUserPreference != null)
+                currentUserPreference.PREFERENCE_VALUE = preferenceValue;
+            else
+                LoginCredentials.CurrentUser.UserPreferences.Add(dbCurrentUserPreference);
         }
     }
 }

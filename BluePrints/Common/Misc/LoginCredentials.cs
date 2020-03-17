@@ -66,10 +66,10 @@ namespace BluePrints.Common
 
         public static bool GetUserPreferenceBool(string preferenceName)
         {
-            if (currentUser.USER_PREFERENCE == null || currentUser.USER_PREFERENCE.Count == 0)
+            if (currentUser == null || currentUser.UserPreferences.Count() == 0)
                 return false;
 
-            USER_PREFERENCE findUSER_PREFERENCE = currentUser.USER_PREFERENCE.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
+            USER_PREFERENCE findUSER_PREFERENCE = currentUser.UserPreferences.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
             if (findUSER_PREFERENCE == null)
                 return false;
             else
