@@ -499,6 +499,7 @@ namespace BluePrints.ViewModels
         private void ExoLoadingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             isLoadingExo = false;
+            isLoadingExo = false;
             backgroundProcessCompleted();
         }
 

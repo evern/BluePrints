@@ -96,7 +96,9 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         List<USER_PREFERENCE> userPreferences;
+        [NotMapped]
         public List<USER_PREFERENCE> UserPreferences
         {
             get

@@ -46,9 +46,6 @@ namespace BluePrints.Common.ViewModel.Converters
                                 decimal eacCosts = dateCost.EACCosts;
                                 decimal parentValue = (decimal)values[2];
 
-                                if (eacCosts == 0)
-                                    return transparentColor;
-
                                 if (parentValue <= eacCosts)
                                     return paleGreenColor;
                                 else
