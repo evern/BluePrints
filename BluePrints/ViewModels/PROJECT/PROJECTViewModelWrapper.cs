@@ -83,6 +83,7 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
         protected bool isCompletelyLoaded { get; set; }
+        public bool IsShowViewLoading { get; set; }
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor

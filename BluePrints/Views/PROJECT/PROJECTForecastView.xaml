@@ -297,30 +297,30 @@
                     <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding DataContext.UndoCommand, ElementName=userControl}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
                     <dxb:BarButtonItem x:Name="biLocalRedo" Command="{Binding DataContext.RedoCommand, ElementName=userControl}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                     <dxb:BarButtonItem x:Name="biSaveEAC" Command="{Binding DataContext.SaveCurrentMonthEACCommand, ElementName=userControl}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
-                    <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding DataContext.IsWeeks, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
-                    <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding DataContext.FixedDataDate, ElementName=userControl}" ToolTip="Data date">
+                    <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding DataContext.IsWeeks, ElementName=userControl, Mode=TwoWay}" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
+                    <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding DataContext.FixedDataDate, ElementName=userControl}" ToolTip="Data date">
                         <dxb:BarEditItem.EditSettings>
                             <dxe:DateEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
-                    <dxb:BarEditItem x:Name="beFixedEndDate" Content="End Date" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" EditValue="{Binding DataContext.FixedEndDate, ElementName=userControl}" ToolTip="End date">
+                    <dxb:BarEditItem x:Name="beFixedEndDate" Content="End Date" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" EditValue="{Binding DataContext.FixedEndDate, ElementName=userControl}" ToolTip="End date">
                         <dxb:BarEditItem.EditSettings>
                             <dxe:DateEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
                     <dxb:BarButtonItem x:Name="biSaveDateAndRefresh" Command="{Binding DataContext.SaveDateAndRefreshCommand, ElementName=userControl}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the data date, end date and refreshes this view" />
-                    <dxb:BarEditItem x:Name="beForecastProject" Content="P6 Schedule" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" EditValue="{Binding DataContext.P6ForecastProject, ElementName=userControl}" ToolTip="P6 Forecast Schedule">
+                    <dxb:BarEditItem x:Name="beForecastProject" Content="P6 Schedule" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" EditValue="{Binding DataContext.P6ForecastProject, ElementName=userControl}" ToolTip="P6 Forecast Schedule">
                         <dxb:BarEditItem.EditSettings>
                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding DataContext.P6PROJECTSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
                     <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Data Date" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding DataContext.P6DataDate, ElementName=userControl, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
                         <dxb:BarEditItem.EditSettings>
-                            <dxe:DateEditSettings />
+                            <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
                     <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding DataContext.ReloadP6ForecastCommand, ElementName=userControl}" Content="Calculate Forecast" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
-                    <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding DataContext.IsShowActualsHistory, ElementName=userControl, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
+                    <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding DataContext.IsShowActualsHistory, ElementName=userControl, Mode=TwoWay}" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2019">
@@ -328,7 +328,7 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarSubItem Content="Grid Functions" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
+                                    <dxb:BarSubItem Content="Grid Functions" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
                                         <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
                                         <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
                                         <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
@@ -340,7 +340,7 @@
                                         <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                         <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                     </dxb:BarSubItem>
-                                    <dxb:BarSubItem Content="PF Functions" Glyph="{dx:DXImage Image=GaugeStyleFullCircular_16x16.png}" LargeGlyph="{dx:DXImage Image=GaugeStyleFullCircular_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
+                                    <dxb:BarSubItem Content="PF Functions" IsEnabled="{Binding DataContext.IsShowViewLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=GaugeStyleFullCircular_16x16.png}" LargeGlyph="{dx:DXImage Image=GaugeStyleFullCircular_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
                                         <dxb:BarButtonItemLink BarItemName="biApplyPF" />
                                         <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
                                     </dxb:BarSubItem>
@@ -371,7 +371,7 @@
                             <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                                 <dxdo:LayoutPanel Visibility="Collapsed">
                                     <Grid>
-                                        <local:GridControlEx x:Name="gridControlExport" FontFamily="Calibri" FontSize="12" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                        <local:GridControlEx x:Name="gridControlExport" FontFamily="Calibri" FontSize="12" dxc:DXSerializer.SerializationID="GridControlExport" dxc:DXSerializer.StoreLayoutMode="All" AutoGenerateColumns="AddNew" ClipboardCopyMode="ExcludeHeader" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataContext.ExportTable, ElementName=userControl}" ShowLoadingPanel="{Binding DataContext.IsShowViewLoading, ElementName=userControl}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.HideColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                             </dxmvvm:Interaction.Behaviors>
@@ -404,7 +404,7 @@
                                              TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                              GroupSummarySource="{Binding DataContext.ParentSummaries, ElementName=userControl}"
                                              GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
-                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ParentViewColumns, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding DataContext.ParentViewColumns, ElementName=userControl}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataContext.DataPointsTable, ElementName=userControl}" SelectedItems="{Binding DataContext.SelectedDataRows, Mode=TwoWay, ElementName=userControl}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding DataContext.IsShowViewLoading, ElementName=userControl}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.PastingFromClipboardCommand, ElementName=userControl}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
@@ -475,7 +475,7 @@
                                 </dxdo:LayoutPanel>
                                 <!--<dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">-->
                                 <dxdo:LayoutPanel AutoHidden="False" ShowHideButton="True">
-                                    <dxg:GridControl x:Name="gridControlDetail" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ActualsDetail, ElementName=userControl}" SelectionMode="Row">
+                                    <dxg:GridControl x:Name="gridControlDetail" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ActualsDetail, ElementName=userControl}" SelectionMode="Row" ShowLoadingPanel="{Binding DataContext.IsShowViewLoading, ElementName=userControl}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DataContext.DetailGridKeyDownCommand, ElementName=userControl}" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
@@ -559,7 +559,7 @@
                             </dxdo:LayoutGroup>
                             <dxdo:LayoutGroup FontFamily="Calibri" FontSize="12" MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="275" Orientation="Vertical">
                                 <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
-                                    <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding DataContext.IsLoadingForecast, ElementName=userControl}">
+                                    <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding DataContext.IsShowViewLoading, ElementName=userControl}">
                                         <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical">
                                             <dxlc:LayoutGroup Orientation="Vertical" Header="Approved" View="GroupBox">
                                                 <dxlc:LayoutItem Label="Original Revenue" LabelPosition="Left">

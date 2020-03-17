@@ -270,12 +270,18 @@ namespace BluePrints.ViewModels
         public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
+            IsShowViewLoading = true;
+            this.RaisePropertyChanged(x => x.IsShowViewLoading);
+
             dataPointsTable = null;
             commodityJobs = null;
 
             updateDataPointsTable();
             OnDataTableLoaded?.Invoke(DataPointsTable);
             this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsShowViewLoading = false;
+            this.RaisePropertyChanged(x => x.IsShowViewLoading);
         }
 
         public bool FullScreenView = true;
@@ -290,6 +296,7 @@ namespace BluePrints.ViewModels
             ForceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
+            IsShowViewLoading = true;
             LoadingScreenManager.DisableLoadingScreen = false;
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
@@ -358,7 +365,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveDateAndRefresh()
         {
-            return isCompletelyLoaded;
+            return !IsShowViewLoading;
         }
 
         public void SaveDateAndRefresh()
@@ -454,11 +461,13 @@ namespace BluePrints.ViewModels
 
         public bool CanReloadP6Forecast()
         {
-            return isCompletelyLoaded && !IsLoadingForecast;
+            return !IsShowViewLoading;
         }
 
         public async void ReloadP6Forecast()
         {
+            IsShowViewLoading = true;
+            this.RaisePropertyChanged(x => x.IsShowViewLoading);
             IsLoadingForecast = true;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
             if (summaryBackgroundWorker != null)
@@ -557,11 +566,13 @@ namespace BluePrints.ViewModels
 
         public override bool CanFullRefresh()
         {
-            return isCompletelyLoaded;
+            return !IsShowViewLoading;
         }
 
         public override void FullRefresh()
         {
+            IsShowViewLoading = true;
+            this.RaisePropertyChanged(x => x.IsShowViewLoading);
             IsLoadingForecast = true;
             isCompletelyLoaded = false;
             this.RaisePropertyChanged(x => x.isCompletelyLoaded);
@@ -1628,6 +1639,11 @@ namespace BluePrints.ViewModels
             refreshGridData();
         }
 
+        public bool CanApplyCurrentPF()
+        {
+            return !IsShowViewLoading;
+        }
+
         public void ApplyCurrentPF()
         {
             EntitiesUndoRedoManager.PauseActionId();
@@ -1652,6 +1668,11 @@ namespace BluePrints.ViewModels
 
             EntitiesUndoRedoManager.UnpauseActionId();
             refreshGridData();
+        }
+
+        public bool CanUpdateCurrentPF()
+        {
+            return !IsShowViewLoading;
         }
 
         public void UpdateCurrentPF()
@@ -2356,7 +2377,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveCurrentMonthEAC()
         {
-            return isCompletelyLoaded;
+            return !IsShowViewLoading;
         }
 
         public void SaveCurrentMonthEAC()
@@ -2730,7 +2751,7 @@ namespace BluePrints.ViewModels
                 pasteCellData(gridControl, tableView, RowData);
             }
         }
-
+        
         public bool CanCreateExportSheet()
         {
             return ExportTable != null && FixedDataDate != null;
