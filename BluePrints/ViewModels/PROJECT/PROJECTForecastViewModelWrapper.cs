@@ -915,7 +915,7 @@ namespace BluePrints.ViewModels
                 //only describe actuals when it's less than data date
                 if (dateCost.Date <= FixedDataDateMonthEnd)
                 {
-                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts + dateCost.MaterialCosts;
 
                     //describe previously forecasted costs
                     compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = forecastHistory.Sum(x => (decimal)x.FORECAST_UNITS);
@@ -2370,7 +2370,7 @@ namespace BluePrints.ViewModels
             List<ForecastJobData> jobs = getJobDataFromDatatable();
             if(jobs.Any(x => x.IsPOError))
             {
-                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned, please go to PO forecast module and click Align Actuals to fix all issues", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
                 return;
             }
 

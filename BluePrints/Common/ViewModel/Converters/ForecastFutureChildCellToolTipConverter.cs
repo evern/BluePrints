@@ -44,9 +44,9 @@ namespace BluePrints.Common.ViewModel.Converters
 
                             currentValue = Math.Round(currentValue);
                             if(currentValue > totalHours)
-                                return "Color is green because value has been overridden and it's higher than P6 calculated value of " + totalHours;
+                                return "Color is green because value has been edited and it's higher than P6 calculated value of " + totalHours + "\nTo reset it, single click the cell above and press 'Del' key";
                             else if (currentValue < totalHours)
-                                return "Color is red because value has been overridden and it's lower than P6 calculated value of " + totalHours;
+                                return "Color is red because value has been overridden and it's lower than P6 calculated value of " + totalHours + "\nTo reset it, single click the cell above and press 'Del' key";
                         }
                     }
                 }

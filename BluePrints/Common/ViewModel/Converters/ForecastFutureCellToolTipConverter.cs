@@ -50,37 +50,37 @@ namespace BluePrints.Common.ViewModel.Converters
                                 totalCosts = Math.Round(totalCosts);
                                 decimal currentValue = (decimal)values[2];
 
-                                string P6RemainingStr = "P6 remaining";
+                                string P6RemainingStr = "P6 forecast";
                                 string associatedCosts = string.Empty;
                                 if (p6RemainingCosts > 0)
-                                    associatedCosts += P6RemainingStr + ", ";
+                                    associatedCosts += P6RemainingStr + "\n";
                                 if (poForecastCosts > 0)
-                                    associatedCosts += "PO forecast, ";
+                                    associatedCosts += "PO forecast\n";
                                 if (indirectCosts > 0)
-                                    associatedCosts += "Indirect forecast, ";
+                                    associatedCosts += "Indirect forecast\n";
                                 if (materialCosts > 0)
-                                    associatedCosts += "Material, ";
+                                    associatedCosts += "Material\n";
                                 if (actualCosts > 0)
-                                    associatedCosts += "Actual, ";
+                                    associatedCosts += "Actual\n";
 
                                 if (associatedCosts != string.Empty)
-                                    associatedCosts = associatedCosts.Substring(0, associatedCosts.Length - 2);
+                                    associatedCosts = associatedCosts.Substring(0, associatedCosts.Length - 1);
 
                                 if (totalCosts != 0)
                                 {
                                     currentValue = Math.Round(currentValue);
                                     if (currentValue > totalCosts)
-                                        return "Color is green because cell value is higher than the cost of " + associatedCosts;
+                                        return "Color is green because edited cell value is higher than the cost of " + associatedCosts;
                                     else if (currentValue < totalCosts)
                                     {
                                         if (associatedCosts == P6RemainingStr)
-                                            return "Color is red because cell value is lower than P6 remaining cost, please press 'Del' key on the cell to reset it";
+                                            return "Color is red because edited cell value is superseded by higher P6 forecast cost" + "\nPlease single click this cell and press 'Del' key to reset it";
 
-                                        return "Color is red because cell value is lower than the cost of " + associatedCosts;
+                                        return "Color is red because edited cell value is lower than the cost of " + associatedCosts;
                                     }
                                 }
                                 else if (currentValue > 0)
-                                    return "Color is green because there aren't any system cost on this date and cell value is more than zero";
+                                    return "Color is green to indicate that this cell has been edited";
                             }
                         }
                     }
