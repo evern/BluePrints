@@ -493,7 +493,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uncommitted.
+        ///   Looks up a localized string similar to Previously Forecasted (Before Data Date) \ Uncommitted (After Data Date).
         /// </summary>
         internal static string ForecastCompare_UncommittedRowPhase {
             get {

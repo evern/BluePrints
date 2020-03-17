@@ -137,6 +137,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_PO_SETTINGS, FORECAST_PO_SETTINGProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
         }
 
         private Func<IRepositoryQuery<FORECAST>, IQueryable<FORECAST>> FORECASTProjectionFunc()
@@ -145,6 +146,11 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<FORECAST_PO_SETTING>, IQueryable<FORECAST_PO_SETTING>> FORECAST_PO_SETTINGProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -945,10 +951,9 @@ namespace BluePrints.ViewModels
             {
                 if (ForecastStartDate < LoadDataDate)
                 {
-                    IEnumerable<FORECAST> EACForecasts = FORECASTCollection.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC);
-                    if (EACForecasts.Count() > 0)
+                    if (FORECAST_EACCollection.Count() > 0)
                     {
-                        DateTime lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
+                        DateTime lastEACDataDate = FORECAST_EACCollection.Max(x => x.FORECAST_DATE);
                         if (ForecastStartDate < lastEACDataDate)
                         {
                             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
@@ -965,7 +970,7 @@ namespace BluePrints.ViewModels
                 //restrict user from moving data date forward if there are forecast but EAC isn't saved
                 else if (ForecastStartDate > LoadDataDate)
                 {
-                    bool hasEACOnCurrentDataDate = FORECASTCollection.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == LoadDataDate).Count() > 0;
+                    bool hasEACOnCurrentDataDate = FORECAST_EACCollection.Where(x => x.FORECAST_DATE == LoadDataDate).Count() > 0;
                     if (LoadDataDate != null && !hasEACOnCurrentDataDate)
                     {
                         if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
@@ -1271,6 +1276,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST>();
+            }
+        }
+
+        public IEnumerable<FORECAST_EAC> FORECAST_EACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>();
             }
         }
 

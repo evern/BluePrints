@@ -124,7 +124,7 @@
             </dxe:SpinEdit>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplateFuture">
-            <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
+            <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="False" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
                 <dxe:SpinEdit.Background>
                     <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
                         <Binding Path="RowData.Row.Row" />

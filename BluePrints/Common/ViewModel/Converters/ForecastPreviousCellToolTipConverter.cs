@@ -38,17 +38,15 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
-                            if (dateCost != null)
-                            {
-                                decimal eacCosts = dateCost.EACCosts;
-                                decimal parentValue = (decimal)values[2];
+                            decimal previouslyForecastedCosts = (decimal)childEntity.Rows[System.Convert.ToInt32(BluePrintsResources.ForecastCompare_UncommittedRowIndex)][fieldname];
 
-                                if (parentValue <= eacCosts)
-                                    return "Color is green because actuals are less than EAC";
-                                else
-                                    return "Color is red because actuals are more than EAC";
-                            }
+                            //parentValue will be actual cost e.g. Actuals + Materials + PO Forecast + Indirect Forecast
+                            decimal parentValue = (decimal)values[2];
+
+                            if (parentValue <= previouslyForecastedCosts)
+                                return "Color is green because actuals are less than previously forecasted costs";
+                            else
+                                return "Color is red because actuals are more than previously forecasted costs";
                         }
                     }
                 }

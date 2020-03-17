@@ -31,8 +31,8 @@ namespace BluePrints.Common
         Cost,
         [Display(Name = "P6")]
         P6,
-        [Display(Name = "EAC")]
-        EAC,
+        [Display(Name = "DataDateForecast")]
+        DataDateForecast,
         [Display(Name = "Hour")]
         Hour
     }

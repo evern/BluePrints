@@ -370,10 +370,9 @@ namespace BluePrints.ViewModels
                 {
                     if (FixedDataDate < LoadDataDate)
                     {
-                        IEnumerable<FORECAST> EACForecasts = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC);
-                        if(EACForecasts.Count() > 0)
+                        if(FORECAST_EACCollection.Count() > 0)
                         {
-                            DateTime lastEACDataDate = EACForecasts.Max(x => x.FORECAST_DATE);
+                            DateTime lastEACDataDate = FORECAST_EACCollection.Max(x => x.FORECAST_DATE);
                             if(FixedDataDate < lastEACDataDate)
                             {
                                 if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
@@ -390,7 +389,7 @@ namespace BluePrints.ViewModels
                     //restrict user from moving data date forward if there are forecast but EAC isn't saved
                     else if (FixedDataDate > LoadDataDate)
                     {
-                        bool hasEACOnCurrentDataDate = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_TYPE == ForecastDataType.EAC && x.FORECAST_DATE == LoadDataDate).Count() > 0;
+                        bool hasEACOnCurrentDataDate = FORECAST_EACCollection.Where(x => x.FORECAST_DATE == LoadDataDate).Count() > 0;
                         if (LoadDataDate != null && !hasEACOnCurrentDataDate)
                         {
                             if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
@@ -884,6 +883,7 @@ namespace BluePrints.ViewModels
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
                 List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
+                List<FORECAST> forecastHistory = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast).ToList();
 
                 //skip when date is actual date
                 if (forecastUnitsOverrides.Count > 0 && dateCost != commodityJob.DateCosts.First())
@@ -912,13 +912,24 @@ namespace BluePrints.ViewModels
                     viewCost = dateCost.TotalCosts;
                 }
 
-                commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost;
+                //only describe actuals when it's less than data date
+                if (dateCost.Date <= FixedDataDateMonthEnd)
+                {
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
 
-                //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
-                if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
-                    compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost - dateCost.P6Costs - dateCost.ActualCosts - dateCost.MaterialCosts - dateCost.POForecastCosts - dateCost.IndirectForecastCosts;
+                    //describe previously forecasted costs
+                    compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = forecastHistory.Sum(x => (decimal)x.FORECAST_UNITS);
+                }
                 else
-                    compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = 0;
+                {
+                    commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost;                
+                    
+                    //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
+                    if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
+                        compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost - dateCost.TotalCosts;
+                    else
+                        compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = 0;
+                }
             }
 
             commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
@@ -1383,6 +1394,7 @@ namespace BluePrints.ViewModels
                 {
                     e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
                     e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
+                    e.Column.ReadOnly = false;
                 }
 
                 GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
@@ -1398,6 +1410,7 @@ namespace BluePrints.ViewModels
 
                 e.Column.ReadOnly = true;
                 e.Column.Fixed = FixedStyle.Left;
+                e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
             }
         }
 
@@ -2363,10 +2376,33 @@ namespace BluePrints.ViewModels
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+
+            DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
                 ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsEntitiesUnitOfWork, entity.EstimateAtCompletion, false);
+
+                decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
+                ExoSubJobProjection projection = entity.Projection;
+                FORECAST findFORECASTS = bluePrintsEntitiesUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
+                if (findFORECASTS != null)
+                    findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
+                else
+                {
+                    findFORECASTS = new FORECAST();
+                    findFORECASTS.GUID = Guid.Empty;
+                    findFORECASTS.GUID_PROJECT = LoadPROJECT.GUID;
+                    findFORECASTS.SUBJOB_CODE = projection.SubJob.Code;
+                    findFORECASTS.DISCIPLINE_CODE = projection.Discipline.Code;
+                    findFORECASTS.COMMODITY_CODE = projection.Commodity.Code;
+                    findFORECASTS.VARIATION_CODE = normalizeVariationCode(projection.Variation_Code);
+                    findFORECASTS.FORECAST_DATE = firstForecastDate;
+                    findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
+                    findFORECASTS.FORECAST_TYPE = ForecastDataType.DataDateForecast;
+                    bluePrintsEntitiesUnitOfWork.FORECASTS.Add(findFORECASTS);
+                }
+
                 LoadingScreenManager.Progress();
             }
 

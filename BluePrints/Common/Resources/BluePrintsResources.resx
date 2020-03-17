@@ -358,6 +358,6 @@
     <value>2</value>
   </data>
   <data name="ForecastCompare_UncommittedRowPhase" xml:space="preserve">
-    <value>Uncommitted</value>
+    <value>Previously Forecasted (Before Data Date) \ Uncommitted (After Data Date)</value>
   </data>
 </root>
