@@ -874,17 +874,17 @@ namespace BluePrints.ViewModels
                         {
                             decimal forecastValue = FORECAST_PO.FORECAST_VALUE == null ? 0 : (decimal)FORECAST_PO.FORECAST_VALUE;
                             decimal postAdjustmentCosts = forecastValue + wbsCostDifference;
-                            if (postAdjustmentCosts > 0)
-                            {
+                            //if (postAdjustmentCosts > 0)
+                            //{
                                 FORECAST_PO.FORECAST_VALUE += wbsCostDifference;
                                 saveFORECAST_POs.Add(FORECAST_PO);
-                            }
-                            else
-                            {
-                                wbsCostDifference += forecastValue;
-                                FORECAST_PO.FORECAST_VALUE = 0.00m;
-                                saveFORECAST_POs.Add(FORECAST_PO);
-                            }
+                            //}
+                            //else
+                            //{
+                            //    wbsCostDifference += forecastValue;
+                            //    FORECAST_PO.FORECAST_VALUE = 0.00m;
+                            //    saveFORECAST_POs.Add(FORECAST_PO);
+                            //}
                         }
                     }
                 }
@@ -1117,7 +1117,7 @@ namespace BluePrints.ViewModels
         public bool IsPOColumnsVisible { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
-            if (SelectedDataRows == null || SelectedDataRows.Count == 0)
+            if (gridColumn == null || SelectedDataRows == null || SelectedDataRows.Count == 0)
                 return;
 
             if (gridColumn.FieldName.ToUpper().Contains("PO_REMAININGPRICE"))
