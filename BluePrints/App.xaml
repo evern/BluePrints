@@ -173,6 +173,19 @@
                 </TextBlock.LayoutTransform>
             </TextBlock>
         </DataTemplate>
+        <DataTemplate x:Key="POViewHeaderTemplate">
+            <TextBlock TextWrapping="WrapWithOverflow" 
+                           Width="70" FontFamily="Calibri" FontSize="12"
+                           VerticalAlignment="Center" TextAlignment="Center" 
+                           HorizontalAlignment="Center">
+                <TextBlock.Text>
+                    <Binding />
+                </TextBlock.Text>
+                <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="0" />
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </DataTemplate>
         <DataTemplate x:Key="POForecastHeaderTemplate">
             <TextBlock TextWrapping="WrapWithOverflow"
                            Width="40" 

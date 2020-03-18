@@ -210,8 +210,7 @@ namespace BluePrints.ViewModels
         List<string> hiddenColumnFieldNames = new List<string>();
         protected List<DateTime> alignedDataDateCollection;
         protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
-        protected virtual IGridControlService ExportGridControlService { get { return this.GetService<IGridControlService>("ExportGridControlService"); } }
-        protected virtual ITableViewService ExportTableViewService { get { return this.GetService<ITableViewService>("ExportTableViewService"); } }
+        protected virtual ITableViewService DetailTableViewService { get { return this.GetService<ITableViewService>("DetailTableViewService"); } }
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
@@ -1254,6 +1253,7 @@ namespace BluePrints.ViewModels
         }
 
         public bool IsPOColumnsVisible { get; set; }
+        private bool isDetailBestFitApplied { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (gridColumn == null || dataRowView == null)
@@ -1335,6 +1335,12 @@ namespace BluePrints.ViewModels
                 IsHidden = true;
             }
 
+            //apply only once because it's resource consuming
+            if(!isDetailBestFitApplied)
+            {
+                DetailTableViewService.ApplyBestFit();
+                isDetailBestFitApplied = true;
+            }
             //this.RaisePropertyChanged(x => x.IsHidden);
         }
 
@@ -2755,126 +2761,6 @@ namespace BluePrints.ViewModels
         public bool CanCreateExportSheet()
         {
             return ExportTable != null && FixedDataDate != null;
-        }
-
-        public void CreateExportSheet()
-        {
-            ExportTableViewService.ApplyBestFit();
-            string ResultPath = string.Empty;
-            if (FolderBrowserDialogService.ShowDialog())
-            {
-                ResultPath = FolderBrowserDialogService.ResultPath;
-                DateTime exportDate = (DateTime)FixedDataDate;
-                MemoryStream stream = new MemoryStream();
-
-                //copy group configuration
-                GridColumnCollection exportGridColumns = ExportGridControlService.GridColumns();
-                GridColumnCollection defaultGridColumns = GridControlService.GridColumns();
-
-                foreach (GridColumn gridColumn in defaultGridColumns)
-                {
-                    string fieldName = gridColumn.FieldName;
-                    if (exportGridColumns.Any(x => x.FieldName == fieldName))
-                    {
-                        exportGridColumns[fieldName].GroupIndex = gridColumn.GroupIndex;
-                    }
-                }
-
-                if (ExportTableViewService.ExportToXls(stream))
-                {
-                    using (SpreadsheetControl spreadsheetControl = new SpreadsheetControl())
-                    {
-                        System.Drawing.Color editableColor = System.Drawing.Color.Yellow;
-                        string costFormat = "$#,###,###";
-                        string numberFormat = "#,###,###";
-                        spreadsheetControl.LoadDocument(stream);
-                        Worksheet ws = spreadsheetControl.Document.Worksheets[0];
-                        DevExpress.Spreadsheet.Range usedRange = ws.GetUsedRange();
-                        ws["$A:$XFD"].Protection.Locked = false;
-                        for (int rowIndex = 0; rowIndex < usedRange.RowCount; rowIndex++)
-                        {
-                            bool isReadOnly = false;
-                            Cell commodityCell = usedRange[rowIndex, spreadSheetCommodityIndex];
-                            if (commodityCell.Value.IsEmpty)
-                                isReadOnly = true;
-
-                            Cell phaseCell = usedRange[rowIndex, spreadSheetPhaseIndex];
-                            Cell areaCell = usedRange[rowIndex, spreadSheetAreaIndex];
-                            Cell subAreaCell = usedRange[rowIndex, spreadSheetSubAreaIndex];
-                            Cell subJobCell = usedRange[rowIndex, spreadSheetSubJobIndex];
-                            Cell subJobTitleCell = usedRange[rowIndex, spreadSheetSubJobTitleIndex];
-                            Cell variationCell = usedRange[rowIndex, spreadSheetVariationIndex];
-                            Cell disciplineCell = usedRange[rowIndex, spreadSheetDisciplineIndex];
-                            Cell disciplineNameCell = usedRange[rowIndex, spreadSheetDisciplineNameIndex];
-                            Cell commodityNameCell = usedRange[rowIndex, spreadSheetCommodityNameIndex];
-                            Cell commodityDescriptionCell = usedRange[rowIndex, spreadSheetCommodityDescriptionIndex];
-                            Cell commodityUOMCell = usedRange[rowIndex, spreadSheetCommodityUOMIndex];
-                            Cell budgetCell = usedRange[rowIndex, spreadSheetBudgetIndex];
-                            Cell rateCell = usedRange[rowIndex, spreadSheetRateIndex];
-
-                            budgetCell.NumberFormat = costFormat;
-                            rateCell.NumberFormat = costFormat;
-                            ws[phaseCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[areaCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[subAreaCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[subJobCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[subJobTitleCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[variationCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[disciplineCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[disciplineNameCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[commodityCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[commodityNameCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[commodityDescriptionCell.GetReferenceA1()].Protection.Locked = true;
-                            ws[commodityUOMCell.GetReferenceA1()].Protection.Locked = true;
-
-                            string uomFormat = numberFormat;
-                            if (!commodityUOMCell.Value.IsEmpty)
-                                uomFormat = numberFormat + @" """ + commodityUOMCell.Value.TextValue + @"""";
-
-                            if (isReadOnly)
-                            {
-                                ws[budgetCell.GetReferenceA1()].Protection.Locked = true;
-                                ws[rateCell.GetReferenceA1()].Protection.Locked = true;
-                            }
-                            else
-                            {
-                                budgetCell.FillColor = editableColor;
-                                rateCell.FillColor = editableColor;
-
-                                for (int columnIndex = spreadSheetDateStartIndex; columnIndex < usedRange.ColumnCount; columnIndex++)
-                                {
-                                    DateTime columnDate;
-                                    Cell dateCell = usedRange[0, columnIndex];
-                                    if (!DateTime.TryParse(dateCell.Value.TextValue, out columnDate))
-                                        continue;
-
-                                    Cell currentCell = usedRange[rowIndex, columnIndex];
-                                    currentCell.FillColor = editableColor;
-                                    currentCell.NumberFormat = uomFormat;
-                                }
-                            }
-                        }
-
-                        string exportPath = ResultPath + "\\" + exportDate.Year + "-" + exportDate.ToString("MMM") + "_" + LoadPROJECT.NUMBER + "_Forecast" + ".xlsx";
-                        try
-                        {
-                            
-                            ws.Protect("", WorksheetProtectionPermissions.Default | WorksheetProtectionPermissions.FormatColumns | WorksheetProtectionPermissions.PivotTables | WorksheetProtectionPermissions.Sort | WorksheetProtectionPermissions.AutoFilters | WorksheetProtectionPermissions.SelectLockedCells | WorksheetProtectionPermissions.SelectUnlockedCells | WorksheetProtectionPermissions.FormatCells | WorksheetProtectionPermissions.FormatRows);
-
-                            spreadsheetControl.Options.Behavior.Group.CollapseExpandOnProtectedSheet = DevExpress.XtraSpreadsheet.DocumentCapability.Enabled;
-                            spreadsheetControl.Options.Behavior.Group.CollapseExpandOnReadOnlyControl = DevExpress.XtraSpreadsheet.DocumentCapability.Enabled;
-                            spreadsheetControl.SaveDocument(exportPath);
-                            Process.Start(exportPath);
-                        }
-                        catch
-                        {
-                            MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
-                        }
-                    }
-                }
-                else
-                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Information);
-            }
         }
 
         public override void ExportToExcel()
