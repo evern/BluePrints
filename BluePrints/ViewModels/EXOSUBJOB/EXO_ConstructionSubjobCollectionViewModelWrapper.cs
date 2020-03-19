@@ -38,7 +38,7 @@ namespace BluePrints.ViewModels
     /// Represents the single BASELINE object view model.
     /// </summary>
     public partial class EXO_ConstructionSubjobCollectionViewModelWrapper :
-        EXO_SubjobCollectionViewModelWrapper
+        EXO_JobPermissionCollectionViewModelWrapper
     {
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.

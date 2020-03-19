@@ -23,7 +23,7 @@ namespace BluePrints.ViewModels
     /// Represents the single BASELINE object view model.
     /// </summary>
     public partial class EXO_DesignSubjobCollectionViewModelWrapper :
-        EXO_SubjobCollectionViewModelWrapper
+        EXO_JobPermissionCollectionViewModelWrapper
     {
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -62,7 +62,6 @@ namespace BluePrints.ViewModels
             SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
             DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
             tryCombineLocalUsers = true;
-            
             //Not linking to base because it contains background planned subjob check
             //base.resolveParameters(parameter);
         }
@@ -235,8 +234,24 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        #region View Properties
-        public override IEnumerable<ExoSubJobAuth> Users
+        #region View Properties        
+        protected bool isPermissionLoading;
+        //if user clicks on an autofilter row and isPermissionLoading is true it won't be set to false ever and this can freeze up the view
+        public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
+
+
+        public bool IsPermissionGridEnabled
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplaySelectedEntities.Count == 0)
+                    return false;
+
+                return DisplaySelectedEntities.Any(x => x.IsLineExistsInExo);
+            }
+        }
+
+        public IEnumerable<ExoSubJobAuth> Users
         {
             get
             {

@@ -153,7 +153,9 @@ namespace BluePrints.ViewModels
                     DisplayEntities.Add(projection);
                 }
 
-                OnAfterNewRowAdded(1);
+                List<ExoResourceProjection> newlyAddedResources = new List<ExoResourceProjection>();
+                newlyAddedResources.Add(projection);
+                OnAfterNewRowAdded(newlyAddedResources);
                 if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                     MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, null, null, null, EntityMessageType.Added);
             }

@@ -56,8 +56,6 @@ namespace BluePrints.ViewModels
         List<ExoDataPoint> revenueDataPoints;
 
         protected BackgroundWorker summaryBackgroundWorker;
-        //indicate whether projection transformation should run first loaded or refreshed
-        bool isFirstLoaded;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;

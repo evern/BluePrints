@@ -24,8 +24,11 @@ namespace BluePrints.Common.Base
 
         public override void OnLoaded()
         {
-            SpellCheckerModule = new SpellCheckerModule();
-            SpellCheckerModule.ApplySpellCheckMode(true);
+            if (!isFirstLoaded)
+            {
+                SpellCheckerModule = new SpellCheckerModule();
+                SpellCheckerModule.ApplySpellCheckMode(true);
+            }
 
             base.OnLoaded();
         }
@@ -53,8 +56,11 @@ namespace BluePrints.Common.Base
 
         public override void OnLoaded()
         {
-            SpellCheckerModule = new SpellCheckerModule();
-            SpellCheckerModule.ApplySpellCheckMode(true);
+            if (!isFirstLoaded)
+            {
+                SpellCheckerModule = new SpellCheckerModule();
+                SpellCheckerModule.ApplySpellCheckMode(true);
+            }
 
             base.OnLoaded();
         }
@@ -82,8 +88,12 @@ namespace BluePrints.Common.Base
 
         public override void OnLoaded()
         {
-            SpellCheckerModule = new SpellCheckerModule();
-            SpellCheckerModule.ApplySpellCheckMode(true);
+            if (!isFirstLoaded)
+            {
+                SpellCheckerModule = new SpellCheckerModule();
+                SpellCheckerModule.ApplySpellCheckMode(true);
+            }
+
             base.OnLoaded();
         }
 

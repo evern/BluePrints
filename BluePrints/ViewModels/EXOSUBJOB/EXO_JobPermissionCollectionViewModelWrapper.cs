@@ -40,7 +40,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class EXO_SubjobCollectionViewModelWrapper :
+    public partial class EXO_JobPermissionCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <BASELINE_ITEM, ExoSubJobEditableProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -48,10 +48,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static EXO_SubjobCollectionViewModelWrapper Create(
+        public static EXO_JobPermissionCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new EXO_SubjobCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new EXO_JobPermissionCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         BackgroundWorker backgroundBudgetChecker;
@@ -60,7 +60,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the BASELINEViewModel type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected EXO_SubjobCollectionViewModelWrapper(
+        protected EXO_JobPermissionCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
 
@@ -87,8 +87,6 @@ namespace BluePrints.ViewModels
 
         //user from exo will do a lookup to get additional details from user's in BluePrints
         protected bool tryCombineLocalUsers = false;
-        public string SubJobRegex { get; set; }
-        public string DisciplineRegex { get; set; }
         #endregion
 
         #region Loading Operations
@@ -184,16 +182,28 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinue;
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
+            MainViewModel.FuncManualRowPastingIsContinue = this.ManualRowPasteAction;
+            MainViewModel.PasteListener = onAfterEntitiesPasted;
             MainViewModel.SetParentViewModel(this);
 
+            mainThreadDispatcher.BeginInvoke(new Action(() => filterUser()));
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         private bool onBeforeEntitySavedIsContinue(ExoSubJobEditableProjection entity)
         {
-            commitToExo(entity);
             return false;
         }
+
+        //filter out user's that have default security profile
+        private void filterUser()
+        {
+            //CriteriaOperator newCriteriaOperator = CriteriaOperator.Parse("[User.SecurityProfileID] <> 4");
+            //UserFilterCriteria = newCriteriaOperator;
+            //this.RaisePropertyChanged(x => x.UserFilterCriteria);
+        }
+
+        public CriteriaOperator UserFilterCriteria { get; set; }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
@@ -207,9 +217,104 @@ namespace BluePrints.ViewModels
 
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
+
+        protected override void OnSelectedEntitiesChanged()
+        {
+            refreshPermissions();
+        }
 #endregion
 
 #region Events
+        /// <summary>
+        /// Remembers an entity added for undoing
+        /// Since CollectionViewModelBase is a POCO view model, an the instance of this class will also expose the AddUndoCommand property that can be used as a binding source in views.
+        /// </summary>
+        public virtual void CommitNewRow(RowEventArgs e)
+        {
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
+            {
+                commitToExo((ExoSubJobEditableProjection)e.Row);
+            }
+        }
+
+        public bool ManualRowPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, ExoSubJobEditableProjection pasteEntity, bool isLastRow)
+        {
+            KeyValuePair<ColumnBase, string> subjobCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)));
+            KeyValuePair<ColumnBase, string> subjobCodeTitleData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobTitle)));
+            KeyValuePair<ColumnBase, string> disciplineCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)));
+            KeyValuePair<ColumnBase, string> disciplineNameData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineName)));
+            KeyValuePair<ColumnBase, string> commodityCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)));
+            KeyValuePair<ColumnBase, string> stockCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)));
+            KeyValuePair<ColumnBase, string> variationCodeData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)));
+            KeyValuePair<ColumnBase, string> budgetData = pasteData.FirstOrDefault(x => x.Key.FieldName.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)));
+
+            pasteEntity.SubJobCode = subjobCodeData.Value.Trim();
+            pasteEntity.SubJobTitle = subjobCodeTitleData.Value.Trim();
+            pasteEntity.DisciplineCode = disciplineCodeData.Value.Trim();
+            pasteEntity.DisciplineName = disciplineNameData.Value.Trim();
+            pasteEntity.CommodityCode = commodityCodeData.Value.Trim();
+            pasteEntity.StockCode = stockCodeData.Value.Trim();
+            pasteEntity.VariationCode = variationCodeData.Value.Trim();
+
+            decimal budgetValue = 0;
+            if (decimal.TryParse(budgetData.Value, out budgetValue))
+            {
+                pasteEntity.ExoBudget = budgetValue;
+            }
+
+            pasteEntity.PopulateCommodityCodes(COMMODITY_CODECollection);
+            pasteEntity.PopulateStockCodes(STOCK_ITEMSCollection);
+            pasteEntity.PopulateLineAuthUsers(DisplayEntities);
+
+            string errorMessage = string.Empty;
+            List<KeyValuePair<string, string>> constraintIssues;
+            if (MainViewModel.IsValidEntity(pasteEntity, null, ref errorMessage, out constraintIssues))
+            {
+                if (commitToExo(pasteEntity, false))
+                {
+                    MainViewModel.Entities.Insert(0, pasteEntity);
+                    if(isLastRow)
+                        this.RaisePropertyChanged(x => x.DisplayEntities);
+                }
+
+                //remove restriction atm because user isn't familiar with system yet
+                //if (pasteEntity.IsCommodityCodeValid)
+                //{
+                //    if(commitToExo(pasteEntity))
+                //    {
+                //        MainViewModel.Entities.Insert(0, pasteEntity);
+                //        this.RaisePropertyChanged(x => x.DisplayEntities);
+                //    }
+                //}
+                //else
+                //{
+                //    errorMessage = "Commodity code " + pasteEntity.CommodityCode + " does not belong to discipline code " + pasteEntity.DisciplineCode + " and phase type " + pasteEntity.PhaseTypeStr + "\nCurrent row will be skipped";
+                //}
+            }
+
+            if(errorMessage != string.Empty)
+            {
+                if (errorMessage.ToUpper().Contains("DUPLICATE"))
+                    pasteErrorMessages.Add(new ErrorMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode, "Already exists"));
+                else
+                    pasteErrorMessages.Add(new ErrorMessage(pasteEntity.SubJobCode + " " + pasteEntity.DisciplineCode + " " + pasteEntity.CommodityCode + " " + pasteEntity.VariationCode, errorMessage));
+            }
+
+            return false;
+        }
+
+        List<ErrorMessage> pasteErrorMessages = new List<ErrorMessage>();
+        private void onAfterEntitiesPasted(PasteStatus pasteStatus)
+        {
+            if (pasteStatus == PasteStatus.Start)
+                pasteErrorMessages.Clear();
+            else if(pasteErrorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(pasteErrorMessages, "The following jobs cannot be pasted");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
+            }
+        }
+
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, bool isNew)
         {
             string errorMessage = string.Empty;
@@ -300,7 +405,71 @@ namespace BluePrints.ViewModels
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
-        
+
+        public void PermissionCellValueChanging(CellValueChangedEventArgs e)
+        {
+            //skip on new row
+            if (e.RowHandle < 0)
+            {
+                e.Handled = true;
+                base.CellValueChanging(e);
+                return;
+            }
+
+            ExoSubJobAuth editingSubJobAuth = (ExoSubJobAuth)e.Row;
+            //don't need to validate fieldname since only this field is changeable in role permission grid control
+
+            bool newValue = (bool)e.Value;
+            if (newValue)
+            {
+                foreach (ExoSubJobEditableProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+                {
+                    if (editingSubJobAuth.User.ProjectLocaleExoId == null)
+                        continue;
+
+                    ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
+                    editingSubJobAuth.IsAssigned = true;
+                    selectedEntity.AuthUsers.Add(editingSubJobAuth);
+
+                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    {
+                        ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
+                        if (findAuth == null)
+                        {
+                            sameSubJobEntity.AuthUsers.Add(editingSubJobAuth);
+                        }
+                        else if (findAuth.IsAssigned == null || !(bool)findAuth.IsAssigned)
+                            findAuth.IsAssigned = true;
+                    }
+                }
+
+                e.Handled = true;
+            }
+            else
+            {
+                foreach (ExoSubJobEditableProjection selectedEntity in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+                {
+                    ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
+                    if (existingPermission != null)
+                    {
+                        ExoMethods.deleteResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
+                        selectedEntity.AuthUsers.Remove(existingPermission);
+                        e.Handled = true;
+                    }
+
+                    foreach (ExoSubJobEditableProjection sameSubJobEntity in DisplayEntities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    {
+                        ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
+                        if (findAuth != null)
+                            sameSubJobEntity.AuthUsers.Remove(findAuth);
+                    }
+                }
+            }
+
+            //refreshPermissions();
+            base.CellValueChanging(e);
+        }
+
         private void viewOnlyUpdateSubJobTitle(ExoSubJobEditableProjection projection, string newSubJobCode, bool updateRelatedSubjobsEntries)
         {
             if (newSubJobCode == null)
@@ -388,6 +557,11 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void CommitNewLinesToExo()
+        {
+            CommitToExo(DisplayEntities);
+        }
+
         public void RemoveSelected()
         {
             List<ExoSubJobEditableProjection> removeProjections = DisplaySelectedEntities.Where(x => x.IsLineExistsInExo).ToList();
@@ -471,6 +645,26 @@ namespace BluePrints.ViewModels
             SendKeys.SendWait("^v");
         }
 
+        public bool IsPermissionGridEnabled
+        {
+            get
+            {
+                if (DisplayEntities == null || DisplaySelectedEntities.Count == 0)
+                    return false;
+
+                return DisplaySelectedEntities.Any(x => x.IsLineExistsInExo);
+            }
+        }
+
+        protected void refreshPermissions()
+        {
+            isPermissionLoading = true;
+            this.RaisePropertyChanged(x => x.IsPermissionLoading);
+
+            this.RaisePropertyChanged(x => x.Users);
+            this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
+        }
+
         public override void FullRefresh()
         {
             initializeCompulsoryViewProperties(loadPROJECT);
@@ -482,15 +676,15 @@ namespace BluePrints.ViewModels
 #endregion
 
 #region EXO Database
-        private bool commitToExo(ExoSubJobEditableProjection projection)
+        private bool commitToExo(ExoSubJobEditableProjection projection, bool updatePermission = true)
         {
             List<ExoSubJobEditableProjection> newLines = new List<ExoSubJobEditableProjection>();
             ExoSubJobEditableProjection newLine = projection;
             newLines.Add(newLine);
-            return CommitToExo(newLines);
+            return CommitToExo(newLines, updatePermission);
         }
 
-        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
+        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections, bool updatePermission = true)
         {
             if(masterJob == null)
             {
@@ -565,6 +759,13 @@ namespace BluePrints.ViewModels
                 return false;
             }
 
+            //Commodity code doesn't have to be valid for now
+            //else if(projections.Any(x => !x.IsCommodityCodeValid))
+            //{
+            //    MessageBoxService.ShowMessage("Some lines have commodity code that doesn't match discipline code and phase", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+            //    return false;
+            //}
+
             int updatedLineCount = 0;
             List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
             foreach (ExoSubJobEditableProjection projection in projections)
@@ -604,6 +805,9 @@ namespace BluePrints.ViewModels
                                             }
                                         }
 
+                                        if(updatePermission)
+                                            refreshPermissions();
+
                                         addedProjections.Add(projection);
                                         updatedLineCount += 1;
                                     }
@@ -623,18 +827,10 @@ namespace BluePrints.ViewModels
 
             if (addedProjections.Count() > 0)
             {
-                foreach (ExoSubJobEditableProjection addedProjection in addedProjections)
-                {
-                    addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                    addedProjection.PopulateStockCodes(STOCK_ITEMSCollection);
-                    addedProjection.PopulateLineAuthUsers(DisplayEntities);
-                    MainViewModel.Entities.Insert(0, addedProjection);
-                }
-
+                //MessageBoxService.ShowMessage(updatedLineCount + " line(s) added");
                 OnAfterNewRowAdded(addedProjections);
                 //Refreshes collection properties
                 this.RaisePropertiesChanged();
-
                 return true;
             }
 
@@ -844,6 +1040,76 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.FilterCriteria);
         }
 
+        protected bool isPermissionLoading;
+        //if user clicks on an autofilter row and isPermissionLoading is true it won't be set to false ever and this can freeze up the view
+        public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
+
+        public ExoSubJobAuth SelectedUser { get; set; }
+        List<ExoSubJobAuth> orderedAuthUsers;
+        public virtual IEnumerable<ExoSubJobAuth> Users
+        {
+            get
+            {
+                if (MainViewModel == null || !IsPermissionGridEnabled)
+                    return null;
+
+                var permissions = new List<ExoSubJobAuth>();
+                if (DisplaySelectedEntities == null && MainViewModel.Entities.Count > 0)
+                    DisplaySelectedEntities.Add(MainViewModel.Entities.First());
+
+                if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
+                    return null;
+
+                if (orderedAuthUsers == null)
+                {
+                    orderedAuthUsers = new List<ExoSubJobAuth>();
+                    foreach (STAFF staff in exoSTAFFS)
+                    {
+                        ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
+
+                        USER newUser = null;
+                        if (tryCombineLocalUsers)
+                            newUser = USERCollection.FirstOrDefault(x => x.ProjectLocaleExoId == staff.STAFFNO);
+
+                        if (newUser == null)
+                        {
+                            newUser = new USER();
+                            newUser.ProjectLocale = loadPROJECT.OfficeNameForExo;
+                        }
+
+                        if (!orderedAuthUsers.Any(x => x.User.ProjectLocaleExoId == staff.STAFFNO))
+                        {
+                            newUser.NAME = staff.NAME;
+                            newUser.ProjectLocaleExoId = staff.STAFFNO;
+                            newUser.TITLE = newUser.TITLE != null && newUser.TITLE != string.Empty ? newUser.TITLE : staff.JOBTITLE;
+                            newUser.SecurityProfileID = staff.SECURITYPROFILEID;
+                            displayUserAuth.User = newUser;
+
+                            orderedAuthUsers.Add(displayUserAuth);
+                        }
+                    }
+                }
+
+                foreach(ExoSubJobAuth authorisation in orderedAuthUsers)
+                {
+                    if (DisplaySelectedEntities.All(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == authorisation.User.ProjectLocaleExoId)))
+                        authorisation.IsAssigned = true;
+                    else if (DisplaySelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == authorisation.User.ProjectLocaleExoId)))
+                        authorisation.IsAssigned = null;
+                    else
+                        authorisation.IsAssigned = false;
+
+                    authorisation.ShouldAssign = false;
+                }
+                
+
+                isPermissionLoading = false;
+                this.RaisePropertyChanged(x => x.IsPermissionLoading);
+                permissions.AddRange(orderedAuthUsers.OrderBy(x => x.User.Full_Name));
+                return permissions;
+            }
+        }
+
         public override void ShowNotification()
         {
             if (AppNotificationService == null)
@@ -858,10 +1124,12 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "EXO_SubjobCollectionViewModelWrapper";
+                return "EXO_JobPermissionCollectionViewModelWrapper";
             }
         }
 
+        public string SubJobRegex { get; set; }
+        public string DisciplineRegex { get; set; }
         public IEnumerable<USER> USERCollection
         {
             get

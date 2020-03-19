@@ -450,7 +450,6 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region Set current data date
-        bool isFirstLoaded;
         protected void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
         {
             if(entity == null && !SupressCompulsoryEntityNotFoundMessage)
