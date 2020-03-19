@@ -23,7 +23,7 @@
                     <dxb:BarButtonItem x:Name="biShowExoError" Command="{Binding DataContext.ShowExoErrorsCommand, ElementName=userControl}" Content="Exo Issues" Glyph="{dx:DXImageOffice2013 Image=BugReport_16x16.png}" LargeGlyph="{dx:DXImage Image=BugReport_32x32.png}" ToolTip="Shows any subjobs in exo that isn't available in blueprints" />
                 </dxb:BarManager.Items>
                 <DockPanel>
-                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="OfficeSlim">
+                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">

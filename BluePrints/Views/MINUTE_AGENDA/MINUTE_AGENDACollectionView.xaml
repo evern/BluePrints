@@ -183,7 +183,7 @@
                     <dxb:BarButtonItem x:Name="biShowAllAgendas" Command="{Binding DataContext.ShowAllAgendasCommand, ElementName=userControl}" Content="Show All Agendas" Glyph="{dx:DXImage Image=ClearFilter_16x16.png}" LargeGlyph="{dxc:DXImage Image=ClearFilter_32x32.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
-                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >

@@ -91,6 +91,7 @@
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </dx:DXWindow.Resources>
@@ -107,6 +108,8 @@
         </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
+                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
+                <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
                 <dxb:BarButtonItem x:Name="biLogOut" Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />
                 <dxr:RibbonGalleryBarItem x:Name="biGalleryItems" Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" ToolTip="Change theme">
                     <dxmvvm:Interaction.Behaviors>
@@ -137,7 +140,7 @@
                 <dxb:BarButtonItem x:Name="biClose" Command="{Binding DataContext.ApplicationShutDownCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Close_16x16.png}" LargeGlyph="{dx:DXImage Image=Close_32x32.png}" ToolTip="Shut down program" />
             </dxb:BarManager.Items>
             <DockPanel>
-                <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" x:Name="ribbonControl1" dx:DXSerializer.Enabled="False" AllowCustomization="False" AllowMinimizeRibbon="False" ApplicationButtonText="" DockPanel.Dock="Top" RibbonHeaderVisibility="Visible"  RibbonStyle="TabletOffice" ShowApplicationButton="False" ToolbarShowMode="Hide" MouseDown="RibbonControl1_MouseDown" MouseUp="RibbonControl1_MouseUp" MouseMove="RibbonControl1_MouseMove">
+                <dxr:RibbonControl x:Name="ribbonControl1" Style="{StaticResource DefaultRibbonControlStyle}" MouseDown="RibbonControl1_MouseDown" MouseUp="RibbonControl1_MouseUp" MouseMove="RibbonControl1_MouseMove" RibbonStyle="TabletOffice" >
                     <dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                         <Style TargetType="dxr:RibbonApplicationButtonControl">
                             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -154,9 +157,9 @@
                     </dxr:RibbonControl.PageHeaderItemLinks>
                     <dxr:RibbonDefaultPageCategory MergeType="MergeItems" Caption="defaultCategory">
                         <dxr:RibbonPage Caption="Home" MergeType="Remove" MergeOrder="1" >
-                            <dxr:RibbonPageGroup MergeType="Remove" Caption="Navigation" MergeOrder="1001" local:CustomRibbonPageGroupsItemsPanel.GroupAlignment="Right">
-                                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
-                                <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
+                            <dxr:RibbonPageGroup MergeType="Remove" Caption="Navigation" MergeOrder="1002" local:CustomRibbonPageGroupsItemsPanel.GroupAlignment="Right">
+                                <dxb:BarButtonItemLink BarItemName="biRefreshProjectNavigations" />
+                                <dxb:BarButtonItemLink BarItemName="biSyncDatabase" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -182,7 +185,7 @@
                         </Style>
                     </dxa:AccordionControl.ItemContainerStyle>
                 </dxa:AccordionControl>
-                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" FloatingMode="Desktop" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0">
                             <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">

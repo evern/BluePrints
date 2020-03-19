@@ -36,7 +36,7 @@
                     <dxb:BarButtonItem x:Name="biTenderProfile" Command="{Binding DataContext.TenderProfileCommand, ElementName=userControl}" Content="Tender Profile" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
-                    <dxr:RibbonControl MDIMergeStyle="WhenChildActivated" AllowCustomization="False" DockPanel.Dock="Top" RibbonStyle="Office2010">
+                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
                         <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
