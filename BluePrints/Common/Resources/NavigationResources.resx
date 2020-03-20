@@ -384,4 +384,7 @@
   <data name="Category_Unauthorised" xml:space="preserve">
     <value>Unauthorised category</value>
   </data>
+  <data name="Menu_Project_EXO_JobPermission" xml:space="preserve">
+    <value>Project EXO jobs permissions maintenance menu</value>
+  </data>
 </root>

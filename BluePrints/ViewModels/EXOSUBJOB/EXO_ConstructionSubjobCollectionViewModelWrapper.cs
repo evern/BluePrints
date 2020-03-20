@@ -37,8 +37,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class EXO_ConstructionSubjobCollectionViewModelWrapper :
-        EXO_JobPermissionCollectionViewModelWrapper
+    public partial class EXO_ConstructionSubjobCollectionViewModelWrapper : EXO_JobPermissionCollectionViewModelWrapper
     {
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -69,15 +68,8 @@ namespace BluePrints.ViewModels
         #region Loading Operations
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
-
-            loadPROJECT = PROJECTParameter.GetEntity();
-            initializeCompulsoryViewProperties(loadPROJECT);
-            initializeOptionalViewCollectionsOnRefresh = false;
-            SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
-            DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
-            //Not linking to base because it contains background planned subjob check
-            //base.resolveParameters(parameter);
+            base.resolveParameters(parameter);
+            tryCombineLocalUsers = false;
         }
 
         protected override void addEntitiesLoader()
@@ -202,11 +194,6 @@ namespace BluePrints.ViewModels
             }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
-        }
-
-        public void UploadToExo()
-        {
-            base.CommitToExo(DisplaySelectedEntities);
         }
         #endregion
 

@@ -10,6 +10,7 @@ using BluePrints.Common;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
@@ -54,16 +55,8 @@ namespace BluePrints.ViewModels
         #region Loading Operations
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
-
-            loadPROJECT = PROJECTParameter.GetEntity();
-            initializeCompulsoryViewProperties(loadPROJECT);
-            initializeOptionalViewCollectionsOnRefresh = false;
-            SubJobRegex = loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB;
-            DisciplineRegex = BluePrintsResources.Regex_DISCIPLINE;
+            base.resolveParameters(parameter);
             tryCombineLocalUsers = true;
-            //Not linking to base because it contains background planned subjob check
-            //base.resolveParameters(parameter);
         }
 
         protected override void addEntitiesLoader()
@@ -175,6 +168,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Events
+
         public void AlignExoBudget()
         {
             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None)
@@ -189,14 +183,9 @@ namespace BluePrints.ViewModels
             foreach (ExoSubJobEditableProjection subJob in DisplaySelectedEntities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.ExoBudget = subJob.Budget;
-                commitLineBudgetCost(subJob);
+                ExoMethods.CommitLineBudgetCost(subJob, localPrimeroUnitOfWork);
                 subJob.Update();
             }
-        }
-
-        public void UploadToExo()
-        {
-            base.CommitToExo(DisplaySelectedEntities);
         }
 
         public void AutoAssignPermission()
@@ -234,24 +223,8 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        #region View Properties        
-        protected bool isPermissionLoading;
-        //if user clicks on an autofilter row and isPermissionLoading is true it won't be set to false ever and this can freeze up the view
-        public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
-
-
-        public bool IsPermissionGridEnabled
-        {
-            get
-            {
-                if (DisplayEntities == null || DisplaySelectedEntities.Count == 0)
-                    return false;
-
-                return DisplaySelectedEntities.Any(x => x.IsLineExistsInExo);
-            }
-        }
-
-        public IEnumerable<ExoSubJobAuth> Users
+        #region View Properties
+        public override IEnumerable<ExoSubJobAuth> BluePrintsUsers
         {
             get
             {

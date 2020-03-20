@@ -266,7 +266,19 @@ namespace BluePrints.Common.Projections
         public bool IsSubJobExistsInExo => SubJobCode != string.Empty;
         public bool IsDisciplineExistsInExo => DisciplineCode != string.Empty;
         public bool IsCommodityExistsInExo => CommodityCode != string.Empty;
-        public bool IsLineExistsInExo => LineId != null;
+        bool? isLineExistInExo;
+        public bool IsLineExistsInExo
+        {
+            get
+            {
+                if (isLineExistInExo == null)
+                    isLineExistInExo = LineId != null;
+
+                return (bool)isLineExistInExo;
+            }
+            set => isLineExistInExo = value;
+        }
+        
         public bool HasBudget { get; set; }
         public string NullText => IsLineExistsInExo ? "Double click this cell to change title" : "Title can only be changed when job is bookable";
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
@@ -559,7 +571,7 @@ namespace BluePrints.Common.Projections
             if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
                 return false;
 
-            JOB_COSTGROUPS discipline = ExoQueries.GetDiscipline(primeroUnitOfWork, projection.DisciplineCode);
+            JOB_COSTGROUPS discipline = ExoQueries.GetCostGroup(primeroUnitOfWork, projection.DisciplineCode);
             if (projection.DisciplineName == null || projection.DisciplineName == string.Empty)
             {
                 if (discipline == null)
@@ -607,6 +619,203 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
+
+        public static bool CommitLineBudgetCost(ExoSubJobEditableProjection projection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork)
+        {
+            if (projection.LineId != null)
+            {
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                if (line != null)
+                {
+                    line.QUOTE_QTY = 1;
+                    line.ACTUAL_UNITCOST = Convert.ToDouble(projection.ExoBudget);
+                    localPrimeroUnitOfWork.SaveChanges();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static IEnumerable<ExoSubJobEditableProjection> CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, ObservableCollection<ExoSubJobEditableProjection> DisplayEntities = null)
+        {
+            List<ExoSubJobEditableProjection> addedProjections = new List<ExoSubJobEditableProjection>();
+            if (masterJob == null)
+            {
+                MessageBoxService.ShowMessage("Cannot upload to exo because job " + loadPROJECT.NUMBER + " is not created\nPlease contact " + BluePrintsResources.Default_CFO + " to add project", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+            if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
+            {
+                string projectManagername = string.Empty;
+                USER pmUSER = null;
+
+                if (loadPROJECT.GUID_PROJUSER != null)
+                {
+                    pmUSER = USERCollection.FirstOrDefault(x => x.GUID == loadPROJECT.GUID_PROJUSER);
+                    if (pmUSER != null)
+                        projectManagername = pmUSER.Full_Name;
+                }
+
+                string defaultTenderPhaseErrorMessage = "Uploading to EXO is disabled because this job is in tender phase";
+                if (projectManagername != string.Empty)
+                    MessageBoxService.ShowMessage(defaultTenderPhaseErrorMessage + "\nPlease contact " + projectManagername + " to change project category", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                else
+                    MessageBoxService.ShowMessage(defaultTenderPhaseErrorMessage, "Warning", MessageButton.OK, MessageIcon.Exclamation);
+
+                return addedProjections;
+            }
+
+            if (masterJob == null)
+            {
+                MessageBoxService.ShowMessage("Project master job doesn't exists in EXO\nPlease request " + BluePrintsResources.Default_CFO + " to add a job with job code " + loadPROJECT.NUMBER, "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+            if (copyLine == null)
+            {
+                MessageBoxService.ShowMessage("Project master line is not setup in exo\nPlease request " + BluePrintsResources.Default_CFO + " to add a job line linked to master job with job code " + loadPROJECT.NUMBER, "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+            if (projections.Any(x => x.SubJobCode == null) || projections.Any(x => x.SubJobCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB)))
+            {
+                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+            else if (projections.Any(x => x.SubJobCode.Length > 15))
+            {
+                MessageBoxService.ShowMessage("Some lines have subjob code that is more than 15 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+            if (projections.Any(x => x.DisciplineCode == null) || projections.Any(x => x.DisciplineCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE)))
+            {
+                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+            else if (projections.Any(x => x.DisciplineCode.Length > 4))
+            {
+                MessageBoxService.ShowMessage("Some lines have discipline code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+
+            if (projections.Any(x => x.CommodityCode == null) || projections.Any(x => x.CommodityCode == string.Empty))
+            {
+                MessageBoxService.ShowMessage("Some lines doesn't have commodity code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+            else if (projections.Any(x => x.CommodityCode.Length > 4))
+            {
+                MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                return addedProjections;
+            }
+
+            int updatedLineCount = 0;
+            foreach (ExoSubJobEditableProjection projection in projections)
+            {
+                if (projection.PhaseType != null && projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                {
+                    MessageBoxService.ShowMessage("The commodity " + projection.CommodityCode + " can only be assigned to indirect subjobs\nPlease change the subjob or assign a different commodity in the deliverable's list", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                    continue;
+                }
+
+                if (!projection.IsLineExistsInExo)
+                {
+                    if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
+                    {
+                        if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
+                        {
+                            //stock item cannot be added, so it must exists before commodity can be added using it
+                            string stockCode = projection.GetStockCode();
+                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(localPrimeroUnitOfWork, stockCode);
+                            if (stock_item != null)
+                            {
+                                projection.StockName = stock_item.DESCRIPTION;
+                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
+                                {
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER);
+                                    projection.LineId = findExistingOrAddLine.SEQNO;
+                                    if (projection.LineId != null)
+                                    {
+                                        if (DisplayEntities != null)
+                                        {
+                                            ExoSubJobEditableProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.GUID != Guid.Empty && x.SubJobId == projection.SubJobId);
+                                            if (existingSameSubJobLine != null)
+                                            {
+                                                foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
+                                                {
+                                                    ExoSubJobAuth newUser = new ExoSubJobAuth();
+                                                    DataUtils.ShallowCopy(newUser, authUser);
+                                                    projection.AuthUsers.Add(newUser);
+                                                }
+                                            }
+                                        }
+
+                                        addedProjections.Add(projection);
+                                        updatedLineCount += 1;
+                                    }
+
+                                    projection.Update();
+                                }
+                                else
+                                {
+                                    MessageBoxService.ShowMessage(projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return addedProjections;
+        }
+
+        public static bool CommitLineVariation(ExoSubJobEditableProjection projection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork)
+        {
+            if (projection.LineId != null)
+            {
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                if (line != null)
+                {
+                    line.X_VARIATION_CODE = projection.VariationCode;
+                    localPrimeroUnitOfWork.SaveChanges();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static void CommitSubJobTitle(ExoSubJobEditableProjection projection, string projectNumber, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IMessageBoxService MessageBoxService)
+        {
+            JOBCOST_HDR existingSubJob = ExoQueries.GetProjectSubJob(localPrimeroUnitOfWork, projectNumber, projection.SubJobCode);
+            if (existingSubJob == null)
+            {
+                MessageBoxService.ShowMessage(projection.SubJobCode + " doesn't exists in exo yet, please upload to exo before clicking edit title");
+                return;
+            }
+
+            existingSubJob.TITLE = projection.SubJobTitle;
+            localPrimeroUnitOfWork.SaveChanges();
+        }
+
+        public static void CommitCostGroupName(ExoSubJobEditableProjection projection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IMessageBoxService MessageBoxService)
+        {
+            JOB_COSTGROUPS costGroup = ExoQueries.GetCostGroup(localPrimeroUnitOfWork, projection.DisciplineCode);
+            if (costGroup == null)
+            {
+                MessageBoxService.ShowMessage(projection.DisciplineCode + " doesn't exists in exo yet, please upload to exo before clicking edit cost group title");
+                return;
+            }
+
+            costGroup.COSTDESC = projection.DisciplineName;
+            localPrimeroUnitOfWork.SaveChanges();
+        }
+
         public static bool CommitLineCommodity(ExoSubJobEditableProjection projection, STOCK_ITEMS stock_item, bool editLineAfterCommit, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, string projectNumber, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             if (projection.CommodityCode == null || projection.CommodityCode == string.Empty || projection.DisciplineId == null)
@@ -639,6 +848,50 @@ namespace BluePrints.Common.Projections
             }
 
             return false;
+        }
+
+        public static void ViewUpdateSubJobTitle(ExoSubJobEditableProjection projection, IEnumerable<ExoSubJobEditableProjection> projections, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, string newSubJobCode, bool updateRelatedSubjobsEntries)
+        {
+            if (newSubJobCode == null)
+                return;
+
+            JOBCOST_HDR existingSubJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, projectNumber, newSubJobCode);
+            if (existingSubJob != null)
+            {
+                projection.SubJobTitle = existingSubJob.TITLE;
+                projection.Update();
+
+                if (updateRelatedSubjobsEntries)
+                {
+                    foreach (ExoSubJobEditableProjection relatedProjection in projections.Where(x => x.SubJobCode == newSubJobCode && x.IsLineExistsInExo))
+                    {
+                        relatedProjection.SubJobTitle = existingSubJob.TITLE;
+                        relatedProjection.Update();
+                    }
+                }
+            }
+        }
+
+        public static void ViewUpdateCostGroupTitle(ExoSubJobEditableProjection projection, IEnumerable<ExoSubJobEditableProjection> projections, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string newCostGroupCode, bool updateRelatedDisciplineCodeEntries)
+        {
+            if (newCostGroupCode == null)
+                return;
+
+            JOB_COSTGROUPS existingCostGroup = ExoQueries.GetCostGroup(primeroUnitOfWork, newCostGroupCode);
+            if (existingCostGroup != null)
+            {
+                projection.DisciplineName = existingCostGroup.COSTDESC;
+                projection.Update();
+
+                if (updateRelatedDisciplineCodeEntries)
+                {
+                    foreach (ExoSubJobEditableProjection relatedProjection in projections.Where(x => x.DisciplineCode == newCostGroupCode))
+                    {
+                        relatedProjection.DisciplineName = projection.DisciplineName;
+                        relatedProjection.Update();
+                    }
+                }
+            }
         }
 
         //public static bool CommitJOB_COSTTYPES(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IDialogService BulkColumnEditDialogService, COMMODITY_CODEProjection projection)
@@ -1290,6 +1543,37 @@ namespace BluePrints.Common.Projections
             return exoSubJobs.OrderBy(x => x.SubJob.Code).AsQueryable();
         }
 
+        public static IQueryable<ExoSubJobEditableProjection> GetExoSubJob(
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS, string officeName, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
+        {
+            List<ExoTimeAuthorisation> exoLines = GetSubJob(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoAuthorisations = GetSimpleExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoSubJobEditableProjection> exoSubJobs = new List<ExoSubJobEditableProjection>();
+            foreach (ExoTimeAuthorisation exoLine in exoLines)
+            {
+                ExoSubJobEditableProjection projection = ViewModelSource.Create(() => new ExoSubJobEditableProjection());
+                projection.IgnoreExoBudgetError = true;
+                projection.LineId = exoLine.LineSeqNo;
+                projection.SubJobId = exoLine.SubJobNo;
+                projection.SubJobCode = exoLine.SubJobCode;
+                projection.SubJobTitle = exoLine.SubJobTitle;
+                projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+                projection.PopulateStockCodes(STOCK_ITEMSCollection);
+                projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                if (exoLines.Count() > 0)
+                {
+                    projection.LineId = exoLine.LineSeqNo;
+                    List<ExoSubJobAuth> exoStaffs = getEXOStaffsByJobNo(exoAuthorisations, exoLine, ExoSTAFFS, officeName);
+                    if (exoStaffs.Count > 0)
+                        projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>(exoStaffs);
+                }
+
+                exoSubJobs.Add(projection);
+            }
+
+            return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
+        }
+
         public static IQueryable<ExoSubJobEditableProjection> GetNativeExoSubJobEditableProjection(
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS, string officeName)
         {
@@ -1329,6 +1613,34 @@ namespace BluePrints.Common.Projections
             }
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
+        }
+
+        private static List<ExoSubJobAuth> getEXOStaffsByJobNo(List<ExoTimeAuthorisation> exoAuthorisations, ExoTimeAuthorisation exoLine, IEnumerable<STAFF> ExoSTAFFS, string officeName)
+        {
+            List<ExoSubJobAuth> exoSTAFFS = new List<ExoSubJobAuth>();
+
+            if (ExoSTAFFS != null)
+            {
+                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobNo == exoLine.SubJobNo);
+                foreach (ExoTimeAuthorisation exoAuth in exoAuths)
+                {
+                    STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
+                    if (findSTAFF != null)
+                    {
+                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                        USER newUser = new USER();
+                        newUser.ProjectLocale = officeName;
+                        newUser.NAME = findSTAFF.NAME;
+                        newUser.ProjectLocaleExoId = findSTAFF.STAFFNO;
+                        newAuth.User = newUser;
+                        newAuth.ShouldAssign = false;
+                        newAuth.IsAssigned = true;
+                        exoSTAFFS.Add(newAuth);
+                    }
+                }
+            }
+
+            return exoSTAFFS;
         }
 
         private static List<ExoSubJobAuth> getEXOStaffs(List<ExoTimeAuthorisation> exoAuthorisations, ExoTimeAuthorisation exoLine, IEnumerable<STAFF> ExoSTAFFS, string officeName)
@@ -1729,7 +2041,7 @@ namespace BluePrints.Common.Projections
             return costTypes.First();
         }
 
-        public static JOB_COSTGROUPS GetDiscipline(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string disciplineCode)
+        public static JOB_COSTGROUPS GetCostGroup(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string disciplineCode)
         {
             var costGroups = from COSTGROUP in primeroUnitOfWork.JOB_COSTGROUPS
                              where COSTGROUP.SHORTCODE == disciplineCode
@@ -1897,6 +2209,28 @@ namespace BluePrints.Common.Projections
             return availableLines.First();
         }
 
+        public static List<ExoTimeAuthorisation> GetSubJob(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var availableLines = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 where MAINJOB.JOBCODE == projectNumber
+                                 select new { MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE };
+
+            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select
+                (x =>
+                {
+                    ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();
+                    exoTime.MasterJobNo = x.MASTERJOBNO;
+                    exoTime.SubJobNo = x.SUBJOBNO;
+                    exoTime.SubJobCode = x.SUBJOBNAME;
+                    exoTime.SubJobTitle = x.SUBJOBTITLE;
+                    return exoTime;
+                }).ToList();
+
+            return exoTimes;
+        }
+
         public static List<ExoTimeAuthorisation> GetProjectLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
@@ -1964,6 +2298,24 @@ namespace BluePrints.Common.Projections
             }
             else
                 return 0;
+        }
+
+        public static List<ExoTimeAuthorisation> GetSimpleExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        {
+            var resourceAllocation = from JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
+                                     join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                     on JOB_RESOURCE_ALLOCATION.JOBNO equals SUBJOB.JOBNO
+                                     join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                     on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                     join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                     on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
+                                     join STAFF in primeroUnitOfWork.STAFF
+                                     on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                                     where MAINJOB.JOBCODE == projectNumber && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
+                                     select new { JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, SUBJOB.JOBNO };
+
+            List<ExoTimeAuthorisation> exoTimes = resourceAllocation.ToList().Select(x => new ExoTimeAuthorisation() { ResourceName = x.RESOURCENAME, ResourceStaffId = x.STAFFNO, SubJobNo = x.JOBNO }).ToList();
+            return exoTimes;
         }
 
         public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
