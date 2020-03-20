@@ -626,6 +626,8 @@ namespace BluePrints.Common.Misc
         {
             DashboardFlatStructure newDashboard = new DashboardFlatStructure();
             newDashboard.SubjobCode = subjobDashboard.Code;
+            newDashboard.AreaCode = newDashboard.SubjobCode.Length >= 9 ? newDashboard.SubjobCode.Substring(6, 3) : string.Empty;
+            newDashboard.SubAreaCode = newDashboard.SubjobCode.Length >= 12 ? newDashboard.SubjobCode.Substring(10, 2) : string.Empty;
             newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
             newDashboard.DisciplineCode = disciplineCode;
             newDashboard.CommodityCode = commodityCode;

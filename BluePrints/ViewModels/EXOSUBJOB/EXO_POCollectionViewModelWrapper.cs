@@ -127,27 +127,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Filtering
-        /// <summary>
-        /// Because grid alternate between showing editor and focused row, use mousedown to invoke set filter
-        /// </summary>
-        public void MouseDown(System.Windows.Input.MouseButtonEventArgs e)
+
+        protected override void OnSelectedEntitiesChanged()
         {
-            try
-            {
-                TableView tableView = e.Source as TableView;
-                if (tableView == null)
-                    return;
-
-                TableViewHitInfo hi = ((TableView)e.Source).CalcHitInfo(e.OriginalSource as DependencyObject);
-                RowData clickRowData = tableView.FocusedRowData;
-
-                if (clickRowData != null)
-                    setFilter();
-            }
-            catch (Exception ex)
-            {
-                string s = ex.ToString();
-            }
+            setFilter();
+            base.OnSelectedEntitiesChanged();
         }
 
         /// <summary>
@@ -161,8 +145,7 @@ namespace BluePrints.ViewModels
         private bool isDetailBestFitApplied { get; set; }
         private void setFilter()
         {
-            ExoDataPoint projection = DisplaySelectedEntity;
-            if (projection == null)
+            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
                 return;
 
             IEnumerable<ExoDataPoint> projections = DisplaySelectedEntities.Where(x => x.Subjob_Name != null && x.Subjob_Name != string.Empty && x.Discipline_Code != null && x.Discipline_Code != string.Empty && x.Commodity_Code != null && x.Commodity_Code != string.Empty);

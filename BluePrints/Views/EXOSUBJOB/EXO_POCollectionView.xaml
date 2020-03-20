@@ -129,10 +129,9 @@
                                             <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                         </dxg:GridControl.TotalSummary>
                                         <dxg:GridControl.View>
-                                            <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowFilterPanelMode="ShowAlways" NewItemRowPosition="None" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                            <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" ShowFilterPanelMode="ShowAlways" NewItemRowPosition="None" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                                 <dxmvvm:Interaction.Behaviors>
                                                     <dxmvvm:EventToCommand Command="{Binding DataContext.ShowingEditorCommand, ElementName=userControl}" EventName="ShowingEditor" PassEventArgsToCommand="True" />
-                                                    <dxmvvm:EventToCommand Command="{Binding DataContext.MouseDownCommand, ElementName=userControl}" EventName="MouseDown" PassEventArgsToCommand="True" />
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
