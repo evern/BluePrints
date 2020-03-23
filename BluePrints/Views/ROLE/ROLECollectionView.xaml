@@ -49,7 +49,7 @@
                             <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                         </dxr:RibbonStatusBarControl.LeftItems>
                     </dxr:RibbonStatusBarControl>
-                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" FloatingMode="Desktop" MDIMergeStyle="WhenChildActivated">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                             <dxdo:LayoutGroup MaxWidth="450" Name="LayoutGroupMain" Orientation="Vertical">
                                 <dxdo:LayoutPanel ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">

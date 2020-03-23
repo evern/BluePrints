@@ -60,8 +60,8 @@
                             <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
                         </dxr:RibbonStatusBarControl.LeftItems>
                     </dxr:RibbonStatusBarControl>
-                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
-                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
+                    <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" FloatingMode="Desktop" MDIMergeStyle="WhenChildActivated">
+                        <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" dxlc:LayoutControl.AllowVerticalSizing="True" ItemHeight="*" Orientation="Horizontal">
                             <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                                 <!--<dxdo:LayoutPanel AutoHidden="{Binding DataContext.IsHidden, ElementName=userControl, Mode=TwoWay}" ShowHideButton="True">-->
                                 <dxdo:LayoutPanel AutoHidden="False" ShowHideButton="True">
@@ -143,9 +143,6 @@
                                             </dxg:TableView>
                                         </dxg:GridControl.View>
                                     </dxg:GridControl>
-                                </dxdo:LayoutPanel>
-                                <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
-                                    <dxlc:LayoutItem Label="Click anywhere on the table below and press CTRL + F to clear filter and search for any actuals" LabelPosition="Left" />
                                 </dxdo:LayoutPanel>
                                 <dxdo:LayoutPanel AutoHidden="False" ShowHideButton="True">
                                     <dxg:GridControl x:Name="gridControlDetail" dxc:DXSerializer.SerializationID="gridControlDetail" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" ItemsSource="{Binding DataContext.ExoMaterials, ElementName=userControl}" Style="{StaticResource DefaultGridControlTemplate}">
