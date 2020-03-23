@@ -58,7 +58,7 @@ namespace BluePrints.Common.Projections
 
     [ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, StockCode, VariationCode")]
     //ExoSubJobProjection is not flat so this is created
-    public class ExoSubJobEditableProjection : EntityBase, IGuidEntityKey, IDXDataErrorInfo
+    public class ExoSubJobEditableProjection : CodesValidationModel, IGuidEntityKey
     {
         public ExoSubJobEditableProjection()
         {
@@ -134,135 +134,6 @@ namespace BluePrints.Common.Projections
         public decimal SubJobRemainingPOCostSummary { get; set; }
         #endregion
 
-        public string PhaseTypeStr
-        {
-            get
-            {
-                if (PhaseType == null)
-                    return string.Empty;
-                else
-                    return PhaseType.ToString();
-            }
-        }
-
-        public PhaseType? PhaseType
-        {
-            get
-            {
-                if (SubJobCode == null)
-                    return null;
-
-                if (SubJobCode.Length < 15)
-                    return Common.PhaseType.Tender;
-
-                string phaseTypeString = SubJobCode.Substring(13, 1).ToUpper();
-                if (phaseTypeString == "I")
-                    return Common.PhaseType.Indirect;
-                else if (phaseTypeString == "P")
-                    return Common.PhaseType.Procurement;
-                else if (phaseTypeString == "D")
-                    return Common.PhaseType.Design;
-                else if (phaseTypeString == "C")
-                    return Common.PhaseType.Construct;
-
-                return null;
-            }
-        }
-
-        public bool IsCommodityCodeValid
-        {
-            get
-            {
-                if (CommodityCode == null || ValidCommodityCodes.Count() == 0 || CommodityCode.Length < 2)
-                    return false;
-
-                if (PhaseType == Common.PhaseType.Tender)
-                {
-                    if (CommodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
-                        return true;
-                    else
-                        return false;
-                }
-
-                return ValidCommodityCodes.Any(x => x.CODE == CommodityCode);
-            }
-        }
-
-        public bool IsStockCodeValid
-        {
-            get
-            {
-                if (CommodityCode == null || ValidStockCodes.Count() == 0)
-                    return false;
-
-                string stockCode = StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
-                if (PhaseType == Common.PhaseType.Tender)
-                {
-                    if (stockCode == BluePrintsResources.Default_TenderStockCode)
-                        return true;
-                    else
-                        return false;
-                }
-
-                return ValidStockCodes.Any(x => x == stockCode);
-            }
-        }
-
-        public List<COMMODITY_CODE> validCommodityCodes = null;
-        public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
-        {
-            get
-            {
-                if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null)
-                    return new List<COMMODITY_CODE>();
-
-                if(validCommodityCodes == null)
-                {
-                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, PhaseType, DisciplineCode).ToList();
-                }
-
-                return validCommodityCodes;
-            }
-        }
-
-        List<string> validStockCodes = null;
-        public IEnumerable<string> ValidStockCodes
-        {
-            get
-            {
-                if (COMMODITY_CODES == null || DisciplineCode == null || DisciplineCode.Length < 2 || PhaseType == null || CommodityCode == null)
-                    return new List<string>();
-
-                if(validStockCodes == null)
-                {
-                    if (PhaseType == Common.PhaseType.Tender)
-                        validStockCodes = COMMODITY_CODES.Where(x => x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == "CO"))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
-                    else
-                    {
-                        string disciplineCode = DisciplineCode.Substring(0, 2);
-                        validStockCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == CommodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
-                    }
-                }
-
-                return validStockCodes;
-            }
-        }
-
-        public IEnumerable<STOCK_ITEMS> ValidStockItemsCollection
-        {
-            get
-            {
-                if (STOCK_ITEMS == null)
-                    return new List<STOCK_ITEMS>();
-
-                if (PhaseType == Common.PhaseType.Tender)
-                    return STOCK_ITEMS.Where(x => x.STOCKCODE == BluePrintsResources.Default_TenderStockCode);
-
-                List<string> validStockCodes = ValidStockCodes.ToList();
-                return STOCK_ITEMS.Where(x => ValidStockCodes.Any(y => x.STOCKCODE == y));
-            }
-        }
-
         public bool IsSubJobExistsInExo => SubJobCode != string.Empty;
         public bool IsDisciplineExistsInExo => DisciplineCode != string.Empty;
         public bool IsCommodityExistsInExo => CommodityCode != string.Empty;
@@ -281,20 +152,7 @@ namespace BluePrints.Common.Projections
         
         public bool HasBudget { get; set; }
         public string NullText => IsLineExistsInExo ? "Double click this cell to change title" : "Title can only be changed when job is bookable";
-        private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
-        public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
-        {
-            validCommodityCodes = null;
-            COMMODITY_CODES = COMMODITY_CODECollection;
-        }
-
-        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
-        public void PopulateStockCodes(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
-        {
-            STOCK_ITEMS = STOCK_ITEMSCollection;
-        }
-
-
+        
         public void PopulateLineAuthUsers(IEnumerable<ExoSubJobEditableProjection> projections)
         {
             ExoSubJobEditableProjection existingSameSubJobLine = projections.FirstOrDefault(x => x.SubJobCode == this.SubJobCode);
@@ -309,54 +167,37 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public void GetPropertyError(string propertyName, ErrorInfo info)
-        {
-            if(SubJobCode != null && SubJobCode.Length == 15)
-            {
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
-                {
-                    info.ErrorText = "Invalid commodity code, please check phase and discipline";
-                }
-
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
-                {
-                    info.ErrorText = "Invalid stock code, please check commodity code";
-                }
-
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget))
-                {
-                    if (IsLineExistsInExo && !IgnoreExoBudgetError && Math.Round(ExoBudget, 0) != Math.Round(Budget, 0))
-                        info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
-                }
-            }
-            else
-            {
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode) && DisciplineCode != BluePrintsResources.Default_TenderDisciplineCode)
-                {
-                    info.ErrorText = "Discipline code must be " + BluePrintsResources.Default_TenderDisciplineCode;
-                }
-
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode) && !IsCommodityCodeValid)
-                {
-                    info.ErrorText = "Commodity code must be " + BluePrintsResources.Default_TenderCommodityCode;
-                }
-
-                if (propertyName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode) && !IsStockCodeValid)
-                {
-                    info.ErrorText = "Stock code must be " + BluePrintsResources.Default_TenderStockCode;
-                }
-            }
-        }
-
-        public void GetError(ErrorInfo info)
-        {
-        }
-
         //Used so that class can be used in view model
         #region View Model Compatibility Members
         public Guid guid { get; set; }
 
         public Guid GUID { get => guid; set => guid = value; }
+        #endregion
+
+        #region Code validation
+        protected override string disciplineCodePropertyName => BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode);
+
+        protected override string commodityCodePropertyName => BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode);
+
+        protected override string stockCodePropertyName => BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode);
+
+        protected override string exoBudgetPropertyName => BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget);
+
+        protected override string subJobCode => SubJobCode;
+
+        protected override string disciplineCode => DisciplineCode;
+
+        protected override string commodityCode => CommodityCode;
+
+        protected override string stockCode => StockCode;
+
+        protected override decimal exoBudget => ExoBudget;
+
+        protected override decimal budget => Budget;
+
+        protected override bool isLineExists => IsLineExistsInExo;
+
+        protected override bool ignoreBudgetError => IgnoreExoBudgetError;
         #endregion
     }
 

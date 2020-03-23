@@ -6,6 +6,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -66,14 +67,52 @@
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="COST_GROUP" Header="Cost Group" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                                </dxg:GridColumn.EditSettings>
+                                                <dxg:GridColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.JOB_COSTGROUPSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="SEQNO">
+                                                            <dxg:LookUpEdit.StyleSettings>
+                                                                <dxg:SearchLookUpEditStyleSettings />
+                                                            </dxg:LookUpEdit.StyleSettings>
+                                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                                <ControlTemplate TargetType="ContentControl">
+                                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                                        <dxg:GridControl.Columns>
+                                                                            <dxg:GridColumn FieldName="SHORTCODE" Header="Code" ReadOnly="True" />
+                                                                            <dxg:GridColumn FieldName="COSTDESC" Width="*" Header="Description" ReadOnly="True" />
+                                                                        </dxg:GridControl.Columns>
+                                                                        <dxg:GridControl.View>
+                                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                        </dxg:GridControl.View>
+                                                                    </dxg:GridControl>
+                                                                </ControlTemplate>
+                                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                                        </dxg:LookUpEdit>
+                                                    </DataTemplate>
+                                                </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="COST_TYPE" Header="Cost Type" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}">
-                                                <dxg:GridColumn.EditSettings>
-                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" ValueMember="SEQNO" />
-                                                </dxg:GridColumn.EditSettings>
+                                                <dxg:GridColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="SEQNO">
+                                                            <dxg:LookUpEdit.StyleSettings>
+                                                                <dxg:SearchLookUpEditStyleSettings />
+                                                            </dxg:LookUpEdit.StyleSettings>
+                                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                                <ControlTemplate TargetType="ContentControl">
+                                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                                        <dxg:GridControl.Columns>
+                                                                            <dxg:GridColumn FieldName="SHORTCODE" Header="Code" ReadOnly="True" />
+                                                                            <dxg:GridColumn FieldName="COSTDESC" Width="*" Header="Description" ReadOnly="True" />
+                                                                        </dxg:GridControl.Columns>
+                                                                        <dxg:GridControl.View>
+                                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                        </dxg:GridControl.View>
+                                                                    </dxg:GridControl>
+                                                                </ControlTemplate>
+                                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                                        </dxg:LookUpEdit>
+                                                    </DataTemplate>
+                                                </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation Code" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" />
                                             <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" />

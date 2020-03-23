@@ -1,11 +1,13 @@
 namespace BluePrints.PrimeroData
 {
     using BaseModel.DataModel;
+    using BluePrints.Common.Projections;
+    using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class PURCHORD_LINES : EntityBase
+    public partial class PURCHORD_LINES : CodesValidationModel
     {
         [NotMapped]
         public string Subjob_Name { get; set; }
@@ -52,5 +54,32 @@ namespace BluePrints.PrimeroData
         [NotMapped]
         public decimal RemainingCosts => RemainingQty * AdjustedUnitPrice;
 
+        protected override string disciplineCodePropertyName => BindableBase.GetPropertyName(() => new PURCHORD_LINES().COSTGROUP);
+
+        protected override string commodityCodePropertyName => BindableBase.GetPropertyName(() => new PURCHORD_LINES().COSTTYPE);
+
+        protected override string stockCodePropertyName => BindableBase.GetPropertyName(() => new PURCHORD_LINES().STOCKCODE);
+
+        //this is use in DXDataError and the validation error will not be thrown there because this property name doesn't exist
+        protected override string exoBudgetPropertyName => "DontExist";
+
+        protected override string subJobCode => Subjob_Name;
+
+        protected override string disciplineCode => Discipline_Code;
+
+        protected override string commodityCode => Commodity_Code;
+
+        protected override string stockCode => STOCKCODE;
+
+        //this property will not be used here because it validates on exoBudgetPropertyName
+        protected override decimal exoBudget => 0;
+
+        //this property will not be used here because it validates on exoBudgetPropertyName
+        protected override decimal budget => 0;
+
+        //this property will not be used here because it validates on exoBudgetPropertyName
+        protected override bool isLineExists => true;
+
+        protected override bool ignoreBudgetError => true;
     }
 }

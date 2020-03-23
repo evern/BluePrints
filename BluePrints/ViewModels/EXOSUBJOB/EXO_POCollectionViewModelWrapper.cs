@@ -83,9 +83,16 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -114,7 +121,9 @@ namespace BluePrints.ViewModels
 
             foreach(PURCHORD_LINES exoPo in exoPos)
             {
-                if(exoPo.Status != 2)
+                exoPo.PopulateCommodityCodes(COMMODITY_CODECollection);
+                exoPo.PopulateStockCodes(STOCK_ITEMSCollection);
+                if (exoPo.Status != 2)
                 {
                     returnDataPoints.Add(exoPo);
                 }
@@ -255,6 +264,28 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             get { return "EXO_POCollectionViewModelWrapper_v2.00"; }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<PrimeroData.STOCK_ITEMS> STOCK_ITEMSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
+                return collection;
+            }
         }
 
         public IEnumerable<JOBCOST_HDR> JOBCOST_HDRCollection
