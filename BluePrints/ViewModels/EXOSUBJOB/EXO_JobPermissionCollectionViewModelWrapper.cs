@@ -103,7 +103,13 @@ namespace BluePrints.ViewModels
         protected override void OnSelectedEntitiesChanged()
         {
             if(delayedPermissionRefreshDispatcher != null)
+            {
+                isPermissionLoading = true;
+                this.RaisePropertyChanged(x => x.IsPermissionLoading);
+                this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
                 delayedPermissionRefreshDispatcher.Start();
+
+            }
         }
         #endregion
 
@@ -255,12 +261,8 @@ namespace BluePrints.ViewModels
 
         protected void refreshPermissions()
         {
-            isPermissionLoading = true;
-            this.RaisePropertyChanged(x => x.IsPermissionLoading);
-
             this.RaisePropertyChanged(x => x.Users);
             this.RaisePropertyChanged(x => x.BluePrintsUsers);
-            this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
         }
 
         List<ExoSubJobAuth> orderedAuthUsers;

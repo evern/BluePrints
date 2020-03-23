@@ -84,7 +84,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobRemainingPOCostSummary" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" ShowTotalSummary="True" MouseUp="tableView1_MouseUp" AutoWidth="False" NewItemRowPosition="Top" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableView" ShowTotalSummary="True" MouseUp="tableView1_MouseUp" AutoWidth="False" NewItemRowPosition="None" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
@@ -132,7 +132,7 @@
                                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                        <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" AutoWidth="True" NewItemRowPosition="None" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                             </dxmvvm:Interaction.Behaviors>

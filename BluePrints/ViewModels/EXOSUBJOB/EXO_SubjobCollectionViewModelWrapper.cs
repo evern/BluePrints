@@ -567,6 +567,8 @@ namespace BluePrints.ViewModels
 
             INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo, null, null, null);
             notification1.ShowAsync();
+            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Permission assignment has been moved to Exo -> Master Job Permission in attempt to reduce errors here", null, null, null);
+            notification2.ShowAsync();
         }
 
         public override string ViewName
