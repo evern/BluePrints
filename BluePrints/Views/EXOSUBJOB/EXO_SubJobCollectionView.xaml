@@ -55,24 +55,13 @@
                         </dxr:RibbonStatusBarControl.LeftItems>
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" FilterCriteria="{Binding DataContext.FilterCriteria, ElementName=userControl, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding DataContext.CustomColumnDisplayTextCommand, ElementName=userControl}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="SubJobCode" ColumnFilterMode="DisplayText" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
-                                        <!--<dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxe:PopupBaseEdit Name="PART_Editor" Width="150" Height="24" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False">
-                                                <dxe:PopupBaseEdit.PopupContentTemplate>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <dxe:ComboBoxEdit x:Name="PART_ComboBox" AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskPlaceHolder="_" MaskShowPlaceHolders="True" MaskType="RegEx" MaskUseAsDisplayFormat="True" ShowBorder="False" ValidateOnTextInput="False" />
-                                                    </ControlTemplate>
-                                                </dxe:PopupBaseEdit.PopupContentTemplate>
-                                            </dxe:PopupBaseEdit>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>-->
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskType="RegEx" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
@@ -149,7 +138,7 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in blueprints" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in deliverable's list" ReadOnly="True" />
                                     <dxg:GridColumn FieldName="SubJobActualCostSummary" Header="Actual Costs" HeaderToolTip="Actual costs from EXO" ReadOnly="True" Visible="{Binding DataContext.IsActualCostSummaryVisible, ElementName=userControl}">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -181,66 +170,17 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="SubJobRemainingPOCostSummary" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding CellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CommitNewRowCommand, ElementName=userControl}" EventName="RowUpdated" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding ValidateRowCommand}" EventName="ValidateRow" PassEventArgsToCommand="True" />
-                                        </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biRemoveSelected" />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>
-                                        <!--<dxg:TableView.FormatConditions>
-                                            <dxg:FormatCondition ApplyToRow="True" Expression="[IsLineExistsInExo] = 'False'">
-                                                <dxc:Format Background="LightSalmon" />
-                                            </dxg:FormatCondition>
-                                        </dxg:TableView.FormatConditions>-->
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </dxlc:LayoutGroup>
-                        <dxc:LoadingDecorator DataContext="{Binding DataContext, ElementName=userControl}" IsSplashScreenShown="{Binding IsPermissionLoading}">
-                            <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
-                                <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" FilterCriteria="{Binding UserFilterCriteria, Mode=TwoWay}" SelectionMode="Cell">
-                                    <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="IsAssigned" Width="90" Header="Can Book" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:CheckEditSettings />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.NAME" Header="User" SortIndex="1" />
-                                        <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Profile" ReadOnly="True">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding PROFILECollection}" ValueMember="ID" />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" Header="Department" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" Header="Discipline" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" Header="Title" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" Header="Description" />
-                                    </dxg:GridControl.Columns>
-                                    <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                                    </dxg:GridControl.TotalSummary>
-                                    <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                    </dxg:GridControl.GroupSummary>
-                                    <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxg:TableView>
-                                    </dxg:GridControl.View>
-                                </dxg:GridControl>
-                            </dxlc:LayoutGroup>
-                        </dxc:LoadingDecorator>
                     </dxlc:LayoutControl>
                 </DockPanel>
             </dxb:BarManager>

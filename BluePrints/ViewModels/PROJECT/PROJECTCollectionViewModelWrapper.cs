@@ -68,15 +68,18 @@ namespace BluePrints.ViewModels
 
         public override void OnLoaded()
         {
-            if (AppNotificationService == null || GlobalVariables.IsProjectCollectionViewNotificationShown)
+            if (!isFirstLoaded)
             {
-                base.OnLoaded();
-                return;
-            }
+                if (AppNotificationService == null || GlobalVariables.IsProjectCollectionViewNotificationShown)
+                {
+                    base.OnLoaded();
+                    return;
+                }
 
-            INotification notification = AppNotificationService.CreatePredefinedNotification("Update: go to rate, baseline, progress and estimate from right clicking or top menu", null, null, null);
-            GlobalVariables.IsProjectViewNotificationShown = true;
-            notification.ShowAsync();
+                INotification notification = AppNotificationService.CreatePredefinedNotification("Update: go to rate, baseline, progress and estimate from right clicking or top menu", null, null, null);
+                GlobalVariables.IsProjectViewNotificationShown = true;
+                notification.ShowAsync();
+            }
 
             base.OnLoaded();
         }

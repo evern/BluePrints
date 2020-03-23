@@ -19,9 +19,13 @@ namespace BluePrints.Common.Base
         public SpellCheckerModule SpellCheckerModule { get; set; }
 
         public override void OnLoaded()
-        {
-            SpellCheckerModule = new SpellCheckerModule();
-            SpellCheckerModule.ApplySpellCheckMode(true);
+        {   
+            if(!isFirstLoaded)
+            {
+                SpellCheckerModule = new SpellCheckerModule();
+                SpellCheckerModule.ApplySpellCheckMode(true);
+            }
+
             base.OnLoaded();
         }
 

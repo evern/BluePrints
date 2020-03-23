@@ -484,6 +484,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project EXO jobs permissions maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_EXO_JobPermission {
+            get {
+                return ResourceManager.GetString("Menu_Project_EXO_JobPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project EXO jobs maintenance menu.
         /// </summary>
         internal static string Menu_Project_EXO_Jobs {

@@ -131,10 +131,13 @@ namespace BluePrints.ViewModels
 
         public override void OnLoaded()
         {
-            if (AppNotificationService == null || GlobalVariables.IsProjectViewNotificationShown)
+            if (!isFirstLoaded)
             {
-                base.OnLoaded();
-                return;
+                if (AppNotificationService == null || GlobalVariables.IsProjectViewNotificationShown)
+                {
+                    base.OnLoaded();
+                    return;
+                }
             }
 
             //INotification notification = AppNotificationService.CreatePredefinedNotification("If view is not responding please email and report to su.bing-wen@primero.com.au, sorry for any inconvenience!", null, null, null);

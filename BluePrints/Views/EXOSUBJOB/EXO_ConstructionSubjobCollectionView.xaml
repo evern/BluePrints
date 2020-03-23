@@ -46,12 +46,12 @@
                     </dxr:RibbonStatusBarControl>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                            <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="{Binding SelectMode}" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Row" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
-                                    <dxg:GridColumn FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                    <dxg:GridColumn Width="120" FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
                                     <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
@@ -66,7 +66,7 @@
                                             <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" />
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
@@ -77,7 +77,7 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableView" AutoWidth="True" MouseUp="tableView1_MouseUp" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />

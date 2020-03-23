@@ -1896,96 +1896,35 @@ namespace BluePrints.ViewModels
 
         private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue)
         {
-            ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
-            ExoSubJobProjection entity = job.Projection;
             decimal newDecimalValue = 0;
             if (newValue != null && decimal.TryParse(newValue.ToString(), out newDecimalValue))
             {
+                ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
+                ExoSubJobProjection entity = job.Projection;
                 ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
+                List<ExoSubJobEditableProjection> projections = new List<ExoSubJobEditableProjection>();
+                projections.Add(projection);
+                IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, BulkColumnEditDialogService);
+
+                if (addedProjections.Count() == 0)
+                    return false;
+
                 JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
-                bool isError = false;
-                projection.ExoBudget = newDecimalValue;
+                findExistingOrAddLine.QUOTE_QTY = 1;
+                findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
 
-                if (findExistingOrAddLine == null)
-                {
-                    if (masterJob == null)
-                    {
-                        MessageBoxService.ShowMessage("Cannot change budget because the master job is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                        isError = true;
-                    }
-                    else if (copyLine == null)
-                    {
-                        MessageBoxService.ShowMessage("Cannot change budget because the master line is not created for project " + LoadPROJECT.NUMBER + " isn't added\nPlease contact " + BluePrintsResources.Default_CFO);
-                        isError = true;
-                    }
-                    else if (ExoMethods.CommitLineSubJob(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                    {
-                        if (ExoMethods.CommitLineDiscipline(projection, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                        {
-                            //stock item cannot be added, so it must exists before commodity can be added using it
-                            string stockCode = projection.GetStockCode();
-                            STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(primeroUnitOfWork, stockCode);
-                            if (stock_item != null)
-                            {
-                                projection.StockName = stock_item.DESCRIPTION;
-                                if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, LoadPROJECT.NUMBER, primeroUnitOfWork))
-                                {
-                                    int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(primeroUnitOfWork);
-                                    JOBCOST_LINES newLine = ExoMethods.CreateNewLine(copyLine, projection, (int)maxJOBCOSTLINEID);
-                                    primeroUnitOfWork.JOBCOST_LINES.Add(newLine);
-                                    primeroUnitOfWork.SaveChanges();
-                                    entity.LineId = newLine.SEQNO;
-                                }
-                                else
-                                {
-                                    MessageBoxService.ShowMessage("Cannot change budget because commodity code " + projection.CommodityCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                    isError = true;
-                                }
-                            }
-                            else
-                            {
-                                MessageBoxService.ShowMessage("Cannot change budget because stock code " + stockCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                                isError = true;
-                            }
-                        }
-                        else
-                        {
-                            MessageBoxService.ShowMessage("Cannot change budget because cost group " + projection.DisciplineCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                            isError = true;
-                        }
-                    }
-                    else
-                    {
-                        MessageBoxService.ShowMessage("Cannot change budget because subjob " + projection.SubJobCode + " is not added\nPlease contact " + BluePrintsResources.Default_CFO);
-                        isError = true;
-                    }
+                primeroUnitOfWork.SaveChanges();
 
-                    job.Budget = newDecimalValue;
-                    if (isError)
-                        projection.ExoBudget = 0;
-                    else
-                        recurseCalculateBudget(dataRow);
+                job.Budget = newDecimalValue;
+                recurseCalculateBudget(dataRow);
 
-                    projection.Update();
-                }
-                else
-                {
-                    findExistingOrAddLine.QUOTE_QTY = 1;
-                    findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
-
-                    primeroUnitOfWork.SaveChanges();
-
-                    job.Budget = newDecimalValue;
-                    recurseCalculateBudget(dataRow);
-
-                    projection.Update();
-                }
-
+                projection.Update();
                 refreshGridData();
                 updateFloatingSummaryMembers();
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         private void recurseCalculateBudget(DataRow commodityRow)

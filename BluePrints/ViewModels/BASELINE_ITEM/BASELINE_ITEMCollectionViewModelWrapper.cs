@@ -310,10 +310,13 @@ namespace BluePrints.ViewModels
 
         public override void OnLoaded()
         {
-            if (AppNotificationService == null || GlobalVariables.IsBaselineItemNotificationShown)
+            if (!isFirstLoaded)
             {
-                base.OnLoaded();
-                return;
+                if (AppNotificationService == null || GlobalVariables.IsBaselineItemNotificationShown)
+                {
+                    base.OnLoaded();
+                    return;
+                }
             }
 
             //INotification notification = AppNotificationService.CreatePredefinedNotification("Resource has been changed to allow multiple resources, please re-assign them if you use them, sorry for any inconvenience!", null, null, null);
