@@ -124,7 +124,6 @@ namespace BluePrints.ViewModels
         {
             exoAuthorisations = ExoQueries.GetExoLinesAuthorisations(primeroUnitOfWork, loadPROJECT.NUMBER);
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ROSTER_STAFFS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<ROSTER_STAFF>, IQueryable<ROSTER_STAFF>> specifyMainViewModelProjection()

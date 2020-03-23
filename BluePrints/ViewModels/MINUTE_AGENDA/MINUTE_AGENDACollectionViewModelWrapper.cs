@@ -128,7 +128,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.MINUTE_AGENDAS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<MINUTE_AGENDA>, IQueryable<MINUTE_AGENDAMasterDetailProjection>> specifyMainViewModelProjection()

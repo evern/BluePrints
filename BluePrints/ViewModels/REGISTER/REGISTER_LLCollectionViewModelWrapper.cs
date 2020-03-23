@@ -73,7 +73,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_LL);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<REGISTER_LL>, IQueryable<REGISTER_LL>> specifyMainViewModelProjection()

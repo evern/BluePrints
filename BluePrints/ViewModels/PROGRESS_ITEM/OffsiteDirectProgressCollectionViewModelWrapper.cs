@@ -116,7 +116,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         public bool CanUpdateAllPercentagesByStatus()

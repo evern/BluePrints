@@ -54,7 +54,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILES);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<TENDER_PROFILE>, IQueryable<TENDER_PROFILE>> specifyMainViewModelProjection()

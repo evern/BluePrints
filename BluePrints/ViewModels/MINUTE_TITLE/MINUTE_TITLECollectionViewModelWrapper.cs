@@ -68,7 +68,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(BluePrintsUnitOfWorkFactory, x => x.MINUTE_TITLES);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<MINUTE_TITLE>, IQueryable<MINUTE_TITLE>>

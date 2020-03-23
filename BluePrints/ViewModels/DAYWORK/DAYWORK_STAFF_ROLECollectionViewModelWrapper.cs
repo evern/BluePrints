@@ -58,7 +58,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.DAYWORK_STAFF_ROLES);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<DAYWORK_STAFF_ROLE>, IQueryable<DAYWORK_STAFF_ROLE>> specifyMainViewModelProjection()

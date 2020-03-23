@@ -47,9 +47,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <JOB_TRANSACTIONS, JOB_TRANSACTIONS, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<JOB_TRANSACTIONS, JOB_TRANSACTIONS, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -101,7 +99,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(primeroUnitOfWorkFactory, x => x.JOB_TRANSACTIONS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<JOB_TRANSACTIONS>, IQueryable<JOB_TRANSACTIONS>> specifyMainViewModelProjection()
@@ -117,7 +114,7 @@ namespace BluePrints.ViewModels
         public IQueryable<JOB_TRANSACTIONS> attachSupplierQuery(IQueryable<JOB_TRANSACTIONS> JOB_TRANSACTIONCollection)
         {
             List<JOB_TRANSACTIONS> jobTransactions = JOB_TRANSACTIONCollection.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.JOBNO).ToList();
-            foreach(JOB_TRANSACTIONS jobTransaction in jobTransactions)
+            foreach (JOB_TRANSACTIONS jobTransaction in jobTransactions)
             {
                 X_JOB_TRANSACTIONS_DETAIL_SeqNo transactionDetail = X_JOB_TRANSACTIONS_DETAILCollection.FirstOrDefault(x => x.SEQNO == jobTransaction.SEQNO);
                 if (transactionDetail != null)

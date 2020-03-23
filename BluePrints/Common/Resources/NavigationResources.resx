@@ -379,7 +379,7 @@
     <value>Edit previous EAC</value>
   </data>
   <data name="Menu_Project_EXO_AllPO" xml:space="preserve">
-    <value>Project POs maintenance menu</value>
+    <value>Project POs maintenance menu read/write</value>
   </data>
   <data name="Category_Unauthorised" xml:space="preserve">
     <value>Unauthorised category</value>

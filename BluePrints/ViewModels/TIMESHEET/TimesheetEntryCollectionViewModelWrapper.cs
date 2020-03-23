@@ -136,7 +136,6 @@ namespace BluePrints.ViewModels
             preloadedExoLinesWithCostInfo = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             VariationCodes = new ObservableCollection<string>(preloadedExoLines.Select(x => x.VariationCode).Distinct().OrderBy(x => x));
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> specifyMainViewModelProjection()

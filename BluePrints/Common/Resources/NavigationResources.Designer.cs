@@ -475,7 +475,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project POs maintenance menu.
+        ///   Looks up a localized string similar to Project POs maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_AllPO {
             get {

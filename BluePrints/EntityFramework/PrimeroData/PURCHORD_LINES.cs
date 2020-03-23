@@ -16,7 +16,7 @@ namespace BluePrints.PrimeroData
         [StringLength(23)]
         public string STOCKCODE { get; set; }
 
-        [StringLength(40)]
+        [StringLength(100)]
         public string DESCRIPTION { get; set; }
 
         public double? ORD_QUANT { get; set; }

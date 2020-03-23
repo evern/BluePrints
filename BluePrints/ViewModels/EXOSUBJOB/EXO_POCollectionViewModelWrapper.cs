@@ -10,6 +10,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm.POCO;
@@ -23,9 +24,7 @@ using System.Windows.Input;
 
 namespace BluePrints.ViewModels
 {
-    public class EXO_POCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <FORECAST_PO, ExoDataPoint, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class EXO_POCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<PURCHORD_LINES, PURCHORD_LINES, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of EXO_POCollectionViewModelWrapper as a POCO view model.
@@ -43,13 +42,12 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the EXO_POCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected EXO_POCollectionViewModelWrapper(
-            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected EXO_POCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_AllPO)) == LoginCredentials.PermissionStatus.ReadOnly;
         }
 
         #region Database Operations
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
@@ -58,7 +56,6 @@ namespace BluePrints.ViewModels
         public CriteriaOperator FilterCriteria { get; set; }
         protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
         protected virtual ITableViewService DetailTableViewService { get { return this.GetService<ITableViewService>("DetailTableViewService"); } }
-
         bool isFilterActuals;
         public bool IsFilterActuals
         {
@@ -86,35 +83,44 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
+        {
+            return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.PURCHORD_LINES);
         }
 
-        protected override Func<IRepositoryQuery<FORECAST_PO>, IQueryable<ExoDataPoint>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<PURCHORD_LINES>, IQueryable<PURCHORD_LINES>> specifyMainViewModelProjection()
         {
-            return query => getExoPOs();
+            return query => getExoPOs(query);
         }
 
-        public IQueryable<ExoDataPoint> getExoPOs()
+        public IQueryable<PURCHORD_LINES> getExoPOs(IRepositoryQuery<PURCHORD_LINES> query)
         {
             DateTime futureDateTime = DateTime.Now.AddYears(10);
-            ExoMaterials = BluePrintsDataUtils.GetMaterials(primeroUnitOfWork, loadPROJECT.NUMBER, futureDateTime);
-            List<ExoDataPoint> exoPos = BluePrintsDataUtils.GetAllEXOPO(primeroUnitOfWork, loadPROJECT.NUMBER);
-            List<ExoDataPoint> returnDataPoints = new List<ExoDataPoint>();
+            if(ExoMaterials == null)
+                ExoMaterials = BluePrintsDataUtils.GetMaterials(MainViewModel.UnitOfWork, loadPROJECT.NUMBER, futureDateTime);
 
-            foreach(ExoDataPoint exoPo in exoPos)
+            List<PURCHORD_LINES> exoPos = BluePrintsDataUtils.GetAllNativeEXOPO(MainViewModel.UnitOfWork, query, loadPROJECT.NUMBER);
+            List<PURCHORD_LINES> returnDataPoints = new List<PURCHORD_LINES>();
+
+            foreach(PURCHORD_LINES exoPo in exoPos)
             {
-                if(exoPo.POStatus != 2)
+                if(exoPo.Status != 2)
                 {
                     returnDataPoints.Add(exoPo);
                 }
                 else
                 {
-                    if (ExoMaterials.Any(x => x.PONumber == exoPo.PONumber))
+                    if (ExoMaterials.Any(x => x.PONumber == ((int)exoPo.HDR_SEQNO).ToString()))
                         returnDataPoints.Add(exoPo);
                 }
             }
@@ -122,7 +128,7 @@ namespace BluePrints.ViewModels
             return returnDataPoints.AsQueryable();
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoDataPoint> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PURCHORD_LINES> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -134,14 +140,20 @@ namespace BluePrints.ViewModels
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
-        public override string UnifiedValueValidation(ExoDataPoint projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(PURCHORD_LINES projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(ExoDataPoint projection)
+        public override string UnifiedRowValidation(PURCHORD_LINES projection)
         {
             return string.Empty;
+        }
+
+        public override void FullRefresh()
+        {
+            ExoMaterials = null;
+            base.FullRefresh();
         }
         #endregion
 
@@ -170,22 +182,22 @@ namespace BluePrints.ViewModels
             if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
                 return;
 
-            IEnumerable<ExoDataPoint> projections = DisplaySelectedEntities.Where(x => x.Subjob_Name != null && x.Subjob_Name != string.Empty && x.Discipline_Code != null && x.Discipline_Code != string.Empty && x.Commodity_Code != null && x.Commodity_Code != string.Empty);
+            IEnumerable<PURCHORD_LINES> projections = DisplaySelectedEntities.Where(x => x.Subjob_Name != null && x.Subjob_Name != string.Empty && x.Discipline_Code != null && x.Discipline_Code != string.Empty && x.Commodity_Code != null && x.Commodity_Code != string.Empty);
             var groupedSelections = projections.GroupBy(x => x.Subjob_Name + x.Discipline_Code + x.Commodity_Code).Select(group => new { SelectionKey = group.Key, GroupedProjections = group.ToList() });
             string criteriaString = string.Empty;
 
             foreach(var groupedSelection in groupedSelections)
             {
-                ExoDataPoint firstElement = groupedSelection.GroupedProjections.First();
-                criteriaString += "([Subjob_Name] = '" + firstElement.Subjob_Name + "' And [Discipline_Code] = '" + firstElement.Discipline_Code + "' And [Variation_Code] = '" + firstElement.Variation_Code + "' And [Commodity_Code] = '" + firstElement.Commodity_Code + "' And (";
+                PURCHORD_LINES firstElement = groupedSelection.GroupedProjections.First();
+                criteriaString += "([Subjob_Name] = '" + firstElement.Subjob_Name + "' And [Discipline_Code] = '" + firstElement.Discipline_Code + "' And [Variation_Code] = '" + firstElement.X_VARIATIONCODE + "' And [Commodity_Code] = '" + firstElement.Commodity_Code + "' And (";
 
-                var groupedByPOSelections = groupedSelection.GroupedProjections.GroupBy(x => x.PONumber).Select(group => new { PONumber = group.Key, GroupedProjections = group.ToList() }); ;
+                var groupedByPOSelections = groupedSelection.GroupedProjections.GroupBy(x => x.HDR_SEQNO).Select(group => new { PONumber = group.Key, GroupedProjections = group.ToList() }); ;
                 foreach(var groupedByPOSelection in groupedByPOSelections)
                 {
                     criteriaString += "([PONumber] = '" + groupedByPOSelection.PONumber + "' AND (";
-                    foreach (ExoDataPoint exoDataPoint in groupedByPOSelection.GroupedProjections)
+                    foreach (PURCHORD_LINES puchordLine in groupedByPOSelection.GroupedProjections)
                     {
-                        string sanitizedDescription = exoDataPoint.Description.Replace("'", "''");
+                        string sanitizedDescription = puchordLine.DESCRIPTION.Replace("'", "''");
                         criteriaString += "[Description] = '" + sanitizedDescription + "' OR ";
                     }
 
@@ -242,9 +254,41 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "EXO_POCollectionViewModelWrapper"; }
+            get { return "EXO_POCollectionViewModelWrapper_v2.00"; }
         }
 
+        public IEnumerable<JOBCOST_HDR> JOBCOST_HDRCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOBCOST_HDR>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.JOBCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTTYPES>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
         #endregion
     }
 }

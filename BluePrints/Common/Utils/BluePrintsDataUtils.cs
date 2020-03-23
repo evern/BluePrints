@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
@@ -749,71 +750,45 @@ namespace BluePrints.Common.ViewModel.Utils
             return poDataPoints.ToList();
         }
 
-        public static List<ExoDataPoint> GetAllEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber)
+        public static List<PURCHORD_LINES> GetAllNativeEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, IRepositoryQuery<PURCHORD_LINES> PURCHORD_LINESCollection, string projectNumber)
         {
-            List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
-
-            var pos = from PURCHORD_LINES in primeroUOW.PURCHORD_LINES
+            var pos = from PURCHORD_LINES in PURCHORD_LINESCollection
                       join PURCHORD_HDR in primeroUOW.PURCHORD_HDR
                       on PURCHORD_LINES.HDR_SEQNO equals PURCHORD_HDR.SEQNO
-                      join CR_ACCS in primeroUOW.CR_ACCS
-                      on PURCHORD_HDR.ACCNO equals CR_ACCS.ACCNO
                       join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
                       on PURCHORD_LINES.JOBNO equals JOBCOST_HDR.JOBNO
                       join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
                       on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                      join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
-                      on PURCHORD_LINES.COSTTYPE equals JOB_COSTTYPES.SEQNO
-                      join JOB_COSTGROUPS in primeroUOW.JOB_COSTGROUPS
-                      on PURCHORD_LINES.COSTGROUP equals JOB_COSTGROUPS.SEQNO
+                      join CR_ACCS in primeroUOW.CR_ACCS
+                      on PURCHORD_HDR.ACCNO equals CR_ACCS.ACCNO
                       join NARRATIVES in primeroUOW.NARRATIVES
-                      on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
-                      from PONarrate in PONarratives.DefaultIfEmpty()
-                      where JOBCOST_HDR2.JOBCODE == projectNumber
-                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE };
+                      on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarrativeTable
+                      from PONarratives in PONarrativeTable.DefaultIfEmpty()
+                      join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
+                      on PURCHORD_LINES.COSTTYPE equals JOB_COSTTYPES.SEQNO into CostTypeTable
+                      from CostTypes in CostTypeTable.DefaultIfEmpty()
+                      join JOB_COSTGROUPS in primeroUOW.JOB_COSTGROUPS
+                      on PURCHORD_LINES.COSTGROUP equals JOB_COSTGROUPS.SEQNO into CostGroupTable
+                      from CostGroups in CostGroupTable.DefaultIfEmpty()
+                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_LINES.HDR_SEQNO != null
+                      //select PURCHORD_LINES;
+            select new { ExchangeRate = PURCHORD_HDR.EXCHRATE, OrderDate = PURCHORD_HDR.ORDERDATE, Narrative = PONarratives.NARRATIVE, Status = PURCHORD_HDR.STATUS, SupplierName = CR_ACCS.NAME, PurchaseOrderLine = PURCHORD_LINES, SubJob_Name = JOBCOST_HDR.JOBCODE, Discipline_Code = CostGroups.SHORTCODE, Commodity_Code = CostTypes.SHORTCODE };
 
-            var poList = pos.ToList();
-
-            foreach (var po in poList)
+            dynamic POQueryLines = pos.ToList();
+            foreach(var po in POQueryLines)
             {
-                if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
-                {
-                    ExoDataPoint poDataPoint = new ExoDataPoint();
-                    poDataPoint.BudgetedUnits = 0;
-                    poDataPoint.BudgetedCosts = 0;
-                    decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
-                    decimal supplyQty = po.SUP_QUANT == null ? 0 : ((decimal)po.SUP_QUANT);
-                    decimal unitPrice = po.UNITPRICE == null ? 0 : po.EXCHRATE == null || po.EXCHRATE == 0 ? ((decimal)po.UNITPRICE) : ((decimal)po.UNITPRICE) / ((decimal)po.EXCHRATE);
-                    poDataPoint.TotalUnits = orderQty;
-
-                    poDataPoint.Units = orderQty - supplyQty;
-                    poDataPoint.Costs = poDataPoint.Units * unitPrice;
-                    poDataPoint.CostPerQty = unitPrice;
-                    poDataPoint.TotalCosts = poDataPoint.TotalUnits * poDataPoint.CostPerQty;
-                    poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
-                    poDataPoint.Subjob_Name = po.JOBCODE;
-                    poDataPoint.ResourceName = string.Empty;
-                    poDataPoint.Quantity = poDataPoint.Units;
-                    poDataPoint.Description = po.DESCRIPTION;
-                    poDataPoint.Narrative = po.NARRATIVE;
-                    poDataPoint.Supplier = po.NAME;
-                    poDataPoint.InvoiceNo = string.Empty;
-                    poDataPoint.CostGroup = po.COSTGROUPDESC;
-                    poDataPoint.CostType = po.COSTTYPEDESC;
-                    poDataPoint.StockCode = po.STOCKCODE;
-                    poDataPoint.Cost_GLName = string.Empty;
-                    poDataPoint.Purchase_GLName = string.Empty;
-                    poDataPoint.IsPO = true;
-                    poDataPoint.PONumber = po.SEQNO.ToString();
-                    poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
-                    poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
-                    poDataPoint.POStatus = po.STATUS;
-                    poDataPoint.Variation_Code = normalizeVariationCode(po.X_VARIATIONCODE);
-                    poDataPoints.Add(poDataPoint);
-                }
+                po.PurchaseOrderLine.ExchangeRate = po.ExchangeRate == null ? 0 : (double)po.ExchangeRate;
+                po.PurchaseOrderLine.OrderDate = po.OrderDate;
+                po.PurchaseOrderLine.Narrative = po.Narrative;
+                po.PurchaseOrderLine.Status = po.Status;
+                po.PurchaseOrderLine.SupplierName = po.SupplierName;
+                po.PurchaseOrderLine.Subjob_Name = po.SubJob_Name;
+                po.PurchaseOrderLine.Discipline_Code = po.Discipline_Code;
+                po.PurchaseOrderLine.Commodity_Code = po.Commodity_Code;
+                po.PurchaseOrderLine.X_VARIATIONCODE = normalizeVariationCode(po.PurchaseOrderLine.X_VARIATIONCODE);
             }
 
-            return poDataPoints.ToList();
+            return pos.Select(x => x.PurchaseOrderLine).ToList();
         }
 
         public static bool GuidEquals<T>(T x, T y)

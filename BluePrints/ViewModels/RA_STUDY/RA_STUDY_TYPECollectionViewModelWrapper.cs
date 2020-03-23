@@ -67,7 +67,6 @@ namespace BluePrints.ViewModels
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(BluePrintsUnitOfWorkFactory, x => x.RA_STUDY_TYPES);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected override Func<IRepositoryQuery<RA_STUDY_TYPE>, IQueryable<RA_STUDY_TYPEProjection>> specifyMainViewModelProjection()

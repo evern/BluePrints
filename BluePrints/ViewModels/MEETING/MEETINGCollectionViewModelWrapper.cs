@@ -74,7 +74,6 @@ namespace BluePrints.ViewModels
         {
             user_client_loaded = true;
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.MEETINGS);
-            mainThreadDispatcher.BeginInvoke(new Action(() => mainEntityLoaderDescription.CreateCollectionViewModel()));
         }
 
         protected Func<IRepositoryQuery<CLIENT>, IQueryable<CLIENT>> clientQueryProjection()
