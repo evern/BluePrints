@@ -61,6 +61,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Filter actual by selected PO line(s) in PO view.
+        /// </summary>
+        internal static string EXO_POUseFilter {
+            get {
+                return ResourceManager.GetString("EXO_POUseFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show actuals on forecast.
         /// </summary>
         internal static string Forecast_ShowActuals {

@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.Services;
@@ -56,6 +57,21 @@ namespace BluePrints.ViewModels
         public CriteriaOperator FilterCriteria { get; set; }
         protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
         protected virtual ITableViewService DetailTableViewService { get { return this.GetService<ITableViewService>("DetailTableViewService"); } }
+
+        bool isFilterActuals;
+        public bool IsFilterActuals
+        {
+            get => isFilterActuals;
+            set
+            {
+                isFilterActuals = value;
+                if (!isFilterActuals)
+                    clearFilter();
+
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+            }
+        }
+
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -145,6 +161,9 @@ namespace BluePrints.ViewModels
         private bool isDetailBestFitApplied { get; set; }
         private void setFilter()
         {
+            if (!IsFilterActuals)
+                return;
+
             if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
                 return;
 

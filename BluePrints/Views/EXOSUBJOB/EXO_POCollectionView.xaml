@@ -24,6 +24,7 @@
                 <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
             </Style>
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
@@ -36,6 +37,7 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                    <dxb:BarCheckItem x:Name="biActivateFilter" Content="Filter Actuals by Selected PO Line" Glyph="{dxc:DXImage Images/Filter/Filter_16x16.png}" IsChecked="{Binding DataContext.IsFilterActuals, ElementName=userControl, Mode=TwoWay}" IsEnabled="{Binding DataContext.IsLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Filter/Filter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Filter actuals by selected PO line(s)" />
                     <dxb:BarButtonItem x:Name="biCopyDetailWithHeader1" Command="{Binding DataContext.CopyDetailWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
                 </dxb:BarManager.Items>
                 <DockPanel>
@@ -48,6 +50,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarCheckItemLink BarItemName="biActivateFilter" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                         </dxr:RibbonDefaultPageCategory>
