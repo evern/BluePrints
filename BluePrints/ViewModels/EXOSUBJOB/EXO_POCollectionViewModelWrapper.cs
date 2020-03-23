@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
@@ -68,7 +69,7 @@ namespace BluePrints.ViewModels
                 if (!isFilterActuals)
                     clearFilter();
 
-                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.EXO_POUseFilter), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
             }
         }
 
@@ -79,6 +80,8 @@ namespace BluePrints.ViewModels
 
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+
+            isFilterActuals = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_POUseFilter));
         }
 
         protected override void addEntitiesLoader()
