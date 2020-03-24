@@ -81,7 +81,7 @@ namespace BluePrints.Common.Projections
                 if (taggedValidCommodityCodes == null)
                 {
                     taggedValidCommodityCodes = new List<COMMODITY_CODE>();
-                    foreach (COMMODITY_CODE commodityCode in COMMODITY_CODES)
+                    foreach (COMMODITY_CODE commodityCode in COMMODITY_CODES.OrderBy(x => x.CODE))
                     {
                         COMMODITY_CODE newCommodityCode = new COMMODITY_CODE();
                         newCommodityCode.GUID = commodityCode.GUID;
@@ -104,6 +104,16 @@ namespace BluePrints.Common.Projections
                 return taggedValidCommodityCodes;
             }
         }
+        #endregion
+
+        #region Stock Codes
+        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
+        public void PopulateStockItems(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
+        {
+            validStockCodes = null;
+            taggedValidStockItems = null;
+            STOCK_ITEMS = STOCK_ITEMSCollection;
+        }
 
         private List<STOCK_ITEMS> taggedValidStockItems;
         public IEnumerable<STOCK_ITEMS> TaggedValidStockItems
@@ -113,7 +123,7 @@ namespace BluePrints.Common.Projections
                 if (taggedValidStockItems == null)
                 {
                     taggedValidStockItems = new List<STOCK_ITEMS>();
-                    foreach (STOCK_ITEMS stockItem in STOCK_ITEMS)
+                    foreach (STOCK_ITEMS stockItem in STOCK_ITEMS.OrderBy(x => x.STOCKCODE))
                     {
                         STOCK_ITEMS newStockItem = new STOCK_ITEMS();
                         newStockItem.STOCKCODE = stockItem.STOCKCODE;
@@ -132,15 +142,6 @@ namespace BluePrints.Common.Projections
 
                 return taggedValidStockItems;
             }
-        }
-        #endregion
-
-        #region Stock Codes
-        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
-        public void PopulateStockCodes(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
-        {
-            validStockCodes = null;
-            STOCK_ITEMS = STOCK_ITEMSCollection;
         }
 
         public bool IsStockCodeValid

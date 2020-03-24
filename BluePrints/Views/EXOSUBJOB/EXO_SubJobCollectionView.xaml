@@ -81,10 +81,13 @@
                                     <dxg:GridColumn FieldName="CommodityCode" ColumnFilterMode="DisplayText" Header="Cost Type" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" PopupMinWidth="500">
-                                                    <custom:PopupBaseEditEx.PopupContentTemplate>
+                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidCommodityCodes}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="CODE">
+                                                    <dxg:LookUpEdit.StyleSettings>
+                                                        <dxg:SearchLookUpEditStyleSettings />
+                                                    </dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:LookUpEdit.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
-                                                            <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" MaxHeight="750" ItemsSource="{Binding RowData.Row.TaggedValidCommodityCodes}" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                            <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                                 <dxg:GridControl.Columns>
                                                                     <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
@@ -93,34 +96,37 @@
                                                                     <dxg:GridColumn Width="*" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                                 </dxg:GridControl.Columns>
                                                                 <dxg:GridControl.View>
-                                                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
                                                                 </dxg:GridControl.View>
                                                             </dxg:GridControl>
                                                         </ControlTemplate>
-                                                    </custom:PopupBaseEditEx.PopupContentTemplate>
-                                                </custom:PopupBaseEditEx>
+                                                    </dxg:LookUpEdit.PopupContentTemplate>
+                                                </dxg:LookUpEdit>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="StockCode" Header="Stock Code" ColumnFilterMode="DisplayText" HeaderToolTip="Select from combobox">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="STOCKCODE" PopupMinWidth="500">
-                                                    <custom:PopupBaseEditEx.PopupContentTemplate>
+                                                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidStockItems}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="STOCKCODE">
+                                                    <dxg:LookUpEdit.StyleSettings>
+                                                        <dxg:SearchLookUpEditStyleSettings />
+                                                    </dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:LookUpEdit.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
-                                                            <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" SelectionMode="Row" ItemsSource="{Binding RowData.Row.TaggedValidStockItems}" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                            <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                                 <dxg:GridControl.Columns>
                                                                     <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
-                                                                    <dxg:GridColumn Width="50" FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
-                                                                    <dxg:GridColumn Width="350" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                                    <dxg:GridColumn FieldName="DESCRIPTION" Width="*" Header="Description" ReadOnly="True" />
                                                                 </dxg:GridControl.Columns>
                                                                 <dxg:GridControl.View>
-                                                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowSearchPanelMode="Always" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
                                                                 </dxg:GridControl.View>
                                                             </dxg:GridControl>
                                                         </ControlTemplate>
-                                                    </custom:PopupBaseEditEx.PopupContentTemplate>
-                                                </custom:PopupBaseEditEx>
+                                                    </dxg:LookUpEdit.PopupContentTemplate>
+                                                </dxg:LookUpEdit>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
                                     </dxg:GridColumn>

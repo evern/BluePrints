@@ -85,46 +85,6 @@ namespace BluePrints.PrimeroData
         protected override bool isLineExists => true;
 
         protected override bool ignoreBudgetError => true;
-
-        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
-        public void PopulateStockItems(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
-        {
-            taggedValidStockItems = null;
-            STOCK_ITEMS = STOCK_ITEMSCollection;
-        }
-
-        private List<STOCK_ITEMS> taggedValidStockItems;
-        public IEnumerable<STOCK_ITEMS> TaggedValidStockItems
-        {
-            get
-            {
-                if (STOCK_ITEMS == null)
-                    return new List<STOCK_ITEMS>();
-
-                if(taggedValidStockItems == null)
-                {
-                    taggedValidStockItems = new List<STOCK_ITEMS>();
-                    foreach (STOCK_ITEMS stockItem in STOCK_ITEMS)
-                    {
-                        STOCK_ITEMS newStockItem = new STOCK_ITEMS();
-                        newStockItem.STOCKCODE = stockItem.STOCKCODE;
-                        newStockItem.DESCRIPTION = stockItem.DESCRIPTION;
-                        taggedValidStockItems.Add(newStockItem);
-                    }
-                }
-
-                taggedValidStockItems.ForEach(x =>
-                {
-                    if (ValidStockCodes.Any(y => y == x.STOCKCODE))
-                        x.IsValid = true;
-                    else
-                        x.IsValid = false;
-                });
-
-                return taggedValidStockItems;
-            }
-        }
-
         private IEnumerable<JOB_COSTTYPES> JOB_COSTTYPES { get; set; }
         public void PopulateCostTypes(IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection)
         {
@@ -143,7 +103,7 @@ namespace BluePrints.PrimeroData
                 if(taggedValidJobCostTypes == null)
                 {
                     taggedValidJobCostTypes = new List<JOB_COSTTYPES>();
-                    foreach (JOB_COSTTYPES jobCostType in JOB_COSTTYPES)
+                    foreach (JOB_COSTTYPES jobCostType in JOB_COSTTYPES.OrderBy(x => x.SHORTCODE))
                     {
                         JOB_COSTTYPES newJobCostType = new JOB_COSTTYPES();
                         newJobCostType.SEQNO = jobCostType.SEQNO;

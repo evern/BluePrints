@@ -254,7 +254,7 @@ namespace BluePrints.ViewModels
         {
             string errorMessage = string.Empty;
             projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            projection.PopulateStockCodes(STOCK_ITEMSCollection);
+            projection.PopulateStockItems(STOCK_ITEMSCollection);
             projection.Update();
 
             List<KeyValuePair<string, string>> constraintIssues;
@@ -423,7 +423,7 @@ namespace BluePrints.ViewModels
                 foreach (ExoSubJobEditableProjection addedProjection in addedProjections)
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                    addedProjection.PopulateStockCodes(STOCK_ITEMSCollection);
+                    addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
                     addedProjection.PopulateLineAuthUsers(DisplayEntities);
                     MainViewModel.Entities.Insert(0, addedProjection);
 

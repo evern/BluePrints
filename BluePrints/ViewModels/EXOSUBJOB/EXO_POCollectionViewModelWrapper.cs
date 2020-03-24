@@ -122,7 +122,6 @@ namespace BluePrints.ViewModels
             foreach(PURCHORD_LINES exoPo in exoPos)
             {
                 exoPo.PopulateCommodityCodes(COMMODITY_CODECollection);
-                exoPo.PopulateStockCodes(STOCK_ITEMSCollection);
                 exoPo.PopulateCostTypes(JOB_COSTTYPESCollection);
                 exoPo.PopulateStockItems(STOCK_ITEMSCollection);
                 if (exoPo.Status != 2)

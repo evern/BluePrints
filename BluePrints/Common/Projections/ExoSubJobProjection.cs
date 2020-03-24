@@ -1399,7 +1399,7 @@ namespace BluePrints.Common.Projections
                 projection.SubJobCode = exoLine.SubJobCode;
                 projection.SubJobTitle = exoLine.SubJobTitle;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                projection.PopulateStockCodes(STOCK_ITEMSCollection);
+                projection.PopulateStockItems(STOCK_ITEMSCollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 if (exoLines.Count() > 0)
                 {
@@ -1440,7 +1440,7 @@ namespace BluePrints.Common.Projections
                 projection.VariationCode = exoLine.VariationCode;
                 projection.ExoBudget = exoLine.BudgetCosts;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                projection.PopulateStockCodes(STOCK_ITEMSCollection);
+                projection.PopulateStockItems(STOCK_ITEMSCollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
                 if (exoLines.Count() > 0)
                 {
