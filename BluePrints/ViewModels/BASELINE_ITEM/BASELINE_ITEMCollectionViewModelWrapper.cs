@@ -1313,11 +1313,12 @@ namespace BluePrints.ViewModels
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, DisplayEntities, DisplaySelectedEntities);
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
-            foreach(BASELINE_ITEMProgress newEntity in newEntities)
-            {
-                MainViewModel.Save(newEntity);
-                populateCompulsoryLookupCollection(newEntity);
-            }
+            //foreach (BASELINE_ITEMProgress newEntity in newEntities)
+            //{
+            //    MainViewModel.Save(newEntity);
+            //    populateCompulsoryLookupCollection(newEntity);
+            //}
+            MainViewModel.BulkSave(newEntities);
 
             if (!_isProcessingMultiple)
                 UnpauseUndoRedo();
@@ -1445,8 +1446,9 @@ namespace BluePrints.ViewModels
                 List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(timesToDuplicate, false, DisplayEntities, DisplaySelectedEntities);
 
                 //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
-                foreach (BASELINE_ITEMProgress newEntity in newEntities)
-                    MainViewModel.Save(newEntity);
+                //foreach (BASELINE_ITEMProgress newEntity in newEntities)
+                //    MainViewModel.Save(newEntity);
+                MainViewModel.BulkSave(newEntities);
 
                 //Add undo must happen after save so that variation can pick it up
                 foreach (BASELINE_ITEMProgress newEntity in newEntities)
