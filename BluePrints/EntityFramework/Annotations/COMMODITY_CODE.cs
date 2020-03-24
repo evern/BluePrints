@@ -20,5 +20,8 @@ namespace BluePrints.Data
         }
 
         public string Office => BluePrintsResources.GlobalOffice;
+
+        [NotMapped]
+        public bool IsValid { get; set; }
     }
 }

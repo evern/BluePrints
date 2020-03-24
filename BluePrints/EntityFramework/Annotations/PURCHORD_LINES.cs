@@ -1,11 +1,15 @@
 namespace BluePrints.PrimeroData
 {
+    using BaseModel.Data.Helpers;
     using BaseModel.DataModel;
     using BluePrints.Common.Projections;
+    using BluePrints.Data;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     public partial class PURCHORD_LINES : CodesValidationModel
     {
@@ -81,5 +85,84 @@ namespace BluePrints.PrimeroData
         protected override bool isLineExists => true;
 
         protected override bool ignoreBudgetError => true;
+
+        private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
+        public void PopulateStockItems(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
+        {
+            taggedValidStockItems = null;
+            STOCK_ITEMS = STOCK_ITEMSCollection;
+        }
+
+        private List<STOCK_ITEMS> taggedValidStockItems;
+        public IEnumerable<STOCK_ITEMS> TaggedValidStockItems
+        {
+            get
+            {
+                if (STOCK_ITEMS == null)
+                    return new List<STOCK_ITEMS>();
+
+                if(taggedValidStockItems == null)
+                {
+                    taggedValidStockItems = new List<STOCK_ITEMS>();
+                    foreach (STOCK_ITEMS stockItem in STOCK_ITEMS)
+                    {
+                        STOCK_ITEMS newStockItem = new STOCK_ITEMS();
+                        newStockItem.STOCKCODE = stockItem.STOCKCODE;
+                        newStockItem.DESCRIPTION = stockItem.DESCRIPTION;
+                        taggedValidStockItems.Add(newStockItem);
+                    }
+                }
+
+                taggedValidStockItems.ForEach(x =>
+                {
+                    if (ValidStockCodes.Any(y => y == x.STOCKCODE))
+                        x.IsValid = true;
+                    else
+                        x.IsValid = false;
+                });
+
+                return taggedValidStockItems;
+            }
+        }
+
+        private IEnumerable<JOB_COSTTYPES> JOB_COSTTYPES { get; set; }
+        public void PopulateCostTypes(IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection)
+        {
+            taggedValidJobCostTypes = null;
+            JOB_COSTTYPES = JOB_COSTTYPESCollection;
+        }
+
+        private List<JOB_COSTTYPES> taggedValidJobCostTypes;
+        public IEnumerable<JOB_COSTTYPES> TaggedValidCostTypes
+        {
+            get
+            {
+                if (JOB_COSTTYPES == null)
+                    return new List<JOB_COSTTYPES>();
+
+                if(taggedValidJobCostTypes == null)
+                {
+                    taggedValidJobCostTypes = new List<JOB_COSTTYPES>();
+                    foreach (JOB_COSTTYPES jobCostType in JOB_COSTTYPES)
+                    {
+                        JOB_COSTTYPES newJobCostType = new JOB_COSTTYPES();
+                        newJobCostType.SEQNO = jobCostType.SEQNO;
+                        newJobCostType.SHORTCODE = jobCostType.SHORTCODE;
+                        newJobCostType.COSTDESC = jobCostType.COSTDESC;
+                        taggedValidJobCostTypes.Add(newJobCostType);
+                    }
+                }
+
+                taggedValidJobCostTypes.ForEach(x =>
+                {
+                    if (ValidCommodityCodes.Any(y => y.CODE == x.SHORTCODE))
+                        x.IsValid = true;
+                    else
+                        x.IsValid = false;
+                });
+
+                return taggedValidJobCostTypes;
+            }
+        }
     }
 }

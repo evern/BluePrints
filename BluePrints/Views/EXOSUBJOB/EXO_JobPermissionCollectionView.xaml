@@ -63,7 +63,7 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding DataContext.SUBJOBCodeStringCollection, ElementName=userControl}" Mask="{Binding DataContext.SubJobRegex, ElementName=userControl}" MaskType="RegEx" ValidateOnTextInput="False" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Width="150" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" >
+                                    <dxg:GridColumn FieldName="SubJobTitle" Width="*" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
                                         </dxg:GridColumn.EditSettings>

@@ -828,6 +828,8 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\STOCK_ITEMS.cs" />
+    <Compile Include="EntityFramework\Annotations\JOB_COSTTYPES.cs" />
     <Compile Include="EntityFramework\Annotations\PURCHORD_LINES.cs" />
     <Compile Include="EntityFramework\Annotations\USER_PREFERENCE.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_PERMISSION.cs" />

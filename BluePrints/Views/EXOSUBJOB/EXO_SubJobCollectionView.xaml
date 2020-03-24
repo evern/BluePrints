@@ -14,7 +14,6 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarButtonItem x:Name="biCopyToJobSetup" Command="{Binding DataContext.CopyToJobCommand, ElementName=userControl}" Content="Copy to Job Setup" Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}" LargeGlyph="{dx:DXImage Image=ConvertToRange_32x32.png}" ToolTip="This will copy jobs in exo that doesn't exists in job setup yet, safe to click whenever as it won't create duplicates" />
-                    <dxb:BarButtonItem x:Name="biRemoveSelected" Command="{Binding DataContext.RemoveSelectedCommand, ElementName=userControl}" Content="Delete" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" ToolTip="Delete entry from exo" />
                     <dxb:BarButtonItem x:Name="biPopulateActuals" Command="{Binding DataContext.PopulateActualsCommand, ElementName=userControl}" Content="Get Actuals" Glyph="{dxc:DXImage Images/Function Library/Financial_16x16.png}" LargeGlyph="{dx:DXImage Images/Function Library/Financial_32x32.png}" ToolTip="Get actuals summary by job from EXO and show it in the grid" />
                     <dxb:BarButtonItem x:Name="biSetIndirectFilter" Command="{Binding DataContext.SetIndirectFilterCommand, ElementName=userControl}" Content="Show Indirect Only" Glyph="{dxc:DXImage Images/Business Objects/BODetails_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BODetails_32x32.png}" ToolTip="Show indirect jobs only" />
                     <dxb:BarButtonItem x:Name="biSetDesignFilter" Command="{Binding DataContext.SetDesignFilterCommand, ElementName=userControl}" Content="Show Design Only" Glyph="{dxc:DXImage Images/Business Objects/BOPerson_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOPerson_32x32.png}" ToolTip="Show design jobs only" />
@@ -27,7 +26,9 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRemoveSelected" />
+                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1"/>
                                     <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
                                     <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
@@ -80,15 +81,16 @@
                                     <dxg:GridColumn FieldName="CommodityCode" ColumnFilterMode="DisplayText" Header="Cost Type" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" >
+                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" PopupMinWidth="500">
                                                     <custom:PopupBaseEditEx.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
-                                                            <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" MaxHeight="750" ItemsSource="{Binding RowData.Row.ValidCommodityCodes}" SelectionMode="Row" ShowBorder="False">
+                                                            <dxg:GridControl x:Name="PART_GridControl" HorizontalAlignment="Right" MaxHeight="750" ItemsSource="{Binding RowData.Row.TaggedValidCommodityCodes}" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                                 <dxg:GridControl.Columns>
+                                                                    <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="200" FieldName="NAME" Header="Name" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="50" FieldName="UOM" Header="UOM" ReadOnly="True" />
-                                                                    <dxg:GridColumn Width="350" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                    <dxg:GridColumn Width="*" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                                 </dxg:GridControl.Columns>
                                                                 <dxg:GridControl.View>
                                                                     <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
@@ -99,18 +101,16 @@
                                                 </custom:PopupBaseEditEx>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
-                                        </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="StockCode" Header="Stock Code" ColumnFilterMode="DisplayText" HeaderToolTip="Select from combobox">
                                         <dxg:GridColumn.CellTemplate>
                                             <DataTemplate>
-                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="STOCKCODE" >
+                                                <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="STOCKCODE" PopupMinWidth="500">
                                                     <custom:PopupBaseEditEx.PopupContentTemplate>
                                                         <ControlTemplate TargetType="ContentControl">
-                                                            <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" SelectionMode="Row" ItemsSource="{Binding RowData.Row.ValidStockItemsCollection}" ShowBorder="False">
+                                                            <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" SelectionMode="Row" ItemsSource="{Binding RowData.Row.TaggedValidStockItems}" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                                 <dxg:GridControl.Columns>
+                                                                    <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="50" FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
                                                                     <dxg:GridColumn Width="350" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
                                                                 </dxg:GridControl.Columns>
@@ -123,9 +123,6 @@
                                                 </custom:PopupBaseEditEx>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DataContext.STOCK_CODEStringCollection, ElementName=userControl}" ValidateOnTextInput="False" />
-                                        </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="VariationCode" Header="Variation" HeaderToolTip="Select from combobox or type in new">
                                         <dxg:GridColumn.EditSettings>
@@ -174,7 +171,7 @@
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biRemoveSelected" />
+                                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>

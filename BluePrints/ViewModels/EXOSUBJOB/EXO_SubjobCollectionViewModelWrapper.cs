@@ -178,6 +178,7 @@ namespace BluePrints.ViewModels
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
+            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleteIsContinue;
             MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinue;
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.SetParentViewModel(this);
@@ -189,6 +190,15 @@ namespace BluePrints.ViewModels
         {
             commitToExo(entity);
             return false;
+        }
+
+        protected virtual DeleteInterceptMode onBeforeEntityDeleteIsContinue(ExoSubJobEditableProjection entity)
+        {
+            if (!entity.IsLineExistsInExo)
+                return DeleteInterceptMode.Skip;
+
+            removeFromExo(entity);
+            return DeleteInterceptMode.Skip;
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -325,26 +335,35 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void RemoveSelected()
+        private void removeFromExo(ExoSubJobEditableProjection projection)
         {
-            List<ExoSubJobEditableProjection> removeProjections = DisplaySelectedEntities.Where(x => x.IsLineExistsInExo).ToList();
-            if (MessageBoxService.ShowMessage("Are you sure you want to remove " + removeProjections.Count + " selected lines from exo?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
+            List<ExoSubJobEditableProjection> removeLines = new List<ExoSubJobEditableProjection>();
+            ExoSubJobEditableProjection newLine = projection;
+            removeLines.Add(newLine);
+            removeFromExo(removeLines);
+        }
 
+        private void removeFromExo(IEnumerable<ExoSubJobEditableProjection> removeProjections)
+        {
             List<ExoSubJobEditableProjection> viewRemoveProjections = new List<ExoSubJobEditableProjection>();
-            LoadingScreenManager.ShowLoadingScreen(removeProjections.Count);
+            LoadingScreenManager.ShowLoadingScreen(removeProjections.Count());
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             foreach (ExoSubJobEditableProjection removeProjection in removeProjections)
             {
                 JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
                 if (line != null)
                 {
                     localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
+                    removeProjection.LineId = null;
+                    removeProjection.IsLineExistsInExo = false;
                     localPrimeroUnitOfWork.SaveChanges();
                 }
+
                 viewRemoveProjections.Add(removeProjection);
                 LoadingScreenManager.Progress();
             }
 
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             LoadingScreenManager.CloseLoadingScreen();
             foreach (ExoSubJobEditableProjection viewRemoveProjection in viewRemoveProjections)
             {
@@ -400,14 +419,18 @@ namespace BluePrints.ViewModels
             IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, DisplayEntities);
             if (addedProjections.Count() > 0)
             {
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 foreach (ExoSubJobEditableProjection addedProjection in addedProjections)
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockCodes(STOCK_ITEMSCollection);
                     addedProjection.PopulateLineAuthUsers(DisplayEntities);
                     MainViewModel.Entities.Insert(0, addedProjection);
+
+                    addedProjection.IsLineExistsInExo = true;
                 }
 
+                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
                 OnAfterNewRowAdded(addedProjections);
                 //Refreshes collection properties
                 this.RaisePropertiesChanged();
@@ -566,7 +589,7 @@ namespace BluePrints.ViewModels
 
             INotification notification1 = AppNotificationService.CreatePredefinedNotification("Exo is connected to " + loadPROJECT.OfficeNameForExo, null, null, null);
             notification1.ShowAsync();
-            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Permission assignment has been moved to Exo -> Master Job Permission in attempt to reduce errors here", null, null, null);
+            INotification notification2 = AppNotificationService.CreatePredefinedNotification("Permission assignment has been moved to [Exo] -> [Master Job Permission] to reduce bugs here", null, null, null);
             notification2.ShowAsync();
         }
 

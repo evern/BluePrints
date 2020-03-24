@@ -38,7 +38,7 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                    <dxb:BarCheckItem x:Name="biActivateFilter" Content="Filter Actuals by Selected PO Line" Glyph="{dxc:DXImage Images/Filter/Filter_16x16.png}" IsChecked="{Binding DataContext.IsFilterActuals, ElementName=userControl, Mode=TwoWay}" IsEnabled="{Binding DataContext.IsLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Filter/Filter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Filter actuals by selected PO line(s)" />
+                    <dxb:BarCheckItem x:Name="biActivateFilter" Content="Filter Actuals by Selected PO Line(s)" Glyph="{dxc:DXImage Images/Filter/Filter_16x16.png}" IsChecked="{Binding DataContext.IsFilterActuals, ElementName=userControl, Mode=TwoWay}" IsEnabled="{Binding DataContext.IsLoading, ElementName=userControl, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Filter/Filter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Filter actuals by selected PO line(s)" />
                     <dxb:BarButtonItem x:Name="biCopyDetailWithHeader1" Command="{Binding DataContext.CopyDetailWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
                 </dxb:BarManager.Items>
                 <DockPanel>
@@ -47,6 +47,10 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                     <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
                                     <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
@@ -101,14 +105,15 @@
                                                 <dxg:GridColumn FieldName="COSTTYPE" Header="Commodity" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" VisibleIndex="30">
                                                     <dxg:GridColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.JOB_COSTTYPESCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="SEQNO">
+                                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidCostTypes}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="SEQNO">
                                                                 <dxg:LookUpEdit.StyleSettings>
                                                                     <dxg:SearchLookUpEditStyleSettings />
                                                                 </dxg:LookUpEdit.StyleSettings>
                                                                 <dxg:LookUpEdit.PopupContentTemplate>
                                                                     <ControlTemplate TargetType="ContentControl">
-                                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                                             <dxg:GridControl.Columns>
+                                                                                <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
                                                                                 <dxg:GridColumn FieldName="SHORTCODE" Header="Code" ReadOnly="True" />
                                                                                 <dxg:GridColumn FieldName="COSTDESC" Width="*" Header="Description" ReadOnly="True" />
                                                                             </dxg:GridControl.Columns>
@@ -122,9 +127,34 @@
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="True" SortIndex="40" Visible="True" VisibleIndex="40" />
-                                                <dxg:GridColumn FieldName="OrderDate" Header="Order Date" ReadOnly="True" SortIndex="50" FilterPopupMode="DateAlt" VisibleIndex="50" />
-                                                <dxg:GridColumn FieldName="HDR_SEQNO" Header="PO Number" ReadOnly="True" VisibleIndex="60" />
+                                                <dxg:GridColumn FieldName="STOCKCODE" Header="Stock" ReadOnly="{Binding DataContext.IsReadOnly, ElementName=userControl}" VisibleIndex="40">
+                                                    <dxg:GridColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidStockItems}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="STOCKCODE">
+                                                                <dxg:LookUpEdit.StyleSettings>
+                                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                                </dxg:LookUpEdit.StyleSettings>
+                                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                                    <ControlTemplate TargetType="ContentControl">
+                                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                                            <dxg:GridControl.Columns>
+                                                                                <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
+                                                                                <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                                                <dxg:GridColumn FieldName="DESCRIPTION" Width="*" Header="Description" ReadOnly="True" />
+                                                                            </dxg:GridControl.Columns>
+                                                                            <dxg:GridControl.View>
+                                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                                            </dxg:GridControl.View>
+                                                                        </dxg:GridControl>
+                                                                    </ControlTemplate>
+                                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                                            </dxg:LookUpEdit>
+                                                        </DataTemplate>
+                                                    </dxg:GridColumn.CellTemplate>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="True" SortIndex="40" Visible="True" VisibleIndex="50" />
+                                                <dxg:GridColumn FieldName="OrderDate" Header="Order Date" ReadOnly="True" SortIndex="50" FilterPopupMode="DateAlt" VisibleIndex="60" />
+                                                <dxg:GridColumn FieldName="HDR_SEQNO" Header="PO Number" ReadOnly="True" VisibleIndex="70" />
                                             </dxg:GridControlBand>
                                             <dxg:GridControlBand Header="Commodity">
                                                 <dxg:GridColumn FieldName="DESCRIPTION" Width="200" Header="Description" ReadOnly="True" VisibleIndex="70" />

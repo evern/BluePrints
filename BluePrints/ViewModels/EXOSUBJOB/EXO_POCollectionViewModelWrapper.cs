@@ -123,6 +123,8 @@ namespace BluePrints.ViewModels
             {
                 exoPo.PopulateCommodityCodes(COMMODITY_CODECollection);
                 exoPo.PopulateStockCodes(STOCK_ITEMSCollection);
+                exoPo.PopulateCostTypes(JOB_COSTTYPESCollection);
+                exoPo.PopulateStockItems(STOCK_ITEMSCollection);
                 if (exoPo.Status != 2)
                 {
                     returnDataPoints.Add(exoPo);
@@ -132,6 +134,8 @@ namespace BluePrints.ViewModels
                     if (ExoMaterials.Any(x => x.PONumber == ((int)exoPo.HDR_SEQNO).ToString()))
                         returnDataPoints.Add(exoPo);
                 }
+
+                exoPo.Update();
             }
 
             return returnDataPoints.AsQueryable();
@@ -318,6 +322,36 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
                 return collection;
+            }
+        }
+
+        public IEnumerable<string> COMMODITY_CODEStringCollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+                List<string> allCommodityCodes = new List<string>();
+                if (collection != null)
+                {
+                    allCommodityCodes.AddRange(collection.OrderBy(x => x.CODE).Distinct().Select(x => x.CODE).Distinct());
+                }
+
+                return allCommodityCodes.OrderBy(x => x);
+            }
+        }
+
+        public IEnumerable<string> STOCK_CODEStringCollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.STOCK_ITEMS>();
+                List<string> allStockCodeRanges = new List<string>();
+                if (collection != null)
+                {
+                    allStockCodeRanges.AddRange(collection.OrderBy(x => x.STOCKCODE).Distinct().Select(x => x.STOCKCODE).Distinct());
+                }
+
+                return allStockCodeRanges.OrderBy(x => x);
             }
         }
         #endregion

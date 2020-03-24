@@ -56,7 +56,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public List<COMMODITY_CODE> validCommodityCodes = null;
+        protected List<COMMODITY_CODE> validCommodityCodes = null;
         public IEnumerable<COMMODITY_CODE> ValidCommodityCodes
         {
             get
@@ -72,12 +72,74 @@ namespace BluePrints.Common.Projections
                 return validCommodityCodes;
             }
         }
+
+        private List<COMMODITY_CODE> taggedValidCommodityCodes;
+        public IEnumerable<COMMODITY_CODE> TaggedValidCommodityCodes
+        {
+            get
+            {
+                if (taggedValidCommodityCodes == null)
+                {
+                    taggedValidCommodityCodes = new List<COMMODITY_CODE>();
+                    foreach (COMMODITY_CODE commodityCode in COMMODITY_CODES)
+                    {
+                        COMMODITY_CODE newCommodityCode = new COMMODITY_CODE();
+                        newCommodityCode.GUID = commodityCode.GUID;
+                        newCommodityCode.CODE = commodityCode.CODE;
+                        newCommodityCode.NAME = commodityCode.NAME;
+                        newCommodityCode.DESCRIPTION = commodityCode.DESCRIPTION;
+                        newCommodityCode.UOM = commodityCode.UOM;
+                        taggedValidCommodityCodes.Add(newCommodityCode);
+                    }
+                }
+
+                taggedValidCommodityCodes.ForEach(x =>
+                {
+                    if (ValidCommodityCodes.Any(y => y.CODE == x.CODE))
+                        x.IsValid = true;
+                    else
+                        x.IsValid = false;
+                });
+
+                return taggedValidCommodityCodes;
+            }
+        }
+
+        private List<STOCK_ITEMS> taggedValidStockItems;
+        public IEnumerable<STOCK_ITEMS> TaggedValidStockItems
+        {
+            get
+            {
+                if (taggedValidStockItems == null)
+                {
+                    taggedValidStockItems = new List<STOCK_ITEMS>();
+                    foreach (STOCK_ITEMS stockItem in STOCK_ITEMS)
+                    {
+                        STOCK_ITEMS newStockItem = new STOCK_ITEMS();
+                        newStockItem.STOCKCODE = stockItem.STOCKCODE;
+                        newStockItem.DESCRIPTION = stockItem.DESCRIPTION;
+                        taggedValidStockItems.Add(newStockItem);
+                    }
+                }
+
+                taggedValidStockItems.ForEach(x =>
+                {
+                    if (ValidStockCodes.Any(y => y == x.STOCKCODE))
+                        x.IsValid = true;
+                    else
+                        x.IsValid = false;
+                });
+
+                return taggedValidStockItems;
+            }
+        }
         #endregion
 
         #region Stock Codes
         private IEnumerable<STOCK_ITEMS> STOCK_ITEMS { get; set; }
         public void PopulateStockCodes(IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
         {
+            validStockCodes = null;
             STOCK_ITEMS = STOCK_ITEMSCollection;
         }
 
@@ -101,7 +163,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        List<string> validStockCodes = null;
+        protected List<string> validStockCodes = null;
         public IEnumerable<string> ValidStockCodes
         {
             get
