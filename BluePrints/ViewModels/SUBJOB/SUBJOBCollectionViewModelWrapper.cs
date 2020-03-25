@@ -420,7 +420,9 @@ namespace BluePrints.ViewModels
                         AREACollection, SUBAREACollection, out phaseGuid, newProjection.Entity.GUID_DPHASE, PHASECollection);
 
                 newProjection.Entity.INTERNAL_NAME1 = newInternalName;
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
+
+                //handled in save
+                //MainViewModel.EntitiesUndoRedoManager.AddUndo(newProjection, null, null, null, EntityMessageType.Added);
                 MainViewModel.Save(newProjection);
             }
 

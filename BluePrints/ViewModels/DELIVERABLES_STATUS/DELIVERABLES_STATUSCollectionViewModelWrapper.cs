@@ -292,8 +292,9 @@ namespace BluePrints.ViewModels
                 DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && newAssignedDocTypes.Any(y => x.GetAssignedDocTypes().Any(z => z.GUID == y.GUID)));
                 if (findEntity == null)
                 {
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
-                    duplicateDeliverableStatuses.Add(newDeliverableStatus);
+                    //Handled in save
+                    //MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
+                    //duplicateDeliverableStatuses.Add(newDeliverableStatus);
                 }
                 else
                     MessageBoxService.ShowMessage("Document type with autopercentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists");
