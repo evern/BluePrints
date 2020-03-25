@@ -387,4 +387,7 @@
   <data name="Menu_Project_EXO_JobPermission" xml:space="preserve">
     <value>Project EXO jobs permissions maintenance menu</value>
   </data>
+  <data name="Global_ChangeLog" xml:space="preserve">
+    <value>Startup change log information view</value>
+  </data>
 </root>

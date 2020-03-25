@@ -123,6 +123,9 @@
   <data name="Forecast_ShowActuals" xml:space="preserve">
     <value>Show actuals on forecast</value>
   </data>
+  <data name="Global_HideUserDeliverablesOnStartup" xml:space="preserve">
+    <value>Do not show user deliverables list on startup</value>
+  </data>
   <data name="PreferenceFalseValue" xml:space="preserve">
     <value>N</value>
   </data>

@@ -223,6 +223,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Startup change log information view.
+        /// </summary>
+        internal static string Global_ChangeLog {
+            get {
+                return ResourceManager.GetString("Global_ChangeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Main project menu.
         /// </summary>
         internal static string Menu_AllProjects {

@@ -324,6 +324,7 @@
     <Reference Include="DevExpress.Xpf.NavBar.v19.1, Version=19.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
+    <Reference Include="DevExpress.Xpf.PdfViewer.v19.1, Version=19.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.PivotGrid.v19.1, Version=19.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Printing.v19.1, Version=19.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -1028,6 +1029,7 @@
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
+    <Compile Include="ViewModels\ChangeLogViewModel.cs" />
     <Compile Include="ViewModels\MEETING\MEETINGCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_ACTION\MEETING_ACTIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\MEETING_TYPE\MEETING_TYPECollectionViewModelWrapper.cs" />
@@ -1130,6 +1132,9 @@
     </Compile>
     <Compile Include="Views\HSE\HSESingleObjectView.xaml.cs">
       <DependentUpon>HSESingleObjectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChangeLogWindow.xaml.cs">
+      <DependentUpon>ChangeLogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MEETING\MEETINGCollectionView.xaml.cs">
       <DependentUpon>MEETINGCollectionView.xaml</DependentUpon>
@@ -2093,6 +2098,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\ChangeLogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\MEETING\MEETINGCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2548,6 +2557,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Views\ChangeLog.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -2932,16 +2942,6 @@
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="DevExpress.Xpf.Ribbon.v19.1">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="DevExpress.Xpf.RichEdit.v19.1">
       <Visible>False</Visible>
       <Group>
       </Group>

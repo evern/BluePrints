@@ -975,7 +975,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.EntitiesUndoRedoManager.AddUndo(changedEntity, propertyName, oldValue, newValue, messageType);
         }
-
         public void PauseUndoRedo()
         {
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
@@ -1249,9 +1248,6 @@ namespace BluePrints.ViewModels
         public void Insert()
         {
             TableViewService.SetImmediateUpdateRowPosition(true);
-            if (!_isProcessingMultiple)
-                PauseUndoRedo();
-
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, true, DisplayEntities, DisplaySelectedEntities);
             //datacontext savechanges will save existing renamed entities
             renameExistingEntitiesByReferencingNewEntities(newEntities, EditableAllEntities);
@@ -1260,8 +1256,6 @@ namespace BluePrints.ViewModels
             foreach(BASELINE_ITEMProgress newEntity in newEntities)
                 populateCompulsoryLookupCollection(newEntity);
 
-            if (!_isProcessingMultiple)
-                UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
@@ -1307,9 +1301,6 @@ namespace BluePrints.ViewModels
         public void Duplicate()
         {
             TableViewService.SetImmediateUpdateRowPosition(true);
-            if (!_isProcessingMultiple)
-                PauseUndoRedo();
-
             List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(1, false, DisplayEntities, DisplaySelectedEntities);
 
             //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
@@ -1319,9 +1310,6 @@ namespace BluePrints.ViewModels
             //    populateCompulsoryLookupCollection(newEntity);
             //}
             MainViewModel.BulkSave(newEntities);
-
-            if (!_isProcessingMultiple)
-                UnpauseUndoRedo();
 
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
@@ -1400,8 +1388,6 @@ namespace BluePrints.ViewModels
                     newProjection.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Preliminary;
                     newProjection.Entity.Entity.GUID_USER = null;
                     onBeforeEntitiesDuplicated(selectedEntity, newProjection);
-                    //newProjection.Entity.Entity.INTERNAL_NUM = string.Empty;
-                    AddUndo(newProjection, null, null, null, EntityMessageType.Added);
                     unsavedEntities.Add(newProjection);
                 }
             }
@@ -1440,37 +1426,24 @@ namespace BluePrints.ViewModels
             {
 
                 TableViewService.SetImmediateUpdateRowPosition(true);
-                if (!_isProcessingMultiple)
-                    PauseUndoRedo();
-
                 List<BASELINE_ITEMProgress> newEntities = getNewProgressEntities(timesToDuplicate, false, DisplayEntities, DisplaySelectedEntities);
 
                 //because bulk save will invoke refresh on this collectionviewmodel. Variation will not know about the refresh
                 //foreach (BASELINE_ITEMProgress newEntity in newEntities)
                 //    MainViewModel.Save(newEntity);
                 MainViewModel.BulkSave(newEntities);
-
-                //Add undo must happen after save so that variation can pick it up
-                foreach (BASELINE_ITEMProgress newEntity in newEntities)
-                    AddUndo(newEntity, null, null, null, EntityMessageType.Added);
-
-                if (!_isProcessingMultiple)
-                    UnpauseUndoRedo();
-
                 //List<BASELINE_ITEMProgress> currentEnumerationSaveEntities = getNewProgressEntities(timesToDuplicate, false, MainViewModel.Entities, DisplaySelectedEntities);
                 //newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
             //MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
-            UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
         public void InsertMultiple(BarEditItem barEdit)
         {
             TableViewService.SetImmediateUpdateRowPosition(true);
-            PauseUndoRedo();
             _isProcessingMultiple = true;
             var timesToInsert = 0;
             List<BASELINE_ITEMProgress> newEntities = new List<BASELINE_ITEMProgress>();
@@ -1488,7 +1461,6 @@ namespace BluePrints.ViewModels
        
             //MainViewModel.BulkSave(newEntities);
             _isProcessingMultiple = false;
-            UnpauseUndoRedo();
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
         

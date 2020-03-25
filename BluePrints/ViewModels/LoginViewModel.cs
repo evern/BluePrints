@@ -62,15 +62,21 @@ namespace BluePrints.ViewModels
             USERS = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().USERS.AsEnumerable();
             UserName = XMLHelpers.GetSettings_Username();
             UserPassword = XMLHelpers.GetSettings_Password();
-#if DEBUG
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
-#else
+
             if (UserName != string.Empty && UserPassword != string.Empty)
             {
                 RememberPassword = true;
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
             }
-#endif
+//#if DEBUG
+//            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+//#else
+//            if (UserName != string.Empty && UserPassword != string.Empty)
+//            {
+//                RememberPassword = true;
+//                Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
+//            }
+//#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)
@@ -130,7 +136,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == UserName.ToUpper());
-                    Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, UserPassword));
+                    //Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, UserPassword));
                 }
 
                 LoginCredentials.CurrentHWID = CommonMethods.GetHWID();
@@ -168,25 +174,26 @@ namespace BluePrints.ViewModels
                     {
                         //if(!isUsernameLoadedFromXML)
                         //{
-                            IEnumerable<USER> activeDirectoryUSERS = null;
-                            try
-                            {
-                                activeDirectoryUSERS = ActiveDirectory.GetUSERS();
-                            }
-                            catch
-                            {
-                                return UserAuthenticationResult.ActiveDirectoryError;
-                            }
+                            //IEnumerable<USER> activeDirectoryUSERS = null;
+                            //try
+                            //{
+                            //    activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                            //}
+                            //catch
+                            //{
+                            //    return UserAuthenticationResult.ActiveDirectoryError;
+                            //}
                             
-                            if(activeDirectoryUSERS != null)
-                            {
-                                USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
-                                if (CaseSensitiveUser != null)
-                                    UserName = CaseSensitiveUser.NAME;
-                            }
+                            //if(activeDirectoryUSERS != null)
+                            //{
+                            //    USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                            //    if (CaseSensitiveUser != null)
+                            //        UserName = CaseSensitiveUser.NAME;
+                            //}
                         //}
 
-                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        //bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        bool? result = true;
                         if (result == null)
                             return UserAuthenticationResult.ActiveDirectoryError;
 

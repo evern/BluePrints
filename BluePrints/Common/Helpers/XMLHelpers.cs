@@ -10,9 +10,11 @@ namespace BluePrints.Common.Helpers
 {
     public static class XMLHelpers
     {
-        public static string SettingsRootName = "Settings";
+        //change settingsrootname to revise XML settings attributes when attributes has been added/deleted
+        public static string SettingsRootName = "Settings_v2";
         public static string UsernameElementName = "Username";
         public static string PasswordElementName = "Password";
+        public static string LastChangeLogDisplayElementName = "LastChangeLogDisplayDate";
 
         /// <summary>
         /// Retrieve the designated file path for xml
@@ -43,8 +45,19 @@ namespace BluePrints.Common.Helpers
         public static void UpdateSettingsXML(XMLSettings defaultSetting)
         {
             XDocument doc = GetSettingsXML();
+            var xmlFilePath = SettingsXMLFilePath(true);
             string username = defaultSetting == null ? string.Empty : defaultSetting.Username;
             string password = defaultSetting == null ? string.Empty : defaultSetting.Password;
+
+            //remove old xml file
+            if (doc.Root.Name != SettingsRootName)
+            {
+                File.Delete(xmlFilePath);
+                doc = new XDocument(new XDeclaration("1.0", "utf-8", null),
+                    new XElement(SettingsRootName)
+                );
+                doc.Save(xmlFilePath);
+            }
 
             if (!doc.Root.Descendants().Any(obj => obj.Name.LocalName == UsernameElementName))
             {
@@ -61,7 +74,11 @@ namespace BluePrints.Common.Helpers
                 findPasswordElement.Value = password;
             }
 
-            var xmlFilePath = SettingsXMLFilePath(true);
+            if(!doc.Root.Descendants().Any(obj => obj.Name.LocalName == LastChangeLogDisplayElementName))
+            {
+                doc.Root.Add(new XElement(LastChangeLogDisplayElementName, string.Empty));
+            }
+
             doc.Save(xmlFilePath);
         }
 
@@ -73,17 +90,6 @@ namespace BluePrints.Common.Helpers
                 try
                 {
                     doc = XDocument.Load(xmlFilePath);
-                    var findDatabase = doc.Root.Descendants().FirstOrDefault(obj => obj.Name == SettingsRootName);
-
-                    //remove old xml file
-                    if (findDatabase != null && findDatabase.HasAttributes && findDatabase.FirstAttribute.Name == UsernameElementName)
-                    {
-                        File.Delete(xmlFilePath);
-                        doc = new XDocument(new XDeclaration("1.0", "utf-8", null),
-                            new XElement(SettingsRootName)
-                        );
-                        doc.Save(xmlFilePath);
-                    }
                 }
                 catch //if xml file fails to load recreate it
                 {
@@ -103,6 +109,23 @@ namespace BluePrints.Common.Helpers
 
 
             return doc;
+        }
+
+        public static DateTime? GetSettings_LastChangeLogDisplayDate()
+        {
+            XDocument doc = GetSettingsXML();
+            DateTime? lastChangeLogDisplayDate = null;
+            if (doc != null)
+            {
+                var findLastChangeLogDisplayDate = doc.Root.Elements().FirstOrDefault(obj => obj.Name.LocalName == LastChangeLogDisplayElementName);
+                if (findLastChangeLogDisplayDate != null)
+                {
+                    if(findLastChangeLogDisplayDate.Value != string.Empty)
+                        lastChangeLogDisplayDate = DateTime.Parse(findLastChangeLogDisplayDate.Value);
+                }
+            }
+
+            return lastChangeLogDisplayDate;
         }
 
         public static string GetSettings_Username()

@@ -347,7 +347,7 @@ namespace BluePrints.ViewModels
         {
             List<ExoSubJobEditableProjection> viewRemoveProjections = new List<ExoSubJobEditableProjection>();
             LoadingScreenManager.ShowLoadingScreen(removeProjections.Count());
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
             foreach (ExoSubJobEditableProjection removeProjection in removeProjections)
             {
                 JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
@@ -363,7 +363,6 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.Progress();
             }
 
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             LoadingScreenManager.CloseLoadingScreen();
             foreach (ExoSubJobEditableProjection viewRemoveProjection in viewRemoveProjections)
             {
@@ -427,6 +426,8 @@ namespace BluePrints.ViewModels
                     addedProjection.PopulateLineAuthUsers(DisplayEntities);
                     MainViewModel.Entities.Insert(0, addedProjection);
 
+                    if(!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
+                        MainViewModel.EntitiesUndoRedoManager.AddUndo(addedProjection, string.Empty, null, null, EntityMessageType.Added);
                     addedProjection.IsLineExistsInExo = true;
                 }
 

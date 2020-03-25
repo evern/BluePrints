@@ -1858,6 +1858,11 @@ namespace BluePrints.Common.Base
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("BookTimeDialog"); }
         }
 
+        public bool CanBookTime()
+        {
+            return !IsLoading;
+        }
+
         public void BookTime()
         {
             if (exoAuthorisations == null)

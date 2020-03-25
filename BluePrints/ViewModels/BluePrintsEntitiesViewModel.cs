@@ -41,7 +41,7 @@ namespace BluePrints.ViewModels
 
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
         private CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
-        private DispatcherTimer myDeliverablesDispatcher;
+        private DispatcherTimer onAfterNavigationLoadedDispatcher;
 
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
@@ -65,10 +65,6 @@ namespace BluePrints.ViewModels
 
         private void initialize()
         {
-            myDeliverablesDispatcher = new DispatcherTimer();
-            myDeliverablesDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
-            myDeliverablesDispatcher.Tick += MyDeliverablesDispatcher_Tick;
-
             initializeCategoryDescription();
             _projectCollectionViewModel = CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>.CreateCollectionViewModel(unitOfWorkFactory, x => x.PROJECTS);
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = OnEntitiesLoadedCallBack;
@@ -138,15 +134,28 @@ namespace BluePrints.ViewModels
             IsLoaded = true;
             _projectCollectionViewModel.OnEntitiesLoadedCallBack = null;
             MainThreadDispatcher.BeginInvoke(new Action(() => loadNavigationModules(entities)));
-            myDeliverablesDispatcher.Start();
+            onAfterNavigationLoadedDispatcher.Start();
         }
 
 
-        private void MyDeliverablesDispatcher_Tick(object sender, EventArgs e)
+        private void onAfterNavigationLoadedDispatcher_Tick(object sender, EventArgs e)
         {
-            myDeliverablesDispatcher.Stop();
-            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
-                NavigateCore(myDeliverablesDescription);
+            onAfterNavigationLoadedDispatcher.Stop();
+
+            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
+            {
+                if(!LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup)))
+                    NavigateCore(myDeliverablesDescription);
+            }
+
+            //DateTime? lastChangeLogDisplayDate = XMLHelpers.GetSettings_LastChangeLogDisplayDate();
+            //if (lastChangeLogDisplayDate == null || ((DateTime)lastChangeLogDisplayDate) < DateTime.Now)
+            //{
+            //    ChangeLogWindow changeLogWindow = new ChangeLogWindow();
+            //    changeLogWindow.Show();
+            //}
+            //if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
+            //    NavigateCore(myDeliverablesDescription);
         }
 
         private void CreateModules(IEnumerable<PROJECT> entities, bool isSecurityModule)
@@ -315,6 +324,10 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
         private void initializeCategoryDescription()
         {
+            onAfterNavigationLoadedDispatcher = new DispatcherTimer();
+            onAfterNavigationLoadedDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            onAfterNavigationLoadedDispatcher.Tick += onAfterNavigationLoadedDispatcher_Tick;
+
             dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
             myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
@@ -383,39 +396,10 @@ namespace BluePrints.ViewModels
             if (module == null || DocumentManagerService == null)
                 return null;
 
-            //if (module.DocumentType == "PROJECTView")
-            //{
-            //    KeyValuePair<string, PROJECTViewWindow> existingProjectView = openedProjectView.FirstOrDefault(x => x.Key == module.Id.ToString());
-            //    if (existingProjectView.Value != null)
-            //    {
-            //        PROJECTViewWindow projectView = existingProjectView.Value;
-            //        projectView.Tag = module.Id.ToString();
-            //        projectView.WindowClosed = windowClosed;
-            //        projectView.Activate();
-            //    }
-            //    else
-            //    {
-            //        PROJECTViewWindow projectView = new PROJECTViewWindow();
-            //        projectView.Tag = module.Id.ToString();
-            //        projectView.WindowClosed = windowClosed;
-            //        PROJECTViewModelWrapper viewModel = (PROJECTViewModelWrapper)projectView.DataContext;
-            //        viewModel.OnParameterChanged(module.DocumentParameter);
-            //        openedProjectView.Add(module.Id.ToString(), projectView);
-            //        projectView.Show();
-            //    }
+            DocumentInfo documentInfo = new DocumentInfo(module.NavigationId, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
+            var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
 
-            //    return null;
-            //}
-            //else
-            //{
-                DocumentInfo documentInfo = new DocumentInfo(module.NavigationId, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
-                var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
-                //var document = DocumentManagerService.FindDocumentByIdOrCreate(module.ModuleTitle,
-                //    x => NavigateToDocument(module));
-                //document.Show();
-
-                return document;
-            //}
+            return document;
         }
 
         protected IMessageBoxService MessageBoxService

@@ -35,6 +35,19 @@ namespace BluePrints.ViewModels
             _loadUSER = LoginCredentials.CurrentUser;
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
+
+            isHideOnStartup = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+        }
+
+        bool isHideOnStartup;
+        public bool IsHideOnStartup
+        {
+            get => isHideOnStartup;
+            set
+            {
+                isHideOnStartup = value;
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+            }
         }
 
         protected override void addEntitiesLoader()

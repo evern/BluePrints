@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do not show user deliverables list on startup.
+        /// </summary>
+        internal static string Global_HideUserDeliverablesOnStartup {
+            get {
+                return ResourceManager.GetString("Global_HideUserDeliverablesOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to N.
         /// </summary>
         internal static string PreferenceFalseValue {
