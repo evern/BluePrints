@@ -147,12 +147,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override bool OnBeforeParentAssigned(MINUTE_AGENDAMasterDetailProjection masterEntity, MINUTE_AGENDAMasterDetailProjection childEntity)
-        {
-            //initializeDetailProperties(masterEntity, childEntity);
-            return base.OnBeforeParentAssigned(masterEntity, childEntity);
-        }
-
         private void initializeDetailProperties(MINUTE_AGENDAMasterDetailProjection masterEntity, MINUTE_AGENDAMasterDetailProjection childEntity)
         {
             childEntity.Entity.NUMBER = string.Empty;
@@ -194,8 +188,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_AGENDAMasterDetailProjection> entities)
         {
-            MINUTE_TITLECollectionViewModelWrapper.OnDisplaySelectedEntityChangedCallBack = onMINUTE_TITLEChanged;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -204,6 +196,19 @@ namespace BluePrints.ViewModels
         {
             calculateTitleSummary();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(MINUTE_AGENDAMasterDetailProjection projection, out bool isNew)
+        {
+            isNew = false;
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select a title before adding an agenda");
+                return OperationInterceptMode.Skip;
+            }
+
+            initializeMasterProperties(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         private void calculateTitleSummary()
@@ -254,7 +259,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        private void onMINUTE_TITLEChanged(MINUTE_TITLE minute_title_entity)
+        protected override void OnSelectedEntitiesChanged()
         {
             filterAgenda();
         }
@@ -273,21 +278,6 @@ namespace BluePrints.ViewModels
         {
             this.RaisePropertyChanged(x => x.IsArrowVisible);
             this.RaisePropertyChanged(x => x.NewAgendaInstruction);
-        }
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(MINUTE_AGENDAMasterDetailProjection entity)
-        {
-            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
-            {
-                MessageBoxService.ShowMessage("Please select a title before adding an agenda");
-                return false;
-            }
-
-            initializeMasterProperties(entity);
-            return true;
         }
         #endregion
 

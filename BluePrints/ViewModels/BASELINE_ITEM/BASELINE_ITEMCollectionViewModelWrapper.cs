@@ -111,7 +111,7 @@ namespace BluePrints.ViewModels
                     entity.Update();
                 }
 
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
 
                 //if(loadBASELINE.FIN_CLIENTNUM_BY == null)
@@ -139,7 +139,7 @@ namespace BluePrints.ViewModels
                     entity.Update();
                 }
 
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
 
                 //if (loadBASELINE.FIN_CLIENTNUM_BY == null)
@@ -168,7 +168,7 @@ namespace BluePrints.ViewModels
                 }
 
                 List<string> internalNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.INTERNAL_NUM).ToList();
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
 
                 //string emailMessage = @"<html> 
@@ -202,7 +202,7 @@ namespace BluePrints.ViewModels
                 }
 
                 List<string> clientNumbers = DisplaySelectedEntities.Select(x => x.Entity.Entity.CLIENT_NUM).ToList();
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
 
                 //string emailMessage = @"<html> 
@@ -301,13 +301,7 @@ namespace BluePrints.ViewModels
             base.FullRefresh();
         }
         #endregion
-
-        public virtual void Interface_InitializeParameters(object parameter)
-        {
-
-            //Is_Autofill_Internal_Number = true;
-        }
-
+        s
         public override void OnLoaded()
         {
             if (!isFirstLoaded)
@@ -548,9 +542,8 @@ namespace BluePrints.ViewModels
         {
             FilterTreeViewModel = FiltersSettings.GetBASELINE_ITEMProgressFilterTree(this, entities);
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.FilterTreeViewModel)));
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnBeforeProjectionsDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             MainViewModel.SetParentViewModel(this);
 
@@ -571,6 +564,33 @@ namespace BluePrints.ViewModels
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(BASELINE_ITEMProgress projection, out List<ErrorMessage> errorMessages)
+        {
+            errorMessages = new List<ErrorMessage>();
+            IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => canDeleteDeliverable(y, projection)));
+
+            //when there are variations that relates to this deliverable
+            if (attachedVARIATIONS.Count() > 0)
+            {
+                string variations = string.Empty;
+                foreach (VARIATION attachedVARIATION in attachedVARIATIONS)
+                {
+                    variations += attachedVARIATION.NAME + ", ";
+                }
+
+                if (variations.Length > 2)
+                    variations = variations.Substring(0, variations.Length - 2);
+
+                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Variations exists: " + variations));
+            }
+            else if (projection.PROGRESS_ITEMS.Count > 0 && projection.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Has been progressed"));
+            else
+                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Deleted"));
+
+            return OperationInterceptMode.Continue;
         }
 
         protected virtual bool onBeforeEntitiesDeleted(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -611,7 +631,7 @@ namespace BluePrints.ViewModels
 
             if(showErrorMessage)
             {
-                MainViewModel.BaseBulkDelete(deleteEntities);
+                MainViewModel.BulkDelete(deleteEntities);
                 DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot delete deliverable(s) due to the following error");
                 ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
                 return false;
@@ -640,7 +660,7 @@ namespace BluePrints.ViewModels
                         remove_baseline_item_work.Add(assignment);
                 }
 
-                BASELINE_ITEM_WORKCollectionViewModel.BaseBulkDelete(remove_baseline_item_work);
+                BASELINE_ITEM_WORKCollectionViewModel.BulkDelete(remove_baseline_item_work);
                 List<BASELINE_ITEM_WORK> add_project_disciplines = new List<BASELINE_ITEM_WORK>();
                 foreach (USER user in entity.Entity.AssignUsers)
                 {
@@ -660,7 +680,7 @@ namespace BluePrints.ViewModels
                     remove_baseline_item_work.Add(assignment);
                 }
 
-                BASELINE_ITEM_WORKCollectionViewModel.BaseBulkDelete(remove_baseline_item_work);
+                BASELINE_ITEM_WORKCollectionViewModel.BulkDelete(remove_baseline_item_work);
             }
         }
 
@@ -735,14 +755,8 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public virtual bool OnBeforeEntitySaved(BASELINE_ITEMProgress entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)
         {
-            //if (MainViewModel.isBackgroundEdit)
-            //    return true;
-
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
 
@@ -752,30 +766,29 @@ namespace BluePrints.ViewModels
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.Chargeable;
                 if (defaultPHASE != null)
-                    entity.Phase_Guid = defaultPHASE.GUID;
+                    projection.Phase_Guid = defaultPHASE.GUID;
             }
-            else if(viewType == DeliverablesViewType.Indirect)
+            else if (viewType == DeliverablesViewType.Indirect)
             {
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.NotChargeable;
                 PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable));
                 if (indirectPHASE != null)
-                    entity.Phase_Guid = indirectPHASE.GUID;
+                    projection.Phase_Guid = indirectPHASE.GUID;
             }
-            else if (entity.Phase_Guid == null && defaultPHASE != null)
+            else if (projection.Phase_Guid == null && defaultPHASE != null)
             {
-                entity.Phase_Guid = defaultPHASE.GUID;
+                projection.Phase_Guid = defaultPHASE.GUID;
             }
 
             string errorMessage = string.Empty;
-            if (entity.GUID == Guid.Empty && entity.Entity.Entity.INTERNAL_NUM == string.Empty && entity.IsInternalNumberEditable)
-                entity.Entity.Entity.INTERNAL_NUM = generateInternalNumber(entity, out errorMessage);
+            if (projection.GUID == Guid.Empty && projection.Entity.Entity.INTERNAL_NUM == string.Empty && projection.IsInternalNumberEditable)
+                projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection, out errorMessage);
 
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, entity, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
-            entity.Update();
-            //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
-            return true;
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            projection.Update();
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public Action<BASELINE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
@@ -1066,10 +1079,10 @@ namespace BluePrints.ViewModels
             projection.Entity.Entity.PopulateDocumentTypes(DOCTYPECollection, COMMODITY_CODECollection);
         }
 
-        public override void UnifiedNewRowInitialization(BASELINE_ITEMProgress projection)
+        public override void UnifiedNewRowInitializationFromView(BASELINE_ITEMProgress projection)
         {
             projection.Entity.Entity.NewItemRowSubAREACollection = SUBAREACollection;
-            base.UnifiedNewRowInitialization(projection);
+            base.UnifiedNewRowInitializationFromView(projection);
         }
 
         //anything with AddUndo needs to be added to unified value changed to prevent it from getting added twice

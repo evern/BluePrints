@@ -122,7 +122,6 @@ namespace BluePrints.ViewModels
             disableMultipleDeliverablesToOneActivityAssignment = true;
             MainViewModel.AlwaysSkipMessage = true;
             P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = false;
-            P6_ASSIGNMENTSCollectionViewModel.AfterBulkOperationRefreshCallBack = onAfterBulkOperationRefresh;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -150,7 +149,7 @@ namespace BluePrints.ViewModels
                 return;
 
             IEnumerable<P6_ASSIGNMENT> delete_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments);
-            P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(delete_assignments);
+            P6_ASSIGNMENTSCollectionViewModel.BulkDelete(delete_assignments);
 
             foreach(ESTIMATE_ITEMProgress displayEntity in DisplayEntities)
             {

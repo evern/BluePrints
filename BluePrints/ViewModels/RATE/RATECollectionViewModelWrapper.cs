@@ -102,30 +102,19 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
         {
             MainViewModel.OnBeforePasteWithValidation = initializeRATE;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public virtual bool OnBeforeEntitySaved(RATE entity)
+        public override void UnifiedNewRowInitializationFromView(RATE projection)
         {
-            compulsoryOnBeforeEntitySaved(entity);
-            entity.COST_TYPE = loadCostType;
-            entity.CHARGE_TYPE = loadChargeType;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            projection.COST_TYPE = loadCostType;
+            projection.CHARGE_TYPE = loadChargeType;
 
-
-            //commodity code must be empty string to avoid ambiguity when querying
-            if (entity.COMMODITY_CODE == null)
-                entity.COMMODITY_CODE = string.Empty;
-
-            populatePHASE(entity);
-
-            return true;
+            base.UnifiedNewRowInitializationFromView(projection);
         }
 
         protected virtual void populatePHASE(RATE entity)
@@ -150,15 +139,6 @@ namespace BluePrints.ViewModels
                         entity.PHASE_TYPE = PhaseType.Indirect;
                     }
                 }
-            }
-        }
-
-        protected void compulsoryOnBeforeEntitySaved(RATE entity)
-        {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            if (entity.IsGangRateCalculatable)
-            {
-                entity.RATE1 = entity.GangRate;
             }
         }
         
@@ -269,15 +249,22 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
         {
-            projection.COST_TYPE = loadCostType;
-            projection.CHARGE_TYPE = loadChargeType;
-
             if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
             }
 
+            if (projection.IsGangRateCalculatable)
+            {
+                projection.RATE1 = projection.GangRate;
+            }
+
+            //commodity code must be empty string to avoid ambiguity when querying
+            if (projection.COMMODITY_CODE == null)
+                projection.COMMODITY_CODE = string.Empty;
+
+            populatePHASE(projection);
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
@@ -323,7 +310,7 @@ namespace BluePrints.ViewModels
             }
 
             int removeCount = DeleteRates.Count;
-            MainViewModel.BaseBulkDelete(DeleteRates);
+            MainViewModel.BulkDelete(DeleteRates);
             MessageBoxService.ShowMessage(removeCount + " duplicates entries removed");
         }
 

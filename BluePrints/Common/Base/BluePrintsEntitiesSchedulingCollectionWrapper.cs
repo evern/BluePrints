@@ -652,7 +652,7 @@ namespace BluePrints.Common.Base
                                 assignedDeliverable.P6_Assignments.Remove(removeAssignment);
                         }
 
-                        P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(otherAssignments);
+                        P6_ASSIGNMENTSCollectionViewModel.BulkDelete(otherAssignments);
                     }
                 }
 
@@ -1209,7 +1209,7 @@ namespace BluePrints.Common.Base
             if(missingAssignments.Count > 0)
             {
                 deletedDeliverablesAssignmentCount = missingAssignments.Count;
-                P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingAssignments);
+                P6_ASSIGNMENTSCollectionViewModel.BulkDelete(missingAssignments);
             }
 
             if (missing_activities.Count > 0)
@@ -1219,7 +1219,7 @@ namespace BluePrints.Common.Base
 
                 if (MessageBoxService.ShowMessage("Do you wish to delete these invalid assignments?", BluePrintsResources.Warning_Caption, MessageButton.OKCancel) == MessageResult.OK)
                 {
-                    P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missing_activities.Select(x => x.deliverable_assignment));
+                    P6_ASSIGNMENTSCollectionViewModel.BulkDelete(missing_activities.Select(x => x.deliverable_assignment));
                     FullRefresh();
                 }
             }

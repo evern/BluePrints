@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MEETING> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
+            MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -188,7 +188,7 @@ namespace BluePrints.ViewModels
                             remove_meeting_users.Add(assignment);
                     }
 
-                    MEETING_USERCollectionViewModel.BaseBulkDelete(remove_meeting_users);
+                    MEETING_USERCollectionViewModel.BulkDelete(remove_meeting_users);
 
                     List<MEETING_USER> add_attendees = new List<MEETING_USER>();
                     foreach (MeetingUser user in section_users)
@@ -206,7 +206,7 @@ namespace BluePrints.ViewModels
                         remove_meeting_users.Add(assignment);
                     }
 
-                    MEETING_USERCollectionViewModel.BaseBulkDelete(remove_meeting_users);
+                    MEETING_USERCollectionViewModel.BulkDelete(remove_meeting_users);
                 }
             }
         }

@@ -97,9 +97,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HSEProjection> entities)
         {
-            HSE_INCIDENTViewModel.OnBeforeEntitySavedIsContinueCallBack = HSE_INCIDENTOnBeforeEntitySaved;
-            HSE_INJURYViewModel.OnBeforeEntitySavedIsContinueCallBack = HSE_INJURYOnBeforeEntitySaved;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
+            HSE_INCIDENTViewModel.OnBeforeProjectionSaveIsContinueCallBack = HSE_INCIDENTOnBeforeEntitySaved;
+            HSE_INJURYViewModel.OnBeforeProjectionSaveIsContinueCallBack = HSE_INJURYOnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             HSE_INCIDENTViewModel.FuncManualRowPastingIsContinue = ManualRowPasteAction;
             HSE_INCIDENTViewModel.SetParentViewModel(this);
@@ -219,32 +218,30 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(HSEProjection projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(HSEProjection projection, out bool isNew)
         {
             projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool HSE_INCIDENTOnBeforeEntitySaved(HSE_INCIDENT projection)
+        public OperationInterceptMode HSE_INCIDENTOnBeforeEntitySaved(HSE_INCIDENT projection, out bool isNew)
         {
+            isNew = false;
             projection.GUID_HSE = EditingEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool HSE_INJURYOnBeforeEntitySaved(HSE_INJURY projection)
+        public OperationInterceptMode HSE_INJURYOnBeforeEntitySaved(HSE_INJURY projection, out bool isNew)
         {
+            isNew = false;
             projection.GUID_HSE = EditingEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         public override string UnifiedRowValidation(HSEProjection projection)

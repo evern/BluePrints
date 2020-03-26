@@ -144,7 +144,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<SUBJOBProjection> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = OnEntitySavedCallBack;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnEntitySavedCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }

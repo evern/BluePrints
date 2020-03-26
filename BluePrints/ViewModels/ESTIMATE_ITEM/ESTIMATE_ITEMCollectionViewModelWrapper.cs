@@ -319,13 +319,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
         {
             //MainViewModel.DisablePasting = true;
-            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             MainViewModel.FuncManualRowPastingIsContinue = FuncManualRowPasteAction;
-            MainViewModel.CanBulkDeleteCallBack = this.CanBulkDelete;
-            MainViewModel.CanFillDownCallBack = this.CanFillDown;
-            MainViewModel.DisablePasting = !this.AllowEditingOnEstimate;
             MainViewModel.UseRegularSplitting = true;
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.SetParentViewModel(this);
@@ -334,7 +328,6 @@ namespace BluePrints.ViewModels
             AREACollectionViewModel.SetParentViewModel(this);
             SUBJOBSCollectionViewModel.SetParentViewModel(this);
             WORKPACKSCollectionViewModel.SetParentViewModel(this);
-            mainThreadDispatcher.BeginInvoke(new Action(() => showViewReadOnlyMessage()));
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
 
@@ -346,45 +339,6 @@ namespace BluePrints.ViewModels
             }
 
             SetViewSpecificProperties();
-        }
-
-        private void showViewReadOnlyMessage()
-        {
-            if (!AllowEditingOnEstimate)
-                MessageBoxService.ShowMessage("Estimate is currently in read only mode because it has already been approved as a budget");
-        }
-
-        private void onBeforeSavedDefaultCommodityCodeAssignment(ESTIMATE_ITEMProgress entity)
-        {
-            //if(entity.Entity.Entity.GUID_COMMODITY_CODE == null)
-            //{
-            //    if (entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE != null)
-            //    {
-            //        STOCK_CODE estimateStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_ESTIMATE_STOCK_CODE);
-            //        if (estimateStockCode != null)
-            //        {
-            //            COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == estimateStockCode.CODE);
-            //            if(defaultCOMMODITY_CODE != null)
-            //                entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
-            //        }
-            //    }
-            //    else if(entity.Entity.Entity.GUID_BUDGET_STOCK_CODE != null)
-            //    {
-            //        STOCK_CODE budgetStockCode = STOCK_CODECollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_BUDGET_STOCK_CODE);
-            //        if (budgetStockCode != null)
-            //        {
-            //            COMMODITY_CODE defaultCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == budgetStockCode.CODE);
-            //            if (defaultCOMMODITY_CODE != null)
-            //                entity.Entity.Entity.GUID_COMMODITY_CODE = defaultCOMMODITY_CODE.GUID;
-            //        }
-            //    }
-            //}
-
-            //update CachedCOMMODITY_CODE for deliverable_name to be updated
-            //if(entity.Entity.Entity.Commodity_Code == string.Empty && entity.Entity.Entity.COMMODITY_CODE != null)
-            //{
-            //    entity.Entity.Entity.CachedCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == entity.Entity.Entity.COMMODITY_CODE);
-            //}
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
@@ -596,7 +550,7 @@ namespace BluePrints.ViewModels
                 if(ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.OK)
                 {
                     MainViewModel.BulkSave(newESTIMATE_ITEMS);
-                    MainViewModel.BaseBulkDelete(removeESTIMATE_ITEMS);
+                    MainViewModel.BulkDelete(removeESTIMATE_ITEMS);
                     MessageBoxService.ShowMessage("All job(s) are aligned between BluePrints and EXO", "Congratulation!", MessageButton.OK);
 
                     FullRefresh();
@@ -641,15 +595,6 @@ namespace BluePrints.ViewModels
                     pasteEntity.Entity.Entity.GUID_DISCIPLINE = disciplineGuid;
                 }
             }
-            //if(commodity_data.Key != null)
-            //{
-            //    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodity_data.Value.Substring(0, 3));
-            //    if (findCOMMODITY_CODE != null)
-            //    {
-            //        pasteEntity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
-            //        pasteEntity.Entity.Entity.CachedCOMMODITY_CODE = findCOMMODITY_CODE;
-            //    }
-            //}
 
             if (stock_code_data.Key != null)
             {
@@ -746,7 +691,6 @@ namespace BluePrints.ViewModels
             }
 
             onBeforeSavedDualSubjobAssignment(pasteEntity);
-            onBeforeSavedDefaultCommodityCodeAssignment(pasteEntity);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(pasteEntity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             return true;
         }
@@ -778,46 +722,27 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
-        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<ESTIMATE_ITEMProgress> entities)
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ESTIMATE_ITEMProgress projection, out List<ErrorMessage> errorMessages)
         {
-            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-            List<ESTIMATE_ITEMProgress> deleteEntities = new List<ESTIMATE_ITEMProgress>();
-            bool showErrorMessage = false;
-            foreach (ESTIMATE_ITEMProgress entity in entities)
+            errorMessages = new List<ErrorMessage>();
+            IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == projection.OriginalEntityKey);
+
+            //when there are variations that relates to this deliverable
+            if (attachedP6Assignments.Count() > 0)
             {
-                IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == entity.OriginalEntityKey);
-
-                //when there are variations that relates to this deliverable
-                if (attachedP6Assignments.Count() > 0)
+                string p6AssignmentName = string.Empty;
+                foreach (P6_ASSIGNMENT attachedP6Assignment in attachedP6Assignments)
                 {
-                    string p6AssignmentName = string.Empty;
-                    foreach (P6_ASSIGNMENT attachedP6Assignment in attachedP6Assignments)
-                    {
-                        p6AssignmentName += attachedP6Assignment.P6_ACTIVITYID + ", ";
-                    }
-
-                    if (p6AssignmentName.Length > 2)
-                        p6AssignmentName = p6AssignmentName.Substring(0, p6AssignmentName.Length - 2);
-
-                    errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "P6 assignment exists: " + p6AssignmentName));
-                    showErrorMessage = true;
+                    p6AssignmentName += attachedP6Assignment.P6_ACTIVITYID + ", ";
                 }
-                else
-                {
-                    //errorMessages.Add(new ErrorMessage(entity.Deliverable_Name, "Deleted"));
-                    deleteEntities.Add(entity);
-                }
+
+                if (p6AssignmentName.Length > 2)
+                    p6AssignmentName = p6AssignmentName.Substring(0, p6AssignmentName.Length - 2);
+
+                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "P6 assignment exists: " + p6AssignmentName));
             }
 
-            if (showErrorMessage)
-            {
-                MainViewModel.BaseBulkDelete(deleteEntities);
-                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "The following job(s) have P6 assignment(s), do you still wish to delete them?");
-                if(ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.Cancel)
-                    return false;
-            }
-
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         #region Collection Call Backs
@@ -884,32 +809,23 @@ namespace BluePrints.ViewModels
             STOCK_CODECollectionViewModel.Save(stock_code);
         }
 
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(ESTIMATE_ITEMProgress entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ESTIMATE_ITEMProgress projection, out bool isNew)
         {
-            //if (viewType == DeliverablesViewType.Indirect)
-            //    entity.Entity.Entity.BY_DURATION = true;
-
-            onBeforeSavedDualSubjobAssignment(entity);
-            onBeforeSavedProjectStockCodeLogging(entity);
-            onBeforeSavedDefaultCommodityCodeAssignment(entity);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(entity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
-            //entity.Entity.Entity.GUID_ESTIMATE = loadESTIMATE.GUID;
-            return true;
+            onBeforeSavedDualSubjobAssignment(projection);
+            onBeforeSavedProjectStockCodeLogging(projection);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
-        public void OnEntitiesSavedCallBack(ESTIMATE_ITEMProgress projectionEntity, ESTIMATE_ITEM entity, bool isNewEntity)
+        protected override void OnAfterProjectionSave(ESTIMATE_ITEMProgress projection, ESTIMATE_ITEM entity, bool isNew)
         {
-            projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
-            if (isNewEntity)
-                OnAfterDuplicateCallBack?.Invoke(projectionEntity);
+            projection.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            if (isNew)
+                OnAfterDuplicateCallBack?.Invoke(projection);
         }
 
         bool neverAskAndEdit;
         bool neverAskAndAdd;
-
         private void onBeforeSavedProjectStockCodeLogging(ESTIMATE_ITEMProgress entity)
         {
             STOCK_CODE editingSTOCK_CODE;
@@ -1004,96 +920,6 @@ namespace BluePrints.ViewModels
 
         #region View Behavior
         #region Duplicate Behavior
-        private bool _isProcessingMultiple;
-        public bool CanBulkDelete(IEnumerable<ESTIMATE_ITEMProgress> entities)
-        {
-            return AllowEditingOnEstimate;
-        }
-
-        public bool CanFillDown(IEnumerable<ESTIMATE_ITEMProgress> selectedEntities, GridMenuInfo info)
-        {
-            return AllowEditingOnEstimate;
-        }
-
-        public bool CanDuplicateMultiple(BarEditItem barEdit)
-        {
-            if (MainViewModel == null || SelectedEntities.Count() == 0)
-                return false;
-
-            return true;
-        }
-
-        public void DuplicateMultiple(BarEditItem barEdit)
-        {
-            PauseUndoRedo();
-            _isProcessingMultiple = true;
-            var timesToDuplicate = 0;
-            List<ESTIMATE_ITEMProgress> newEntities = new List<ESTIMATE_ITEMProgress>();
-            if (int.TryParse(barEdit.EditValue.ToString(), out timesToDuplicate))
-            {
-                List<ESTIMATE_ITEMProgress> currentEnumerationSaveEntities = getNewEntities(timesToDuplicate, false);
-                newEntities.AddRange(currentEnumerationSaveEntities);
-            }
-
-            MainViewModel.BulkSave(newEntities);
-            _isProcessingMultiple = false;
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-        }
-
-        public bool CanDuplicate()
-        {
-            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0)
-                return false;
-
-            return true;
-        }
-
-        public void Duplicate()
-        {
-            if (!_isProcessingMultiple)
-                PauseUndoRedo();
-
-            List<ESTIMATE_ITEMProgress> newEntities = getNewEntities(1, false);
-
-            foreach (ESTIMATE_ITEMProgress newEntity in newEntities)
-                MainViewModel.Save(newEntity);
-
-            if (!_isProcessingMultiple)
-                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-        }
-
-        List<ESTIMATE_ITEMProgress> getNewEntities(int timesToDuplicate, bool isInsert)
-        {
-            List<ESTIMATE_ITEMProgress> unsavedEntities = new List<ESTIMATE_ITEMProgress>();
-            for (int i = 0; i < timesToDuplicate; i++)
-            {
-                foreach (var selectedEntity in SelectedEntities)
-                {
-                    var newProjection = new ESTIMATE_ITEMProgress();
-                    DataUtils.ShallowCopy(newProjection.Entity.Entity, selectedEntity.Entity.Entity);
-                    newProjection.Entity.Entity.GUID = Guid.Empty;
-                    newProjection.Entity.Entity.GUID_ORIGINAL = Guid.Empty;
-
-                    //because this function is used in variation, let ApplyProjection handle this
-                    newProjection.Entity.Entity.GUID_ESTIMATE = null;
-                    newProjection.Entity.Entity.GUID_VARIATION = null;
-
-                    //when duplicated by variation this should be 0
-                    newProjection.Entity.Entity.BUDGET_QUANTITY = 0;
-
-                    newProjection.Entity.Entity.DC_QUANTITY = 0;
-                    newProjection.Entity.Entity.PROGRESS_TYPE = EstimateProgressType.Standalone;
-                    newProjection.Entity.Entity.DB_Productivity_Override = null;
-                    //newProjection.Entity.Entity.ESTIMATE_QUANTITY = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.ESTIMATE_QUANTITY;
-
-                    AddUndo(newProjection, null, null, null, EntityMessageType.Added);
-                    unsavedEntities.Add(newProjection);
-                }
-            }
-
-            return unsavedEntities;
-        }
-
         /// <summary>
         /// Show commodity code even when it is not valid
         /// </summary>
@@ -1127,25 +953,6 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
-
-        ///// <summary>
-        ///// Remove redundant project stock groups when view is closed
-        ///// </summary>
-        //protected override void OnClose(CancelEventArgs e)
-        //{
-        //    if(STOCK_CODECollectionViewModel != null)
-        //    {
-        //        List<STOCK_CODE> removeStockCodes = new List<STOCK_CODE>();
-        //        foreach (STOCK_CODE projectStockCode in ProjectSTOCK_CODECollection)
-        //        {
-        //            if (!MainViewModel.Entities.Any(x => x.Entity.Entity.GUID_STOCK_CODE == projectStockCode.GUID))
-        //                removeStockCodes.Add(projectStockCode);
-        //        }
-        //        STOCK_CODECollectionViewModel.BaseBulkDelete(removeStockCodes);
-        //    }
-
-        //    base.OnClose(e);
-        //}
 
         //allows raise property change to propagate to parent
         public Action<object> RaisePropertyChangeCallBack { get; set; }
@@ -1256,13 +1063,18 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-
         public void InitNewRow(InitNewRowEventArgs e)
         {
             var gridView = (TableView)e.OriginalSource;
             var grid = gridView.Grid;
             ESTIMATE_ITEMProgress projection = (ESTIMATE_ITEMProgress)grid.GetRow(e.RowHandle);
+            UnifiedNewRowInitializationFromView(projection);
+        }
+
+        public override void UnifiedNewRowInitializationFromView(ESTIMATE_ITEMProgress projection)
+        {
             projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
+            base.UnifiedNewRowInitializationFromView(projection);
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ESTIMATE_ITEMProgress projection, bool isNew)
@@ -1497,26 +1309,6 @@ namespace BluePrints.ViewModels
         public void Delete(ESTIMATE_ITEMProgress progress_entity)
         {
             MainViewModel.Delete(progress_entity);
-        }
-
-        public bool CanInsertMultiple(BarEditItem barEdit)
-        {
-            return CanDuplicateMultiple(barEdit);
-        }
-
-        public void InsertMultiple(BarEditItem barEdit)
-        {
-
-        }
-
-        public bool CanInsert()
-        {
-            return CanDuplicate();
-        }
-
-        public void Insert()
-        {
-
         }
 
         public bool CanAutoPopulate(object button)
@@ -1979,17 +1771,6 @@ namespace BluePrints.ViewModels
         public Func<IEnumerable<ESTIMATE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
 
         private bool IsBudget => loadESTIMATE.STATUS == BaselineStatus.Live;
-
-        public bool AllowEditingOnEstimate
-        {
-            get
-            {
-                //if (loadESTIMATE != null && (viewMode == EstimateViewMode.Estimate && loadESTIMATE.STATUS == BaselineStatus.Live))
-                //    return false;
-                //else
-                    return true;
-            }
-        }
 
         public string P6ForecastProject
         {

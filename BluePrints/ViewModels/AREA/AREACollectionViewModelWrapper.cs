@@ -82,20 +82,15 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<AREAMasterDetailProjection> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(AREAMasterDetailProjection entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(AREAMasterDetailProjection projection, out bool isNew)
         {
-            entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
         #endregion
 

@@ -81,12 +81,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_STUDY> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-
         #endregion
 
         #region View Behavior
@@ -115,13 +111,10 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(RA_STUDY entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(RA_STUDY projection, out bool isNew)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         /// <summary>

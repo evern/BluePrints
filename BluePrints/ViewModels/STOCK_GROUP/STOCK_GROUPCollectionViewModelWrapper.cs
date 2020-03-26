@@ -98,20 +98,17 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_GROUPProjection> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(STOCK_GROUPProjection entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(STOCK_GROUPProjection projection, out bool isNew)
         {
             if (IsProjectSpecific)
-                entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+                projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
+
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(STOCK_GROUPProjection projection)

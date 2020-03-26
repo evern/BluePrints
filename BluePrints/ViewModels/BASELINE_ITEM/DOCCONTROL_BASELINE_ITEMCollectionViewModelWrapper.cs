@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
                         internalNumberBaselines.Add(entityBASELINE);
                 }
 
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
             };
         }
@@ -182,7 +182,7 @@ namespace BluePrints.ViewModels
                         clientNumberBaselines.Add(entityBASELINE);
                 }
 
-                MainViewModel.SimpleSaveAll();
+                MainViewModel.SaveChangesDirectly();
                 GridControlService.RefreshData();
             };
         }

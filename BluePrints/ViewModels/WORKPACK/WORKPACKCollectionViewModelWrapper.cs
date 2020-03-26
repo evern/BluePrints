@@ -53,6 +53,7 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            AlwaysSkipMessage = true;
         }
 
         protected override void addEntitiesLoader()
@@ -195,12 +196,6 @@ namespace BluePrints.ViewModels
             return query => WORKPACKQueries.WORKPACKProjectionSiteAndOffsiteTransformation(query.Where(x => x.SUBJOB.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMCollection, ESTIMATE_ITEMCollection, P6_ASSIGNMENTCollection, RATECollection, VARIATIONCollection, STOCK_GROUPCollection, STOCK_CODECollection, PROGRESSCollection, P6TASKCollection, loadPROJECT);
         }
 
-        //Do not refresh because it is refresh heavy
-        private bool onEntityMessageCallBack(object primaryKey, Type entityType, EntityMessageType messageType, object sender, bool bulkRefresh)
-        {
-            return false;
-        }
-
         public IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTCollection
         {
             get
@@ -293,16 +288,14 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
         {
-            MainViewModel.OnBeforeEntitiesChangedCallBack = onEntityMessageCallBack;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySave;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private bool OnBeforeEntitySave(WORKPACKProjection workpack)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(WORKPACKProjection projection, out bool isNew)
         {
-            BluePrintsDataUtils.WORKPACK_Populate_Name(workpack.Entity, SUBJOBCollection, DISCIPLINECollection);
-            return true;
+            BluePrintsDataUtils.WORKPACK_Populate_Name(projection.Entity, SUBJOBCollection, DISCIPLINECollection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
         #endregion
 
@@ -345,7 +338,7 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.Progress();
             }
-            MainViewModel.BaseBulkDelete(removeWORKPACKS);
+            MainViewModel.BulkDelete(removeWORKPACKS);
 
             List<BASELINE_ITEMProgress> baseline_itemsToSave = new List<BASELINE_ITEMProgress>();
             LoadingScreenManager.CloseLoadingScreen();

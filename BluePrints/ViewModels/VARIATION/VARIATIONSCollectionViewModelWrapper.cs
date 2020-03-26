@@ -126,8 +126,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
             MainViewModel.AlwaysSkipMessage = true;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.IsContinueSaveCallBack = BeforeSaveValidation;
             VARIATION_ITEMSViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             variationSummaryBackgroundWorker.RunWorkerAsync(entities);
@@ -200,14 +198,6 @@ namespace BluePrints.ViewModels
             base.OnSelectedEntitiesChanged();
         }
 
-        public bool BeforeSaveValidation(VARIATIONProjection entity, bool isNewEntity)
-        {
-            if (LiveBASELINE == null && LiveESTIMATE == null)
-                return false;
-
-            return true;
-        }
-
         protected override void OnBeforeApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
         {
             if (entity.CREATED.Date.Year == 1)
@@ -219,22 +209,27 @@ namespace BluePrints.ViewModels
             base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
         }
 
-        public bool OnBeforeEntitySaved(VARIATIONProjection entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATIONProjection projection, out bool isNew)
         {
-            entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            entity.Entity.PHASE = phaseType;
+            isNew = false;
+            if (LiveBASELINE == null && LiveESTIMATE == null)
+                return OperationInterceptMode.Skip;
 
-            if (entity.Entity.APPROVED != null)
+            projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
+            projection.Entity.PHASE = phaseType;
+
+            if (projection.Entity.APPROVED != null)
             {
                 if (phaseType == PhaseType.Design)
-                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
+                    projection.Entity.GUID_ORIBASELINE = projection.Entity.GUID_ORIBASELINE ?? LiveBASELINE.GUID;
                 else
-                    entity.Entity.GUID_ORIBASELINE = entity.Entity.GUID_ORIBASELINE ?? LiveESTIMATE.GUID;
+                    projection.Entity.GUID_ORIBASELINE = projection.Entity.GUID_ORIBASELINE ?? LiveESTIMATE.GUID;
             }
             else
-                entity.Entity.GUID_ORIBASELINE = null;
+                projection.Entity.GUID_ORIBASELINE = null;
 
-            return true;
+
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
         #endregion
 

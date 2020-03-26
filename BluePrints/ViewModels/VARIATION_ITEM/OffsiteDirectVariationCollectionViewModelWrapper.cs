@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleted;
+            MainViewModel.OnBeforeProjectionDeleteIsContinueCallBack = onBeforeEntityDeleted;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -223,7 +223,7 @@ namespace BluePrints.ViewModels
             }
 
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            MainViewModel.BaseBulkDelete(displaySelectedEntities);
+            MainViewModel.BulkDelete(displaySelectedEntities);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
 
@@ -273,7 +273,7 @@ namespace BluePrints.ViewModels
         /// Delete variation item before entity is deleted
         /// </summary>
         /// <param name="undoRedoEntity"></param>
-        protected DeleteInterceptMode onBeforeEntityDeleted(BASELINE_ITEMProgress delete_entity)
+        protected OperationInterceptMode onBeforeEntityDeleted(BASELINE_ITEMProgress delete_entity)
         {
             if (!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(delete_entity, null, null, null, EntityMessageType.Deleted);
@@ -282,7 +282,7 @@ namespace BluePrints.ViewModels
             if (delete_entity.VARIATION_ITEM != null && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                 VARIATION_ITEMSCollectionViewModel.Delete(delete_entity.VARIATION_ITEM);
 
-            return DeleteInterceptMode.Continue;
+            return OperationInterceptMode.Continue;
         }
 
         public void CancelDeliverable(BASELINE_ITEMProgress projectionEntity)

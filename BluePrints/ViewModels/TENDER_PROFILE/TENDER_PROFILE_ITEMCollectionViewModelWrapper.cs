@@ -67,19 +67,15 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TENDER_PROFILE_ITEM> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply tender profile association
-        /// </summary>
-        public virtual bool OnBeforeEntitySaved(TENDER_PROFILE_ITEM entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(TENDER_PROFILE_ITEM projection, out bool isNew)
         {
-            entity.GUID_TENDER_PROFILE = loadTENDER_PROFILE.GUID;
-            return true;
+            projection.GUID_TENDER_PROFILE = loadTENDER_PROFILE.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(TENDER_PROFILE_ITEM projection)

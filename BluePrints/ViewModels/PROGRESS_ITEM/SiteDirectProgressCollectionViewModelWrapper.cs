@@ -103,7 +103,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ReportablesDisplay> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -192,19 +191,23 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Intercept MainViewModel Saving because bulk or single selective saving is required
         /// </summary>
-        public bool OnBeforeEntitySaved(ReportablesDisplay entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ReportablesDisplay projection, out bool isNew)
         {
-            bool is_group = save_reportables_display(entity);
+            isNew = false;
+            bool is_group = save_reportables_display(projection);
             //save progress is only used for saving standalone or group
-            if (entity.ProgressItem.Progress_Type == EstimateProgressType.Standalone || is_group)
+            if (projection.ProgressItem.Progress_Type == EstimateProgressType.Standalone || is_group)
             {
-                save_progress(entity);
+                save_progress(projection);
                 //update must be here or else installed quantity will be cleared and progress will be saved with 0 units
-                entity.Update();
+                projection.Update();
             }
 
             //only DisplayQuantityReportable is allowed to be saved
-            return !is_group;
+            if (is_group)
+                return OperationInterceptMode.Continue;
+            else
+                return OperationInterceptMode.Skip;
         }
 
         public bool CanAutoProgressIndirects()

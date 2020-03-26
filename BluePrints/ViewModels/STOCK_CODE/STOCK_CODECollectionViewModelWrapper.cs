@@ -91,26 +91,16 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<STOCK_CODE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(STOCK_CODE entity)
+        public override void UnifiedNewRowInitializationFromView(STOCK_CODE projection)
         {
-            if(isProjectSpecific)
-                entity.GUID_PROJECT = loadPROJECT.GUID;
-
-            //new item is not allowed, so stock code type will be whatever it was previously
-            //entity.STOCK_CODE_TYPE = loadCommodityCodeType;
-            return true;
+            if (isProjectSpecific)
+                projection.GUID_PROJECT = loadPROJECT.GUID;
         }
-
         #endregion
 
         #endregion
@@ -148,7 +138,7 @@ namespace BluePrints.ViewModels
                 }
             }
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-            MainViewModel.BaseBulkDelete(removeStockCodes);
+            MainViewModel.BulkDelete(removeStockCodes);
         }
 
         public override string UnifiedRowValidation(STOCK_CODE projection)

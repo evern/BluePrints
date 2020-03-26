@@ -67,8 +67,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
         {
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleted;
-            MainViewModel.OnBeforeEntitiesDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
+            MainViewModel.OnBeforeProjectionDeleteIsContinueCallBack = onBeforeEntityDeleted;
+            MainViewModel.OnBeforeProjectionsDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -166,12 +166,12 @@ namespace BluePrints.ViewModels
 
         #region Collection Call Backs
         //skip inactive entity
-        protected DeleteInterceptMode onBeforeEntityDeleted(RATE entity)
+        protected OperationInterceptMode onBeforeEntityDeleted(RATE entity)
         {
             if (!entity.IsRateExists)
-                return DeleteInterceptMode.Skip;
+                return OperationInterceptMode.Skip;
             else
-                return DeleteInterceptMode.Continue;
+                return OperationInterceptMode.Continue;
         }
 
         //disallow deletion of projection when it's not active

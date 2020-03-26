@@ -139,7 +139,7 @@ namespace BluePrints.ViewModels
                         removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BulkDelete(removeProjectDisciplines);
                 List<PROJECT_DISCIPLINE> addProjectDisciplines = new List<PROJECT_DISCIPLINE>();
                 foreach (DISCIPLINE project_discipline in entity.Project_Disciplines)
                 {
@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
                     removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BulkDelete(removeProjectDisciplines);
             }
         }
 
@@ -232,8 +232,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeletedIsContinueCallBack;
-            MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
+            MainViewModel.OnBeforeProjectionDeleteIsContinueCallBack = onBeforeEntityDeletedIsContinueCallBack;
+            MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -254,14 +254,14 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private DeleteInterceptMode onBeforeEntityDeletedIsContinueCallBack(PROJECT project)
+        private OperationInterceptMode onBeforeEntityDeletedIsContinueCallBack(PROJECT project)
         {
             //Avoid EF exception on PROJECT_DISCIPLINE foreign key: The relationship could not be changed because one or more of the foreign-key properties is non-nullable
             saveProjectDiscipline(project);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            return DeleteInterceptMode.Continue;
+            return OperationInterceptMode.Continue;
         }
 
         private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)

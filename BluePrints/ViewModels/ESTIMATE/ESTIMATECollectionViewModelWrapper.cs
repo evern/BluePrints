@@ -18,9 +18,7 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATECollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class ESTIMATECollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<ESTIMATE, ESTIMATE, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATE_ITEMSViewModelWrapper as a POCO view model.
@@ -87,22 +85,16 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(ESTIMATE entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ESTIMATE projection, out bool isNew)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
-
         #endregion
 
         #endregion

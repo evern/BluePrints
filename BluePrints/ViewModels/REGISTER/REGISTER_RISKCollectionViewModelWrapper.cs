@@ -82,18 +82,24 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_RISK> entities)
         {
-            MainViewModel.OnBeforeViewNewRowSavedIsContinueCallBack += IsContinueNewRowFromView;
+            MainViewModel.OnBeforeNewRowSavedIsContinueFromViewCallBack += IsContinueNewRowFromView;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        protected override bool onBeforeEntitySavedIsContinue(REGISTER_RISK projection)
+        public override void UnifiedNewRowInitializationFromView(REGISTER_RISK projection)
+        {
+            base.UnifiedNewRowInitializationFromView(projection);
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_RISK projection, out bool isNew)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
             if (projection.GUID == Guid.Empty && projection.DATE_IDENTIFIED == null)
                 projection.DATE_IDENTIFIED = DateTime.Now.Date;
-            return base.onBeforeEntitySavedIsContinue(projection);
+
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         private bool IsContinueNewRowFromView(RowEventArgs e, REGISTER_RISK projection)

@@ -93,7 +93,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_GUIDE_SUBPROMPT> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySaved;
             MainViewModel.FuncManualRowPastingIsContinue = ManualPasteAction;
             MainViewModel.SetParentViewModel(this);
             RA_GUIDE_PROMPTViewModel.SetParentViewModel(this);
@@ -143,29 +142,28 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool onBeforeEntitySaved(RA_GUIDE_SUBPROMPT subPrompt)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(RA_GUIDE_SUBPROMPT projection, out bool isNew)
         {
-            if (subPrompt.GUID_STUDY_TYPE != null)
+            if (projection.GUID_STUDY_TYPE != null)
             {
-                RA_GUIDE_PROMPT guide_prompt_by_guid = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUID == subPrompt.GUID_GUIDE_PROMPT);
-                if(guide_prompt_by_guid != null)
+                RA_GUIDE_PROMPT guide_prompt_by_guid = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUID == projection.GUID_GUIDE_PROMPT);
+                if (guide_prompt_by_guid != null)
                 {
-                    RA_GUIDE_PROMPT guide_prompt_by_verification = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == guide_prompt_by_guid.GUIDE_PROMPT && x.GUID_STUDY_TYPE == subPrompt.GUID_STUDY_TYPE);
+                    RA_GUIDE_PROMPT guide_prompt_by_verification = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == guide_prompt_by_guid.GUIDE_PROMPT && x.GUID_STUDY_TYPE == projection.GUID_STUDY_TYPE);
                     if (guide_prompt_by_verification == null)
                     {
                         RA_GUIDE_PROMPT new_guide_prompt = new RA_GUIDE_PROMPT();
-                        new_guide_prompt.GUID_STUDY_TYPE = subPrompt.GUID_STUDY_TYPE;
+                        new_guide_prompt.GUID_STUDY_TYPE = projection.GUID_STUDY_TYPE;
                         new_guide_prompt.GUIDE_PROMPT = guide_prompt_by_guid.GUIDE_PROMPT;
                         RA_GUIDE_PROMPTViewModel.Save(new_guide_prompt);
-                        subPrompt.GUID_GUIDE_PROMPT = new_guide_prompt.GUID;
+                        projection.GUID_GUIDE_PROMPT = new_guide_prompt.GUID;
                     }
                     else if (guide_prompt_by_verification != null)
-                        subPrompt.GUID_GUIDE_PROMPT = guide_prompt_by_verification.GUID;
+                        projection.GUID_GUIDE_PROMPT = guide_prompt_by_verification.GUID;
                 }
-
             }
 
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(RA_GUIDE_SUBPROMPT projection)

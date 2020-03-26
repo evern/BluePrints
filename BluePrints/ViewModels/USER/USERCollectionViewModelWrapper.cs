@@ -143,7 +143,7 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
         {
             //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySaved;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -186,7 +186,7 @@ namespace BluePrints.ViewModels
                         remove_projects.Add(assignment);
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
+                PROJECT_PERMISSIONCollectionViewModel.BulkDelete(remove_projects);
 
                 List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
@@ -205,7 +205,7 @@ namespace BluePrints.ViewModels
                     remove_projects.Add(assignment);
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
+                PROJECT_PERMISSIONCollectionViewModel.BulkDelete(remove_projects);
             }
         }
         #endregion

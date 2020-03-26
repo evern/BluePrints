@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_HOLD> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
                         remove_register_hold_ref.Add(assignment);
                 }
 
-                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
+                REGISTER_HOLD_REFCollectionViewModel.BulkDelete(remove_register_hold_ref);
                 List<REGISTER_HOLD_REF> add_register_holds = new List<REGISTER_HOLD_REF>();
                 foreach (BASELINE_ITEM deliverable in entity.AssignDeliverables)
                 {
@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
                     remove_register_hold_ref.Add(assignment);
                 }
 
-                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
+                REGISTER_HOLD_REFCollectionViewModel.BulkDelete(remove_register_hold_ref);
             }
         }
         #endregion

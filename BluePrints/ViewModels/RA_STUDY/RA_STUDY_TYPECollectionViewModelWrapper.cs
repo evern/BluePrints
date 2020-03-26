@@ -76,9 +76,9 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_STUDY_TYPEProjection> entities)
         {
-            RA_GUIDE_PROMPTViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeGUIDE_PROMPTSavedIsContinue;
+            RA_GUIDE_PROMPTViewModel.OnBeforeProjectionSaveIsContinueCallBack = onBeforeGUIDE_PROMPTSavedIsContinue;
             RA_GUIDE_PROMPTViewModel.OnSelectedEntityChangedCallBack = onSelectedGuide_PromptChanged;
-            RA_GUIDE_SUBPROMPTViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeGUIDE_SUBPROMPTSavedIsContinue;
+            RA_GUIDE_SUBPROMPTViewModel.OnBeforeProjectionSaveIsContinueCallBack = onBeforeGUIDE_SUBPROMPTSavedIsContinue;
             MainViewModel.SetParentViewModel(this);
             RA_GUIDE_PROMPTViewModel.SetParentViewModel(this);
             RA_GUIDE_SUBPROMPTViewModel.SetParentViewModel(this);
@@ -101,10 +101,10 @@ namespace BluePrints.ViewModels
         public bool PROMPTEnabled => DisplaySelectedEntity != null;
         public bool SUBPROMPTEnabled => PROMPTEnabled && RA_GUIDE_PROMPTViewModel != null && RA_GUIDE_PROMPTViewModel.SelectedEntity != null;
 
-        public override void OnDisplaySelectedEntityChanged(RA_STUDY_TYPEProjection entity)
+        protected override void OnSelectedEntitiesChanged()
         {
             refreshGuidePrompts();
-            base.OnDisplaySelectedEntityChanged(entity);
+            base.OnSelectedEntitiesChanged();
         }
 
         private void refreshGuidePrompts()
@@ -118,13 +118,14 @@ namespace BluePrints.ViewModels
         }
 
         #region Guide Prompt
-        private bool onBeforeGUIDE_PROMPTSavedIsContinue(RA_GUIDE_PROMPT guide_prompt)
+        private OperationInterceptMode onBeforeGUIDE_PROMPTSavedIsContinue(RA_GUIDE_PROMPT guide_prompt, out bool isNew)
         {
+            isNew = false;
             if (DisplaySelectedEntity == null)
-                return false;
+                return OperationInterceptMode.Skip;
 
             guide_prompt.GUID_STUDY_TYPE = DisplaySelectedEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         ObservableCollection<RA_GUIDE_PROMPT> guide_prompts;
@@ -173,13 +174,14 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Guide Sub Prompt
-        private bool onBeforeGUIDE_SUBPROMPTSavedIsContinue(RA_GUIDE_SUBPROMPT guide_subprompt)
+        private OperationInterceptMode onBeforeGUIDE_SUBPROMPTSavedIsContinue(RA_GUIDE_SUBPROMPT guide_subprompt, out bool isNew)
         {
+            isNew = false;
             if (RA_GUIDE_PROMPTViewModel == null || RA_GUIDE_PROMPTViewModel.SelectedEntity == null)
-                return false;
+                return OperationInterceptMode.Skip;
 
             guide_subprompt.GUID_GUIDE_PROMPT = RA_GUIDE_PROMPTViewModel.SelectedEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         ObservableCollection<RA_GUIDE_SUBPROMPT> guide_subprompts;

@@ -86,22 +86,16 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE> entities)
         {
-            MainViewModel.FuncManualRowPastingIsContinue = this.ManualPasteAction;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(BASELINE entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE projection, out bool isNew)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
-
         #endregion
 
         #endregion
@@ -247,12 +241,6 @@ namespace BluePrints.ViewModels
             }
 
             return string.Empty;
-        }
-
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, BASELINE pasteEntity, bool isLastRow)
-        {
-            //pasteEntity.STATUS = BaselineStatus.Working;
-            return true;
         }
         #endregion
     }

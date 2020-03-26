@@ -105,9 +105,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<DELIVERABLES_STATUS> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = onAfterEntitySaved;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = applyProjectionProperties;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -121,26 +118,22 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        private bool applyProjectionProperties(DELIVERABLES_STATUS projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(DELIVERABLES_STATUS projection, out bool isNew)
         {
             if (isProjectSpecific)
-            {
                 projection.GUID_PROJECT = loadPROJECT.GUID;
-            }
-
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         //Save assigned document types on projection
-        private void onAfterEntitySaved(DELIVERABLES_STATUS projectionEntity, DELIVERABLES_STATUS entity, bool isNewEntity)
+        protected override void OnAfterProjectionSave(DELIVERABLES_STATUS projection, DELIVERABLES_STATUS entity, bool isNew)
         {
-            if (MainViewModel == null)
-                return;
-
             MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            DeleteProjectionDocTypes(projectionEntity);
-            SaveProjectionDocTypes(projectionEntity);
+            DeleteProjectionDocTypes(projection);
+            SaveProjectionDocTypes(projection);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+
+            base.OnAfterProjectionSave(projection, entity, isNew);
         }
 
         private void DeleteProjectionDocTypes(DELIVERABLES_STATUS projectionEntity)

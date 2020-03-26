@@ -178,27 +178,30 @@ namespace BluePrints.ViewModels
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
         {
-            MainViewModel.OnBeforeEntityDeletedIsContinueCallBack = onBeforeEntityDeleteIsContinue;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinue;
             MainViewModel.AlwaysSkipMessage = this.AlwaysSkipMessage;
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected virtual bool onBeforeEntitySavedIsContinue(ExoSubJobEditableProjection entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ExoSubJobEditableProjection projection, out bool isNew)
         {
-            commitToExo(entity);
-            return false;
+            isNew = false;
+            ExoSubJobEditableProjection newlyAddedProjection = commitToExo(projection);
+            if (newlyAddedProjection != null)
+                isNew = true;
+
+            return OperationInterceptMode.Skip;
         }
 
-        protected virtual DeleteInterceptMode onBeforeEntityDeleteIsContinue(ExoSubJobEditableProjection entity)
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ExoSubJobEditableProjection projection, out List<ErrorMessage> errorMessages)
         {
-            if (!entity.IsLineExistsInExo)
-                return DeleteInterceptMode.Skip;
+            errorMessages = new List<ErrorMessage>();
+            if (!projection.IsLineExistsInExo)
+                return OperationInterceptMode.Skip;
 
-            removeFromExo(entity);
-            return DeleteInterceptMode.Skip;
+            removeFromExo(projection);
+            return OperationInterceptMode.Skip;
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -405,41 +408,41 @@ namespace BluePrints.ViewModels
 #endregion
 
 #region EXO Database
-        private bool commitToExo(ExoSubJobEditableProjection projection)
+        private ExoSubJobEditableProjection commitToExo(ExoSubJobEditableProjection projection)
         {
             List<ExoSubJobEditableProjection> newLines = new List<ExoSubJobEditableProjection>();
             ExoSubJobEditableProjection newLine = projection;
             newLines.Add(newLine);
-            return CommitToExo(newLines);
+            IEnumerable<ExoSubJobEditableProjection> newlyAddedProjections = CommitToExo(newLines);
+            if (newlyAddedProjections.Count() > 0)
+                return newlyAddedProjections.First();
+
+            return null;
         }
 
-        public bool CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
+        public IEnumerable<ExoSubJobEditableProjection> CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
         {
             IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, DisplayEntities);
             if (addedProjections.Count() > 0)
             {
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 foreach (ExoSubJobEditableProjection addedProjection in addedProjections)
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
                     addedProjection.PopulateLineAuthUsers(DisplayEntities);
-                    MainViewModel.Entities.Insert(0, addedProjection);
+
+                    if(!DisplayEntities.Any(x => x.LineId == addedProjection.LineId))
+                        DisplayEntities.Insert(0, addedProjection);
 
                     if(!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
                         MainViewModel.EntitiesUndoRedoManager.AddUndo(addedProjection, string.Empty, null, null, EntityMessageType.Added);
                     addedProjection.IsLineExistsInExo = true;
                 }
 
-                MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-                OnAfterNewRowAdded(addedProjections);
-                //Refreshes collection properties
-                this.RaisePropertiesChanged();
-
-                return true;
+                return addedProjections;
             }
 
-            return false;
+            return new List<ExoSubJobEditableProjection>();
         }
 
 #endregion

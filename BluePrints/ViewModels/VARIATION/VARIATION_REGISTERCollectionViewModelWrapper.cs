@@ -63,21 +63,11 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_REGISTER> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(VARIATION_REGISTER entity)
-        {
-            return true;
-        }
-
         public override string UnifiedRowValidation(VARIATION_REGISTER projection)
         {
             return string.Empty;
@@ -87,7 +77,6 @@ namespace BluePrints.ViewModels
         {
             return string.Empty;
         }
-
         #endregion
 
         #endregion

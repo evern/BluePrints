@@ -65,7 +65,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<HOLIDAY> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -112,14 +111,10 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Collection Call Backs
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(HOLIDAY entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(HOLIDAY projection, out bool isNew)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(HOLIDAY projection)

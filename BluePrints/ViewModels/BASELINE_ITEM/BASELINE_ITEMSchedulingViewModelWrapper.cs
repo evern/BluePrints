@@ -166,7 +166,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = OnEntitiesSavedCallBack;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnEntitiesSavedCallBack;
             MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
             P6_ASSIGNMENTSCollectionViewModel.SetParentViewModel(this);

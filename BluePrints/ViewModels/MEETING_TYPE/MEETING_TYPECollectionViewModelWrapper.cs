@@ -78,19 +78,16 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MEETING_TYPE> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = onBeforeEntitySavedIsContinueCallBack;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #endregion
 
         #region Saving Behavior
-        private bool onBeforeEntitySavedIsContinueCallBack(MEETING_TYPE entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(MEETING_TYPE projection, out bool isNew)
         {
-            if (entity.CREATED.Year == 1)
-                entity.CREATED = DateTime.Now;
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
         #endregion
 

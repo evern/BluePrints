@@ -78,7 +78,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TENDER_PROFILE_ITEM> entities)
         {
             projectTENDER_PROFILE = TENDER_PROFILECollection.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID);
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -98,16 +97,14 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("DefaultTenderProfileSelectionDialog"); }
         }
 
-        /// <summary>
-        /// CallBack to apply tender profile association
-        /// </summary>
-        public override bool OnBeforeEntitySaved(TENDER_PROFILE_ITEM entity)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(TENDER_PROFILE_ITEM projection, out bool isNew)
         {
+            isNew = false;
             if (projectTENDER_PROFILE == null)
-                return false;
+                return OperationInterceptMode.Skip;
 
-            entity.GUID_TENDER_PROFILE = projectTENDER_PROFILE.GUID;
-            return true;
+            projection.GUID_TENDER_PROFILE = projectTENDER_PROFILE.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(TENDER_PROFILE_ITEM projection)

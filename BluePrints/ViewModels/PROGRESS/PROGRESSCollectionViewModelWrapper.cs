@@ -92,31 +92,24 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS> entities)
         {
-            MainViewModel.FuncManualRowPastingIsContinue = this.ManualPasteAction;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
-
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(PROGRESS entity)
+        public override void UnifiedNewRowInitializationFromView(PROGRESS projection)
         {
-            entity.GUID_PROJECT = loadPROJECT.GUID;
-            entity.PROGRESS_START = entity.PROGRESS_START.Date;
-            entity.DATA_DATE = entity.DATA_DATE.Date.AddDays(1).AddSeconds(-1);
-            if(entity.REPORT_DATE != null)
+            projection.GUID_PROJECT = loadPROJECT.GUID;
+            projection.PROGRESS_START = projection.PROGRESS_START.Date;
+            projection.DATA_DATE = projection.DATA_DATE.Date.AddDays(1).AddSeconds(-1);
+            if (projection.REPORT_DATE != null)
             {
-                DateTime qualifiedReportDate = ((DateTime)entity.REPORT_DATE).Date.AddDays(1).AddSeconds(-1);
-                entity.REPORT_DATE = qualifiedReportDate;
+                DateTime qualifiedReportDate = ((DateTime)projection.REPORT_DATE).Date.AddDays(1).AddSeconds(-1);
+                projection.REPORT_DATE = qualifiedReportDate;
             }
 
-            return true;
+            base.UnifiedNewRowInitializationFromView(projection);
         }
-
         #endregion
 
         #endregion
@@ -370,12 +363,6 @@ namespace BluePrints.ViewModels
         private DevExpress.Mvvm.IDialogService EarnedDataDateRealignmentDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("EarnedDataDateRealignmentDialogService"); }
-        }
-
-        public bool ManualPasteAction(List<KeyValuePair<ColumnBase, string>> pasteData, PROGRESS pasteEntity, bool isLastRow)
-        {
-            //pasteEntity.STATUS = ProgressStatus.Working;
-            return true;
         }
         #endregion
     }

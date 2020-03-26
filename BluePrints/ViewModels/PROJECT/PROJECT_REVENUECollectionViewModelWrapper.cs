@@ -205,21 +205,15 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_REVENUEProjection> entities)
         {
-            isFirstLoaded = true;
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(PROJECT_REVENUEProjection projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(PROJECT_REVENUEProjection projection, out bool isNew)
         {
             projection.Entity.REVENUE_MONTH = new DateTime(projection.MonthCeiling.Year, projection.MonthCeiling.Month, 1);
             projection.Entity.REVENUE_PRICE = projection.GetNewEntityRevenuePrice();
             projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECT_REVENUEProjection projection, bool isNew)

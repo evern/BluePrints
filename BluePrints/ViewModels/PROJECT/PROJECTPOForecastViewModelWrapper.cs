@@ -571,7 +571,7 @@ namespace BluePrints.ViewModels
         private void clearPOForecast(string poNo, string variationCode)
         {
             List<FORECAST_PO> removePOForecasts = DisplayEntities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
-            MainViewModel.BaseBulkDelete(removePOForecasts);
+            MainViewModel.BulkDelete(removePOForecasts);
         }
 
         private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)

@@ -118,32 +118,28 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<COMMODITY_CODEProjection> entities)
         {
-            MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-#region Collection Call Backs
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeEntitySaved(COMMODITY_CODEProjection entity)
+        #region Collection Call Backs
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(COMMODITY_CODEProjection projection, out bool isNew)
         {
             if (IsProjectSpecific)
-                entity.Entity.GUID_PROJECT = loadPROJECT.GUID;
+                projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
 
-            if (entity.GUID == Guid.Empty)
+            if (projection.GUID == Guid.Empty)
             {
-                if (entity.Entity.DEFAULT_STOCKCODE == null || entity.Entity.DEFAULT_STOCKCODE == string.Empty)
-                    entity.Entity.DEFAULT_STOCKCODE = entity.Entity.CODE;
+                if (projection.Entity.DEFAULT_STOCKCODE == null || projection.Entity.DEFAULT_STOCKCODE == string.Empty)
+                    projection.Entity.DEFAULT_STOCKCODE = projection.Entity.CODE;
 
-                if (entity.Entity.DEFAULT_COSTGROUP == null || entity.Entity.DEFAULT_COSTGROUP == string.Empty)
+                if (projection.Entity.DEFAULT_COSTGROUP == null || projection.Entity.DEFAULT_COSTGROUP == string.Empty)
                 {
-                    entity.Entity.DEFAULT_COSTGROUP = getCostGroupCode(entity.Entity.GUID_DISCIPLINE);
+                    projection.Entity.DEFAULT_COSTGROUP = getCostGroupCode(projection.Entity.GUID_DISCIPLINE);
                 }
             }
 
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, COMMODITY_CODEProjection projection, bool isNew)

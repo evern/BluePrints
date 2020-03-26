@@ -208,7 +208,7 @@ namespace BluePrints.Common.Base
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TMainProjectionEntity> entities)
         {
-            MainViewModel.OnAfterEntitySavedCallBack = OnAfterEntitySavedCallBack;
+            MainViewModel.OnAfterProjectionSavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
             MainViewModel.OnBeforeExistingRowAddUndoAndSaveIsContinue = onExistingRowAddUndoAndSaveIsContinue;

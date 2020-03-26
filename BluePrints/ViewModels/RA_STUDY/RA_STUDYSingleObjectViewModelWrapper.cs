@@ -136,10 +136,10 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RA_STUDY> entities)
         {
-            RA_STUDY_TEAMViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeTeamEntitySaved;
-            RA_STUDY_DRAWINGViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeDrawingEntitySaved;
+            RA_STUDY_TEAMViewModel.OnBeforeProjectionSaveIsContinueCallBack = OnBeforeTeamEntitySaved;
+            RA_STUDY_DRAWINGViewModel.OnBeforeProjectionSaveIsContinueCallBack = OnBeforeDrawingEntitySaved;
             RA_STUDY_DRAWINGViewModel.UnifiedValueChangingCallback = studyDrawingUnifiedCellValueChanging;
-            RA_STUDY_NODEViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeNodeEntitySaved;
+            RA_STUDY_NODEViewModel.OnBeforeProjectionSaveIsContinueCallBack = OnBeforeNodeEntitySaved;
             RA_STUDY_DATAViewModel.UnifiedValueChangingCallback = studyDataUnifiedCellValueChanging;
             RA_STUDY_DATAViewModel.UnifiedValidateRow = validateStudyData;
             MainViewModel.SetParentViewModel(this);
@@ -246,28 +246,28 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeTeamEntitySaved(RA_STUDY_TEAM entity)
+        public OperationInterceptMode OnBeforeTeamEntitySaved(RA_STUDY_TEAM entity, out bool isNew)
         {
+            isNew = false;
             entity.GUID_STUDY = EditingEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
+        }
+
+        public OperationInterceptMode OnBeforeDrawingEntitySaved(RA_STUDY_DRAWING entity, out bool isNew)
+        {
+            isNew = false;
+            entity.GUID_STUDY = EditingEntity.GUID;
+            return OperationInterceptMode.Continue;
         }
 
         /// <summary>
         /// CallBack to apply global convention
         /// </summary>
-        public bool OnBeforeDrawingEntitySaved(RA_STUDY_DRAWING entity)
+        public OperationInterceptMode OnBeforeNodeEntitySaved(RA_STUDY_NODE entity, out bool isNew)
         {
+            isNew = false;
             entity.GUID_STUDY = EditingEntity.GUID;
-            return true;
-        }
-
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public bool OnBeforeNodeEntitySaved(RA_STUDY_NODE entity)
-        {
-            entity.GUID_STUDY = EditingEntity.GUID;
-            return true;
+            return OperationInterceptMode.Continue;
         }
 
         /// <summary>
