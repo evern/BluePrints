@@ -853,6 +853,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show costs on EXO transactions.
+        /// </summary>
+        internal static string Permission_EXO_Transactions_ShowCosts {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Transactions_ShowCosts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit previous EAC.
         /// </summary>
         internal static string Permission_Forecast_EditPreviousEAC {

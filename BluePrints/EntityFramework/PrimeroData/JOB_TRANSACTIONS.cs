@@ -7,7 +7,7 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class JOB_TRANSACTIONS : EntityBase
+    public partial class JOB_TRANSACTIONS
     {
         [Key]
         public int SEQNO { get; set; }
@@ -274,8 +274,5 @@ namespace BluePrints.PrimeroData
 
         [StringLength(50)]
         public string X_SUPPLIERNAME { get; set; }
-
-        [NotMapped]
-        public string SupplierName { get; set; }
     }
 }

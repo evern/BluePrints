@@ -144,8 +144,9 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
             {
-                if(!LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup)))
-                    NavigateCore(myDeliverablesDescription);
+                if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) == LoginCredentials.PermissionStatus.All)
+                    if (!LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup)))
+                        NavigateCore(myDeliverablesDescription);
             }
 
             //DateTime? lastChangeLogDisplayDate = XMLHelpers.GetSettings_LastChangeLogDisplayDate();
@@ -586,6 +587,10 @@ namespace BluePrints.ViewModels
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus));
             }
+            else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions))
+            {
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Transactions_ShowCosts, NavigationResources.Permission_EXO_Transactions_ShowCosts));
+            }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Timesheets))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Timesheets_Commit), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Timesheets_Commit, NavigationResources.Permission_EXO_Timesheets_Commit));
@@ -596,7 +601,6 @@ namespace BluePrints.ViewModels
             }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast))
             {
-                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget), securityKey, parentNavigationId, NavigationResources.Permission_EXO_ChangeBudget, NavigationResources.Permission_EXO_ChangeBudget));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate), string.Empty, parentNavigationId, NavigationResources.Permission_Forecast_MoveDataDate, NavigationResources.Permission_Forecast_MoveDataDate));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC), string.Empty, parentNavigationId, NavigationResources.Permission_Forecast_SaveEAC, NavigationResources.Permission_Forecast_SaveEAC));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC), securityKey, parentNavigationId, NavigationResources.Permission_Forecast_EditPreviousEAC, NavigationResources.Permission_Forecast_EditPreviousEAC));

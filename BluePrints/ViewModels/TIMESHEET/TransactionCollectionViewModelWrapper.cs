@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<JOB_TRANSACTIONS, JOB_TRANSACTIONS, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_SeqNo, X_JOB_TRANSACTIONS_DETAIL_SeqNo, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -62,6 +62,7 @@ namespace BluePrints.ViewModels
         protected TransactionCollectionViewModelWrapper()
         {
             IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
+            IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
         }
         
         #region Database Operation
@@ -86,7 +87,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
-            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos, X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
         }
 
@@ -98,12 +98,12 @@ namespace BluePrints.ViewModels
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.JOB_TRANSACTIONS);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos);
         }
 
-        protected override Func<IRepositoryQuery<JOB_TRANSACTIONS>, IQueryable<JOB_TRANSACTIONS>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
-            return query => attachSupplierQuery(query);
+            return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
         }
 
         protected Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection()
@@ -111,23 +111,34 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.jobcode == loadPROJECT.NUMBER);
         }
 
-        public IQueryable<JOB_TRANSACTIONS> attachSupplierQuery(IQueryable<JOB_TRANSACTIONS> JOB_TRANSACTIONCollection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
         {
-            List<JOB_TRANSACTIONS> jobTransactions = JOB_TRANSACTIONCollection.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.JOBNO).ToList();
-            foreach (JOB_TRANSACTIONS jobTransaction in jobTransactions)
+            isNew = false;
+            JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
+            if(findJOB_TRANSACTION != null)
             {
-                X_JOB_TRANSACTIONS_DETAIL_SeqNo transactionDetail = X_JOB_TRANSACTIONS_DETAILCollection.FirstOrDefault(x => x.SEQNO == jobTransaction.SEQNO);
-                if (transactionDetail != null)
-                    jobTransaction.SupplierName = transactionDetail.name;
+                findJOB_TRANSACTION.JOBNO = projection.jobno;
+                findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP;
+                findJOB_TRANSACTION.COST_TYPE = projection.CostType;
+                findJOB_TRANSACTION.X_VARIATIONCODE = projection.X_VARIATIONCODE;
+                findJOB_TRANSACTION.DESCRIPTION = projection.description;
+                findJOB_TRANSACTION.STAFFNO = projection.accno;
             }
 
-            return jobTransactions.AsQueryable();
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<JOB_TRANSACTIONS> entities)
+        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
+        {
+            primeroUnitOfWork.SaveChanges();
+            base.OnAfterProjectionsSave(projections);
+        }
+
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities)
         {
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.IsPasteCellLevel = true;
+            MainViewModel.IsPersistentView = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -164,12 +175,12 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override string UnifiedValueValidation(JOB_TRANSACTIONS projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(JOB_TRANSACTIONS projection)
+        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection)
         {
             return string.Empty;
         }

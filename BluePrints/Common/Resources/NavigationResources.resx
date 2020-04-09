@@ -390,4 +390,7 @@
   <data name="Global_ChangeLog" xml:space="preserve">
     <value>Startup change log information view</value>
   </data>
+  <data name="Permission_EXO_Transactions_ShowCosts" xml:space="preserve">
+    <value>Show costs on EXO transactions</value>
+  </data>
 </root>
