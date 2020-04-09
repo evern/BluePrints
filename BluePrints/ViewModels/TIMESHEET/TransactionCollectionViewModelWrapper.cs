@@ -58,6 +58,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new TransactionCollectionViewModelWrapper());
         }
 
+        public bool IsCostsVisible { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
         protected TransactionCollectionViewModelWrapper()
         {
