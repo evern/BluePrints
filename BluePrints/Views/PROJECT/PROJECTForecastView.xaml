@@ -323,12 +323,12 @@
                         <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                 <dxb:BarSubItem Content="Grid Functions" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
                                     <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
                                     <dxb:BarButtonItemLink BarItemName="biLocalKeyboardPaste" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />

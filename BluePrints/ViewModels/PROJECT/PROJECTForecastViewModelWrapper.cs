@@ -309,7 +309,7 @@ namespace BluePrints.ViewModels
             //isExcelExportDataAware = false;
             IsVariationSeparated = true;
 
-            if(FullScreenView)
+            if (FullScreenView)
                 GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
             this.RaisePropertiesChanged();
@@ -519,12 +519,9 @@ namespace BluePrints.ViewModels
             if (FORECASTCollectionViewModel == null)
                 return;
 
-            if(MainViewModel != null)
-            {
-                MainViewModel.IsPasteCellLevel = true;
-                this.RaisePropertyChanged(x => x.MainViewModel.IsPasteCellLevel);
-            }
-
+            IsPasteCellLevel = true;
+            this.RaisePropertyChanged(x => x.IsPasteCellLevel);
+            this.RaisePropertyChanged(x => x.SelectMode);
             FORECASTCollectionViewModel.SetParentViewModel(this);
             VARIATION_REGISTERCollectionViewModel.SetParentViewModel(this);
 
