@@ -1311,10 +1311,6 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static void UpdatePercentagesByStatus(IMessageBoxService MessageBoxService, CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel, IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?",
-                         BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
-                return;
-
             IEnumerable<BASELINE_ITEMProgress> deliverables = entities.Where(x => x.Entity.Entity.GUID_STATUS != null);
             List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
 

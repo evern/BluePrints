@@ -987,7 +987,12 @@ namespace BluePrints.ViewModels
 
         public void UpdateAllPercentagesByStatus()
         {
+            if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?", BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
+                return;
+
+            MainViewModel.AlwaysSkipMessage = true;
             BluePrintsDataUtils.UpdatePercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
+            MainViewModel.AlwaysSkipMessage = false;
 
             //need to perform full refresh to reload stats due to support for % reduction by gates
             FullRefresh();
