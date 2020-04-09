@@ -343,6 +343,9 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
+            if (subJobCode.Length < 15)
+                return;
+
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
             string commodityCodeName = string.Empty;
             string commodityCodeDescription = string.Empty;
