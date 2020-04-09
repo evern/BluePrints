@@ -30,7 +30,6 @@ namespace BluePrints.ViewModels
     {
         //ensure mainviewmodel is loaded before calling background worker
         private DispatcherTimer onMainViewModelFirstLoadedTimer;
-        private bool isAsyncRefreshing;
         //allow background worker to be cancelled
         List<BackgroundWorker> backgroundWorkerCollection = new List<BackgroundWorker>();
 
@@ -139,7 +138,6 @@ namespace BluePrints.ViewModels
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
-            isAsyncRefreshing = false;
             MainViewModel =
                 (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
                 mainEntityLoaderDescription.GetViewModel();
@@ -224,7 +222,6 @@ namespace BluePrints.ViewModels
         #region View Properties
         public async void Refresh_From_P6()
         {
-            isAsyncRefreshing = true;
             backgroundWorkerCollection.ForEach(x => x.CancelAsync());
             LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshAllDataPoints();

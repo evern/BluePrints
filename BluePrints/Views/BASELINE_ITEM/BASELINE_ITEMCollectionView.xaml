@@ -445,7 +445,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" ReadOnly="True" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job" HeaderToolTip="Automatically assigned field. Right click and select 'Populate' to update" Visible="true">
+                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" ReadOnly="True" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job (Read Only)" HeaderToolTip="Automatically assigned field. Right click and select 'Populate' to update" Visible="true">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

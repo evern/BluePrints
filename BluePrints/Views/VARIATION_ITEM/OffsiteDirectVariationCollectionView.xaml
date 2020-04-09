@@ -319,7 +319,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" Name="colSUBJOB" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Subjob" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name">
+                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" Name="colSUBJOB" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job (Read Only)" ReadOnly="True" HeaderToolTip="Automatically assigned field. Changing this will affect workpack name">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsEnabled="{Binding RowData.Row.IsReadOnly, Converter={StaticResource BooleanNegationConverter}}" IsTextEditable="True" ItemsSource="{Binding View.DataContext.SUBJOBCollection}" ValueMember="GUID" />
