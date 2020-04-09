@@ -146,7 +146,7 @@
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="True" SortIndex="40" Visible="True" VisibleIndex="50" />
+                                            <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="{Binding IsReadOnly}" SortIndex="40" Visible="True" VisibleIndex="50" />
                                             <dxg:GridColumn FieldName="OrderDate" Header="Order Date" ReadOnly="True" SortIndex="50" FilterPopupMode="DateAlt" VisibleIndex="60" />
                                             <dxg:GridColumn FieldName="HDR_SEQNO" Header="PO Number" ReadOnly="True" VisibleIndex="70" />
                                         </dxg:GridControlBand>
