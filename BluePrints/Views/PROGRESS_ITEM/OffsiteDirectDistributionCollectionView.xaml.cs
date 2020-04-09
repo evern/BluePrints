@@ -18,13 +18,13 @@ namespace BluePrints.Views
             {
                 if(menuInfo.Column.FieldName.Contains("ProgressId"))
                 {
-                    biFillUp.IsVisible = true;
-                    biFillDown.IsVisible = true;
+                    biFillUp2.IsVisible = true;
+                    biFillDown2.IsVisible = true;
                 }
                 else
                 {
-                    biFillUp.IsVisible = false;
-                    biFillDown.IsVisible = false;
+                    biFillUp2.IsVisible = false;
+                    biFillDown2.IsVisible = false;
                 }
             }
         }

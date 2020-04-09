@@ -112,7 +112,6 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarButtonItem x:Name="biCopyWithHeader1" Command="{Binding CopyWithHeaderCommand}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
                 <dxb:BarButtonItem x:Name="biCommitToExo" Command="{Binding CommitToExoCommand}" Content="Submit to Exo" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Commit current table data to exo timesheet" />
                 <dxb:BarButtonItem x:Name="biShowValidJobLines" Command="{Binding ShowValidJobLinesCommand}" Content="Show Valid Jobs" Glyph="{dx:DXImage Image=RowIndex_16x16.png}" LargeGlyph="{dx:DXImage Image=RowIndex_32x32.png}" ToolTip="Clear current table entries and populate with valid job lines" />
             </dxb:BarManager.Items>
