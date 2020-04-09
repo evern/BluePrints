@@ -149,13 +149,13 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        protected override bool onBeforeEntitySavedIsContinue(REGISTER_ISSUE projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_ISSUE projection, out bool isNew)
         {
             if (projection.GUID == Guid.Empty && projection.DATE_RAISED == null)
                 projection.DATE_RAISED = DateTime.Now;
 
             projection.GUID_PROJECT = loadPROJECT.GUID;
-            return base.onBeforeEntitySavedIsContinue(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(REGISTER_ISSUE projection)
@@ -215,34 +215,34 @@ namespace BluePrints.ViewModels
 
         public bool CanSendToHoldRegister()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
-            return DisplaySelectedEntity.RegisterChange == null && DisplaySelectedEntity.RegisterHold == null;
+            return SelectedEntity.RegisterChange == null && SelectedEntity.RegisterHold == null;
         }
 
         public bool CanSendToChangeRegister()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
-            return DisplaySelectedEntity.RegisterChange == null && DisplaySelectedEntity.RegisterHold == null;
+            return SelectedEntity.RegisterChange == null && SelectedEntity.RegisterHold == null;
         }
 
         public void SendToChangeRegister()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            var editingEntity = DisplaySelectedEntity;
+            var editingEntity = SelectedEntity;
             REGISTER_CHANGE newRegister = new REGISTER_CHANGE();
             newRegister.GUID_PROJECT = loadPROJECT.GUID;
-            newRegister.GUID_AREA = DisplaySelectedEntity.GUID_AREA;
+            newRegister.GUID_AREA = SelectedEntity.GUID_AREA;
             newRegister.NUMBER = getChangeRegisterNewNumber();
-            newRegister.TITLE = DisplaySelectedEntity.TITLE;
-            newRegister.DESCRIPTION = DisplaySelectedEntity.DESCRIPTION;
-            newRegister.SCHEDULE_IMPACT = DisplaySelectedEntity.SCHEDULE_IMPACT;
-            newRegister.COST_IMPACT = DisplaySelectedEntity.COST_IMPACT;
+            newRegister.TITLE = SelectedEntity.TITLE;
+            newRegister.DESCRIPTION = SelectedEntity.DESCRIPTION;
+            newRegister.SCHEDULE_IMPACT = SelectedEntity.SCHEDULE_IMPACT;
+            newRegister.COST_IMPACT = SelectedEntity.COST_IMPACT;
             newRegister.IMPACT_TYPE = Register_ImpactType.Internal;
             newRegister.INTERDISC_CHECK_COMPLETE = false;
             newRegister.APPROVED = false;
@@ -265,15 +265,15 @@ namespace BluePrints.ViewModels
 
         public void SendToHoldRegister()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            var editingEntity = DisplaySelectedEntity;
+            var editingEntity = SelectedEntity;
             REGISTER_HOLD newRegister = new REGISTER_HOLD();
             newRegister.GUID_PROJECT = loadPROJECT.GUID;
-            newRegister.GUID_AREA = DisplaySelectedEntity.GUID_AREA;
+            newRegister.GUID_AREA = SelectedEntity.GUID_AREA;
             newRegister.NUMBER = getHoldRegisterNewNumber();
-            newRegister.DESCRIPTION = DisplaySelectedEntity.DESCRIPTION;
+            newRegister.DESCRIPTION = SelectedEntity.DESCRIPTION;
             newRegister.DATE_RAISED = DateTime.Now;
             newRegister.CREATED = DateTime.Now;
             newRegister.CREATEDBY = LoginCredentials.CurrentUserGuid;
@@ -363,6 +363,7 @@ namespace BluePrints.ViewModels
 
         private void previewReport(IEnumerable<REGISTER_ISSUE> issues)
         {
+            LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
             issuesRegisterReport = new XtraReportIssuesRegister();
             PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
@@ -390,6 +391,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             issuesRegisterReport.RequestParameters = false;
             issuesRegisterReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
 

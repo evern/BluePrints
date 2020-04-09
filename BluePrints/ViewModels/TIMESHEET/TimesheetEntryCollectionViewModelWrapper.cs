@@ -13,6 +13,7 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.P6Data;
@@ -79,10 +80,12 @@ namespace BluePrints.ViewModels
         string columnUniqueCode = "UniqueCode";
         string columnDuplicate = "Duplicate";
         string valueNotFoundError = "Value not found";
+        public bool IsTimesheetLoaded { get; set; }
 
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         public ObservableCollection<string> VariationCodes { get; set; }
+        DispatcherTimer focusNewlyAddedProjectionTimer = new DispatcherTimer();
 
         protected override void resolveParameters(object parameter)
         {
@@ -110,6 +113,10 @@ namespace BluePrints.ViewModels
             systemColumnFieldNames.Add(columnVariationCode);
             systemColumnFieldNames.Add(columnNarrative);
             systemColumnFieldNames.Add(columnUniqueCode);
+
+            SelectedDataRows = new ObservableCollection<DataRowView>();
+            focusNewlyAddedProjectionTimer = new DispatcherTimer();
+            focusNewlyAddedProjectionTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -136,6 +143,8 @@ namespace BluePrints.ViewModels
             preloadedExoLinesWithCostInfo = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             VariationCodes = new ObservableCollection<string>(preloadedExoLines.Select(x => x.VariationCode).Distinct().OrderBy(x => x));
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
+            IsTimesheetLoaded = true;
+            this.RaisePropertyChanged(x => x.IsTimesheetLoaded);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> specifyMainViewModelProjection()
@@ -166,6 +175,11 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
+            isReadingFromExo = true;
+            IsTimesheetLoaded = false;
             base.FullRefresh();
             refreshDataPointsTable();
         }
@@ -174,6 +188,55 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        protected ObservableCollection<ColumnDescriptor> columnDescriptors;
+        public ObservableCollection<ColumnDescriptor> ColumnDescriptors
+        {
+            get
+            {
+                if (columnDescriptors == null)
+                {
+                    columnDescriptors = new ObservableCollection<ColumnDescriptor>();
+                }
+                return columnDescriptors;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> summaryDescriptors;
+        public ObservableCollection<SummaryDescriptor> SummaryDescriptors
+        {
+            get
+            {
+                if (summaryDescriptors == null)
+                {
+                    summaryDescriptors = new ObservableCollection<SummaryDescriptor>();
+                }
+                return summaryDescriptors;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = "Resource_SeqNo", Header = "Resource", Fixed = FixedStyle.Left, Width = 150, DisplayMember = "RESOURCENAME", ValueMember = "SEQNO", ItemsSource = JOBCOST_RESOURCECollection, Settings = SettingsType.DisplayMemberCollection });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Resource_SeqNo", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = "JobNo", Header = "Job", Fixed = FixedStyle.Left, Width = 100, DisplayMember = "JOBCODE", ValueMember = "JOBNO", ItemsSource = JOBCOST_HDRCollection, Settings = SettingsType.DisplayMemberCollection });
+            columns.Add(new ColumnDescriptor() { FieldName = "CostGroup", Header = "Discipline", Fixed = FixedStyle.Left, Width = 70, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTGROUPSCollection, Settings = SettingsType.DisplayMemberCollection });
+            columns.Add(new ColumnDescriptor() { FieldName = "CostType", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTTYPESCollection, Settings = SettingsType.DisplayMemberCollection });
+            columns.Add(new ColumnDescriptor() { FieldName = "StockCode", Header = "Stock Code", Fixed = FixedStyle.Left, Width = 100, NullText = "Leave empty to auto-populate with resource code during submission", Settings = SettingsType.Text });
+            columns.Add(new ColumnDescriptor() { FieldName = "VariationCode", Header = "Variation", Fixed = FixedStyle.Left, Width = 70, ItemsSource = VariationCodes, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "Narrative", Header = "Narrative", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Duplicate", Header = "Duplicate", ReadOnly = true, Fixed = FixedStyle.Right, Width = 50, UnboundType = UnboundColumnType.Boolean, Settings = SettingsType.Unbound });
+            columns.Add(new ColumnDescriptor() { FieldName = "UniqueCode", Header = "UniqueCode", ReadOnly = true, Visible = false, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Default });
+
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            {
+                string columnFieldName = alignedDate.Date.ToShortDateString();
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Mask = "n", Increment = 1, Fixed = FixedStyle.None, Width = 70, Settings = SettingsType.Number });
+            }
+        }
+
         private void refreshDataPointsTable()
         {
             dataPointsTable = null;
@@ -190,35 +253,13 @@ namespace BluePrints.ViewModels
         {
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
-
-        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
-        {
-            if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
-            {
-                SpinEditSettings spinEdit = new SpinEditSettings();
-                spinEdit.MaskType = MaskType.Numeric;
-                spinEdit.Mask = "n";
-                spinEdit.MaskUseAsDisplayFormat = true;
-                spinEdit.MinValue = 0;
-                e.Column.EditSettings = spinEdit;
-            }
-            else
-            {
-                if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName) || systemColumnFieldNames.Any(x => x == e.Column.FieldName))
-                {
-                    e.Column.Visible = false;
-                }
-
-                e.Column.Fixed = FixedStyle.Left;
-            }
-        }
-
+        
         private void reselectDeliverable()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SelectedEntity)));
         }
 
-        DataRowView selectedDataRow { get; set; }
+        DataRowView selectedDataRow;
         public DataRowView SelectedDataRow
         {
             get
@@ -239,20 +280,69 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public ObservableCollection<DataRowView> SelectedDataRows { get; set; }
+
+        List<DataRowView> newlyAddedRows;
+        protected virtual void OnAfterNewProjectionsAdded(DataRowView newRow)
+        {
+            if (newRow != null)
+            {
+                if (newlyAddedRows == null)
+                    newlyAddedRows = new List<DataRowView>();
+
+                newlyAddedRows.Add(newRow);
+                //Uncomment this to allow grid to focus on new row
+                focusNewlyAddedProjectionTimer.Tick -= FocusNewlyAddedProjectionTimer_Tick;
+                focusNewlyAddedProjectionTimer.Tick += FocusNewlyAddedProjectionTimer_Tick;
+                focusNewlyAddedProjectionTimer.Start();
+            }
+        }
+
+        private void FocusNewlyAddedProjectionTimer_Tick(object sender, EventArgs e)
+        {
+            focusNewlyAddedProjectionTimer.Stop();
+            if (Entities == null || newlyAddedRows.Count() == 0)
+                return;
+
+            List<DataRowView> selectedRows = new List<DataRowView>();
+            foreach (DataRowView newlyAddedRow in newlyAddedRows)
+            {
+                selectedRows.Add(newlyAddedRow);
+            }
+
+            newlyAddedRows.Clear();
+            SelectedDataRows?.Clear();
+            foreach (DataRowView selectedRow in selectedRows)
+            {
+                SelectedDataRows?.Add(selectedRow);
+            }
+
+            if (selectedRows.Count > 0)
+            {
+                SelectedDataRow = selectedRows.Last();
+                this.RaisePropertyChanged(x => x.SelectedDataRows);
+                this.RaisePropertyChanged(x => x.SelectedDataRow);
+            }
+        }
+
         DataTable dataPointsTable = null;
+
+        //to prevent table new row from getting called when it's loading
+        bool isReadingFromExo = true;
         public DataTable DataPointsTable
         {
             get
             {
-                if (MainViewModel == null || DisplayEntities == null)
+                if (MainViewModel == null || Entities == null)
                     return null;
 
                 if(dataPointsTable == null)
                 {
                     dataPointsTable = new DataTable();
+                    dataPointsTable.RowChanged += DataPointsTable_RowChanged;
                     TimeSpan interval = new TimeSpan(1, 0, 0, 0);
-                    IEnumerable<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
-
+                    List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
+                    InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
                     dataPointsTable.Columns.Add(columnResourceSeqNo, typeof(int));
                     dataPointsTable.Columns.Add(columnJobNo, typeof(int));
                     dataPointsTable.Columns.Add(columnCostGroup, typeof(int));
@@ -279,7 +369,6 @@ namespace BluePrints.ViewModels
                 dataPointsTable = value;
             }
         }
-
 
         public void ShowValidJobLines()
         {
@@ -314,6 +403,7 @@ namespace BluePrints.ViewModels
                 if (MessageBoxService.ShowMessage("Are you sure you want to read hours from exo?\n\nThis will clear the table and replace hours with hours from exo", "Confirmation", MessageButton.OKCancel) != MessageResult.OK)
                     return;
 
+            isReadingFromExo = true;
             EntitiesUndoRedoManager.Clear();
             DataPointsTable.Clear();
 
@@ -412,7 +502,7 @@ namespace BluePrints.ViewModels
                                 decimal exoHoursDecimal = Convert.ToDecimal((double)exoHours);
                                 newRow[dateColumnName] = exoHoursDecimal;
                                 if (isReadOnly)
-                                    newRow.SetColumnError(dateColumnName, "Already posted");
+                                    newRow.SetColumnError(dateColumnName, "Already Submitted to Exo");
                                 else
                                     newRow.SetColumnError(dateColumnName, string.Empty);
                             }
@@ -436,11 +526,13 @@ namespace BluePrints.ViewModels
 
             if (!doNotPrompt)
                 MessageBoxService.ShowMessage("Data retrieved from exo");
+
+            isReadingFromExo = false;
         }
 
         public bool CanCommitToExo()
         {
-            return DataPointsTable != null && DataPointsTable.Rows.Count > 0;
+            return IsTimesheetLoaded && DataPointsTable != null && DataPointsTable.Rows.Count > 0;
         }
 
         public void CommitToExo()
@@ -529,7 +621,7 @@ namespace BluePrints.ViewModels
                                 {
                                     AdjustTimeSheetHours(timesheet, timesheetDate, bookTime, out isReadOnly);
                                     if (isReadOnly)
-                                        row.SetColumnError(dataColumn, "Already posted");
+                                        row.SetColumnError(dataColumn, "Already Submitted to Exo");
                                     else
                                         row.SetColumnError(dataColumn, string.Empty);
 
@@ -843,7 +935,7 @@ namespace BluePrints.ViewModels
         #endregion
 
 
-        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
             TableView gridTableView = (TableView)gridControl.View;
@@ -965,9 +1057,10 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private void pasteRowData(TableView gridTableView, string[] RowData)
+        private List<DataRowView> pasteRowData(TableView gridTableView, string[] RowData)
         {
             EntitiesUndoRedoManager.PauseActionId();
+            List<DataRowView> newlyAddedRows = new List<DataRowView>();
             foreach (var Row in RowData)
             {
                 DataRow newRow = DataPointsTable.NewRow();
@@ -984,9 +1077,29 @@ namespace BluePrints.ViewModels
 
                 validateUserAuth(newRow);
                 DataPointsTable.Rows.Add(newRow);
+                DataRowView dataRowView = DataPointsTable.DefaultView[DataPointsTable.Rows.IndexOf(newRow)];
+                newlyAddedRows.Add(dataRowView);
                 EntitiesUndoRedoManager.AddUndo(newRow, null, null, null, EntityMessageType.Added);
             }
             EntitiesUndoRedoManager.UnpauseActionId();
+
+            return newlyAddedRows;
+        }
+
+        private void DataPointsTable_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            if (e.Action == DataRowAction.Add)
+            {
+                if (isReadingFromExo)
+                    return;
+
+                int rowIndex = DataPointsTable.Rows.IndexOf(e.Row);
+                if (rowIndex >= 0)
+                {
+                    DataRowView dataRowView = DataPointsTable.DefaultView[DataPointsTable.Rows.IndexOf(e.Row)];
+                    OnAfterNewProjectionsAdded(dataRowView);
+                }
+            }
         }
 
         private bool basePasteData(DataRow newRow, DataColumn dataColumn, ColumnBase copyColumn, string pasteData, bool isNewRow)
@@ -1077,12 +1190,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public bool CanBulkDelete()
-        {
-            return GridControlService.GetSelectedRowHandles().Count() > 0;
-        }
-
-        public void BulkDelete()
+        public override void BulkDelete()
         {
             GridControlService.BeginDataUpdate();
             int[] selectedRowHandles = GridControlService.GetSelectedRowHandles();
@@ -1148,7 +1256,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void ValidateCell(GridCellValidationEventArgs e)
+        public override void ValidateCell(GridCellValidationEventArgs e)
         {
             string fieldName = e.Column.FieldName;
             DataRowView dataRowView = (DataRowView)e.Row;
@@ -1164,7 +1272,7 @@ namespace BluePrints.ViewModels
             validateUserAuth(validateRow);
         }
 
-        public virtual void ValidateRow(GridRowValidationEventArgs e)
+        public override void ValidateRow(GridRowValidationEventArgs e)
         {
             DataRowView dataRowView = (DataRowView)e.Row;
             DataRow validateRow = dataRowView.Row;
@@ -1175,29 +1283,73 @@ namespace BluePrints.ViewModels
             validateUserAuth(validateRow);
         }
 
-        public bool CanUndo()
+        public bool CanShowValidJobLines()
         {
-            if (EntitiesUndoRedoManager == null)
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanKeyboardCopy()
+        {
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanKeyboardPaste()
+        {
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanCopyWithHeader()
+        {
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanFullRefresh()
+        {
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanBulkDelete()
+        {
+            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+        }
+
+        public override bool CanSaveLayout()
+        {
+            if (!IsTimesheetLoaded || DataPointsTable == null || isReadingFromExo)
+                return false;
+
+            return base.CanSaveLayout();
+        }
+
+        public override bool CanUndo()
+        {
+            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !IsTimesheetLoaded || isReadingFromExo)
                 return false;
 
             return EntitiesUndoRedoManager.CanUndo();
         }
 
-        public bool CanRedo()
+        public override bool CanRedo()
         {
-            if (EntitiesUndoRedoManager == null)
+            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !IsTimesheetLoaded || isReadingFromExo)
                 return false;
 
             return EntitiesUndoRedoManager.CanRedo();
         }
 
-        public void Undo()
+        public override void Undo()
         {
+            if (!CanUndo())
+                return;
+
             EntitiesUndoRedoManager.Undo();
         }
 
-        public void Redo()
+        public override void Redo()
         {
+            if (!CanRedo())
+                return;
+
             EntitiesUndoRedoManager.Redo();
         }
 

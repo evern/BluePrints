@@ -1043,18 +1043,15 @@
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTSummaryViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\PROJECTQMRViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\RATE\CostRATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYSingleObjectViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\ROSTER\RosterCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_HOLDCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_ISSUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_CHANGECollectionViewModelWrapper.cs" />
@@ -1072,7 +1069,6 @@
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\SUBJOB\SUBJOBDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMRATECollectionView.xaml.cs">
       <DependentUpon>BASELINE_ITEMRATECollectionView.xaml</DependentUpon>
@@ -1176,12 +1172,6 @@
     <Compile Include="Views\PROJECT\PROJECTIssueView.xaml.cs">
       <DependentUpon>PROJECTIssueView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PROJECT\PROJECTQMRView.xaml.cs">
-      <DependentUpon>PROJECTQMRView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PROJECT\PROJECTViewWindow.xaml.cs">
-      <DependentUpon>PROJECTViewWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\RATE\CostRATECollectionView.xaml.cs">
       <DependentUpon>CostRATECollectionView.xaml</DependentUpon>
     </Compile>
@@ -1197,9 +1187,6 @@
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ROSTER\RosterCollectionView.xaml.cs">
-      <DependentUpon>RosterCollectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
     </Compile>
@@ -1208,9 +1195,6 @@
     </Compile>
     <Compile Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionView.xaml.cs">
       <DependentUpon>ESTIMATE_ITEMCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
-      <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECTDashboardPreloadUserControl.xaml.cs">
       <DependentUpon>PROJECTDashboardPreloadUserControl.xaml</DependentUpon>
@@ -1810,9 +1794,6 @@
     <Compile Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml.cs">
       <DependentUpon>DELIVERABLES_STATUSCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml.cs">
-      <DependentUpon>INDIRECT_TYPECollectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\PROGRESS_ITEM\User_OffsiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>User_OffsiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1911,9 +1892,6 @@
     </Compile>
     <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SUBJOB\SUBJOBDashboardView.xaml.cs">
-      <DependentUpon>SUBJOBDashboardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WORKPACK\WORKPACKCollectionView.xaml.cs">
       <DependentUpon>WORKPACKCollectionView.xaml</DependentUpon>
@@ -2150,14 +2128,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PROJECT\PROJECTQMRView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\PROJECT\PROJECTViewWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\RATE\CostRATECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2178,10 +2148,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ROSTER\RosterCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2193,10 +2159,6 @@
     <Page Include="Views\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECTDashboardPreloadUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -2247,10 +2209,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DELIVERABLES_STATUS\DELIVERABLES_STATUSCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\INDIRECT_TYPE\INDIRECT_TYPECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2387,10 +2345,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SUBJOB\SUBJOBDashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

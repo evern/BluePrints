@@ -9,89 +9,82 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                </dxb:BarManager.Items>
-                <DockPanel>
-                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
-                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                        </dxr:RibbonDefaultPageCategory>
-                    </dxr:RibbonControl>
-                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                        <dxr:RibbonStatusBarControl.LeftItems>
-                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                        </dxr:RibbonStatusBarControl.LeftItems>
-                    </dxr:RibbonStatusBarControl>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="GUID_STUDY_TYPE" Header="Study Type">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="STUDY_TYPE" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessStudyNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxe:ComboBoxEdit>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STUDY_TYPE" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_STUDY_TYPECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUID_GUIDE_PROMPT" Header="Guide Word">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="GUIDE_PROMPT" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValidateOnTextInput="False" ValueMember="GUID">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.ProcessGuidePromptNewValueCommand, ElementName=userControl}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxe:ComboBoxEdit>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_PROMPT" IsTextEditable="True" ItemsSource="{Binding DataContext.RA_GUIDE_PROMPTCollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Sub Prompt" />
-                        </dxg:GridControl.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </custom:GridControlEx>
-                </DockPanel>
-            </dxb:BarManager>
-        </Grid>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+            </dxb:BarManager.Items>
+        </dxb:BarManager>
+        <DockPanel>
+            <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                    <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                            <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                            <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                            <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                            <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                            <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                            <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                            <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                            <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                            <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                            <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                            <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn FieldName="GUID_STUDY_TYPE" Header="Study Type">
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="STUDY_TYPE" ItemsSource="{Binding RA_STUDY_TYPECollection}" ValidateOnTextInput="False" ValueMember="GUID">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding ProcessStudyNewValueCommand}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxe:ComboBoxEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STUDY_TYPE" IsTextEditable="True" ItemsSource="{Binding RA_STUDY_TYPECollection}" ValueMember="GUID" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="GUID_GUIDE_PROMPT" Header="Guide Word">
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <dxe:ComboBoxEdit Name="PART_Editor" AllowNullInput="True" DisplayMember="GUIDE_PROMPT" ItemsSource="{Binding RA_GUIDE_PROMPTCollection}" ValidateOnTextInput="False" ValueMember="GUID">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding ProcessGuidePromptNewValueCommand}" EventName="ProcessNewValue" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </dxe:ComboBoxEdit>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GUIDE_PROMPT" IsTextEditable="True" ItemsSource="{Binding RA_GUIDE_PROMPTCollection}" ValueMember="GUID" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Sub Prompt" />
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.TotalSummary>
+                    <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
+                </dxg:GridControl.TotalSummary>
+                <dxg:GridControl.GroupSummary>
+                    <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="GUIDE_SUBPROMPT" SummaryType="Count" />
+                </dxg:GridControl.GroupSummary>
+                <dxg:GridControl.View>
+                    <dxg:TableView x:Name="tableView" AutoWidth="True" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView.RowCellMenuCustomizations>
+                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                            <dxb:BarItemLinkSeparator />
+                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                        </dxg:TableView.RowCellMenuCustomizations>
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+            </custom:GridControlEx>
+        </DockPanel>
     </Grid>
 </UserControl>

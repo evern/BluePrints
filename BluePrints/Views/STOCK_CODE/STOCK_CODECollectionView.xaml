@@ -9,80 +9,68 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <DockPanel>
-                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
-                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
-                                <dxb:BarButtonItem Command="{Binding DataContext.Trim_UnusedCommand, ElementName=userControl}" Content="Trim Unused Stock Code" Glyph="{dx:DXImage Image=Trash_16x16.png}" LargeGlyph="{dx:DXImage Image=Trash_32x32.png}" ToolTip="Bulk remove stock code that are unused in estimate" />
-                            </dxr:RibbonPageGroup>
-                        </dxr:RibbonPage>
-                    </dxr:RibbonDefaultPageCategory>
-                </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                        <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="STOCK_CODE_TYPE" Header="Generate From" HeaderToolTip="Indicate where stock code is generated from">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StockCodeType}}" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_DISCIPLINE" Header="Discipline">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn DataContext="{Binding DataContext, ElementName=userControl}" FieldName="GUID_COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Default commodity code that will be assigned in estimate">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CODE" Header="Code" />
-                            <dxg:GridColumn FieldName="NAME" Header="Name" />
-                            <dxg:GridColumn FieldName="TYPE" Header="Type" />
-                            <dxg:GridColumn FieldName="SPEC" Header="Specification" />
-                            <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
-                            <dxg:GridColumn FieldName="UOM" Header="UOM" HeaderToolTip="Unit of measure" />
-                            <dxg:GridColumn FieldName="RATE_SUPPLY" Header="Supply Rate" HeaderToolTip="Supply rate per quantity">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="HOURS_INSTALL" Header="Installation Hours" HeaderToolTip="Installation hours per quantity">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControl.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </custom:GridControlEx>
-                </Grid>
-            </DockPanel>
-        </Grid>
+        <DockPanel>
+            <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                    <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Layout" ItemLinksSource="{StaticResource RibbonDefaultLayoutButtons}" />
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                            <dxb:BarButtonItem Command="{Binding Trim_UnusedCommand}" Content="Trim Unused Stock Code" Glyph="{dx:DXImage Image=Trash_16x16.png}" LargeGlyph="{dx:DXImage Image=Trash_32x32.png}" ToolTip="Bulk remove stock code that are unused in estimate" />
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTOCK_CODECollectionView" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn FieldName="STOCK_CODE_TYPE" Header="Generate From" HeaderToolTip="Indicate where stock code is generated from">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:StockCodeType}}" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="GUID_COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Default commodity code that will be assigned in estimate">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding COMMODITY_CODECollection}" ValueMember="GUID" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="CODE" Header="Code" />
+                    <dxg:GridColumn FieldName="NAME" Header="Name" />
+                    <dxg:GridColumn FieldName="TYPE" Header="Type" />
+                    <dxg:GridColumn FieldName="SPEC" Header="Specification" />
+                    <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                    <dxg:GridColumn FieldName="UOM" Header="UOM" HeaderToolTip="Unit of measure" />
+                    <dxg:GridColumn FieldName="RATE_SUPPLY" Header="Supply Rate" HeaderToolTip="Supply rate per quantity">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="HOURS_INSTALL" Header="Installation Hours" HeaderToolTip="Installation hours per quantity">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.TotalSummary>
+                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                </dxg:GridControl.TotalSummary>
+                <dxg:GridControl.GroupSummary>
+                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                </dxg:GridControl.GroupSummary>
+                <dxg:GridControl.View>
+                    <dxg:TableView x:Name="tableView" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView.RowCellMenuCustomizations>
+                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                            <dxb:BarItemLinkSeparator />
+                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultFooterButtons}" />
+                        </dxg:TableView.RowCellMenuCustomizations>
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+            </custom:GridControlEx>
+        </DockPanel>
     </Grid>
 </UserControl>

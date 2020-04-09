@@ -99,7 +99,6 @@ namespace BluePrints.ViewModels
                     MeetingUserCollection.Add(meetingUser);
             }
 
-            disable_immediate_post = true;
             MINUTE_TITLECollectionViewModelWrapper.OnParameterChange(new EntitiesParameter<MEETING_TYPE>(loadMEETING.MEETING_TYPE));
         }
 
@@ -139,7 +138,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                MINUTE_TITLE selected_minute_title = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity;
+                MINUTE_TITLE selected_minute_title = MINUTE_TITLECollectionViewModelWrapper.SelectedEntity;
                 if (selected_minute_title == null)
                     return Guid.Empty;
 
@@ -175,11 +174,11 @@ namespace BluePrints.ViewModels
         {
             if (entity.Entity.GUID == Guid.Empty && entity.Entity.GUID_MINUTE_TITLE == null)
             {
-                entity.Entity.GUID_MINUTE_TITLE = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.GUID;
-                IEnumerable<MINUTE_AGENDAMasterDetailProjection> agenda_collection = displayEntities.Where(x => x.Entity.GUID_MINUTE_TITLE == MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.GUID);
+                entity.Entity.GUID_MINUTE_TITLE = MINUTE_TITLECollectionViewModelWrapper.SelectedEntity.GUID;
+                IEnumerable<MINUTE_AGENDAMasterDetailProjection> agenda_collection = entities.Where(x => x.Entity.GUID_MINUTE_TITLE == MINUTE_TITLECollectionViewModelWrapper.SelectedEntity.GUID);
                 int count_attached_agenda = agenda_collection.Count();
 
-                entity.Entity.NUMBER = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity.DisplayNumber + "." + count_attached_agenda.ToString();
+                entity.Entity.NUMBER = MINUTE_TITLECollectionViewModelWrapper.SelectedEntity.DisplayNumber + "." + count_attached_agenda.ToString();
             }
 
             entity.Entity.RAISE_DATE = loadMEETING.MEETING_DATE;
@@ -188,6 +187,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MINUTE_AGENDAMasterDetailProjection> entities)
         {
+            MainViewModel.DisableImmediatePosting = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -201,10 +201,10 @@ namespace BluePrints.ViewModels
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(MINUTE_AGENDAMasterDetailProjection projection, out bool isNew)
         {
             isNew = false;
-            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.SelectedEntity == null)
             {
                 MessageBoxService.ShowMessage("Please select a title before adding an agenda");
-                return OperationInterceptMode.Skip;
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
             }
 
             initializeMasterProperties(projection);
@@ -213,11 +213,11 @@ namespace BluePrints.ViewModels
 
         private void calculateTitleSummary()
         {
-            RefreshDisplayEntities();
-            var entities = MINUTE_TITLECollectionViewModelWrapper.DisplayEntities;
+            RefreshEntities();
+            var entities = MINUTE_TITLECollectionViewModelWrapper.Entities;
             foreach(MINUTE_TITLE entity in entities)
             {
-                IEnumerable<MINUTE_AGENDAMasterDetailProjection> current_agendas = DisplayEntities.Where(x => x.Entity.GUID_MINUTE_TITLE == entity.GUID);
+                IEnumerable<MINUTE_AGENDAMasterDetailProjection> current_agendas = Entities.Where(x => x.Entity.GUID_MINUTE_TITLE == entity.GUID);
                 entity.Summary_Total_Agendas = current_agendas.Count();
 
                 int dueAgendaCount = 0;
@@ -266,7 +266,7 @@ namespace BluePrints.ViewModels
 
         private void filterAgenda()
         {
-            MINUTE_TITLE selected_minute_title = MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity;
+            MINUTE_TITLE selected_minute_title = MINUTE_TITLECollectionViewModelWrapper.SelectedEntity;
             if (selected_minute_title == null)
                 return;
 
@@ -352,7 +352,7 @@ namespace BluePrints.ViewModels
         #region Reporting
         public bool CanEditReport()
         {
-            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplayEntities == null)
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.Entities == null)
                 return false;
 
             return true;
@@ -360,7 +360,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplayEntities == null)
+            if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.Entities == null)
                 return false;
 
             return true;
@@ -380,6 +380,7 @@ namespace BluePrints.ViewModels
         XtraReportMeeting_Minute meeting_minute;
         public void ViewReport()
         {
+            LoadingScreenManager.ShowLoadingScreen(1);
             meeting_minute = new XtraReportMeeting_Minute();
             PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
             if (dbProjectReport != null)
@@ -393,14 +394,15 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            RefreshDisplayEntities();
-            meeting_minute.AssignProperties(loadMEETING, MINUTE_TITLECollectionViewModelWrapper.DisplayEntities.ToList(), MeetingUserCollection, DisplayEntities.ToList(), MEETING_ACTIONCollection);
+            RefreshEntities();
+            meeting_minute.AssignProperties(loadMEETING, MINUTE_TITLECollectionViewModelWrapper.Entities.ToList(), MeetingUserCollection, Entities.ToList(), MEETING_ACTIONCollection);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = meeting_minute;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             previewWindow.WindowState = WindowState.Maximized;
             meeting_minute.RequestParameters = false;
             meeting_minute.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
         #endregion
@@ -470,7 +472,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+                if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.SelectedEntity == null)
                     return "Please select a title before entering new agenda";
 
                 return "Type here to add new agenda, push enter when complete";
@@ -481,7 +483,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.DisplaySelectedEntity == null)
+                if (MINUTE_TITLECollectionViewModelWrapper == null || MINUTE_TITLECollectionViewModelWrapper.SelectedEntity == null)
                     return Visibility.Visible;
 
                 return Visibility.Hidden;

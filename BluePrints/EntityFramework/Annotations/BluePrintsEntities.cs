@@ -54,10 +54,19 @@ namespace BluePrints.Data
                             guidKeyEntity.GUID = newGuid;
                     }
 
+                    //copy guid to original guid because relationship on entities that have revision control will have guid regenerated on next revision
                     IOriginalGuidEntityKey originalGuidKeyEntity = dbEntry.Entity as IOriginalGuidEntityKey;
                     if(originalGuidKeyEntity != null && originalGuidKeyEntity.OriginalEntityKey == Guid.Empty)
                     {
                         originalGuidKeyEntity.SetOriginalEntityKey(newGuid);
+                    }
+
+                    IHaveCreatedDate iHaveCreatedDateProjectionEntity = dbEntry.Entity as IHaveCreatedDate;
+                    if (iHaveCreatedDateProjectionEntity != null)
+                    {
+                        //workaround for created because Save() only sets the projection primary key, this is used for property redo where the interceptor only tampers with UPDATED and CREATED is left as null
+                        if (iHaveCreatedDateProjectionEntity.EntityCreatedDate.Date.Year == 1)
+                            iHaveCreatedDateProjectionEntity.EntityCreatedDate = DateTime.Now;
                     }
                 }
             }

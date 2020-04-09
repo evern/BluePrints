@@ -82,8 +82,6 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCore;
-        protected bool isCompletelyLoaded { get; set; }
-        public bool IsShowViewLoading { get; set; }
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
@@ -239,6 +237,7 @@ namespace BluePrints.ViewModels
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
             PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, ShowLoadingScreen);
 
+            IsLoading = true;
             project_dashboards.Add(project_dashboard);
             return query => project_dashboards.AsQueryable();
         }
@@ -267,7 +266,7 @@ namespace BluePrints.ViewModels
             
             if (entities.Count() > 0)
             {
-                this.DisplaySelectedEntity = entities.First();
+                this.SelectedEntity = entities.First();
                 summaryBackgroundWorker = new BackgroundWorker();
                 summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
                 summaryBackgroundWorker.RunWorkerCompleted += summaryBackgroundWorker_RunWorkerCompleted;
@@ -327,20 +326,21 @@ namespace BluePrints.ViewModels
         {
             //for raising can export to excel
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.onSummaryCalculateComplete()));
-
-            if(selectAllDispatcher != null)
+            mainThreadDispatcher.BeginInvoke(new Action(() => onSummaryCalculateComplete()));
+            if (selectAllDispatcher != null)
                 selectAllDispatcher.Start();
         }
 
         protected virtual void onSummaryCalculateComplete()
         {
-            isCompletelyLoaded = true;
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
         }
 
-        public bool CanExportToExcel()
+        public override bool CanExportToExcel()
         {
-            return DisplayEntities != null && DisplayEntities.Count > 0 && DisplayEntities.First().Subjob_Dashboards != null;
+            bool canBaseExportToExcel = base.CanExportToExcel();
+            return canBaseExportToExcel && Entities != null && Entities.Count > 0 && Entities.First().Subjob_Dashboards != null;
         }
 
         protected string exportFileName = string.Empty;
@@ -365,7 +365,7 @@ namespace BluePrints.ViewModels
                 return;
 
             LoadingScreenManager.ShowLoadingScreen(1);
-            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            PROJECT_Dashboard dashboard = Entities.First();
             dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard);
             IsExportInternalNameVisible = false;
             this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
@@ -421,7 +421,7 @@ namespace BluePrints.ViewModels
                 return;
 
             LoadingScreenManager.ShowLoadingScreen(1);
-            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            PROJECT_Dashboard dashboard = Entities.First();
             dashboard.Export_Data = DashboardHelpers.BuildExportDataByType(statsType, LoadPROJECT.NUMBER, dashboard);
             IsExportInternalNameVisible = true;
             this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
@@ -524,7 +524,7 @@ namespace BluePrints.ViewModels
 
         private void OnDeliverablesLoadedCallBack(IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            PROJECT_Dashboard dashboard = DisplayEntities.First();
+            PROJECT_Dashboard dashboard = Entities.First();
             List<ProjectIssue> projectIssues = new List<ProjectIssue>();
             BASELINE liveBASELINE = LoadPROJECT.BASELINE.FirstOrDefault(x => x.STATUS == BaselineStatus.Live);
             PROGRESS livePROGRESS = LoadPROJECT.PROGRESS.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
@@ -621,7 +621,7 @@ namespace BluePrints.ViewModels
 
         public bool Animate { get; set; }
         public string HealthCheckIconName { get; set; }
-        public List<Dashboard_Export_Data_Point> ExcelExportData => DisplayEntities == null ? null : DisplayEntities.Count == 0 ? null : DisplayEntities.First().Export_Data;
+        public List<Dashboard_Export_Data_Point> ExcelExportData => Entities == null ? null : Entities.Count == 0 ? null : Entities.First().Export_Data;
         #endregion
 
         #region View Behavior
@@ -1234,11 +1234,11 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (DisplayEntities == null || DisplayEntities.Count == 0)
+                if (Entities == null || Entities.Count == 0)
                     return null;
 
                 //Only return managed subjobs
-                List<DashboardFlatStructure> dashboards = DisplayEntities.First().Subjob_Dashboards;
+                List<DashboardFlatStructure> dashboards = Entities.First().Subjob_Dashboards;
                 IEnumerable<DashboardFlatStructure> singleProjectDashboard = null;
                 if (dashboards != null)
                     singleProjectDashboard = dashboards.Where(x => x != null).Where(x => !x.ShouldHide);
@@ -1254,10 +1254,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (DisplayEntities == null || DisplayEntities.Count == 0)
+                if (Entities == null || Entities.Count == 0)
                     return null;
 
-                List<DashboardFlatStructure> singleProjectDashboard = DisplayEntities.First().Subjob_Dashboards;
+                List<DashboardFlatStructure> singleProjectDashboard = Entities.First().Subjob_Dashboards;
                 return singleProjectDashboard;
             }
         }
@@ -1359,18 +1359,15 @@ namespace BluePrints.ViewModels
 
         public virtual bool CanEditReport()
         {
-            if (MainViewModel == null || MainViewModel.Entities.Count == 0)
-                return false;
-
-            return true;
+            return !IsLoading;
         }
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
-            return true;
+            return !IsLoading;
         }
 
         public virtual void EditReport()
@@ -1401,6 +1398,10 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
+            IsLoading = true;
             base.FullRefresh();
             ReloadEntitiesCollection();
         }
@@ -1412,13 +1413,13 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "SubjobDashboardView",
-                DisplaySelectedEntity,
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString() + "SubjobDashboardView",
+                SelectedEntity,
                 "SUBJOBDashboardView",
-                "[" + DisplaySelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
+                "[" + SelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -1450,19 +1451,6 @@ namespace BluePrints.ViewModels
                 new EntitiesParameter<PROJECT>(LoadPROJECT),
                     "AREACollectionView",
                     "[" + LoadPROJECT.NUMBER + "] Areas");
-
-            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
-        }
-
-        public void EditRate()
-        {
-            if (LoadPROJECT == null)
-                return;
-
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + LoadPROJECT.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(LoadPROJECT),
-                    "RATECollectionView",
-                    "[" + LoadPROJECT.NUMBER + "] Rates");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

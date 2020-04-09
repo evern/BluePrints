@@ -41,9 +41,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single BASELINE object view model.
     /// </summary>
-    public partial class EXO_SubjobCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <BASELINE_ITEM, ExoSubJobEditableProjection, Guid, IBluePrintsEntitiesUnitOfWork>
+    public partial class EXO_SubjobCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<BASELINE_ITEM, ExoSubJobEditableProjection, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of BASELINE_ITEMSViewModelWrapper as a POCO view model.
@@ -80,12 +78,12 @@ namespace BluePrints.ViewModels
         protected bool runPlannedChecker = false;
         protected bool initializeOptionalViewCollectionsOnRefresh = true;
         public CriteriaOperator FilterCriteria { get; set; }
-
         //user from exo will do a lookup to get additional details from user's in BluePrints
         protected bool tryCombineLocalUsers = false;
         public string SubJobRegex { get; set; }
         public string DisciplineRegex { get; set; }
         protected bool ignoreCostGroupCostTypeError { get; set; }
+        protected bool ignoreExoBudgetError { get; set; }
         #endregion
 
         #region Loading Operations
@@ -99,6 +97,7 @@ namespace BluePrints.ViewModels
             backgroundBudgetChecker = new BackgroundWorker();
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
+            ignoreExoBudgetError = true;
             initializeOptionalViewCollections();
         }
 
@@ -157,7 +156,7 @@ namespace BluePrints.ViewModels
 
             foreach (ExoSubJobEditableProjection designSubjob in designSubjobs)
             {
-                ExoSubJobEditableProjection findSubJob = DisplayEntities.FirstOrDefault(x => x.SubJobCode == designSubjob.SubJobCode && x.DisciplineCode == designSubjob.DisciplineCode && x.CommodityCode == designSubjob.CommodityCode);
+                ExoSubJobEditableProjection findSubJob = Entities.FirstOrDefault(x => x.SubJobCode == designSubjob.SubJobCode && x.DisciplineCode == designSubjob.DisciplineCode && x.CommodityCode == designSubjob.CommodityCode);
                 if (findSubJob != null)
                 {
                     findSubJob.HasBudget = true;
@@ -191,17 +190,17 @@ namespace BluePrints.ViewModels
             if (newlyAddedProjection != null)
                 isNew = true;
 
-            return OperationInterceptMode.Skip;
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ExoSubJobEditableProjection projection, out List<ErrorMessage> errorMessages)
         {
             errorMessages = new List<ErrorMessage>();
             if (!projection.IsLineExistsInExo)
-                return OperationInterceptMode.Skip;
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
 
             removeFromExo(projection);
-            return OperationInterceptMode.Skip;
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -221,8 +220,6 @@ namespace BluePrints.ViewModels
         #region Events
         public override string UnifiedRowValidation(ExoSubJobEditableProjection projection)
         {
-            projection.IgnoreExoBudgetError = true;
-
             if(!ignoreCostGroupCostTypeError)
             {
                 if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
@@ -258,12 +255,13 @@ namespace BluePrints.ViewModels
             string errorMessage = string.Empty;
             projection.PopulateCommodityCodes(COMMODITY_CODECollection);
             projection.PopulateStockItems(STOCK_ITEMSCollection);
+            projection.IgnoreExoBudgetError = ignoreExoBudgetError;
             projection.Update();
 
             List<KeyValuePair<string, string>> constraintIssues;
             if (MainViewModel.IsValidEntity(projection, null, ref errorMessage, out constraintIssues) && projection.IsLineExistsInExo)
             {
-                CommonMethods.SubJobLineValueChanged(field_name, old_value, new_value, projection, DisplayEntities, isNew, loadPROJECT.NUMBER, localPrimeroUnitOfWork, MessageBoxService, BulkColumnEditDialogService, masterJob, () => this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection), () => this.RaisePropertyChanged(x => x.STOCK_CODEStringCollection));
+                CommonMethods.SubJobLineValueChanged(field_name, old_value, new_value, projection, Entities, isNew, loadPROJECT.NUMBER, localPrimeroUnitOfWork, MessageBoxService, BulkColumnEditDialogService, masterJob, () => this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection), () => this.RaisePropertyChanged(x => x.STOCK_CODEStringCollection));
             }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
@@ -277,7 +275,7 @@ namespace BluePrints.ViewModels
                 {
                     string newSubJobCode = new_value.ToString();
                     //Cannot set property immediately because it must go through validation and revert to old value when it's not valid, hence passing in new value is necessary
-                    ExoMethods.ViewUpdateSubJobTitle(projection, DisplayEntities, localPrimeroUnitOfWork, loadPROJECT.NUMBER, newSubJobCode, false);
+                    ExoMethods.ViewUpdateSubJobTitle(projection, Entities, localPrimeroUnitOfWork, loadPROJECT.NUMBER, newSubJobCode, false);
                     projection.Update();
                 }
             }
@@ -287,7 +285,7 @@ namespace BluePrints.ViewModels
                 {
                     string newCostGroupCode = new_value.ToString();
                     //Cannot set property immediately because it must go through validation and revert to old value when it's not valid, hence passing in new value is necessary
-                    ExoMethods.ViewUpdateCostGroupTitle(projection, DisplayEntities, localPrimeroUnitOfWork, newCostGroupCode, false);
+                    ExoMethods.ViewUpdateCostGroupTitle(projection, Entities, localPrimeroUnitOfWork, newCostGroupCode, false);
                     projection.Update();
                 }
             }
@@ -369,7 +367,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
             foreach (ExoSubJobEditableProjection viewRemoveProjection in viewRemoveProjections)
             {
-                DisplayEntities.Remove(viewRemoveProjection);
+                Entities.Remove(viewRemoveProjection);
             }
         }
 
@@ -387,18 +385,18 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public void KeyboardCopy()
-        {
-            SendKeys.SendWait("^c");
-        }
-
-        public void KeyboardPaste()
-        {
-            SendKeys.SendWait("^v");
-        }
-
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
+            IsActualCostSummaryVisible = false;
+            IsMaterialCostSummaryVisible = false;
+            IsRemainingPOCostSummaryVisible = false;
+
+            this.RaisePropertyChanged(x => x.IsActualCostSummaryVisible);
+            this.RaisePropertyChanged(x => x.IsMaterialCostSummaryVisible);
+            this.RaisePropertyChanged(x => x.IsRemainingPOCostSummaryVisible);
             initializeCompulsoryViewProperties(loadPROJECT);
             if(initializeOptionalViewCollectionsOnRefresh)
                 initializeOptionalViewCollections();
@@ -422,20 +420,14 @@ namespace BluePrints.ViewModels
 
         public IEnumerable<ExoSubJobEditableProjection> CommitToExo(IEnumerable<ExoSubJobEditableProjection> projections)
         {
-            IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, DisplayEntities);
+            IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, Entities);
             if (addedProjections.Count() > 0)
             {
                 foreach (ExoSubJobEditableProjection addedProjection in addedProjections)
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
-                    addedProjection.PopulateLineAuthUsers(DisplayEntities);
-
-                    if(!DisplayEntities.Any(x => x.LineId == addedProjection.LineId))
-                        DisplayEntities.Insert(0, addedProjection);
-
-                    if(!MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation())
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(addedProjection, string.Empty, null, null, EntityMessageType.Added);
+                    addedProjection.PopulateLineAuthUsers(Entities);
                     addedProjection.IsLineExistsInExo = true;
                 }
 
@@ -449,6 +441,11 @@ namespace BluePrints.ViewModels
 
 #region View Properties
         ESTIMATE_ITEMCollectionViewModelWrapper estimateItemViewModel;
+        public bool CanCopyToJob()
+        {
+            return !IsLoading;
+        }
+
         public void CopyToJob()
         {
             if (MessageBoxService.ShowMessage("This will make a copy of existing jobs in exo (except design) into job setup, do you wish to continue?", "Confirmation", MessageButton.OKCancel, MessageIcon.Information) == MessageResult.OK)
@@ -458,7 +455,7 @@ namespace BluePrints.ViewModels
                 estimateItemViewModel.OnEntitiesLoadedCallBackManualDispose = true;
                 estimateItemViewModel.OnParameterChange(new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, null, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Direct, EstimateViewMode.Budget)));
 
-                LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
+                LoadingScreenManager.ShowLoadingScreen(Entities.Count);
             }
         }
 
@@ -468,7 +465,7 @@ namespace BluePrints.ViewModels
                 int saveCount = 0;
                 List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
                 List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-                foreach (var entity in DisplayEntities)
+                foreach (var entity in Entities)
                 {
                     if (entity.SubJobCode.Length >= 15 && entity.DisciplineCode.Length >= 4 && entity.CommodityCode != string.Empty)
                     {
@@ -530,6 +527,11 @@ namespace BluePrints.ViewModels
             }));
         }
 
+        public bool CanPopulateActuals()
+        {
+            return !IsLoading;
+        }
+
         public bool IsActualCostSummaryVisible { get; set; }
         public bool IsMaterialCostSummaryVisible { get; set; }
         public bool IsRemainingPOCostSummaryVisible { get; set; }
@@ -560,9 +562,19 @@ namespace BluePrints.ViewModels
             GridControlService.RefreshData();
         }
 
+        public bool CanSetDesignFilter()
+        {
+            return !IsLoading;
+        }
+
         public void SetDesignFilter()
         {
             setFilter("-D");
+        }
+
+        public bool CanSetIndirectFilter()
+        {
+            return !IsLoading;
         }
 
         public void SetIndirectFilter()
@@ -570,9 +582,19 @@ namespace BluePrints.ViewModels
             setFilter("-I");
         }
 
+        public bool CanSetProcurementFilter()
+        {
+            return !IsLoading;
+        }
+
         public void SetProcurementFilter()
         {
             setFilter("-P");
+        }
+
+        public bool CanSetConstructionFilter()
+        {
+            return !IsLoading;
         }
 
         public void SetConstructionFilter()
@@ -606,26 +628,38 @@ namespace BluePrints.ViewModels
             }
         }
 
+        List<USER> userCollection;
         public IEnumerable<USER> USERCollection
         {
             get
             {
-                var collection = GetEntities<USER>();
-
-                List<USER> returnSTAFF = new List<USER>();
-                foreach(USER user in collection)
+                if(userCollection == null)
                 {
-                    user.ProjectLocale = loadPROJECT.OfficeNameForExo;
-                    STAFF staff = exoSTAFFS.FirstOrDefault(x => x.STAFFNO == user.ProjectLocaleExoId);
-                    //don't return any user that is disabled in EXO
-                    if (staff != null)
+                    userCollection = new List<USER>();
+                    var collection = GetEntities<USER>();
+                    foreach (USER user in collection)
                     {
-                        //if(staff.SECURITYPROFILEID != 4)
-                        returnSTAFF.Add(user);
+                        user.ProjectLocale = loadPROJECT.OfficeNameForExo;
+                        STAFF staff = exoSTAFFS.FirstOrDefault(x => x.STAFFNO == user.ProjectLocaleExoId);
+                        //don't return any user that is disabled in EXO
+                        if (staff != null)
+                        {
+                            //if(staff.SECURITYPROFILEID != 4)
+                            userCollection.Add(user);
+                        }
                     }
                 }
                 
-                return returnSTAFF.OrderBy(x => x.NAME);
+                return userCollection.OrderBy(x => x.NAME);
+            }
+        }
+
+        public IEnumerable<USER> AllUSERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                return collection.OrderBy(x => x.NAME);
             }
         }
 
@@ -641,9 +675,9 @@ namespace BluePrints.ViewModels
                 }
 
                 //add commodity code from entities so that even commodity code that isn't valid will be displayed
-                if(DisplayEntities != null && DisplayEntities.Count > 0)
+                if(Entities != null && Entities.Count > 0)
                 {
-                    allCommodityCodes.AddRange(DisplayEntities.Select(x => x.CommodityCode));
+                    allCommodityCodes.AddRange(Entities.Select(x => x.CommodityCode));
                 }
 
                 return allCommodityCodes.OrderBy(x => x);
@@ -684,9 +718,9 @@ namespace BluePrints.ViewModels
                 }
 
                 //add commodity code from entities so that even commodity code that isn't valid will be displayed
-                if (DisplayEntities != null && DisplayEntities.Count > 0)
+                if (Entities != null && Entities.Count > 0)
                 {
-                    allStockCodeRanges.AddRange(DisplayEntities.Select(x => x.StockCode));
+                    allStockCodeRanges.AddRange(Entities.Select(x => x.StockCode));
                 }
 
                 return allStockCodeRanges.OrderBy(x => x);
@@ -717,10 +751,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (DisplayEntities == null || DisplayEntities.Count() == 0)
+                if (Entities == null || Entities.Count() == 0)
                     return new List<string>();
 
-                return DisplayEntities.Select(x => x.SubJobCode).OrderBy(x => x).Distinct();
+                return Entities.Select(x => x.SubJobCode).OrderBy(x => x).Distinct();
             }
         }
 
@@ -728,10 +762,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (DisplayEntities == null || DisplayEntities.Count() == 0)
+                if (Entities == null || Entities.Count() == 0)
                     return new List<string>();
 
-                return DisplayEntities.Select(x => x.VariationCode).OrderBy(x => x).Distinct();
+                return Entities.Select(x => x.VariationCode).OrderBy(x => x).Distinct();
             }
         }
 #endregion

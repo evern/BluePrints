@@ -164,6 +164,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             ExoMaterials = null;
             base.FullRefresh();
         }
@@ -191,10 +194,10 @@ namespace BluePrints.ViewModels
             if (!IsFilterActuals)
                 return;
 
-            if (DisplaySelectedEntities == null || DisplaySelectedEntities.Count == 0)
+            if (SelectedEntities == null || SelectedEntities.Count == 0)
                 return;
 
-            IEnumerable<PURCHORD_LINES> projections = DisplaySelectedEntities.Where(x => x.Subjob_Name != null && x.Subjob_Name != string.Empty && x.Discipline_Code != null && x.Discipline_Code != string.Empty && x.Commodity_Code != null && x.Commodity_Code != string.Empty);
+            IEnumerable<PURCHORD_LINES> projections = SelectedEntities.Where(x => x.Subjob_Name != null && x.Subjob_Name != string.Empty && x.Discipline_Code != null && x.Discipline_Code != string.Empty && x.Commodity_Code != null && x.Commodity_Code != string.Empty);
             var groupedSelections = projections.GroupBy(x => x.Subjob_Name + x.Discipline_Code + x.Commodity_Code).Select(group => new { SelectionKey = group.Key, GroupedProjections = group.ToList() });
             string criteriaString = string.Empty;
 

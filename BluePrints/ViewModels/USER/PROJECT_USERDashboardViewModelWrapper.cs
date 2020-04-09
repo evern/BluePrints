@@ -73,7 +73,7 @@ namespace BluePrints.ViewModels
         public void SelectAll()
         {
             Selected_Dashboards.Clear();
-            foreach (BASELINE_ITEMProgress entity in DisplayEntities)
+            foreach (BASELINE_ITEMProgress entity in Entities)
             {
                 Selected_Dashboards.Add(entity);
             }
@@ -152,6 +152,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             ReloadEntitiesCollection();
         }
 

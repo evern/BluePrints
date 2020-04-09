@@ -97,7 +97,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>> specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, USERCollection, BASELINE_ITEM_WORKCollection, _loadUSER);
+            return query => ProgressQueries.User_OffsiteDirectProgressItemTransformation(query, PROGRESS_ITEMCollection, USERCollection, BASELINE_ITEM_WORKCollection, _loadUSER, true);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -107,6 +107,13 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             return base.OnMainViewModelLoaded(entities);
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
         #endregion
 
@@ -134,6 +141,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             ReloadEntitiesCollection();
         }
 

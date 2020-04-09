@@ -584,6 +584,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             summaryDataPointsTable = null;
             base.FullRefresh();
         }

@@ -9,149 +9,135 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                    <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding DataContext.UploadToExoCommand, ElementName=userControl}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
-                    <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding DataContext.AlignExoBudgetCommand, ElementName=userControl}" Content="Align Selected Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align exo budget with budget calculated from deliverable's list" />
-                    <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding DataContext.AutoAssignPermissionCommand, ElementName=userControl}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
-                    <dxb:BarButtonItem x:Name="biLocalCopy" Command="{Binding DataContext.KeyboardCopyCommand, ElementName=userControl}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
-                    <dxb:BarButtonItem x:Name="biLocalPaste" Command="{Binding DataContext.KeyboardPasteCommand, ElementName=userControl}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
-                    <dxb:BarCheckItem x:Name="biShowPreferred" Content="Show Preferred User Only" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" IsChecked="{Binding DataContext.ShowPreferred, ElementName=userControl}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" ToolTip="Show preferred user only (based on role)" />
-                </dxb:BarManager.Items>
-                <DockPanel>
-                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalCopy"/>
-                                    <dxb:BarButtonItemLink BarItemName="biLocalPaste" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
-                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                    <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                            <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Permissions" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
-                                    <dxb:BarCheckItemLink BarItemName="biShowPreferred" />
-                                    <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
-                                    <dxb:BarButtonItemLink BarItemName="biAutoAssign"/>
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                        </dxr:RibbonDefaultPageCategory>
-                    </dxr:RibbonControl>
-                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                        <dxr:RibbonStatusBarControl.LeftItems>
-                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                        </dxr:RibbonStatusBarControl.LeftItems>
-                    </dxr:RibbonStatusBarControl>
-                    <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
-                        <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1100" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                            <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Row" Style="{StaticResource DefaultGridControlTemplate}">
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Width="120" FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
-                                        <dxg:GridColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <dxe:TextEdit x:Name="PART_Editor" NullText="{Binding RowData.Row.NullText}" ShowNullText="True" IsReadOnly="{Binding RowData.Row.IsLineExistsInExo, Converter={StaticResource BooleanNegationConverter}}" />
-                                            </DataTemplate>
-                                        </dxg:GridColumn.CellTemplate>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn Width="100" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
-                                    <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
-                                    <dxg:GridColumn FieldName="VariationCode" Header="Variation" ReadOnly="True" />
-                                    <!--<dxg:GridColumn FieldName="Budget" Header="Budget" HeaderToolTip="Budget calculated from from deliverable's total">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="False" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>-->
-                                    <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" HeaderToolTip="Budget in Exo">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="Budget" Header="Budget Cost" HeaderToolTip="Budget in Exo (Sum from Deliverables List)">
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding UploadToExoCommand}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
+                <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding AlignExoBudgetCommand}" Content="Align Selected Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align exo budget with budget calculated from deliverable's list" />
+                <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding AutoAssignPermissionCommand}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
+                <dxb:BarCheckItem x:Name="biShowPreferred" Content="Show Preferred User Only" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" IsChecked="{Binding ShowPreferred}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" ToolTip="Show preferred user only (based on role)" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                        <dxr:RibbonPage MergeType="Replace" Caption="Permissions">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Permissions" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
+                                <dxb:BarCheckItemLink BarItemName="biShowPreferred" />
+                                <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
+                                <dxb:BarButtonItemLink BarItemName="biAutoAssign"/>
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
+                    <dxlc:LayoutGroup Name="LayoutGroupGrid" Width="1000" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
+                        <dxg:GridControl x:Name="GridControlSubJob" dxc:DXSerializer.SerializationID="GridControlEXOSUBJOB" dxc:DXSerializer.StoreLayoutMode="All" SelectionMode="Row" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn AllowBestFit="false" Width="110" FieldName="SubJobCode" Header="Subjob" HeaderToolTip="Personnel permission is set per subjob, however recommended personnel depends on document types assigned to role" ReadOnly="True" />
+                                <dxg:GridColumn AllowBestFit="false" Width="*" FieldName="SubJobTitle" Header="Subjob Title" HeaderToolTip="Subjob title in exo" ReadOnly="False" >
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:TextEdit x:Name="PART_Editor" NullText="{Binding RowData.Row.NullText}" ShowNullText="True" IsReadOnly="{Binding RowData.Row.IsLineExistsInExo, Converter={StaticResource BooleanNegationConverter}}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" AllowBestFit="false" Width="50" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn AllowBestFit="false" Width="150" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="VariationCode" AllowBestFit="false" Width="70" Header="Variation" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" AllowBestFit="false" Width="90" HeaderToolTip="Budget in Exo">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Budget" Header="Budget Cost" AllowBestFit="false" Width="90" HeaderToolTip="Budget calculated from from deliverable's">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" AllowBestFit="false" Width="60" HeaderToolTip="Is this line available to be booked by authorised personnel" />
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem FieldName="SubJobCode" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="Budget" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="ExoBudget" SummaryType="Sum" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem FieldName="SubJobCode" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="Budget" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="ExoBudget" SummaryType="Sum" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" MouseUp="tableView1_MouseUp" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                        <dxmvvm:EventToCommand Command="{Binding CellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </dxg:GridControl>
+                    </dxlc:LayoutGroup>
+                    <dxc:LoadingDecorator IsSplashScreenShown="{Binding IsPermissionLoading}">
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
+                            <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding BluePrintsUsers}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" AllowBestFit="false" Width="50" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" HeaderToolTip="Is this line available to be booked by authorised personnel" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" Header="User" AllowBestFit="false" Width="*"/>
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" Header="Role" AllowBestFit="false" Width="200" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" AllowBestFit="false" Width="50" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:CheckEditSettings />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.GroupSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="Budget" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total: {0:c0}" FieldName="ExoBudget" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" AutoWidth="True" MouseUp="tableView1_MouseUp" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableView1" MouseUp="tableView1_MouseUp" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ValidateCellCommand, ElementName=userControl}" EventName="ValidateCell" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangingCommand, ElementName=userControl}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CellValueChangedCommand, ElementName=userControl}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biAlignBudget" />
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                        </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </dxg:GridControl>
+                            </custom:GridControlEx>
                         </dxlc:LayoutGroup>
-                        <dxc:LoadingDecorator DataContext="{Binding DataContext, ElementName=userControl}" IsSplashScreenShown="{Binding IsPermissionLoading}">
-                            <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
-                                <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding BluePrintsUsers}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
-                                    <dxg:GridControl.Columns>
-                                        <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" Width="90" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:CheckEditSettings />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" Header="User" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" Header="Role" />
-                                        <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
-                                            <dxg:GridColumn.EditSettings>
-                                                <dxe:CheckEditSettings />
-                                            </dxg:GridColumn.EditSettings>
-                                        </dxg:GridColumn>
-                                    </dxg:GridControl.Columns>
-                                    <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                                    </dxg:GridControl.TotalSummary>
-                                    <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
-                                    </dxg:GridControl.GroupSummary>
-                                    <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView1" AutoWidth="True" MouseUp="tableView1_MouseUp">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxg:TableView>
-                                    </dxg:GridControl.View>
-                                </custom:GridControlEx>
-                            </dxlc:LayoutGroup>
-                        </dxc:LoadingDecorator>
-                    </dxlc:LayoutControl>
-                </DockPanel>
-            </dxb:BarManager>
-        </Grid>
+                    </dxc:LoadingDecorator>
+                </dxlc:LayoutControl>
+            </DockPanel>
+        </dxb:BarManager>
     </Grid>
 </UserControl>

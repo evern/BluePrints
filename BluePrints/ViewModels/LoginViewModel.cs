@@ -63,20 +63,15 @@ namespace BluePrints.ViewModels
             UserName = XMLHelpers.GetSettings_Username();
             UserPassword = XMLHelpers.GetSettings_Password();
 
+#if DEBUG
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#else
             if (UserName != string.Empty && UserPassword != string.Empty)
             {
                 RememberPassword = true;
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
             }
-//#if DEBUG
-//            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
-//#else
-//            if (UserName != string.Empty && UserPassword != string.Empty)
-//            {
-//                RememberPassword = true;
-//                Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
-//            }
-//#endif
+#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)
@@ -125,12 +120,12 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
+                    LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                    //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
                     forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
                     LoginCredentials.CurrentUser.UserPreferences.Add(forecastActualPreference);
-                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "DHRUV.PATEL");
                     Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else

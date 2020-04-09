@@ -80,6 +80,9 @@ namespace BluePrints.Common.Projections
             {
                 if (taggedValidCommodityCodes == null)
                 {
+                    if(COMMODITY_CODES == null)
+                        return new List<COMMODITY_CODE>();
+
                     taggedValidCommodityCodes = new List<COMMODITY_CODE>();
                     foreach (COMMODITY_CODE commodityCode in COMMODITY_CODES.OrderBy(x => x.CODE))
                     {
@@ -115,13 +118,16 @@ namespace BluePrints.Common.Projections
             STOCK_ITEMS = STOCK_ITEMSCollection;
         }
 
-        private List<STOCK_ITEMS> taggedValidStockItems;
+        protected List<STOCK_ITEMS> taggedValidStockItems;
         public IEnumerable<STOCK_ITEMS> TaggedValidStockItems
         {
             get
             {
                 if (taggedValidStockItems == null)
                 {
+                    if(STOCK_ITEMS == null)
+                        return new List<STOCK_ITEMS>();
+
                     taggedValidStockItems = new List<STOCK_ITEMS>();
                     foreach (STOCK_ITEMS stockItem in STOCK_ITEMS.OrderBy(x => x.STOCKCODE))
                     {

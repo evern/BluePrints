@@ -57,8 +57,6 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
-            disable_immediate_post = true;
         }
 
         protected override void addEntitiesLoader()
@@ -101,18 +99,19 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<MEETING> entities)
         {
+            MainViewModel.DisableImmediatePosting = true;
             MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override bool onBeforeEntitySavedIsContinue(MEETING projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(MEETING projection, out bool isNew)
         {
             if (projection.CREATED.Year == 1)
                 projection.CREATED = DateTime.Now;
             projection.GUID_PROJECT = loadPROJECT.GUID;
 
-            return base.onBeforeEntitySavedIsContinue(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(MEETING projection)
@@ -188,7 +187,7 @@ namespace BluePrints.ViewModels
                             remove_meeting_users.Add(assignment);
                     }
 
-                    MEETING_USERCollectionViewModel.BulkDelete(remove_meeting_users);
+                    MEETING_USERCollectionViewModel.BaseBulkDelete(remove_meeting_users);
 
                     List<MEETING_USER> add_attendees = new List<MEETING_USER>();
                     foreach (MeetingUser user in section_users)
@@ -197,7 +196,7 @@ namespace BluePrints.ViewModels
                             add_attendees.Add(new MEETING_USER() { GUID_USER = user.Guid, GUID_MEETING = entity.GUID, TYPE = section, USER_TYPE = user.User_Type });
                     }
 
-                    MEETING_USERCollectionViewModel.BulkSave(add_attendees);
+                    MEETING_USERCollectionViewModel.BaseBulkSave(add_attendees);
                 }
                 else
                 {
@@ -206,7 +205,7 @@ namespace BluePrints.ViewModels
                         remove_meeting_users.Add(assignment);
                     }
 
-                    MEETING_USERCollectionViewModel.BulkDelete(remove_meeting_users);
+                    MEETING_USERCollectionViewModel.BaseBulkDelete(remove_meeting_users);
                 }
             }
         }
@@ -352,7 +351,7 @@ namespace BluePrints.ViewModels
         #region ISupportCustomDocumentTypeAndParameter
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -365,23 +364,23 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            if (DisplaySelectedEntity.MEETING_TYPE == null && DisplaySelectedEntity.GUID_MEETING_TYPE != null)
-                DisplaySelectedEntity.MEETING_TYPE = MEETING_TYPECollection.FirstOrDefault(x => x.GUID == DisplaySelectedEntity.GUID_MEETING_TYPE);
+            if (SelectedEntity.MEETING_TYPE == null && SelectedEntity.GUID_MEETING_TYPE != null)
+                SelectedEntity.MEETING_TYPE = MEETING_TYPECollection.FirstOrDefault(x => x.GUID == SelectedEntity.GUID_MEETING_TYPE);
 
 
-            if(DisplaySelectedEntity.MEETING_TYPE == null)
+            if(SelectedEntity.MEETING_TYPE == null)
             {
                 MessageBoxService.ShowMessage("Please assign a meeting type for current meeting before continuing");
                 return;
             }
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new DualEntitiesParameter<PROJECT, MEETING>(loadPROJECT, DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(),
+                new DualEntitiesParameter<PROJECT, MEETING>(loadPROJECT, SelectedEntity),
                     "MINUTE_AGENDACollectionView",
-                    "[" + DisplaySelectedEntity.EntityNumber + "] Agenda");
+                    "[" + SelectedEntity.EntityNumber + "] Agenda");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

@@ -94,7 +94,7 @@ namespace BluePrints.ViewModels
         #region View Properties
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -107,10 +107,10 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new EntitiesParameter<TENDER_PROFILE>(DisplaySelectedEntity) , "TENDER_PROFILE_ITEMCollectionView", "Tender Profile Items");
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new EntitiesParameter<TENDER_PROFILE>(SelectedEntity) , "TENDER_PROFILE_ITEMCollectionView", "Tender Profile Items");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 

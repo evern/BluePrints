@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
         {
             isNew = false;
             if (projectTENDER_PROFILE == null)
-                return OperationInterceptMode.Skip;
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
 
             projection.GUID_TENDER_PROFILE = projectTENDER_PROFILE.GUID;
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
 
         public bool CanShowDefaultTenderProfileSelection()
         {
-            return MainViewModel != null;
+            return !IsLoading;
         }
 
         public void ShowDefaultTenderProfileSelection()
@@ -146,7 +146,7 @@ namespace BluePrints.ViewModels
 
         public bool CanPopulateTenderDeliverables()
         {
-            return true;
+            return !IsLoading;
         }
 
         public void PopulateTenderDeliverables()
@@ -196,6 +196,7 @@ namespace BluePrints.ViewModels
         /// <param name="parameter">Call back parameter</param>
         private void assignDeliverables(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
+            LoadingScreenManager.CloseLoadingScreen();
             mainThreadDispatcher.BeginInvoke(new Action(() => assignDeliverablesWrapper()));
         }
 
@@ -219,14 +220,15 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if (baseline_itemCollectionViewModel.DisplayEntities.Count() > 0)
+            if (baseline_itemCollectionViewModel.Entities.Count() > 0)
             {
                 if (MessageBoxService.ShowMessage("Deliverables list is not empty, this action will clear the list, are you sure you wish to proceed?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
                     return;
             }
 
             int createdDeliverablesCount = 0;
-            foreach (TENDER_PROFILE_ITEM tenderItem in DisplayEntities)
+            LoadingScreenManager.ShowLoadingScreen(Entities.Count);
+            foreach (TENDER_PROFILE_ITEM tenderItem in Entities)
             {
                 decimal assignHours = projectTENDER_PROFILE.TENDER_HOURS * tenderItem.HOURS_PERCENTAGE;
                 Guid assignDepartment = tenderItem.GUID_DEPARTMENT;
@@ -270,6 +272,7 @@ namespace BluePrints.ViewModels
                 SUBJOBCollectionViewModel.Save(baseline_itemSubJob);
 
                 createdDeliverablesCount += 1;
+                LoadingScreenManager.Progress();
             }
 
             Refresh_From_P6();

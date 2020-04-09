@@ -28,7 +28,7 @@ namespace BluePrints.Common.Projections
     {
         public ExoResourceProjection()
         {
-            IsNewRow = true;
+            IsViewNewRow = true;
         }
 
         [Key]
@@ -65,6 +65,6 @@ namespace BluePrints.Common.Projections
         public int COSTGROUP { get; set; }
 
         //indicate whether this row is commited to database
-        public bool IsNewRow { get; set; }
+        public bool IsViewNewRow { get; set; }
     }
 }

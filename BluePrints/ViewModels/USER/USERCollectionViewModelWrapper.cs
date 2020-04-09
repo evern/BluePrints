@@ -142,9 +142,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<USER> entities)
         {
-            //MainViewModel.OnBeforeEntitySavedIsContinueCallBack = OnBeforeEntitySaved;
-            MainViewModel.OnAfterProjectionSavedCallBack = OnAfterEntitySaved;
-            MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -154,23 +151,22 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.HideLeave);
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public void OnAfterEntitySaved(USER projection, USER entity, bool isNewEntity)
+
+        protected override void OnAfterProjectionSave(USER projection, USER entity, bool isNew)
         {
-            if(isNewEntity && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null))
+            if (isNew && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null))
             {
                 entity.START_DATE = DateTime.Now;
 
-                if(entity.EXO_STAFF_ID == null)
+                if (entity.EXO_STAFF_ID == null)
                     entity.EXO_STAFF_ID = getExoStaffId(entity, PerthSTAFFCollection);
 
-                if(entity.EXO_STAFF_ID_REMOTE == null)
+                if (entity.EXO_STAFF_ID_REMOTE == null)
                     entity.EXO_STAFF_ID_REMOTE = getExoStaffId(entity, MontrealSTAFFCollection);
             }
 
             saveProjectAssignments(entity);
+            base.OnAfterProjectionSave(projection, entity, isNew);
         }
         #endregion
 
@@ -182,20 +178,20 @@ namespace BluePrints.ViewModels
                 List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
                 {
-                    if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID))
+                    if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID_PROJECT))
                         remove_projects.Add(assignment);
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BulkDelete(remove_projects);
+                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
 
                 List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
                 {
-                    if (!entity.PROJECT_PERMISSION.Any(x => x.GUID == project.GUID))
+                    if (!add_projects.Any(x => x.GUID_PROJECT == project.GUID))
                         add_projects.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BulkSave(add_projects);
+                PROJECT_PERMISSIONCollectionViewModel.BaseBulkSave(add_projects);
             }
             else
             {
@@ -205,7 +201,7 @@ namespace BluePrints.ViewModels
                     remove_projects.Add(assignment);
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BulkDelete(remove_projects);
+                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
             }
         }
         #endregion
@@ -247,9 +243,14 @@ namespace BluePrints.ViewModels
             return null;
         }
 
+        public bool CanMatchExoStaffId()
+        {
+            return !IsLoading;
+        }
+
         public void MatchExoStaffId()
         {
-            if(DisplaySelectedEntities.Count == 0)
+            if(SelectedEntities.Count == 0)
             {
                 MessageBoxService.ShowMessage("Please select user(s) to update", "Error", MessageButton.OK, MessageIcon.Information);
                 return;
@@ -257,7 +258,7 @@ namespace BluePrints.ViewModels
 
             bool showErrorMessage = false;
             List<USER> userToSave = new List<USER>();
-            foreach(USER entity in DisplaySelectedEntities)
+            foreach(USER entity in SelectedEntities)
             {
                 if (entity.GUID_OFFICE == null)
                 {
@@ -285,7 +286,16 @@ namespace BluePrints.ViewModels
                 MessageBoxService.ShowMessage("Cannot assign Exo user because office isn't populated, please populate office then try again", "Error", MessageButton.OK, MessageIcon.Information);
             }
 
-            MainViewModel.BulkSave(userToSave);
+            MainViewModel.BaseBulkSave(userToSave);
+        }
+
+        public override void FullRefresh()
+        {
+            if (!CanFullRefresh())
+                return;
+
+            authorisedPROJECTS = null;
+            base.FullRefresh();
         }
 
         /// <summary>
@@ -463,18 +473,23 @@ namespace BluePrints.ViewModels
 
         public bool CanImpersonate()
         {
-            return IsImpersonateVisible;
+            return !IsLoading && IsImpersonateVisible;
         }
 
         public void Impersonate()
         {
-            LoginCredentials.CurrentUser = DisplaySelectedEntity;
+            LoginCredentials.CurrentUser = SelectedEntity;
             MessageBoxService.ShowMessage("Context user account has been changed to " + LoginCredentials.CurrentUser.NAME);
+        }
+
+        public bool CanUpdate_User()
+        {
+            return !IsLoading;
         }
 
         public void Update_User()
         {
-            if (DisplaySelectedEntities.Count == 0)
+            if (SelectedEntities.Count == 0)
             {
                 MessageBoxService.ShowMessage("Please select user(s) to update", "Error", MessageButton.OK, MessageIcon.Information);
                 return;
@@ -482,7 +497,7 @@ namespace BluePrints.ViewModels
 
             IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
             List<USER> update_users = new List<USER>();
-            foreach(USER user in DisplaySelectedEntities)
+            foreach(USER user in SelectedEntities)
             {
                 USER active_directory_user = activeDirectoryUSERS.FirstOrDefault(x => x.NAME == user.NAME);
                 if(active_directory_user != null)
@@ -499,7 +514,12 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            MainViewModel.BulkSave(update_users);
+            MainViewModel.BaseBulkSave(update_users);
+        }
+
+        public bool CanImport()
+        {
+            return !IsLoading;
         }
 
         public void Import()
@@ -525,7 +545,7 @@ namespace BluePrints.ViewModels
                     add_new_users.Add(new_user);
                 }
 
-                MainViewModel.BulkSave(add_new_users);
+                MainViewModel.BaseBulkSave(add_new_users);
             }
 
             selectEntitiesViewModel = null;

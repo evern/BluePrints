@@ -2,6 +2,7 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -12,6 +13,7 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -46,9 +48,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class OffsiteDirectDistributionCollectionViewModelWrapper :
-        BluePrintsEntitiesProgressCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
+    public partial class OffsiteDirectDistributionCollectionViewModelWrapper : BluePrintsEntitiesProgressCollectionWrapper<BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
         IBluePrintsEntitiesUnitOfWork bluePrintsUOW;
         /// <summary>
@@ -70,7 +70,8 @@ namespace BluePrints.ViewModels
         string columnEntity = "Entity";
         string columnPrimaryTitle = "Entity.Entity.Entity.PRIMARY_TITLE";
         string columnDeliverableStatus = "Entity.DeliverableStatusProgressGuid";
-
+        Timer focusLastColumnTimer = new Timer();
+        BluePrintsNativeEntities nativeDataContext = new BluePrintsNativeEntities();
         protected override void resolveParameters(object parameter)
         {
             defaultColumnFieldNames.Add(columnEntity);
@@ -82,12 +83,17 @@ namespace BluePrints.ViewModels
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            IsCalculating = true;
-            this.RaisePropertyChanged(x => x.IsCalculating);
             extrapolateDataDate = true;
+            focusLastColumnTimer.Interval = 1000;
+            focusLastColumnTimer.Elapsed += FocusLastColumnTimer_Elapsed;
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
-
             base.resolveParameters(parameter);
+        }
+
+        private void FocusLastColumnTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            focusLastColumnTimer.Stop();
+            mainThreadDispatcher.BeginInvoke(new Action(() => TableViewService.ScrollToLast()));
         }
 
         private BASELINE loadBASELINE;
@@ -153,7 +159,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, true, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, DateTime.Now.Date, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         bool isBestFitApplied;
@@ -166,8 +172,10 @@ namespace BluePrints.ViewModels
             MainViewModel.IsPasteCellLevel = false;
             MainViewModel.AlwaysSkipMessage = false;
             MainViewModel.RefreshOnSameSenderKey = true;
+            MainViewModel.DisableEntitiesPauseUnpause = true;
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
             PROGRESS_ITEMSCollectionViewModel.RefreshOnSameSenderKey = true;
+            PROGRESS_ITEMSCollectionViewModel.DisableEntitiesPauseUnpause = true;
             doNotApplyBestFit = true;
         }
 
@@ -175,7 +183,7 @@ namespace BluePrints.ViewModels
         {
             if (TableViewService != null && !isBestFitApplied)
             {
-                if (DisplayEntities != null && DisplayEntities.Count > 0)
+                if (Entities != null && Entities.Count > 0)
                     TableViewService.ApplyBestFit();
 
                 TableViewService.ScrollToLast();
@@ -199,12 +207,24 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        protected override void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
+        {
+            //base delayed progress saving will call FullRefresh()
+            alignedDataDateCollection = null;
+            base.delayedPROGRESSSavingDispatcher_Tick(sender, e);
+        }
+
         public override void FullRefresh()
-         {
-            IsCalculating = true;
-            this.RaisePropertyChanged(x => x.IsCalculating);
-            base.FullRefresh();
+        {
+            if (!CanFullRefresh())
+                return;
+
+            IsCalculationCompleted = false;
+
+            //set datapoints table to empty so user cannot edit anything whilst it's refreshing
             refreshDataPointsTable();
+            this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+            base.FullRefresh();
         }
         #endregion
 
@@ -215,173 +235,120 @@ namespace BluePrints.ViewModels
         {
             alignedDataDateCollection = null;
             dataPointsTable = null;
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+            this.RaisePropertyChanged(x => x.DataPointsTable);
         }
-
-        private DataColumn lastColumn;
-        public DataColumn LastColumn
-        {
-            get
-            {
-                return lastColumn;
-            }
-        }
-
-        public bool IsCalculating { get; set; }
-        //because stats aren't fully built yet in progress base class on CalculatePlannedBackgroundWorker, do not calculate dataPointsTable
-        bool canCalculateDataPointsTable;
+        
         protected override void onAfterRefresh()
         {
-            base.onAfterRefresh();
-            canCalculateDataPointsTable = true;
             refreshDataPointsTable();
-
-            if(isCalculationCompleted)
-            {
-                mainThreadDispatcher.BeginInvoke(new Action(() => calculated()));
-                //mainThreadDispatcher.BeginInvoke(new Action(() => applyBestFit()));
-            }
+            base.onAfterRefresh();
         }
-
-        private void calculated()
-        {
-            IsCalculating = false;
-            this.RaisePropertyChanged(x => x.IsCalculating);
-        }
-
+        
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            BASELINE_ITEMProgress deliverable = null;
             if (changedType == typeof(BASELINE_ITEM))
-                deliverable = DisplayEntities.FirstOrDefault(x => x.GUID == (Guid)key);
-
-            if (deliverable != null)
             {
-                IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
-                deliverable.SetProgressItems(progressItems.ToList());
-                List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
-                calcTypes.Add(StatsCalculationType.Earned);
-                deliverable.BuildStats(1, calcTypes);
-                BuildRowStats(deliverable, true);
-                mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+                BASELINE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
+                if(deliverable != null)
+                {
+                    IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
+                    deliverable.SetProgressItems(progressItems.ToList());
+                    List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+                    calcTypes.Add(StatsCalculationType.Earned);
+                    deliverable.BuildStats(1, calcTypes);
+                    BuildRowStats(deliverable, true);
+                    deliverable.Update();
+                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+                }
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        public void AutoGeneratingPercentageColumns(AutoGeneratingColumnEventArgs e)
-        {
-            if (!defaultColumnFieldNames.Any(x => x == e.Column.FieldName))
-            {
-                //SpinEditSettings spinEdit = new SpinEditSettings();
-                //spinEdit.MaskType = MaskType.Numeric;
-                //spinEdit.Mask = "p2";
-                //spinEdit.MaskUseAsDisplayFormat = true;
-                //spinEdit.Increment = 0.01m;
-                //spinEdit.MaxValue = 1;
-                //spinEdit.MinValue = 0;
-                //e.Column.EditSettings = spinEdit;
-                e.Column.Width = 90;
-                if(e.Column.FieldName.Contains(loadPROGRESS.DATA_DATE.Date.ToString()))
-                    e.Column.CellTemplate = Application.Current.Resources["percentageTemplateLastDate"] as DataTemplate;
-                else
-                    e.Column.CellTemplate = Application.Current.Resources["percentageTemplate"] as DataTemplate;
-            }
-            else
-            {
-                if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName) || systemColumnFieldNames.Any(x => x == e.Column.FieldName))
-                {
-                    e.Column.Visible = false;
-                }
-
-                if(!systemColumnFieldNames.Any(x => x == e.Column.FieldName))
-                {
-                    e.Column.FilterPopupMode = FilterPopupMode.Excel;
-
-                    if (e.Column.FieldName.ToUpper().Contains("PERCENT"))
-                    {
-                        SpinEditSettings spinEdit = new SpinEditSettings();
-                        spinEdit.MaskType = MaskType.Numeric;
-                        spinEdit.Mask = "p";
-                        spinEdit.MaskUseAsDisplayFormat = true;
-                        e.Column.EditSettings = spinEdit;
-                    }
-                    else if (e.Column.FieldName.ToUpper().Contains("COST"))
-                    {
-                        SpinEditSettings spinEdit = new SpinEditSettings();
-                        spinEdit.MaskType = MaskType.Numeric;
-                        spinEdit.Mask = "c";
-                        spinEdit.MaskUseAsDisplayFormat = true;
-                        e.Column.EditSettings = spinEdit;
-                    }
-                    else if (e.Column.FieldName.ToUpper().Contains("UNIT"))
-                    {
-                        SpinEditSettings spinEdit = new SpinEditSettings();
-                        spinEdit.MaskType = MaskType.Numeric;
-                        spinEdit.Mask = "n";
-                        spinEdit.MaskUseAsDisplayFormat = true;
-                        e.Column.EditSettings = spinEdit;
-                    }
-
-                    e.Column.ReadOnly = true;
-                }
-
-                e.Column.Fixed = FixedStyle.Left;
-            }
-        }
-
         public bool CanProgressUndo()
         {
-            if (PROGRESS_ITEMSCollectionViewModel == null || PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager == null)
+            if (!IsCalculationCompleted)
                 return false;
 
-            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo();
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo() || MainViewModel.EntitiesUndoRedoManager.CanUndo();
         }
 
         public bool CanProgressRedo()
         {
-            if (PROGRESS_ITEMSCollectionViewModel == null || PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager == null)
+            if (!IsCalculationCompleted)
                 return false;
 
-            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo();
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo() || MainViewModel.EntitiesUndoRedoManager.CanRedo();
         }
 
 
         public void ProgressUndo()
         {
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
+
+            //mainviewmodel must be undone last so that auxiliary message event can handle progress_item changes
             MainViewModel.EntitiesUndoRedoManager.Undo();
         }
 
         public void ProgressRedo()
         {
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
+
+            //mainviewmodel must be redone last so that auxiliary message event can handle progress_item changes
             MainViewModel.EntitiesUndoRedoManager.Redo();
+        }
+
+        private void pauseUndoRedoAction()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+        }
+
+        private void unPauseUndoRedoAction()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private void clearUndoRedo()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Clear();
+            MainViewModel.EntitiesUndoRedoManager.Clear();
         }
 
         private void reselectDeliverable()
         {
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DisplaySelectedEntity)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SelectedEntity)));
         }
 
-        public bool CanFillDown(object button)
+        public override bool CanFillDown(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            return !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && info.Column.FieldName.Contains(unboundProgressIdFieldname) && SelectedDataRows.Count > 1;
+            if (!IsCalculationCompleted)
+                return false;
+
+            BarButtonItem barButtonItem = button as BarButtonItem;
+            if(barButtonItem != null)
+            {
+                GridMenuInfo info = barButtonItem.DataContext as GridMenuInfo;
+                if (info != null)
+                    if (info.Column.FieldName.Contains(unboundProgressIdFieldname) && SelectedDataRows.Count > 1)
+                        return true;
+            }
+
+            return false;
         }
 
-        public bool CanFillUp(object button)
+        public override bool CanFillUp(object button)
         {
-            var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            return !IsLoading && info != null && info.Column != null && !info.Column.ReadOnly && info.Column.FieldName.Contains(unboundProgressIdFieldname) && SelectedDataRows.Count > 1;
+            return CanFillDown(button);
         }
 
-        public void FillDown(object button)
+        public override void FillDown(object button)
         {
             Fill(button, false);
         }
 
-        public void FillUp(object button)
+        public override void FillUp(object button)
         {
             Fill(button, true);
         }
@@ -399,7 +366,8 @@ namespace BluePrints.ViewModels
 
             BASELINE_ITEMProgress copyEntity = (BASELINE_ITEMProgress)(copyRow[columnEntity]);
             valueToFill = copyEntity.DeliverableStatusProgressGuid;
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            clearUndoRedo();
+            pauseUndoRedoAction();
             var bulkSaveEntities = new List<BASELINE_ITEMProgress>();
 
             for (int i = 0; i < SelectedDataRows.Count; i++)
@@ -419,17 +387,15 @@ namespace BluePrints.ViewModels
                 else
                     selectedEntity.DeliverableStatusProgressGuid = null;
 
-                updateAutoPercentage(selectedEntity);
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(selectedEntity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid), oldValue, selectedEntity.DeliverableStatusProgressGuid, EntityMessageType.Changed);
-                MainViewModel.Save(selectedEntity);
+                onDeliverableStatusChange(selectedEntity, oldValue, selectedEntity.DeliverableStatusProgressGuid);
             }
 
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            unPauseUndoRedoAction();
         }
 
         public void CustomUnboundColumnData(GridColumnDataEventArgs e)
         {
-            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            if (Entities != null && Entities.Count > 0 && DataPointsTable != null)
             {
                 if(DataPointsTable.Rows.Count > 0)
                 {
@@ -442,7 +408,6 @@ namespace BluePrints.ViewModels
                         {
                             if (e.Value == DBNull.Value)
                             {
-                                MainViewModel.EntitiesUndoRedoManager.AddUndo(selectedEntity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid), selectedEntity.DeliverableStatusProgressGuid, null, EntityMessageType.Changed);
                                 selectedEntity.DeliverableStatusProgressGuid = null;
                             }
                         }
@@ -461,7 +426,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
             TableView gridTableView = (TableView)gridControl.View;
@@ -480,7 +445,10 @@ namespace BluePrints.ViewModels
 
             newValueString = newValueArr[0];
             decimal newValueDecimal = 0;
-            
+
+            clearUndoRedo();
+            pauseUndoRedoAction();
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (var selected_cell in selected_cells)
             {
                 DataRowView editing_row = (DataRowView)gridControl.GetRow(selected_cell.RowHandle);
@@ -496,11 +464,8 @@ namespace BluePrints.ViewModels
                     }
                     else if (entity.Entity.Entity.SetDeliverableStatusByName(newValueString))
                     {
-                        Guid? newValue = entity.Entity.Entity.GUID_STATUS;
-                        MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, selected_cell.Column.FieldName, oldValue, newValue, EntityMessageType.Changed);
-
-                        updateAutoPercentage(entity);
-                        MainViewModel.Save(entity);
+                        Guid? newValue = entity.DeliverableStatusProgressGuid;
+                        onDeliverableStatusChange(entity, oldValue, newValue);
                         //do this so that deliverable goes through the projection refresh
                         //Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
                     }
@@ -511,10 +476,15 @@ namespace BluePrints.ViewModels
                     if (newValueDecimal > 1)
                         newValueDecimal *= 0.01m;
 
-                    updatePercentage(entity, selected_cell.Column.FieldName, oldValue, newValueDecimal);
+                    ErrorMessage errorMessage;
+                    updatePercentage(entity, selected_cell.Column.FieldName, oldValue, newValueDecimal, out errorMessage);
+                    if(errorMessage != null)
+                        errorMessages.Add(errorMessage);
                 }
             }
+            unPauseUndoRedoAction();
 
+            showErrorMessages(errorMessages);
             e.Handled = true;
         }
 
@@ -571,8 +541,11 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage(fixedCount + " progress fixed");
         }
 
-        private void updateAutoPercentage(BASELINE_ITEMProgress entity)
+        private void onDeliverableStatusChange(BASELINE_ITEMProgress entity, Guid? oldDeliverableStatusGuid, Guid? newDeliverableStatusGuid)
         {
+            entity.DeliverableStatusProgressGuid = newDeliverableStatusGuid;
+            MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid), oldDeliverableStatusGuid, newDeliverableStatusGuid, EntityMessageType.Changed);
+
             DELIVERABLES_STATUS currentDELIVERABLE_STATUS = entity.Entity.Entity.DeliverableStatusCollection.FirstOrDefault(x => x.GUID == entity.Entity.Entity.GUID_STATUS);
             if (currentDELIVERABLE_STATUS != null && currentDELIVERABLE_STATUS.AUTO_PERCENTAGE != null)
             {
@@ -580,21 +553,50 @@ namespace BluePrints.ViewModels
                 decimal auto_percentage = (decimal)currentDELIVERABLE_STATUS.AUTO_PERCENTAGE;
                 if (auto_percentage > entity.Total_Percentage)
                 {
-                    entity.Total_Earned_Percentage = auto_percentage;
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage), oldTotalPercentage, auto_percentage, EntityMessageType.Changed);
+                    ErrorMessage errorMessage;
+                    //entity will be saved within this method
+                    updatePercentage(entity, loadPROGRESS.DATA_DATE.ToShortDateString(), oldTotalPercentage, auto_percentage, out errorMessage);
+                    showErrorMessage(errorMessage);
                 }
+                else
+                    MainViewModel.Save(entity);
+            }
+            else //save deliverables status only
+                MainViewModel.Save(entity);
+        }
+
+        private void showErrorMessage(ErrorMessage errorMessage)
+        {
+            if (errorMessage == null)
+                return;
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            errorMessages.Add(errorMessage);
+            showErrorMessages(errorMessages);
+        }
+
+        private void showErrorMessages(IEnumerable<ErrorMessage> errorMessages)
+        {
+            if (errorMessages.Count() > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot create assignments due to the following error");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
             }
         }
 
-        private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue)
+        private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue, out ErrorMessage errorMessage)
         {
+            if (entity.Total_Units == 0)
+            {
+                errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
+                return;
+            }
+
+            errorMessage = null;
             DateTime columnDate;
             if (DateTime.TryParse(fieldName, out columnDate))
             {
                 string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
-
-                PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
                 DateTime currentProgressDate = columnDate.AddDays(1).AddSeconds(-1);
 
                 List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
@@ -614,7 +616,7 @@ namespace BluePrints.ViewModels
                     {
                         if(alignedDataDateCollection.Count > 0)
                         {
-                            DateTime? alignDateTime = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date > unalignedPROGRESS_ITEM.EARNED_DATE);
+                            DateTime? alignDateTime = alignedDataDateCollection.OrderByDescending(x => x).FirstOrDefault(x => unalignedPROGRESS_ITEM.EARNED_DATE > x.Date);
                             if (alignDateTime != null)
                                 unalignedPROGRESS_ITEM.EARNED_DATE = (DateTime)alignDateTime;
 
@@ -644,22 +646,24 @@ namespace BluePrints.ViewModels
                         {
                             totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
                             postEditUnits = 0;
-                            MessageBoxService.ShowMessage("Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
+                            errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
                         }
-
-                        decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
-                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
-                        //use this to fix time issue
-                        currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
-                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
-                        progressToSave.Add(currentPeriodPROGRESS_ITEM);
+                        else
+                        {
+                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                            currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                            //use this to fix time issue
+                            currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
+                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
+                            progressToSave.Add(currentPeriodPROGRESS_ITEM);
+                        }
                     }
                     else
                     {
                         decimal oldValueDecimal;
                         if(oldValue != null && Decimal.TryParse(oldValue.ToString(), out oldValueDecimal))
                         {
-                            MessageBoxService.ShowMessage("There is no datapoint to edit on this date, if you wish to reduce it please do so on the first instance of " + string.Format(oldValueDecimal.ToString("P")));
+                            errorMessage = new ErrorMessage(entity.Deliverable_Name, "There is no datapoint to edit on this date, if you wish to reduce it please do so on the first instance of " + string.Format(oldValueDecimal.ToString("P")));
                             Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
                         }
 
@@ -702,18 +706,13 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                foreach (PROGRESS_ITEM progress in progressToSave)
-                {
-                    PROGRESS_ITEMSCollectionViewModel.Save(progress);
-                }
-
+                PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(progressToSave);
                 //add a dummy undo so that during undo/redo operation a baseline item message will be sent
                 MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed);
-                //do this so that deliverable goes through the projection refresh
-                Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, MainViewModel, MainViewModel.CurrentHWID));
-                PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-                //will be unpaused in existingrow or newrow save
             }
+
+            //save baseline_item here so that auxiliary message can respond to progress item changes
+            MainViewModel.Save(entity);
         }
 
         /// <summary>
@@ -731,8 +730,10 @@ namespace BluePrints.ViewModels
                     DataRowView dataRowView = (DataRowView)e.Row;
                     BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
                     entity.DeliverableStatusProgressGuid = (Guid?)e.Value;
-                    if (entity.DeliverableStatusProgressGuid != null)
-                        updateAutoPercentage(entity);
+                    clearUndoRedo();
+                    pauseUndoRedoAction();
+                    onDeliverableStatusChange(entity, (Guid?)e.OldValue, (Guid?)e.Value);
+                    unPauseUndoRedoAction();
                 }
             }
         }
@@ -748,15 +749,15 @@ namespace BluePrints.ViewModels
             DataRowView dataRowView = (DataRowView)e.Row;
             BASELINE_ITEMProgress entity = (BASELINE_ITEMProgress)dataRowView.Row[columnEntity];
 
-            if(e.Column.FieldName.ToUpper().Contains("ENTITY") || e.Column.FieldName == unboundProgressIdFieldname)
+            if(!e.Column.FieldName.ToUpper().Contains("ENTITY") && e.Column.FieldName != unboundProgressIdFieldname)
             {
-                //entity.Entity.Entity.PRIMARY_TITLE = e.Value.ToString();
-                ///MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, columnPrimaryTitle, e.OldValue, e.Value, EntityMessageType.Changed);
-                MainViewModel.Save(entity);
-            }
-            else
-            {
-                updatePercentage(entity, e.Column.FieldName, e.OldValue, e.Value);
+                //only clear undo redo before update percentage here because this is the only event called from grid
+                clearUndoRedo();
+                pauseUndoRedoAction();
+                ErrorMessage errorMessage;
+                updatePercentage(entity, e.Column.FieldName, e.OldValue, e.Value, out errorMessage);
+                showErrorMessage(errorMessage);
+                unPauseUndoRedoAction();
             }
 
             e.Handled = true;
@@ -819,59 +820,116 @@ namespace BluePrints.ViewModels
             }
         }
 
+        protected ObservableCollection<ColumnDescriptor> columnDescriptors;
+        public ObservableCollection<ColumnDescriptor> ColumnDescriptors
+        {
+            get
+            {
+                if (columnDescriptors == null)
+                {
+                    columnDescriptors = new ObservableCollection<ColumnDescriptor>();
+                }
+                return columnDescriptors;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> summaryDescriptors;
+        public ObservableCollection<SummaryDescriptor> SummaryDescriptors
+        {
+            get
+            {
+                if (summaryDescriptors == null)
+                {
+                    summaryDescriptors = new ObservableCollection<SummaryDescriptor>();
+                }
+                return summaryDescriptors;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.AREA.INTERNAL_NUM", ReadOnly = true, Header = "Area", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Entity.Entity.AREA.INTERNAL_NUM", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.DOCTYPE.NAME", ReadOnly = true, Header = "Document Type", Fixed = FixedStyle.Left, Width = 90, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.DISCIPLINE.NAME", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 90, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.DEPARTMENT.NAME", ReadOnly = true, Header = "Department", Fixed = FixedStyle.Left, Width = 90, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.INTERNAL_NUM", ReadOnly = true, Header = "Internal Number", Fixed = FixedStyle.Left, Width = 140, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.CLIENT_NUM", ReadOnly = true, Header = "Client Number", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.PRIMARY_TITLE", ReadOnly = true, Header = "Primary Title", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Total_Units", Mask = "###,##0 hrs", ReadOnly = true, Header = "Total Hours", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Total_Units", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Earned_Units_ToDate", Mask= "###,##0 hrs", ReadOnly = true, Header = "Total Earn", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Earned_Units_ToDate", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Earned_Units_OnDataDate", Mask = "###,##0 hrs", ReadOnly = true, Header = "Period Earn", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Earned_Units_OnDataDate", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = unboundProgressIdFieldname, ReadOnly = false, DataContext = this, Header = "Gates", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Gates, HeaderToolTip = "Changing this value will increase current % only if the gate has a higher percentage than previously earned %" });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.SUBJOB.INTERNAL_NAME1", ReadOnly = true, Header = "Sub Job", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.DELIVERABLE_TYPE", ReadOnly = true, Header = "Deliverable Type", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.SECONDARY_TITLE", ReadOnly = true, Visible = false, Header = "Comments", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.COMMENTS", ReadOnly = true, Visible = false, Header = "Comments", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Total_Earned_Percentage", Mask="p2", ReadOnly = true, Header = "Total Earned %", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            {
+                string columnFieldName = alignedDate.Date.ToShortDateString();
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 100, Settings = SettingsType.Percent });
+            }
+        }
+
         DataTable dataPointsTable = null;
         List<DateTime> alignedDataDateCollection = null;
         public DataTable DataPointsTable
         {
             get
             {
-                if (MainViewModel == null || DisplayEntities == null)
+                if (MainViewModel == null || Entities == null)
                     return null;
 
-                if (!canCalculateDataPointsTable)
+                if (!IsCalculationCompleted)
                     return null;
 
                 if(dataPointsTable == null)
                 {
+                    GridControlService.BeginDataUpdate();
                     dataPointsTable = new DataTable();
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-                    DateTime lastDataDate = loadPROGRESS.DATA_DATE;
+
+                    DateTime? lastEarnedDate = null;
+                    if(Entities.Where(x => x.LastDataDate != null).Count() > 0)
+                        lastEarnedDate = Entities.Where(x => x.LastDataDate != null).Max(x => x.LastDataDate);
+
+                    DateTime lastDataDate = lastEarnedDate == null ? loadPROGRESS.DATA_DATE : ((DateTime)lastEarnedDate > loadPROGRESS.DATA_DATE) ? (DateTime)lastEarnedDate : loadPROGRESS.DATA_DATE;
                     if(alignedDataDateCollection == null)
-                        alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
-
-                    dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));
-
-                    //bool conditionalFormattingAdded = false;
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
-                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        //if (!conditionalFormattingAdded)
-                        //{
-                            colorScaleFormatCondition.FieldName = columnFieldName;
-                            colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
-                            colorScaleFormatCondition.MinValue = 0;
-                            colorScaleFormatCondition.MaxValue = 1;
-                            TableViewService.AddFormatCondition(colorScaleFormatCondition);
-                        //    conditionalFormattingAdded = true;
-                        //}
-
-                        if(alignedDataDate == loadPROGRESS.DATA_DATE)
-                        {
-                            lastColumn = new DataColumn();
-                            lastColumn.ColumnName = columnFieldName;
-                            lastColumn.DataType = typeof(decimal);
-                            dataPointsTable.Columns.Add(lastColumn);
-                        }
-                        else
-                            dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+                        alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
+                        InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
                     }
 
-                    foreach(BASELINE_ITEMProgress entity in DisplayEntities)
+                    dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));
+                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
+                    {
+                        //ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
+                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                        //colorScaleFormatCondition.FieldName = columnFieldName;
+                        //colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
+                        //colorScaleFormatCondition.MinValue = 0;
+                        //colorScaleFormatCondition.MaxValue = 1;
+                        //TableViewService.AddFormatCondition(colorScaleFormatCondition);
+
+                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+                    }
+
+                    foreach(BASELINE_ITEMProgress entity in Entities)
                     {
                         BuildRowStats(entity, false);
                     }
+
+                    focusLastColumnTimer.Start();
+                    GridControlService.EndDataUpdate();
                 }
 
                 return dataPointsTable;
@@ -921,21 +979,18 @@ namespace BluePrints.ViewModels
 
         public bool CanUpdateAllPercentagesByStatus()
         {
+            if (!IsCalculationCompleted)
+                return false;
+
             return LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus)) != LoginCredentials.PermissionStatus.None;
         }
 
         public void UpdateAllPercentagesByStatus()
         {
-            BluePrintsDataUtils.UpdateAllPercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
-            FullRefresh();
-        }
-        public override void ShowNotification()
-        {
-            if (AppNotificationService == null)
-                return;
+            BluePrintsDataUtils.UpdatePercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
 
-            INotification notification1 = AppNotificationService.CreatePredefinedNotification("Please check whether data date is correct before updating", null, null, null);
-            notification1.ShowAsync();
+            //need to perform full refresh to reload stats due to support for % reduction by gates
+            FullRefresh();
         }
 
         /// <summary>
@@ -1026,7 +1081,7 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Design;
 
-        protected override bool haveGroupEntity => false;
+        protected override bool manuallySaveProgressOnAfterBaselineItemSaved => true;
 
         protected override void OnClose(CancelEventArgs e)
         {
@@ -1036,6 +1091,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Reporting
+        public bool CanEditReport()
+        {
+            return IsCalculationCompleted;
+        }
+
         public void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT,
@@ -1049,7 +1109,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            return true;
+            return IsCalculationCompleted;
         }
 
         public async void ViewReport()
@@ -1069,7 +1129,6 @@ namespace BluePrints.ViewModels
 
             LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-            LoadingScreenManager.Progress();
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
@@ -1092,6 +1151,8 @@ namespace BluePrints.ViewModels
             progressReport.RequestParameters = false;
             progressReport.CreateDocument(true);
             previewWindow.Show();
+
+            LoadingScreenManager.CloseLoadingScreen();
         }
         #endregion
     }

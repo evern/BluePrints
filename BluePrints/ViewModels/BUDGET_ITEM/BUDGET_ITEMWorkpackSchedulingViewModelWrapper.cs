@@ -294,7 +294,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
+        public override IEnumerable<ICanAssignP6> Deliverables_Source => Entities;
         #endregion
 
         #region Reporting

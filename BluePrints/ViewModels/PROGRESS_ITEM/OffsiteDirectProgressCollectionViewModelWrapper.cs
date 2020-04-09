@@ -120,19 +120,25 @@ namespace BluePrints.ViewModels
 
         public bool CanUpdateAllPercentagesByStatus()
         {
+            if (IsLoading)
+                return false;
+
             return LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus)) != LoginCredentials.PermissionStatus.None;
         }
 
         public void UpdateAllPercentagesByStatus()
         {
-            BluePrintsDataUtils.UpdateAllPercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
+            if (IsLoading)
+                return;
+
+            BluePrintsDataUtils.UpdatePercentagesByStatus(MessageBoxService, PROGRESS_ITEMSCollectionViewModel, MainViewModel.Entities);
             FullRefresh();
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, false, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -160,6 +166,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             ReloadEntitiesCollection();
         }
         #endregion
@@ -255,10 +264,15 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Design;
 
-        protected override bool haveGroupEntity => false;
+        protected override bool manuallySaveProgressOnAfterBaselineItemSaved => false;
         #endregion
 
         #region Reporting
+        public bool CanEditReport()
+        {
+            return !IsLoading;
+        }
+
         public void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT,
@@ -268,6 +282,11 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
             else
                 reportDesigner.Dispose();
+        }
+
+        public bool CanFixVariation()
+        {
+            return !IsLoading;
         }
 
         public void FixVariation()
@@ -291,7 +310,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            MainViewModel.BulkSave(saveEntities);
+            MainViewModel.BaseBulkSave(saveEntities);
         }
 
         public override void ShowNotification()
@@ -305,7 +324,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            return true;
+            return !IsLoading;
         }
 
         public void ViewReport()
@@ -313,6 +332,7 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Please make sure that you've already recalculated planned and remaining data for w/e " + DataDate.ToShortDateString() + "\n\nYou can do this by double clicking on the project title in the navigation bar on the left and press refresh", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
+            LoadingScreenManager.ShowLoadingScreen(1);
             var progressReport = new XtraReportPROGRESS_ITEMS();
             var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
             if (dbProjectReport != null)
@@ -350,6 +370,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             progressReport.RequestParameters = false;
             progressReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
         #endregion

@@ -236,7 +236,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity, ICanAssignP6
-        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveStock_Group, IHaveQuantity, new()
+        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, IHaveStock_Group, IHaveQuantity, new()
     {
         public BluePrintsProgressableByQuantityProjectionBase()
         {
@@ -455,7 +455,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     public abstract class BluePrintsProgressableProjectionBase<TEntity> : BluePrintsProjectionBase<TEntity>, IReportable, ICanSetProgresses, ICanAssignP6
-        where TEntity : class, IDeliverable_Rates, IHaveCosts, new()
+        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, new()
     {
         #region Stats Parameters
         readonly SingleObjectSummarizer statsSummarizer;

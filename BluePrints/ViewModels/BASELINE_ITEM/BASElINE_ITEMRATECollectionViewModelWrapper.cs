@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
         }
 
         ObservableCollection<BASELINE_ITEMProjection> displayEntities;
-        public override ObservableCollection<BASELINE_ITEMProjection> DisplayEntities
+        public override ObservableCollection<BASELINE_ITEMProjection> Entities
         {
             get
             {

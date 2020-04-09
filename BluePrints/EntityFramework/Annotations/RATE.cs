@@ -191,14 +191,14 @@ namespace BluePrints.Data
         public decimal UndergraduateRate => this.UNDERGRADUATE_RATE == null ? 0 : (decimal)this.UNDERGRADUATE_RATE;
 
         [NotMapped]
-        private bool isRateExists;
-        [NotMapped]
         public bool IsRateExists
         {
-            get => GUID != Guid.Empty;
+            get
+            {
+                return GUID != Guid.Empty;
+            }
             set
             {
-                isRateExists = value;
             }
         }
 
@@ -286,6 +286,35 @@ namespace BluePrints.Data
 
         [NotMapped]
         public List<ExoDataPoint> Transactions { get; set; }
+
+        public string ErrorMessageCommodityCode
+        {
+            get
+            {
+                if (COMMODITY_CODE == null || COMMODITY_CODE == string.Empty)
+                    return "Any";
+
+                return COMMODITY_CODE;
+            }
+        }
+
+        public string ErrorMessageDisciplineCode
+        {
+            get
+            {
+                if (DISCIPLINE != null)
+                    return DISCIPLINE.CODE;
+
+                if(allDISCIPLINES != null)
+                {
+                    DISCIPLINE discipline = allDISCIPLINES.FirstOrDefault(x => x.GUID == GUID_DISCIPLINE);
+                    if (discipline != null)
+                        return discipline.CODE;
+                }
+
+                return string.Empty;
+            }
+        }
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }

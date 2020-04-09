@@ -86,11 +86,16 @@ namespace BluePrints.ViewModels
         {
         }
         
+        public bool CanStandardizeLines()
+        {
+            return !IsLoading;
+        }
+
         public void StandardizeLines()
         {
             int updatedLines = 0;
-            LoadingScreenManager.ShowLoadingScreen(DisplaySelectedEntities.Count);
-            foreach(var entity in DisplaySelectedEntities)
+            LoadingScreenManager.ShowLoadingScreen(SelectedEntities.Count);
+            foreach(var entity in SelectedEntities)
             {
                 if (entity.SubJob == null || entity.SubJob.Id == null)
                     continue;

@@ -180,43 +180,14 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public void AlignExoData()
+        public bool CanAlignExoData()
         {
-            if(DisplaySelectedEntities.Count == 0)
-            {
-                MessageBoxService.ShowMessage("Please select row(s) to fix", "Error", MessageButton.OK, MessageIcon.Information);
-                return;
-            }
-
-            List<COMMODITY_CODEProjection> fixedProjections = new List<COMMODITY_CODEProjection>();
-            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-            foreach (COMMODITY_CODEProjection projection in DisplaySelectedEntities)
-            {
-                string errorMessage = validateProjection(projection, true);
-                if (errorMessage != string.Empty)
-                    errorMessages.Add(new ErrorMessage(projection.Entity.CODE, errorMessage));
-                else
-                    fixedProjections.Add(projection);
-            }
-
-            primeroUnitOfWork.SaveChanges();
-
-            //use this to trigger message sending and refresh
-            MainViewModel.BulkSave(fixedProjections);
-
-            if(errorMessages.Count > 0)
-            {
-                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot fix commodity code(s) due to the following error");
-                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
-            }
+            return !IsLoading;
         }
 
         private string validateProjection(COMMODITY_CODEProjection projection, bool isFix)
         {
             string message = string.Empty;
-            //if (projection.EXO_COSTTYPES_COSTGROUP_NOTFOUND)
-            //    message += "Cost group: " + projection.Entity.DEFAULT_COSTGROUP + " and ";
-
             if (projection.EXO_COSTTYPE == null)
                 message += "Cost Type: " + projection.Entity.CODE + " and ";
             if (projection.EXO_STOCKITEM == null)
@@ -237,95 +208,20 @@ namespace BluePrints.ViewModels
                     JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
                     if (validCostGroup == null)
                         return "Cost Group:" + validDisciplineCode + " doesn't exists in exo";
-                    //else if(projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
-                    //{
-                    //    if(isFix)
-                    //        projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
-                    //}
                 }
-                //else
-                //{
-                //    if(projection.EXO_COSTTYPE.DEF_COSTGROUP != null)
-                //    {
-                //        if (isFix)
-                //            projection.EXO_COSTTYPE.DEF_COSTGROUP = null;
-                //        else
-                //            return "Cost Group on " + projection.EXO_COSTTYPE.SHORTCODE + " should be set to none since discipline is not defined on this commodity";
-                //    }
-                //}
+
             }
-
-            //if (projection.Entity.DEFAULT_STOCKCODE == null || projection.Entity.DEFAULT_STOCKCODE == string.Empty)
-            //    return "Stock code doesn't exists in Exo";
-            //else
-            //{
-            //    STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == projection.Entity.DEFAULT_STOCKCODE);
-            //    if (findSTOCK_ITEM == null)
-            //        return "Stock code doesn't exists in Exo";
-            //    else
-            //    {
-            //        if (findSTOCK_ITEM.COSTTYPE != projection.EXO_COSTTYPE.SEQNO)
-            //        {
-            //            JOB_COSTTYPES validCOST_TYPE = JOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == projection.EXO_COSTTYPE.SEQNO);
-            //            if(validCOST_TYPE == null)
-            //                return "Cost type: " + projection.Entity.CODE + " doesn't exists in exo";
-            //            else
-            //            {
-            //                if(isFix)
-            //                    findSTOCK_ITEM.COSTTYPE = validCOST_TYPE.SEQNO;
-            //                else
-            //                    return "Cost type on stock item is not linked to commodity code " + projection.Entity.CODE;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (projection.Entity.GUID_DISCIPLINE != null)
-            //            {
-            //                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.Entity.GUID_DISCIPLINE);
-            //                if(findDISCIPLINE != null)
-            //                {
-            //                    string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
-            //                    JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
-            //                    if (validCostGroup == null)
-            //                        return "Cost Group: " + validDisciplineCode + " on stock code doesn't exists in exo";
-            //                    else
-            //                    {
-            //                        //Commodity and stock code's cost group shouldn't be validated
-            //                        //if (projection.EXO_STOCKITEM.COSTGROUP != validCostGroup.SEQNO)
-            //                        //{
-            //                        //    if (isFix)
-            //                        //        projection.EXO_STOCKITEM.COSTGROUP = validCostGroup.SEQNO;
-            //                        //    else
-            //                        //        return "Cost group is incorrect on stock code";
-            //                        //}
-
-            //                        //if (projection.EXO_COSTTYPE != null)
-            //                        //{
-            //                        //    if (projection.EXO_COSTTYPE.DEF_COSTGROUP != validCostGroup.SEQNO)
-            //                        //    {
-            //                        //        if (isFix)
-            //                        //            projection.EXO_COSTTYPE.DEF_COSTGROUP = validCostGroup.SEQNO;
-            //                        //        else
-            //                        //            return "Cost group is incorrect on cost type";
-            //                        //    }
-            //                        //}
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
 
             return string.Empty;
         }
 
         public void CustomUnboundColumnData(GridColumnDataEventArgs e)
         {
-            if (DisplayEntities != null && DisplayEntities.Count > 0)
+            if (Entities != null && Entities.Count > 0)
             {
                 if (e.Column.FieldName == "ErrorMessage")
                 {
-                    COMMODITY_CODEProjection row = DisplayEntities[e.ListSourceRowIndex];
+                    COMMODITY_CODEProjection row = Entities[e.ListSourceRowIndex];
                     e.Value = validateProjection(row, false);
                 }
             }

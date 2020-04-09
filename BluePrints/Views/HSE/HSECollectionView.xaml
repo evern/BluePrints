@@ -68,50 +68,38 @@
         <dxmvvm:Interaction.Behaviors>
             <services:PivotGridControlService x:Name="PivotGridControlService" PivotGridControl="{Binding ElementName=pivotGridControl1}" />
         </dxmvvm:Interaction.Behaviors>
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                </dxb:BarManager.Items>
-                <DockPanel>
-                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                        </dxr:RibbonDefaultPageCategory>
-                    </dxr:RibbonControl>
-                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                        <dxr:RibbonStatusBarControl.LeftItems>
-                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                        </dxr:RibbonStatusBarControl.LeftItems>
-                    </dxr:RibbonStatusBarControl>
-                    <Grid DataContext="{Binding DataContext, ElementName=userControl}">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:LayoutSerializationService />
-                        </dxmvvm:Interaction.Behaviors>
-                        <dxpg:PivotGridControl Name="pivotGridControl1" AutoExpandGroups="True" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding DisplayEntities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowFilterHeaders="False" ShowLoadingPanel="{Binding IsLoading}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
-                            <dxpg:PivotGridControl.FormatConditions>
-                                <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
-                            </dxpg:PivotGridControl.FormatConditions>
-                            <dxpg:PivotGridControl.Fields>
-                                <dxpg:PivotGridField Area="RowArea" Caption="Group" FieldName="Group" GroupIndex="0" />
-                                <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="2" />
-                                <dxpg:PivotGridField Area="ColumnArea" Caption="Project" FieldName="Project.NUMBER" />
-                                <dxpg:PivotGridField Name="fieldHSEDate" ExpandedInFieldsGroup="False" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
-                                <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n2" FieldName="StatsValue" SummaryType="Custom" />
-                                <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n2" FieldName="StatsTarget" SummaryType="Custom" />
-                            </dxpg:PivotGridControl.Fields>
-                            <dxpg:PivotGridControl.FieldCellTemplateSelector>
-                                <local:CellTemplateSelector />
-                            </dxpg:PivotGridControl.FieldCellTemplateSelector>
-                        </dxpg:PivotGridControl>
-                    </Grid>
-                </DockPanel>
-            </dxb:BarManager>
-        </Grid>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxpg:PivotGridControl Name="pivotGridControl1" AutoExpandGroups="True" CustomFieldValueCells="pivotGridControl1_CustomFieldValueCells" CustomSummary="pivotGridControl1_CustomSummary" DataSource="{Binding Entities}" FieldCellTemplate="{x:Null}" RowTreeWidth="300" ShowFilterHeaders="False" ShowLoadingPanel="{Binding IsLoading}" ShowRowGrandTotalHeader="False" ShowRowGrandTotals="False">
+                    <dxpg:PivotGridControl.FormatConditions>
+                        <dxpg:DataBarFormatCondition ColumnName="fieldStatsValue" MaxValue="fieldStatsTarget" MeasureName="fieldStatsValue" MinValue="0" PredefinedFormatName="LightBlueGradientDataBar" RowName="fieldHSEDate" />
+                    </dxpg:PivotGridControl.FormatConditions>
+                    <dxpg:PivotGridControl.Fields>
+                        <dxpg:PivotGridField Area="RowArea" Caption="Group" FieldName="Group" GroupIndex="0" />
+                        <dxpg:PivotGridField Area="RowArea" Caption="Name" FieldName="StatsName" GroupIndex="2" />
+                        <dxpg:PivotGridField Area="ColumnArea" Caption="Project" FieldName="Project.NUMBER" />
+                        <dxpg:PivotGridField Name="fieldHSEDate" ExpandedInFieldsGroup="False" Area="ColumnArea" Caption="Month" FieldName="HSEDate" GroupInterval="DateMonthYear" />
+                        <dxpg:PivotGridField Name="fieldStatsValue" Area="DataArea" Caption="Value" CellFormat="n2" FieldName="StatsValue" SummaryType="Custom" />
+                        <dxpg:PivotGridField Name="fieldStatsTarget" Area="DataArea" Caption="Target" CellFormat="n2" FieldName="StatsTarget" SummaryType="Custom" />
+                    </dxpg:PivotGridControl.Fields>
+                    <dxpg:PivotGridControl.FieldCellTemplateSelector>
+                        <local:CellTemplateSelector />
+                    </dxpg:PivotGridControl.FieldCellTemplateSelector>
+                </dxpg:PivotGridControl>
+            </DockPanel>
+        </dxb:BarManager>
     </Grid>
 </UserControl>

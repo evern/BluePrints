@@ -6,6 +6,7 @@ using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels

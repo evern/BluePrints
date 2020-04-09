@@ -100,7 +100,7 @@ namespace BluePrints.ViewModels
             else if (field_name == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().HOURS_PERCENTAGE))
             {
                 decimal tenderPercentage = (decimal)new_value;
-                decimal remainingPercentage = 1 - (DisplayEntities.Where(x => x.GUID != projection.GUID).Sum(x => x.HOURS_PERCENTAGE));
+                decimal remainingPercentage = 1 - (Entities.Where(x => x.GUID != projection.GUID).Sum(x => x.HOURS_PERCENTAGE));
 
                 if (tenderPercentage > remainingPercentage)
                     return "Total % cannot be higher than 100%";

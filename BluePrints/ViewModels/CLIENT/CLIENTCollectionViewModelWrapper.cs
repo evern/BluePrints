@@ -95,7 +95,7 @@ namespace BluePrints.ViewModels
                         remove_projects.Add(assignment);
                 }
 
-                CLIENT_PROJECTCollectionViewModel.BulkDelete(remove_projects);
+                CLIENT_PROJECTCollectionViewModel.BaseBulkDelete(remove_projects);
 
                 List<CLIENT_PROJECT> add_projects = new List<CLIENT_PROJECT>();
                 foreach (PROJECT project in entity.Project_Assignments)
@@ -104,7 +104,7 @@ namespace BluePrints.ViewModels
                         add_projects.Add(new CLIENT_PROJECT() { GUID_PROJECT = project.GUID, GUID_CLIENT = entity.GUID });
                 }
 
-                CLIENT_PROJECTCollectionViewModel.BulkSave(add_projects);
+                CLIENT_PROJECTCollectionViewModel.BaseBulkSave(add_projects);
             }
             else
             {
@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
                     remove_projects.Add(assignment);
                 }
 
-                CLIENT_PROJECTCollectionViewModel.BulkDelete(remove_projects);
+                CLIENT_PROJECTCollectionViewModel.BaseBulkDelete(remove_projects);
             }
         }
 

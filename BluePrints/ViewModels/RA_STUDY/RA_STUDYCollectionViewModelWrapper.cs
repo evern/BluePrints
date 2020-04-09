@@ -89,7 +89,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -102,10 +102,10 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<RA_STUDY, PROJECT>(DisplaySelectedEntity, loadPROJECT), "RA_STUDYSingleObjectView", "[" + DisplaySelectedEntity.NAME + "] Risk Assessment");
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new DualEntitiesParameter<RA_STUDY, PROJECT>(SelectedEntity, loadPROJECT), "RA_STUDYSingleObjectView", "[" + SelectedEntity.NAME + "] Risk Assessment");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
         #endregion

@@ -90,13 +90,16 @@ namespace BluePrints.Common.Projections
         public decimal Revenue => revenueDataPoints.Where(x => x.InvoiceDate >= MonthFloor && x.InvoiceDate <= MonthCeiling).Sum(x => x.InvoiceAmount);
         public decimal RevenueToDate => allRevenues == null ? 0 : allRevenues.Where(x => x.MonthCeiling <= MonthCeiling).Sum(x => x.ViewRevenue);
 
-        decimal viewRevenue;
+        public decimal? viewRevenue;
         public decimal ViewRevenue
         {
             get
             {
                 if (IsRevenueReadOnly)
                     return Revenue;
+
+                if (viewRevenue != null)
+                    return (decimal)viewRevenue;
 
                 return Entity.REVENUE_PRICE;
             }
@@ -111,7 +114,10 @@ namespace BluePrints.Common.Projections
 
         public decimal GetNewEntityRevenuePrice()
         {
-            return viewRevenue;
+            if (viewRevenue == null)
+                return 0;
+
+            return (decimal)viewRevenue;
         }
 
         public string Editor { get; set; }

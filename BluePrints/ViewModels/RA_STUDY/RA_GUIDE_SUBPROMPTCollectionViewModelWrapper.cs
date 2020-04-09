@@ -132,10 +132,10 @@ namespace BluePrints.ViewModels
             {
                 RA_GUIDE_PROMPT guide_prompt = RA_GUIDE_PROMPTCollection.FirstOrDefault(x => x.GUIDE_PROMPT == e.DisplayText);
 
-                if (guide_prompt == null && DisplaySelectedEntity != null && DisplaySelectedEntity.GUID_STUDY_TYPE != null)
+                if (guide_prompt == null && SelectedEntity != null && SelectedEntity.GUID_STUDY_TYPE != null)
                 {
                     RA_GUIDE_PROMPT new_guide_prompt = new RA_GUIDE_PROMPT();
-                    new_guide_prompt.GUID_STUDY_TYPE = DisplaySelectedEntity.GUID_STUDY_TYPE;
+                    new_guide_prompt.GUID_STUDY_TYPE = SelectedEntity.GUID_STUDY_TYPE;
                     new_guide_prompt.GUIDE_PROMPT = e.DisplayText;
                     RA_GUIDE_PROMPTViewModel.Save(new_guide_prompt);
                 }

@@ -105,12 +105,12 @@ namespace BluePrints.ViewModels
 
 
         #region Collection Call Backs
-        protected override bool onBeforeEntitySavedIsContinue(REGISTER_HOLD projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_HOLD projection, out bool isNew)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
             if (projection.GUID == Guid.Empty && projection.DATE_RAISED == null)
                 projection.DATE_RAISED = DateTime.Now.Date;
-            return base.onBeforeEntitySavedIsContinue(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(REGISTER_HOLD projection)
@@ -154,7 +154,7 @@ namespace BluePrints.ViewModels
                         remove_register_hold_ref.Add(assignment);
                 }
 
-                REGISTER_HOLD_REFCollectionViewModel.BulkDelete(remove_register_hold_ref);
+                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
                 List<REGISTER_HOLD_REF> add_register_holds = new List<REGISTER_HOLD_REF>();
                 foreach (BASELINE_ITEM deliverable in entity.AssignDeliverables)
                 {
@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
 
                 }
 
-                REGISTER_HOLD_REFCollectionViewModel.BulkSave(add_register_holds);
+                REGISTER_HOLD_REFCollectionViewModel.BaseBulkSave(add_register_holds);
             }
             else
             {
@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
                     remove_register_hold_ref.Add(assignment);
                 }
 
-                REGISTER_HOLD_REFCollectionViewModel.BulkDelete(remove_register_hold_ref);
+                REGISTER_HOLD_REFCollectionViewModel.BaseBulkDelete(remove_register_hold_ref);
             }
         }
         #endregion

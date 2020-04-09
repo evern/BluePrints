@@ -11,7 +11,7 @@ namespace BluePrints.Common.Base
     /// <typeparam name="TEntity">Entity with Guid typed key</typeparam>
     /// <typeparam name="TProjection">Projection with Guid typed key</typeparam>
     public abstract class BluePrintsProjectionMasterDetailBase<TEntity, TProjection> : ProjectionMasterDetailBase<TEntity, TProjection>
-        where TEntity : class, IGuidEntityKey, new()
+        where TEntity : class, IGuidEntityKey, IHaveCreatedDate, new()
         where TProjection : class, IGuidEntityKey, new()
     {
     }
@@ -23,7 +23,7 @@ namespace BluePrints.Common.Base
     /// <typeparam name="TEntity">Entity with Guid typed key</typeparam>
     /// <typeparam name="TProjection">Projection with Guid typed key</typeparam>
     public abstract class BluePrintsProjectionMasterOtherDetailBase<TEntity, TChild, TProjection> : ProjectionMasterOtherDetailBase<TEntity, TChild, TProjection>
-        where TEntity : class, IGuidEntityKey, new()
+        where TEntity : class, IGuidEntityKey, IHaveCreatedDate, new()
         where TChild : class, IGuidEntityKey, IGuidParentEntityKey, new()
         where TProjection : class, IGuidEntityKey, new()
     {

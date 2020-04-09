@@ -14,7 +14,7 @@ namespace BluePrints.Common.Base
     /// </summary>
     /// <typeparam name="TEntity">Entity with Guid typed key</typeparam>
     public abstract class BluePrintsProjectionBase<TEntity> : ProjectionBase<TEntity>
-        where TEntity : class, IGuidEntityKey, new()
+        where TEntity : class, IGuidEntityKey, IHaveCreatedDate, new()
     {
     }
 }

@@ -18,24 +18,29 @@ namespace BluePrints.Views
 
         private void RibbonControl1_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 3)
+            //sometimes user clicks on ribbon tabs and the window moves
+            DXBorder dxBorder = e.OriginalSource as DXBorder;
+            if(dxBorder != null)
             {
-                if ((ResizeMode == ResizeMode.CanResize) || (ResizeMode == ResizeMode.CanResizeWithGrip))
+                if (e.ClickCount == 2)
                 {
-                    SwitchWindowState();
+                    if ((ResizeMode == ResizeMode.CanResize) || (ResizeMode == ResizeMode.CanResizeWithGrip))
+                    {
+                        SwitchWindowState();
+                    }
+
+                    return;
                 }
 
-                return;
-            }
+                if (WindowState == WindowState.Maximized)
+                {
+                    mRestoreIfMove = true;
+                    return;
+                }
 
-            if (WindowState == WindowState.Maximized)
-            {
-                mRestoreIfMove = true;
-                return;
+                if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+                    DragMove();
             }
-
-            if(e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-                DragMove();
         }
 
 

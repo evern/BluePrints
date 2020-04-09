@@ -60,6 +60,8 @@ namespace BluePrints.ViewModels
         EXO_SubjobCollectionViewModelWrapper exoJobCollectionViewModel;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        public bool IsSummaryColumnsVisible { get; set; }
+        public bool IsBusy => IsLoading || isSubmitting || isApproving || isSummarizing;
         protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, PhaseTypeClass>) parameter;
@@ -128,10 +130,11 @@ namespace BluePrints.ViewModels
             MainViewModel.AlwaysSkipMessage = true;
             VARIATION_ITEMSViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
-            variationSummaryBackgroundWorker.RunWorkerAsync(entities);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        private bool isSummarizing;
+        private int summariesAssigned = 0;
         private void variationSummaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IEnumerable<VARIATIONProjection> entities = (IEnumerable<VARIATIONProjection>)e.Argument;
@@ -141,6 +144,11 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            isSummarizing = true;
+            this.RaisePropertyChanged(x => IsBusy);
+
+            totalSummariesAssignment = entities.Count();
+            summariesAssigned = 0;
             foreach (var entity in entities)
             {
                 CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
@@ -164,8 +172,17 @@ namespace BluePrints.ViewModels
 
             projection.DetailEntities = new ObservableCollection<ISupportVariationSummary>(variation_projections);
             projection.Update();
-            isApproving = false;
             refreshTotalsSummary();
+
+            summariesAssigned += 1;
+            if(summariesAssigned == totalSummariesAssignment)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() =>
+                {
+                    isSummarizing = false;
+                    this.RaisePropertyChanged(x => IsBusy);
+                }));
+            }
         }
 
         private void refreshTotalsSummary()
@@ -179,7 +196,7 @@ namespace BluePrints.ViewModels
             if (sender != MainViewModel && changedType == typeof(VARIATION))
             {
                 Guid guid = (Guid)key;
-                VARIATIONProjection variationToRefresh = DisplayEntities.FirstOrDefault(x => x.GUID == guid);
+                VARIATIONProjection variationToRefresh = Entities.FirstOrDefault(x => x.GUID == guid);
                 List<VARIATIONProjection> refreshEntities = new List<VARIATIONProjection>();
                 refreshEntities.Add(variationToRefresh);
                 if (variationToRefresh != null)
@@ -198,22 +215,11 @@ namespace BluePrints.ViewModels
             base.OnSelectedEntitiesChanged();
         }
 
-        protected override void OnBeforeApplyProjectionPropertiesToEntity(VARIATIONProjection projectionEntity, VARIATION entity)
-        {
-            if (entity.CREATED.Date.Year == 1)
-            {
-                //Although EF convention will generate this but we require it immediately in the view
-                projectionEntity.Entity.CREATEDBY = LoginCredentials.CurrentUserGuid;
-            }
-
-            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
-        }
-
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATIONProjection projection, out bool isNew)
         {
             isNew = false;
             if (LiveBASELINE == null && LiveESTIMATE == null)
-                return OperationInterceptMode.Skip;
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
 
             projection.Entity.GUID_PROJECT = loadPROJECT.GUID;
             projection.Entity.PHASE = phaseType;
@@ -239,18 +245,24 @@ namespace BluePrints.ViewModels
         Guid? selectedEntityKey = null;
         public override void FullRefresh()
         {
-            if (DisplaySelectedEntity != null)
-                selectedEntityKey = DisplaySelectedEntity.GUID;
+            if (!CanFullRefresh())
+                return;
 
+            if (SelectedEntity != null)
+                selectedEntityKey = SelectedEntity.GUID;
+
+            IsSummaryColumnsVisible = false;
+            this.RaisePropertyChanged(x => x.IsSummaryColumnsVisible);
             ReloadEntitiesCollection();
         }
 
+        private int totalSummariesAssignment = 0;
         private void refreshSummary()
         {
-            if (DisplaySelectedEntity != null)
-                selectedEntityKey = DisplaySelectedEntity.GUID;
+            if (SelectedEntity != null)
+                selectedEntityKey = SelectedEntity.GUID;
 
-            variationSummaryBackgroundWorker.RunWorkerAsync(DisplayEntities);
+            variationSummaryBackgroundWorker.RunWorkerAsync(Entities);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -261,16 +273,16 @@ namespace BluePrints.ViewModels
 
         private void restoreSelectedEntity()
         {
-            if (selectedEntityKey != null && DisplayEntities != null)
+            if (selectedEntityKey != null && Entities != null)
             {
-                DisplaySelectedEntity = DisplayEntities.FirstOrDefault(x => x.GUID == selectedEntityKey);
-                if (DisplaySelectedEntity != null)
+                SelectedEntity = Entities.FirstOrDefault(x => x.GUID == selectedEntityKey);
+                if (SelectedEntity != null)
                 {
-                    DisplaySelectedEntities.Clear();
-                    DisplaySelectedEntities.Add(DisplaySelectedEntity);
+                    SelectedEntities.Clear();
+                    SelectedEntities.Add(SelectedEntity);
                     selectedEntityKey = null;
-                    this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
-                    this.RaisePropertyChanged(x => x.DisplaySelectedEntities);
+                    this.RaisePropertyChanged(x => x.SelectedEntity);
+                    this.RaisePropertyChanged(x => x.SelectedEntities);
                 }
             }
         }
@@ -424,7 +436,10 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (IsBusy)
+                return false;
+
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -432,82 +447,91 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
             string view_name = "OffsiteDirectVariationCollectionView";
             string tab_title = "Design Variation";
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, DisplaySelectedEntity.Entity), view_name, "[" + loadPROJECT.NUMBER + "] " + "[" + DisplaySelectedEntity.Entity.NAME + "] " + tab_title);
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, VARIATION>(loadPROJECT, SelectedEntity.Entity), view_name, "[" + loadPROJECT.NUMBER + "] " + "[" + SelectedEntity.Entity.NAME + "] " + tab_title);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
-        }
-
-        public override void OnDisplaySelectedEntityChanged(VARIATIONProjection entity)
-        {
-            this.RaisePropertyChanged(x => x.IsSubmitted);
-            this.RaisePropertyChanged(x => x.IsApproved);
-            base.OnDisplaySelectedEntityChanged(entity);
         }
 
         const string messageEntityNotSelected = "Please select a variation";
         const string messageBaselineDoesntExists = "Live baseline does not exists";
         const string messageIsApproving = "Variation is in the process of approving, please wait";
+        bool isSubmitting = false;
         bool isApproving = false;
         public bool IsSubmitted
         {
-            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.SUBMITTED != null;
+            get => isSubmitting || (SelectedEntity == null ? false : SelectedEntity.Entity.SUBMITTED != null);
             set
             {
                 string errorMessage = string.Empty;
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     errorMessage = messageEntityNotSelected;
 
                 if (LiveBASELINE == null && LiveESTIMATE == null)
                     errorMessage = messageBaselineDoesntExists;
 
-                if (!value && DisplaySelectedEntity.Entity.APPROVED != null)
+                if (!value && SelectedEntity.Entity.APPROVED != null)
                     errorMessage = "Please unapprove variation before unsubmitting";
 
                 if (errorMessage != string.Empty)
+                {
                     MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
-                else if(value)
-                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationSubmit, null, false);
+                    return;
+                }
+
+                isSubmitting = true;
+                this.RaisePropertyChanged(x => x.IsSubmitted);
+                this.RaisePropertyChanged(x => IsBusy);
+                if (value)
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationSubmit, null, false);
                 else if(!value)
-                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnsubmit, null, false);
+                    CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationUnsubmit, null, false);
             }
         }
 
         public bool IsApproved
         {
-            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.APPROVED != null;
+            get => isApproving || (SelectedEntity == null ? false : SelectedEntity.Entity.APPROVED != null);
             set
             {
                 string errorMessage = string.Empty;
                 if (isApproving)
                     errorMessage = messageIsApproving;
 
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     errorMessage = messageEntityNotSelected;
 
-                if (value && DisplaySelectedEntity.Entity.SUBMITTED == null)
+                if (value && SelectedEntity.Entity.SUBMITTED == null)
                     errorMessage = "Please submit variation before approving";
 
                 if (errorMessage != string.Empty)
-                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
-                else if (value)
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you want to approve " + DisplaySelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
+                    return;
+                }
+
+                if (value)
+                {
+                    if (MessageBoxService.ShowMessage("Are you sure you want to approve " + SelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
                     {
                         isApproving = true;
-                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationApprove, null, false);
+                        this.RaisePropertyChanged(x => x.IsApproved);
+                        this.RaisePropertyChanged(x => IsBusy);
+                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationApprove, null, false);
                     }
                 }
                 else if(!value)
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you want to unapprove " + DisplaySelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+                    if (MessageBoxService.ShowMessage("Are you sure you want to unapprove " + SelectedEntity.Entity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
                     {
                         isApproving = true;
-                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
+                        this.RaisePropertyChanged(x => x.IsApproved);
+                        this.RaisePropertyChanged(x => IsBusy);
+                        CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationUnapprove, null, false);
                     }
                 }
             }
@@ -515,39 +539,37 @@ namespace BluePrints.ViewModels
 
         public bool IsClientApproved
         {
-            get => DisplaySelectedEntity == null ? false : DisplaySelectedEntity.Entity.CLIENT_APPROVED != null;
+            get => SelectedEntity == null ? false : SelectedEntity.Entity.CLIENT_APPROVED != null;
             set
             {
                 string errorMessage = string.Empty;
                 if (isApproving)
                     errorMessage = messageIsApproving;
 
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     errorMessage = messageEntityNotSelected;
 
-                if (value && DisplaySelectedEntity.Entity.SUBMITTED == null)
+                if (value && SelectedEntity.Entity.SUBMITTED == null)
                     errorMessage = "Please submit variation before marking it as client approved";
 
-                if (value && DisplaySelectedEntity.Entity.APPROVED == null)
+                if (value && SelectedEntity.Entity.APPROVED == null)
                     errorMessage = "Please approve variation before marking it as client approved";
 
                 if (errorMessage != string.Empty)
                     MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Exclamation);
                 else if (value)
                 {
-                    DisplaySelectedEntity.Entity.CLIENT_APPROVED = DateTime.Now;
-                    DisplaySelectedEntity.Entity.CLIENT_APPROVEDBY = LoginCredentials.CurrentUserGuid;
-                    MainViewModel.Save(DisplaySelectedEntity);
-                    OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
-                    DisplaySelectedEntity.Update();
+                    SelectedEntity.Entity.CLIENT_APPROVED = DateTime.Now;
+                    SelectedEntity.Entity.CLIENT_APPROVEDBY = LoginCredentials.CurrentUserGuid;
+                    MainViewModel.Save(SelectedEntity);
+                    SelectedEntity.Update();
                 }
                 else if (!value)
                 {
-                    DisplaySelectedEntity.Entity.CLIENT_APPROVED = null;
-                    DisplaySelectedEntity.Entity.CLIENT_APPROVEDBY = null;
-                    MainViewModel.Save(DisplaySelectedEntity);
-                    OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
-                    DisplaySelectedEntity.Update();
+                    SelectedEntity.Entity.CLIENT_APPROVED = null;
+                    SelectedEntity.Entity.CLIENT_APPROVEDBY = null;
+                    MainViewModel.Save(SelectedEntity);
+                    SelectedEntity.Update();
                 }
             }
         }
@@ -601,74 +623,43 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Unsubmit)));
         }
 
+        public bool CanCalculateVariationSummary()
+        {
+            return !IsBusy;
+        }
+
+        public void CalculateVariationSummary()
+        {
+            IsSummaryColumnsVisible = true;
+            this.RaisePropertyChanged(x => x.IsSummaryColumnsVisible);
+
+            variationSummaryBackgroundWorker.RunWorkerAsync(Entities);
+        }
+
         public bool CanUnapprove()
         {
             if (isApproving)
                 return false;
 
-            if (MainViewModel == null || DisplaySelectedEntity == null)
+            if (MainViewModel == null || SelectedEntity == null)
                 return false;
 
-            if (DisplaySelectedEntity.Entity == null)
+            if (SelectedEntity.Entity == null)
                 return false;
 
-            if (DisplaySelectedEntity.Entity.SUBMITTED == null)
+            if (SelectedEntity.Entity.SUBMITTED == null)
                 return false;
 
-            return DisplaySelectedEntity.Entity.APPROVED != null;
+            return SelectedEntity.Entity.APPROVED != null;
         }
 
         public void Unapprove()
         {
             if (MessageBoxService.ShowMessage("Are you sure you want to unapprove the selected variation?", "Unapprove Variation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
-
-            //if (MessageBoxService.ShowMessage("This will revert from the latest variation onwards.\nCurrent live baseline will be superseded with suffix '_Reverted'\nAre you sure you want to revert changes to the baseline?", "Revert Baseline", MessageButton.OKCancel) == MessageResult.Cancel)
-            //    return;
-
-            //string liveBaselineRevision = LiveBASELINE.Revision;
-
-            //string lastBaselineRevision = string.Empty;
-            //string valueToFill = liveBaselineRevision;
-            //int numericFieldLength = 0;
-            //int? numericIndex = StringFormatUtils.GetNumericIndex(valueToFill, out numericFieldLength);
-            //if (numericIndex == null)
-            //    lastBaselineRevision = ((char)(liveBaselineRevision.Last() - 1)).ToString();
-            //else
-            //{
-            //    string valueToFillStringOnly = valueToFill.Substring(0, valueToFill.Length - numericFieldLength);
-            //    long valueToFillNumberOnly = Int64.Parse(valueToFill.Substring(numericIndex.Value, valueToFill.Length - numericIndex.Value));
-            //    if(valueToFillNumberOnly == 1)
-            //        lastBaselineRevision = ((char)(valueToFillStringOnly.Last())).ToString();
-            //    else
-            //        lastBaselineRevision = valueToFillStringOnly + (valueToFillNumberOnly - 1).ToString();
-            //}
-
-            //VARIATIONProjection lastVariation = MainViewModel.Entities.FirstOrDefault(x => getBaselineRevision(x.Entity.GUID_BASELINE) == liveBaselineRevision);
-            //if(lastVariation == null)
-            //{
-            //    MessageBoxService.ShowMessage("Last variation revision does not match latest baseline revision");
-            //    return;
-            //}
-
-            //BASELINE lastBaseline = BASELINECollection.FirstOrDefault(x => x.REVISION == lastBaselineRevision);
-            //if(lastBaseline == null)
-            //{
-            //    MessageBoxService.ShowMessage("Last baseline not found");
-            //    return;
-            //}
-
-            //BASELINE live_baseline = new BASELINE();
-            //DataUtils.ShallowCopy(live_baseline, LiveBASELINE);
-            //live_baseline.REVISION = live_baseline.REVISION + "_Reverted";
-            //live_baseline.STATUS = BaselineStatus.Superseded;
-            //BASELINEViewModel.Save(live_baseline);
-
-            //lastBaseline.STATUS = BaselineStatus.Live;
-            //BASELINEViewModel.Save(lastBaseline);
-
+            
             isApproving = true;
-            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(DisplaySelectedEntity.Entity, OnVariationUnapprove, null, false);
+            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationUnapprove, null, false);
         }
 
         public override string UnifiedRowValidation(VARIATIONProjection projection)
@@ -735,7 +726,7 @@ namespace BluePrints.ViewModels
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariationRevision, new()
         {
-            string variationCode = DisplaySelectedEntity.Entity.NAME;
+            string variationCode = SelectedEntity.Entity.NAME;
             TBaseline revisedBaseline = null;
             //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
             if (variationStage == VariationStages.Approve)
@@ -750,11 +741,11 @@ namespace BluePrints.ViewModels
                 revisedBaseline.Baseline_Status = BaselineStatus.Live;
                 collectionViewModel.Save(revisedBaseline);
 
-                DisplaySelectedEntity.Entity.APPROVED = DateTime.Now;
-                DisplaySelectedEntity.Entity.APPROVEDBY = LoginCredentials.CurrentUserGuid;
-                DisplaySelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
-                DisplaySelectedEntity.Entity.GUID_BASELINE = revisedBaseline.GUID;
-                MainViewModel.Save(DisplaySelectedEntity);
+                SelectedEntity.Entity.APPROVED = DateTime.Now;
+                SelectedEntity.Entity.APPROVEDBY = LoginCredentials.CurrentUserGuid;
+                SelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
+                SelectedEntity.Entity.GUID_BASELINE = revisedBaseline.GUID;
+                MainViewModel.Save(SelectedEntity);
 
                 liveBASELINE.GUID = revisedBaseline.GUID;
             }
@@ -799,7 +790,7 @@ namespace BluePrints.ViewModels
                         List<BASELINE_ITEM_VARIATIONContainer> deliverableVariations = deliverableVariationQuery.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
 
                         //only remove this deliverable is only the variation responsible of adding it exists
-                        if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == DisplaySelectedEntity.GUID))
+                        if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
                         {
                             BASELINE_ITEM removeDeliverable = deliverableVariations.First().BASELINE_ITEM;
                             BASELINE_ITEM variationDeliverable = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
@@ -881,7 +872,7 @@ namespace BluePrints.ViewModels
                         newDeliverable.GUID_BASELINE = revisedBaseline.GUID;
                         //remember deliverable that was added from variation so that when we delete we don't touch deliverable that weren't added from variation
                         if (deliverable.DisplayVariationAction == VariationAction.Add)
-                            newDeliverable.GUID_VARIATION = DisplaySelectedEntity.GUID;
+                            newDeliverable.GUID_VARIATION = SelectedEntity.GUID;
                         repository.Add(newDeliverable);
                     }
 
@@ -893,7 +884,7 @@ namespace BluePrints.ViewModels
                     }
                 }
                 //if its purely a scan to determine variation
-                else if (variationStage != VariationStages.Approve && DisplaySelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
+                else if (variationStage != VariationStages.Approve && SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
                 {
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
@@ -914,7 +905,7 @@ namespace BluePrints.ViewModels
 
             if ((variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit))
             {
-                if (DisplaySelectedEntity.Entity.TYPE == VariationType.External)
+                if (SelectedEntity.Entity.TYPE == VariationType.External)
                     addVariationJobToExo(exoVariations, variationStage);
                 else if (variationStage == VariationStages.Submit)
                     SubmitSelectedEntity();
@@ -933,12 +924,12 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        DisplaySelectedEntity.Entity.ADJUSTMENT_TO_BUDGET = false;
-                        DisplaySelectedEntity.Entity.APPROVED = null;
-                        DisplaySelectedEntity.Entity.APPROVEDBY = null;
-                        DisplaySelectedEntity.Entity.GUID_ORIBASELINE = null;
-                        DisplaySelectedEntity.Entity.GUID_BASELINE = null;
-                        MainViewModel.Save(DisplaySelectedEntity);
+                        SelectedEntity.Entity.ADJUSTMENT_TO_BUDGET = false;
+                        SelectedEntity.Entity.APPROVED = null;
+                        SelectedEntity.Entity.APPROVEDBY = null;
+                        SelectedEntity.Entity.GUID_ORIBASELINE = null;
+                        SelectedEntity.Entity.GUID_BASELINE = null;
+                        MainViewModel.Save(SelectedEntity);
 
                         //this will invoke unsubmit in the setter
                         IsSubmitted = false;
@@ -953,8 +944,11 @@ namespace BluePrints.ViewModels
                     refreshSummary();
             }
 
-            //call this to raise property change on selected entity status
-            OnDisplaySelectedEntityChanged(DisplaySelectedEntity);
+            isSubmitting = false;
+            isApproving = false;
+            this.RaisePropertyChanged(x => IsBusy);
+            this.RaisePropertyChanged(x => IsSubmitted);
+            this.RaisePropertyChanged(x => IsApproved);
             #region Send Email
             //isApproving = false;
             //if (addedDeliverables.Count > 0)
@@ -1041,7 +1035,8 @@ namespace BluePrints.ViewModels
             {
                 if(exoInteraction == VariationStages.Submit)
                 {
-                    if (exoJobCollectionViewModel.CommitToExo(exoVariationJobs))
+                    IEnumerable<ExoSubJobEditableProjection> newlyAddedProjections = exoJobCollectionViewModel.CommitToExo(exoVariationJobs);
+                    if (newlyAddedProjections.Count() > 0)
                     {
                         SubmitSelectedEntity();
                         MessageBoxService.ShowMessage("Variation code(s) pushed to exo");
@@ -1096,18 +1091,18 @@ namespace BluePrints.ViewModels
 
         private void UnsubmitSelectedEntity()
         {
-            DisplaySelectedEntity.Entity.SUBMITTED = null;
-            DisplaySelectedEntity.Entity.SUBMITTEDBY = null;
-            DisplaySelectedEntity.Update();
-            MainViewModel.Save(DisplaySelectedEntity);
+            SelectedEntity.Entity.SUBMITTED = null;
+            SelectedEntity.Entity.SUBMITTEDBY = null;
+            SelectedEntity.Update();
+            MainViewModel.Save(SelectedEntity);
         }
 
         private void SubmitSelectedEntity()
         {
-            DisplaySelectedEntity.Entity.SUBMITTED = DateTime.Now;
-            DisplaySelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
-            DisplaySelectedEntity.Update();
-            MainViewModel.Save(DisplaySelectedEntity);
+            SelectedEntity.Entity.SUBMITTED = DateTime.Now;
+            SelectedEntity.Entity.SUBMITTEDBY = LoginCredentials.CurrentUserGuid;
+            SelectedEntity.Update();
+            MainViewModel.Save(SelectedEntity);
         }
 
         protected override void OnClose(CancelEventArgs e)

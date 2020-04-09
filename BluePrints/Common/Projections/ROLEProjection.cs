@@ -39,18 +39,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public DateTime EntityCreatedDate
-        {
-            get
-            {
-                return Entity.CREATED;
-            }
-            set
-            {
-                Entity.CREATED = value;
-            }
-        }
-
         public int SortOrder
         {
             get

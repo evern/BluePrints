@@ -139,7 +139,7 @@ namespace BluePrints.ViewModels
                         removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BulkDelete(removeProjectDisciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
                 List<PROJECT_DISCIPLINE> addProjectDisciplines = new List<PROJECT_DISCIPLINE>();
                 foreach (DISCIPLINE project_discipline in entity.Project_Disciplines)
                 {
@@ -147,7 +147,7 @@ namespace BluePrints.ViewModels
                         addProjectDisciplines.Add(new PROJECT_DISCIPLINE() { GUID_DISCIPLINE = project_discipline.GUID, GUID_PROJECT = entity.GUID });
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BulkSave(addProjectDisciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkSave(addProjectDisciplines);
             }
             else
             {
@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
                     removeProjectDisciplines.Add(assignment);
                 }
 
-                PROJECT_DISCIPLINECollectionViewModel.BulkDelete(removeProjectDisciplines);
+                PROJECT_DISCIPLINECollectionViewModel.BaseBulkDelete(removeProjectDisciplines);
             }
         }
 
@@ -232,7 +232,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
         {
-            MainViewModel.OnBeforeProjectionDeleteIsContinueCallBack = onBeforeEntityDeletedIsContinueCallBack;
             MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.CanFillDownCallBack = CanFillDownCallBack;
             MainViewModel.SetParentViewModel(this);
@@ -254,14 +253,14 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
 
-        private OperationInterceptMode onBeforeEntityDeletedIsContinueCallBack(PROJECT project)
-        {
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(PROJECT projection, out List<ErrorMessage> errorMessages)
+        {           
             //Avoid EF exception on PROJECT_DISCIPLINE foreign key: The relationship could not be changed because one or more of the foreign-key properties is non-nullable
-            saveProjectDiscipline(project);
+            saveProjectDiscipline(projection);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
+            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            return OperationInterceptMode.Continue;
+            return base.OnBeforeProjectionDeleteIsContinue(projection, out errorMessages);
         }
 
         private void PostSave(PROJECT projectionEntity, PROJECT entity, bool isNewEntity)
@@ -610,7 +609,7 @@ namespace BluePrints.ViewModels
         }
 
         bool shouldInvokeTenderSubjobDates = false;
-        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {
@@ -757,7 +756,7 @@ namespace BluePrints.ViewModels
             }
             else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().NUMBER))
             {
-                if(DisplayEntities.Any(x => x.NUMBER != null && x.NUMBER.ToUpper() == new_value.ToString().ToUpper()))
+                if(Entities.Any(x => x.NUMBER != null && x.NUMBER.ToUpper() == new_value.ToString().ToUpper()))
                 {
                     return "Project number already exists";
                 }
@@ -998,93 +997,93 @@ namespace BluePrints.ViewModels
 
         public void TenderProfile()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            if(DisplaySelectedEntity.STATUS != ProjectStatus.Tender && DisplaySelectedEntity.STATUS != ProjectStatus.TenderSubmitted)
+            if(SelectedEntity.STATUS != ProjectStatus.Tender && SelectedEntity.STATUS != ProjectStatus.TenderSubmitted)
             {
                 MessageBoxService.ShowMessage("Project must be a tender to begin tender profiling");
                 return;
             }
 
-            if (DisplaySelectedEntity.TENDER_PROJECT_START == null)
+            if (SelectedEntity.TENDER_PROJECT_START == null)
             {
                 MessageBoxService.ShowMessage("Please set tender start date before proceeding");
                 return;
             }
 
-            if(DisplaySelectedEntity.TENDER_PROJECT_DURATION == null)
+            if(SelectedEntity.TENDER_PROJECT_DURATION == null)
             {
                 MessageBoxService.ShowMessage("Please set tender duration before proceeding");
                 return;
             }
 
             TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModel = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
-            tenderProfileSelectionViewModel.OnParameterChange(new EntitiesParameter<PROJECT>(DisplaySelectedEntity));
+            tenderProfileSelectionViewModel.OnParameterChange(new EntitiesParameter<PROJECT>(SelectedEntity));
             TenderProfileSelectionDialogService.ShowDialog(MessageButton.OK, "Apply tender profile", "TENDER_PROFILESelectionView", tenderProfileSelectionViewModel);
         }
 
         public void EditArea()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectAreas" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectAreas" + SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(SelectedEntity),
                     "AREACollectionView",
-                    "[" + DisplaySelectedEntity.NUMBER + "] Areas");
+                    "[" + SelectedEntity.NUMBER + "] Areas");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditRate()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectRates" + SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(SelectedEntity),
                     "RATECollectionView",
-                    "[" + DisplaySelectedEntity.NUMBER + "] Rates");
+                    "[" + SelectedEntity.NUMBER + "] Rates");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditBaseline()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectBaselines" + SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(SelectedEntity),
                     "BASELINECollectionView",
-                    "[" + DisplaySelectedEntity.NUMBER + "] Baselines");
+                    "[" + SelectedEntity.NUMBER + "] Baselines");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditEstimate()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(SelectedEntity),
                     "ESTIMATECollectionView",
-                    "[" + DisplaySelectedEntity.NUMBER + "] Estimates");
+                    "[" + SelectedEntity.NUMBER + "] Estimates");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public void EditProgress()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<PROJECT>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ProjectEstimates" + SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(SelectedEntity),
                     "PROGRESSCollectionView",
-                    "[" + DisplaySelectedEntity.NUMBER + "] Progresses");
+                    "[" + SelectedEntity.NUMBER + "] Progresses");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -1094,7 +1093,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -1113,13 +1112,13 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), 
-                new DualEntitiesParameter<PROJECT, Action<object>>(DisplaySelectedEntity, navigateCoreCommand), 
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), 
+                new DualEntitiesParameter<PROJECT, Action<object>>(SelectedEntity, navigateCoreCommand), 
                 "PROJECTView", 
-                "[" + DisplaySelectedEntity.NUMBER + "]");
+                "[" + SelectedEntity.NUMBER + "]");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

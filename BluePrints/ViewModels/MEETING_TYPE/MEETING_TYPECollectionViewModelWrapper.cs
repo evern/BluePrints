@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -119,13 +119,13 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(),
-                new EntitiesParameter<MEETING_TYPE>(DisplaySelectedEntity),
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(),
+                new EntitiesParameter<MEETING_TYPE>(SelectedEntity),
                     "MINUTE_TITLECollectionView",
-                    "[" + DisplaySelectedEntity.NAME + "] Titles");
+                    "[" + SelectedEntity.NAME + "] Titles");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

@@ -69,7 +69,7 @@ namespace BluePrints.Common.ViewModel
         {
             DoNotAutoRefresh = true;
             IsSummaryLoading = true;
-            IsChartLoading = true;
+            IsLoading = true;
             isSuppressPropertyChange = true;
 
             Selected_Dashboards = new ObservableCollection<IHaveStats>();
@@ -139,8 +139,8 @@ namespace BluePrints.Common.ViewModel
             if (MainViewModel == null)
                 return;
 
-            IsChartLoading = true;
-            this.RaisePropertyChanged(x => x.IsChartLoading);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             if (entities.Count() > 0)
             {
                 SummaryEntity = ViewModelSource.Create(() => new TProjection());
@@ -167,8 +167,8 @@ namespace BluePrints.Common.ViewModel
             }
 
 
-            IsChartLoading = false;
-            this.RaisePropertyChanged(x => x.IsChartLoading);
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
             this.RaisePropertyChanged(x => x.SummaryEntity);
             OnAfterSelectedEntitiesChanged();
         }
@@ -180,7 +180,7 @@ namespace BluePrints.Common.ViewModel
 
         public virtual bool CanChangeStatsType(object checkButton)
         {
-            return MainViewModel != null && !MainViewModel.IsLoading;
+            return !IsLoading;
         }
 
         public Action<DashboardViewType> ChangeViewMemberFieldNames { get; set; }
@@ -220,11 +220,13 @@ namespace BluePrints.Common.ViewModel
         #region P6 Affinity
         public bool CanShowP6Errors()
         {
-
-            if (DisplaySelectedEntity == null)
+            if (IsLoading)
                 return false;
 
-            SummaryStats summaryStats = DisplaySelectedEntity.Stats as SummaryStats;
+            if (SelectedEntity == null)
+                return false;
+
+            SummaryStats summaryStats = SelectedEntity.Stats as SummaryStats;
             if (summaryStats == null || summaryStats.Reportables == null)
                 return false;
 
@@ -239,10 +241,10 @@ namespace BluePrints.Common.ViewModel
 
         public void ShowP6Errors()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            SummaryStats summaryStats = DisplaySelectedEntity.Stats as SummaryStats;
+            SummaryStats summaryStats = SelectedEntity.Stats as SummaryStats;
             if (summaryStats == null)
                 return;
 
@@ -259,10 +261,13 @@ namespace BluePrints.Common.ViewModel
 
         public bool CanShowExoErrors()
         {
-            if (DisplaySelectedEntity == null)
+            if (IsLoading)
                 return false;
 
-            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
+            if (SelectedEntity == null)
+                return false;
+
+            ProjectSummaryStats projectSummary = SelectedEntity.Stats as ProjectSummaryStats;
             if (projectSummary == null || projectSummary.ExoMissingSUBJOBS == null || projectSummary.ExoMissingSUBJOBS.Count == 0)
                 return false;
 
@@ -271,7 +276,7 @@ namespace BluePrints.Common.ViewModel
 
         public void ShowExoErrors()
         {
-            ProjectSummaryStats projectSummary = DisplaySelectedEntity.Stats as ProjectSummaryStats;
+            ProjectSummaryStats projectSummary = SelectedEntity.Stats as ProjectSummaryStats;
             if (projectSummary == null || projectSummary.ExoMissingSUBJOBS == null || projectSummary.ExoMissingSUBJOBS.Count == 0)
                 return;
 
@@ -281,11 +286,12 @@ namespace BluePrints.Common.ViewModel
 
         public virtual bool CanViewReport()
         {
-            return SummaryEntity != null && SummaryEntity.Stats != null;
+            return !IsLoading && SummaryEntity != null && SummaryEntity.Stats != null;
         }
 
         public virtual void ViewReport()
         {
+            LoadingScreenManager.ShowLoadingScreen(1);
             SummaryStats displaySummary = SummaryEntity.Stats as SummaryStats;
             if (displaySummary == null)
                 return;
@@ -294,7 +300,7 @@ namespace BluePrints.Common.ViewModel
             loadReportLayoutFromDatabase(progressReport);
 
             string title = string.Empty;
-            PROJECT_Dashboard project_dashboard = DisplaySelectedEntity as PROJECT_Dashboard;
+            PROJECT_Dashboard project_dashboard = SelectedEntity as PROJECT_Dashboard;
             if (project_dashboard != null)
                 title = project_dashboard.Entity.NAME;
 
@@ -305,6 +311,7 @@ namespace BluePrints.Common.ViewModel
             previewWindow.WindowState = WindowState.Maximized;
             progressReport.RequestParameters = false;
             progressReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
 

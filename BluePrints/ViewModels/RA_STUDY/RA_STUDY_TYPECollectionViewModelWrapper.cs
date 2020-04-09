@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Behavior
-        public bool PROMPTEnabled => DisplaySelectedEntity != null;
+        public bool PROMPTEnabled => SelectedEntity != null;
         public bool SUBPROMPTEnabled => PROMPTEnabled && RA_GUIDE_PROMPTViewModel != null && RA_GUIDE_PROMPTViewModel.SelectedEntity != null;
 
         protected override void OnSelectedEntitiesChanged()
@@ -121,10 +121,10 @@ namespace BluePrints.ViewModels
         private OperationInterceptMode onBeforeGUIDE_PROMPTSavedIsContinue(RA_GUIDE_PROMPT guide_prompt, out bool isNew)
         {
             isNew = false;
-            if (DisplaySelectedEntity == null)
-                return OperationInterceptMode.Skip;
+            if (SelectedEntity == null)
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
 
-            guide_prompt.GUID_STUDY_TYPE = DisplaySelectedEntity.GUID;
+            guide_prompt.GUID_STUDY_TYPE = SelectedEntity.GUID;
             return OperationInterceptMode.Continue;
         }
 
@@ -133,13 +133,13 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (RA_GUIDE_PROMPTCollection == null || DisplaySelectedEntity == null)
+                if (RA_GUIDE_PROMPTCollection == null || SelectedEntity == null)
                     return null;
 
                 if(guide_prompts == null)
                 {
                     guide_prompts = new ObservableCollection<RA_GUIDE_PROMPT>();
-                    foreach (RA_GUIDE_PROMPT guide_prompt in RA_GUIDE_PROMPTCollection.Where(x => x.GUID_STUDY_TYPE == DisplaySelectedEntity.GUID))
+                    foreach (RA_GUIDE_PROMPT guide_prompt in RA_GUIDE_PROMPTCollection.Where(x => x.GUID_STUDY_TYPE == SelectedEntity.GUID))
                         guide_prompts.Add(guide_prompt);
                 }
 
@@ -151,7 +151,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     return "Please select a study type before adding new prompt";
 
                 return "Type here to add new agenda, push enter when complete";
@@ -178,7 +178,7 @@ namespace BluePrints.ViewModels
         {
             isNew = false;
             if (RA_GUIDE_PROMPTViewModel == null || RA_GUIDE_PROMPTViewModel.SelectedEntity == null)
-                return OperationInterceptMode.Skip;
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
 
             guide_subprompt.GUID_GUIDE_PROMPT = RA_GUIDE_PROMPTViewModel.SelectedEntity.GUID;
             return OperationInterceptMode.Continue;

@@ -71,6 +71,13 @@ namespace BluePrints.ViewModels
             onMainViewModelFirstLoadedTimer.Stop();
         }
 
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
+        {
+            //so that background refresh can happen, it's been overriden in base to wait for calculation to complete
+            IsCalculationCompleted = true;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
@@ -100,7 +107,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "UserOffsiteDirectProgressViewModelWrapper"; }
+            get { return "UserOffsiteDirectProgressViewModelWrapper_v2"; }
         }
 
         public override void ShowNotification()

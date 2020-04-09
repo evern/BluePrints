@@ -91,13 +91,10 @@ namespace BluePrints.ViewModels
         private IQueryable<DELIVERABLES_STATUS> setAssignedDocumentTypes(IQueryable<DELIVERABLES_STATUS> query, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPES)
         {
             List<DELIVERABLES_STATUS> deliverable_statuses = query.ToList();
-            LoadingScreenManager.ShowLoadingScreen(deliverable_statuses.Count);
             foreach(var deliverable_status in deliverable_statuses)
             {
                 deliverable_status.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES);
-                LoadingScreenManager.Progress();
             }
-            LoadingScreenManager.CloseLoadingScreen();
 
             //deliverable_statuses.ForEach(x => x.SetAssignedDocTypes(DOCTYPECollection, DSTATUS_DOCTYPES));
             return deliverable_statuses.AsQueryable();
@@ -128,10 +125,8 @@ namespace BluePrints.ViewModels
         //Save assigned document types on projection
         protected override void OnAfterProjectionSave(DELIVERABLES_STATUS projection, DELIVERABLES_STATUS entity, bool isNew)
         {
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             DeleteProjectionDocTypes(projection);
             SaveProjectionDocTypes(projection);
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
 
             base.OnAfterProjectionSave(projection, entity, isNew);
         }
@@ -241,7 +236,9 @@ namespace BluePrints.ViewModels
         public void Insert()
         {
             TableViewService.SetImmediateUpdateRowPosition(true);
-            VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities);
+            List<ErrorMessage> errorMessages;
+            VerifyAndSaveDuplicateItems(MainViewModel.SelectedEntities, out errorMessages);
+            ShowErrorMessage("Cannot insert status", errorMessages);
             TableViewService.SetImmediateUpdateRowPosition(false);
         }
 
@@ -257,10 +254,10 @@ namespace BluePrints.ViewModels
         //    TableViewService.SetImmediateUpdateRowPosition(false);
         //}
 
-        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, bool isCopyFrom = false)
+        private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, out List<ErrorMessage> errorMessages, bool isCopyFrom = false)
         {
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            List<DELIVERABLES_STATUS> duplicateDeliverableStatuses = new List<DELIVERABLES_STATUS>();
+            errorMessages = new List<ErrorMessage>();
+            List<DELIVERABLES_STATUS> newDeliverableStatuses = new List<DELIVERABLES_STATUS>();
             foreach (var entity in deliverableStatuses)
             {
                 var newDeliverableStatus = new DELIVERABLES_STATUS();
@@ -271,9 +268,9 @@ namespace BluePrints.ViewModels
 
                 if (!isCopyFrom)
                 {
-                    if (newDeliverableStatus.MAX_PERCENTAGE > 1m)
+                    if (newDeliverableStatus.MAX_PERCENTAGE >= 1m)
                     {
-                        MessageBoxService.ShowMessage("Cannot insert record after 100% max percentage");
+                        errorMessages.Add(new ErrorMessage(newDeliverableStatus.NAME, "Cannot insert record after 100% max percentage"));
                         continue;
                     }
 
@@ -283,18 +280,20 @@ namespace BluePrints.ViewModels
 
                 List<DOCTYPE> newAssignedDocTypes = newDeliverableStatus.GetAssignedDocTypes();
                 DELIVERABLES_STATUS findEntity = MainViewModel.Entities.FirstOrDefault(x => x.AUTO_PERCENTAGE == newDeliverableStatus.AUTO_PERCENTAGE && x.MAX_PERCENTAGE == newDeliverableStatus.MAX_PERCENTAGE && newAssignedDocTypes.Any(y => x.GetAssignedDocTypes().Any(z => z.GUID == y.GUID)));
+
                 if (findEntity == null)
-                {
-                    //Handled in save
-                    //MainViewModel.EntitiesUndoRedoManager.AddUndo(newDeliverableStatus, null, null, null, EntityMessageType.Added);
-                    //duplicateDeliverableStatuses.Add(newDeliverableStatus);
-                }
+                    newDeliverableStatuses.Add(newDeliverableStatus);
                 else
-                    MessageBoxService.ShowMessage("Document type with autopercentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists");
+                {
+                    List<DOCTYPE> assignedDOCTYPE = entity.GetAssignedDocTypes();
+                    foreach (DOCTYPE doctype in assignedDOCTYPE)
+                    {
+                        errorMessages.Add(new ErrorMessage(newDeliverableStatus.NAME, "Document type: " + doctype.CODE + " with auto percentage: " + findEntity.AUTO_PERCENTAGE * 100 + "% already exists"));
+                    }
+                }
             }
 
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-            MainViewModel.BulkSave(duplicateDeliverableStatuses);
+            MainViewModel.BaseBulkSave(newDeliverableStatuses);
         }
 
         public bool CanCopyFrom()
@@ -317,7 +316,10 @@ namespace BluePrints.ViewModels
                         IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
                         var copyEntities = unitOfWork.DELIVERABLES_STATUSES.Where(x => x.GUID_PROJECT == queryGuid);
                         setAssignedDocumentTypes(copyEntities, unitOfWork.DSTATUS_DOCTYPES.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == queryGuid));
-                        VerifyAndSaveDuplicateItems(copyEntities, true);
+
+                        List<ErrorMessage> errorMessages;
+                        VerifyAndSaveDuplicateItems(copyEntities, out errorMessages, true);
+                        ShowErrorMessage("Failed to copy these statuses", errorMessages);
                     }
                 }
             }

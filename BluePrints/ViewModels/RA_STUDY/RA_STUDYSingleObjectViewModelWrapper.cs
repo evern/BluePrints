@@ -429,7 +429,7 @@ namespace BluePrints.ViewModels
         #region Reporting
         public bool CanEditReport()
         {
-            if (MainViewModel == null || DisplayEntities == null)
+            if (MainViewModel == null || Entities == null)
                 return false;
 
             return true;
@@ -437,7 +437,7 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            if (MainViewModel == null || DisplayEntities == null)
+            if (MainViewModel == null || Entities == null)
                 return false;
 
             return true;
@@ -465,6 +465,7 @@ namespace BluePrints.ViewModels
 
         private void previewReport()
         {
+            LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
             risk_assessmentReport = new XtraReportStudyData();
             PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
@@ -486,6 +487,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             risk_assessmentReport.RequestParameters = false;
             risk_assessmentReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
         #endregion

@@ -209,21 +209,19 @@ namespace BluePrints.ViewModels
 
         public override bool CanFullRefresh()
         {
-            return CanRefresh_From_P6();
+            return !IsLoading;
         }
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             ReloadEntitiesCollection();
         }
         #endregion
 
         #region View Properties
-        public bool CanRefresh_From_P6()
-        {
-            return !isAsyncRefreshing && !IsLoading;
-        }
-
         public async void Refresh_From_P6()
         {
             isAsyncRefreshing = true;
@@ -247,7 +245,10 @@ namespace BluePrints.ViewModels
 
         public bool CanEditReport()
         {
-            if (DisplaySelectedEntities.Count > 0)
+            if (IsLoading)
+                return false;
+
+            if (SelectedEntities.Count > 0)
                 return false;
 
             return true;
@@ -255,7 +256,7 @@ namespace BluePrints.ViewModels
 
         public override bool CanViewReport()
         {
-            if (DisplaySelectedEntities.Count > 0)
+            if (SelectedEntities.Count > 0)
                 return false;
 
             return true;
@@ -263,7 +264,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -276,13 +277,13 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString() + "SubjobDashboardView",
-                DisplaySelectedEntity,
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString() + "SubjobDashboardView",
+                SelectedEntity,
                 "SUBJOBDashboardView",
-                "[" + DisplaySelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
+                "[" + SelectedEntity.Entity.NUMBER + "] SUBJOB Dashboard");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

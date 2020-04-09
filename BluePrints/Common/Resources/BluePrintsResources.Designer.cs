@@ -421,6 +421,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ForecastJob.
+        /// </summary>
+        internal static string Forecast_ForecastJobColumn {
+            get {
+                return ResourceManager.GetString("Forecast_ForecastJobColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actual.
         /// </summary>
         internal static string ForecastCompare_ActualRowPhase {
@@ -540,9 +549,9 @@ namespace BluePrints.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to UOM.
         /// </summary>
-        internal static string ForecastUOMColumnName {
+        internal static string ForecastIndirectUOMColumn {
             get {
-                return ResourceManager.GetString("ForecastUOMColumnName", resourceCulture);
+                return ResourceManager.GetString("ForecastIndirectUOMColumn", resourceCulture);
             }
         }
         

@@ -9,157 +9,145 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
-                    <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected item">
-                        <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
-                            <dxb:BarEditItem.EditSettings>
-                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                    <dxe:SpinEditSettings.Buttons>
-                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.DuplicateMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxe:ButtonInfo>
-                                    </dxe:SpinEditSettings.Buttons>
-                                </dxe:SpinEditSettings>
-                            </dxb:BarEditItem.EditSettings>
-                        </dxb:BarEditItem>
-                    </dxb:BarSubItem>
-                    <dxb:BarSubItem x:Name="biInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new items">
-                        <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
-                            <dxb:BarEditItem.EditSettings>
-                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
-                                    <dxe:SpinEditSettings.Buttons>
-                                        <dxe:ButtonInfo GlyphKind="Apply">
-                                            <dxmvvm:Interaction.Behaviors>
-                                                <dxmvvm:EventToCommand Command="{Binding DataContext.InsertMultipleCommand, ElementName=userControl}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
-                                            </dxmvvm:Interaction.Behaviors>
-                                        </dxe:ButtonInfo>
-                                    </dxe:SpinEditSettings.Buttons>
-                                </dxe:SpinEditSettings>
-                            </dxb:BarEditItem.EditSettings>
-                        </dxb:BarEditItem>
-                    </dxb:BarSubItem>
-                    <dxb:BarButtonItem x:Name="biSendToChangeRegister" Content="Change Register" ToolTip="Send selected issue to change register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToChangeRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="biSendToHoldRegister" Content="Hold Register" ToolTip="Send selected issue to hold register. Cannot send if item is already sent to hold/change register" Command="{Binding DataContext.SendToHoldRegisterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dx:DXImage Image=BORules_16x16.png}" />
-                </dxb:BarManager.Items>
-                <DockPanel>
-                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
-                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                        </dxr:RibbonDefaultPageCategory>
-                    </dxr:RibbonControl>
-                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                        <dxr:RibbonStatusBarControl.LeftItems>
-                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                        </dxr:RibbonStatusBarControl.LeftItems>
-                    </dxr:RibbonStatusBarControl>
-                    <Grid>
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:LayoutSerializationService />
-                        </dxmvvm:Interaction.Behaviors>
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="NC Number" FieldName="NUMBER" HeaderToolTip="Unique Number" AllowMoving="false" />
-                                <dxg:GridColumn Header="Area" FieldName="GUID_AREA" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY_TYPE" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RegisterRaisedByType}}" NullValueButtonPlacement="Popup" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Non-Conformance Title" FieldName="TITLE" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Non-Conformance Description" FieldName="DESCRIPTION" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Cause of Non-Conformance" FieldName="CAUSE" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Corrective Action Type" FieldName="CORRECTIVE_ACTION_TYPE" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CorrectiveActionType}}" NullValueButtonPlacement="Popup" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Corrective Action" FieldName="CORRECTIVE_ACTION" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Estimated Rectification Cost" FieldName="ESTIMATED_RECTIFICATION_COST" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:SpinEditSettings Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY" AllowMoving="false">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Date Identified" FieldName="DATE_IDENTIFIED" AllowMoving="false" />
-                                <dxg:GridColumn Header="Date Closed" FieldName="DATE_CLOSED" AllowMoving="false" />
-                            </dxg:GridControl.Columns>
-                            <dxg:GridControl.TotalSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                            </dxg:GridControl.TotalSummary>
-                            <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                            </dxg:GridControl.GroupSummary>
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                    <dxg:TableView.RowCellMenuCustomizations>
-                                        <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
-                                        <dxb:BarButtonItemLink BarItemName="biInsert1" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
-                                        <dxb:BarSubItemLink BarItemName="biInsertMulti" />
-                                        <dxb:BarItemLinkSeparator />
-                                        <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    </dxg:TableView.RowCellMenuCustomizations>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                        </custom:GridControlEx>
-                    </Grid>
-                </DockPanel>
-            </dxb:BarManager>
-        </Grid>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected item">
+                    <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
+                        <dxb:BarEditItem.EditSettings>
+                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                <dxe:SpinEditSettings.Buttons>
+                                    <dxe:ButtonInfo GlyphKind="Apply">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DuplicateMultipleCommand}" CommandParameter="{Binding ElementName=contextMenuDuplicateMultiCount}" EventName="Click" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxe:ButtonInfo>
+                                </dxe:SpinEditSettings.Buttons>
+                            </dxe:SpinEditSettings>
+                        </dxb:BarEditItem.EditSettings>
+                    </dxb:BarEditItem>
+                </dxb:BarSubItem>
+                <dxb:BarSubItem x:Name="biInsertMulti" Content="Insert Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to insert new items">
+                    <dxb:BarEditItem Name="contextMenuInsertMultiCount" EditValue="2" Content="Count">
+                        <dxb:BarEditItem.EditSettings>
+                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="2">
+                                <dxe:SpinEditSettings.Buttons>
+                                    <dxe:ButtonInfo GlyphKind="Apply">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding InsertMultipleCommand}" CommandParameter="{Binding ElementName=contextMenuInsertMultiCount}" EventName="Click" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxe:ButtonInfo>
+                                </dxe:SpinEditSettings.Buttons>
+                            </dxe:SpinEditSettings>
+                        </dxb:BarEditItem.EditSettings>
+                    </dxb:BarEditItem>
+                </dxb:BarSubItem>
+                <dxb:BarButtonItem x:Name="biSendToChangeRegister" Content="Change Register" ToolTip="Send selected issue to change register. Cannot send if item is already sent to hold/change register" Command="{Binding SendToChangeRegisterCommand}" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biSendToHoldRegister" Content="Hold Register" ToolTip="Send selected issue to hold register. Cannot send if item is already sent to hold/change register" Command="{Binding SendToHoldRegisterCommand}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dx:DXImage Image=BORules_16x16.png}" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                                <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn Header="NC Number" AllowBestFit="false" Width="50" FieldName="NUMBER" HeaderToolTip="Unique Number" AllowMoving="false" />
+                        <dxg:GridColumn Header="Area" AllowBestFit="false" Width="50" FieldName="GUID_AREA" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Discipline" FieldName="GUID_DISCIPLINE" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY_TYPE" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RegisterRaisedByType}}" NullValueButtonPlacement="Popup" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Non-Conformance Title" FieldName="TITLE" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Non-Conformance Description" AllowBestFit="false" Width="*" FieldName="DESCRIPTION" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Cause of Non-Conformance" FieldName="CAUSE" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Corrective Action Type" FieldName="CORRECTIVE_ACTION_TYPE" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:CorrectiveActionType}}" NullValueButtonPlacement="Popup" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Corrective Action" FieldName="CORRECTIVE_ACTION" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Estimated Rectification Cost" FieldName="ESTIMATED_RECTIFICATION_COST" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Name="PART_Editor" Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Raised By" FieldName="RAISEDBY" AllowMoving="false">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Date Identified" AllowBestFit="false" Width="70" FieldName="DATE_IDENTIFIED" AllowMoving="false" />
+                        <dxg:GridColumn Header="Date Closed" AllowBestFit="false" Width="70" FieldName="DATE_CLOSED" AllowMoving="false" />
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
+                                <dxb:BarButtonItemLink BarItemName="biInsert1" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
+                                <dxb:BarSubItemLink BarItemName="biInsertMulti" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </custom:GridControlEx>
+            </DockPanel>
+        </dxb:BarManager>
     </Grid>
 </UserControl>

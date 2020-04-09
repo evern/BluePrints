@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            BASELINE selectedBASELINE = DisplaySelectedEntity;
+            BASELINE selectedBASELINE = SelectedEntity;
             if (selectedBASELINE == null)
                 return;
 
@@ -200,16 +200,16 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, DisplaySelectedEntity, DeliverablesViewType.Both), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline Rev " + DisplaySelectedEntity.REVISION);
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(loadPROJECT, SelectedEntity, DeliverablesViewType.Both), "BASELINE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Baseline Rev " + SelectedEntity.REVISION);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
         {
-            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null && DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
+            return SelectedEntity != null && SelectedEntity.P6BASELINE_NAME != null && SelectedEntity.P6BASELINE_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN()
@@ -220,8 +220,8 @@ namespace BluePrints.ViewModels
             else
                 viewName = "BASELINE_ITEMSchedulingView";
 
-            string tabName = DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping";
-            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
+            string tabName = SelectedEntity.NAME + " - " + SelectedEntity.P6BASELINE_NAME + " Mapping";
+            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { SelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
@@ -234,7 +234,7 @@ namespace BluePrints.ViewModels
         {
             if(field_name == BindableBase.GetPropertyName(() => new BASELINE().STATUS) && new_value != null)
             {
-                IEnumerable<BASELINE> otherBASELINES = DisplayEntities.Where(x => x.GUID != projection.GUID);
+                IEnumerable<BASELINE> otherBASELINES = Entities.Where(x => x.GUID != projection.GUID);
                 BaselineStatus newStatus = (BaselineStatus)new_value;
                 if (otherBASELINES.Any(x => x.STATUS == BaselineStatus.Live) && newStatus == BaselineStatus.Live)
                     return "There can be only one live baseline";

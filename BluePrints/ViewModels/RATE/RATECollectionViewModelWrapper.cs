@@ -110,10 +110,7 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         public override void UnifiedNewRowInitializationFromView(RATE projection)
         {
-            projection.GUID_PROJECT = loadPROJECT.GUID;
-            projection.COST_TYPE = loadCostType;
-            projection.CHARGE_TYPE = loadChargeType;
-
+            compulsoryOnBeforeEntitySaved(projection);
             base.UnifiedNewRowInitializationFromView(projection);
         }
 
@@ -147,7 +144,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public virtual void OnAfterEntitySaved(RATE projection, RATE entity, bool isNewEntity)
         {
-            this.RaisePropertyChanged(x => x.DisplayEntities);
+            this.RaisePropertyChanged(x => x.Entities);
         }
 
         string errorMessage = "Duplicate entries by phase type, charge type, department, discipline and commodity";
@@ -156,7 +153,7 @@ namespace BluePrints.ViewModels
             //because projection commodity code is formatted to empty string when null before saving and this method is called before entity is going to be saved
             string commodityCode = projection.COMMODITY_CODE == null ? string.Empty : projection.COMMODITY_CODE;
             populatePHASE(projection);
-            if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == commodityCode) && x.GUID != projection.GUID))
+            if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == commodityCode) && x.GUID != projection.GUID))
                 return errorMessage;
 
             return string.Empty;
@@ -167,27 +164,27 @@ namespace BluePrints.ViewModels
             //do not validate phase type on new row because when enum is instantiated with default values user might get stucked in the cell due to duplication error
             if (projection.GUID != Guid.Empty && field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
             {
-                if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             if (field_name == BindableBase.GetPropertyName(() => new RATE().CHARGE_TYPE))
             {
-                if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
             {
-                if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
-                if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE))
             {
-                if (DisplayEntities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == new_value.ToString()) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == new_value.ToString()) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().RATE1))
@@ -249,15 +246,11 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
         {
+            compulsoryOnBeforeEntitySaved(projection);
             if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
-            }
-
-            if (projection.IsGangRateCalculatable)
-            {
-                projection.RATE1 = projection.GangRate;
             }
 
             //commodity code must be empty string to avoid ambiguity when querying
@@ -266,6 +259,15 @@ namespace BluePrints.ViewModels
 
             populatePHASE(projection);
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        protected void compulsoryOnBeforeEntitySaved(RATE entity)
+        {
+            entity.GUID_PROJECT = loadPROJECT.GUID;
+            if (entity.IsGangRateCalculatable)
+            {
+                entity.RATE1 = entity.GangRate;
+            }
         }
         #endregion
 
@@ -292,9 +294,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool CanRemoveDuplicates()
+        {
+            return !IsLoading;
+        }
+
         public void RemoveDuplicates()
         {
-            List<RATE> Rates = new List<RATE>(DisplayEntities);
+            List<RATE> Rates = new List<RATE>(Entities);
             List<RATE> DeleteRates = new List<RATE>();
             for(int i = 0;i < Rates.Count;i++)
             {
@@ -310,7 +317,7 @@ namespace BluePrints.ViewModels
             }
 
             int removeCount = DeleteRates.Count;
-            MainViewModel.BulkDelete(DeleteRates);
+            MainViewModel.BaseBulkDelete(DeleteRates);
             MessageBoxService.ShowMessage(removeCount + " duplicates entries removed");
         }
 

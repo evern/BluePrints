@@ -43,7 +43,6 @@ namespace BluePrints.ViewModels
         protected EXO_ResourcesCollectionViewModelWrapper(
             IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-
         }
 
         #region Database Operations
@@ -58,6 +57,7 @@ namespace BluePrints.ViewModels
 
         protected override void resolveParameters(object parameter)
         {
+            AlwaysSkipMessage = true;
         }
 
         protected override void addEntitiesLoader()
@@ -91,14 +91,14 @@ namespace BluePrints.ViewModels
             if (addedResources.Count() > 0)
                 isNew = true;
 
-            return OperationInterceptMode.Skip;
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ExoResourceProjection projection, out List<ErrorMessage> errorMessages)
         {
             errorMessages = new List<ErrorMessage>();
-            delete(projection);
-            return OperationInterceptMode.Skip;
+            deleteResource(projection);
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
         protected bool onBeforeEntitySaved(ExoResourceProjection projection)
@@ -109,7 +109,7 @@ namespace BluePrints.ViewModels
 
         protected OperationInterceptMode onBeforeEntityDeleted(ExoResourceProjection projection)
         {
-            return OperationInterceptMode.Skip;
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
         private IEnumerable<ExoResourceProjection> commitToExo(ExoResourceProjection projection)
@@ -131,23 +131,21 @@ namespace BluePrints.ViewModels
             string primaryDbStaffName;
 
             string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;
-            commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName);
+            bool isNew = commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName);
             string secondaryDbStaffName;
             commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName);
 
             //need to add post to capture generated id and properties
             //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
-            if (!DisplayEntities.Any(x => x.STAFFNO == projection.STAFFNO))
+            if (isNew)
             {
-                DisplayEntities.Add(projection);
                 newlyAddedResources.Add(projection);
-                OnAfterNewRowAdded(newlyAddedResources);
             }
 
             return newlyAddedResources;
         }
 
-        private void commitToExo(ExoResourceProjection resource, IPrimeroEntitiesUnitOfWork primeroUOW, string newResourceShortCode, string forceSearchName, out string primaryDbStaffName)
+        private bool commitToExo(ExoResourceProjection resource, IPrimeroEntitiesUnitOfWork primeroUOW, string newResourceShortCode, string forceSearchName, out string primaryDbStaffName)
         {
             bool isNew;
             STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID, forceSearchName, out primaryDbStaffName, out isNew);
@@ -155,7 +153,6 @@ namespace BluePrints.ViewModels
             resource.STAFFNO = addedStaff.STAFFNO;
             //map back generated properties to projection
             //do not map back because multiple contexts are involved
-            //resource.STAFFNO = addedStaff.STAFFNO;
             resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
             string activeShortCode = isNew ? newResourceShortCode : resource.SHORTCODE;
             JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, activeShortCode, forceSearchName);
@@ -166,44 +163,30 @@ namespace BluePrints.ViewModels
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
             STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
-
-            resource.IsNewRow = false;
+            primeroUOW.SaveChanges();
+            resource.IsViewNewRow = false;
             resource.Update();
 
-            primeroUOW.SaveChanges();
+            return isNew;
         }
 
-        public void DeleteSelected()
-        {
-            if (MessageBoxService.ShowMessage("Are you sure you want to remove selected resource(s)\n\nThis will mark resource as inactive in EXO", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                return;
-
-            foreach(ExoResourceProjection projection in DisplaySelectedEntities)
-            {
-                delete(projection);
-            }
-        }
-
-        private void delete(ExoResourceProjection projection)
+        private void deleteResource(ExoResourceProjection projection)
         {
             ExoResourceProjection remoteProjection = new ExoResourceProjection();
             DataUtils.ShallowCopy(remoteProjection, projection);
 
             string primaryDbName;
-            delete(projection, primeroUnitOfWork, string.Empty, out primaryDbName);
+            deleteResources(projection, primeroUnitOfWork, string.Empty, out primaryDbName);
             string remoteDbName;
-            delete(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
+            deleteResources(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
         }
 
-        private void delete(ExoResourceProjection projection, IPrimeroEntitiesUnitOfWork primeroUOW, string forceSearchName, out string primaryDbName, bool isRemoteOperation = false)
+        private void deleteResources(ExoResourceProjection projection, IPrimeroEntitiesUnitOfWork primeroUOW, string forceSearchName, out string primaryDbName, bool isRemoteOperation = false)
         {
             ExoMethods.RemoveStaff(primeroUOW, projection, forceSearchName, out primaryDbName);
             ExoMethods.RemoveResources(primeroUOW, projection, forceSearchName);
             ExoMethods.RemoveStockItem(primeroUOW, projection);
             primeroUOW.SaveChanges();
-
-            if(!isRemoteOperation)
-                DisplayEntities.Remove(projection);
         }
 
         /// <summary>
@@ -234,9 +217,13 @@ namespace BluePrints.ViewModels
                     return "Name is required";
             }
 
-            if (!projection.IsNewRow)
+            if (!projection.IsViewNewRow && (IsChangingValueFromBackgroundEvents && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation || CellValueChangingFieldName != null))
             {
-                if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                string validateFieldName = field_name;
+                if (!IsChangingValueFromBackgroundEvents && CellValueChangingFieldName != null)
+                    validateFieldName = CellValueChangingFieldName;
+
+                if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
                 {
                     if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                         return "User cancel";

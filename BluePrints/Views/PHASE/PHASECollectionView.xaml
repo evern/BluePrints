@@ -9,12 +9,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                </dxb:BarManager.Items>
-            </dxb:BarManager>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+            </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
@@ -37,50 +35,40 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                    <dxr:RibbonStatusBarControl.LeftItems>
-                        <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                    </dxr:RibbonStatusBarControl.LeftItems>
-                </dxr:RibbonStatusBarControl>
-                <Grid>
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:LayoutSerializationService />
-                    </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPHASE" Style="{StaticResource DefaultGridControlTemplate}">
-                        <custom:GridControlEx.Columns>
-                            <dxg:GridColumn Header="Internal Number" FieldName="INTERNAL_NUM" />
-                            <dxg:GridColumn Header="Client Number" FieldName="CLIENT_NUM" />
-                            <dxg:GridColumn Header="Title" FieldName="TITLE" />
-                            <dxg:GridColumn Header="Phase Type" FieldName="PHASE_TYPE" HeaderToolTip="Determines whether the current phase can be chosen in design or construct deliverables">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" NullValueButtonPlacement="Popup" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Charge Type" FieldName="CHARGE_TYPE" HeaderToolTip="Determines whether the current phase can be chosen in direct or indirect deliverables">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" NullValueButtonPlacement="Popup" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </custom:GridControlEx.Columns>
-                        <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                        </dxg:GridControl.TotalSummary>
-                        <dxg:GridControl.GroupSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                        </dxg:GridControl.GroupSummary>
-                        <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
-                                <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                    <dxb:BarItemLinkSeparator />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                </dxg:TableView.RowCellMenuCustomizations>
-                            </dxg:TableView>
-                        </dxg:GridControl.View>
-                    </custom:GridControlEx>
-                </Grid>
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPHASE" Style="{StaticResource DefaultGridControlTemplate}">
+                    <custom:GridControlEx.Columns>
+                        <dxg:GridColumn Header="Internal Number" FieldName="INTERNAL_NUM" />
+                        <dxg:GridColumn Header="Client Number" FieldName="CLIENT_NUM" />
+                        <dxg:GridColumn Header="Title" Width="*" FieldName="TITLE" />
+                        <dxg:GridColumn Header="Phase Type" FieldName="PHASE_TYPE" HeaderToolTip="Determines whether the current phase can be chosen in design or construct deliverables">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PhaseType}}" NullValueButtonPlacement="Popup" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Charge Type" FieldName="CHARGE_TYPE" HeaderToolTip="Determines whether the current phase can be chosen in direct or indirect deliverables">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" NullValueButtonPlacement="Popup" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                    </custom:GridControlEx.Columns>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </custom:GridControlEx>
             </DockPanel>
-        </Grid>
+        </dxb:BarManager>
     </Grid>
 </UserControl>

@@ -338,7 +338,7 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.Progress();
             }
-            MainViewModel.BulkDelete(removeWORKPACKS);
+            MainViewModel.BaseBulkDelete(removeWORKPACKS);
 
             List<BASELINE_ITEMProgress> baseline_itemsToSave = new List<BASELINE_ITEMProgress>();
             LoadingScreenManager.CloseLoadingScreen();

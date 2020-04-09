@@ -60,7 +60,6 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             loadExoData();
@@ -120,7 +119,7 @@ namespace BluePrints.ViewModels
                 PROJECT_REVENUE editedRevenue = query.FirstOrDefault();
                 if(editedRevenue != null)
                 {
-                    PROJECT_REVENUEProjection findProjection = DisplayEntities.FirstOrDefault(x => x.MonthCeiling.Year == editedRevenue.REVENUE_MONTH.Year && x.MonthCeiling.Month == editedRevenue.REVENUE_MONTH.Month);
+                    PROJECT_REVENUEProjection findProjection = Entities.FirstOrDefault(x => x.MonthCeiling.Year == editedRevenue.REVENUE_MONTH.Year && x.MonthCeiling.Month == editedRevenue.REVENUE_MONTH.Month);
                     if (findProjection != null)
                     {
                         findProjection.Entity = editedRevenue;
@@ -136,10 +135,11 @@ namespace BluePrints.ViewModels
         PROJECTForecastViewModelWrapper projectForecastViewModel;
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_REVENUEProjection> entities)
         {
+            MainViewModel.IsPersistentView = true;
             summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            summaryBackgroundWorker.RunWorkerAsync();
+            //summaryBackgroundWorker.RunWorkerAsync();
 
             return base.OnMainViewModelLoaded(entities);
         }
@@ -185,9 +185,9 @@ namespace BluePrints.ViewModels
             IEnumerable<ExoDataPoint> actualDataPoints = actualStats.SelectMany(x => x.ExoDataPoints);
             IEnumerable<ExoDataPoint> materialDataPoints = materialStats.SelectMany(x => x.ExoDataPoints);
 
-            foreach (PROJECT_REVENUEProjection displayEntity in DisplayEntities)
+            foreach (PROJECT_REVENUEProjection displayEntity in Entities)
             {
-                displayEntity.SetRevenues(DisplayEntities);
+                displayEntity.SetRevenues(Entities);
                 displayEntity.SetActualDataPoints(actualDataPoints);
                 displayEntity.SetMaterialDataPoints(materialDataPoints);
                 displayEntity.ForecastCosts = forecastDateCosts.Where(x => x.Date >= displayEntity.MonthFloor && x.Date <= displayEntity.MonthCeiling).Sum(x => x.Cost);
@@ -216,11 +216,17 @@ namespace BluePrints.ViewModels
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
+        protected override void OnAfterProjectionSave(PROJECT_REVENUEProjection projection, PROJECT_REVENUE entity, bool isNew)
+        {
+            projection.viewRevenue = null;
+            base.OnAfterProjectionSave(projection, entity, isNew);
+        }
+
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECT_REVENUEProjection projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT_REVENUEProjection().ViewRevenue))
             {
-                foreach (PROJECT_REVENUEProjection displayEntity in DisplayEntities)
+                foreach (PROJECT_REVENUEProjection displayEntity in Entities)
                 {
                     displayEntity.Update();
                 }
@@ -266,6 +272,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             loadExoData();
             isFirstLoaded = false;
             base.FullRefresh();
@@ -285,7 +294,9 @@ namespace BluePrints.ViewModels
         protected override void OnClose(CancelEventArgs e)
         {
             summaryBackgroundWorker.CancelAsync();
-            projectForecastViewModel.Dispose();
+            if(projectForecastViewModel != null)
+                projectForecastViewModel.Dispose();
+
             base.OnClose(e);
         }
         #endregion

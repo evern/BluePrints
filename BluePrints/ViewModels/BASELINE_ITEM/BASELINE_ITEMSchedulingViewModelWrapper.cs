@@ -167,7 +167,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
         {
             MainViewModel.OnAfterProjectionSavedCallBack = OnEntitiesSavedCallBack;
-            MainViewModel.PasteListener = this.PasteListener;
             MainViewModel.SetParentViewModel(this);
             P6_ASSIGNMENTSCollectionViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -175,6 +174,12 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)
+        {
+            projection.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
+        }
+
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
@@ -185,18 +190,12 @@ namespace BluePrints.ViewModels
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
         }
-
-        private void PasteListener(PasteStatus pasteStatus)
+        
+        protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
-
-        }
-
-        protected override void OnBeforeApplyProjectionPropertiesToEntity(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
-        {
-            projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
             //because TProjection is not IProjection<TMainEntity>, do it manually here
             DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
-            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
+            return false;
         }
 
         public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
@@ -291,7 +290,7 @@ namespace BluePrints.ViewModels
 
             List<BASELINE_ITEMProgress> newEntities = getNewEntities(1, true);
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
-            MainViewModel.BulkSave(newEntities);
+            MainViewModel.BaseBulkSave(newEntities);
             if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
@@ -346,7 +345,7 @@ namespace BluePrints.ViewModels
                 MainViewModel.EntitiesUndoRedoManager.PauseActionId();
 
             List<BASELINE_ITEMProgress> newEntities = getNewEntities(1, false);
-            MainViewModel.BulkSave(newEntities);
+            MainViewModel.BaseBulkSave(newEntities);
             if (!_isProcessingMultiple)
                 MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
@@ -448,7 +447,7 @@ namespace BluePrints.ViewModels
                 newEntities.AddRange(currentEnumerationSaveEntities);
             }
 
-            MainViewModel.BulkSave(newEntities);
+            MainViewModel.BaseBulkSave(newEntities);
             _isProcessingMultiple = false;
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
@@ -467,7 +466,7 @@ namespace BluePrints.ViewModels
 
             newEntities = concatenateNewEntitiesWithExistingRenameEntities(newEntities);
 
-            MainViewModel.BulkSave(newEntities);
+            MainViewModel.BaseBulkSave(newEntities);
             _isProcessingMultiple = false;
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
         }
@@ -585,7 +584,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            MainViewModel.BulkSave(entitiesToSave);
+            MainViewModel.BaseBulkSave(entitiesToSave);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
             BackgroundRefresh();
         }
@@ -696,7 +695,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
+        public override IEnumerable<ICanAssignP6> Deliverables_Source => Entities;
         #endregion
 
         #region Reporting
@@ -732,6 +731,7 @@ namespace BluePrints.ViewModels
 
         public void ViewReport()
         {
+            LoadingScreenManager.ShowLoadingScreen(1);
             var baselineReport = new XtraReportBASELINE_ITEMS();
             var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
             if (dbProjectReport != null)
@@ -756,6 +756,7 @@ namespace BluePrints.ViewModels
             previewWindow.WindowState = WindowState.Maximized;
             baselineReport.RequestParameters = false;
             baselineReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
 

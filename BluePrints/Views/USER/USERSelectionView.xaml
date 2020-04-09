@@ -23,7 +23,7 @@
                         <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" />
                         <dxg:GridColumn Header="Role" FieldName="GUID_ROLE">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="NAME" IsTextEditable="False" ItemsSource="{Binding DataContext.LookUpROLES.Entities, ElementName=userControl}" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings DisplayMember="NAME" IsTextEditable="False" ItemsSource="{Binding LookUpROLES.Entities}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>

@@ -136,7 +136,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -149,18 +149,18 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
-            EstimateViewMode estimateViewMode = DisplaySelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
-            DocumentInfo DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode)), "ESTIMATE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
+            EstimateViewMode estimateViewMode = SelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
+            DocumentInfo DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, SelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode)), "ESTIMATE_ITEMCollectionView", "[" + loadPROJECT.NUMBER + "] Direct Estimate");
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanP6BASELINE_ASSIGN()
         {
-            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6BASELINE_NAME != null &&
-                   DisplaySelectedEntity.P6BASELINE_NAME != string.Empty;
+            return SelectedEntity != null && SelectedEntity.P6BASELINE_NAME != null &&
+                   SelectedEntity.P6BASELINE_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN()
@@ -171,8 +171,8 @@ namespace BluePrints.ViewModels
             else
                 viewName = "BUDGET_ITEMSchedulingView";
 
-            string tabName = DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6BASELINE_NAME + " Mapping";
-            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
+            string tabName = SelectedEntity.NAME + " - " + SelectedEntity.P6BASELINE_NAME + " Mapping";
+            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { SelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
@@ -181,13 +181,13 @@ namespace BluePrints.ViewModels
         public bool IsApproving { get; set; }
         public bool CanApprove()
         {
-            return !IsApproving && DisplaySelectedEntity != null;
+            return !IsApproving && SelectedEntity != null;
         }
 
 
         public void Approve()
         {
-            if (DisplaySelectedEntity.STATUS == BaselineStatus.Live)
+            if (SelectedEntity.STATUS == BaselineStatus.Live)
             {
                 MessageBoxService.ShowMessage("Cannot approve live estimate");
                 return;
@@ -201,10 +201,10 @@ namespace BluePrints.ViewModels
             estimate_itemViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = true;
             estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackManualDispose = true;
             estimate_itemViewModelWrapper.OnEntitiesLoadedCallBack = onEstimateItemsLoaded;
-            estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => DisplaySelectedEntity.GUID;
+            estimate_itemViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => SelectedEntity.GUID;
             ISupportParameter receiveParameterViewModel = estimate_itemViewModelWrapper as ISupportParameter;
-            EstimateViewMode estimateViewMode = DisplaySelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
-            receiveParameterViewModel.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, DisplaySelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode));
+            EstimateViewMode estimateViewMode = SelectedEntity.STATUS == BaselineStatus.Working ? EstimateViewMode.Estimate : EstimateViewMode.Budget;
+            receiveParameterViewModel.Parameter = new TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>(null, SelectedEntity, new KeyValuePair<DeliverablesViewType, EstimateViewMode>(DeliverablesViewType.Both, estimateViewMode));
         }
 
         private void onEstimateItemsLoaded(IEnumerable<ESTIMATE_ITEMProgress> projections, object parentId)
@@ -247,7 +247,7 @@ namespace BluePrints.ViewModels
             estimate_itemViewModelWrapper.BulkSave(estimateItemsToSave);
             estimate_itemViewModelWrapper.CleanUpEntitiesLoader();
 
-            ESTIMATE estimate = this.DisplayEntities.FirstOrDefault(x => x.GUID.ToString() == parentId.ToString());
+            ESTIMATE estimate = this.Entities.FirstOrDefault(x => x.GUID.ToString() == parentId.ToString());
             estimate.STATUS = BaselineStatus.Live;
             MainViewModel.Save(estimate);
             MessageBoxService.ShowMessage(estimate.NAME + " approved");

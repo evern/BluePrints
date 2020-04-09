@@ -148,10 +148,10 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("This will reset all assignment and attempt to auto assign deliverables to activity\n\nDo you wish to continue?", "Warning", MessageButton.YesNo) == MessageResult.No)
                 return;
 
-            IEnumerable<P6_ASSIGNMENT> delete_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments);
-            P6_ASSIGNMENTSCollectionViewModel.BulkDelete(delete_assignments);
+            IEnumerable<P6_ASSIGNMENT> delete_assignments = Entities.SelectMany(x => x.P6_Assignments);
+            P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(delete_assignments);
 
-            foreach(ESTIMATE_ITEMProgress displayEntity in DisplayEntities)
+            foreach(ESTIMATE_ITEMProgress displayEntity in Entities)
             {
                 displayEntity.P6_Assignments.Clear();
             }
@@ -159,7 +159,7 @@ namespace BluePrints.ViewModels
             foreach (var task in TASK_Source)
             {
                 string activity_id = task.task_code;
-                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea = DisplayEntities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
+                IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea = Entities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
                 decimal lowValue = 0.01m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {
@@ -184,13 +184,13 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            IEnumerable<P6_ASSIGNMENT> save_assignments = DisplayEntities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
+            IEnumerable<P6_ASSIGNMENT> save_assignments = Entities.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
             foreach (P6_ASSIGNMENT save_assignment in save_assignments)
             {
                 P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
             }
 
-            P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
+            P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(save_assignments);
             FullRefresh();
         }
 
@@ -296,7 +296,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override IEnumerable<ICanAssignP6> Deliverables_Source => DisplayEntities;
+        public override IEnumerable<ICanAssignP6> Deliverables_Source => Entities;
 
         public override bool HasHoursOnDeliverables => false;
         #endregion

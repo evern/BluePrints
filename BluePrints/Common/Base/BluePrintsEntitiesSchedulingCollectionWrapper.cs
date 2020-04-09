@@ -221,6 +221,9 @@ namespace BluePrints.Common.Base
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             activities_source = null;
             ReloadEntitiesCollection();
         }
@@ -624,7 +627,7 @@ namespace BluePrints.Common.Base
                         string assignedDeliverableNames = string.Empty;
                         foreach(P6_ASSIGNMENT otherAssignment in otherAssignments)
                         {
-                            ICanAssignP6 assignedDeliverable = DisplayEntities.FirstOrDefault(x => x.OriginalEntityKey == otherAssignment.GUID_ORIGINAL);
+                            ICanAssignP6 assignedDeliverable = Entities.FirstOrDefault(x => x.OriginalEntityKey == otherAssignment.GUID_ORIGINAL);
                             if (assignedDeliverable != null)
                             {
                                 assignedDeliverables.Add(assignedDeliverable);
@@ -652,7 +655,7 @@ namespace BluePrints.Common.Base
                                 assignedDeliverable.P6_Assignments.Remove(removeAssignment);
                         }
 
-                        P6_ASSIGNMENTSCollectionViewModel.BulkDelete(otherAssignments);
+                        P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(otherAssignments);
                     }
                 }
 
@@ -677,7 +680,7 @@ namespace BluePrints.Common.Base
                 P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
             }
 
-            P6_ASSIGNMENTSCollectionViewModel.BulkSave(save_assignments);
+            P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(save_assignments);
             SetMaxUnits();
             raise_deliverable_assignment_changes();
             raiseQuantityAssignmentPropertiesChanged();
@@ -689,18 +692,13 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public bool CanExportToExcel()
-        {
-            return DisplayEntities != null && DisplayEntities.Count > 0;
-        }
-
         List<P6_AssignmentProjection> excelExportData;
         public List<P6_AssignmentProjection> ExcelExportData => excelExportData;
         public override void ExportToExcel()
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             excelExportData = new List<P6_AssignmentProjection>();
-            foreach(ICanAssignP6 entity in DisplayEntities.OrderBy(x => x.P6AssignmentName))
+            foreach(ICanAssignP6 entity in Entities.OrderBy(x => x.P6AssignmentName))
             {
                 foreach(P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
                 {
@@ -780,7 +778,7 @@ namespace BluePrints.Common.Base
                         summarizeActivity.Add(activity);
                 }
 
-                P6_ASSIGNMENTSCollectionViewModel.BulkSave(p6_assignments_in_order);
+                P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(p6_assignments_in_order);
                 LoadingScreenManager.Progress();
             }
 
@@ -872,7 +870,7 @@ namespace BluePrints.Common.Base
             foreach (P6_Activity edited_activity in edited_activities)
                 summarize_wbs_parent_unit(edited_activity);
 
-            P6_ASSIGNMENTSCollectionViewModel.BulkSave(new ObservableCollection<P6_ASSIGNMENT>(edited_assignments));
+            P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(new ObservableCollection<P6_ASSIGNMENT>(edited_assignments));
             Selected_P6_Assignments.Clear();
             Selected_P6_Assignments.Add(swap_assignment_selection);
             Selected_P6_Assignment = swap_assignment_selection;
@@ -1191,7 +1189,7 @@ namespace BluePrints.Common.Base
 
                     if (reassign_activities.Count > 0)
                     {
-                        P6_ASSIGNMENTSCollectionViewModel.BulkSave(reassign_activities.Select(x => x.deliverable_assignment));
+                        P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(reassign_activities.Select(x => x.deliverable_assignment));
                         MessageBoxService.ShowMessage(reassign_activities.Count + " activities re-assigned");
                     }
                 }
@@ -1209,7 +1207,7 @@ namespace BluePrints.Common.Base
             if(missingAssignments.Count > 0)
             {
                 deletedDeliverablesAssignmentCount = missingAssignments.Count;
-                P6_ASSIGNMENTSCollectionViewModel.BulkDelete(missingAssignments);
+                P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingAssignments);
             }
 
             if (missing_activities.Count > 0)
@@ -1219,7 +1217,7 @@ namespace BluePrints.Common.Base
 
                 if (MessageBoxService.ShowMessage("Do you wish to delete these invalid assignments?", BluePrintsResources.Warning_Caption, MessageButton.OKCancel) == MessageResult.OK)
                 {
-                    P6_ASSIGNMENTSCollectionViewModel.BulkDelete(missing_activities.Select(x => x.deliverable_assignment));
+                    P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missing_activities.Select(x => x.deliverable_assignment));
                     FullRefresh();
                 }
             }
@@ -1266,7 +1264,7 @@ namespace BluePrints.Common.Base
             List<P6_ASSIGNMENT> missingDeliverablesAssignments = new List<P6_ASSIGNMENT>();
             foreach (P6_ASSIGNMENT assignment in P6_ASSIGNMENTSCollectionViewModel.Entities)
             {
-                if (!DisplayEntities.Any(x => x.OriginalEntityKey == assignment.GUID_ORIGINAL))
+                if (!Entities.Any(x => x.OriginalEntityKey == assignment.GUID_ORIGINAL))
                     missingDeliverablesAssignments.Add(assignment);
             }
 

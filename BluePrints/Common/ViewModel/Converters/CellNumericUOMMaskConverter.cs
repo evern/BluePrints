@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Data;
 using System;
 using System.Data;
 using System.Globalization;
@@ -22,16 +23,16 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (value == DependencyProperty.UnsetValue)
                     return defaultFormat;
 
-                string UOMColumnName = BluePrintsResources.ForecastUOMColumnName;
                 DataRow dataRow = (DataRow)value;
-                if (!dataRow.Table.Columns.Contains(UOMColumnName))
+                if (!dataRow.Table.Columns.Contains(BluePrintsResources.Forecast_ForecastJobColumn))
                     return defaultFormat;
 
-                if (dataRow[UOMColumnName] != DBNull.Value)
-                {
-                    string uom = dataRow[UOMColumnName].ToString();
-                    return "###,##0 " + uom;
-                }
+                if (dataRow[BluePrintsResources.Forecast_ForecastJobColumn] == DBNull.Value)
+                    return defaultFormat;
+
+                FORECAST_JOB forecastJob = (FORECAST_JOB)dataRow[BluePrintsResources.Forecast_ForecastJobColumn];
+                string uom = forecastJob.UOM;
+                return "###,##0 " + uom;
             }
             catch (Exception ex)
             {

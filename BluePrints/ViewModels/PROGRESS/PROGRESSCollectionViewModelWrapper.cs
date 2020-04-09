@@ -152,7 +152,7 @@ namespace BluePrints.ViewModels
 
         public bool CanBackup()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -166,7 +166,7 @@ namespace BluePrints.ViewModels
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            PROGRESS selectedPROGRESS = DisplaySelectedEntity;
+            PROGRESS selectedPROGRESS = SelectedEntity;
             if (selectedPROGRESS == null)
                 return;
 
@@ -203,7 +203,7 @@ namespace BluePrints.ViewModels
 
         public bool CanP6BASELINE_ASSIGN()
         {
-            return DisplaySelectedEntity != null && DisplaySelectedEntity.P6PROGRESS_NAME != null && DisplaySelectedEntity.P6PROGRESS_NAME != string.Empty;
+            return SelectedEntity != null && SelectedEntity.P6PROGRESS_NAME != null && SelectedEntity.P6PROGRESS_NAME != string.Empty;
         }
 
         public void P6BASELINE_ASSIGN()
@@ -214,14 +214,14 @@ namespace BluePrints.ViewModels
             else
                 viewName = "BASELINE_ITEMSchedulingView";
 
-            string tabName = DisplaySelectedEntity.NAME + " - " + DisplaySelectedEntity.P6PROGRESS_NAME + " Mapping";
-            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { DisplaySelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, false }, viewName, tabName);
+            string tabName = SelectedEntity.NAME + " - " + SelectedEntity.P6PROGRESS_NAME + " Mapping";
+            DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { SelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, false }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -234,14 +234,14 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
             DocumentInfo DocumentInfo;
-            if(DisplaySelectedEntity.TYPE == PhaseType.Design)
-                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "OffsiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+            if(SelectedEntity.TYPE == PhaseType.Design)
+                DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, SelectedEntity), "OffsiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
             else
-                DocumentInfo = new DocumentInfo(DisplaySelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, DisplaySelectedEntity), "SiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
+                DocumentInfo = new DocumentInfo(SelectedEntity.GUID.ToString(), new DualEntitiesParameter<PROJECT, PROGRESS>(null, SelectedEntity), "SiteDirectProgressCollectionView", "[" + loadPROJECT.NUMBER + "] Progress");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
@@ -255,7 +255,7 @@ namespace BluePrints.ViewModels
         {
             if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().STATUS) && new_value != null)
             {
-                IEnumerable<PROGRESS> otherPROGRESSES = DisplayEntities.Where(x => x.GUID != projection.GUID && x.TYPE == projection.TYPE);
+                IEnumerable<PROGRESS> otherPROGRESSES = Entities.Where(x => x.GUID != projection.GUID && x.TYPE == projection.TYPE);
                 ProgressStatus newStatus = (ProgressStatus)new_value;
                 if (otherPROGRESSES.Any(x => x.STATUS == ProgressStatus.Live) && newStatus == ProgressStatus.Live)
                     return "There can be only one live progress";

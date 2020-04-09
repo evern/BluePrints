@@ -9,6 +9,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -32,9 +33,7 @@ using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTPOForecastViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTPOForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECTPOForecastViewModelWrapper as a POCO view model.
@@ -103,8 +102,9 @@ namespace BluePrints.ViewModels
 
             exoLoadingBackgroundWorker.DoWork += ExoLoadingBackgroundWorker_DoWork;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
-            IsForecastLoading = true;
-            this.RaisePropertyChanged(x => x.isForecastLoading);
+            IsLoading = true;
+            isHandleLoadedGridRows = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
         }
 
         private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -123,7 +123,6 @@ namespace BluePrints.ViewModels
             generateAlignedDataDates();
             isExoDataLoaded = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
-            mainThreadDispatcher.BeginInvoke(new Action(() => postLoadedDispatcherTimer.Start()));
         }
 
         private void CloseEditorDispatcher_Tick(object sender, EventArgs e)
@@ -238,7 +237,6 @@ namespace BluePrints.ViewModels
         //List<ExoDataPoint> materialDataPoints;
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_PO> entities)
         {
-            delayPostLoadedTimer = false;
             exoLoadingBackgroundWorker.RunWorkerAsync();
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -254,7 +252,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
             TableView gridTableView = (TableView)gridControl.View;
@@ -407,6 +405,31 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        protected ObservableCollection<ColumnDescriptor> columnDescriptors;
+        public ObservableCollection<ColumnDescriptor> ColumnDescriptors
+        {
+            get
+            {
+                if (columnDescriptors == null)
+                {
+                    columnDescriptors = new ObservableCollection<ColumnDescriptor>();
+                }
+                return columnDescriptors;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> summaryDescriptors;
+        public ObservableCollection<SummaryDescriptor> SummaryDescriptors
+        {
+            get
+            {
+                if (summaryDescriptors == null)
+                {
+                    summaryDescriptors = new ObservableCollection<SummaryDescriptor>();
+                }
+                return summaryDescriptors;
+            }
+        }
         DataTable dataPointsTable = null;
         public virtual DataTable DataPointsTable
         {
@@ -420,6 +443,9 @@ namespace BluePrints.ViewModels
                     //generate aligned dates
                     if (alignedDataDateCollection == null || alignedDataDateCollection.Count == 0)
                         return null;
+
+                    //initialize view source
+                    InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
 
                     //initialize datatable schema
                     dataPointsTable = new DataTable();
@@ -458,17 +484,44 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
                     //TableViewService.ScrollToLast();
-                    IsForecastLoading = false;
+                    IsLoading = false;
                     this.RaisePropertyChanged(x => x.PODetails);
-                    this.RaisePropertyChanged(x => x.IsForecastLoading);
+                    this.RaisePropertyChanged(x => x.IsLoading);
                 }
 
                 return dataPointsTable;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PONO", Header = "PO Number", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PONO", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", Header = "Variation", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Supplier", Header = "Supplier", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstActualDate", Header = "First Raised", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstInvoiceDate", Header = "First Invoiced", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_TotalPrice", Header = "Total", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Invoiced", Header = "Invoiced $", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_RemainingPrice", Header = "Outstanding", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.TotalForecast", Header = "Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TotalForecast", DisplayFormat = "c", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Unforecasted", Header = "Not Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Unforecasted });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Unforecasted", DisplayFormat = "c", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Comments", Header = "Comments", ReadOnly = false, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            {
+                string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Mask = "c", Increment = 1, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
             }
         }
 
@@ -502,7 +555,7 @@ namespace BluePrints.ViewModels
                 return false;
 
             //since displayentities comes from mainviewmodel it should be populated by now
-            DateTime latestDate = DisplayEntities.Count == 0 ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1) : DisplayEntities.Max(x => x.FORECAST_DATE);
+            DateTime latestDate = Entities.Count == 0 ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1) : Entities.Max(x => x.FORECAST_DATE);
             if (latestDate > ForecastEndDate)
                 ForecastEndDate = latestDate;
 
@@ -557,7 +610,7 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue, true);
 
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
@@ -570,8 +623,8 @@ namespace BluePrints.ViewModels
 
         private void clearPOForecast(string poNo, string variationCode)
         {
-            List<FORECAST_PO> removePOForecasts = DisplayEntities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
-            MainViewModel.BulkDelete(removePOForecasts);
+            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
+            MainViewModel.BaseBulkDelete(removePOForecasts);
         }
 
         private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
@@ -586,7 +639,7 @@ namespace BluePrints.ViewModels
             var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
             foreach (var groupByCodesPOItem in groupByCodesPOItems)
             {
-                FORECAST_PO findFORECAST_PO = DisplayEntities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
+                FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
 
                 if (findFORECAST_PO == null)
                 {
@@ -613,28 +666,7 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
-        }
-
-        public void ValidateCell(GridCellValidationEventArgs e)
-        {
-            //if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().PaymentTerms))
-            // || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().RemainingPeriodEdit))
-            // || e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().FirstForecastDate)))
-            //{
-            //    DataRowView dataRowView = (DataRowView)e.Row;
-            //    POForecastProjection projection = (POForecastProjection)dataRowView[columnEntity];
-            //    initializeForecastConfig(projection);
-
-            //    if (e.IsValid)
-            //    {
-            //        MainViewModel.Save(projection.ForecastConfig);
-            //        generatePOForecast(projection, alignedDataDateCollection);
-            //        GridControlService.RefreshData();
-            //        TableView tableView = e.Source as TableView;
-            //        tableView.CloseEditor();
-            //    }
-            //}
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
         }
 
         public bool CanShowCustomPaymentDialog
@@ -643,6 +675,11 @@ namespace BluePrints.ViewModels
             {
                 return SelectedDataRow != null;
             }
+        }
+
+        public bool CanPaymentSpread(object parameter)
+        {
+            return !IsLoading;
         }
 
         decimal? spreadPeriod = null;
@@ -764,7 +801,7 @@ namespace BluePrints.ViewModels
 
                     if (!forceRefreshDataTable)
                     {
-                        updateRowPOForecast(alignedDataDateCollection, DisplayEntities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
 
                         //because grid doesn't refresh totals
                         GridControlService.RefreshData();
@@ -814,8 +851,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool CanAlignPOsWithActuals()
+        {
+            return !IsLoading;
+        }
+
         public void AlignPOsWithActuals()
         {
+            EntitiesUndoRedoManager.Clear();
             IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
                                                             select (POForecastProjection)dr[columnEntity];
 
@@ -891,12 +934,10 @@ namespace BluePrints.ViewModels
 
             LoadingScreenManager.CloseLoadingScreen();
             LastAlignedDate = DateTime.Now;
-            MainViewModel.BulkSave(saveFORECAST_POs);
+            MainViewModel.BaseBulkSave(saveFORECAST_POs);
             refreshDataTable();
         }
 
-        bool? isForecastLoading = null;
-        public bool IsForecastLoading { get; set; }
         private void refreshDataTable()
         {
             generateAlignedDataDates();
@@ -911,14 +952,22 @@ namespace BluePrints.ViewModels
                     select dr).FirstOrDefault();
         }
 
+        public override bool CanFullRefresh()
+        {
+            return !IsLoading;
+        }
+
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
             allPODetails = null;
             //loadExoData();
-            IsForecastLoading = true;
-            this.RaisePropertyChanged(x => x.IsForecastLoading);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             base.FullRefresh();
         }
 
@@ -941,7 +990,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveDateAndRefresh()
         {
-            return !IsForecastLoading;
+            return !IsLoading;
         }
 
         public void SaveDateAndRefresh()
@@ -983,6 +1032,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            EntitiesUndoRedoManager.Clear();
             DateTime saveDateTime = new DateTime(((DateTime)ForecastStartDate).Year, ((DateTime)ForecastStartDate).Month, 1).AddMonths(1).AddDays(-1);
             loadPROJECT.FORECAST_END_DATE = ForecastEndDate;
             loadPROJECT.FORECAST_DATA_DATE = saveDateTime;
@@ -1006,7 +1056,7 @@ namespace BluePrints.ViewModels
             }
             set
             {
-                if (!IsForecastLoading)
+                if (!IsLoading)
                 {
                     loadPROJECT.FORECAST_PO_LAST_ALIGNED = value;
                     PROJECTCollectionViewModel.Save(loadPROJECT);
@@ -1070,7 +1120,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (IsLoading || IsForecastLoading)
+                if (IsLoading)
                     return new List<ExoDataPoint>();
 
                 if(allPODetails == null)
@@ -1148,29 +1198,68 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.FilterCriteria);
         }
 
-        public bool CanUndo()
+        public override bool CanExportToExcel()
         {
-            if (EntitiesUndoRedoManager == null)
+            return !IsLoading;
+        }
+
+        public override bool CanExportToPDF()
+        {
+            return !IsLoading;
+        }
+
+        public override bool CanResetLayout()
+        {
+            if (IsLoading)
+                return false;
+
+            return base.CanResetLayout();
+        }
+
+        public override bool CanSaveLayout()
+        {
+            return !IsLoading;
+        }
+
+        public override bool CanKeyboardCopy()
+        {
+            return !IsLoading;
+        }
+
+        public override bool CanKeyboardPaste()
+        {
+            return !IsLoading;
+        }
+
+        public override bool CanUndo()
+        {
+            if (EntitiesUndoRedoManager == null || IsLoading)
                 return false;
 
             return EntitiesUndoRedoManager.CanUndo();
         }
 
-        public bool CanRedo()
+        public override bool CanRedo()
         {
-            if (EntitiesUndoRedoManager == null)
+            if (EntitiesUndoRedoManager == null || IsLoading)
                 return false;
 
             return EntitiesUndoRedoManager.CanRedo();
         }
 
-        public void Undo()
+        public override void Undo()
         {
+            if (!CanUndo())
+                return;
+
             EntitiesUndoRedoManager.Undo();
         }
 
-        public void Redo()
+        public override void Redo()
         {
+            if (!CanRedo())
+                return;
+
             EntitiesUndoRedoManager.Redo();
         }
 
@@ -1255,12 +1344,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void KeyboardCopy()
+        public override void KeyboardCopy()
         {
             System.Windows.Forms.SendKeys.SendWait("^c");
         }
 
-        public void KeyboardPaste()
+        public override void KeyboardPaste()
         {
             System.Windows.Forms.SendKeys.SendWait("^v");
         }

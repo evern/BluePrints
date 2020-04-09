@@ -86,12 +86,12 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        protected override bool onBeforeEntitySavedIsContinue(REGISTER_LL projection)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_LL projection, out bool isNew)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
             if (projection.GUID == Guid.Empty && projection.DATE_IDENTIFIED == null)
                 projection.DATE_IDENTIFIED = DateTime.Now.Date;
-            return base.onBeforeEntitySavedIsContinue(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override string UnifiedRowValidation(REGISTER_LL projection)

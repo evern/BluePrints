@@ -103,7 +103,7 @@ namespace BluePrints.ViewModels
             exoLines = ExoQueries.GetProjectLines(primeroUnitOfWorkFactory.CreateUnitOfWork(), loadPROJECT.NUMBER);
             InitializeColumnSource(ViewColumns, ViewSummaries, alignedDataDateCollection);
 
-            LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
+            LoadingScreenManager.ShowLoadingScreen(Entities.Count);
             LoadingScreenManager.SetMessage("Preparing View...");
 
             //construct data points table
@@ -114,7 +114,7 @@ namespace BluePrints.ViewModels
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
-            var groupedJobs = DisplayEntities.GroupBy(x => new { SubJobCode = x.SUBJOB_CODE, DisciplineCode = x.DISCIPLINE_CODE, CommodityCode = x.COMMODITY_CODE, VariationCode = x.VARIATION_CODE })
+            var groupedJobs = Entities.GroupBy(x => new { SubJobCode = x.SUBJOB_CODE, DisciplineCode = x.DISCIPLINE_CODE, CommodityCode = x.COMMODITY_CODE, VariationCode = x.VARIATION_CODE })
               .Select(group => new { group.Key.SubJobCode, group.Key.DisciplineCode, group.Key.CommodityCode, group.Key.VariationCode, DateCosts = group.ToList() }).OrderBy(x => x.SubJobCode).ThenBy(x => x.DisciplineCode).ThenBy(x => x.CommodityCode).ThenBy(x => x.VariationCode);
 
             foreach (var groupedJob in groupedJobs)
@@ -173,10 +173,10 @@ namespace BluePrints.ViewModels
             DateTime firstDataDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
             DateTime lastDataDate = firstDataDate;
             
-            if(DisplayEntities.Count != 0)
+            if(Entities.Count != 0)
             {
-                firstDataDate = DisplayEntities.Min(x => x.FORECAST_DATE);
-                lastDataDate = DisplayEntities.Max(x => x.FORECAST_DATE);
+                firstDataDate = Entities.Min(x => x.FORECAST_DATE);
+                lastDataDate = Entities.Max(x => x.FORECAST_DATE);
             }
 
             return ChronologicalHelpers.GenerateEndDatesCollection(firstDataDate, lastDataDate);
@@ -264,6 +264,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            if (!CanFullRefresh())
+                return;
+
             IsLoadingForecast = true;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
             alignedDataDateCollection.Clear();

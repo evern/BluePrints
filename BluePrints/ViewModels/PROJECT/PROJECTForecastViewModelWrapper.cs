@@ -269,8 +269,8 @@ namespace BluePrints.ViewModels
         public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
-            IsShowViewLoading = true;
-            this.RaisePropertyChanged(x => x.IsShowViewLoading);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
 
             dataPointsTable = null;
             commodityJobs = null;
@@ -279,8 +279,8 @@ namespace BluePrints.ViewModels
             OnDataTableLoaded?.Invoke(DataPointsTable);
             this.RaisePropertyChanged(x => x.DataPointsTable);
 
-            IsShowViewLoading = false;
-            this.RaisePropertyChanged(x => x.IsShowViewLoading);
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
         }
 
         public bool FullScreenView = true;
@@ -295,7 +295,7 @@ namespace BluePrints.ViewModels
             ForceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
-            IsShowViewLoading = true;
+            IsLoading = true;
             LoadingScreenManager.DisableLoadingScreen = false;
             skipBindingSwitch = true;
             hiddenColumnFieldNames.Add(columnEntity);
@@ -305,7 +305,7 @@ namespace BluePrints.ViewModels
             DetailedData = new List<ExoDataPoint>();
             alignedDataDateCollection = new List<DateTime>();
             IsHidden = true;
-            delayPostLoadedTimer = true;
+            isHandleLoadedGridRows = true;
             //isExcelExportDataAware = false;
             IsVariationSeparated = true;
 
@@ -364,7 +364,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveDateAndRefresh()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public void SaveDateAndRefresh()
@@ -460,15 +460,13 @@ namespace BluePrints.ViewModels
 
         public bool CanReloadP6Forecast()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public async void ReloadP6Forecast()
         {
-            IsShowViewLoading = true;
-            this.RaisePropertyChanged(x => x.IsShowViewLoading);
-            IsLoadingForecast = true;
-            this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             if (summaryBackgroundWorker != null)
                 summaryBackgroundWorker.CancelAsync();
             
@@ -549,10 +547,7 @@ namespace BluePrints.ViewModels
                     LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
                 }
 
-                postLoadedDispatcherTimer = new Timer();
-                postLoadedDispatcherTimer.Interval = 10;
-                postLoadedDispatcherTimer.Elapsed += post_loaded_dispatcher_timer_tick;
-                postLoadedDispatcherTimer.Start();
+                onGridRowsLoaded();
             }
         }
 
@@ -565,16 +560,16 @@ namespace BluePrints.ViewModels
 
         public override bool CanFullRefresh()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public override void FullRefresh()
         {
-            IsShowViewLoading = true;
-            this.RaisePropertyChanged(x => x.IsShowViewLoading);
-            IsLoadingForecast = true;
-            isCompletelyLoaded = false;
-            this.RaisePropertyChanged(x => x.isCompletelyLoaded);
+            if (!CanFullRefresh())
+                return;
+
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             alignedDataDateCollection.Clear();
             DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();
@@ -688,7 +683,7 @@ namespace BluePrints.ViewModels
             DateTime endDateToGenerate;
 
             //because background worker haven't update this value yet, updating it will allow end date to be saved when it's less than remaining end date
-            isCompletelyLoaded = true;
+            IsLoading = false;
             if (remainingDataPoints.Count() > 0)
             {
                 endDateToGenerate = remainingDataPoints.Max(x => x.ProgressDate);
@@ -967,10 +962,9 @@ namespace BluePrints.ViewModels
                 bool isPreviousEACReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC)) == LoginCredentials.PermissionStatus.None;
 
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.JobError });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Title", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
-                
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.SubJob.Code", DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Discipline.Code", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Name", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
@@ -1341,7 +1335,6 @@ namespace BluePrints.ViewModels
                 DetailTableViewService.ApplyBestFit();
                 isDetailBestFitApplied = true;
             }
-            //this.RaisePropertyChanged(x => x.IsHidden);
         }
 
         public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -1496,17 +1489,8 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        public void KeyboardCopy()
-        {
-            System.Windows.Forms.SendKeys.SendWait("^c");
-        }
-
-        public void KeyboardPaste()
-        {
-            System.Windows.Forms.SendKeys.SendWait("^v");
-        }
         
-        public virtual void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
         {
             GridControl gridControl = (GridControl)e.Source;
             TableView gridTableView = (TableView)gridControl.View;
@@ -1564,7 +1548,7 @@ namespace BluePrints.ViewModels
                     {
                         ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
                         decimal oldValue = job.PreviousEAC;
-
+                        
                         commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
                         EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
                     }
@@ -1615,7 +1599,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        public void DeleteCellContent()
+        public void ResetCellContent()
         {
             EntitiesUndoRedoManager.PauseActionId();
             var selected_cells = getSelectedCells();
@@ -1647,7 +1631,7 @@ namespace BluePrints.ViewModels
 
         public bool CanApplyCurrentPF()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public void ApplyCurrentPF()
@@ -1678,7 +1662,7 @@ namespace BluePrints.ViewModels
 
         public bool CanUpdateCurrentPF()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public void UpdateCurrentPF()
@@ -1805,7 +1789,7 @@ namespace BluePrints.ViewModels
                         resetFORECAST.FORECAST_UNITS = null;
                     }
 
-                    FORECASTCollectionViewModel.BulkSave(resetFORECASTS);
+                    FORECASTCollectionViewModel.BaseBulkSave(resetFORECASTS);
                     foreach (ForecastDateCost dateCost in job.DateCosts)
                     {
                         string alignedDateField = (dateCost.Date).ToString(BluePrintsResources.ColumnDateFormat);
@@ -1841,7 +1825,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void ValidateCell(GridCellValidationEventArgs e)
+        public override void ValidateCell(GridCellValidationEventArgs e)
         {
             if(e.Value != null)
             {
@@ -2106,7 +2090,7 @@ namespace BluePrints.ViewModels
                 deleteFORECAST.FORECAST_UNITS = null;
             }
 
-            FORECASTCollectionViewModel.BulkSave(deleteFORECASTS);
+            FORECASTCollectionViewModel.BaseBulkSave(deleteFORECASTS);
 
             if (editFORECAST == null)
             {
@@ -2322,7 +2306,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveCurrentMonthEAC()
         {
-            return !IsShowViewLoading;
+            return !IsLoading;
         }
 
         public void SaveCurrentMonthEAC()
@@ -2424,28 +2408,22 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool CanUndo()
+        public override bool CanUndo()
         {
-            if (EntitiesUndoRedoManager == null)
-                return false;
-
-            return EntitiesUndoRedoManager.CanUndo();
+            return !IsLoading && EntitiesUndoRedoManager.CanUndo();
         }
 
-        public bool CanRedo()
-        {
-            if (EntitiesUndoRedoManager == null)
-                return false;
-
-            return EntitiesUndoRedoManager.CanRedo();
-        }
-
-        public void Undo()
+        public override void Undo()
         {
             EntitiesUndoRedoManager.Undo();
         }
 
-        public void Redo()
+        public override bool CanRedo()
+        {
+            return !IsLoading && EntitiesUndoRedoManager.CanRedo();
+        }
+
+        public override void Redo()
         {
             EntitiesUndoRedoManager.Redo();
         }
@@ -2629,7 +2607,7 @@ namespace BluePrints.ViewModels
 
         public bool CanDistributeUnits(object parameter)
         {
-            if (!isCompletelyLoaded)
+            if (IsLoading)
                 return false;
 
             GridControl gridControl = (GridControl)parameter;

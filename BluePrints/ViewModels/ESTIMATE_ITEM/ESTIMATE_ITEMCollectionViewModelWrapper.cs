@@ -71,8 +71,6 @@ namespace BluePrints.ViewModels
 
         public string DefaultPhaseInternalNumber { get; set; }
         public Func<ESTIMATE_ITEMProgress> SelectedEntityCallBack { get; set; }
-        public ESTIMATE_ITEMProgress SelectedEntity { get => SelectedEntityCallBack != null ? SelectedEntityCallBack.Invoke() : DisplaySelectedEntity; }
-        public IEnumerable<ESTIMATE_ITEMProgress> SelectedEntities { get; set; }
         public IEnumerable<ESTIMATE_ITEMProgress> EditableAllEntities { get; set; }
         public bool IsProcurementSubjobVisible { get; set; }
         private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -131,16 +129,10 @@ namespace BluePrints.ViewModels
         {
             bool createLiveEstimate = false;
             if (estimation_direct == null && !SupressCompulsoryEntityNotFoundMessage)
-            {
-                //mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Budget file not found")));
                 createLiveEstimate = true;
-            }
 
             if ((estimation_direct != null && estimation_direct.STATUS == BaselineStatus.Working))
-            {
-                //mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live budget not found")));
                 createLiveEstimate = true;
-            }
 
             if(createLiveEstimate)
             {
@@ -154,6 +146,8 @@ namespace BluePrints.ViewModels
                 bluePrintsUnitOfWork.SaveChanges();
 
                 loadESTIMATE = newESTIMATE_DIRECT;
+                stopSubsequentEntitiesLoading = true;
+                FullRefresh();
             }
             else
                 loadESTIMATE = estimation_direct;
@@ -161,14 +155,7 @@ namespace BluePrints.ViewModels
 
         private void assign_progress(PROGRESS progress)
         {
-            bool createLiveProgress = false;
             if (progress == null && !SupressCompulsoryEntityNotFoundMessage)
-            {
-                createLiveProgress = true;
-                mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
-            }
-
-            if(createLiveProgress)
             {
                 IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
                 PROGRESS newConstructionPROGRESS = new PROGRESS();
@@ -184,6 +171,8 @@ namespace BluePrints.ViewModels
                 bluePrintsUnitOfWork.SaveChanges();
 
                 livePROGRESS = newConstructionPROGRESS;
+                stopSubsequentEntitiesLoading = true;
+                FullRefresh();
             }
             else
                 livePROGRESS = progress;
@@ -430,6 +419,11 @@ namespace BluePrints.ViewModels
             return findDISCIPLINE.GUID;
         }
 
+        public bool CanAlign()
+        {
+            return !IsLoading;
+        }
+
         public void Align()
         {
             if (MessageBoxService.ShowMessage("This will add EXO jobs that doesn't exist in BluePrints or remove BluePrints jobs that doesn't exists in EXO, do you wish to continue?", "Warning", MessageButton.OKCancel, MessageIcon.Question) != MessageResult.OK)
@@ -446,9 +440,9 @@ namespace BluePrints.ViewModels
             List<ESTIMATE_ITEMProgress> newESTIMATE_ITEMS = new List<ESTIMATE_ITEMProgress>();
             List<ErrorMessage> messages = new List<ErrorMessage>();
 
-            Common.LoadingScreenManager.ShowLoadingScreen(DisplayEntities.Count);
+            Common.LoadingScreenManager.ShowLoadingScreen(Entities.Count);
             Common.LoadingScreenManager.SetMessage("Parsing EXO jobs...");
-            List<ESTIMATE_ITEMProgress> entities = DisplayEntities.ToList();
+            List<ESTIMATE_ITEMProgress> entities = Entities.ToList();
 
             for(int i=0;i < entities.Count;i++)
             {
@@ -472,7 +466,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     //remove duplicates
-                    IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = DisplayEntities.Where(x => x.GUID != displayEntity.GUID && x.UniqueJobcode == displayEntity.UniqueJobcode);
+                    IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = Entities.Where(x => x.GUID != displayEntity.GUID && x.UniqueJobcode == displayEntity.UniqueJobcode);
                     if (duplicateEntities.Count() > 0)
                     {
                         foreach (ESTIMATE_ITEMProgress duplicateEntity in duplicateEntities)
@@ -505,7 +499,7 @@ namespace BluePrints.ViewModels
                         string fullDisciplineCode = string.Concat(disciplineCode, disciplineNum);
                         string fullWBSCode = exoLine.SubJobCode + "-" + fullDisciplineCode + "-" + exoLine.CommodityCode;
 
-                        ESTIMATE_ITEMProgress findESTIMATE_ITEM = DisplayEntities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
+                        ESTIMATE_ITEMProgress findESTIMATE_ITEM = Entities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
                         if (findESTIMATE_ITEM == null)
                         {
                             if(findESTIMATE_ITEM == null)
@@ -549,11 +543,11 @@ namespace BluePrints.ViewModels
                 DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(messages, "Do you wish to continue with adding/removing jobs in the following list?");
                 if(ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.OK)
                 {
-                    MainViewModel.BulkSave(newESTIMATE_ITEMS);
-                    MainViewModel.BulkDelete(removeESTIMATE_ITEMS);
-                    MessageBoxService.ShowMessage("All job(s) are aligned between BluePrints and EXO", "Congratulation!", MessageButton.OK);
+                    MainViewModel.BaseBulkSave(newESTIMATE_ITEMS);
+                    MainViewModel.BaseBulkDelete(removeESTIMATE_ITEMS);
 
                     FullRefresh();
+                    MessageBoxService.ShowMessage("All job(s) are aligned between BluePrints and EXO", "Congratulation!", MessageButton.OK);
                 }
             }
             else
@@ -703,23 +697,16 @@ namespace BluePrints.ViewModels
             //When this is not called externally as a nested wrapper
             if(MainViewModel != null)
             {
-                SelectedEntities = DisplaySelectedEntities;
                 EditableAllEntities = MainViewModel.Entities;
                 DefaultPhaseInternalNumber = BluePrintsResources.Default_Construction_Phase;
             }
         }
 
-        public Action<ESTIMATE_ITEMProgress> ApplyViewSpecificPropertiesToEntityCallBack { get; set; }
-        protected override void OnBeforeApplyProjectionPropertiesToEntity(ESTIMATE_ITEMProgress projectionEntity, ESTIMATE_ITEM entity)
+        protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(ESTIMATE_ITEMProgress projection, ESTIMATE_ITEM entity)
         {
-            if (ApplyViewSpecificPropertiesToEntityCallBack == null)
-                projectionEntity.Entity.Entity.GUID_ESTIMATE = load_context_guid;
-            else
-                ApplyViewSpecificPropertiesToEntityCallBack.Invoke(projectionEntity);
-
             //because TProjection is not IProjection<TMainEntity>, do it manually here
-            DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
-            base.OnBeforeApplyProjectionPropertiesToEntity(projectionEntity, entity);
+            DataUtils.ShallowCopy(entity, projection.Entity.Entity);
+            return false;
         }
 
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ESTIMATE_ITEMProgress projection, out List<ErrorMessage> errorMessages)
@@ -811,6 +798,8 @@ namespace BluePrints.ViewModels
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ESTIMATE_ITEMProgress projection, out bool isNew)
         {
+            projection.Entity.Entity.GUID_ESTIMATE = load_context_guid;
+
             onBeforeSavedDualSubjobAssignment(projection);
             onBeforeSavedProjectStockCodeLogging(projection);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
@@ -964,7 +953,7 @@ namespace BluePrints.ViewModels
                 STOCK_CODE changedStock_Code = STOCK_CODECollection.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(changedStock_Code != null)
                 {
-                    foreach (var entity in DisplayEntities)
+                    foreach (var entity in Entities)
                     {
                         if(IsBudget)
                         {
@@ -1303,7 +1292,7 @@ namespace BluePrints.ViewModels
 
         public void BulkSave(IEnumerable<ESTIMATE_ITEMProgress> progress_entities)
         {
-            MainViewModel.BulkSave(progress_entities, true);
+            MainViewModel.BaseBulkSave(progress_entities, true);
         }
 
         public void Delete(ESTIMATE_ITEMProgress progress_entity)
@@ -1412,7 +1401,7 @@ namespace BluePrints.ViewModels
             }
 
             UnpauseUndoRedo();
-            MainViewModel.BulkSave(saveItems);
+            MainViewModel.BaseBulkSave(saveItems);
         }
         #endregion
 

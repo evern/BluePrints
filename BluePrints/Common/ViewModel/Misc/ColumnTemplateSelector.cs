@@ -1,6 +1,7 @@
 ﻿using DevExpress.Data;
 using DevExpress.Xpf.Editors.Settings;
 using DevExpress.Xpf.Grid;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,9 +32,15 @@ namespace BluePrints.Common.ViewModel.Misc
         public SettingsType Settings { get; set; }
         public bool ReadOnly { get; set; }
         public bool Visible { get; set; }
+        public object DataContext { get; set; }
+        public string DisplayMember { get; set; }
+        public string ValueMember { get; set; }
+        public object ItemsSource { get; set; }
+        public string NullText { get; set; }
+        public UnboundColumnType UnboundType { get; set; }
     }
 
-    public enum SettingsType { Default, POError, Budget, Number, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError }
+    public enum SettingsType { Default, Unbound, Collection, DisplayMemberCollection, Text, POError, Budget, Number, Date, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError, Percent, Cost, Units, Gates, Unforecasted }
     public class ColumnTemplateSelector : DataTemplateSelector
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)

@@ -95,7 +95,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override void OnClose(CancelEventArgs e)
         {
-            MainViewModel.BulkSave(MainViewModel.Entities);
+            MainViewModel.BaseBulkSave(MainViewModel.Entities);
             base.OnClose(e);
         }
         #endregion

@@ -76,6 +76,11 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("DateFromToDialogService"); }
         }
 
+        public bool CanAddDateRange()
+        {
+            return !IsLoading;
+        }
+
         public void AddDateRange()
         {
             var dateFromToViewModel = DateFromToDialogViewModel.Create();
@@ -87,7 +92,7 @@ namespace BluePrints.ViewModels
                 DateTime dateToAdd = dateFrom;
                 while (dateToAdd <= dateTo)
                 {
-                    HOLIDAY lookupExistingHoliday = DisplayEntities.FirstOrDefault(x => x.HOLIDAY_DATE.Date == dateToAdd.Date);
+                    HOLIDAY lookupExistingHoliday = Entities.FirstOrDefault(x => x.HOLIDAY_DATE.Date == dateToAdd.Date);
                     if(lookupExistingHoliday == null)
                     {
                         HOLIDAY newHoliday = new HOLIDAY();

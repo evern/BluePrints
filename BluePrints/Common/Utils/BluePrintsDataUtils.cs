@@ -1307,7 +1307,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
-        public static void UpdateAllPercentagesByStatus(IMessageBoxService MessageBoxService, CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel, IEnumerable<BASELINE_ITEMProgress> entities)
+        public static void UpdatePercentagesByStatus(IMessageBoxService MessageBoxService, CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel, IEnumerable<BASELINE_ITEMProgress> entities)
         {
             if (MessageBoxService.ShowMessage("Warning\nThis action will update or delete progresses based on deliverable status and is not reversible\nDo you wish to continue?",
                          BluePrintsResources.Warning_Caption, MessageButton.YesNo) == MessageResult.No)
@@ -1371,7 +1371,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             }
 
-            PROGRESS_ITEMSCollectionViewModel.BulkSave(updateProgress);
+            PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
         }
 
         public static void SaveUserPreference(string preferenceName, string preferenceValue)

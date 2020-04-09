@@ -59,7 +59,7 @@
         <Setter Property="ShowAllTableValuesInCheckedFilterPopup" Value="False" />
     </Style>
     <Style x:Key="TemporaryGridControlTemplate" TargetType="{x:Type dxg:GridControl}">
-        <Setter Property="ShowLoadingPanel" Value="{Binding DataContext.IsLoading, ElementName=userControl}" />
+        <Setter Property="ShowLoadingPanel" Value="{Binding IsLoading}" />
         <Setter Property="ItemsSource" Value="{Binding Entities}" />
         <Setter Property="ClipboardCopyMode" Value="ExcludeHeader" />
         <Setter Property="SelectionMode" Value="Row" />
@@ -71,14 +71,14 @@
         <Setter Property="dxsc:SpellingSettings.CheckAsYouType" Value="True" />
         <Setter Property="dxsc:SpellingSettings.ShowSpellCheckMenu" Value="True" />
         <Setter Property="dxsc:SpellingSettings.SpellChecker"
-                Value="{Binding DataContext.SpellCheckerModule.SpellChecker, ElementName=userControl}" />
+                Value="{Binding SpellCheckerModule.SpellChecker}" />
         <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
             <Setter.Value>
                 <DataTemplate>
                     <ItemsControl>
                         <dxmvvm:KeyToCommand Command="{Binding ShowPopUpCommand}" KeyGesture="Space"
                                              CommandParameter="{Binding ElementName=GridControl}" />
-                        <dxmvvm:EventToCommand Command="{Binding DataContext.LoadedCommand, ElementName=userControl}"
+                        <dxmvvm:EventToCommand Command="{Binding LoadedCommand}"
                                                EventName="Loaded" />
                     </ItemsControl>
                 </DataTemplate>

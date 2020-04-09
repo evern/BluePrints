@@ -15,7 +15,6 @@ namespace BluePrints.Data
         public BluePrintsNativeEntities(string configString)
             : base(configString)
         {
-
         }
 
         public virtual DbSet<AREA> AREA { get; set; }

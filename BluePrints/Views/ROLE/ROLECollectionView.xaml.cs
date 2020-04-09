@@ -26,7 +26,7 @@ namespace BluePrints.Views
         private void sortTimer_Tick(object sender, EventArgs e)
         {
             sortTimer.Stop();
-            GridControlTree.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
+            GridControl.Columns["Entity.SORTORDER"].SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
         }
 
         /// <summary>
@@ -44,6 +44,18 @@ namespace BluePrints.Views
                 if (checkEdit != null)
                     SendKeys.SendWait(" ");
             }
+        }   
+
+        /// <summary>
+        /// Circumvent an issue with checkedit not responsive on treelist because of drag drop manager and cellvaluechanged being implemented
+        /// </summary>
+        private void GridControlPermission_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed)
+                return;
+
+            //send key unconditionally because the only interaction concerned is checking boxes and cell template is used so there's no way of getting inplaceedit
+            SendKeys.SendWait(" ");
         }
     }
 }

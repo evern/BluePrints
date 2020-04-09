@@ -20,18 +20,6 @@ namespace BluePrints.Common.Projections
             get { return Entity.GUID; }
             set { Entity.GUID = value; }
         }
-
-        public DateTime EntityCreatedDate
-        {
-            get
-            {
-                return Entity.CREATED;
-            }
-            set
-            {
-                Entity.CREATED = value;
-            }
-        }
     }
 
     public static class RA_STUDY_TYPEProjectionQueries

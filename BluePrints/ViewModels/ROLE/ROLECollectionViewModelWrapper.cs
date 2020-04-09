@@ -101,10 +101,10 @@ namespace BluePrints.ViewModels
             DataUtils.SetNestedValue(e.Column.FieldName, projection, e.Value);
             MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
 
-            ROLEProjection selectedEntity = DisplaySelectedEntity;
+            ROLEProjection selectedEntity = SelectedEntity;
             MainViewModel.Save(projection);
-            DisplaySelectedEntity = selectedEntity;
-            this.RaisePropertyChanged(x => x.DisplaySelectedEntity);
+            SelectedEntity = selectedEntity;
+            this.RaisePropertyChanged(x => x.SelectedEntity);
         }
 
         #region Permissions
@@ -119,7 +119,7 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return null;
 
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     return null;
 
                 if (permissions == null)
@@ -142,7 +142,7 @@ namespace BluePrints.ViewModels
                         else if (!bluePrintsEntitiesViewModel.Modules.Any(x => x.ParentId == module.NavigationId))
                             continue;
 
-                        ROLE_PERMISSION findROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == module.SecurityKey);
+                        ROLE_PERMISSION findROLE_PERMISSION = SelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == module.SecurityKey);
                         bool isSelectedRoleHasPermission = findROLE_PERMISSION != null;
                         bool isPermissionReadOnly = false;
                         if (isSelectedRoleHasPermission)
@@ -179,10 +179,10 @@ namespace BluePrints.ViewModels
 
                 var permissions = new List<DocTypePermissionAssignment>();
 
-                if (DisplaySelectedEntity == null)
+                if (SelectedEntity == null)
                     return null;
 
-                permissions.AddRange(DisplaySelectedEntity.ROLE_COMMODITIES.Select(x => new DocTypePermissionAssignment() { DocType = findDOCTYPE(x.GUID_COMMODITY), IsAssigned = true }).ToList());
+                permissions.AddRange(SelectedEntity.ROLE_COMMODITIES.Select(x => new DocTypePermissionAssignment() { DocType = findDOCTYPE(x.GUID_COMMODITY), IsAssigned = true }).ToList());
                 foreach (DOCTYPE docType in DOCTYPECollection)
                 {
                     DocTypePermissionAssignment findPermission = permissions.Where(x => x.DocType != null).FirstOrDefault(x => x.DocType.GUID == docType.GUID);
@@ -190,7 +190,7 @@ namespace BluePrints.ViewModels
                         permissions.Add(new DocTypePermissionAssignment() { DocType = docType, IsAssigned = false });
                 }
 
-                return permissions.OrderBy(x => x.DocType.NAME);
+                return permissions.Where(x => x.DocType != null).OrderBy(x => x.DocType.NAME);
             }
         }
 
@@ -212,10 +212,10 @@ namespace BluePrints.ViewModels
             GridControlService.RefreshData();
         }
 
-        public override void OnDisplaySelectedEntityChanged(ROLEProjection entity)
+        protected override void OnSelectedEntitiesChanged()
         {
             refreshPermissions();
-            base.OnDisplaySelectedEntityChanged(entity);
+            base.OnSelectedEntitiesChanged();
         }
 
         public void PermissionCellValueChanging(TreeListCellValueChangedEventArgs e)
@@ -248,20 +248,20 @@ namespace BluePrints.ViewModels
 
             if (isAssign)
             {
-                ROLE_PERMISSION editROLE_PERMISSION = ROLE_PERMISSIONViewModel.Entities.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey && x.GUID_ROLE == DisplaySelectedEntity.GUID);
+                ROLE_PERMISSION editROLE_PERMISSION = ROLE_PERMISSIONViewModel.Entities.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey && x.GUID_ROLE == SelectedEntity.GUID);
                 if (editROLE_PERMISSION == null)
                     editROLE_PERMISSION = new ROLE_PERMISSION();
 
-                editROLE_PERMISSION.GUID_ROLE = DisplaySelectedEntity.GUID;
+                editROLE_PERMISSION.GUID_ROLE = SelectedEntity.GUID;
                 editROLE_PERMISSION.PERMISSION = editPermission.SecurityKey;
                 editROLE_PERMISSION.ISREADONLY = isAssignReadOnly;
                 editPermissions.ForEach(x => x.IsAssigned = true);
                 editPermissions.ForEach(x => x.IsReadOnly = isAssignReadOnly);
 
                 //must add from collection before saving because it'll invoke OnPersistentAfterAuxiliaryEntitiesChanges, and trigger OnDisplaySelectedEntityChanged 
-                ROLE_PERMISSION findNavigationalROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                ROLE_PERMISSION findNavigationalROLE_PERMISSION = SelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
                 if (findNavigationalROLE_PERMISSION == null)
-                    DisplaySelectedEntity.ROLE_PERMISSIONS.Add(editROLE_PERMISSION);
+                    SelectedEntity.ROLE_PERMISSIONS.Add(editROLE_PERMISSION);
                 else
                     DataUtils.ShallowCopy(findNavigationalROLE_PERMISSION, editROLE_PERMISSION);
 
@@ -269,11 +269,11 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                ROLE_PERMISSION existingROLE_PERMISSION = DisplaySelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
+                ROLE_PERMISSION existingROLE_PERMISSION = SelectedEntity.ROLE_PERMISSIONS.FirstOrDefault(x => x.PERMISSION == editPermission.SecurityKey);
                 if (existingROLE_PERMISSION != null)
                 {
                     //must remove from collection before deletion because it'll invoke OnPersistentAfterAuxiliaryEntitiesChanges, and trigger OnDisplaySelectedEntityChanged 
-                    DisplaySelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
+                    SelectedEntity.ROLE_PERMISSIONS.Remove(existingROLE_PERMISSION);
                     ROLE_PERMISSIONViewModel.Delete(existingROLE_PERMISSION);
                 }
 
@@ -299,19 +299,19 @@ namespace BluePrints.ViewModels
             if (newValue)
             {
                 ROLE_COMMODITY newROLE_COMMODITY = new ROLE_COMMODITY();
-                newROLE_COMMODITY.GUID_ROLE = DisplaySelectedEntity.GUID;
+                newROLE_COMMODITY.GUID_ROLE = SelectedEntity.GUID;
                 newROLE_COMMODITY.GUID_COMMODITY = editingDocTypePermissionAssignment.DocType.GUID;
                 ROLE_COMMODITYViewModel.Save(newROLE_COMMODITY);
-                DisplaySelectedEntity.ROLE_COMMODITIES.Add(newROLE_COMMODITY);
+                SelectedEntity.ROLE_COMMODITIES.Add(newROLE_COMMODITY);
                 e.Handled = true;
             }
             else
             {
-                ROLE_COMMODITY existingROLE_COMMODITY = DisplaySelectedEntity.ROLE_COMMODITIES.FirstOrDefault(x => x.GUID_COMMODITY == editingDocTypePermissionAssignment.DocType.GUID);
+                ROLE_COMMODITY existingROLE_COMMODITY = SelectedEntity.ROLE_COMMODITIES.FirstOrDefault(x => x.GUID_COMMODITY == editingDocTypePermissionAssignment.DocType.GUID);
                 if (existingROLE_COMMODITY != null)
                 {
                     ROLE_COMMODITYViewModel.Delete(existingROLE_COMMODITY);
-                    DisplaySelectedEntity.ROLE_COMMODITIES.Remove(existingROLE_COMMODITY);
+                    SelectedEntity.ROLE_COMMODITIES.Remove(existingROLE_COMMODITY);
                     e.Handled = true;
                 }
             }
@@ -370,7 +370,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         protected override void OnClose(CancelEventArgs e)
         {
-            MainViewModel.BulkSave(MainViewModel.Entities);
+            MainViewModel.BaseBulkSave(MainViewModel.Entities);
             base.OnClose(e);
         }
         #endregion
@@ -395,7 +395,7 @@ namespace BluePrints.ViewModels
 
         public bool CanEdit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return false;
 
             return true;
@@ -403,7 +403,7 @@ namespace BluePrints.ViewModels
 
         public void Edit()
         {
-            if (DisplaySelectedEntity == null)
+            if (SelectedEntity == null)
                 return;
 
             //DocumentInfo documentInfo = new DocumentInfo(loadProject.Guid.ToString() + DisplaySelectedEntity.Guid.ToString(), new EntitiesParameter<ROLE>(DisplaySelectedEntity), "CommodityCollectionView", "[" + DisplaySelectedEntity.Name + "] Commodities");

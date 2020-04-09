@@ -49,6 +49,8 @@ namespace BluePrints.Common.Base
         protected bool isQueryForLiveStatus;
         protected abstract CostGroup cost_group { get; }
         protected abstract PhaseType progress_type { get; }
+        public bool IsExoDataLoaded => exoAuthorisations != null;
+        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
         //ensure mainviewmodel is loaded before calling background worker
         protected DispatcherTimer onMainViewModelFirstLoadedTimer;
         //calculates the planned values only for each deliverables
@@ -211,7 +213,6 @@ namespace BluePrints.Common.Base
             MainViewModel.OnAfterProjectionSavedCallBack = OnAfterEntitySavedCallBack;
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
-            MainViewModel.OnBeforeExistingRowAddUndoAndSaveIsContinue = onExistingRowAddUndoAndSaveIsContinue;
             MainViewModel.DisablePasteRowLevel = true;
             //MainViewModel.AlwaysSkipMessage = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
@@ -223,30 +224,10 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected bool onExistingRowAddUndoAndSaveIsContinue(CellValueChangedEventArgs e, TMainProjectionEntity projection)
-        {
-            //only save progress when total % complete is changed
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
-            {
-                if (!haveGroupEntity && projection.ShouldSaveProgress)
-                {
-                    MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, e.Column.FieldName, e.OldValue, e.Value, EntityMessageType.Changed);
-                    MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-                    saveProgressItem(projection);
-                }
-
-                return false;
-            }
-
-            //saves the deliverable when changes occur on other fields
-            return true;
-        }
-
-        protected List<ExoTimeAuthorisation> exoAuthorisations = null;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            isCompletelyLoaded = true;
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
             Task.Run(() => loadExoData());
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
@@ -256,7 +237,8 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(DisplayEntities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
+            this.RaisePropertyChanged(x => x.IsExoDataLoaded);
         }
 
         List<ProjectUnitOfWorkContext> projectContexts;
@@ -316,7 +298,7 @@ namespace BluePrints.Common.Base
         }
 
         //when the inherited view model have group entity, OnBeforeEntitySavedCallBack will be used instead of OnAfterEntitySavedCallBack to identify whether the edited entity is group
-        protected abstract bool haveGroupEntity { get; }
+        protected abstract bool manuallySaveProgressOnAfterBaselineItemSaved { get; }
         /// <summary>
         /// Save progress item during BASELINE_ITEM Undo/Redo operation
         /// </summary>
@@ -325,7 +307,7 @@ namespace BluePrints.Common.Base
         protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
         {
             //because undo/redo operation still relies on mainviewmodel progress needs to be re-checked even though we had onExistingRowAddUndoAndSaveIsContinue
-            if (!haveGroupEntity && projectionEntity.ShouldSaveProgress)
+            if (!manuallySaveProgressOnAfterBaselineItemSaved && projectionEntity.ShouldSaveProgress)
             {
                 saveProgressItem(projectionEntity);
 
@@ -392,9 +374,10 @@ namespace BluePrints.Common.Base
         {
             onMainViewModelFirstLoadedTimer.Stop();
             if(!statsCalculatedOnProjection)
+            {
                 InitializeSummarizer();
-
-            calculatePlannedBackgroundWorker.RunWorkerAsync();
+                calculatePlannedBackgroundWorker.RunWorkerAsync();
+            }
         }
 
         protected bool extrapolateDataDate = false;
@@ -407,7 +390,7 @@ namespace BluePrints.Common.Base
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? loadPROGRESS.DATA_DATE : (DateTime?)null);
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
             DateTime reporting_data_date = loadPROGRESS.DATA_DATE;
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
@@ -431,22 +414,27 @@ namespace BluePrints.Common.Base
         {
             if(fullSummarizer != null)
             {
-                fullSummarizer.BuildBudgeted();
+                //fullSummarizer.BuildBudgeted();
                 fullSummarizer.BuildEarned();
-                fullSummarizer.BuildRemaining();
+                //fullSummarizer.BuildRemaining();
                 fullSummarizer.Summarize();
             }
         }
 
         public bool isBusy { get; set; }
-        public bool isCalculationCompleted { get; set; }
+        public bool IsCalculationCompleted { get; set; }
         protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             isBusy = false;
-            isCalculationCompleted = true;
+            IsCalculationCompleted = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
         }
 
+        protected override void BackgroundRefresh()
+        {
+            if(IsCalculationCompleted)
+                base.BackgroundRefresh();
+        }
         #endregion
 
         #region Set current data date
@@ -460,7 +448,7 @@ namespace BluePrints.Common.Base
                 mainThreadDispatcher.BeginInvoke(new Action(() => DateChange(DateNavigationType.Current)));
         }
 
-        protected void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
+        protected virtual void delayedPROGRESSSavingDispatcher_Tick(object sender, EventArgs e)
         {
             delayedPROGRESSSavingDispatcher.Stop();
             var PROGRESSCollectionViewModel = (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
@@ -473,7 +461,7 @@ namespace BluePrints.Common.Base
             get => loadPROGRESS == null ? DateTime.Now : loadPROGRESS.DATA_DATE;
             set
             {
-                if (isCompletelyLoaded)
+                if (!IsLoading)
                 {
                     loadPROGRESS.DATA_DATE = value.Date.AddDays(1).AddSeconds(-1);
 
@@ -489,28 +477,66 @@ namespace BluePrints.Common.Base
             }
         }
 
+        public override bool CanExportToPDF()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            return base.CanExportToPDF();
+        }
+
+        public override bool CanExportToExcel()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            return base.CanExportToExcel();
+        }
+
+        public override bool CanFullRefresh()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            return base.CanFullRefresh();
+        }
+
         public override void FullRefresh()
         {
-            isCompletelyLoaded = false;
+            IsCalculationCompleted = false;
+            IsLoading = true;
             base.FullRefresh();
         }
 
         public string DataDateStr => DataDate.ToString("dd-MMM-yy");
 
-        //public string DataDate
-        //{
-        //    get
-        //    {
-        //        if (loadPROGRESS == null || loadPROGRESS.DATA_DATE == null)
-        //            return string.Empty;
+        public override bool CanKeyboardCopy()
+        {
+            if (!IsCalculationCompleted)
+                return false;
 
-        //        return loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy");
-        //    }
-        //}
+            return base.CanKeyboardCopy();
+        }
+
+        public override bool CanKeyboardPaste()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            return base.CanKeyboardPaste();
+        }
+
+        public override bool CanSaveLayout()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            return base.CanSaveLayout();
+        }
 
         public bool CanDateBackward()
         {
-            if (MainViewModel == null || MainViewModel.IsLoading)
+            if (!IsCalculationCompleted || IsLoading || MainViewModel == null)
                 return false;
 
             if (loadPROGRESS.DATA_DATE > loadPROGRESS.PROGRESS_START)
@@ -521,10 +547,7 @@ namespace BluePrints.Common.Base
 
         public bool CanDateForward()
         {
-            //if (isBusy)
-            //    return false;
-
-            if (MainViewModel == null || MainViewModel.IsLoading)
+            if (!IsCalculationCompleted || IsLoading || MainViewModel == null)
                 return false;
 
             return true;
@@ -595,7 +618,7 @@ namespace BluePrints.Common.Base
         #region Book Time
         public bool CanShowBookable()
         {
-            if (MainViewModel == null || DisplaySelectedEntities == null || DisplaySelectedEntities.Count() == 0 || exoAuthorisations == null)
+            if (MainViewModel == null || SelectedEntities == null || SelectedEntities.Count() == 0 || exoAuthorisations == null)
                 return false;
 
             return true;
@@ -629,7 +652,7 @@ namespace BluePrints.Common.Base
 
         private bool CanPushToP6()
         {
-            if (isPushingToP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
+            if (IsLoading || isPushingToP6 || loadPROGRESS == null || loadPROGRESS.P6PROGRESS_NAME == null || loadPROGRESS.P6PROGRESS_NAME == string.Empty)
                 return false;
 
             return true;
@@ -1476,12 +1499,12 @@ namespace BluePrints.Common.Base
 
             List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
             calcTypes.Add(StatsCalculationType.Earned);
-            foreach(var displayEntity in DisplayEntities)
+            foreach(var displayEntity in Entities)
             {
                 displayEntity.BuildStats(1, calcTypes);
             }
 
-            IEnumerable<ICanAssignP6> deliverables = DisplayEntities;
+            IEnumerable<ICanAssignP6> deliverables = Entities;
             #region reset budgeted on progress
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 
@@ -1869,10 +1892,10 @@ namespace BluePrints.Common.Base
                 MessageBoxService.ShowMessage("Exo data is still loading, please wait awhile before using this function");
             else
             {
-                ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == DisplaySelectedEntity.Project_Number);
+                ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == SelectedEntity.Project_Number);
                 if(projectContext != null)
                 {
-                    BluePrintsUtils.BookTime(DisplaySelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, DisplaySelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService, projectContext.Project, USERCollection);
+                    BluePrintsUtils.BookTime(SelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, SelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService, projectContext.Project, USERCollection);
                 }
             }
         }

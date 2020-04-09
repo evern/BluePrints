@@ -9,98 +9,87 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.TreeListRootContainer}">
-        <Grid DataContext="{Binding MainViewModel}">
-            <dxb:BarManager>
-                <dxb:BarManager.Items>
-                    <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                    <dxb:BarButtonItem x:Name="biInsertBefore" Content="Insert Before" Command="{Binding DataContext.AddRowBeforeCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="biInsertAfter" Content="Insert After" Command="{Binding DataContext.AddRowAfterCommand, ElementName=userControl}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
-                </dxb:BarManager.Items>
-                <DockPanel>
-                    <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
-                        <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
-                            <dxr:RibbonPage MergeType="Replace" Caption="Grid">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
-                                    <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                    <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
-                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
-                                    <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
-                                    <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
-                                    <dxb:BarButtonItemLink BarItemName="biInsertBefore" />
-                                    <dxb:BarButtonItemLink BarItemName="biInsertAfter" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
-                        </dxr:RibbonDefaultPageCategory>
-                    </dxr:RibbonControl>
-                    <dxr:RibbonStatusBarControl DockPanel.Dock="Bottom">
-                        <dxr:RibbonStatusBarControl.LeftItems>
-                            <dxb:BarStaticItem Content="{Binding Entities.Count, Converter={dxmvvm:FormatStringConverter FormatString='RECORDS: {0}'}}" />
-                        </dxr:RibbonStatusBarControl.LeftItems>
-                    </dxr:RibbonStatusBarControl>
-                    <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
-                        <dxlc:LayoutGroup>
-                            <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="MINUTE_TITLETree" MouseUp="treeListControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxg:TreeListDragDropManager x:Name="dragDropManager">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DropCommand, ElementName=userControl}" EventName="Drop" PassEventArgsToCommand="True" />
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.DragDropManager_DroppedCommand, ElementName=userControl}" EventName="Dropped" PassEventArgsToCommand="True" />
-                                        </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TreeListDragDropManager.DragElementTemplate>
-                                            <DataTemplate>
-                                                <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
-                                                    <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
-                                                        <StackPanel Margin="5" Background="White" Orientation="Vertical">
-                                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
-                                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                        <Separator />
-                                                        <StackPanel Margin="5" Orientation="Horizontal">
-                                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
-                                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </Border>
-                                            </DataTemplate>
-                                        </dxg:TreeListDragDropManager.DragElementTemplate>
-                                    </dxg:TreeListDragDropManager>
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="Number" FieldName="DisplayNumber" ReadOnly="True" VisibleIndex="10" />
-                                    <dxg:GridColumn Header="Name" FieldName="NAME" VisibleIndex="20" />
-                                    <dxg:GridColumn Header="SortOrder" FieldName="SORTORDER" Visible="False" VisibleIndex="30" />
-                                </dxg:GridControl.Columns>
-                                <dxg:GridControl.View>
-                                    <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
-                                        <dxg:TreeListView.RowCellMenuCustomizations>
-                                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biInsertBefore" />
-                                            <dxb:BarButtonItemLink BarItemName="biInsertAfter" />
-                                            <dxb:BarItemLinkSeparator />
-                                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                        </dxg:TreeListView.RowCellMenuCustomizations>
-                                    </dxg:TreeListView>
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </dxlc:LayoutGroup>
-                    </dxlc:LayoutGroup>
-                </DockPanel>
-            </dxb:BarManager>
-        </Grid>
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biInsertBefore" Content="Insert Before" Command="{Binding AddRowBeforeCommand}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biInsertAfter" Content="Insert After" Command="{Binding AddRowAfterCommand}" LargeGlyph="{dx:DXImageOffice2013 Image=Insert_32x32.png}" Glyph="{dx:DXImageOffice2013 Image=Insert_16x16.png}" />
+            </dxb:BarManager.Items>
+        </dxb:BarManager>
+        <DockPanel>
+            <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                    <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
+                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                            <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                            <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                            <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                            <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
+                            <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                            <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                            <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                            <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                            <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                            <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                            <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                        </dxr:RibbonPageGroup>
+                        <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                            <dxb:BarButtonItemLink BarItemName="biInsertBefore" />
+                            <dxb:BarButtonItemLink BarItemName="biInsertAfter" />
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <dxg:GridControl Name="GridControlTree" MaxHeight="2000" dx:DXSerializer.SerializationID="MINUTE_TITLETree" MouseUp="treeListControl_MouseUp" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxg:TreeListDragDropManager x:Name="dragDropManager">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding DragDropManager_DropCommand}" EventName="Drop" PassEventArgsToCommand="True" />
+                            <dxmvvm:EventToCommand Command="{Binding DragDropManager_DroppedCommand}" EventName="Dropped" PassEventArgsToCommand="True" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:TreeListDragDropManager.DragElementTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="LightGray" BorderThickness="2" CornerRadius="5">
+                                    <StackPanel Margin="5" HorizontalAlignment="Left" Background="White" Orientation="Vertical">
+                                        <StackPanel Margin="5" Background="White" Orientation="Vertical">
+                                            <TextBlock Padding="3" FontWeight="Bold" Text="{Binding Path=DraggingRows.Count, StringFormat='Dragging {0} row(s)'}" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Source: " />
+                                                <TextBlock Padding="0,3,3,3" Text="{Binding Path=DraggingRows, Converter={StaticResource RowNameConverter}}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Separator />
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBlock Padding="3,3,0,3" FontWeight="Bold" Text="Target: " />
+                                            <TextBlock Padding="0,3,3,0" Text="{Binding Path=DropTargetRow, Converter={StaticResource RowNameConverter}}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </dxg:TreeListDragDropManager.DragElementTemplate>
+                    </dxg:TreeListDragDropManager>
+                </dxmvvm:Interaction.Behaviors>
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn Header="Number" FieldName="DisplayNumber" ReadOnly="True" VisibleIndex="10" />
+                    <dxg:GridColumn Header="Name" FieldName="NAME" VisibleIndex="20" />
+                    <dxg:GridColumn Header="SortOrder" FieldName="SORTORDER" Visible="False" VisibleIndex="30" />
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.View>
+                    <dxg:TreeListView x:Name="treeListView" Style="{StaticResource DefaultTreeListViewTemplate}">
+                        <dxg:TreeListView.RowCellMenuCustomizations>
+                            <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                            <dxb:BarItemLinkSeparator />
+                            <dxb:BarButtonItemLink BarItemName="biInsertBefore" />
+                            <dxb:BarButtonItemLink BarItemName="biInsertAfter" />
+                            <dxb:BarItemLinkSeparator />
+                            <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                        </dxg:TreeListView.RowCellMenuCustomizations>
+                    </dxg:TreeListView>
+                </dxg:GridControl.View>
+            </dxg:GridControl>
+        </DockPanel>
     </Grid>
 </UserControl>

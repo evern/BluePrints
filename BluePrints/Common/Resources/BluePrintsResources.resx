@@ -324,9 +324,6 @@
   <data name="ContingencyCostType" xml:space="preserve">
     <value>CTG</value>
   </data>
-  <data name="ForecastUOMColumnName" xml:space="preserve">
-    <value>UOM</value>
-  </data>
   <data name="ForecastCompareTableName" xml:space="preserve">
     <value>CompareTable</value>
   </data>
@@ -359,5 +356,11 @@
   </data>
   <data name="ForecastCompare_UncommittedRowPhase" xml:space="preserve">
     <value>Previously Forecasted (Before Data Date) \ Uncommitted (After Data Date)</value>
+  </data>
+  <data name="Forecast_ForecastJobColumn" xml:space="preserve">
+    <value>ForecastJob</value>
+  </data>
+  <data name="ForecastIndirectUOMColumn" xml:space="preserve">
+    <value>UOM</value>
   </data>
 </root>

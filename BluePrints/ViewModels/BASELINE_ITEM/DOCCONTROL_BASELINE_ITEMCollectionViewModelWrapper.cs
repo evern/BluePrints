@@ -135,7 +135,7 @@ namespace BluePrints.ViewModels
 
         List<BASELINE> internalNumberBaselines = new List<BASELINE>();
         List<BASELINE> clientNumberBaselines = new List<BASELINE>();
-        public bool CanApproveSelectedInternalNumbers => DisplaySelectedEntities.Count() > 0;
+        public bool CanApproveSelectedInternalNumbers => SelectedEntities.Count() > 0;
         public void ApproveSelectedInternalNumbers()
         {
             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval)) == LoginCredentials.PermissionStatus.None)
@@ -146,7 +146,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will lock selected internal numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     if(entity.Entity.Entity.INTERNALNUM_STATUS == DocumentNumberStatus.Awaiting)
                         entity.Entity.Entity.INTERNALNUM_STATUS = DocumentNumberStatus.Approved;
@@ -161,7 +161,7 @@ namespace BluePrints.ViewModels
             };
         }
 
-        public bool CanApproveSelectedClientNumbers => DisplaySelectedEntities.Count() > 0;
+        public bool CanApproveSelectedClientNumbers => SelectedEntities.Count() > 0;
         public void ApproveSelectedClientNumbers()
         {
             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval)) == LoginCredentials.PermissionStatus.None)
@@ -172,7 +172,7 @@ namespace BluePrints.ViewModels
 
             if (MessageBoxService.ShowMessage("This will lock selected client numbers, are you sure you want to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
             {
-                foreach (BASELINE_ITEMProgress entity in DisplaySelectedEntities)
+                foreach (BASELINE_ITEMProgress entity in SelectedEntities)
                 {
                     if (entity.Entity.Entity.CLIENTNUM_STATUS == DocumentNumberStatus.Awaiting)
                         entity.Entity.Entity.CLIENTNUM_STATUS = DocumentNumberStatus.Approved;

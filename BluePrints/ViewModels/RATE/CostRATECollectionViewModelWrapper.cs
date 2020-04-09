@@ -67,8 +67,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<RATE> entities)
         {
-            MainViewModel.OnBeforeProjectionDeleteIsContinueCallBack = onBeforeEntityDeleted;
-            MainViewModel.OnBeforeProjectionsDeleteIsContinueCallBack = onBeforeEntitiesDeleted;
+            MainViewModel.EntitiesUndoRedoManager.ExceptionFieldNames.Add(BindableBase.GetPropertyName(() => new RATE().IsRateExists));
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -127,19 +126,25 @@ namespace BluePrints.ViewModels
             return returnRATES.AsQueryable();
         }
 
+        public bool CanUpdateFloatingRates()
+        {
+            return !IsLoading;
+        }
+
         public void UpdateFloatingRates()
         {
             if (MessageBoxService.ShowMessage("This will update all rates that have floating ticked to recommended rate, do you wish to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
             List<RATE> saveEntities = new List<RATE>();
-            foreach(RATE entity in DisplayEntities.Where(x => x.IsRateExists && x.IS_FLOATING))
+            foreach(RATE entity in Entities.Where(x => x.IsRateExists && x.IS_FLOATING))
             {
                 entity.RATE1 = entity.RecommendedRate;
                 saveEntities.Add(entity);
             }
 
-            MainViewModel.BulkSave(saveEntities);
+            MainViewModel.BaseBulkSave(saveEntities);
+            MessageBoxService.ShowMessage(Entities.Where(x => x.IsRateExists && x.IS_FLOATING).Count().ToString() + " floating rate(s) updated");
         }
 
         private void setRecommendedRate(RATE rate, bool isEditRateField = false)
@@ -165,53 +170,40 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        //skip inactive entity
-        protected OperationInterceptMode onBeforeEntityDeleted(RATE entity)
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(RATE projection, out List<ErrorMessage> errorMessages)
         {
-            if (!entity.IsRateExists)
-                return OperationInterceptMode.Skip;
-            else
+            errorMessages = new List<ErrorMessage>();
+            string currentRateIdentifier = "[Discipline] = " + projection.ErrorMessageDisciplineCode + " [Commodity] = " + projection.ErrorMessageCommodityCode;
+            if (projection.IsRateExists)
                 return OperationInterceptMode.Continue;
+            else if (!projection.IsRateExists)
+            {
+                errorMessages.Add(new ErrorMessage(currentRateIdentifier, "Cannot delete selected rate because it's not active"));
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
+            }
+
+            return base.OnBeforeProjectionDeleteIsContinue(projection, out errorMessages);
         }
 
-        //disallow deletion of projection when it's not active
-        protected virtual bool onBeforeEntitiesDeleted(IEnumerable<RATE> entities)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(RATE projection, out bool isNew)
         {
-            if (entities.All(x => x.IsRateExists))
-                return true;
-            else if (entities.All(x => !x.IsRateExists))
-            {
-                MessageBoxService.ShowMessage("Cannot delete selected rate(s) because they aren't active", "Error", MessageButton.OK);
-                return false;
-            }
-            else if (MessageBoxService.ShowMessage("Only active rate(s) will be deleted, do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
-            {
-                return false;
-            }
-            else
-                return true;
-        }
+            compulsoryOnBeforeEntitySaved(projection);
+            projection.COST_TYPE = CostType.Cost;
+            populatePHASE(projection);
 
-        /// <summary>
-        /// CallBack to apply global convention
-        /// </summary>
-        public override bool OnBeforeEntitySaved(RATE entity)
-        {
-            compulsoryOnBeforeEntitySaved(entity);
-            entity.COST_TYPE = CostType.Cost;
-            populatePHASE(entity);
+            if (projection.COMMODITY_CODE == null)
+                projection.COMMODITY_CODE = string.Empty;
 
-            if (entity.COMMODITY_CODE == null)
-                entity.COMMODITY_CODE = string.Empty;
-
-            return true;
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
         public override void OnAfterEntitySaved(RATE projection, RATE entity, bool isNewEntity)
         {
-            RATE uncommittedRATE = DisplayEntities.FirstOrDefault(x => !x.IsRateExists && x.GUID != entity.GUID && x.GUID_PHASE == entity.GUID_PHASE && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.COMMODITY_CODE == entity.COMMODITY_CODE);
+            RATE uncommittedRATE = Entities.FirstOrDefault(x => !x.IsRateExists && x.GUID != entity.GUID && x.GUID_PHASE == entity.GUID_PHASE && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.COMMODITY_CODE == entity.COMMODITY_CODE);
             if (uncommittedRATE != null)
-                DisplayEntities.Remove(uncommittedRATE);
+                Entities.Remove(uncommittedRATE);
+
+            projection.Update();
             base.OnAfterEntitySaved(projection, entity, isNewEntity);
         }
 
@@ -224,12 +216,7 @@ namespace BluePrints.ViewModels
                 {
                     projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
                 }
-                //Guid? oldValue = projection.GUID_COMMODITY_CODE;
-                //Guid? newValue = null;
-                //projection.GUID_COMMODITY_CODE = newValue;
-                //projection.ManualCOMMODITY_CODE = null;
-                //MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-                //MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new RATE().GUID_COMMODITY_CODE), oldValue, newValue, EntityMessageType.Changed);
+
                 projection.Update();
             }
 
@@ -268,13 +255,13 @@ namespace BluePrints.ViewModels
                 //set recommended rate here so that paste data will pick it up
                 setRecommendedRate(projection);
             }
-            else if(field_name == BindableBase.GetPropertyName(() => new RATE().IsRateExists))
-            {
-                if(!isPaste && new_value != null && !(bool)new_value)
-                {
-                    return "Cannot set inactive, please delete this rate instead";
-                }
-            }
+            //else if(field_name == BindableBase.GetPropertyName(() => new RATE().IsRateExists))
+            //{
+            //    if(!isPaste && new_value != null && !(bool)new_value)
+            //    {
+            //        return "Cannot set inactive, please delete this rate instead";
+            //    }
+            //}
 
             return base.UnifiedValueValidation(projection, field_name, new_value, isPaste);
         }
