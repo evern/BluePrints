@@ -107,7 +107,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "UserOffsiteDirectProgressViewModelWrapper_v2"; }
+            get { return "UserOffsiteDirectProgressViewModelWrapper_v3"; }
         }
 
         public override void ShowNotification()

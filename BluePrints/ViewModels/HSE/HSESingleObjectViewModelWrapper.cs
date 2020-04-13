@@ -137,7 +137,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "HSESingleObjectViewModelWrapper"; }
+            get { return "HSESingleObjectViewModelWrapper_v2"; }
         }
 
         public IEnumerable<STAFF> STAFFCollection

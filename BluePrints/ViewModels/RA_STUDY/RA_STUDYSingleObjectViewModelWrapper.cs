@@ -275,7 +275,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "RA_STUDYSingleObjectViewModelWrapper_V1"; }
+            get { return "RA_STUDYSingleObjectViewModelWrapper_v2"; }
         }
 
         public IEnumerable<USER> USERCollection

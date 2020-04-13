@@ -882,7 +882,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "TimesheetEntryViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "TimesheetEntryViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private DevExpress.Mvvm.IDialogService DateFromToDialogService

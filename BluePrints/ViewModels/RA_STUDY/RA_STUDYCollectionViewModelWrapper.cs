@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "RA_STUDYCollectionViewModelWrapper_V1"; }
+            get { return "RA_STUDYCollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<USER> USERCollection

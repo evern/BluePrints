@@ -293,7 +293,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "VARIATIONSViewModelWrapper" + view_project_specific_affix; }
-            get { return "VARIATIONSViewModelWrapper_v1"; }
+            get { return "VARIATIONSViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix

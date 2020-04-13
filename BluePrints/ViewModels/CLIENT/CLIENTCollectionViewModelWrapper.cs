@@ -136,7 +136,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "CLIENTCollectionViewModelWrapper"; }
+            get { return "CLIENTCollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<CLIENT_PROJECT> CLIENT_PROJECTCollection

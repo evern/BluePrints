@@ -165,7 +165,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "SUBJOBCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "SUBJOBCollectionViewModelWrapper_v1"; }
+            get { return "SUBJOBCollectionViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix

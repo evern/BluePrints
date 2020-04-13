@@ -337,7 +337,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "ExoDesignSubJobViewModelWrapper";
+                return "ExoDesignSubJobViewModelWrapper_v2";
             }
         }
 

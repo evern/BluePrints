@@ -140,7 +140,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "TENDER_PROFILE_ITEMCollectionViewModelWrapper"; }
+            get { return "TENDER_PROFILE_ITEMCollectionViewModelWrapper_v2"; }
         }
 
         #endregion

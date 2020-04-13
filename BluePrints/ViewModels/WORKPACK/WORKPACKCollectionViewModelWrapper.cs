@@ -397,7 +397,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "WORKPACKCollectionViewModelWrapper"; }
+            get { return "WORKPACKCollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<SUBJOB> SUBJOBCollection

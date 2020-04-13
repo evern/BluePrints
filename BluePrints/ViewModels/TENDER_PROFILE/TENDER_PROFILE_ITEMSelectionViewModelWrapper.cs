@@ -397,7 +397,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "[" + getTenderProfileProjectName() + "] Tender Profile"; }
+            get { return "[" + getTenderProfileProjectName() + "] Tender Profile_v2"; }
         }
 
         private string getTenderProfileProjectName()

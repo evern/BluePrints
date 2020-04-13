@@ -315,7 +315,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "FORECASTEACReportCollectionViewModelWrapper"; }
+            get { return "FORECASTEACReportCollectionViewModelWrapper_v2"; }
         }
         #endregion
     }

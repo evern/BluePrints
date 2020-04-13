@@ -1399,7 +1399,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTPOForecastViewModelWrapper"; }
+            get { return "PROJECTPOForecastViewModelWrapper_v2"; }
         }
 
         protected override void OnClose(CancelEventArgs e)

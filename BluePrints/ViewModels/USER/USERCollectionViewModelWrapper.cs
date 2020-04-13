@@ -303,7 +303,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "USERCollectionViewModelWrapper"; }
+            get { return "USERCollectionViewModelWrapper_v2"; }
         }
 
         List<STAFF> perthStaffCollection;

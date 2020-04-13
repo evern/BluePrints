@@ -344,7 +344,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECT_USERDashboardViewModelWrapper"; }
+            get { return "PROJECT_USERDashboardViewModelWrapper_v2"; }
         }
         #endregion
     }

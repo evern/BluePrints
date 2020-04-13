@@ -288,7 +288,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECT_REVENUECollectionViewModelWrapper"; }
+            get { return "PROJECT_REVENUECollectionViewModelWrapper_v2"; }
         }
 
         protected override void OnClose(CancelEventArgs e)

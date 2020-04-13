@@ -1429,7 +1429,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTViewModelWrapper_v1.02" + view_project_specific_affix; }
+            get { return "PROJECTViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

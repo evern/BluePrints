@@ -212,7 +212,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "RA_STUDY_TYPEViewModelWrapper_V1"; }
+            get { return "RA_STUDY_TYPEViewModelWrapper_v2"; }
         }
 
         #endregion

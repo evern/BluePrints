@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "PROGRESSCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "PROGRESSCollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "PROGRESSCollectionViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

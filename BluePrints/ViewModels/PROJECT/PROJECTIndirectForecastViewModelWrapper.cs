@@ -1054,7 +1054,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "FORECAST_JOBCollectionViewModelWrapper_V2"; }
+            get { return "FORECAST_JOBCollectionViewModelWrapper_v2"; }
         }
 
         /// <summary>

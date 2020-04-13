@@ -288,7 +288,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "CostRATECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "CostRATECollectionViewModelWrapper_v2"; }
+            get { return "CostRATECollectionViewModelWrapper_v3"; }
         }
 
         private string view_project_specific_affix

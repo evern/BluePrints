@@ -108,7 +108,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "BASELINECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "BASELINECollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "BASELINECollectionViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

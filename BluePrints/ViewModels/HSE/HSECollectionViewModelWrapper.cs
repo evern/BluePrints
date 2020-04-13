@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "HSECollectionViewModelWrapper"; }
+            get { return "HSECollectionViewModelWrapper_v2"; }
         }
         #endregion
     }

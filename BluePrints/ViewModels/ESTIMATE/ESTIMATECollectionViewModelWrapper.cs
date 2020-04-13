@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "ESTIMATECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "ESTIMATECollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "ESTIMATECollectionViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

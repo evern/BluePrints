@@ -637,7 +637,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTSummaryViewModelWrapper"; }
+            get { return "PROJECTSummaryViewModelWrapper_v2"; }
         }
 
         public IEnumerable<FORECAST> FORECASTCollection

@@ -87,7 +87,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PHASECollectionViewModelWrapper"; }
+            get { return "PHASECollectionViewModelWrapper_v2"; }
         }
 
         #endregion

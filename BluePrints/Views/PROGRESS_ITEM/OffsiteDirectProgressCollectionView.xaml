@@ -239,7 +239,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Budget">
+                        <dxg:GridControlBand Header="Budget (Read Only)">
                             <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="70" Header="Budget Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -266,7 +266,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative To Date">
+                        <dxg:GridControlBand Header="Cumulative To Date (Read Only)">
                             <dxg:GridColumn FieldName="Baseline_Percentage" Header="Baseline %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -313,7 +313,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative Total">
+                        <dxg:GridControlBand Header="Cumulative Total (Read Only)">
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="FirstDataDate" AllowBestFit="false" Width="80" Header="First Earned Date" HeaderToolTip="Progress first earned date along the entire timeline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
@@ -359,7 +359,7 @@
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Period">
+                        <dxg:GridControlBand Header="Period (Read Only)">
                             <dxg:GridColumn FieldName="ScheduleCurrentPeriodPercentage" Header="Planned %" AllowBestFit="false" Width="70" HeaderToolTip="Required % for current period obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -381,13 +381,13 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Productivity">
+                        <dxg:GridControlBand Header="Productivity (Read Only)">
                             <dxg:GridColumn FieldName="Current_Productivity" Header="Current Productivity" AllowBestFit="false" Width="70" HeaderToolTip="Productivity is calculated as [current earned hours / schedule planned hours]" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Override_Productivity" Header="Override Productivity" AllowBestFit="false" Width="70" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date">
+                            <dxg:GridColumn FieldName="Override_Productivity" Header="Override Productivity (Editable)" AllowBestFit="false" Width="70" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
@@ -400,7 +400,7 @@
                             <dxg:GridColumn FieldName="IAmCritical" Header="Critical" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" />
                             <dxg:GridColumn FieldName="IAmOverdue" Header="Overdue" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is overdue. Expand this row to view required milestone" ReadOnly="True" />
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Investigation" Visible="False">
+                        <dxg:GridControlBand Header="Investigation (Read Only)">
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" AllowBestFit="false" Width="100" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
@@ -511,7 +511,7 @@
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.BASELINE_ITEM" ShowInColumn="Entity.BASELINE_ITEM" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" NewItemRowPosition="None" PrintAllDetails="True" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.FormatConditions>
                                 <dxg:FormatCondition ApplyToRow="True" Expression="[IAmCritical] = 'True'" FieldName="IAmCritical">
                                     <dxc:Format Background="LightBlue" />

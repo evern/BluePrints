@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "VARIATION_REGISTERCollectionViewModelWrapper"; }
+            get { return "VARIATION_REGISTERCollectionViewModelWrapper_v2"; }
         }
 
         #endregion

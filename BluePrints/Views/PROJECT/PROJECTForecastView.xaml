@@ -255,7 +255,6 @@
                 <Setter Property="MaskType" Value="Numeric" />
                 <Setter Property="Mask" Value="c0" />
                 <Setter Property="MaskUseAsDisplayFormat" Value="True" />
-                <Setter Property="MinValue" Value="0" />
             </Style>
             <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>

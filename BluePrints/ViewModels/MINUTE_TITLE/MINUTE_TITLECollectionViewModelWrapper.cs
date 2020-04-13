@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "MINUTE_TITLEViewModelWrapper"; }
+            get { return "MINUTE_TITLEViewModelWrapper_v2"; }
         }
 
         #endregion

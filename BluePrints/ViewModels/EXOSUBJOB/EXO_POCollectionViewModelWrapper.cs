@@ -269,7 +269,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "EXO_POCollectionViewModelWrapper_v2.00"; }
+            get { return "EXO_POCollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection

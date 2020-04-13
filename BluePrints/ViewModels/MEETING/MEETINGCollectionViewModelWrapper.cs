@@ -245,7 +245,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "MEETINGCollectionViewModelWrapper"; }
+            get { return "MEETINGCollectionViewModelWrapper_v2"; }
         }
 
         //need to use private alluser because this can only be initialized once for shuffling data with same hash into attendance, apologies, signoff for token combobox edit to work

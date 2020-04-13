@@ -221,7 +221,7 @@ namespace BluePrints.ViewModels
             emailReportList.Clear();
         }
 
-        public override string ViewName => "DOCCONTROL_BASELINE_ITEMCollection";
+        public override string ViewName => "DOCCONTROL_BASELINE_ITEMCollection_v2";
 
         private DevExpress.Mvvm.IDialogService ReportDialogService
         {

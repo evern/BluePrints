@@ -401,7 +401,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "REGISTER_ISSUECollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "REGISTER_ISSUECollectionViewModelWrapper_v1"; }
+            get { return "REGISTER_ISSUECollectionViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix

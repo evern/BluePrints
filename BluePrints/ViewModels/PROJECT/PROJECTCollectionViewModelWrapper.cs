@@ -992,7 +992,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTCollectionViewModelWrapper"; }
+            get { return "PROJECTCollectionViewModelWrapper_v2"; }
         }
 
         public void TenderProfile()

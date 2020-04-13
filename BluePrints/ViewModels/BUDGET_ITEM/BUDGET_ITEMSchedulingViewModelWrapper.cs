@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "BUDGET_ITEMSchedulingViewModelWrapper" + view_project_specific_affix; }
-            get { return "BUDGET_ITEMSchedulingViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "BUDGET_ITEMSchedulingViewModelWrapper_v2" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

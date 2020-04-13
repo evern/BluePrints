@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "REGISTER_RISKCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "REGISTER_RISKCollectionViewModelWrapper_v1"; }
+            get { return "REGISTER_RISKCollectionViewModelWrapper_v2"; }
         }
 
         private string view_project_specific_affix

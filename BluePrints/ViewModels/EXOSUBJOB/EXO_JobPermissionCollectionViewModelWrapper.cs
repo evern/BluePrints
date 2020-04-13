@@ -377,7 +377,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "EXO_JobPermissionCollectionViewModelWrapper";
+                return "EXO_JobPermissionCollectionViewModelWrapper_v2";
             }
         }
         #endregion

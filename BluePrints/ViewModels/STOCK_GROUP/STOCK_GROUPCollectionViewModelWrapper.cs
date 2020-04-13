@@ -136,7 +136,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "STOCK_GROUPCollectionViewModelWrapper"; }
+            get { return "STOCK_GROUPCollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<AREA> AREACollection

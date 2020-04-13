@@ -235,7 +235,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "BASELINE_ITEMRATECollectionViewModelWrapper"; }
+            get { return "BASELINE_ITEMRATECollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<DOCTYPE> BASELINE_ITEMCollection

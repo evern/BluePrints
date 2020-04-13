@@ -82,7 +82,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "DOCTYPECollectionViewModelWrapper"; }
+            get { return "DOCTYPECollectionViewModelWrapper_v2"; }
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

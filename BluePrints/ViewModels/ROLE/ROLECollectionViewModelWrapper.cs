@@ -382,7 +382,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "ROLEViewModelWrapper"; }
+            get { return "ROLEViewModelWrapper_v2"; }
         }
 
         #endregion

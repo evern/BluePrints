@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "MEETING_TYPECollectionViewModelWrapper"; }
+            get { return "MEETING_TYPECollectionViewModelWrapper_v2"; }
         }
         #endregion
 
