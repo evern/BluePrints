@@ -129,7 +129,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" AllowBestFit="false" Width="90" HeaderToolTip="Budget in Exo">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
