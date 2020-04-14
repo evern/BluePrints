@@ -139,7 +139,7 @@ namespace BluePrints.ViewModels
             summaryBackgroundWorker = new BackgroundWorker();
             summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
             summaryBackgroundWorker.WorkerSupportsCancellation = true;
-            //summaryBackgroundWorker.RunWorkerAsync();
+            summaryBackgroundWorker.RunWorkerAsync();
 
             return base.OnMainViewModelLoaded(entities);
         }
