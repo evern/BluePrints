@@ -6,7 +6,7 @@
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -17,7 +17,7 @@
             </DataTemplate>
             <DataTemplate x:Key="CommodityCodeColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -65,7 +65,7 @@
             </DataTemplate>
             <DataTemplate x:Key="JobErrorColumnTemplate">
                 <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -247,6 +247,7 @@
                         <DataTemplate>
                             <ItemsControl>
                                 <dxmvvm:EventToCommand Command="{Binding EditValueChangedCommand}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                <dxmvvm:EventToCommand Command="{Binding EditValueValidateCommand}" EventName="Validate" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                                 <!--<dxmvvm:EventToCommand Command="{Binding EditControlPreviewMouseDownCommand}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />-->
                             </ItemsControl>
                         </DataTemplate>
@@ -281,14 +282,9 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                 <dxb:BarButtonItem x:Name="biResetForecast" Command="{Binding ResetCellContentCommand}" Content="Reset Forecast" Glyph="{dx:DXImage Image=Reset_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to it's underlying immutable values (PO, indirect, actuals, materials). Shortcut: [Delete] Key" />
                 <dxb:BarButtonItem x:Name="biApplyPF" Command="{Binding ApplyCurrentPFCommand}" Content="Apply PF" Glyph="{dxc:DXImage Images/People/PublicFix_32x32.png}" LargeGlyph="{dx:DXImage Images/People/PublicFix_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Apply current PF to selected rows" />
                 <dxb:BarButtonItem x:Name="biUpdatePF" Command="{Binding UpdateCurrentPFCommand}" Content="Update All PF" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update PF for all jobs that had current PF applied before, to verify which job will get updated, right click on columns, find Show Column Chooser and tick Floating PF" />
-                <dxb:BarButtonItem x:Name="biLocalKeyboardCopy" Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
-                <dxb:BarButtonItem x:Name="biLocalKeyboardPaste" Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
-                <dxb:BarButtonItem x:Name="biLocalUndo" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" LargeGlyph="{dx:DXImage Image=Undo_32x32.png}" ToolTip="Undo last action" />
-                <dxb:BarButtonItem x:Name="biLocalRedo" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                 <dxb:BarButtonItem x:Name="biSaveEAC" Command="{Binding SaveCurrentMonthEACCommand}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
                 <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding IsWeeks, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
                 <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding FixedDataDate}" ToolTip="Data date">
@@ -324,10 +320,10 @@
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                 <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                 <dxb:BarSubItem Content="Grid Functions" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
-                                    <dxb:BarButtonItemLink BarItemName="biLocalUndo" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalRedo" />
-                                    <dxb:BarButtonItemLink BarItemName="biLocalKeyboardCopy"/>
-                                    <dxb:BarButtonItemLink BarItemName="biLocalKeyboardPaste" />
+                                    <dxb:BarButtonItemLink BarItemName="biUndo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biRedo1" />
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
+                                    <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
                                     <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                     <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
@@ -562,6 +558,9 @@
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.EAC_Margin_Percent_Background}" Text="{Binding ForecastSummary.EAC_Margin_Percent, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Contingency" LabelPosition="Left">
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="Contingency" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Contingency, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutGroup Header="Non-PF Influenced" View="GroupBox" Orientation="Vertical">
                                                 <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">

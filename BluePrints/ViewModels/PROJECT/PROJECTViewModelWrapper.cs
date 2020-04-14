@@ -1398,9 +1398,6 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            if (!CanFullRefresh())
-                return;
-
             IsLoading = true;
             base.FullRefresh();
             ReloadEntitiesCollection();

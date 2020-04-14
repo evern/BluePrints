@@ -195,7 +195,7 @@ namespace BaseModel.ViewModel.Dialogs
                 return null;
 
             DataRow findExistingOrNewDataRow = (from DataRow dr in SimulationTable.Rows
-                                                where (((ForecastJobData)dr[columnEntity])).Projection.SubJob.Code == job.Projection.SubJob.Code && ((ForecastJobData)dr[columnEntity]).Projection.Discipline.Code == job.Projection.Discipline.Code
+                                                where (((ForecastJobData)dr[columnEntity])).Projection.SubJobCode == job.Projection.SubJobCode && ((ForecastJobData)dr[columnEntity]).Projection.DisciplineCode == job.Projection.DisciplineCode
                                                 select dr).FirstOrDefault();
             
             if (findExistingOrNewDataRow == null)

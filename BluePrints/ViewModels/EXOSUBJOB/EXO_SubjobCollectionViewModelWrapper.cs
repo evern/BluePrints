@@ -188,7 +188,10 @@ namespace BluePrints.ViewModels
             isNew = false;
             ExoSubJobEditableProjection newlyAddedProjection = commitToExo(projection);
             if (newlyAddedProjection != null)
+            {
                 isNew = true;
+                newlyAddedProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
+            }
 
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }

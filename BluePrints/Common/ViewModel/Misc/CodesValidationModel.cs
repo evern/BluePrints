@@ -187,7 +187,10 @@ namespace BluePrints.Common.Projections
                         string disciplineCodeWithoutEnumeration = disciplineCode.Substring(0, 2);
                         validStockCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == PhaseType && x.CODE == commodityCode && (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCodeWithoutEnumeration))).Select(x => x.DEFAULT_STOCKCODE).OrderBy(x => x).ToList();
                     }
+
+                    validStockCodes.Add(BluePrintsResources.ContingencyCostType);
                 }
+
 
                 return validStockCodes;
             }

@@ -23,10 +23,10 @@ namespace BluePrints.Common.ViewModel.Misc
         /// Creates the discipline job forecast and also commodity job forecast within
         /// </summary>
         /// <returns></returns>
-        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
+        public static List<ForecastJobData> CreateCommodityProjections(IEnumerable<ExoSubJobEditableProjection> unifiedJobList, IEnumerable<ExoTimeAuthorisation> queryJobLines, IEnumerable<DashboardFlatStructure> projectDashboards, IEnumerable<FORECAST> FORECASTCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<DateTime> dates, DateTime dataDate, bool isWeeks, bool showLoadingScreen)
         {
             List<ForecastJobData> forecastProjections = new List<ForecastJobData>();
-            var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJob.Code + x.Discipline.Code + x.Variation_Code).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
+            var groupedDisciplineJobs = unifiedJobList.GroupBy(x => x.SubJobCode + x.DisciplineCode + x.VariationCode).Select(group => new { DisciplineJob = group.First(), CommodityJobs = group.ToList() });
 
             if(showLoadingScreen)
             {
@@ -37,18 +37,18 @@ namespace BluePrints.Common.ViewModel.Misc
             foreach(var groupedDisciplineJob in groupedDisciplineJobs)
             {
                 //retrive the discipline subjob, any member in the collection will do
-                ExoSubJobProjection DisciplineJob = groupedDisciplineJob.DisciplineJob;
+                ExoSubJobEditableProjection DisciplineJob = groupedDisciplineJob.DisciplineJob;
 
                 //create the discipline level forecast summary
-                List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJob.Code && x.DisciplineCode == DisciplineJob.Discipline.Code && x.Variation_Code == DisciplineJob.Variation_Code).ToList();
+                List<DashboardFlatStructure> disciplineDashboards = projectDashboards.Where(x => x.SubjobCode == DisciplineJob.SubJobCode && x.DisciplineCode == DisciplineJob.DisciplineCode && x.Variation_Code == DisciplineJob.VariationCode).ToList();
                 List<ForecastJobData> commodityJobs = new List<ForecastJobData>();
 
                 foreach (var commodityJob in groupedDisciplineJob.CommodityJobs)
                 {
-                    ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJob.Code, commodityJob.SubJob.Title, commodityJob.Discipline.Code, commodityJob.Discipline.Name, commodityJob.Commodity.Code, commodityJob.Commodity.Name, commodityJob.Commodity.Description, commodityJob.Commodity.UOM, commodityJob.Variation_Code, queryJobLines, COMMODITY_CODECollection);
+                    ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJobCode, commodityJob.SubJobTitle, commodityJob.DisciplineCode, commodityJob.DisciplineName, commodityJob.CommodityCode, commodityJob.CommodityName, commodityJob.CommodityDescription, commodityJob.CommodityUOM, commodityJob.VariationCode, queryJobLines, COMMODITY_CODECollection);
                     commodityJobForecastSummary.JobErrorMessage = commodityJob.ForecastErrorString;
 
-                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.Commodity.Code);
+                    IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.CommodityCode);
                     PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true);
                     //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load
                     //PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
@@ -75,10 +75,10 @@ namespace BluePrints.Common.ViewModel.Misc
         /// </summary>
         public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered)
         {
-            ExoSubJobProjection projection = jobForecastSummary.Projection;
+            ExoSubJobEditableProjection projection = jobForecastSummary.Projection;
             List<DashboardFlatStructure> relevantDashboards;
             if (!isDataFiltered)
-                relevantDashboards = DashboardCollection.Where(x => x.SubjobCode == projection.SubJob.Code && x.DisciplineCode == projection.Discipline.Code && x.CommodityCode == projection.Commodity.Code && x.Variation_Code == projection.Variation_Code).ToList();
+                relevantDashboards = DashboardCollection.Where(x => x.SubjobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.Variation_Code == projection.VariationCode).ToList();
             else
                 relevantDashboards = DashboardCollection.ToList();
 
@@ -118,7 +118,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //get relevant forecast EACs
             List<FORECAST_EAC> currentJobEACs = new List<FORECAST_EAC>();
-            currentJobEACs = FORECAST_EACCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
+            currentJobEACs = FORECAST_EACCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
 
             //get remaining data points
             List<Common.ViewModel.Reporting.DataPoint> remainingDataPoints = new List<Reporting.DataPoint>();
@@ -178,7 +178,7 @@ namespace BluePrints.Common.ViewModel.Misc
             DateTime firstRemainingDate = new DateTime(dates.First().Year, dates.First().Month, 1).AddMonths(2).AddDays(-1);
 
             List<RemainingCost> indirectRemainingCosts = new List<RemainingCost>();
-            List<FORECAST_JOB> relevantFORECAST_JOBS = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
+            List<FORECAST_JOB> relevantFORECAST_JOBS = FORECAST_JOBCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
             foreach(FORECAST_JOB relevantFORECAST_JOB in relevantFORECAST_JOBS.Where(x => x.FORECAST_RATE != null))
             {
                 foreach(FORECAST_JOB_HOUR relevantFORECAST_JOB_HOUR in relevantFORECAST_JOB.FORECAST_JOB_HOUR.Where(x => x.FORECAST_HOUR != null))
@@ -188,7 +188,7 @@ namespace BluePrints.Common.ViewModel.Misc
             }
 
             //set whether productivity is floating
-            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
+            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
                 jobForecastSummary.IsProductivityFloating = true;
 
             foreach (ForecastDateCost dateCost in jobForecastSummary.DateCosts)
@@ -211,7 +211,7 @@ namespace BluePrints.Common.ViewModel.Misc
             forecastProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
             forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             variationCode = NormalizeVariationCode(variationCode);
-            forecastProjection.Projection = new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityName, Description = commodityDescription, UOM = commodityUOM }, Variation_Code = variationCode };
+            forecastProjection.Projection = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityName, CommodityDescription = commodityDescription, CommodityUOM = commodityUOM, VariationCode = variationCode };
 
             //construct relevant exo lines collection
             IEnumerable<ExoTimeAuthorisation> relevantJobLines;
@@ -236,7 +236,7 @@ namespace BluePrints.Common.ViewModel.Misc
             previousEACDataDate = previousEACDataDate.AddDays(-1);
 
             //populate previous estimate to completion
-            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJob.Code && x.DISCIPLINE_CODE == forecastProjection.Projection.Discipline.Code && x.COMMODITY_CODE == forecastProjection.Projection.Commodity.Code && x.VARIATION_CODE == forecastProjection.Projection.Variation_Code && x.FORECAST_DATE.Date == previousEACDataDate.Date);
+            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date);
             if (previousEAC != null)
             {
                 if (previousEAC.FORECAST_COSTS != null)
@@ -263,9 +263,9 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Creates a unified projection of all jobs queried and actuals from dashboards
         /// </summary>
-        public static List<ExoSubJobProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
+        public static List<ExoSubJobEditableProjection> ConstructUnifiedJobList(IEnumerable<ExoTimeAuthorisation> queriedJobs, IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, List<ExoDataPoint> allDataPoints, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, bool showLoadingScreen, IEnumerable<DashboardFlatStructure> dashboardJobs = null)
         {
-            List<ExoSubJobProjection> combinedSubJobs = new List<ExoSubJobProjection>();
+            List<ExoSubJobEditableProjection> combinedSubJobs = new List<ExoSubJobEditableProjection>();
 
             if(showLoadingScreen)
             {
@@ -339,7 +339,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals
         /// </summary>
-        private static void addExoSubJob(List<ExoSubJobProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
+        private static void addExoSubJob(List<ExoSubJobEditableProjection> combinedSubJobs, string subJobCode, string disciplineCode, string commodityCode, string variationCode, 
             IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
@@ -377,14 +377,14 @@ namespace BluePrints.Common.ViewModel.Misc
             string possibleErrorMessage = errorMessage == string.Empty ? string.Empty : errorMessage + ", but isn't added in exo";
             if (variationCode == null || variationCode == string.Empty)
             {
-                if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && (x.Variation_Code == null || x.Variation_Code == string.Empty)))
+                if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && (x.VariationCode == null || x.VariationCode == string.Empty)))
                 {
-                    combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityCodeName, Description = commodityCodeDescription, UOM = commodityCodeUOM }, Variation_Code = NormalizeVariationCode(variationCode) });
+                    combinedSubJobs.Add(new ExoSubJobEditableProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeVariationCode(variationCode) });
                 }
             }
-            else if (!combinedSubJobs.Any(x => x.SubJob.Code == subJobCode && x.Discipline.Code == disciplineCode && x.Commodity.Code == commodityCode && x.Variation_Code == variationCode))
+            else if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
             {
-                combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJob = new PrimeroSubJob() { Code = subJobCode, Title = subJobTitle }, Discipline = new PrimeroDiscipline() { Code = disciplineCode, Name = disciplineName }, Commodity = new PrimeroCommodity() { Code = commodityCode, Name = commodityCodeName, Description = commodityCodeDescription, UOM = commodityCodeUOM }, Variation_Code = NormalizeVariationCode(variationCode) });
+                combinedSubJobs.Add(new ExoSubJobEditableProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeVariationCode(variationCode) });
             }
         }
     }

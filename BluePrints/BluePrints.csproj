@@ -1022,7 +1022,6 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_MasterJobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobPermissionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_SubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_DesignSubjobCollectionViewModelWrapper.cs" />
@@ -1098,9 +1097,6 @@
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml.cs">
       <DependentUpon>EXO_ResourcesCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_MasterJobCollectionView.xaml.cs">
-      <DependentUpon>EXO_MasterJobCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_JobPermissionCollectionView.xaml.cs">
       <DependentUpon>EXO_JobPermissionCollectionView.xaml</DependentUpon>
@@ -2027,10 +2023,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_MasterJobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -25,12 +25,12 @@ namespace BluePrints.Common.Projections
             if (Projection == null)
                 return string.Empty;
 
-            if (Projection.SubJob != null && Projection.Discipline != null && Projection.Commodity != null)
-                return Projection.SubJob.Code + "-" + Projection.Discipline.Code + "-" + Projection.Commodity.Code;
-            else if (Projection.SubJob != null && Projection.Discipline != null)
-                return Projection.SubJob.Code + "-" + Projection.Discipline.Code;
-            else if (Projection.SubJob != null)
-                return Projection.SubJob.Code;
+            if (Projection.SubJobCode != null && Projection.DisciplineCode != null && Projection.CommodityCode != null)
+                return Projection.SubJobCode + "-" + Projection.DisciplineCode + "-" + Projection.CommodityCode;
+            else if (Projection.SubJobCode != null && Projection.DisciplineCode != null)
+                return Projection.SubJobCode + "-" + Projection.DisciplineCode;
+            else if (Projection.SubJobCode != null)
+                return Projection.SubJobCode;
             else
                 return string.Empty;
         }
@@ -39,7 +39,7 @@ namespace BluePrints.Common.Projections
         public string DropDownPhase { get; set; }
         public string CompareMask { get; set; }
 
-        public ExoSubJobProjection Projection { get; set; }
+        public ExoSubJobEditableProjection Projection { get; set; }
 
         public List<ForecastDateCost> DateCosts { get; set; }
 
@@ -103,10 +103,10 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Projection == null || Projection.SubJob == null || Projection.SubJob.Code == string.Empty)
+                if (Projection == null || Projection.SubJobCode == null || Projection.SubJobCode == string.Empty)
                     return false;
 
-                return Projection.SubJob.Code.ToUpper().Contains("P");
+                return Projection.SubJobCode.ToUpper().Contains("P");
             }
         }
 
@@ -151,12 +151,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (COMMODITY_CODES == null || Projection == null || Projection.PhaseType == null || Projection.Discipline == null || Projection.Discipline.Code.Length < 2)
+                if (COMMODITY_CODES == null || Projection == null || Projection.PhaseType == null || Projection.DisciplineCode == null || Projection.DisciplineCode.Length < 2)
                     return new List<COMMODITY_CODE>();
 
                 if (validCommodityCodes == null)
                 {
-                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, Projection.PhaseType, Projection.Discipline.Code).ToList();
+                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, Projection.PhaseType, Projection.DisciplineCode).ToList();
                 }
 
                 return validCommodityCodes;
@@ -167,18 +167,21 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Projection == null || Projection.Commodity == null || ValidCommodityCodes.Count() == 0 || Projection.Commodity.Code.Length < 2)
+                if (Projection == null || Projection.CommodityCode == null || ValidCommodityCodes.Count() == 0 || Projection.CommodityCode.Length < 2)
                     return true;
+
+                if (Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
+                    return false;
 
                 if (Projection.PhaseType == Common.PhaseType.Tender)
                 {
-                    if (Projection.Commodity.Code.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
+                    if (Projection.CommodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
                         return false;
                     else
                         return true;
                 }
 
-                bool isCommodityCodeError = !ValidCommodityCodes.Any(x => x.CODE == Projection.Commodity.Code);
+                bool isCommodityCodeError = !ValidCommodityCodes.Any(x => x.CODE == Projection.CommodityCode);
                 return isCommodityCodeError;
             }
         }

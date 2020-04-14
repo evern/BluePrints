@@ -562,10 +562,8 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            if (!CanFullRefresh())
-                return;
-
             IsLoading = true;
+            IsLoadingForecast = true;
             this.RaisePropertyChanged(x => x.IsLoading);
             alignedDataDateCollection.Clear();
             DetailedData.Clear();
@@ -598,6 +596,7 @@ namespace BluePrints.ViewModels
 
         DataTable dataPointsTable = null;
         List<ForecastJobData> commodityJobs = null;
+        DataRow contingencyRow = null;
         public virtual DataTable DataPointsTable
         {
             get
@@ -633,7 +632,7 @@ namespace BluePrints.ViewModels
             bool isNewData = false;
             if (commodityJobs == null)
             {
-                List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
+                List<ExoSubJobEditableProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
                 DetailedData.AddRange(allDataPoints);
 
                 commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECASTCollectionViewModel.Entities, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks, ShowLoadingScreen);
@@ -654,12 +653,20 @@ namespace BluePrints.ViewModels
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
+            ForecastSummary.Contingency = 0.00m;
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, (DateTime)FixedDataDate);
                 updateAdditionalJobInfo(commodityJob);
-                updateDataTable(commodityJob, isNewData);
+
+                DataRow commodityRow = updateDataTable(commodityJob, isNewData);
+                if (commodityJob.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
+                {
+                    ForecastSummary.Contingency = commodityJob.Budget;
+                    contingencyRow = commodityRow;
+                }
+
                 LoadingScreenManager.Progress();
             }
 
@@ -705,7 +712,7 @@ namespace BluePrints.ViewModels
                 return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate);
         }
 
-        private void updateDataTable(ForecastJobData commodityJob, bool isNew)
+        private DataRow updateDataTable(ForecastJobData commodityJob, bool isNew)
         {
             DataRow commodityRow = dataPointsTable.NewRow();
             commodityRow[columnEntity] = commodityJob;
@@ -713,13 +720,13 @@ namespace BluePrints.ViewModels
             //rate already present during update
             if (isNew)
             {
-                Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.SubJob.PhaseCode);
-                string disciplineCode = commodityJob.Projection.Discipline.Code.Length > 2 ? commodityJob.Projection.Discipline.Code.Substring(0, 2) : commodityJob.Projection.Discipline.Code;
+                Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.PhaseCode);
+                string disciplineCode = commodityJob.Projection.DisciplineCode != null && commodityJob.Projection.DisciplineCode.Length > 2 ? commodityJob.Projection.DisciplineCode.Substring(0, 2) : commodityJob.Projection.DisciplineCode;
                 //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
                 if (ratePHASE != null && rateDISCIPLINE != null)
                 {
-                    COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.PHASE_TYPE == ratePHASE.PHASE_TYPE && x.GUID_DISCIPLINE == rateDISCIPLINE.GUID && x.CODE == commodityJob.Projection.Commodity.Code);
+                    COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.PHASE_TYPE == ratePHASE.PHASE_TYPE && x.GUID_DISCIPLINE == rateDISCIPLINE.GUID && x.CODE == commodityJob.Projection.CommodityCode);
                     string commodityCode = string.Empty;
 
                     //when commodity isn't found, get rate by phase and discipline only
@@ -838,9 +845,9 @@ namespace BluePrints.ViewModels
             if (!isNew)
                 ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, IsWeeks, false);
 
-            ExoSubJobProjection projection = commodityJob.Projection;
+            ExoSubJobEditableProjection projection = commodityJob.Projection;
             IEnumerable<FORECAST> FORECASTCollection = FORECASTCollectionViewModel.Entities;
-            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code).ToList();
+            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
 
             establishCurrentProductivity(commodityJob);
             decimal P6TotalCurrentRemainingUnits = 0;
@@ -946,6 +953,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.OriginalEstimateAtCompletion += commodityJob.OriginalEstimateAtCompletion;
             ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
             ForecastSummary.CurrentEstimateAtCompletion += commodityJob.CurrentEstimateAtCompletion;
+            return commodityRow;
         }
 
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
@@ -957,14 +965,14 @@ namespace BluePrints.ViewModels
             {
                 bool isPreviousEACReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC)) == LoginCredentials.PermissionStatus.None;
 
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.SubJob.PhaseCode", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Code", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJob.Title", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Discipline.Code", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Code", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Commodity.Name", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.Variation_Code", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.PhaseCode", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DeliverableUnits", ReadOnly = true, Visible = false, Header = "Total Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours including variation, available for design only" });
@@ -1071,7 +1079,7 @@ namespace BluePrints.ViewModels
                 return;
 
             ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
-            ExoSubJobProjection entity = job.Projection;
+            ExoSubJobEditableProjection entity = job.Projection;
             DataTable compareDataTable = (DataTable)updateRow[columnCompare];
 
             decimal oldValue = 0.00m;
@@ -1094,18 +1102,18 @@ namespace BluePrints.ViewModels
         private void findExistingOrAddNewForecastJobSetting(DataRow updateRow, bool isFloatingProductivity)
         {
             ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
-            ExoSubJobProjection projection = job.Projection;
-            FORECAST_JOB_SETTING relevantFORECAST_JOB_SETTING = FORECAST_JOB_SETTINGCollection.FirstOrDefault(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
+            ExoSubJobEditableProjection projection = job.Projection;
+            FORECAST_JOB_SETTING relevantFORECAST_JOB_SETTING = FORECAST_JOB_SETTINGCollection.FirstOrDefault(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
             if (relevantFORECAST_JOB_SETTING == null)
             {
                 FORECAST_JOB_SETTING newFORECAST_JOB_SETTING = new FORECAST_JOB_SETTING();
                 newFORECAST_JOB_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
-                newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJob.Code;
-                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = projection.Discipline.Code;
-                newFORECAST_JOB_SETTING.COMMODITY_CODE = projection.Commodity.Code;
+                newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJobCode;
+                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = projection.DisciplineCode;
+                newFORECAST_JOB_SETTING.COMMODITY_CODE = projection.CommodityCode;
 
-                if (projection.Variation_Code != null && projection.Variation_Code != string.Empty)
-                    newFORECAST_JOB_SETTING.VARIATION_CODE = projection.Variation_Code;
+                if (projection.VariationCode != null && projection.VariationCode != string.Empty)
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = projection.VariationCode;
                 else
                     newFORECAST_JOB_SETTING.VARIATION_CODE = string.Empty;
 
@@ -1136,7 +1144,7 @@ namespace BluePrints.ViewModels
         private void updateViewForecastsOnDatesFromDb(DataRow dataRow, bool searchParentRow = false)
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
-            ExoSubJobProjection projection = job.Projection;
+            ExoSubJobEditableProjection projection = job.Projection;
             //need to map back into main row because datarow could be coming from p6 hours edit
             DataRow parentRow = searchParentRow ? findRow(projection, true) : dataRow;
             job = (ForecastJobData)parentRow[columnEntity];
@@ -1148,7 +1156,7 @@ namespace BluePrints.ViewModels
             DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
             DataRow childCompareP6CostsRow = childCompareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRowIndex)];
 
-            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
+            IEnumerable<FORECAST> currentRowFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
             
             decimal P6CurrentRemainingUnits = 0;
             foreach (ForecastDateCost dateCost in job.DateCosts)
@@ -1252,7 +1260,7 @@ namespace BluePrints.ViewModels
             DateTime parseEndDate;
             if (DateTime.TryParse(gridColumn.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
             {
-                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                ExoSubJobEditableProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
                 EndSelectionDate = parseEndDate;
 
@@ -1263,17 +1271,17 @@ namespace BluePrints.ViewModels
 
                 if(parseEndDate.Date == alignedDataDateCollection.First().Date)
                 {
-                    if(entity.Commodity.Code != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if(entity.CommodityCode != string.Empty)
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
                 else
                 {
-                    if(entity.Commodity.Code != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if(entity.CommodityCode != string.Empty)
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
 
                 IsHidden = false;
@@ -1283,11 +1291,11 @@ namespace BluePrints.ViewModels
             }
             else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
             {
-                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                if(entity.Commodity.Code != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False'");
+                ExoSubJobEditableProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if(entity.CommodityCode != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False'");
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
@@ -1296,11 +1304,11 @@ namespace BluePrints.ViewModels
             }
             else if (gridColumn.FieldName.ToUpper().Contains("INVOICED"))
             {
-                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                if (entity.Commodity.Code != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                ExoSubJobEditableProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if (entity.CommodityCode != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
@@ -1309,11 +1317,11 @@ namespace BluePrints.ViewModels
             }
             else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
             {
-                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                if (entity.Commodity.Code != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [Commodity_Code] = '" + entity.Commodity.Code + "' And [IsPO] = 'True'");
+                ExoSubJobEditableProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if (entity.CommodityCode != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'True'");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJob.Code + "' And [Discipline_Code] = '" + entity.Discipline.Code + "' And [Variation_Code] = '" + entity.Variation_Code + "' And [IsPO] = 'True'");
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'True'");
                 IsHidden = false;
 
                 IsPOColumnsVisible = true;
@@ -1609,7 +1617,7 @@ namespace BluePrints.ViewModels
 
                 DataRow editing_row = editing_row_view.Row;
                 DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.FieldName];
-                ExoSubJobProjection entity = ((ForecastJobData)editing_row[columnEntity]).Projection;
+                ExoSubJobEditableProjection entity = ((ForecastJobData)editing_row[columnEntity]).Projection;
 
                 string columnFieldName = selected_cell.Column.FieldName;
                 DateTime deleteCellDate;
@@ -1643,7 +1651,7 @@ namespace BluePrints.ViewModels
                 DataRowView editing_row_view = (DataRowView)GridControlService.GridControl.GetRow(row_handle);
                 DataRow editing_row = editing_row_view.Row;
                 ForecastJobData job = (ForecastJobData)editing_row[columnEntity];
-                ExoSubJobProjection entity = job.Projection;
+                ExoSubJobEditableProjection entity = job.Projection;
 
                 if(job.CurrentProductivity > 0)
                 {
@@ -1741,7 +1749,7 @@ namespace BluePrints.ViewModels
         protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue)
         {
             ForecastJobData forecastJobData = ((ForecastJobData)row[columnEntity]);
-            ExoSubJobProjection entity = forecastJobData.Projection;
+            ExoSubJobEditableProjection entity = forecastJobData.Projection;
 
             fieldName = fieldName.Replace("Entity.", "");
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Budget) || fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Rate))
@@ -1779,7 +1787,7 @@ namespace BluePrints.ViewModels
                     DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRowIndex)];
 
                     EntitiesUndoRedoManager.PauseActionId();
-                    List<FORECAST> resetFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == job.Projection.SubJob.Code && x.DISCIPLINE_CODE == job.Projection.Discipline.Code && x.COMMODITY_CODE == job.Projection.Commodity.Code && x.VARIATION_CODE == job.Projection.Variation_Code).ToList();
+                    List<FORECAST> resetFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.SUBJOB_CODE == job.Projection.SubJobCode && x.DISCIPLINE_CODE == job.Projection.DisciplineCode && x.COMMODITY_CODE == job.Projection.CommodityCode && x.VARIATION_CODE == job.Projection.VariationCode).ToList();
                     foreach (FORECAST resetFORECAST in resetFORECASTS)
                     {
                         resetFORECAST.FORECAST_UNITS = null;
@@ -1860,8 +1868,8 @@ namespace BluePrints.ViewModels
                     else
                     {
                         ForecastJobData job = (ForecastJobData)row[columnEntity];
-                        ExoSubJobProjection projection = job.Projection;
-                        if (FORECASTCollectionViewModel.Entities.Any(x => x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code))
+                        ExoSubJobEditableProjection projection = job.Projection;
+                        if (FORECASTCollectionViewModel.Entities.Any(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode))
                         {
                             if(MessageBoxService.ShowMessage("Any forecast done on this job will be removed and automatically generated based on PF = " + e.Value.ToString() + ", do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                             {
@@ -1880,8 +1888,7 @@ namespace BluePrints.ViewModels
             if (newValue != null && decimal.TryParse(newValue.ToString(), out newDecimalValue))
             {
                 ForecastJobData job = ((ForecastJobData)dataRow[columnEntity]);
-                ExoSubJobProjection entity = job.Projection;
-                ExoSubJobEditableProjection projection = new ExoSubJobEditableProjection(entity);
+                ExoSubJobEditableProjection projection = job.Projection;
                 List<ExoSubJobEditableProjection> projections = new List<ExoSubJobEditableProjection>();
                 projections.Add(projection);
                 IEnumerable<ExoSubJobEditableProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, BulkColumnEditDialogService);
@@ -2034,7 +2041,7 @@ namespace BluePrints.ViewModels
         private void findExistingOrAddNewForecast(DataRow dataRow, DateTime forecastDate, decimal? viewNewValue, object oldValue = null, bool skipRowRefresh = false)
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
-            ExoSubJobProjection entity = job.Projection;
+            ExoSubJobEditableProjection entity = job.Projection;
             string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
             decimal? compareValue = null;
             decimal? saveNewValue = viewNewValue;
@@ -2068,7 +2075,7 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
 
-            IEnumerable<FORECAST> findFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJob.Code && x.DISCIPLINE_CODE == entity.Discipline.Code && x.COMMODITY_CODE == entity.Commodity.Code && x.VARIATION_CODE == entity.Variation_Code);
+            IEnumerable<FORECAST> findFORECASTS = FORECASTCollectionViewModel.Entities.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
             IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
             IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
             FORECAST costFORECAST = findCostFORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
@@ -2093,10 +2100,10 @@ namespace BluePrints.ViewModels
                 editFORECAST = new FORECAST();
                 editFORECAST.GUID = Guid.Empty;
                 editFORECAST.GUID_PROJECT = LoadPROJECT.GUID;
-                editFORECAST.SUBJOB_CODE = entity.SubJob.Code;
-                editFORECAST.DISCIPLINE_CODE = entity.Discipline.Code;
-                editFORECAST.COMMODITY_CODE = entity.Commodity.Code;
-                editFORECAST.VARIATION_CODE = normalizeVariationCode(entity.Variation_Code);
+                editFORECAST.SUBJOB_CODE = entity.SubJobCode;
+                editFORECAST.DISCIPLINE_CODE = entity.DisciplineCode;
+                editFORECAST.COMMODITY_CODE = entity.CommodityCode;
+                editFORECAST.VARIATION_CODE = normalizeVariationCode(entity.VariationCode);
                 editFORECAST.FORECAST_DATE = forecastDate.Date;
                 editFORECAST.FORECAST_UNITS = saveNewValue;
                 editFORECAST.FORECAST_TYPE = editForecastDataType;
@@ -2211,20 +2218,20 @@ namespace BluePrints.ViewModels
             return forecastJobs;
         }
 
-        private DataRow findRow(ExoSubJobProjection entity, bool searchCommodityLevel)
+        private DataRow findRow(ExoSubJobEditableProjection entity, bool searchCommodityLevel)
         {
             IEnumerable<DataRow> subjobDisciplineRows = (from DataRow dr in dataPointsTable.Rows
-                                                    where (((ForecastJobData)dr[columnEntity])).Projection.SubJob.Code == entity.SubJob.Code && (((ForecastJobData)dr[columnEntity])).Projection.Discipline.Code == entity.Discipline.Code
-                                                    select dr);
+                                                    where (((ForecastJobData)dr[columnEntity])).Projection.SubJobCode == entity.SubJobCode && (((ForecastJobData)dr[columnEntity])).Projection.DisciplineCode == entity.DisciplineCode
+                                                         select dr);
 
             IEnumerable<DataRow> variationRows;
-            if (entity.Variation_Code == string.Empty || entity.Variation_Code == null)
-                variationRows = subjobDisciplineRows.Where(x => ((((ForecastJobData)x[columnEntity])).Projection.Variation_Code == string.Empty || (((ForecastJobData)x[columnEntity])).Projection.Variation_Code == null));
+            if (entity.VariationCode == string.Empty || entity.VariationCode == null)
+                variationRows = subjobDisciplineRows.Where(x => ((((ForecastJobData)x[columnEntity])).Projection.VariationCode == string.Empty || (((ForecastJobData)x[columnEntity])).Projection.VariationCode == null));
             else
-                variationRows = subjobDisciplineRows.Where(x => (((ForecastJobData)x[columnEntity])).Projection.Variation_Code == entity.Variation_Code);
+                variationRows = subjobDisciplineRows.Where(x => (((ForecastJobData)x[columnEntity])).Projection.VariationCode == entity.VariationCode);
 
             if (searchCommodityLevel)
-                return variationRows.FirstOrDefault(x => (((ForecastJobData)x[columnEntity])).Projection.Commodity.Code == entity.Commodity.Code);
+                return variationRows.FirstOrDefault(x => (((ForecastJobData)x[columnEntity])).Projection.CommodityCode == entity.CommodityCode);
             else
                 return variationRows.FirstOrDefault();
         }
@@ -2330,8 +2337,8 @@ namespace BluePrints.ViewModels
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsEntitiesUnitOfWork, entity.EstimateAtCompletion, false);
 
                 decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
-                ExoSubJobProjection projection = entity.Projection;
-                FORECAST findFORECASTS = bluePrintsEntitiesUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJob.Code && x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == projection.Variation_Code);
+                ExoSubJobEditableProjection projection = entity.Projection;
+                FORECAST findFORECASTS = bluePrintsEntitiesUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
                 if (findFORECASTS != null)
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                 else
@@ -2339,10 +2346,10 @@ namespace BluePrints.ViewModels
                     findFORECASTS = new FORECAST();
                     findFORECASTS.GUID = Guid.Empty;
                     findFORECASTS.GUID_PROJECT = LoadPROJECT.GUID;
-                    findFORECASTS.SUBJOB_CODE = projection.SubJob.Code;
-                    findFORECASTS.DISCIPLINE_CODE = projection.Discipline.Code;
-                    findFORECASTS.COMMODITY_CODE = projection.Commodity.Code;
-                    findFORECASTS.VARIATION_CODE = normalizeVariationCode(projection.Variation_Code);
+                    findFORECASTS.SUBJOB_CODE = projection.SubJobCode;
+                    findFORECASTS.DISCIPLINE_CODE = projection.DisciplineCode;
+                    findFORECASTS.COMMODITY_CODE = projection.CommodityCode;
+                    findFORECASTS.VARIATION_CODE = normalizeVariationCode(projection.VariationCode);
                     findFORECASTS.FORECAST_DATE = firstForecastDate;
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                     findFORECASTS.FORECAST_TYPE = ForecastDataType.DataDateForecast;
@@ -2363,15 +2370,15 @@ namespace BluePrints.ViewModels
             SaveDateAndRefresh();
         }
 
-        private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobProjection projection, decimal newPreviousEAC)
+        private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobEditableProjection projection, decimal newPreviousEAC)
         {
             FORECAST_EAC newFORECAST_EAC = new FORECAST_EAC();
             newFORECAST_EAC.GUID = Guid.Empty;
             newFORECAST_EAC.GUID_PROJECT = LoadPROJECT.GUID;
-            newFORECAST_EAC.SUBJOB_CODE = projection.SubJob.Code;
-            newFORECAST_EAC.DISCIPLINE_CODE = projection.Discipline.Code;
-            newFORECAST_EAC.COMMODITY_CODE = projection.Commodity.Code;
-            newFORECAST_EAC.VARIATION_CODE = normalizeVariationCode(projection.Variation_Code);
+            newFORECAST_EAC.SUBJOB_CODE = projection.SubJobCode;
+            newFORECAST_EAC.DISCIPLINE_CODE = projection.DisciplineCode;
+            newFORECAST_EAC.COMMODITY_CODE = projection.CommodityCode;
+            newFORECAST_EAC.VARIATION_CODE = normalizeVariationCode(projection.VariationCode);
             newFORECAST_EAC.FORECAST_DATE = forecastDate.Date;
             newFORECAST_EAC.FORECAST_COSTS = newPreviousEAC;
 
@@ -2380,14 +2387,14 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewEAC(DateTime forecastDate, ForecastJobData entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, decimal newPreviousEAC, bool save)
         {
-            ExoSubJobProjection projection = entity.Projection;
-            if (projection.SubJob == null || projection.Discipline == null || projection.Commodity == null)
+            ExoSubJobEditableProjection projection = entity.Projection;
+            if (projection.SubJobCode == null || projection.DisciplineCode == null || projection.CommodityCode == null)
                 return;
 
-            string normalizedVariationCode = normalizeVariationCode(projection.Variation_Code);
+            string normalizedVariationCode = normalizeVariationCode(projection.VariationCode);
             FORECAST_EAC forecast_EAC = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && 
-            x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJob.Code && 
-            x.DISCIPLINE_CODE == projection.Discipline.Code && x.COMMODITY_CODE == projection.Commodity.Code && x.VARIATION_CODE == normalizedVariationCode);
+            x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && 
+            x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode);
 
             if(forecast_EAC != null)
             {
@@ -2435,6 +2442,20 @@ namespace BluePrints.ViewModels
             GridControlService.CollapseAllMasterRows();
         }
 
+        public void EditValueValidate(DevExpress.Xpf.Editors.ValidationEventArgs e)
+        {
+            string fieldName = ((BaseEdit)e.Source).Tag.ToString();
+            if (fieldName == BindableBase.GetPropertyName(() => new ForecastSummary().Contingency))
+            {
+                if (contingencyRow == null && ((decimal)e.Value) != 0)
+                {
+                    e.IsValid = false;
+                    e.ErrorContent = "Contingency job not found, please add " + BluePrintsResources.ContingencyCostType + " to any job in Exo -> Jobs";
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                }
+            }
+        }
+
         public void EditValueChanged(EditValueChangedEventArgs e)
         {
             if (IsLoadingForecast)
@@ -2446,8 +2467,20 @@ namespace BluePrints.ViewModels
             decimal newValueDecimal = 0;
             decimal.TryParse(e.NewValue.ToString(), out newValueDecimal);
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
-            DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
-            savePROJECT();
+
+            if(fieldName != BindableBase.GetPropertyName(() => new ForecastSummary().Contingency))
+            {
+                DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
+                savePROJECT();
+            }
+            else
+            {
+                if(contingencyRow != null)
+                {
+                    ForecastSummary.Contingency = newValueDecimal;
+                    commitBudget(primeroEntitiesUnitOfWork, contingencyRow, newValueDecimal);
+                }
+            }
 
             if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().ORI_REVENUE))
                 ForecastSummary.Original_Revenue = newValueDecimal;
@@ -2915,6 +2948,7 @@ namespace BluePrints.ViewModels
         public decimal Budget_Margin => Revised_Revenue - Budget_Cost;
         public decimal Budget_Margin_Percent => Revised_Revenue == 0 ? 0 : Budget_Margin / Revised_Revenue;
 
+        public decimal Contingency { get; set; }
         public decimal EAC_Revenue { get; set; }
         public decimal Current_Cost { get; set; }
         public decimal Commitments { get; set; }

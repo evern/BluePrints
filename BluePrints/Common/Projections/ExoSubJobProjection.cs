@@ -106,8 +106,15 @@ namespace BluePrints.Common.Projections
         [Required]
         public string CommodityCode { get; set; }
         public string CommodityName { get; set; }
+        public string CommodityDescription { get; set; }
+        public string CommodityUOM { get; set; }
         public string StockCode { get; set; }
         public string StockName { get; set; }
+
+        public decimal ExoForecastRate { get; set; }
+        public decimal ExoBudgetQty { get; set; }
+        public decimal ExoBudgetCosts { get; set; }
+        public string ForecastErrorString { get; set; }
 
         public string GetStockCode()
         {
@@ -2213,16 +2220,6 @@ namespace BluePrints.Common.Projections
                                  select new { Narrative = TIMESHEET.X_NARRATIVE };
 
             return timesheetLineNarratives.Select(x => x.Narrative).Distinct().OrderBy(x => x).ToList();
-        }
-
-        public static List<ExoSubJobProjection> GetMasterExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
-        {
-            var availableLines = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR
-                                 where SUBJOB.JOBNO == SUBJOB.MASTER_JOBNO
-                                 select new { SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE };
-
-            List<ExoSubJobProjection> exoTimes = availableLines.ToList().Select(x => new ExoSubJobProjection() { SubJob = new PrimeroSubJob() { Id = x.SUBJOBNO, Code = x.SUBJOBNAME, Title = x.SUBJOBTITLE } }).ToList();
-            return exoTimes;
         }
 
         public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
