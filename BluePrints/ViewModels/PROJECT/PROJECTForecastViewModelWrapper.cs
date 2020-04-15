@@ -1884,6 +1884,9 @@ namespace BluePrints.ViewModels
 
         private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue)
         {
+            if (IsLoading)
+                return false;
+
             decimal newDecimalValue = 0;
             if (newValue != null && decimal.TryParse(newValue.ToString(), out newDecimalValue))
             {
