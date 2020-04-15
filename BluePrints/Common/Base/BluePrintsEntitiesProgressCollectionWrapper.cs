@@ -414,9 +414,9 @@ namespace BluePrints.Common.Base
         {
             if(fullSummarizer != null)
             {
-                //fullSummarizer.BuildBudgeted();
+                fullSummarizer.BuildBudgeted();
                 fullSummarizer.BuildEarned();
-                //fullSummarizer.BuildRemaining();
+                fullSummarizer.BuildRemaining();
                 fullSummarizer.Summarize();
             }
         }
@@ -463,7 +463,11 @@ namespace BluePrints.Common.Base
             {
                 if (!IsLoading)
                 {
-                    loadPROGRESS.DATA_DATE = value.Date.AddDays(1).AddSeconds(-1);
+                    DateTime newValue = value.Date.AddDays(1).AddSeconds(-1);
+                    if (loadPROGRESS.DATA_DATE == newValue)
+                        return;
+
+                    loadPROGRESS.DATA_DATE = newValue;
 
                     //!= null is used because set method can be invoked in quick succession (when full refresh is called and PROGRESSCollectionViewModel is disposed)
                     if(PROGRESSCollectionViewModel != null)
