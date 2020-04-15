@@ -687,7 +687,8 @@ namespace BluePrints.ViewModels
             DateTime endDateToGenerate;
 
             //because background worker haven't update this value yet, updating it will allow end date to be saved when it's less than remaining end date
-            IsLoading = false;
+            //have to take this out because editvaluechanging on summary items will get invoked
+            //IsLoading = false;
             if (remainingDataPoints.Count() > 0)
             {
                 endDateToGenerate = remainingDataPoints.Max(x => x.ProgressDate);
