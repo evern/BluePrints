@@ -596,7 +596,6 @@ namespace BluePrints.ViewModels
 
         DataTable dataPointsTable = null;
         List<ForecastJobData> commodityJobs = null;
-        DataRow contingencyRow = null;
         public virtual DataTable DataPointsTable
         {
             get
@@ -652,8 +651,7 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
-
-            ForecastSummary.Contingency = 0.00m;
+            
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
@@ -661,12 +659,6 @@ namespace BluePrints.ViewModels
                 updateAdditionalJobInfo(commodityJob);
 
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
-                if (commodityJob.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
-                {
-                    ForecastSummary.Contingency = commodityJob.Budget;
-                    contingencyRow = commodityRow;
-                }
-
                 LoadingScreenManager.Progress();
             }
 
@@ -954,6 +946,10 @@ namespace BluePrints.ViewModels
             ForecastSummary.OriginalEstimateAtCompletion += commodityJob.OriginalEstimateAtCompletion;
             ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
             ForecastSummary.CurrentEstimateAtCompletion += commodityJob.CurrentEstimateAtCompletion;
+
+            if (commodityJob.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
+                ForecastSummary.Contingency += commodityJob.EstimateAtCompletion;
+
             return commodityRow;
         }
 
@@ -2203,6 +2199,9 @@ namespace BluePrints.ViewModels
                 ForecastSummary.EstimateAtCompletion += job.EstimateAtCompletion;
                 ForecastSummary.CurrentEstimateAtCompletion += job.CurrentEstimateAtCompletion;
                 ForecastSummary.Uncommitted_Forecast += job.Uncommitted;
+
+                if (job.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
+                    ForecastSummary.Contingency += job.EstimateAtCompletion;
             }
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
@@ -2449,15 +2448,6 @@ namespace BluePrints.ViewModels
         public void EditValueValidate(DevExpress.Xpf.Editors.ValidationEventArgs e)
         {
             string fieldName = ((BaseEdit)e.Source).Tag.ToString();
-            if (fieldName == BindableBase.GetPropertyName(() => new ForecastSummary().Contingency))
-            {
-                if (contingencyRow == null && ((decimal)e.Value) != 0)
-                {
-                    e.IsValid = false;
-                    e.ErrorContent = "Contingency job not found, please add " + BluePrintsResources.ContingencyCostType + " to any job in Exo -> Jobs";
-                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
-                }
-            }
         }
 
         public void EditValueChanged(EditValueChangedEventArgs e)
@@ -2471,20 +2461,9 @@ namespace BluePrints.ViewModels
             decimal newValueDecimal = 0;
             decimal.TryParse(e.NewValue.ToString(), out newValueDecimal);
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
-
-            if(fieldName != BindableBase.GetPropertyName(() => new ForecastSummary().Contingency))
-            {
-                DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
-                savePROJECT();
-            }
-            else
-            {
-                if(contingencyRow != null)
-                {
-                    ForecastSummary.Contingency = newValueDecimal;
-                    commitBudget(primeroEntitiesUnitOfWork, contingencyRow, newValueDecimal);
-                }
-            }
+            
+            DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
+            savePROJECT();
 
             if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().ORI_REVENUE))
                 ForecastSummary.Original_Revenue = newValueDecimal;
@@ -2940,6 +2919,7 @@ namespace BluePrints.ViewModels
             Uncommitted_Forecast = 0;
             EstimateAtCompletion = 0;
             Commitments = 0;
+            Contingency = 0;
 
             OriginalEstimateAtCompletion = 0;
             CurrentEstimateAtCompletion = 0;
