@@ -292,7 +292,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupTreeGrid" View="Group">
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDeliverables" dxc:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding Selected_Deliverable, Mode=TwoWay}" SelectedItems="{Binding Selected_Deliverables, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" ReadOnly="True" VisibleIndex="0">
+                                <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" AllowBestFit="false" Width="50" ReadOnly="True" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -302,17 +302,12 @@
                                         <dxe:ComboBoxEditSettings Name="PART_Editor_InternalName1" AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Workpack" FieldName="Entity.Entity.GUID_WORKPACK" VisibleIndex="2">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding WORKPACKCollection}" ValueMember="GUID" />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn Header="Area" FieldName="Entity.Entity.GUID_AREA" ReadOnly="True">
+                                <dxg:GridColumn Header="Area" FieldName="Entity.Entity.GUID_AREA" AllowBestFit="false" Width="50" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Subarea" FieldName="Entity.Entity.SubAreaGuid" ReadOnly="True" ColumnFilterMode="DisplayText">
+                                <dxg:GridColumn Header="Sub Area" FieldName="Entity.Entity.SubAreaGuid" AllowBestFit="false" Width="50" ReadOnly="True" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -338,22 +333,22 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Internal Num" FieldName="Entity.Entity.INTERNAL_NUM" ReadOnly="True" />
-                                <dxg:GridColumn Header="Assigned %" FieldName="Assigned_Percentage" ReadOnly="True" AllowEditing="False">
+                                <dxg:GridColumn Header="Internal Num" FieldName="Entity.Entity.INTERNAL_NUM" AllowBestFit="false" Width="150" ReadOnly="True" />
+                                <dxg:GridColumn Header="Assigned %" FieldName="Assigned_Percentage" AllowBestFit="false" Width="70" ReadOnly="True" AllowEditing="False">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Client Num" FieldName="Entity.Entity.CLIENT_NUM" ReadOnly="True" />
-                                <dxg:GridColumn Header="Revision Num" FieldName="Entity.Entity.REVISION_NUMBER" ReadOnly="True" />
+                                <dxg:GridColumn Header="Client Num" FieldName="Entity.Entity.CLIENT_NUM" AllowBestFit="false" Width="150" ReadOnly="True" />
+                                <dxg:GridColumn Header="Revision Num" FieldName="Entity.Entity.REVISION_NUMBER" AllowBestFit="false" Width="50" ReadOnly="True" />
                                 <dxg:GridColumn Header="Type" FieldName="Entity.Entity.DELIVERABLE_TYPE" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" ReadOnly="True" />
-                                <dxg:GridColumn Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" ReadOnly="True" />
-                                <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" ReadOnly="True" />
+                                <dxg:GridColumn Header="Primary Title" FieldName="Entity.Entity.PRIMARY_TITLE" AllowBestFit="false" Width="250" ReadOnly="True" />
+                                <dxg:GridColumn Header="Secondary Title" FieldName="Entity.Entity.SECONDARY_TITLE" AllowBestFit="false" Width="250" ReadOnly="True" />
+                                <dxg:GridColumn Header="Comments" FieldName="Entity.Entity.COMMENTS" AllowBestFit="false" Width="250" ReadOnly="True" />
                                 <dxg:GridColumn Header="Status" FieldName="Entity.Entity.DeliverableStatusGuid" ReadOnly="True" ColumnFilterMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -375,38 +370,47 @@
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" ReadOnly="True">
+                                <dxg:GridColumn Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="70" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" Visible="{Binding IsBudget}" HeaderToolTip="Additional hours added from the variation approved and checked as budget adjustment" ReadOnly="True" />
-                                <dxg:GridColumn Header="Variation Hours" Visible="{Binding IsBudget, Converter={StaticResource BooleanNegationConverter}}" FieldName="Variation_Units" ReadOnly="True" >
+                                <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" Visible="{Binding IsBudget}" AllowBestFit="false" Width="70" HeaderToolTip="Additional hours added from the variation approved and checked as budget adjustment" ReadOnly="True" >
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Total_Units" Visible="{Binding IsBudget, Converter={StaticResource BooleanNegationConverter}}" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" >
+                                <dxg:GridColumn Header="Variation Hours" Visible="{Binding IsBudget, Converter={StaticResource BooleanNegationConverter}}" AllowBestFit="false" Width="70" FieldName="Variation_Units" ReadOnly="True" >
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Costs" FieldName="Total_Costs" ReadOnly="True" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" AllowSearchPanel="False">
+                                <dxg:GridColumn FieldName="Total_Units" Visible="{Binding IsBudget, Converter={StaticResource BooleanNegationConverter}}" AllowBestFit="false" Width="70" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn Header="Costs" FieldName="Total_Costs" ReadOnly="True" AllowBestFit="false" Width="70" HeaderToolTip="Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" AllowSearchPanel="False">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:TextEdit Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <!--For Filtering-->
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" FilterPopupMode="DateAlt">
+                                <dxg:GridColumn Header="Target Date" FieldName="Entity.Entity.TARGET_DATE" AllowBestFit="false" Width="90" FilterPopupMode="DateAlt">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.GroupSummary>
-                                <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
+                                <dxg:GridSummaryItem FieldName="Entity.Entity.INTERNAL_NUM" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Budget_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Total_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="c" SummaryType="Sum" />
@@ -414,6 +418,7 @@
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMENTS" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.BUDGET_HOURS" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="Budget_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Variation_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Total_Units" dxc:DXSerializer.Enabled="False" DisplayFormat="n" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Total_Costs" dxc:DXSerializer.Enabled="False" DisplayFormat="c" SummaryType="Sum" />

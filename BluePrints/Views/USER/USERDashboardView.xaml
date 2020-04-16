@@ -78,34 +78,34 @@
                                     <dxg:GridControlBand Header="Cumulative">
                                         <dxg:GridColumn Header="Earned %" FieldName="{Binding Cumulative_Current_Earned_Percentage}" HeaderToolTip="Earned % to date" ReadOnly="True" AllowEditing="False" VisibleIndex="80">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding Header_Budgeted_ToDate}" FieldName="{Binding Cumulative_Planned_Units}" HeaderToolTip="Schedule planned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="90">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding Header_Earned_ToDate}" FieldName="{Binding Cumulative_Earned_Units}" HeaderToolTip="Earned to date" ReadOnly="True" AllowEditing="False" VisibleIndex="100">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Period">
                                         <dxg:GridColumn Header="Earned %" FieldName="{Binding Period_Current_Earned_Percentage}" HeaderToolTip="Earned % for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="130">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding Header_Budgeted_ToDate}" FieldName="{Binding Period_Planned_Units}" HeaderToolTip="Planned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="140">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn Header="{Binding Header_Earned_ToDate}" FieldName="{Binding Period_Earned_Units}" HeaderToolTip="Earned for this period" ReadOnly="True" AllowEditing="False" VisibleIndex="150">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                <dxe:SpinEditSettings Mask="{Binding Field_Mask}" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>

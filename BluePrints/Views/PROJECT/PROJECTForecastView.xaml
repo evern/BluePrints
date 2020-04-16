@@ -101,6 +101,10 @@
                                 <dxe:SpinEdit Name="PART_Editor" Increment="1" IsReadOnly="{Binding RowData.Row.Entity.IsBudgetReadOnly}" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
+                        <!--For Filtering-->
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -148,6 +152,10 @@
                                 </dxe:SpinEdit>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
+                        <!--For Filtering-->
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -180,6 +188,10 @@
                                 </dxe:SpinEdit>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
+                        <!--For Filtering-->
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -212,6 +224,10 @@
                                 </dxe:SpinEdit>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
+                        <!--For Filtering-->
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -382,7 +398,7 @@
                                                     <dxmvvm:EventToCommand Command="{Binding AutoGeneratingChildColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:GridControl.View>
-                                                    <dxg:TableView x:Name="tableViewChild" ColumnFilterPopupMode="ExcelSmart" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                    <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                         <dxmvvm:Interaction.Behaviors>
                                                             <dxmvvm:EventToCommand Command="{Binding CellValueChangedUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                         </dxmvvm:Interaction.Behaviors>
@@ -397,7 +413,7 @@
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" ColumnFilterPopupMode="ExcelSmart" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                        <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                             <dxg:TableView.FormatConditions>
                                                 <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98"/>

@@ -225,7 +225,7 @@
                                 </dxg:GridColumn.CellTemplate>
                                 <!--For Masking Filters-->
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.FORECAST_START_DATE" AllowBestFit="false" Width="80" Header="Target Start" HeaderToolTip="Target date when the deliverable is going to start, this will override subjob forecast start date, only affects remaining S-Curve">
@@ -247,7 +247,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" AllowBestFit="false" Width="70" HeaderToolTip="Additional hours added from the variation page and original budget, approved and checked as budget adjustment" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Variation_Units" AllowBestFit="false" Width="70" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True">
@@ -267,19 +267,19 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" AllowBestFit="false" Width="70" Header="Total Charge" HeaderToolTip="Charge Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Cumulative To Date (Read Only)">
                             <dxg:GridColumn FieldName="Baseline_Percentage" Header="Baseline %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Total_Percentage_ToDate" Header="Total %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget + variation" IsEnabled="False" ReadOnly="True" Visible="False">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="SchedulePercentage" Header="Schedule %" AllowBestFit="false" Width="70" HeaderToolTip="Required % as obtained from P6 or subjob dates. % as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
@@ -309,7 +309,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Earned_Units_ToDate" AllowBestFit="false" Width="70" Header="Total Earned Units" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Earned_Costs_ToDate" AllowBestFit="false" Width="70" Header="Total Earned Costs" HeaderToolTip="Cumulative earned costs" IsEnabled="False" ReadOnly="True" Visible="False">
@@ -367,12 +367,12 @@
                         <dxg:GridControlBand Header="Period (Read Only)">
                             <dxg:GridColumn FieldName="ScheduleCurrentPeriodPercentage" Header="Planned %" AllowBestFit="false" Width="70" HeaderToolTip="Required % for current period obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Earned_Percentage_OnDataDate" Header="Earned %" AllowBestFit="false" Width="70" HeaderToolTip="% earned for this period" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Earned_Units_OnDataDate" Header="Earned Units" AllowBestFit="false" Width="70" HeaderToolTip="Units earned on this period" IsEnabled="False" ReadOnly="True">

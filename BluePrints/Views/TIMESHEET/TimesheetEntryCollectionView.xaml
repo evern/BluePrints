@@ -161,7 +161,7 @@
                                 <dxmvvm:EventToCommand Command="{Binding CustomUnboundColumnDataCommand}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowAutoFilterRow="True" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True" ScrollBarAnnotationMode="None" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="Top" ShowCriteriaInAutoFilterRow="True" ShowTotalSummary="True" ScrollBarAnnotationMode="None" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding ValidateRowCommand}" EventName="ValidateRow" PassEventArgsToCommand="True" />

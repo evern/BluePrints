@@ -299,6 +299,10 @@
                                                 </dxe:ComboBoxEdit>
                                             </DataTemplate>
                                         </dxg:GridColumn.CellTemplate>
+                                        <!--For Filtering-->
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding MEETING_ACTIONCollection}" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="Entity.GUID_ACTION_USER" Header="Action By">
                                         <dxg:GridColumn.EditSettings>
@@ -353,6 +357,10 @@
                                                             </dxe:ComboBoxEdit>
                                                         </DataTemplate>
                                                     </dxg:GridColumn.CellTemplate>
+                                                    <!--For Filtering-->
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding MEETING_ACTIONCollection}" ValueMember="GUID" />
+                                                    </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                                 <dxg:GridColumn FieldName="Entity.GUID_ACTION_USER" Header="Action By">
                                                     <dxg:GridColumn.EditSettings>

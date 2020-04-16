@@ -617,7 +617,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix; }
-            get { return "BASELINE_ITEMSSchedulingGroupViewModelWrapper_v2" + view_project_specific_affix; }
+            get { return "BASELINE_ITEMSSchedulingGroupViewModelWrapper_v3" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix

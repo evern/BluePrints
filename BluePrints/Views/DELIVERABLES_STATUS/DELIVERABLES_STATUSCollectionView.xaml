@@ -69,6 +69,10 @@
                                         <dxe:SpinEdit Name="PART_Editor" Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="Maximum Percentage" FieldName="MAX_PERCENTAGE" HeaderToolTip="Maximum allowed percentage for this status" SortIndex="2">
                                 <dxg:GridColumn.EditSettings>

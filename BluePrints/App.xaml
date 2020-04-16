@@ -1,4 +1,5 @@
-﻿<Application x:Class="BluePrints.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/LoginWindow.xaml">
+﻿<Application x:Class="BluePrints.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:dxfui="http://schemas.devexpress.com/winfx/2008/xaml/core/filteringui" Startup="OnAppStartup_UpdateThemeName" StartupUri="Views/LoginWindow.xaml">
     <Application.Resources>
         <converter:ForecastFutureCellMinValueConverter x:Key="ForecastFutureCellMinValueConverter" />
         <converter:DynamicDateColumnDisplayStringConverter x:Key="DynamicDateColumnDisplayStringConverter" />
@@ -17,6 +18,9 @@
             <StackPanel HorizontalAlignment="Left">
                 <dxe:ImageEdit MaxWidth="295" MaxHeight="61" IsPrintingMode="True" IsReadOnly="True" Source="pack://application:,,,/BluePrints;component/Common/Images/PRIMERO.jpg" />
             </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="RangeFilterTemplate">
+            <dxfui:RangeFilterElement x:Name="PART_FilterElement"/>
         </DataTemplate>
         <DataTemplate x:Key="forecastTemplatePast">
             <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" ToolTip="" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">

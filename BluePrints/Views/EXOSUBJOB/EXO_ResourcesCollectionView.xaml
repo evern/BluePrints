@@ -122,6 +122,7 @@
                                             <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" AllowDrop="{Binding RowData.Row.IsNewRow}" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <!--For Filtering-->
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
                                     </dxg:GridColumn.EditSettings>
@@ -153,7 +154,7 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowAutoFilterRow="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" Style="{StaticResource DefaultTableViewTemplate}">
                                     <dxg:TableView.RowCellMenuCustomizations>
                                         <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                         <dxb:BarItemLinkSeparator />

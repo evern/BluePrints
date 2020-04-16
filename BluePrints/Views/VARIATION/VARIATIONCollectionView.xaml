@@ -106,17 +106,17 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Total Units" Visible="{Binding IsSummaryColumnsVisible}" FieldName="TOTAL_UNITS" AllowBestFit="false" Width="70" HeaderToolTip="Total units of this variation" VisibleIndex="90">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Total Charge" Visible="{Binding IsSummaryColumnsVisible}" FieldName="TOTAL_COSTS" AllowBestFit="false" Width="70" HeaderToolTip="Total costs of this variation" VisibleIndex="90">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Total Costs" Visible="{Binding IsSummaryColumnsVisible}" FieldName="TOTAL_INTERNALCOSTS" AllowBestFit="false" Width="70" HeaderToolTip="Total costs of this variation" VisibleIndex="90">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Budget Adjustment" FieldName="Entity.ADJUSTMENT_TO_BUDGET" AllowBestFit="false" Width="70" HeaderToolTip="Variation is used as budget adjustment due to approved scope changes" VisibleIndex="100" />

@@ -280,13 +280,13 @@
                             <dxg:GridColumn Header="DISCIPLINE" FieldName="P6AssignmentDescription2" ReadOnly="True" Width="100" VisibleIndex="0" />
                             <dxg:GridColumn Header="BUDGET_HOURS" FieldName="Budget_Units" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="DC_HOURS" FieldName="Variation_Units" ReadOnly="True" />
                             <dxg:GridColumn Header="ASSIGNED %" FieldName="Assigned_Percentage" ReadOnly="True" AllowEditing="False">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>

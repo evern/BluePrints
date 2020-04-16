@@ -136,17 +136,17 @@
                         <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in deliverable's list" ReadOnly="True" />
                         <dxg:GridColumn FieldName="SubJobActualCostSummary" Header="Actual Costs" HeaderToolTip="Actual costs from EXO" ReadOnly="True" Visible="{Binding IsActualCostSummaryVisible}">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="SubJobMaterialCostSummary" Header="Material Costs" HeaderToolTip="Material costs from EXO" ReadOnly="True" Visible="{Binding IsMaterialCostSummaryVisible}">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="SubJobRemainingPOCostSummary" Header="Remaining PO Costs" HeaderToolTip="Remaining PO costs from EXO" ReadOnly="True" Visible="{Binding IsRemainingPOCostSummaryVisible}">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>

@@ -95,6 +95,10 @@
                                                         </dxg:LookUpEdit>
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
+                                                <!--  For Filtering  -->
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
+                                                </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="COSTTYPE" Header="Commodity" ReadOnly="{Binding IsReadOnly}" VisibleIndex="30">
                                                 <dxg:GridColumn.CellTemplate>
@@ -120,6 +124,10 @@
                                                         </dxg:LookUpEdit>
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
+                                                <!--  For Filtering  -->
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
+                                                </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="STOCKCODE" Header="Stock" ReadOnly="{Binding IsReadOnly}" VisibleIndex="40">
                                                 <dxg:GridColumn.CellTemplate>
@@ -148,7 +156,7 @@
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="{Binding IsReadOnly}" SortIndex="40" Visible="True" VisibleIndex="50" />
                                             <dxg:GridColumn FieldName="OrderDate" Header="Order Date" ReadOnly="True" SortIndex="50" FilterPopupMode="DateAlt" VisibleIndex="60" />
-                                            <dxg:GridColumn FieldName="HDR_SEQNO" Header="PO Number" ReadOnly="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="HDR_SEQNO" AllowBestFit="false" Width="60" Header="PO Number" ReadOnly="True" VisibleIndex="70" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
                                             <dxg:GridColumn FieldName="DESCRIPTION" Width="200" Header="Description" ReadOnly="True" VisibleIndex="70" />
@@ -169,38 +177,38 @@
                                         <dxg:GridControlBand Header="Cost">
                                             <dxg:GridColumn FieldName="TotalCosts" Header="Total" ReadOnly="True" Visible="True" VisibleIndex="150" >
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="ReceiptedCosts" Header="Receipted" ReadOnly="True" VisibleIndex="171" >
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                             <dxg:GridColumn FieldName="RemainingCosts" Header="Outstanding" ReadOnly="True" VisibleIndex="172" >
                                                 <dxg:GridColumn.EditSettings>
-                                                    <dxe:TextEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                 </dxg:GridColumn.EditSettings>
                                             </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.GroupSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="OrderQty" ShowInColumn="OrderQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="SupplyQty" ShowInColumn="SupplyQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="RemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="TotalCosts" ShowInColumn="TotalCosts" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="ReceiptedCosts" ShowInColumn="DisplayReceiptCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="RemainingCosts" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="OrderQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="SupplyQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="RemainingQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="TotalCosts" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="ReceiptedCosts" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="RemainingCosts" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.TotalSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="OrderQty" ShowInColumn="OrderQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="SupplyQty" ShowInColumn="SupplyQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="RemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="TotalCosts" ShowInColumn="TotalCosts" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="ReceiptedCosts" ShowInColumn="DisplayReceiptCost" SummaryType="Sum" />
-                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="RemainingCosts" ShowInColumn="DisplayRemainingCost" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="OrderQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="SupplyQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="n0" FieldName="RemainingQty" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="TotalCosts" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="ReceiptedCosts" SummaryType="Sum" />
+                                        <dxg:GridSummaryItem DisplayFormat="c0" FieldName="RemainingCosts" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" ShowFilterPanelMode="ShowAlways" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}" >

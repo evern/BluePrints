@@ -141,12 +141,12 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn ReadOnly="True" FieldName="RecommendedRate" Header="Recommended Rate" AllowBestFit="false" Width="90" HeaderToolTip="Recommended rate scrapped from transactions">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn ReadOnly="True" FieldName="TransactionCount" AllowBestFit="false" Width="70" Header="Transaction Count" HeaderToolTip="Number of transactions recommended rate was derived from">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Transaction" HeaderToolTip="Show the transactions which the recommended rate were derived">
@@ -164,7 +164,7 @@
                                                         <dxg:GridColumn FieldName="ActualDate" SortIndex="1" SortOrder="Descending" Width="100" Header="Date" ReadOnly="True" />
                                                         <dxg:GridColumn FieldName="CostPerQty" Width="150" Header="Rate" ReadOnly="True" >
                                                             <dxg:GridColumn.EditSettings>
-                                                                <dxe:TextEditSettings Mask="c2" MaskUseAsDisplayFormat="True" MaskType="Numeric" />
+                                                                <dxe:SpinEditSettings Mask="c2" MaskUseAsDisplayFormat="True" MaskType="Numeric" />
                                                             </dxg:GridColumn.EditSettings>
                                                         </dxg:GridColumn>
                                                     </dxg:GridControl.Columns>

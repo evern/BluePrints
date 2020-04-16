@@ -356,6 +356,10 @@
                                         </Grid>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
+                                <!--For Masking Filters-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Dates">
@@ -388,27 +392,27 @@
                         <dxg:GridControlBand Header="Information (Read Only)">
                             <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" AllowBestFit="false" Width="70" HeaderToolTip="Additional hours added from the variation page and original budget, approved and checked as budget adjustment" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Variation_Units" Header="Variation Hours" AllowBestFit="false" Width="70" HeaderToolTip="Variation hours added from the variation page and approved to be shown here" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Total_Units" Header="Total Hours" AllowBestFit="false" Width="70" HeaderToolTip="Budget Hours + Variation Hours" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" AllowBestFit="false" Width="70" Header="Total Charge" HeaderToolTip="Charge Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_InternalCosts" AllowBestFit="false" Width="70" Header="Total Costs" HeaderToolTip="Cost Rate * (Budget Hours + Variation Hours). Rates are located in the cost rates table and assigned to deliverables by discipline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CanBook" Header="Can Book" AllowBestFit="false" Width="50" HeaderToolTip="Time can be booked in exo" ReadOnly="True" />

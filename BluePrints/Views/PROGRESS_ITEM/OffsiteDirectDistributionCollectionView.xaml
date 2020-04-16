@@ -107,6 +107,10 @@
                                 </Grid>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
+                        <!--For Filtering-->
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -238,7 +242,7 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Earned_Units_ToDate" Width="70" Fixed="Left" Header="Total Earn" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Earned_Units_OnDataDate" Width="70" Fixed="Left" Header="Period Earn" HeaderToolTip="Units earned on this period" IsEnabled="False" ReadOnly="True">

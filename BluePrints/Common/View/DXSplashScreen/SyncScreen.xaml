@@ -29,7 +29,7 @@
                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                 </dxg:GridControl.GroupSummary>
                 <dxg:GridControl.View>
-                    <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None" ShowAutoFilterRow="False" ShowGroupPanel="False" />
+                    <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None" ShowGroupPanel="False" />
                 </dxg:GridControl.View>
             </dxg:GridControl>
         </Grid>

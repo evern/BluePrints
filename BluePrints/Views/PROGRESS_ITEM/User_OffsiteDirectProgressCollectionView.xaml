@@ -176,7 +176,7 @@
                             </dxg:GridColumn.CellTemplate>
                             <!--For Masking Filters-->
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Total_Units" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
@@ -186,7 +186,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Earned_Units_ToDate" AllowBestFit="false" Width="70" Header="Total Earned Units" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="ReportingDataDate" Header="Data Date" AllowBestFit="false" Width="80" IsEnabled="False" ReadOnly="True">

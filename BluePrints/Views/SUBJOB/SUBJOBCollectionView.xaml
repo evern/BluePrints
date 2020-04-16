@@ -100,12 +100,12 @@
                         <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="90" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" />
                         <dxg:GridColumn FieldName="Budget_Costs" AllowBestFit="false" Width="90" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Total_Costs" AllowBestFit="false" Width="90" HeaderToolTip="Total costs includes variation from all assigned deliverables" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
