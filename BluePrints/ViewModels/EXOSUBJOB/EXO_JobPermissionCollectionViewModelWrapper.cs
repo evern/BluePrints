@@ -94,7 +94,7 @@ namespace BluePrints.ViewModels
             refreshPermissions();
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
             return query => ExoQueries.GetExoSubJob(localPrimeroUnitOfWork, loadPROJECT, exoSTAFFS, loadPROJECT.OfficeNameForExo, COMMODITY_CODECollection, STOCK_ITEMSCollection);
         }
@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
         {
             if(MainViewModel != null)
             {
-                if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().IsLineExistsInExo))
+                if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo))
                     MainViewModel.ValidateCell(e);
             }
         }
@@ -135,16 +135,16 @@ namespace BluePrints.ViewModels
 
         private bool uploadToExo()
         {
-            IEnumerable<ExoSubJobEditableProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, Entities);
+            IEnumerable<ExoSubJobProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, Entities);
             if (addedSubJobs.Count() > 0)
                 return true;
             else
                 return false;
         }
 
-        public override string UnifiedValueValidation(ExoSubJobEditableProjection projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(ExoSubJobProjection projection, string field_name, object new_value, bool isPaste)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().IsLineExistsInExo))
+            if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo))
             {
                 bool newValue = (bool)new_value;
                 if (newValue && !projection.IsLineExistsInExo)
@@ -198,7 +198,7 @@ namespace BluePrints.ViewModels
             bool newValue = (bool)e.Value;
             if (newValue)
             {
-                foreach (ExoSubJobEditableProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+                foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
                 {
                     if (editingSubJobAuth.User.ProjectLocaleExoId == null)
                         continue;
@@ -207,7 +207,7 @@ namespace BluePrints.ViewModels
                     editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
 
-                    foreach (ExoSubJobEditableProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
                         ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
                         if (findAuth == null)
@@ -223,7 +223,7 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                foreach (ExoSubJobEditableProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+                foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
                 {
                     ExoSubJobAuth existingPermission = selectedEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
                     if (existingPermission != null)
@@ -233,7 +233,7 @@ namespace BluePrints.ViewModels
                         e.Handled = true;
                     }
 
-                    foreach (ExoSubJobEditableProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
                         ExoSubJobAuth findAuth = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.User.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
                         if (findAuth != null)
@@ -248,7 +248,7 @@ namespace BluePrints.ViewModels
 
         protected override void CellValueChangedImmediatePost(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)) || e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().IsLineExistsInExo)))
+            if (e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobProjection().CommodityCode)) || e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo)))
             {
                 TableView tableView = e.Source as TableView;
                 if (tableView != null && e.RowHandle != GridControl.NewItemRowHandle)

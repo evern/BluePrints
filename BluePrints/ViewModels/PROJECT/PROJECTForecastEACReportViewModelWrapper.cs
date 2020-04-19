@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
                 ExoTimeAuthorisation exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == groupedJob.SubJobCode);
                 JOB_COSTTYPES costType = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == groupedJob.CommodityCode);
 
-                ExoSubJobEditableProjection jobProjection = new ExoSubJobEditableProjection();
+                ExoSubJobProjection jobProjection = new ExoSubJobProjection();
                 jobProjection.SubJobCode = groupedJob.SubJobCode;
                 jobProjection.SubJobTitle = exoLine == null ? notAvailableStr : exoLine.SubJobTitle;
                 jobProjection.DisciplineCode = groupedJob.DisciplineCode;

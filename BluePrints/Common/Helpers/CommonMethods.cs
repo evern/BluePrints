@@ -34,27 +34,27 @@ namespace BluePrints.Common.Helpers
             return volumeSerial;
         }
 
-        public static void SubJobLineValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, IEnumerable<ExoSubJobEditableProjection> projections, bool isNew, string projectNumber, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IMessageBoxService MessageBoxService, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, Action raiseCommodityCodesChangeAction = null, Action raiseStockCodesChangeAction = null)
+        public static void SubJobLineValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, IEnumerable<ExoSubJobProjection> projections, bool isNew, string projectNumber, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IMessageBoxService MessageBoxService, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, Action raiseCommodityCodesChangeAction = null, Action raiseStockCodesChangeAction = null)
         {
-            if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobTitle)))
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().SubJobTitle)))
             {
                 ExoMethods.CommitSubJobTitle(projection, projectNumber, localPrimeroUnitOfWork, MessageBoxService);
                 ExoMethods.ViewUpdateSubJobTitle(projection, projections, localPrimeroUnitOfWork, projectNumber, projection.SubJobCode, true);
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineName)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().DisciplineName)))
             {
                 ExoMethods.CommitCostGroupName(projection, localPrimeroUnitOfWork, MessageBoxService);
                 ExoMethods.ViewUpdateCostGroupTitle(projection, projections, localPrimeroUnitOfWork, projection.DisciplineCode, false);
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().SubJobCode)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().SubJobCode)))
             {
                 ExoMethods.CommitLineSubJob(projection, true, BulkColumnEditDialogService, masterJob, projectNumber, localPrimeroUnitOfWork);
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().DisciplineCode)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().DisciplineCode)))
             {
                 ExoMethods.CommitLineDiscipline(projection, true, BulkColumnEditDialogService, masterJob, projectNumber, localPrimeroUnitOfWork);
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().CommodityCode)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().CommodityCode)))
             {
                 //stock item cannot be added, so it must exists before commodity can be added using it
                 string stockCode = projection.GetStockCode();
@@ -66,7 +66,7 @@ namespace BluePrints.Common.Helpers
                         raiseCommodityCodesChangeAction?.Invoke();
                 }
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().StockCode)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().StockCode)))
             {
                 if (new_value != null)
                 {
@@ -76,11 +76,11 @@ namespace BluePrints.Common.Helpers
                         raiseStockCodesChangeAction?.Invoke();
                 }
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().VariationCode)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().VariationCode)))
             {
                 ExoMethods.CommitLineVariation(projection, localPrimeroUnitOfWork);
             }
-            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobEditableProjection().ExoBudget)))
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().ExoBudget)))
             {
                 ExoMethods.CommitLineBudgetCost(projection, localPrimeroUnitOfWork);
             }

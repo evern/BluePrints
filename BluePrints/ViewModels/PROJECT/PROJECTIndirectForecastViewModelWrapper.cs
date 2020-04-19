@@ -108,7 +108,7 @@ namespace BluePrints.ViewModels
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             IsWeeks = true;
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
-            QueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).Where(x => x.SubJob != null && x.SubJob.Code.Contains("I1")).ToList();
+            QueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).Where(x => x.SubJobId != null && x.SubJobCode.Contains("I1")).ToList();
             List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
 
             foreach(ExoSubJobProjection queryJob in QueryJobs)
@@ -245,7 +245,7 @@ namespace BluePrints.ViewModels
             List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
             foreach (FORECAST_JOB job in MainViewModel.Entities)
             {
-                ExoSubJobProjection projection = QueryJobs.Where(x => x.Commodity != null && x.Discipline != null && x.SubJob != null).FirstOrDefault(x => x.Commodity.Code == job.COMMODITY_CODE && x.Discipline.Code == job.DISCIPLINE_CODE && x.SubJob.Code == job.SUBJOB_CODE && x.Variation_Code == job.VARIATION_CODE);
+                ExoSubJobProjection projection = QueryJobs.Where(x => x.CommodityId != null && x.DisciplineId != null && x.SubJobId != null).FirstOrDefault(x => x.CommodityCode == job.COMMODITY_CODE && x.DisciplineCode == job.DISCIPLINE_CODE && x.SubJobCode == job.SUBJOB_CODE && x.VariationCode == job.VARIATION_CODE);
                 if (projection == null)
                     continue;
 
@@ -303,7 +303,7 @@ namespace BluePrints.ViewModels
             //update commodity name
             ExoSubJobProjection projection = (ExoSubJobProjection)row[columnProjection];
             FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
-            JOB_COSTTYPES findCOST_TYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == projection.Commodity.Code);
+            JOB_COSTTYPES findCOST_TYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == projection.CommodityCode);
             if (findCOST_TYPE != null)
                 row[columnCommodityName] = findCOST_TYPE.COSTDESC;
             else
@@ -351,14 +351,14 @@ namespace BluePrints.ViewModels
 
         private string findDefaultStockCode(ExoSubJobProjection exoSubJobProjection)
         {
-            if (exoSubJobProjection.Discipline == null || exoSubJobProjection.Commodity == null)
+            if (exoSubJobProjection.DisciplineId == null || exoSubJobProjection.CommodityId == null)
                 return string.Empty;
 
-            JOB_COSTGROUPS findJOB_COSTGROUPS = JOB_COSTGROUPSCollection.FirstOrDefault(x => x.SHORTCODE == exoSubJobProjection.Discipline.Code);
+            JOB_COSTGROUPS findJOB_COSTGROUPS = JOB_COSTGROUPSCollection.FirstOrDefault(x => x.SHORTCODE == exoSubJobProjection.DisciplineCode);
             if (findJOB_COSTGROUPS == null)
                 return string.Empty;
 
-            JOB_COSTTYPES findJOB_COSTTYPES = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == exoSubJobProjection.Commodity.Code);
+            JOB_COSTTYPES findJOB_COSTTYPES = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == exoSubJobProjection.CommodityCode);
             if (findJOB_COSTTYPES == null)
                 return string.Empty;
 
@@ -714,13 +714,13 @@ namespace BluePrints.ViewModels
             if (projection != null)
             {
                 editFORECAST_JOB.ExoJob = projection;
-                editFORECAST_JOB.SUBJOB_CODE = projection.SubJob.Code;
-                editFORECAST_JOB.DISCIPLINE_CODE = projection.Discipline.Code;
-                editFORECAST_JOB.COMMODITY_CODE = projection.Commodity.Code;
-                if (projection.Variation_Code == null)
+                editFORECAST_JOB.SUBJOB_CODE = projection.SubJobCode;
+                editFORECAST_JOB.DISCIPLINE_CODE = projection.DisciplineCode;
+                editFORECAST_JOB.COMMODITY_CODE = projection.CommodityCode;
+                if (projection.VariationCode == null)
                     editFORECAST_JOB.VARIATION_CODE = string.Empty;
                 else
-                    editFORECAST_JOB.VARIATION_CODE = projection.Variation_Code;
+                    editFORECAST_JOB.VARIATION_CODE = projection.VariationCode;
 
                 editFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
                 MainViewModel.Save(editFORECAST_JOB);
