@@ -38,7 +38,7 @@ namespace BluePrints.PrimeroData
         public string SupplierName { get; set; }
 
         [NotMapped]
-        public decimal AdjustedUnitPrice => ExchangeRate == 0 ? (decimal)UNITPRICE : ((decimal)UNITPRICE) / ((decimal)ExchangeRate);
+        public decimal AdjustedUnitPrice => ExchangeRate == 0 ? UNITPRICE == null ? 0 : (decimal)UNITPRICE : ((decimal)UNITPRICE) / ((decimal)ExchangeRate);
 
         [NotMapped]
         public decimal OrderQty => ORD_QUANT == null ? 0 : ((decimal)ORD_QUANT);
