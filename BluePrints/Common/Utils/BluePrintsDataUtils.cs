@@ -484,15 +484,10 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static List<ExoDataPoint> GetBurned(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
-            ConcurrentBag<ExoDataPoint> burnedDataPoints = new ConcurrentBag<ExoDataPoint>();
+            List<ExoDataPoint> burnedDataPoints = new List<ExoDataPoint>();
             HashSet<string> missingSubJobNames = new HashSet<string>();
 
-            if (showLoadingScreen)
-            {
-                LoadingScreenManager.ShowLoadingScreen(1);
-                LoadingScreenManager.SetMessage("Loading Actuals...");
-            }
-
+            primeroUOW.AutoDetectChangesEnabled(false);
             var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
                                   join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
                                   on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
@@ -507,15 +502,13 @@ namespace BluePrints.Common.ViewModel.Utils
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
                                   select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
 
-            var jobTransactionsList = jobTransactions.ToList();
             if (showLoadingScreen)
             {
-                LoadingScreenManager.CloseLoadingScreen();
-                LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count);
+                LoadingScreenManager.ShowLoadingScreen(jobTransactions.Count());
                 LoadingScreenManager.SetMessage("Loading Actuals...");
             }
 
-            foreach (var jobTransaction in jobTransactionsList)
+            foreach (var jobTransaction in jobTransactions)
             {
                 if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                 {
@@ -559,22 +552,20 @@ namespace BluePrints.Common.ViewModel.Utils
                 {
                     SUBJOB missingSUBJOB = new SUBJOB();
                     missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
-                    missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
+                    missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactions.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
                     missingSUBJOBS.Add(missingSUBJOB);
                 }
 
-            return burnedDataPoints.ToList();
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
+
+            primeroUOW.AutoDetectChangesEnabled(true);
+            return burnedDataPoints;
         }
 
         public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
-            if (showLoadingScreen)
-            {
-                LoadingScreenManager.ShowLoadingScreen(1);
-                LoadingScreenManager.SetMessage("Loading Materials...");
-            }
-
             primeroUOW.AutoDetectChangesEnabled(false);
             DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddHours(-1);
             var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
@@ -593,17 +584,13 @@ namespace BluePrints.Common.ViewModel.Utils
                                where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate < invoiceCutOffDate
                                select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, X_JOB_TRANSACTIONS_DETAIL.jobcode, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = JOBCOST_HDR2.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
 
-            var jobMaterialsList = jobMaterials.ToList();
-            primeroUOW.AutoDetectChangesEnabled(true);
-
             if (showLoadingScreen)
             {
-                LoadingScreenManager.CloseLoadingScreen();
-                LoadingScreenManager.ShowLoadingScreen(jobMaterialsList.Count);
+                LoadingScreenManager.ShowLoadingScreen(jobMaterials.Count());
                 LoadingScreenManager.SetMessage("Loading Materials...");
             }
 
-            foreach(var jobMaterial in jobMaterialsList)
+            foreach(var jobMaterial in jobMaterials)
             {
                 if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
                 {
@@ -647,7 +634,8 @@ namespace BluePrints.Common.ViewModel.Utils
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
 
-            return materialDataPoints.ToList();
+            primeroUOW.AutoDetectChangesEnabled(true);
+            return materialDataPoints;
         }
 
         public static string normalizeVariationCode(string variationCode)

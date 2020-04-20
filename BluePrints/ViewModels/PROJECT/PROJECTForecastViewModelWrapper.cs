@@ -2887,6 +2887,17 @@ namespace BluePrints.ViewModels
 
         public override string ViewName => "PROJECTForecastView_v2";
 
+        public override void ShowNotification()
+        {
+            if (AppNotificationService == null)
+                return;
+
+            INotification notification1 = AppNotificationService.CreatePredefinedNotification("EAC % may have changed because of fixed uncommitted cost calculation", null, null, null);
+            notification1.ShowAsync();
+
+            base.ShowNotification();
+        }
+
         public void LoadLayout()
         {
             PersistentLayoutHelper.TryDeserializeLayout(LayoutSerializationService, ViewName);
