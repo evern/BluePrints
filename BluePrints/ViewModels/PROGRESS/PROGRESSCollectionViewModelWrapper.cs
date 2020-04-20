@@ -294,7 +294,7 @@ namespace BluePrints.ViewModels
                         };
 
                         TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(projection);
-                        DateTime lastDataDate = (DateTime)new_value;
+                        DateTime lastDataDate = DateTime.Now.Date;
                         DateTime firstAlignedDataDate = ChronologicalHelpers.RewindDataDate(projection.PROGRESS_START, lastDataDate, interval);
                         List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
                         List<EarnedDataDateRealignModel> earnedDataDateRealignModels = new List<EarnedDataDateRealignModel>();
@@ -304,6 +304,9 @@ namespace BluePrints.ViewModels
 
                         foreach (PROGRESS_ITEM progress_item in projection.PROGRESS_ITEM)
                         {
+                            string s;
+                            if (progress_item.EARNED_DATE.Day == 12 && progress_item.EARNED_DATE.Month == 4 && progress_item.EARNED_DATE.Year == 2020)
+                                s = string.Empty;
                             DateTime? backwardDate = alignedDataDateCollection.OrderByDescending(x => x).FirstOrDefault(x => progress_item.EARNED_DATE > x);
                             DateTime? forwardDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x > progress_item.EARNED_DATE);
 

@@ -30,7 +30,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false)
         {
             if(showLoadingScreen)
-                LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress());
+                LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress(calcTypes));
 
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
@@ -75,13 +75,20 @@ namespace BluePrints.Common.ViewModel.Reporting
                 LoadingScreenManager.CloseLoadingScreen();
         }
 
-        protected int GetAllMaxProgress()
+        protected int GetAllMaxProgress(List<StatsCalculationType> calcTypes)
         {
             int maxProgress = 0;
-            maxProgress += SetBudgetDataPointsProgress();
-            maxProgress += SetCurrentDataPointsProgress();
-            maxProgress += SetEarnedDataPointsProgress();
-            maxProgress += SetRemainingDataPointsProgress();
+            if (calcTypes.Contains(StatsCalculationType.Planned))
+            {
+                maxProgress += SetBudgetDataPointsProgress();
+                maxProgress += SetCurrentDataPointsProgress();
+            }
+
+            if (calcTypes.Contains(StatsCalculationType.Earned))
+                maxProgress += SetEarnedDataPointsProgress();
+
+            if (calcTypes.Contains(StatsCalculationType.Remaining) || calcTypes.Contains(StatsCalculationType.Forecast))
+                maxProgress += SetRemainingDataPointsProgress();
 
             return maxProgress;
         }
@@ -217,10 +224,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                             }
                             else
                             {
-                                StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                                DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
+                                plannedDataPoint.PeriodPlannedQuantity = plannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                weightedPlannedDataPoints.Add(plannedDataPoint);
                             }
                         }
 
@@ -243,10 +248,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                             }
                             else
                             {
-                                StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
-                                DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
-                                weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                                plannedLateDataPoint.PeriodPlannedQuantity = plannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                weightedPlannedLateDataPoints.Add(plannedLateDataPoint);
                             }
                         }
 
