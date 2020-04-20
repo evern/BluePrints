@@ -154,12 +154,12 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
             return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -183,7 +183,7 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("This will align budget for selected design jobs in exo to aggregated budget in deliverable's list, do you wish to continue?", "Align Budget", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
-            foreach (ExoSubJobEditableProjection subJob in SelectedEntities.Where(x => x.IsLineExistsInExo))
+            foreach (ExoSubJobProjection subJob in SelectedEntities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.ExoBudget = subJob.Budget;
                 ExoMethods.CommitLineBudgetCost(subJob, localPrimeroUnitOfWork);
@@ -205,7 +205,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(fullProgress);
 
             int addedCount = 0;
-            foreach (ExoSubJobEditableProjection subJob in Entities.Where(x => x.IsLineExistsInExo))
+            foreach (ExoSubJobProjection subJob in Entities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.AuthUsers.Clear();
                 foreach (USER user in USERCollection)

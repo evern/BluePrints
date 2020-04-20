@@ -67,7 +67,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID);
         }
 
-        public override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v4" + getUniqueViewId();
+        public override string ViewName => "DESIGN_VARIATION_ITEMSViewModelWrapper_v4";
 
         private string getUniqueViewId()
         {

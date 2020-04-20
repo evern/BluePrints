@@ -39,7 +39,7 @@ namespace BluePrints.Common.Projections
         public string DropDownPhase { get; set; }
         public string CompareMask { get; set; }
 
-        public ExoSubJobEditableProjection Projection { get; set; }
+        public ExoSubJobProjection Projection { get; set; }
 
         public List<ForecastDateCost> DateCosts { get; set; }
 

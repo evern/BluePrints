@@ -171,12 +171,12 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
         }
 
-        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobEditableProjection>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
             return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, localPrimeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobEditableProjection> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
         {
             MainViewModel.IsPasteCellLevel = true;
             MainViewModel.SetParentViewModel(this);
@@ -185,7 +185,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Events
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobEditableProjection projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, bool isNew)
         {
             if (field_name.ToUpper().Contains("BUDGET"))
             {

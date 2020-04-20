@@ -753,7 +753,7 @@ namespace BluePrints.ViewModels
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
 
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
-            List<ExoSubJobEditableProjection> exoVariations = new List<ExoSubJobEditableProjection>();
+            List<ExoSubJobProjection> exoVariations = new List<ExoSubJobProjection>();
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
@@ -890,10 +890,10 @@ namespace BluePrints.ViewModels
                     string disciplineCode = deliverable.Discipline_Code;
                     string commodityCode = deliverable.Commodity_Code;
 
-                    ExoSubJobEditableProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
+                    ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
                     if (exoVariation == null)
                     {
-                        ExoSubJobEditableProjection newVariationSubJob = new ExoSubJobEditableProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
+                        ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
                         //set commodity code convention so that error can be raised natively within model with GetPropertyError
                         newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
                         exoVariations.Add(newVariationSubJob);
@@ -995,7 +995,7 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ConfirmationDialogService"); }
         }
 
-        private void addVariationJobToExo(List<ExoSubJobEditableProjection> exoVariationJobs, VariationStages exoInteraction)
+        private void addVariationJobToExo(List<ExoSubJobProjection> exoVariationJobs, VariationStages exoInteraction)
         {
             bool isAnyVariationJobsExists = false;
             bool isAnyVariationJobNotExists = false;
@@ -1030,12 +1030,12 @@ namespace BluePrints.ViewModels
             else
                 message = "Push OK to remove the following variation jobs from EXO";
 
-            DialogCollectionViewModel<ExoSubJobEditableProjection> viewModel = DialogCollectionViewModel<ExoSubJobEditableProjection>.Create(exoVariationJobs, message);
+            DialogCollectionViewModel<ExoSubJobProjection> viewModel = DialogCollectionViewModel<ExoSubJobProjection>.Create(exoVariationJobs, message);
             if (ConfirmationDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ExoVariationConfirmation", viewModel) == MessageResult.OK)
             {
                 if(exoInteraction == VariationStages.Submit)
                 {
-                    IEnumerable<ExoSubJobEditableProjection> newlyAddedProjections = exoJobCollectionViewModel.CommitToExo(exoVariationJobs);
+                    IEnumerable<ExoSubJobProjection> newlyAddedProjections = exoJobCollectionViewModel.CommitToExo(exoVariationJobs);
                     if (newlyAddedProjections.Count() > 0)
                     {
                         SubmitSelectedEntity();
