@@ -1319,25 +1319,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private RATECollectionViewModelWrapper rateViewModel;
-
-        public RATECollectionViewModelWrapper RATEViewModel
-        {
-            get
-            {
-                if (rateViewModel == null && LoadPROJECT != null)
-                {
-                    rateViewModel = RATECollectionViewModelWrapper.Create();
-                    rateViewModel.SetParentViewModel(this);
-                    var baselineSupportParameterObj = rateViewModel as ISupportParameter;
-                    baselineSupportParameterObj.Parameter = new EntitiesParameter<PROJECT>(LoadPROJECT);
-                    AssignRATEDelegates?.Invoke(rateViewModel);
-                }
-
-                return rateViewModel;
-            }
-        }
-
         private ESTIMATECollectionViewModelWrapper estimationDirectViewModel;
 
         public ESTIMATECollectionViewModelWrapper ESTIMATEViewModel

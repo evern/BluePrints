@@ -1521,7 +1521,7 @@ namespace BluePrints.ViewModels
         private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, true);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
@@ -1548,6 +1548,8 @@ namespace BluePrints.ViewModels
 
                         commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value);
                         findExistingOrAddNewForecastJobSetting(newRow, false);
+                        updateTotalUncommittedOnJob(newRow, true);
+                        updateFloatingSummaryMembers();
                     }
                     else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
                     {
@@ -1741,6 +1743,12 @@ namespace BluePrints.ViewModels
 
             commitCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
             EntitiesUndoRedoManager.UnpauseActionId();
+
+            if(e.Column.FieldName == columnEntity + "." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+            {
+                updateTotalUncommittedOnJob(dataRowView.Row, true);
+                updateFloatingSummaryMembers();
+            }
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
             refreshGridData();
@@ -2761,9 +2769,11 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return null;
 
-                return
-                    (CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>)
+                var collectionViewModel = (CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST>();
+
+                collectionViewModel.AlwaysSkipMessage = true;
+                return collectionViewModel;
             }
         }
 
