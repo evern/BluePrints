@@ -350,8 +350,6 @@ namespace BluePrints.ViewModels
         private void removeFromExo(IEnumerable<ExoSubJobProjection> removeProjections)
         {
             List<ExoSubJobProjection> viewRemoveProjections = new List<ExoSubJobProjection>();
-            LoadingScreenManager.ShowLoadingScreen(removeProjections.Count());
-
             foreach (ExoSubJobProjection removeProjection in removeProjections)
             {
                 JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
@@ -364,10 +362,8 @@ namespace BluePrints.ViewModels
                 }
 
                 viewRemoveProjections.Add(removeProjection);
-                LoadingScreenManager.Progress();
             }
 
-            LoadingScreenManager.CloseLoadingScreen();
             foreach (ExoSubJobProjection viewRemoveProjection in viewRemoveProjections)
             {
                 Entities.Remove(viewRemoveProjection);
