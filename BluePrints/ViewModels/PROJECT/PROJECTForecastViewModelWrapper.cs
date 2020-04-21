@@ -742,13 +742,9 @@ namespace BluePrints.ViewModels
 
             compareDataTable = dataPointsTable.Clone();
             compareDataTable.TableName = BluePrintsResources.ForecastCompareTableName;
-            //compareActualsRow = compareDataTable.NewRow();
-            //compareMaterialRow = compareDataTable.NewRow();
             compareP6CostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
-            //compareActualsRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Actuals $", CompareMask = "c0" });
-            //compareMaterialRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "Materials $", CompareMask = "c0" });
             compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 Hours", CompareMask = "n2", FallBackRate = commodityJob.FallBackRate, Projection = commodityJob.Projection, DateCosts = commodityJob.DateCosts, IsP6HoursRow = true, P6RemainingUnits = commodityJob.P6RemainingUnits, P6RemainingCosts = commodityJob.P6RemainingCosts });
             compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
 
@@ -803,7 +799,12 @@ namespace BluePrints.ViewModels
             foreach (string uniqueIndirectStockCode in uniqueIndirectStockCodes)
             {
                 DataRow compareIndirectRemainingRow = compareDataTable.NewRow();
-                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", CompareMask = "c0" });
+                ExoTimeAuthorisation stockCodeJobLine = commodityJob.RelevantJobLines.FirstOrDefault(x => x.StockCode == uniqueIndirectStockCode);
+                decimal dropDownIndirectBudget = 0;
+                if (stockCodeJobLine != null)
+                    dropDownIndirectBudget = stockCodeJobLine.BudgetCosts;
+
+                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", DropDownIndirectBudget = dropDownIndirectBudget, CompareMask = "c0" });
                 indirectForecastRows.Add(uniqueIndirectStockCode, compareIndirectRemainingRow);
                 compareDataTable.Rows.Add(compareIndirectRemainingRow);
             }
@@ -1006,7 +1007,10 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
             }
             else
+            {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
+            }
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -1917,8 +1921,8 @@ namespace BluePrints.ViewModels
         private void recurseCalculateBudget(DataRow commodityRow)
         {
             ForecastJobData commodityJob = (ForecastJobData)commodityRow[columnEntity];
-            commodityJob.SetBudgetCost(commodityJob.Budget);
-            commodityJob.SetForecastRate(commodityJob.Rate);
+            commodityJob.UpdateBudgetCost(commodityJob.Budget);
+            commodityJob.UpdateBudgetRate(commodityJob.Rate);
         }
 
         private decimal getMasterRowResetValue(DataTable compareDataTable, string dateFieldName)

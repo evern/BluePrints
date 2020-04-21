@@ -36,7 +36,11 @@ namespace BluePrints.Common.Projections
         }
 
         //used for compare data table to show type of cost that adds up to total forecast cost
-        public string DropDownPhase { get; set; }
+        public string DropDownPhase { get; set; }       
+        
+        //used for show budget for indirects
+        public decimal DropDownIndirectBudget { get; set; }
+
         public string CompareMask { get; set; }
 
         public ExoSubJobProjection Projection { get; set; }
@@ -45,22 +49,32 @@ namespace BluePrints.Common.Projections
 
         public List<ForecastJobData> CommodityJobs { get; set; }
 
-        public void SetBudgetCost(decimal budgetCost)
-        {
-            if(Projection == null)
-                throw new NotImplementedException();
+        public IEnumerable<ExoTimeAuthorisation> RelevantJobLines { get; set; }
 
-            Budget = budgetCost;
-            Projection.ExoBudgetCosts = budgetCost;
-        }
-
-        public void SetForecastRate(decimal forecastRate)
+        public void SetRelevantJobLines(IEnumerable<ExoTimeAuthorisation> relevantJobLines)
         {
             if (Projection == null)
                 throw new NotImplementedException();
 
-            Rate = forecastRate;
-            Projection.ExoForecastRate = forecastRate;
+            RelevantJobLines = relevantJobLines;
+            Budget = relevantJobLines.Sum(x => x.BudgetCosts);
+            Projection.ExoBudgetCosts = Budget;
+            Rate = relevantJobLines.Sum(x => x.ForecastRate);
+            Projection.ExoForecastRate = Rate;
+        }
+
+        //used for updating through view because relevant job lines hasn't been updated yet
+        public void UpdateBudgetCost(decimal budgetCosts)
+        {
+            Budget = budgetCosts;
+            Projection.ExoBudgetCosts = budgetCosts;
+        }
+
+        //used for updating through view because relevant job lines hasn't been updated yet
+        public void UpdateBudgetRate(decimal budgetRate)
+        {
+            Rate = budgetRate;
+            Projection.ExoForecastRate = budgetRate;
         }
 
         //construction job doesn't have deliverable total units, fall back to database stat total units

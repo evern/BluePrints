@@ -224,8 +224,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 relevantJobLines = jobLines.Where(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);
 
             forecastProjection.Projection.ExoBudgetQty = relevantJobLines.Sum(x => x.BudgetQty);
-            forecastProjection.SetBudgetCost(relevantJobLines.Sum(x => x.BudgetCosts));
-            forecastProjection.SetForecastRate(relevantJobLines.Sum(x => x.ForecastRate));
+            forecastProjection.SetRelevantJobLines(relevantJobLines);
 
             return forecastProjection;
         }
@@ -399,6 +398,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public DateTime ForecastDate { get; set; }
         public decimal ForecastRemainingCosts { get; set; }
 
+        public decimal IndirectBudget { get; set; }
         public string CommodityCode { get; set; }
         public string StockCode { get; set; }
         public string ViewStockCode => StockCode == null || StockCode == string.Empty ? CommodityCode : StockCode;
