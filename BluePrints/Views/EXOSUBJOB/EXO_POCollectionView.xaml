@@ -167,7 +167,7 @@
                                                     </DataTemplate>
                                                 </dxg:GridColumn.CellTemplate>
                                             </dxg:GridColumn>
-                                            <dxg:GridColumn FieldName="Supplier" Width="200" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
+                                            <dxg:GridColumn FieldName="SupplierName" Width="200" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Quantity">
                                             <dxg:GridColumn FieldName="OrderQty" Header="Ordered" ReadOnly="True" Visible="True" VisibleIndex="150" />
