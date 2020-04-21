@@ -36,7 +36,6 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                 <dxb:BarCheckItem x:Name="biActivateFilter" Content="Filter Actuals by Selected PO Line(s)" Glyph="{dxc:DXImage Images/Filter/Filter_16x16.png}" IsChecked="{Binding IsFilterActuals, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Filter/Filter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Filter actuals by selected PO line(s)" />
                 <dxb:BarButtonItem x:Name="biCopyDetailWithHeader1" Command="{Binding CopyDetailWithHeaderCommand}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
             </dxb:BarManager.Items>
