@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
         public bool IsVariationSeparated { get; set; } //whether to split variation out from main job
+        IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (DualEntitiesParameter<PROJECT, Action<object>>)parameter;
@@ -105,19 +106,21 @@ namespace BluePrints.ViewModels
 
         private void adjustDataDate()
         {
-            IBluePrintsEntitiesUnitOfWork unitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            PROGRESS liveDesignProgress = unitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
+            if(bluePrintsUnitOfWork == null)
+                bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            PROGRESS liveDesignProgress = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
             if(liveDesignProgress != null)
             {
                 if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveDesignProgress))
-                    unitOfWork.SaveChanges();
+                    bluePrintsUnitOfWork.SaveChanges();
             }
 
-            PROGRESS liveConstructProgress = unitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
+            PROGRESS liveConstructProgress = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
             if (liveConstructProgress != null)
             {
                 if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveConstructProgress))
-                    unitOfWork.SaveChanges();
+                    bluePrintsUnitOfWork.SaveChanges();
             }
         }
 

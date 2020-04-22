@@ -123,9 +123,9 @@ namespace BluePrints.ViewModels
                     //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "SU.BING-WEN");
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
-                    forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
-                    forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
-                    LoginCredentials.CurrentUser.UserPreferences.Add(forecastActualPreference);
+                    //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
+                    //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
+                    //LoginCredentials.CurrentUser.UserPreferences.Add(forecastActualPreference);
                     Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else
