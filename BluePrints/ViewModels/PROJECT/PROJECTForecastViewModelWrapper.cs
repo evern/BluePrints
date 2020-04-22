@@ -2772,7 +2772,6 @@ namespace BluePrints.ViewModels
                 var collectionViewModel = (CollectionViewModel<FORECAST, FORECAST, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST>();
 
-                collectionViewModel.AlwaysSkipMessage = true;
                 return collectionViewModel;
             }
         }
