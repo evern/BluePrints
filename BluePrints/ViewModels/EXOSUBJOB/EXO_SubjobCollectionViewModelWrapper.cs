@@ -497,6 +497,7 @@ namespace BluePrints.ViewModels
 
                 standardJob.DisciplineCode = commodityCode.DISCIPLINE.CODE + BluePrintsResources.DefaultCostGroupAffix;
                 standardJob.CommodityCode = commodityCode.CODE;
+                standardJob.StockCode = commodityCode.DEFAULT_STOCKCODE;
                 standardJobs.Add(standardJob);
             }
 
