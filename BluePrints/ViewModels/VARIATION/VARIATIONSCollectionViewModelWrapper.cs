@@ -127,7 +127,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATIONProjection> entities)
         {
-            MainViewModel.AlwaysSkipMessage = true;
             VARIATION_ITEMSViewModel.SetParentViewModel(this);
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);

@@ -1911,7 +1911,14 @@ namespace BluePrints.ViewModels
                 ExoSubJobProjection projection = job.Projection;
                 List<ExoSubJobProjection> projections = new List<ExoSubJobProjection>();
                 projections.Add(projection);
-                IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, BulkColumnEditDialogService);
+
+                List<ErrorMessage> errorMessages;
+                IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                if (errorMessages.Count > 0)
+                {
+                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Errors");
+                    ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
+                }
 
                 if (addedProjections.Count() == 0)
                     return false;

@@ -18,6 +18,7 @@
                 <dxb:BarButtonItem x:Name="biSetDesignFilter" Command="{Binding SetDesignFilterCommand}" Content="Show Design Only" Glyph="{dxc:DXImage Images/Business Objects/BOPerson_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOPerson_32x32.png}" ToolTip="Show design jobs only" />
                 <dxb:BarButtonItem x:Name="biSetProcurementFilter" Command="{Binding SetProcurementFilterCommand}" Content="Show Procurement Only" Glyph="{dxc:DXImage Images/Business Objects/BOProduct_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOProduct_32x32.png}" ToolTip="Show procurement jobs only" />
                 <dxb:BarButtonItem x:Name="biSetConstructionFilter" Command="{Binding SetConstructionFilterCommand}" Content="Show Construction Only" Glyph="{dxc:DXImage Images/Business Objects/BOEmployee_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOEmployee_32x32.png}" ToolTip="Show construction jobs only" />
+                <dxb:BarButtonItem x:Name="biPopulateStandardCodes" Command="{Binding PopulateStandardCodesCommand}" Content="Populate Standard Jobs" Glyph="{dxc:DXImage Images/Data/AddNewDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Images/Data/AddNewDataSource_16x16.png}" ToolTip="Create new jobs with area 000-00 from commodity codes that are marked as standard" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -45,6 +46,7 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarButtonItemLink BarItemName="biCopyToJobSetup" />
+                                <dxb:BarButtonItemLink BarItemName="biPopulateStandardCodes" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

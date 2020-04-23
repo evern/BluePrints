@@ -419,7 +419,10 @@ namespace BluePrints.ViewModels
 
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections)
         {
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, Entities);
+            List<ErrorMessage> errorMessages;
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities);
+
+            ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)
             {
                 foreach (ExoSubJobProjection addedProjection in addedProjections)
@@ -456,6 +459,52 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.ShowLoadingScreen(Entities.Count);
             }
+        }
+
+        public bool CanPopulateStandardCodes()
+        {
+            return !IsLoading;
+        }
+
+        public override bool IsValidEntity(ExoSubJobProjection entity, IEnumerable<ExoSubJobProjection> preCommittedProjections, ref string errorMessage, out List<KeyValuePair<string, string>> constraintIssues)
+        {
+            return base.IsValidEntity(entity, preCommittedProjections, ref errorMessage, out constraintIssues);
+        }
+
+        public void PopulateStandardCodes()
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IQueryable<COMMODITY_CODE> commodityCodes = bluePrintsUnitOfWork.COMMODITY_CODES.Where(x => x.IS_STANDARD);
+
+            string standardJobCode = loadPROJECT.NUMBER + "-000-00-";
+            List<ExoSubJobProjection> standardJobs = new List<ExoSubJobProjection>();
+            foreach(COMMODITY_CODE commodityCode in commodityCodes)
+            {
+                if(commodityCode.DISCIPLINE == null)
+                    continue;
+
+                ExoSubJobProjection standardJob = new ExoSubJobProjection();
+                if (commodityCode.PHASE_TYPE == PhaseType.Construct)
+                    standardJob.SubJobCode = standardJobCode + BluePrintsResources.Default_Construction_Phase;
+                else if (commodityCode.PHASE_TYPE == PhaseType.Design)
+                    standardJob.SubJobCode = standardJobCode + BluePrintsResources.Default_Design_Phase;
+                else if (commodityCode.PHASE_TYPE == PhaseType.Indirect)
+                    standardJob.SubJobCode = standardJobCode + BluePrintsResources.Default_Indirect_Phase;
+                else if (commodityCode.PHASE_TYPE == PhaseType.Procurement)
+                    standardJob.SubJobCode = standardJobCode + BluePrintsResources.Default_Procurement_Phase;
+                else if (commodityCode.PHASE_TYPE == PhaseType.Tender)
+                    standardJob.SubJobCode = standardJobCode + BluePrintsResources.Default_Tender_Phase;
+
+                standardJob.DisciplineCode = commodityCode.DISCIPLINE.CODE + BluePrintsResources.DefaultCostGroupAffix;
+                standardJob.CommodityCode = commodityCode.CODE;
+                standardJobs.Add(standardJob);
+            }
+
+            IEnumerable<ExoSubJobProjection> addedProjections = CommitToExo(standardJobs);
+            foreach(ExoSubJobProjection addedProjection in addedProjections)
+                Entities.Add(addedProjection);
+
+            OnAfterNewProjectionsAdded(addedProjections);
         }
 
         private void onEstimateLoaded(IEnumerable<ESTIMATE_ITEMProgress> estimateItems, object parent_id)

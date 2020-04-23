@@ -39,7 +39,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCOMMODITY_CODE" MouseUp="GridControl_MouseUp" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding CustomUnboundColumnDataCommand}" EventName="CustomUnboundColumnData" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
@@ -70,6 +70,11 @@
                                     <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
                                     <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->
                                     <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.IS_STANDARD" Header="Is Standard" AllowBestFit="false" Width="60">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ErrorMessage" Header="Error Message (Read Only)" AllowBestFit="false" Width="*" UnboundType="String" ReadOnly="True" />

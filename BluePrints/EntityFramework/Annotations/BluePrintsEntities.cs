@@ -36,8 +36,7 @@ namespace BluePrints.Data
         /// <returns></returns>
         public override int SaveChanges()
         {
-            var AddedDbEntries =
-                ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
+            var AddedDbEntries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
             if (AddedDbEntries.Count() > 0)
             {
                 foreach (var dbEntry in AddedDbEntries)

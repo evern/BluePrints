@@ -27,7 +27,7 @@
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Username" IsRequired="True" x:Name="layoutItemUsername" Height="30" Margin="10">
                 <dxe:TextEdit x:Name="txtUsername"
-                              EditValue="{Binding UserName, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                              NullText="firstname.lastname" EditValue="{Binding UserName, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                               MaxLength="100" />
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Password" IsRequired="True" x:Name="layoutItemPassword" Height="30" Margin="10">

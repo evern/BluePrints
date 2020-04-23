@@ -338,8 +338,9 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, ObservableCollection<ExoSubJobProjection> DisplayEntities = null)
+        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null)
         {
+            errorMessages = new List<ErrorMessage>();
             List<ExoSubJobProjection> addedProjections = new List<ExoSubJobProjection>();
             if (masterJob == null)
             {
@@ -379,47 +380,43 @@ namespace BluePrints.Common.Projections
                 MessageBoxService.ShowMessage("Project master line is not setup in exo\nPlease request " + BluePrintsResources.Default_CFO + " to add a job line linked to master job with job code " + loadPROJECT.NUMBER, "Warning", MessageButton.OK, MessageIcon.Exclamation);
                 return addedProjections;
             }
-
-            if (projections.Any(x => x.SubJobCode == null) || projections.Any(x => x.SubJobCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB)))
-            {
-                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-            else if (projections.Any(x => x.SubJobCode.Length > 15))
-            {
-                MessageBoxService.ShowMessage("Some lines have subjob code that is more than 15 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-
-            if (projections.Any(x => x.DisciplineCode == null) || projections.Any(x => x.DisciplineCode == string.Empty) || projections.Any(x => !Regex.IsMatch(x.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE)))
-            {
-                MessageBoxService.ShowMessage("Some lines have invalid subjob code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-            else if (projections.Any(x => x.DisciplineCode.Length > 4))
-            {
-                MessageBoxService.ShowMessage("Some lines have discipline code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-
-
-            if (projections.Any(x => x.CommodityCode == null) || projections.Any(x => x.CommodityCode == string.Empty))
-            {
-                MessageBoxService.ShowMessage("Some lines doesn't have commodity code", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-            else if (projections.Any(x => x.CommodityCode.Length > 4))
-            {
-                MessageBoxService.ShowMessage("Some lines have commodity code that is more than 4 characters", "Warning", MessageButton.OK, MessageIcon.Exclamation);
-                return addedProjections;
-            }
-
+            
             int updatedLineCount = 0;
             foreach (ExoSubJobProjection projection in projections)
             {
-                if (projection.PhaseType != null && projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                if (projection.SubJobCode == null || projection.SubJobCode == string.Empty || !Regex.IsMatch(projection.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB))
                 {
-                    MessageBoxService.ShowMessage("The commodity " + projection.CommodityCode + " can only be assigned to indirect subjobs\nPlease change the subjob or assign a different commodity in the deliverable's list", "Warning", MessageButton.OK, MessageIcon.Exclamation);
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Invalid sub job code"));
+                    continue;
+                }
+                else if (projection.SubJobCode.Length > 15)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Subjob code must be 15 characters"));
+                    continue;
+                }
+                else if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty || !Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Invalid discipline code"));
+                    continue;
+                }
+                else if (projection.DisciplineCode.Length > 4)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "discipline code must be 4 characters"));
+                    continue;
+                }
+                else if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "missing commodity code"));
+                    continue;
+                }
+                else if (projection.CommodityCode.Length > 4)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, "commodity code must be 4 characters"));
+                    continue;
+                }
+                else if (projection.PhaseType != null && projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.FullCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the subjob or assign a different commodity in the deliverable's list"));
                     continue;
                 }
 
@@ -464,13 +461,13 @@ namespace BluePrints.Common.Projections
                                 }
                                 else
                                 {
-                                    MessageBoxService.ShowMessage(projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
+                                    errorMessages.Add(new ErrorMessage(projection.FullCode, projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
                                     continue;
                                 }
                             }
                             else
                             {
-                                MessageBoxService.ShowMessage(stockCode + " stock code does not exists in exo, please request it from " + BluePrintsResources.Default_CFO);
+                                errorMessages.Add(new ErrorMessage(projection.FullCode, stockCode + " stock code does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
                                 continue;
                             }
                         }
