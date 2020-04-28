@@ -78,6 +78,15 @@ namespace BluePrints.Common.ViewModel.Reporting
         protected int GetAllMaxProgress(List<StatsCalculationType> calcTypes)
         {
             int maxProgress = 0;
+            if (calcTypes == null)
+            {
+                maxProgress += SetBudgetDataPointsProgress();
+                maxProgress += SetCurrentDataPointsProgress();
+                maxProgress += SetEarnedDataPointsProgress();
+                maxProgress += SetRemainingDataPointsProgress();
+                return maxProgress;
+            }
+
             if (calcTypes.Contains(StatsCalculationType.Planned))
             {
                 maxProgress += SetBudgetDataPointsProgress();
