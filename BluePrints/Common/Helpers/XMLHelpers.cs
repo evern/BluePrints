@@ -107,7 +107,6 @@ namespace BluePrints.Common.Helpers
                 doc.Save(xmlFilePath);
             }
 
-
             return doc;
         }
 

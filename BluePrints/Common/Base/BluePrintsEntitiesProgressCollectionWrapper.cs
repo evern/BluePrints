@@ -1385,6 +1385,7 @@ namespace BluePrints.Common.Base
                         if (P6TASK.remain_work_qty == 0)
                         {
                             P6TASK.status_code = P6TASKSTATUS.TK_Complete.ToString();
+                            P6TASK.remain_drtn_hr_cnt = 0;
                             //when user select none or user select start only, don't update finish
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.START.ToString());
                             if (!any_write_exclusions)
