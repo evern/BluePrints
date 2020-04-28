@@ -631,8 +631,8 @@ namespace BluePrints.ViewModels
         {
             IsSummaryColumnsVisible = true;
             this.RaisePropertyChanged(x => x.IsSummaryColumnsVisible);
-
-            variationSummaryBackgroundWorker.RunWorkerAsync(Entities);
+            refreshSummary();
+            //variationSummaryBackgroundWorker.RunWorkerAsync(Entities);
         }
 
         public bool CanUnapprove()
@@ -939,8 +939,8 @@ namespace BluePrints.ViewModels
                 //because live baseline has been changed, full refresh is required
                 if (variationStage == VariationStages.Approve)
                     FullRefresh();
-                else
-                    refreshSummary();
+                //else
+                //    refreshSummary();
             }
 
             isSubmitting = false;
@@ -1012,14 +1012,14 @@ namespace BluePrints.ViewModels
             {
                 SubmitSelectedEntity();
                 //refresh is required to populate summary
-                refreshSummary();
+                //refreshSummary();
                 return;
             }
             else if(exoInteraction == VariationStages.Unsubmit && !isAnyVariationJobsExists)
             {
                 UnsubmitSelectedEntity();
                 //refresh is required to populate summary
-                refreshSummary();
+                //refreshSummary();
                 return;
             }
 
@@ -1068,7 +1068,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            refreshSummary();
+            //refreshSummary();
         }
 
         private string getNewRevisionNumber(string currentRevision)
