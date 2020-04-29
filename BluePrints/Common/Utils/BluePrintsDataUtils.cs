@@ -246,13 +246,13 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static int? GetUpdatedProjectLocaleUserExoId(PROJECT loadPROJECT, IEnumerable<USER> USERCollection, Guid currentUserGuid)
+        public static int? GetUpdatedProjectLocaleUserExoId(string officeName, IEnumerable<USER> USERCollection, Guid currentUserGuid)
         {
             USER currentUser = USERCollection.FirstOrDefault(x => x.GUID == currentUserGuid);
             if (currentUser == null)
                 return null;
 
-            if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+            if (officeName == BluePrintsResources.OfficeMontreal)
                 return currentUser.EXO_STAFF_ID_REMOTE;
             else
                 return currentUser.EXO_STAFF_ID;
@@ -261,7 +261,7 @@ namespace BluePrints.Common.ViewModel.Utils
         public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService, PROJECT project, IEnumerable<USER> USERCollection)
         {
             string pmName = project.USER == null ? string.Empty : project.USER.NAME;
-            int? currentUserExoId = BluePrintsUtils.GetUpdatedProjectLocaleUserExoId(project, USERCollection, LoginCredentials.CurrentUserGuid);
+            int? currentUserExoId = BluePrintsUtils.GetUpdatedProjectLocaleUserExoId(project.OfficeNameForExo, USERCollection, LoginCredentials.CurrentUserGuid);
             if (currentUserExoId == null)
             {
                 MessageBoxService.ShowMessage(project.OfficeName + " EXO account is not set for user " + LoginCredentials.CurrentUser.NAME + "\nPlease email " + BluePrintsResources.ITEmail);

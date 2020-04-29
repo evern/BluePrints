@@ -326,7 +326,6 @@ namespace BluePrints.ViewModels
         }
 
         DataTable dataPointsTable = null;
-
         //to prevent table new row from getting called when it's loading
         bool isReadingFromExo = true;
         public DataTable DataPointsTable
@@ -415,7 +414,6 @@ namespace BluePrints.ViewModels
             }
 
             List<TimesheetDate> weekStartDates = new List<TimesheetDate>();
-
             List<string> dateColumnNames = new List<string>();
             foreach (DataColumn dataColumn in DataPointsTable.Columns)
             {

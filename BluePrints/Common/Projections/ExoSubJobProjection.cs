@@ -2022,7 +2022,7 @@ namespace BluePrints.Common.Projections
             return exoTimes;
         }
 
-        public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
+        public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber = null, int? staffNo = null)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
@@ -2039,11 +2039,13 @@ namespace BluePrints.Common.Projections
                                  on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where MAINJOB.JOBCODE == projectNumber && JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
-                                 select new { LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, DEFAULT_STOCKCODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
+                                 where JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
+                                 select new { MAINJOB.JOBCODE, JOBCOST_RESOURCE.STAFFNO, LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, DEFAULT_STOCKCODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
 
-            List<ExoTimeAuthorisation> exoTimes = availableLines.ToList().Select(x => populateExoTimeAuth(x)).ToList();
+            var availableLinesByProject = projectNumber == null ? availableLines : availableLines.Where(x => x.JOBCODE == projectNumber);
+            var availableLinesByStaffNo = staffNo == null ? availableLinesByProject : availableLinesByProject.Where(x => x.STAFFNO == staffNo);
 
+            List<ExoTimeAuthorisation> exoTimes = availableLinesByStaffNo.ToList().Select(x => populateExoTimeAuth(x)).ToList();
             return exoTimes;
         }
 
@@ -2181,6 +2183,20 @@ namespace BluePrints.Common.Projections
         public decimal ForecastRate { get; set; }
         public decimal BudgetCosts => BudgetQty * BudgetRate;
         public string OfficeName { get; set; }
+
+        public string AreaSubAreaCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(6, 6);
+            }
+        }
+
         public string PhaseCode
         {
             get
