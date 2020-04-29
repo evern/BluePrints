@@ -300,7 +300,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 variationCode = variationCode == string.Empty ? null : variationCode;
                 if (bookResource != null && bookCostGroup != null && bookCostType != null)
                 {
-                    JOB_TIMESHEETS findTimeSheetNarrative = FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookCostType.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
+                    JOB_TIMESHEETS findTimeSheetNarrative = FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookResource.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
                     if (findTimeSheetNarrative != null)
                     {
                         AdjustTimeSheetHours(findTimeSheetNarrative, bookDate, deliverable, bookTime, primeroUnitOfWork);
@@ -315,7 +315,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         newTimeSheet.STAFFNO = bookResource.SeqNo;
                         newTimeSheet.JOBNO = subJob.Id;
                         newTimeSheet.TITLE = title;
-                        newTimeSheet.STOCKCODE = bookCostType.StockCode;
+                        newTimeSheet.STOCKCODE = bookResource.StockCode;
                         newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
                         newTimeSheet.UNITPRICE = 0;
                         newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;

@@ -258,6 +258,7 @@ namespace BaseModel.ViewModel.Dialogs
                     newResource.Id = availableLine.ResourceStaffId;
                     newResource.SeqNo = availableLine.ResourceSeqNo;
                     newResource.Name = availableLine.ResourceName;
+                    newResource.StockCode = availableLine.ResourceStockCode;
                     pResourceCollection.Add(newResource);
                 }
 
@@ -356,7 +357,7 @@ namespace BaseModel.ViewModel.Dialogs
 
             if(bookResource != null && subJob != null && bookCostType != null && bookCostGroup != null)
             {
-                JOB_TIMESHEETS timesheet = BluePrintsUtils.FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookCostType.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
+                JOB_TIMESHEETS timesheet = BluePrintsUtils.FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookResource.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
                 Existing_TimeSheet = timesheet;
                 if (Existing_TimeSheet != null)
                 {
