@@ -346,7 +346,7 @@
     <value>su.bing-wen@primero.com.au</value>
   </data>
   <data name="Regex_NumbersOnly" xml:space="preserve">
-    <value>[A-Za-z\\.\\-]</value>
+    <value>[^0-9.]</value>
   </data>
   <data name="ForecastCompare_EACRowPhase" xml:space="preserve">
     <value>EAC</value>
