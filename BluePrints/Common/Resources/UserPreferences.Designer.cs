@@ -61,6 +61,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is design timesheet in database foreign.
+        /// </summary>
+        internal static string EXO_DesignTimeSheetOfficeIsForeign {
+            get {
+                return ResourceManager.GetString("EXO_DesignTimeSheetOfficeIsForeign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filter actual by selected PO line(s) in PO view.
         /// </summary>
         internal static string EXO_POUseFilter {
