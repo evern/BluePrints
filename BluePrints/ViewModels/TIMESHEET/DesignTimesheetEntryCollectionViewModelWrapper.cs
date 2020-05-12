@@ -232,9 +232,38 @@ namespace BluePrints.ViewModels
         public void ToggleTimesheetSubmit(DesignTimesheet designTimesheet)
         {
             if (designTimesheet.Timesheet.X_SUBMITTED == true)
+            {
                 designTimesheet.Timesheet.X_SUBMITTED = false;
+                designTimesheet.Timesheet.DAY1_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY2_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY3_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY4_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY5_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY6_NARRATIVE = null;
+                designTimesheet.Timesheet.DAY7_NARRATIVE = null;
+            }
             else
+            {
                 designTimesheet.Timesheet.X_SUBMITTED = true;
+                if (designTimesheet.DeliverableInternalName != null && designTimesheet.DeliverableInternalName != string.Empty)
+                {
+                    int narrativeId = BluePrintsUtils.FindExistingOrAddNewNarrative(designTimesheet.DeliverableInternalName, primeroEntitiesUnitOfWork);
+                    if (designTimesheet.Timesheet.DAY1 != null)
+                        designTimesheet.Timesheet.DAY1_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY2 != null)
+                        designTimesheet.Timesheet.DAY2_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY3 != null)
+                        designTimesheet.Timesheet.DAY3_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY4 != null)
+                        designTimesheet.Timesheet.DAY4_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY5 != null)
+                        designTimesheet.Timesheet.DAY5_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY6 != null)
+                        designTimesheet.Timesheet.DAY6_NARRATIVE = narrativeId;
+                    if (designTimesheet.Timesheet.DAY7 != null)
+                        designTimesheet.Timesheet.DAY7_NARRATIVE = narrativeId;
+                }
+            }
 
             primeroEntitiesUnitOfWork.SaveChanges();
             designTimesheet.Update();

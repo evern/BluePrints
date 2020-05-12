@@ -2040,7 +2040,7 @@ namespace BluePrints.Common.Projections
                                  join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
                                  on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  where JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
-                                 select new { MAINJOB.JOBCODE, MASTERJOBCODE = MAINJOB.JOBCODE, SUBJOB, MAINJOB, JOBCOST_RESOURCE.STAFFNO, LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, DEFAULT_STOCKCODE = JOBCOST_LINES.STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
+                                 select new { MAINJOB.JOBCODE, MASTERJOBCODE = MAINJOB.JOBCODE, SUBJOB, MAINJOB, JOBCOST_RESOURCE.STAFFNO, LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
 
             var availableLinesByProject = projectNumber == null ? availableLines : availableLines.Where(x => x.JOBCODE == projectNumber);
             var availableLinesByStaffNo = staffNo == null ? availableLinesByProject : availableLinesByProject.Where(x => x.STAFFNO == staffNo);
@@ -2149,6 +2149,7 @@ namespace BluePrints.Common.Projections
             exoTime.ResourceStaffId = dbTime.RESOURCE_STAFF_ID;
             exoTime.ResourceName = dbTime.RESOURCENAME;
             exoTime.ResourceEndDate = dbTime.END_DATE;
+            exoTime.ResourceStockCode = dbTime.DEFAULT_STOCKCODE;
             exoTime.StockCode = dbTime.DEFAULT_STOCKCODE; //when this projection is used in timesheet, the stock code will be resources instead of stock code in jobcost_lines because time booking is only to commodity level
             exoTime.StockName = dbTime.STOCK_CODE_DESC;
             exoTime.VariationCode = dbTime.VARIATIONCODE;
@@ -2177,6 +2178,7 @@ namespace BluePrints.Common.Projections
         public string ResourceName { get; set; }
         public DateTime ResourceEndDate { get; set; }
         public string StockCode { get; set; }
+        public string ResourceStockCode { get; set; }
         public string StockName { get; set; }
         public string VariationCode { get; set; }
         public string JobStatus { get; set; }
@@ -2263,6 +2265,7 @@ namespace BluePrints.Common.Projections
         public int? Id { get; set; }
         public int? SeqNo { get; set; }
         public string Name { get; set; }
+        public string StockCode { get; set; }
     }
 
     public class TimesheetDate
