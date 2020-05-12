@@ -165,6 +165,7 @@ namespace BluePrints.ViewModels
 
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDashboard), string.Empty, dashboardCategoryDescription.NavigationId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"), isSecurityModule);
             moduleAdder(dashboardCategoryDescription, myDeliverablesDescription, isSecurityModule);
+            moduleAdder(dashboardCategoryDescription, myDesignTimesheetDescription, isSecurityModule);
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl), string.Empty, dashboardCategoryDescription.NavigationId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"), isSecurityModule);
 
             BluePrintsEntitiesModuleDescription projectCategoryHeader;
@@ -322,6 +323,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription companyHSECategoryDescription;
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
+        BluePrintsEntitiesModuleDescription myDesignTimesheetDescription;
         private void initializeCategoryDescription()
         {
             onAfterNavigationLoadedDispatcher = new DispatcherTimer();
@@ -329,7 +331,9 @@ namespace BluePrints.ViewModels
             onAfterNavigationLoadedDispatcher.Tick += onAfterNavigationLoadedDispatcher_Tick;
 
             dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
-            myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
+            myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", null, null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
+            myDesignTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "My Design Timesheet", "DesignTimesheetEntryCollectionView", null, null, null, true, false, @"Scheduling\TimeLineView_16x16.png");
+
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
@@ -576,14 +580,14 @@ namespace BluePrints.ViewModels
 
         private void permissionAdder(string securityKey, string parentNavigationId)
         {
-            if(securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignDeliverables))
+            if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignDeliverables))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval, NavigationResources.Permission_DesignDeliverables_InternalNumbersApproval));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval, NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers));
             }
-            else if(securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignProgress))
+            else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignProgress))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus));
             }
@@ -594,6 +598,10 @@ namespace BluePrints.ViewModels
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Timesheets))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Timesheets_Commit), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Timesheets_Commit, NavigationResources.Permission_EXO_Timesheets_Commit));
+            }
+            else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_UserTimesheet))
+            {
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_UserTimesheet_Unsubmit), securityKey, parentNavigationId, NavigationResources.Permission_EXO_UserTimesheet_Unsubmit, NavigationResources.Permission_EXO_UserTimesheet_Unsubmit));
             }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Jobs))
             {

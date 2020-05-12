@@ -340,7 +340,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void InitNewRow(InitNewRowEventArgs e)
+        public override void InitNewRow(InitNewRowEventArgs e)
         {
             var gridView = (TableView)e.OriginalSource;
             var grid = gridView.Grid;

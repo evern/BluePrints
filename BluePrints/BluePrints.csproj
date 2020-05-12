@@ -596,6 +596,7 @@
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProgress.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
+    <Compile Include="Common\Projections\DesignTimesheet.cs" />
     <Compile Include="Common\Projections\ExoResourceProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
     <Compile Include="Common\Projections\ForecastJobData.cs" />
@@ -1064,6 +1065,7 @@
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMSelectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\TIMESHEET\DesignTimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
@@ -1806,6 +1808,9 @@
     <Compile Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml.cs">
       <DependentUpon>TENDER_PROFILECollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TIMESHEET\DesignTimesheetEntryCollectionView.xaml.cs">
+      <DependentUpon>DesignTimesheetEntryCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
       <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
     </Compile>
@@ -2219,6 +2224,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TENDER_PROFILE\TENDER_PROFILECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TIMESHEET\DesignTimesheetEntryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

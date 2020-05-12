@@ -246,13 +246,13 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static int? GetUpdatedProjectLocaleUserExoId(PROJECT loadPROJECT, IEnumerable<USER> USERCollection, Guid currentUserGuid)
+        public static int? GetUpdatedProjectLocaleUserExoId(string officeName, IEnumerable<USER> USERCollection, Guid currentUserGuid)
         {
             USER currentUser = USERCollection.FirstOrDefault(x => x.GUID == currentUserGuid);
             if (currentUser == null)
                 return null;
 
-            if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
+            if (officeName == BluePrintsResources.OfficeMontreal)
                 return currentUser.EXO_STAFF_ID_REMOTE;
             else
                 return currentUser.EXO_STAFF_ID;
@@ -261,7 +261,7 @@ namespace BluePrints.Common.ViewModel.Utils
         public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService, PROJECT project, IEnumerable<USER> USERCollection)
         {
             string pmName = project.USER == null ? string.Empty : project.USER.NAME;
-            int? currentUserExoId = BluePrintsUtils.GetUpdatedProjectLocaleUserExoId(project, USERCollection, LoginCredentials.CurrentUserGuid);
+            int? currentUserExoId = BluePrintsUtils.GetUpdatedProjectLocaleUserExoId(project.OfficeNameForExo, USERCollection, LoginCredentials.CurrentUserGuid);
             if (currentUserExoId == null)
             {
                 MessageBoxService.ShowMessage(project.OfficeName + " EXO account is not set for user " + LoginCredentials.CurrentUser.NAME + "\nPlease email " + BluePrintsResources.ITEmail);
@@ -311,32 +311,17 @@ namespace BluePrints.Common.ViewModel.Utils
                         if (title.Length >= 60)
                             title = title.Substring(0, 59);
 
-                        JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
+                        JOB_TIMESHEETS newTimeSheet = InitNewTimeSheet();
                         newTimeSheet.STAFFNO = bookResource.SeqNo;
                         newTimeSheet.JOBNO = subJob.Id;
                         newTimeSheet.TITLE = title;
                         newTimeSheet.STOCKCODE = bookResource.StockCode;
                         newTimeSheet.DESCRIPTION = bookCostType.StockDescription;
-                        newTimeSheet.UNITPRICE = 0;
                         newTimeSheet.WEEK_START_DATE = bookDate.WeekStartDate;
                         AdjustTimeSheetHours(newTimeSheet, bookDate, deliverable, bookTime, primeroUnitOfWork);
-                        newTimeSheet.IS_OVERTIME = "N";
-                        newTimeSheet.DAY1_POSTED = "N";
-                        newTimeSheet.DAY2_POSTED = "N";
-                        newTimeSheet.DAY3_POSTED = "N";
-                        newTimeSheet.DAY4_POSTED = "N";
-                        newTimeSheet.DAY5_POSTED = "N";
-                        newTimeSheet.DAY6_POSTED = "N";
-                        newTimeSheet.DAY7_POSTED = "N";
-                        newTimeSheet.RATE_SEQNO = 0;
-                        newTimeSheet.RATE_FACTOR = 1;
                         newTimeSheet.COST_GROUP = bookCostGroup.Id;
                         newTimeSheet.COST_TYPE = bookCostType.Id;
-                        newTimeSheet.LABOUR_ALLOWANCE = 0;
-                        newTimeSheet.HAS_ALLOWANCE = "N";
-                        newTimeSheet.X_DECLINED = false;
                         newTimeSheet.X_APPROVAL_MANAGER = -1;
-                        newTimeSheet.X_SUBMITTED = false;
                         newTimeSheet.X_NARRATIVE = narrative;
                         newTimeSheet.X_VARIATIONCODE = variationCode;
                         primeroUnitOfWork.JOB_TIMESHEETS.Add(newTimeSheet);
@@ -345,6 +330,29 @@ namespace BluePrints.Common.ViewModel.Utils
                     primeroUnitOfWork.SaveChanges();
                 }
             }
+        }
+
+        public static JOB_TIMESHEETS InitNewTimeSheet()
+        {
+            JOB_TIMESHEETS newTimeSheet = new JOB_TIMESHEETS();
+            newTimeSheet.UNITPRICE = 0;
+            newTimeSheet.IS_OVERTIME = "N";
+            newTimeSheet.DAY1_POSTED = "N";
+            newTimeSheet.DAY2_POSTED = "N";
+            newTimeSheet.DAY3_POSTED = "N";
+            newTimeSheet.DAY4_POSTED = "N";
+            newTimeSheet.DAY5_POSTED = "N";
+            newTimeSheet.DAY6_POSTED = "N";
+            newTimeSheet.DAY7_POSTED = "N";
+            newTimeSheet.RATE_SEQNO = 0;
+            newTimeSheet.RATE_FACTOR = 1;
+            newTimeSheet.LABOUR_ALLOWANCE = 0;
+            newTimeSheet.HAS_ALLOWANCE = "N";
+            newTimeSheet.X_DECLINED = false;
+            newTimeSheet.X_APPROVAL_MANAGER = -1;
+            newTimeSheet.X_SUBMITTED = false;
+
+            return newTimeSheet;
         }
 
         public static JOB_TIMESHEETS FindJOB_TIMESHEETS(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int? staffNo, int? subJobId, string stockCode, int? costGroup, int? costType, string variationCode, DateTime? weekStartDate, string narrative)
@@ -395,7 +403,7 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        private static int FindExistingOrAddNewNarrative(string description, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static int FindExistingOrAddNewNarrative(string description, IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
         {
             NARRATIVES narrative = primeroUnitOfWork.NARRATIVES.FirstOrDefault(x => x.NARRATIVE == description);
             if (narrative != null)
@@ -923,7 +931,6 @@ namespace BluePrints.Common.ViewModel.Utils
                 return false;
             }
 
-
             return true;
         }
 
@@ -1362,8 +1369,8 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static void SaveUserPreference(string preferenceName, string preferenceValue)
         {
-            if (LoginCredentials.IsAdmin)
-                return;
+            //if (LoginCredentials.IsAdmin)
+            //    return;
 
             if (LoginCredentials.CurrentUser == null)
                 return;

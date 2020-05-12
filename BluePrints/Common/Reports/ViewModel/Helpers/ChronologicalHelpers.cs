@@ -75,6 +75,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             return weekEndingAlignedDataDate;
         }
 
+        public static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
+        }
+
         /// <summary>
         /// Calculates the data date backwards to get the first aligned data date as per the project start date
         /// </summary>
@@ -166,11 +172,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <summary>
         /// Calculates the data date forward to get the last aligned data date as per the first aligned data date
         /// </summary>
-        public static List<DateTime> GenerateEndDatesCollection(DateTime firstAlignedDataDate,
-            DateTime lastDataPointDate, bool isWeeks = false)
+        public static List<DateTime> GenerateEndDatesCollection(DateTime firstAlignedDataDate, DateTime lastDataPointDate, bool isWeeks = false)
         {
             DateTime lastProgressDate;
-
             if(isWeeks)
             {
                 lastProgressDate = GetFirstWeekdayOfNextMonth(firstAlignedDataDate, DayOfWeek.Sunday);

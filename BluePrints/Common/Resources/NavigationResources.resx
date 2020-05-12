@@ -393,4 +393,10 @@
   <data name="Permission_EXO_Transactions_ShowCosts" xml:space="preserve">
     <value>Show costs on EXO transactions</value>
   </data>
+  <data name="Menu_UserTimesheet" xml:space="preserve">
+    <value>User's timesheet menu</value>
+  </data>
+  <data name="Permission_EXO_UserTimesheet_Unsubmit" xml:space="preserve">
+    <value>Unsubmit EXO timesheet</value>
+  </data>
 </root>

@@ -31,7 +31,6 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             is_single_project_mode = false;
-            var USERParameter = (EntitiesParameter<USER>)parameter;
             _loadUSER = LoginCredentials.CurrentUser;
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();

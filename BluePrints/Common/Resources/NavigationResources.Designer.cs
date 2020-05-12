@@ -790,6 +790,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User&apos;s timesheet menu.
+        /// </summary>
+        internal static string Menu_UserTimesheet {
+            get {
+                return ResourceManager.GetString("Menu_UserTimesheet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Book time for other users.
         /// </summary>
         internal static string Permission_DesignDeliverables_BookTimeForOthers {
@@ -858,6 +867,15 @@ namespace BluePrints.Common.Resources {
         internal static string Permission_EXO_Transactions_ShowCosts {
             get {
                 return ResourceManager.GetString("Permission_EXO_Transactions_ShowCosts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsubmit EXO timesheet.
+        /// </summary>
+        internal static string Permission_EXO_UserTimesheet_Unsubmit {
+            get {
+                return ResourceManager.GetString("Permission_EXO_UserTimesheet_Unsubmit", resourceCulture);
             }
         }
         
