@@ -533,12 +533,15 @@
                             <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
                                 <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding IsLoading}">
                                     <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" >
-                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Approved" View="GroupBox">
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Summary" View="GroupBox">
                                             <dxlc:LayoutItem Label="Original Revenue" LabelPosition="Left">
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.ORI_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.VAR_REVENUE, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.UNAPPROVED_VAR_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Revised Revenue" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
@@ -607,6 +610,11 @@
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Total Claims less Total Costs" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.UnderOverClaim_Background}" Text="{Binding ForecastSummary.UnderOverClaim, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Total Unapproved Variations" View="GroupBox">
+                                            <dxlc:LayoutItem Label="Total Unapproved Variation" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Text="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutControl>
