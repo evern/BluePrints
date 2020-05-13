@@ -84,6 +84,8 @@
 
         public decimal? UNAPPROVED_VAR_REVENUE { get; set; }
 
+        public decimal? TOTAL_UNAPPROVED_VAR_REVENUE { get; set; }
+
         public DateTime? FORECAST_PO_LAST_ALIGNED { get; set; }
 
         public DateTime CREATED { get; set; }

@@ -612,9 +612,9 @@
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.UnderOverClaim_Background}" Text="{Binding ForecastSummary.UnderOverClaim, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
-                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Total Unapproved Variations" View="GroupBox">
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Total Unapproved Variation" View="GroupBox">
                                             <dxlc:LayoutItem Label="Total Unapproved Variation" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Text="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="TOTAL_UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutControl>

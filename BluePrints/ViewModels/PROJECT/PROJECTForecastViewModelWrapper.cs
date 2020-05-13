@@ -343,6 +343,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
             ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.VAR_REVENUE;
             ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
             ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
 
             ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
@@ -2505,6 +2506,8 @@ namespace BluePrints.ViewModels
                 ForecastSummary.Approved_Var_Revenue = newValueDecimal;
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().UNAPPROVED_VAR_REVENUE))
                 ForecastSummary.Unapproved_Var_Revenue = newValueDecimal;
+            else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().TOTAL_UNAPPROVED_VAR_REVENUE))
+                ForecastSummary.Total_Unapproved_Var_Revenue = newValueDecimal;
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().EAC_REVENUE))
                 ForecastSummary.EAC_Revenue = newValueDecimal;
 
@@ -2970,6 +2973,7 @@ namespace BluePrints.ViewModels
         public decimal Original_Revenue { get; set; }
         public decimal Approved_Var_Revenue { get; set; }
         public decimal Unapproved_Var_Revenue { get; set; }
+        public decimal Total_Unapproved_Var_Revenue { get; set; }
         public decimal Revised_Revenue => Original_Revenue + Approved_Var_Revenue + Unapproved_Var_Revenue;
         public decimal Budget_Cost { get; set; }
         public decimal Budget_Margin => Revised_Revenue - Budget_Cost;

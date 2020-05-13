@@ -1292,7 +1292,8 @@ namespace BluePrints.ViewModels
                     if(BaseEntityQueryCallBack != null)
                         newProjection.Entity.Entity.BUDGET_HOURS = 0;
                     else
-                        newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
+                        newProjection.Entity.Entity.BUDGET_HOURS = 0;
+                    //newProjection.Entity.Entity.BUDGET_HOURS = IsBASELINELocked ? 0 : selectedEntity.Entity.Entity.BUDGET_HOURS;
                     
                     newProjection.Entity.Entity.DC_HOURS = 0;
                     var selectedAREA = AREACollection.FirstOrDefault(x => x.GUID == newProjection.Entity.Entity.GUID_AREA);
