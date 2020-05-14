@@ -540,9 +540,6 @@
                                             <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.VAR_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.UNAPPROVED_VAR_REVENUE, Mode=OneWay}" />
-                                            </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Revised Revenue" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
@@ -557,8 +554,14 @@
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Current" View="GroupBox" >
+                                            <dxlc:LayoutItem Label="Revenue Approved" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.UNAPPROVED_VAR_REVENUE, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="EAC_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.EAC_REVENUE, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Current_Cost, Mode=OneWay}" />
