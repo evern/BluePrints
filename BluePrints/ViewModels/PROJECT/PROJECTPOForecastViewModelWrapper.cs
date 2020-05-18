@@ -120,6 +120,14 @@ namespace BluePrints.ViewModels
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
             allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
 
+            //po remaining cost adjustment based on description
+            //foreach(ExoDataPoint exoDataPoint in allExoPos)
+            //{
+            //    IEnumerable<ExoDataPoint> exoActuals = allExoActuals.Where(x => x.PONumber == exoDataPoint.PONumber && x.Variation_Code == exoDataPoint.Variation_Code && x.Description.ToUpper() == exoDataPoint.Description.ToUpper());
+            //    exoDataPoint.Quantity = exoActuals.Sum(x => x.Quantity);
+            //    exoDataPoint.Costs = (exoDataPoint.TotalUnits - exoDataPoint.POSuppliedQty) * exoDataPoint.CostPerQty;
+            //}
+
             generateAlignedDataDates();
             isExoDataLoaded = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
