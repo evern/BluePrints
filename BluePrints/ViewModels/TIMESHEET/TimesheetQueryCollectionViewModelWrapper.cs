@@ -47,38 +47,33 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_SeqNo, X_JOB_TRANSACTIONS_DETAIL_SeqNo, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TimesheetQueryCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TIMESHEETS, X_JOB_TIMESHEETS, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static TransactionCollectionViewModelWrapper Create()
+        public static TimesheetQueryCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new TransactionCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new TimesheetQueryCollectionViewModelWrapper());
         }
 
-        public bool IsCostsVisible { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
-        protected TransactionCollectionViewModelWrapper()
+        protected TimesheetQueryCollectionViewModelWrapper()
         {
-            IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
-            IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
         }
-        
+
         #region Database Operation
         private Data.PROJECT loadPROJECT;
+        private JOBCOST_HDR loadJOBCOST_HDR;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
-        private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-        JOBCOST_HDR loadJOBCOST_HDR;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -88,6 +83,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -95,49 +91,25 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
         }
 
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Timesheet_Report.ToString());
+        }
+
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TIMESHEETS);
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TIMESHEETS>, IQueryable<X_JOB_TIMESHEETS>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
+            return query => query.Where(x => x.MASTERJOBCODE == loadPROJECT.NUMBER);
         }
 
-        protected Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection()
-        {
-            return query => query.Where(x => x.jobcode == loadPROJECT.NUMBER);
-        }
-
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
-        {
-            isNew = false;
-            JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
-            if(findJOB_TRANSACTION != null)
-            {
-                findJOB_TRANSACTION.JOBNO = projection.jobno;
-                findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP;
-                findJOB_TRANSACTION.COST_TYPE = projection.CostType;
-                findJOB_TRANSACTION.X_VARIATIONCODE = projection.X_VARIATIONCODE;
-                findJOB_TRANSACTION.DESCRIPTION = projection.description;
-                findJOB_TRANSACTION.STAFFNO = projection.accno;
-            }
-
-            return OperationInterceptMode.SkipOneAndAllDbSaves;
-        }
-
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
-        {
-            primeroUnitOfWork.SaveChanges();
-            base.OnAfterProjectionsSave(projections);
-        }
-
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TIMESHEETS> entities)
         {
             MainViewModel.AlwaysSkipMessage = true;
-            MainViewModel.IsPasteCellLevel = true;
             MainViewModel.IsPersistentView = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -173,14 +145,68 @@ namespace BluePrints.ViewModels
                 return loadPROJECT.GUID.ToString();
             }
         }
+
+        public bool CanEditReport()
+        {
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public bool CanViewReport()
+        {
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Timesheet_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReport()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            XtraReportTimesheet timesheetReport = new XtraReportTimesheet();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    timesheetReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //make sure disciplines are all populated
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            timesheetReport.AssignProperties(SelectedEntities);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = timesheetReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            timesheetReport.RequestParameters = false;
+            timesheetReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
+            previewWindow.Show();
+        }
         #endregion
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TIMESHEETS projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection)
+        public override string UnifiedRowValidation(X_JOB_TIMESHEETS projection)
         {
             return string.Empty;
         }
@@ -218,11 +244,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAILCollection
+        public IEnumerable<X_JOB_TIMESHEETS> X_JOB_TRANSACTIONS_DETAILCollection
         {
             get
             {
-                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_SeqNo>();
+                return GetEntities<X_JOB_TIMESHEETS>();
             }
         }
 

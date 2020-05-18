@@ -53,11 +53,14 @@ namespace BluePrints.Common.Reports
             }
 
             currentREPORT = reportSelector();
-            //set paperkind depending on project location
-            if (currentPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
-                currentREPORT.PaperKind = System.Drawing.Printing.PaperKind.A3;
-            else
-                currentREPORT.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
+            if(currentReportType != ReportType.Timesheet_Report)
+            {
+                //set paperkind depending on project location
+                if (currentPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
+                    currentREPORT.PaperKind = System.Drawing.Printing.PaperKind.A3;
+                else
+                    currentREPORT.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
+            }
         }
 
         private XtraReport reportSelector()
@@ -111,6 +114,11 @@ namespace BluePrints.Common.Reports
             else if (currentReportType == ReportType.Issues_Register)
             {
                 returnReport = new XtraReportIssuesRegister();
+                reportDesigner1.OpenReport(returnReport);
+            }
+            else if (currentReportType == ReportType.Timesheet_Report)
+            {
+                returnReport = new XtraReportTimesheet();
                 reportDesigner1.OpenReport(returnReport);
             }
 
