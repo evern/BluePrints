@@ -65,6 +65,7 @@ namespace BluePrints.ViewModels
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
         List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
+        List<ExoDataPoint> cutOffExoActuals = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
@@ -118,8 +119,8 @@ namespace BluePrints.ViewModels
             isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
-
+            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
+            cutOffExoActuals = allExoActuals.Where(x => x.ActualDate < ActualsCutOffDate).ToList();
             //po remaining cost adjustment based on description
             //foreach(ExoDataPoint exoDataPoint in allExoPos)
             //{
@@ -492,7 +493,7 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
@@ -518,8 +519,8 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstActualDate", Header = "First Raised", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstInvoiceDate", Header = "First Invoiced", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_TotalPrice", Header = "Total", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Invoiced", Header = "Invoiced $", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_RemainingPrice", Header = "Outstanding", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Invoiced", Header = "Cut Off Invoiced $", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_RemainingPrice", Header = "Cut Off Outstanding", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.TotalForecast", Header = "Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TotalForecast", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Unforecasted", Header = "Not Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Unforecasted });
@@ -618,7 +619,7 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue, true);
 
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
@@ -674,7 +675,7 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
         }
 
         public bool CanShowCustomPaymentDialog
@@ -809,7 +810,7 @@ namespace BluePrints.ViewModels
 
                     if (!forceRefreshDataTable)
                     {
-                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
 
                         //because grid doesn't refresh totals
                         GridControlService.RefreshData();
@@ -826,7 +827,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> allActuals, DateTime cutOffDate, string POno = "", string variationCode = "", DataRow PORow = null)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> cutOffActuals, DateTime cutOffDate, string POno = "", string variationCode = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
                 PORow = findPORow(POno, variationCode);
@@ -834,7 +835,7 @@ namespace BluePrints.ViewModels
             if (PORow != null)
             {
                 POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
-                forecast.UpdateForecastPayments(FORECAST_POCollection, allActuals, cutOffDate);
+                forecast.UpdateForecastPayments(FORECAST_POCollection, cutOffActuals, cutOffDate);
 
                 //reset datarow dates
                 foreach (DateTime alignedDate in alignedDataDateCollection)
