@@ -142,7 +142,11 @@ namespace BluePrints.Common.Projections
 
         public decimal PO_RemainingPrice
         {
-            get => ExoPOs.Sum(x => x.Costs);
+            get
+            {
+                decimal totalCosts = ExoPOs.Sum(x => x.TotalCosts);
+                return totalCosts - PO_Invoiced;
+            }
         }
 
         public decimal PO_Invoiced
