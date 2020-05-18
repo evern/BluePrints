@@ -120,7 +120,7 @@ namespace BluePrints.ViewModels
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
             allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
-            cutOffExoActuals = allExoActuals.Where(x => x.ActualDate < ActualsCutOffDate).ToList();
+            cutOffExoActuals = allExoActuals.Where(x => x.ActualDate <= ActualsCutOffDate).ToList();
             //po remaining cost adjustment based on description
             //foreach(ExoDataPoint exoDataPoint in allExoPos)
             //{
