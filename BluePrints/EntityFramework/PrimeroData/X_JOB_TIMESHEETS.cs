@@ -33,5 +33,9 @@ namespace BluePrints.PrimeroData
         public double SUM_DAY6 { get; set; }
 
         public double SUM_DAY7 { get; set; }
+
+        public int X_YEAR { get; set; }
+
+        public int X_WEEKNO { get; set; }
     }
 }
