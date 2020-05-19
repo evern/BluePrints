@@ -1911,7 +1911,7 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             }
         }
 
-        IRepository<X_JOB_TIMESHEETS, int> IPrimeroEntitiesUnitOfWork.X_JOB_TIMESHEETS
+        IRepository<X_JOB_TIMESHEETS, Guid> IPrimeroEntitiesUnitOfWork.X_JOB_TIMESHEETS
         {
             get
             {

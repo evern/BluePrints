@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TimesheetQueryCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TIMESHEETS, X_JOB_TIMESHEETS, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TimesheetQueryCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TIMESHEETS, X_JOB_TIMESHEETS, Guid, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -104,7 +104,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<X_JOB_TIMESHEETS>, IQueryable<X_JOB_TIMESHEETS>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.MASTERJOBCODE == loadPROJECT.NUMBER);
+            return query => query.Where(x => x.MASTER_JOBCODE == loadPROJECT.NUMBER.ToString());
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TIMESHEETS> entities)
