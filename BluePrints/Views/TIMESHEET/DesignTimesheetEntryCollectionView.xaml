@@ -117,6 +117,13 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Timesheet.X_VARIATIONCODE" AllowBestFit="false" Width="100" Header="Variation Code">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.VariationCodes}" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Timesheet.DAY1" AllowBestFit="false" Width="100" HeaderTemplate="{StaticResource WeekStartDateHeaderTemplate}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

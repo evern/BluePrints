@@ -90,6 +90,7 @@ namespace BluePrints.Common.Projections
                 masterJobNo = value;
                 costGroupCollection = null;
                 areaCollection = null;
+                variationCodes = null;
                 deliverableCollection = null;
                 JOBCOST_HDR masterJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == value);
                 masterJobCode = masterJob?.JOBCODE;
@@ -123,6 +124,7 @@ namespace BluePrints.Common.Projections
                 costGroupNo = value;
 
                 areaCollection = null;
+                variationCodes = null;
                 deliverableCollection = null;
                 Timesheet.COST_GROUP = value;
                 costGroupCode = primeroUOW.JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == value)?.SHORTCODE;
@@ -145,6 +147,18 @@ namespace BluePrints.Common.Projections
                     areaCollection = filteredExoTimeAuthorisations.Select(x => x.AreaCode).Distinct().ToList();
 
                 return areaCollection;
+            }
+        }
+
+        List<string> variationCodes;
+        public List<string> VariationCodes
+        {
+            get
+            {
+                if (variationCodes == null)
+                    variationCodes = filteredExoTimeAuthorisations.Select(x => x.VariationCode).Distinct().ToList();
+
+                return variationCodes;
             }
         }
 
