@@ -97,13 +97,37 @@ namespace BluePrints.Common.ViewModel.Misc
             else
                 summaryStats = new List<SummaryStats>();
 
+            jobForecastSummary.ActualCosts = 0;
+            //get actual data points and populate summary
+            List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
+            if (actualStats.Count() > 0)
+            {
+                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
+                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
+                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
+            //get material data points and accrue summary
+            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
+            if (materialStats != null && materialStats.Count() > 0)
+            {
+                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
+                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
             //get po and populate forecasts
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
             if (poStats != null && poStats.Count() > 0)
             {
                 IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
-                jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
+                decimal poTotalCosts = poDataPoints.Sum(x => x.TotalCosts);
+                decimal materialTotalCosts = materialDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Outstanding = poTotalCosts - materialTotalCosts;
 
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
@@ -150,28 +174,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
                 jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
                 jobForecastSummary.EarnedUnits = earnedUnits;
-            }
-
-            jobForecastSummary.ActualCosts = 0;
-            //get actual data points and populate summary
-            List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
-            IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
-            if (actualStats.Count() > 0)
-            {
-                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
-                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
-            }
-
-            //get material data points and accrue summary
-            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
-            IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
-            if (materialStats != null && materialStats.Count() > 0)
-            {
-                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
 
             //the first remaining date will be the second month in the view because data date will end on the first month

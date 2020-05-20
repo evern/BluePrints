@@ -642,8 +642,8 @@ namespace BluePrints.ViewModels
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
             decimal proRateOnPOLine = 1;
-            if(entity.PO_RemainingPrice > 0)
-                proRateOnPOLine = (decimal)viewCosts / entity.PO_RemainingPrice;
+            //if(entity.PO_RemainingPrice > 0)
+            //    proRateOnPOLine = (decimal)viewCosts / entity.PO_RemainingPrice;
 
             var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
             decimal totalPOItemsRemainingCosts = groupByCodesPOItems.Sum(x => x.RemainingCosts);

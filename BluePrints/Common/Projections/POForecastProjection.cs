@@ -144,8 +144,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                decimal totalCosts = ExoPOs.Sum(x => x.TotalCosts);
-                return totalCosts - PO_Invoiced;
+                return PO_TotalPrice - PO_Invoiced;
             }
         }
 
@@ -156,7 +155,7 @@ namespace BluePrints.Common.Projections
 
         public decimal PO_TotalPrice
         {
-            get => PO_Invoiced + PO_RemainingPrice;
+            get => ExoPOs.Sum(x => x.TotalCosts);
         }
     }
 }
