@@ -19,6 +19,8 @@
             }
         }
 
+        public string JobTitle => SUB_JOBCODE + " : " + TITLE;
+
         public DateTime Day1Date => DAY1DATE;
         public DateTime Day2Date => Day1Date.AddDays(1);
         public DateTime Day3Date => Day1Date.AddDays(2);

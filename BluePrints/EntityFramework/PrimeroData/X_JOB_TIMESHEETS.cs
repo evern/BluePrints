@@ -14,6 +14,8 @@ namespace BluePrints.PrimeroData
 
         public string TITLE { get; set; }
 
+        public string DESCRIPTION { get; set; }
+
         public string RESOURCENAME { get; set; }
 
         public string X_VARIATIONCODE { get; set; }
