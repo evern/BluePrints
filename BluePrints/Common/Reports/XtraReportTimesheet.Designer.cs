@@ -392,7 +392,6 @@
             this.xrLabel4});
             this.groupFooterResource.HeightF = 23F;
             this.groupFooterResource.Name = "groupFooterResource";
-            this.groupFooterResource.Visible = false;
             // 
             // xrLabel19
             // 
