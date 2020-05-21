@@ -2327,9 +2327,15 @@ namespace BluePrints.ViewModels
                 differences = Math.Abs(differences);
 
                 if (differences <= 10)
+                {
                     job.IsPOError = false;
+                    job.JobErrorMessage = string.Empty;
+                }
                 else
+                {
                     job.IsPOError = true;
+                    job.JobErrorMessage = "PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast";
+                }
             }
 
             job.Uncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;

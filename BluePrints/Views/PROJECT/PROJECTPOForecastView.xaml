@@ -234,7 +234,7 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Current Total">
-                                        <dxg:GridColumn FieldName="Costs" Header="Costs" ReadOnly="True" VisibleIndex="100" >
+                                        <dxg:GridColumn FieldName="TotalCosts" Header="Costs" ReadOnly="True" VisibleIndex="100" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                             </dxg:GridColumn.EditSettings>
@@ -252,7 +252,7 @@
                                     <dxg:GridSummaryItem DisplayFormat="n0" dx:DXSerializer.Enabled="False" FieldName="DisplayRemainingQty" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="DisplayActualCost" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="DisplayRemainingCost" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="Costs" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="TotalCosts" SummaryType="Sum" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem FieldName="PONumber" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
@@ -260,7 +260,7 @@
                                     <dxg:GridSummaryItem DisplayFormat="n0" dx:DXSerializer.Enabled="False" FieldName="DisplayRemainingQty" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="DisplayActualCost" SummaryType="Sum" />
                                     <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="DisplayRemainingCost" SummaryType="Sum" />
-                                    <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="Costs" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="TotalCosts" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />
