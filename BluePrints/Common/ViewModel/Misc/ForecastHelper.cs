@@ -125,14 +125,12 @@ namespace BluePrints.Common.ViewModel.Misc
             if (poStats != null && poStats.Count() > 0)
             {
                 IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
-                decimal poTotalCosts = poDataPoints.Sum(x => x.TotalCosts);
-                decimal materialTotalCosts = materialDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.Outstanding = poTotalCosts - materialTotalCosts;
+                jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
 
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
                 var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
-                foreach(var poItem in poItems)
+                foreach (var poItem in poItems)
                 {
                     currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
                 }
