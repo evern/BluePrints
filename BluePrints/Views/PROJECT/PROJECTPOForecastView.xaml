@@ -217,7 +217,7 @@
                                         <dxg:GridColumn FieldName="Narrative" Header="Narrative" ReadOnly="True" VisibleIndex="71" />
                                         <dxg:GridColumn FieldName="Supplier" Header="Supplier" ReadOnly="True" VisibleIndex="80" />
                                     </dxg:GridControlBand>
-                                    <dxg:GridControlBand Header="Current Actuals (Data is shown only on actual entries)">
+                                    <dxg:GridControlBand Header="Cut Off Actuals (Data is shown only on actual entries)">
                                         <dxg:GridColumn FieldName="DisplayActualQty" Header="Actual Quantity" ReadOnly="True" VisibleIndex="90" />
                                         <dxg:GridColumn FieldName="DisplayActualCost" Header="Actual Costs" ReadOnly="True" VisibleIndex="100" >
                                             <dxg:GridColumn.EditSettings>
@@ -225,7 +225,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
-                                    <dxg:GridControlBand Header="Current Remaining (Data is shown only on forecast entries)">
+                                    <dxg:GridControlBand Header="Cut Off Remaining (Data is shown only on forecast entries)">
                                         <dxg:GridColumn FieldName="DisplayRemainingQty" Header="Remaining Quantity" ReadOnly="True" VisibleIndex="90" />
                                         <dxg:GridColumn FieldName="DisplayRemainingCost" Header="Remaining Costs" ReadOnly="True" VisibleIndex="100" >
                                             <dxg:GridColumn.EditSettings>
@@ -233,7 +233,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
-                                    <dxg:GridControlBand Header="Current Total">
+                                    <dxg:GridControlBand Header="Total">
                                         <dxg:GridColumn FieldName="TotalCosts" Header="Costs" ReadOnly="True" VisibleIndex="100" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
