@@ -363,6 +363,11 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="BurnedUnits" AllowBestFit="false" Width="70" Header="Total Burned Units" HeaderToolTip="Cumulative burned units" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Period (Read Only)">
                             <dxg:GridColumn FieldName="ScheduleCurrentPeriodPercentage" Header="Planned %" AllowBestFit="false" Width="70" HeaderToolTip="Required % for current period obtained from subjob or P6" IsEnabled="False" ReadOnly="True">

@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool showLoadingScreen = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool showLoadingScreen = false, bool timeOnly = false)
         {
             try
             {
@@ -44,8 +44,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return;
 
                 List<ExoDataPoint> burnedDataPoints;
-                List<ExoDataPoint> materialDataPoints;
-                List<ExoDataPoint> poDataPoints;
+                List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+                List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
@@ -64,8 +64,21 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
                 burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, queryDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
-                materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, queryDataDate, null, CurrencyConversion, showLoadingScreen);
-                poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, queryDataDate, null, showLoadingScreen);
+
+                if(!timeOnly)
+                {
+                    materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, queryDataDate, null, CurrencyConversion, showLoadingScreen);
+                    poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, queryDataDate, null, showLoadingScreen);
+                }
+                else
+                {
+                    List<ExoDataPoint> burnedDataPointsWithNarrative = burnedDataPoints.Where(x => x.Narrative != null).ToList();
+                    foreach(IReportable reportable in summaryObject.Reportables)
+                    {
+                        List<ExoDataPoint> reportableBurnedData = burnedDataPointsWithNarrative.Where(x => x.Narrative.ToUpper() == reportable.Deliverable_Name).ToList();
+                        reportable.Stats.Burned.SetData(reportableBurnedData);
+                    }
+                }
 
                 foreach (SUBJOB missingSUBJOB in missingSUBJOBS)
                 {

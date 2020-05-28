@@ -507,8 +507,11 @@ namespace BluePrints.Common.ViewModel.Utils
                                   on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                   join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
                                   on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
+                                  join NARRATIVES in primeroUOW.NARRATIVES
+                                  on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
+                                  from PONarrate in PONarratives.DefaultIfEmpty()
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
             if (showLoadingScreen)
             {
@@ -540,6 +543,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
                         burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
+                        burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
                         burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
                         burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                         burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
