@@ -156,10 +156,15 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0 || SelectedEntities.Count == 0)
                 return false;
 
             return true;
+        }
+
+        public bool CanExportSelected()
+        {
+            return CanViewReport();
         }
 
         public void EditReport()

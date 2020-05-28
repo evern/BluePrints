@@ -156,7 +156,7 @@ namespace BluePrints.Common.Projections
             get
             {
                 if (variationCodes == null)
-                    variationCodes = filteredExoTimeAuthorisations.Select(x => x.VariationCode).Distinct().ToList();
+                    variationCodes = this.exoTimeAuthorisations.Select(x => x.VariationCode).Distinct().ToList();
 
                 return variationCodes;
             }
