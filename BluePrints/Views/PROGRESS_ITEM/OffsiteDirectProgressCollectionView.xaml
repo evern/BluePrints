@@ -433,7 +433,7 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
-                    <dxg:GridControl.DetailDescriptor>
+                    <!--<dxg:GridControl.DetailDescriptor>
                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Milestones}">
                             <dxg:GridControl x:Name="gridControlChild">
                                 <dxg:GridControl.Columns>
@@ -487,7 +487,7 @@
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </dxg:DataControlDetailDescriptor>
-                    </dxg:GridControl.DetailDescriptor>
+                    </dxg:GridControl.DetailDescriptor>-->
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" ShowInColumn="Baseline_Percentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="SchedulePercentage" ShowInColumn="SchedulePercentage" SummaryType="Custom" />
