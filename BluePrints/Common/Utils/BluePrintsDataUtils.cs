@@ -1248,17 +1248,21 @@ namespace BluePrints.Common.ViewModel.Utils
             return rateByDepartment.FirstOrDefault();
         }
 
-        public static IEnumerable<COMMODITY_CODE> FilterForValidCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODES, PhaseType? phaseType, string fullDisciplineCode)
+        public static IEnumerable<COMMODITY_CODE> FilterForValidCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODES, string fullDisciplineCode, PhaseType? phaseType = null)
         {
             if (COMMODITY_CODES == null || fullDisciplineCode.Length < 2)
                 return new List<COMMODITY_CODE>();
 
             List<COMMODITY_CODE> validCommodityCodes;
-            if (phaseType == PhaseType.Tender)
+            string disciplineCode = fullDisciplineCode.Substring(0, 2);
+            if (phaseType == null)
+            {
+                validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+            }
+            else if (phaseType == PhaseType.Tender)
                 validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == BluePrintsResources.Default_TenderDisciplineCode))).OrderBy(x => x.CODE).ToList();
             else
             {
-                string disciplineCode = fullDisciplineCode.Substring(0, 2);
                 IEnumerable<COMMODITY_CODE> phaseCommodityCodes;
                 if (phaseType == Common.PhaseType.Design)
                     //because design deliverable's have indirect components also

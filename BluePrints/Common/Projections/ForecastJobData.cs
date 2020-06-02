@@ -170,7 +170,7 @@ namespace BluePrints.Common.Projections
 
                 if (validCommodityCodes == null)
                 {
-                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, Projection.PhaseType, Projection.DisciplineCode).ToList();
+                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, Projection.DisciplineCode, Projection.PhaseType).ToList();
                 }
 
                 return validCommodityCodes;
