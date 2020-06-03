@@ -200,7 +200,7 @@ namespace BluePrints.ViewModels
                 return "Discipline not selected";
 
             if (projection.Timesheet.COST_TYPE == null)
-                return "Deliverable not selected";
+                return "Cost type not selected";
 
             return string.Empty;
         }
