@@ -691,6 +691,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal BurnedUnits
+        {
+            get
+            {
+                if (Stats == null || Stats.Burned == null || Stats.Burned.CurrentPeriodCumulativeDataPoint == null)
+                    return 0;
+
+                return Stats.Burned.CurrentPeriodCumulativeDataPoint.Units;
+            }
+        }
+
         public decimal ScheduleCurrentPeriodPercentage
         {
             get

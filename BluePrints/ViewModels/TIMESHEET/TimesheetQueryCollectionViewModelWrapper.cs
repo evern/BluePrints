@@ -47,7 +47,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TimesheetQueryCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TIMESHEETS, X_JOB_TIMESHEETS, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TimesheetQueryCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TIMESHEETS, X_JOB_TIMESHEETS, Guid, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -104,7 +104,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<X_JOB_TIMESHEETS>, IQueryable<X_JOB_TIMESHEETS>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.MASTERJOBCODE == loadPROJECT.NUMBER);
+            return query => query.Where(x => x.MASTER_JOBCODE == loadPROJECT.NUMBER.ToString());
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TIMESHEETS> entities)
@@ -156,10 +156,15 @@ namespace BluePrints.ViewModels
 
         public bool CanViewReport()
         {
-            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0 || SelectedEntities.Count == 0)
                 return false;
 
             return true;
+        }
+
+        public bool CanExportSelected()
+        {
+            return CanViewReport();
         }
 
         public void EditReport()
@@ -169,6 +174,64 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
             else
                 reportDesigner.Dispose();
+        }
+
+        public void ExportSelected()
+        {
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                string resultPath = FolderBrowserDialogService.ResultPath;
+                var groupByVariationTimesheets = SelectedEntities.GroupBy(x => x.X_VARIATIONCODE).Select(group => new { VariationCode = group.Key, Group = group.ToList() });
+
+                XtraReportTimesheet timesheetReport = new XtraReportTimesheet();
+                var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+                if (dbProjectReport != null)
+                {
+                    var reportString = dbProjectReport.REPORT.ToString();
+                    using (var sw = new StreamWriter(new MemoryStream()))
+                    {
+                        sw.Write(reportString);
+                        sw.Flush();
+                        timesheetReport.LoadLayout(sw.BaseStream);
+                    }
+                }
+
+                LoadingScreenManager.ShowLoadingScreen(groupByVariationTimesheets.Count());
+                LoadingScreenManager.SetMessage("Exporting...");
+                string exportPath;
+                foreach (var groupByVariationTimesheet in groupByVariationTimesheets)
+                {
+                    string exportDirectoryPath = resultPath + "\\" + groupByVariationTimesheet.VariationCode;
+                    if (!Directory.Exists(exportDirectoryPath))
+                        Directory.CreateDirectory(exportDirectoryPath);
+
+                    var groupByWeekTimesheets = groupByVariationTimesheet.Group.GroupBy(x => x.Day1Date).Select(group => new { Day1Date = group.Key, Group = group.ToList() });
+                    foreach(var groupByWeekTimesheet in groupByWeekTimesheets)
+                    {
+                        var groupByResourceTimesheets = groupByWeekTimesheet.Group.GroupBy(x => x.RESOURCENAME).Select(group => new { ResourceName = group.Key, Group = group.ToList() });
+                        foreach(var groupByResourceTimesheet in groupByResourceTimesheets)
+                        {
+                            exportPath = exportDirectoryPath + "\\TS" + groupByWeekTimesheet.Day1Date.ToString("yyyyMMdd") + "-" + groupByResourceTimesheet.ResourceName + "-08708" + groupByVariationTimesheet.VariationCode + ".pdf";
+                            exportTimesheet(timesheetReport, groupByResourceTimesheet.Group, exportPath);
+                        }
+                    }
+
+                    exportPath = exportDirectoryPath + "\\" + groupByVariationTimesheet.VariationCode + ".pdf";
+                    exportTimesheet(timesheetReport, groupByVariationTimesheet.Group, exportPath);
+                    LoadingScreenManager.Progress();
+                }
+
+                LoadingScreenManager.CloseLoadingScreen();
+            }
+        }
+
+        private void exportTimesheet(XtraReportTimesheet xtraReportTimesheet, IEnumerable<X_JOB_TIMESHEETS> timesheets, string exportPath)
+        {
+            xtraReportTimesheet.AssignProperties(timesheets);
+            xtraReportTimesheet.RequestParameters = false;
+            xtraReportTimesheet.CreateDocument(true);
+
+            xtraReportTimesheet.ExportToPdf(exportPath);
         }
 
         public void ViewReport()

@@ -66,7 +66,7 @@ namespace BluePrints.Common.Projections
 
                 if (validCommodityCodes == null)
                 {
-                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, PhaseType, disciplineCode).ToList();
+                    validCommodityCodes = BluePrintsDataUtils.FilterForValidCommodityCodes(COMMODITY_CODES, disciplineCode, PhaseType).ToList();
                 }
 
                 return validCommodityCodes;

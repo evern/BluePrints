@@ -65,7 +65,6 @@ namespace BluePrints.ViewModels
         List<DateTime> alignedDataDateCollection;
         List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
         List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
-        List<ExoDataPoint> cutOffExoActuals = new List<ExoDataPoint>();
         List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
@@ -119,8 +118,7 @@ namespace BluePrints.ViewModels
             isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, DateTime.Now, null, 1, true);
-            cutOffExoActuals = allExoActuals.Where(x => x.ActualDate <= ActualsCutOffDate).ToList();
+            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
             //po remaining cost adjustment based on description
             //foreach(ExoDataPoint exoDataPoint in allExoPos)
             //{
@@ -493,7 +491,7 @@ namespace BluePrints.ViewModels
                     {
                         DataRow newRow = DataPointsTable.NewRow();
                         newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
                         dataPointsTable.Rows.Add(newRow);
                     }
 
@@ -619,7 +617,7 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue, true);
 
-                updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
@@ -642,7 +640,7 @@ namespace BluePrints.ViewModels
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
             decimal proRateOnPOItem = 1;
-            if(entity.PO_RemainingPrice > 0)
+            if (entity.PO_RemainingPrice > 0)
                 proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
             var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
@@ -675,7 +673,7 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
         }
 
         public bool CanShowCustomPaymentDialog
@@ -810,7 +808,7 @@ namespace BluePrints.ViewModels
 
                     if (!forceRefreshDataTable)
                     {
-                        updateRowPOForecast(alignedDataDateCollection, Entities, cutOffExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
+                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
 
                         //because grid doesn't refresh totals
                         GridControlService.RefreshData();
@@ -871,7 +869,7 @@ namespace BluePrints.ViewModels
             IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
                                                             select (POForecastProjection)dr[columnEntity];
 
-            List <FORECAST_PO> saveFORECAST_POs = new List<FORECAST_PO>();
+            List<FORECAST_PO> saveFORECAST_POs = new List<FORECAST_PO>();
             //fix codes mis-alignment
             LoadingScreenManager.ShowLoadingScreen(projections.Count());
             LoadingScreenManager.SetMessage("Aligning Actuals...");

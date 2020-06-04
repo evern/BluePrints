@@ -54,22 +54,33 @@ namespace BluePrints.ViewModels
         JOBCOST_RESOURCE currentUserJOBCOST_RESOURCE;
         bool canUnsubmit;
         bool isRemoteEXODb;
+        JOB_COSTGROUPS defaultTenderCostGroup;
+        JOB_COSTTYPES defaultTenderCostType;
         protected override void resolveParameters(object parameter)
         {
             initializeUnitOfWork();
             WeekBeginningDate = DateTime.Now;
             canUnsubmit = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_UserTimesheet_Unsubmit)) == LoginCredentials.PermissionStatus.All;
+            string defaultTenderDisciplineCode = BluePrintsResources.Default_TenderDisciplineCode + "01";
+            defaultTenderCostGroup = primeroEntitiesUnitOfWork.JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == defaultTenderDisciplineCode);
+            defaultTenderCostType = primeroEntitiesUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == BluePrintsResources.Default_TenderCommodityCode);
         }
 
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
+        }
+
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<DesignTimesheet>> specifyMainViewModelProjection()
@@ -88,7 +99,7 @@ namespace BluePrints.ViewModels
                 timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == WeekBeginningDate && x.STAFFNO == currentUserJOBCOST_RESOURCE.SEQNO);
                 foreach (JOB_TIMESHEETS timesheet in timesheetsQueryable)
                 {
-                    DesignTimesheets.Add(new DesignTimesheet(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, timesheet));
+                    DesignTimesheets.Add(new DesignTimesheet(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection, timesheet));
                 }
             }
 
@@ -105,7 +116,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedNewRowInitializationFromView(DesignTimesheet projection)
         {
-            projection.SetInitProperties(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit);
+            projection.SetInitProperties(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection);
             base.UnifiedNewRowInitializationFromView(projection);
         }
 
@@ -189,7 +200,7 @@ namespace BluePrints.ViewModels
                 return "Discipline not selected";
 
             if (projection.Timesheet.COST_TYPE == null)
-                return "Deliverable not selected";
+                return "Cost type not selected";
 
             return string.Empty;
         }
@@ -233,6 +244,9 @@ namespace BluePrints.ViewModels
         {
             if (designTimesheet.Timesheet.X_SUBMITTED == true)
             {
+                if(MessageBoxService.ShowMessage("Are you sure you want to unsubmit this line?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return;
+
                 designTimesheet.Timesheet.X_SUBMITTED = false;
                 designTimesheet.Timesheet.DAY1_NARRATIVE = null;
                 designTimesheet.Timesheet.DAY2_NARRATIVE = null;
@@ -244,6 +258,9 @@ namespace BluePrints.ViewModels
             }
             else
             {
+                if (MessageBoxService.ShowMessage("Are you sure you want to submit this line?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return;
+
                 designTimesheet.Timesheet.X_SUBMITTED = true;
                 if (designTimesheet.DeliverableInternalName != null && designTimesheet.DeliverableInternalName != string.Empty)
                 {
@@ -340,6 +357,22 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             get { return "DesignTimesheetEntryCollectionViewModelWrapper_v1"; }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                return primeroEntitiesUnitOfWork.JOB_COSTTYPES;
+            }
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

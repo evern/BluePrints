@@ -507,8 +507,11 @@ namespace BluePrints.Common.ViewModel.Utils
                                   on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
                                   join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
                                   on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
+                                  join NARRATIVES in primeroUOW.NARRATIVES
+                                  on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
+                                  from PONarrate in PONarratives.DefaultIfEmpty()
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
             if (showLoadingScreen)
             {
@@ -540,6 +543,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
                         burnedDataPoint.CostType = jobTransaction.COSTDESC3;
                         burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
+                        burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
                         burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
                         burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                         burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
@@ -687,10 +691,21 @@ namespace BluePrints.Common.ViewModel.Utils
                       on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                       from PONarrate in PONarratives.DefaultIfEmpty()
                       where PURCHORD_HDR.STATUS != 2 && JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
-                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE };
+                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE };
 
             var poList = pos.ToList();
 
+            IQueryable<INWARDS_GOODS_LINES> inwardGoods = from INWARDS_GOODS_LINES in primeroUOW.INWARDS_GOODS_LINES
+                                                          join PURCHORD_LINES in primeroUOW.PURCHORD_LINES
+                                                          on INWARDS_GOODS_LINES.PO_LINE_NUM equals PURCHORD_LINES.POLINEID
+                                                          join SUBJOB in primeroUOW.JOBCOST_HDR
+                                                          on PURCHORD_LINES.JOBNO equals SUBJOB.JOBNO
+                                                          join MASTERJOB in primeroUOW.JOBCOST_HDR
+                                                          on SUBJOB.MASTER_JOBNO equals MASTERJOB.JOBNO
+                                                          where MASTERJOB.JOBCODE == projectNumber && INWARDS_GOODS_LINES.INV_TRANSDATE < poCutOffDate
+                                                          select INWARDS_GOODS_LINES;
+
+            List<INWARDS_GOODS_LINES> inwardGoodsList = inwardGoods.ToList();
             if (showLoadingScreen)
             {
                 LoadingScreenManager.CloseLoadingScreen();
@@ -706,11 +721,13 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.BudgetedUnits = 0;
                     poDataPoint.BudgetedCosts = 0;
                     decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
-                    decimal supplyQty = po.SUP_QUANT == null ? 0 : ((decimal)po.SUP_QUANT);
+
+                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
+                    double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
                     decimal unitPrice = po.UNITPRICE == null ? 0 : po.EXCHRATE == null || po.EXCHRATE == 0 ? ((decimal)po.UNITPRICE) : ((decimal)po.UNITPRICE) / ((decimal)po.EXCHRATE);
                     poDataPoint.TotalUnits = orderQty;
 
-                    poDataPoint.Units = orderQty - supplyQty;
+                    poDataPoint.Units = orderQty - (decimal)supplyQty;
                     poDataPoint.Costs = poDataPoint.Units * unitPrice;
                     poDataPoint.CostPerQty = unitPrice;
                     poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
@@ -1231,17 +1248,21 @@ namespace BluePrints.Common.ViewModel.Utils
             return rateByDepartment.FirstOrDefault();
         }
 
-        public static IEnumerable<COMMODITY_CODE> FilterForValidCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODES, PhaseType? phaseType, string fullDisciplineCode)
+        public static IEnumerable<COMMODITY_CODE> FilterForValidCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODES, string fullDisciplineCode, PhaseType? phaseType = null)
         {
             if (COMMODITY_CODES == null || fullDisciplineCode.Length < 2)
                 return new List<COMMODITY_CODE>();
 
             List<COMMODITY_CODE> validCommodityCodes;
-            if (phaseType == PhaseType.Tender)
+            string disciplineCode = fullDisciplineCode.Substring(0, 2);
+            if (phaseType == null)
+            {
+                validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+            }
+            else if (phaseType == PhaseType.Tender)
                 validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == BluePrintsResources.Default_TenderDisciplineCode))).OrderBy(x => x.CODE).ToList();
             else
             {
-                string disciplineCode = fullDisciplineCode.Substring(0, 2);
                 IEnumerable<COMMODITY_CODE> phaseCommodityCodes;
                 if (phaseType == Common.PhaseType.Design)
                     //because design deliverable's have indirect components also

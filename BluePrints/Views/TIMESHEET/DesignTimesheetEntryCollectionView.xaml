@@ -70,7 +70,7 @@
                                 <dxg:GridColumn FieldName="CostGroupNo" CopyValueAsDisplayText="True" AllowBestFit="false" Width="50" Header="Discipline">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.CostGroupCollection}" DisplayMember="SHORTCODE" ValueMember="SEQNO" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" NullValueButtonPlacement="Popup" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.CostGroupCollection}" DisplayMember="SHORTCODE" ValueMember="SEQNO" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <dxg:GridColumn.EditSettings>
@@ -80,7 +80,7 @@
                                 <dxg:GridColumn FieldName="AreaCode" AllowBestFit="false" Width="50" Header="Area">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.AreaCollection}" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" NullValueButtonPlacement="Popup" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.AreaCollection}" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
@@ -117,52 +117,82 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY1" AllowBestFit="false" Width="100" HeaderTemplate="{StaticResource WeekStartDateHeaderTemplate}">
+                                <dxg:GridColumn FieldName="COST_TYPE" AllowBestFit="false" Width="200" Header="Cost Type">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidJOB_COSTTYPES}"  IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="SEQNO">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn Width="*" FieldName="COSTDESC" Header="Code" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="Never"  ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY2" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay2}">
+                                <dxg:GridColumn FieldName="Timesheet.X_VARIATIONCODE" AllowBestFit="false" Width="100" Header="Variation Code">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RowData.Row.VariationCodes}" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY3" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay3}">
+                                <dxg:GridColumn FieldName="Day1" AllowBestFit="false" Width="100" HeaderTemplate="{StaticResource WeekStartDateHeaderTemplate}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY4" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay4}">
+                                <dxg:GridColumn FieldName="Day2" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay2}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY5" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay5}">
+                                <dxg:GridColumn FieldName="Day3" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay3}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY6" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay6}">
+                                <dxg:GridColumn FieldName="Day4" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay4}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Timesheet.DAY7" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay7}">
+                                <dxg:GridColumn FieldName="Day5" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay5}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Day6" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay6}">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Day7" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay7}">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>

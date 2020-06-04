@@ -97,6 +97,28 @@ namespace BluePrints.Common.ViewModel.Misc
             else
                 summaryStats = new List<SummaryStats>();
 
+            jobForecastSummary.ActualCosts = 0;
+            //get actual data points and populate summary
+            List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
+            if (actualStats.Count() > 0)
+            {
+                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
+                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
+                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
+            //get material data points and accrue summary
+            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+            IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
+            if (materialStats != null && materialStats.Count() > 0)
+            {
+                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
+                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
+            }
+
             //get po and populate forecasts
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
@@ -108,7 +130,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
                 var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
-                foreach(var poItem in poItems)
+                foreach (var poItem in poItems)
                 {
                     currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
                 }
@@ -150,28 +172,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
                 jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
                 jobForecastSummary.EarnedUnits = earnedUnits;
-            }
-
-            jobForecastSummary.ActualCosts = 0;
-            //get actual data points and populate summary
-            List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
-            IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
-            if (actualStats.Count() > 0)
-            {
-                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
-                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
-            }
-
-            //get material data points and accrue summary
-            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
-            IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
-            if (materialStats != null && materialStats.Count() > 0)
-            {
-                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
 
             //the first remaining date will be the second month in the view because data date will end on the first month

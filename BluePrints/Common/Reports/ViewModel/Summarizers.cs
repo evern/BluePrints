@@ -474,11 +474,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool showLoadingScreen = false)
+        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool showLoadingScreen = false, bool timeOnly = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
+
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, showLoadingScreen);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, showLoadingScreen, timeOnly);
         }
 
         public void RecalculateStats(bool isCosts)
