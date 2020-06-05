@@ -294,8 +294,8 @@ namespace BluePrints.ViewModels
                         };
 
                         TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(projection);
-                        DateTime lastDataDate = DateTime.Now.Date;
-                        DateTime firstAlignedDataDate = ChronologicalHelpers.RewindDataDate(projection.PROGRESS_START, lastDataDate, interval);
+                        DateTime lastDataDate = ((DateTime)new_value).AddDays(140); //add days just in case there are progresses in future dates
+                        DateTime firstAlignedDataDate = ChronologicalHelpers.RewindDataDate(projection.PROGRESS_START.AddYears(-1), lastDataDate, interval);
                         List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
                         List<EarnedDataDateRealignModel> earnedDataDateRealignModels = new List<EarnedDataDateRealignModel>();
 
