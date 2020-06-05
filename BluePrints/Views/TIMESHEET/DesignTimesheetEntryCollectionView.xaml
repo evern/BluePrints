@@ -87,7 +87,7 @@
                                 <dxg:GridColumn FieldName="DeliverableInternalName" AllowBestFit="false" Width="*" Header="Deliverable">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.DeliverableCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="INTERNAL_NUM">
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.DeliverableCollection}" NullValueButtonPlacement="Popup" PopupWidth="1000" ValueMember="INTERNAL_NUM">
                                                 <dxg:LookUpEdit.StyleSettings>
                                                     <dxg:SearchLookUpEditStyleSettings />
                                                 </dxg:LookUpEdit.StyleSettings>
@@ -95,7 +95,10 @@
                                                     <ControlTemplate TargetType="ContentControl">
                                                         <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
                                                             <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="INTERNAL_NUM" Header="Name" ReadOnly="True" />
+                                                                <dxg:GridColumn FieldName="INTERNAL_NUM" Width="150" Header="Name" ReadOnly="True" />
+                                                                <dxg:GridColumn FieldName="PRIMARY_TITLE" Width="250" Header="Primary Title" />
+                                                                <dxg:GridColumn FieldName="SECONDARY_TITLE" Header="Secondary Title" />
+                                                                <dxg:GridColumn FieldName="COMMENTS" Width="150" Header="Comments" />
                                                                 <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" ReadOnly="True">
                                                                     <dxg:GridColumn.EditSettings>
                                                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding View.DataContext.DEPARTMENTCollection}" ValueMember="GUID" />
