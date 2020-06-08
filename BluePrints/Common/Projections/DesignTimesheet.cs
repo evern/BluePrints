@@ -77,19 +77,31 @@ namespace BluePrints.Common.Projections
             }
             else
             {
+                //store narrative before assigning masterjobno and costgroupno because that'll clear narrative
+                string narrative = timesheet.X_NARRATIVE;
+
                 JOBCOST_HDR findSubJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == this.Timesheet.JOBNO);
+                string areaCode = string.Empty;
                 if(findSubJob != null)
                 {
-                    if(findSubJob.JOBCODE.Length >= 12)
-                        AreaCode = findSubJob.JOBCODE.Substring(6, 3);
+                    //store narrative before assigning masterjobno and costgroupno because that'll clear areacode
+                    if (findSubJob.JOBCODE.Length >= 12)
+                        areaCode = findSubJob.JOBCODE.Substring(6, 3);
 
                     JOBCOST_HDR findMasterJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == findSubJob.MASTER_JOBNO);
                     MasterJobNo = findMasterJob?.JOBNO;
                 }
 
                 CostGroupNo = timesheet.COST_GROUP;
-                DeliverableInternalName = timesheet.X_NARRATIVE;
+
+                //reassign areaCode
+                AreaCode = areaCode;
+
+                //reassign narrative
+                DeliverableInternalName = narrative;
             }
+
+            this.Update();
         }
 
         List<ExoTimeAuthorisation> filteredExoTimeAuthorisations = new List<ExoTimeAuthorisation>();
@@ -358,7 +370,9 @@ namespace BluePrints.Common.Projections
                 if (value == 0)
                     Timesheet.DAY1 = null;
                 else
-                    Timesheet.DAY1 = value; 
+                    Timesheet.DAY1 = value;
+
+                this.Update();
             }
         }
 
@@ -374,6 +388,8 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY2 = null;
                 else
                     Timesheet.DAY2 = value;
+
+                this.Update();
             }
         }
 
@@ -389,6 +405,8 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY3 = null;
                 else
                     Timesheet.DAY3 = value;
+
+                this.Update();
             }
         }
 
@@ -404,6 +422,8 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY4 = null;
                 else
                     Timesheet.DAY4 = value;
+
+                this.Update();
             }
         }
 
@@ -419,6 +439,8 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY5 = null;
                 else
                     Timesheet.DAY5 = value;
+
+                this.Update();
             }
         }
 
@@ -434,6 +456,8 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY6 = null;
                 else
                     Timesheet.DAY6 = value;
+
+                this.Update();
             }
         }
 
@@ -449,6 +473,27 @@ namespace BluePrints.Common.Projections
                     Timesheet.DAY7 = null;
                 else
                     Timesheet.DAY7 = value;
+
+                this.Update();
+            }
+        }
+
+        public double TotalHours
+        {
+            get
+            {
+                if (Timesheet == null)
+                    return 0;
+
+                double day1Hour = Day1 == null ? 0 : (double)Day1;
+                double day2Hour = Day2 == null ? 0 : (double)Day2;
+                double day3Hour = Day3 == null ? 0 : (double)Day3;
+                double day4Hour = Day4 == null ? 0 : (double)Day4;
+                double day5Hour = Day5 == null ? 0 : (double)Day5;
+                double day6Hour = Day6 == null ? 0 : (double)Day6;
+                double day7Hour = Day7 == null ? 0 : (double)Day7;
+
+                return day1Hour + day2Hour + day3Hour + day4Hour + day5Hour + day6Hour + day7Hour;
             }
         }
     }

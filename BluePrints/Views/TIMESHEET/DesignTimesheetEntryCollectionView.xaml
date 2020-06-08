@@ -199,6 +199,11 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="TotalHours" AllowBestFit="false" Width="100" ReadOnly="True" Header="Total Hours">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn AllowEditing="False" FieldName="UNBOUND_SUBMIT" Header="Cancel" AllowBestFit="false" Width="100" HeaderToolTip="Submit this line, submitted timesheets cannot be altered or deleted" ReadOnly="True" UnboundType="Boolean">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

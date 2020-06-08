@@ -836,6 +836,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TRANSACTIONS.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_ITEMS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_COSTTYPES.cs" />
