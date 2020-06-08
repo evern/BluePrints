@@ -166,6 +166,7 @@ namespace BluePrints.ViewModels
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDashboard), string.Empty, dashboardCategoryDescription.NavigationId, "My Dashboard", "USERDashboardView", new EntitiesParameter<USER>(LoginCredentials.CurrentUser), null, null, true, false, @"Chart\Bar_16x16.png"), isSecurityModule);
             moduleAdder(dashboardCategoryDescription, myDeliverablesDescription, isSecurityModule);
             moduleAdder(dashboardCategoryDescription, myDesignTimesheetDescription, isSecurityModule);
+            moduleAdder(dashboardCategoryDescription, myReviewTimesheetDescription, isSecurityModule);
             moduleAdder(dashboardCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_DocumentControl), string.Empty, dashboardCategoryDescription.NavigationId, "Document Control", "DOCCONTROL_BASELINE_ITEMCollectionView", null, null, null, true, false, @"Edit\Customization_16x16.png"), isSecurityModule);
 
             BluePrintsEntitiesModuleDescription projectCategoryHeader;
@@ -324,6 +325,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
         BluePrintsEntitiesModuleDescription myDesignTimesheetDescription;
+        BluePrintsEntitiesModuleDescription myReviewTimesheetDescription;
         private void initializeCategoryDescription()
         {
             onAfterNavigationLoadedDispatcher = new DispatcherTimer();
@@ -332,7 +334,8 @@ namespace BluePrints.ViewModels
 
             dashboardCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Dashboard), string.Empty, null, "Dashboards", null, null, null, null, false, true, @"Chart\BarOfPie_16x16.png");
             myDeliverablesDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables), string.Empty, dashboardCategoryDescription.NavigationId, "My Deliverables", "User_OffsiteDirectProgressCollectionView", null, null, null, true, false, @"Chart\ChartsShowLegend_16x16.png");
-            myDesignTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "My Design Timesheet", "DesignTimesheetEntryCollectionView", null, null, null, true, false, @"Scheduling\TimeLineView_16x16.png");
+            myDesignTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "My Design Timesheet", "DesignTimesheetEntryCollectionView", false, null, null, true, false, @"Scheduling\TimeLineView_16x16.png");
+            myReviewTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_ReviewTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "Review Timesheets", "DesignTimesheetEntryCollectionView", true, null, null, true, false, @"Scheduling\SwitchTimeScalesTo_16x16.png");
 
             projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");

@@ -709,6 +709,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User&apos;s timesheet review.
+        /// </summary>
+        internal static string Menu_ReviewTimesheet {
+            get {
+                return ResourceManager.GetString("Menu_ReviewTimesheet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Roles maintenance menu.
         /// </summary>
         internal static string Menu_Roles {

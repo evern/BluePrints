@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.DesignTimesheetEntryCollectionView" xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DesignTimesheetEntryCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.DesignTimesheetEntryCollectionView" xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:DesignTimesheetEntryCollectionViewModelWrapper}" mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
         <dxc:DialogService x:Name="DateFromToDialogService">
             <dxc:DialogService.DialogStyle>
@@ -10,6 +10,41 @@
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <ResourceDictionary>
+            <DataTemplate x:Key="DeliverableNameEditor">
+                <dxe:TextEdit x:Name="PART_Editor" />
+            </DataTemplate>
+            <DataTemplate x:Key="DeliverableCollectionEditor">
+                <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.DeliverableCollection}" NullValueButtonPlacement="Popup" PopupWidth="1000" ValueMember="INTERNAL_NUM">
+                    <dxg:LookUpEdit.StyleSettings>
+                        <dxg:SearchLookUpEditStyleSettings />
+                    </dxg:LookUpEdit.StyleSettings>
+                    <dxg:LookUpEdit.PopupContentTemplate>
+                        <ControlTemplate TargetType="ContentControl">
+                            <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="INTERNAL_NUM" Width="150" Header="Name" ReadOnly="True" />
+                                    <dxg:GridColumn FieldName="PRIMARY_TITLE" Width="250" Header="Primary Title" />
+                                    <dxg:GridColumn FieldName="SECONDARY_TITLE" Header="Secondary Title" />
+                                    <dxg:GridColumn FieldName="COMMENTS" Width="150" Header="Comments" />
+                                    <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding View.DataContext.DEPARTMENTCollection}" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="GUID_DOCTYPE" Header="Document Type" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding View.DataContext.DOCTYPECollection}" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </ControlTemplate>
+                    </dxg:LookUpEdit.PopupContentTemplate>
+                </dxg:LookUpEdit>
+            </DataTemplate>
             <DataTemplate x:Key="WeekStartDateHeaderTemplate">
                 <dxe:DateEdit EditValue="{Binding DataContext.WeekBeginningDate, ElementName=userControl}" />
             </DataTemplate>
@@ -57,6 +92,11 @@
                     <dxlc:LayoutGroup>
                         <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDesignTimesheet" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="Timesheet.STAFFNO" AllowBestFit="false" Width="150" Header="Resource" ReadOnly="True" Visible="{Binding IsReview}">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" DisplayMember="RESOURCENAME" ValueMember="SEQNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="MasterJobNo" AllowBestFit="false" Width="50" Header="Project Number">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
@@ -85,42 +125,11 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="DeliverableInternalName" AllowBestFit="false" Width="*" Header="Deliverable">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.DeliverableCollection}" NullValueButtonPlacement="Popup" PopupWidth="1000" ValueMember="INTERNAL_NUM">
-                                                <dxg:LookUpEdit.StyleSettings>
-                                                    <dxg:SearchLookUpEditStyleSettings />
-                                                </dxg:LookUpEdit.StyleSettings>
-                                                <dxg:LookUpEdit.PopupContentTemplate>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                            <dxg:GridControl.Columns>
-                                                                <dxg:GridColumn FieldName="INTERNAL_NUM" Width="150" Header="Name" ReadOnly="True" />
-                                                                <dxg:GridColumn FieldName="PRIMARY_TITLE" Width="250" Header="Primary Title" />
-                                                                <dxg:GridColumn FieldName="SECONDARY_TITLE" Header="Secondary Title" />
-                                                                <dxg:GridColumn FieldName="COMMENTS" Width="150" Header="Comments" />
-                                                                <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" ReadOnly="True">
-                                                                    <dxg:GridColumn.EditSettings>
-                                                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding View.DataContext.DEPARTMENTCollection}" ValueMember="GUID" />
-                                                                    </dxg:GridColumn.EditSettings>
-                                                                </dxg:GridColumn>
-                                                                <dxg:GridColumn FieldName="GUID_DOCTYPE" Header="Document Type" ReadOnly="True">
-                                                                    <dxg:GridColumn.EditSettings>
-                                                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding View.DataContext.DOCTYPECollection}" ValueMember="GUID" />
-                                                                    </dxg:GridColumn.EditSettings>
-                                                                </dxg:GridColumn>
-                                                            </dxg:GridControl.Columns>
-                                                            <dxg:GridControl.View>
-                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
-                                                            </dxg:GridControl.View>
-                                                        </dxg:GridControl>
-                                                    </ControlTemplate>
-                                                </dxg:LookUpEdit.PopupContentTemplate>
-                                            </dxg:LookUpEdit>
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.CellTemplateSelector>
+                                        <viewmodel:DesignTimesheetEditorTemplateSelector />
+                                    </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COST_TYPE" AllowBestFit="false" Width="200" Header="Cost Type">
+                                <dxg:GridColumn FieldName="COST_TYPE" AllowBestFit="false" Width="150" Header="Cost Type">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding RowData.Row.TaggedValidJOB_COSTTYPES}"  IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="SEQNO">
@@ -157,54 +166,54 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day2" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay2}">
+                                <dxg:GridColumn FieldName="Day2" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay2}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day3" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay3}">
+                                <dxg:GridColumn FieldName="Day3" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay3}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day4" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay4}">
+                                <dxg:GridColumn FieldName="Day4" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay4}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day5" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay5}">
+                                <dxg:GridColumn FieldName="Day5" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay5}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day6" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay6}">
+                                <dxg:GridColumn FieldName="Day6" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay6}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day7" AllowBestFit="false" Width="100" Header="{Binding WeekDateDay7}">
+                                <dxg:GridColumn FieldName="Day7" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay7}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="TotalHours" AllowBestFit="false" Width="100" ReadOnly="True" Header="Total Hours">
+                                <dxg:GridColumn FieldName="TotalHours" AllowBestFit="false" Width="70" ReadOnly="True" Header="Total Hours">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn AllowEditing="False" FieldName="UNBOUND_SUBMIT" Header="Cancel" AllowBestFit="false" Width="100" HeaderToolTip="Submit this line, submitted timesheets cannot be altered or deleted" ReadOnly="True" UnboundType="Boolean">
+                                <dxg:GridColumn AllowEditing="False" FieldName="UNBOUND_SUBMIT" Header="Cancel" AllowBestFit="false" Width="80" HeaderToolTip="Submit this line, submitted timesheets cannot be altered or deleted" ReadOnly="True" UnboundType="Boolean">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Height="18" Command="{Binding View.DataContext.ToggleTimesheetSubmitCommand}" CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.CanSubmit}">
