@@ -108,7 +108,22 @@ namespace BluePrints.ViewModels
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             IsWeeks = true;
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
-            QueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).Where(x => x.SubJobId != null && x.SubJobCode.Contains("I1")).ToList();
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            List<string> indirectPhases = bluePrintsEntitiesUnitOfWork.PHASES.Where(x => x.PHASE_TYPE == Common.PhaseType.Indirect).Select(x => x.INTERNAL_NUM).ToList();
+            List<ExoSubJobProjection> tempQueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).ToList();
+            QueryJobs = new List<ExoSubJobProjection>();
+            foreach (ExoSubJobProjection tempQueryJob in tempQueryJobs)
+            {
+                if (tempQueryJob.SubJobId == null)
+                    continue;
+
+                foreach(string indirectPhase in indirectPhases)
+                {
+                    if (tempQueryJob.SubJobCode.Contains(indirectPhase))
+                        QueryJobs.Add(tempQueryJob);
+                }
+            }
+
             List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
 
             foreach(ExoSubJobProjection queryJob in QueryJobs)
