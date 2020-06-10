@@ -7,6 +7,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,6 +32,9 @@ namespace BluePrints.Common.Projections
         int defaultTenderCostGroupSeqNo;
         int defaultTenderCostTypeSeqNo;
         IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection;
+
+        public string SubmitButtonText { get; set; }
+        public DXImageInfo SubmitButtonImage { get; set; }
 
         bool canUnsubmit { get; set; }
         public bool CanSubmit
