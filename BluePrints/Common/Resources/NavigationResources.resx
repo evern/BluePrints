@@ -402,4 +402,7 @@
   <data name="Menu_Project_EXO_Timesheets_Query" xml:space="preserve">
     <value>Project EXO timesheet query menu</value>
   </data>
+  <data name="Menu_ReviewTimesheet" xml:space="preserve">
+    <value>User's timesheet review</value>
+  </data>
 </root>

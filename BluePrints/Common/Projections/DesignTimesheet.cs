@@ -25,6 +25,7 @@ namespace BluePrints.Common.Projections
         IQueryable<BASELINE_ITEM> deliverables;
         public JOB_TIMESHEETS Timesheet { get; set; }
         public bool IsSubmitted => Timesheet == null ? false : Timesheet.X_SUBMITTED == true ? true : false;
+        public bool IsReview { get; set; }
         IPrimeroEntitiesUnitOfWork primeroUOW;
         JOBCOST_HDR masterJob;
         int defaultTenderCostGroupSeqNo;
@@ -48,16 +49,17 @@ namespace BluePrints.Common.Projections
 
         }
 
-        public DesignTimesheet(List<ExoTimeAuthorisation> exoTimeAuthorisations, IPrimeroEntitiesUnitOfWork primeroUOW, IQueryable<BASELINE_ITEM> BASELINE_ITEMQueryable, JOBCOST_RESOURCE resource, DateTime weekStartDate, bool canUnsubmit, int defaultTenderCostGroupSeqNo, int defaultTenderCostTypeSeqNo, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, JOB_TIMESHEETS timesheet = null)
+        public DesignTimesheet(List<ExoTimeAuthorisation> exoTimeAuthorisations, IPrimeroEntitiesUnitOfWork primeroUOW, IQueryable<BASELINE_ITEM> BASELINE_ITEMQueryable, JOBCOST_RESOURCE resource, DateTime weekStartDate, bool canUnsubmit, int defaultTenderCostGroupSeqNo, int defaultTenderCostTypeSeqNo, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, bool isReview, JOB_TIMESHEETS timesheet = null)
         {
-            SetInitProperties(exoTimeAuthorisations, primeroUOW, BASELINE_ITEMQueryable, resource, weekStartDate, canUnsubmit, defaultTenderCostGroupSeqNo, defaultTenderCostTypeSeqNo, COMMODITY_CODECollection, timesheet);
+            SetInitProperties(exoTimeAuthorisations, primeroUOW, BASELINE_ITEMQueryable, resource, weekStartDate, canUnsubmit, defaultTenderCostGroupSeqNo, defaultTenderCostTypeSeqNo, COMMODITY_CODECollection, isReview, timesheet);
         }
 
-        public void SetInitProperties(List<ExoTimeAuthorisation> exoTimeAuthorisations, IPrimeroEntitiesUnitOfWork primeroUOW, IQueryable<BASELINE_ITEM> BASELINE_ITEMQueryable, JOBCOST_RESOURCE resource, DateTime weekStartDate, bool canUnsubmit, int defaultTenderCostGroupSeqNo, int defaultTenderCostTypeSeqNo, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, JOB_TIMESHEETS timesheet = null)
+        public void SetInitProperties(List<ExoTimeAuthorisation> exoTimeAuthorisations, IPrimeroEntitiesUnitOfWork primeroUOW, IQueryable<BASELINE_ITEM> BASELINE_ITEMQueryable, JOBCOST_RESOURCE resource, DateTime weekStartDate, bool canUnsubmit, int defaultTenderCostGroupSeqNo, int defaultTenderCostTypeSeqNo, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, bool isReview, JOB_TIMESHEETS timesheet = null)
         {
             if (this.Timesheet != null)
                 return;
 
+            this.IsReview = isReview;
             this.exoTimeAuthorisations = exoTimeAuthorisations;
             this.deliverables = BASELINE_ITEMQueryable;
             this.Timesheet = timesheet;

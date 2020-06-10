@@ -23,6 +23,8 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace BluePrints.ViewModels
@@ -56,8 +58,10 @@ namespace BluePrints.ViewModels
         bool isRemoteEXODb;
         JOB_COSTGROUPS defaultTenderCostGroup;
         JOB_COSTTYPES defaultTenderCostType;
+        public bool IsReview { get; set; }
         protected override void resolveParameters(object parameter)
         {
+            IsReview = (bool)parameter;
             initializeUnitOfWork();
             WeekBeginningDate = DateTime.Now;
             canUnsubmit = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_UserTimesheet_Unsubmit)) == LoginCredentials.PermissionStatus.All;
@@ -68,6 +72,7 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
@@ -83,6 +88,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
+        protected virtual Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid);
+        }
+
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<DesignTimesheet>> specifyMainViewModelProjection()
         {
             return query => designTimesheetQuery(query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live));
@@ -94,12 +104,32 @@ namespace BluePrints.ViewModels
         {
             deliverablesQueryable = BASELINE_ITEMS;
             List<DesignTimesheet> DesignTimesheets = new List<DesignTimesheet>();
+            List<int> subJobNos = new List<int>();
+            if(IsReview)
+            {
+                foreach(PROJECT project in PROJECTCollection)
+                {
+                    JOBCOST_HDR masterJob = primeroEntitiesUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBCODE == project.NUMBER);
+                    if(masterJob != null)
+                    {
+                        foreach(JOBCOST_HDR subJob in primeroEntitiesUnitOfWork.JOBCOST_HDR.Where(x => x.MASTER_JOBNO == masterJob.JOBNO))
+                        {
+                            subJobNos.Add(subJob.JOBNO);
+                        }
+                    }
+                }
+            }
+
             if (currentUserJOBCOST_RESOURCE != null)
             {
-                timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == WeekBeginningDate && x.STAFFNO == currentUserJOBCOST_RESOURCE.SEQNO);
+                if (IsReview)
+                    timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.JOBNO != null).Where(x => x.WEEK_START_DATE == WeekBeginningDate).Where(x => subJobNos.Contains((int)x.JOBNO));
+                else
+                    timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == WeekBeginningDate && x.STAFFNO == currentUserJOBCOST_RESOURCE.SEQNO);
+
                 foreach (JOB_TIMESHEETS timesheet in timesheetsQueryable)
                 {
-                    DesignTimesheets.Add(new DesignTimesheet(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection, timesheet));
+                    DesignTimesheets.Add(new DesignTimesheet(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection, IsReview, timesheet));
                 }
             }
 
@@ -116,7 +146,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedNewRowInitializationFromView(DesignTimesheet projection)
         {
-            projection.SetInitProperties(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection);
+            projection.SetInitProperties(userExoTimeAuthorisation, primeroEntitiesUnitOfWork, deliverablesQueryable, currentUserJOBCOST_RESOURCE, WeekBeginningDate, canUnsubmit, defaultTenderCostGroup.SEQNO, defaultTenderCostType.SEQNO, COMMODITY_CODECollection, IsReview);
             base.UnifiedNewRowInitializationFromView(projection);
         }
 
@@ -367,11 +397,33 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<JOBCOST_RESOURCE> JOBCOST_RESOURCECollection
+        {
+            get
+            {
+                if (primeroEntitiesUnitOfWork == null)
+                    return new List<JOBCOST_RESOURCE>();
+
+                return primeroEntitiesUnitOfWork.JOBCOST_RESOURCE;
+            }
+        }
+
         public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
         {
             get
             {
+                if (primeroEntitiesUnitOfWork == null)
+                    return new List<JOB_COSTTYPES>();
+
                 return primeroEntitiesUnitOfWork.JOB_COSTTYPES;
+            }
+        }
+
+        public IEnumerable<PROJECT> PROJECTCollection
+        {
+            get
+            {
+                return GetEntities<PROJECT>();
             }
         }
 
@@ -397,5 +449,20 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+    }
+
+    public class DesignTimesheetEditorTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            string resourceName = "DeliverableCollectionEditor";
+            //GridCellData data = (GridCellData)item;
+            //var dataItem = data.RowData.Row as DesignTimesheet;
+
+            //if (dataItem != null)
+            //    resourceName = dataItem.IsReview ? "DeliverableNameEditor" : "DeliverableCollectionEditor";
+
+            return (DataTemplate)((FrameworkElement)container).FindResource(resourceName);
+        }
     }
 }
