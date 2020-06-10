@@ -621,7 +621,11 @@ namespace BluePrints.ViewModels
                 allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
             }
 
-            firstDataPointsDate = allDataPoints.Min(x => x.ActualDate);
+            if (allDataPoints.Count == 0)
+                firstDataPointsDate = DateTime.Now;
+            else
+                firstDataPointsDate = allDataPoints.Min(x => x.ActualDate);
+
             alignedDataDateCollection = generateDates();
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
             InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
