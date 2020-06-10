@@ -124,15 +124,17 @@ namespace BluePrints.ViewModels
                 exoPo.PopulateCommodityCodes(COMMODITY_CODECollection);
                 exoPo.PopulateCostTypes(JOB_COSTTYPESCollection);
                 exoPo.PopulateStockItems(STOCK_ITEMSCollection);
-                if (exoPo.Status != 2)
-                {
-                    returnDataPoints.Add(exoPo);
-                }
-                else
-                {
-                    if (ExoMaterials.Any(x => x.PONumber == ((int)exoPo.HDR_SEQNO).ToString()))
-                        returnDataPoints.Add(exoPo);
-                }
+
+                returnDataPoints.Add(exoPo);
+                //if (exoPo.Status != 2)
+                //{
+                //    returnDataPoints.Add(exoPo);
+                //}
+                //else
+                //{
+                //    if (ExoMaterials.Any(x => x.PONumber == ((int)exoPo.HDR_SEQNO).ToString()))
+                //        returnDataPoints.Add(exoPo);
+                //}
 
                 exoPo.Update();
             }
