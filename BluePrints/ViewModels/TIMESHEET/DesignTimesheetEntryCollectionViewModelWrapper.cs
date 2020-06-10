@@ -447,9 +447,6 @@ namespace BluePrints.ViewModels
                 designTimesheet.Timesheet.DAY5_NARRATIVE = null;
                 designTimesheet.Timesheet.DAY6_NARRATIVE = null;
                 designTimesheet.Timesheet.DAY7_NARRATIVE = null;
-                designTimesheet.SubmitButtonText = "Submit";
-                designTimesheet.SubmitButtonImage = (DXImageInfo)new DXImageConverter().ConvertFromString("AddFile_16x16.png");
-                designTimesheet.Update();
             }
             else
             {
@@ -476,11 +473,10 @@ namespace BluePrints.ViewModels
                         designTimesheet.Timesheet.DAY7_NARRATIVE = narrativeId;
                 }
 
-                designTimesheet.SubmitButtonText = "Unsubmit";
-                designTimesheet.SubmitButtonImage = (DXImageInfo)new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
                 designTimesheet.Update();
             }
 
+            designTimesheet.RefreshSubmitStatus();
             primeroEntitiesUnitOfWork.SaveChanges();
             designTimesheet.Update();
         }
