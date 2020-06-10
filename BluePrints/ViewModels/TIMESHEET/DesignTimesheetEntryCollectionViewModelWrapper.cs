@@ -68,6 +68,7 @@ namespace BluePrints.ViewModels
             string defaultTenderDisciplineCode = BluePrintsResources.Default_TenderDisciplineCode + "01";
             defaultTenderCostGroup = primeroEntitiesUnitOfWork.JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == defaultTenderDisciplineCode);
             defaultTenderCostType = primeroEntitiesUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == BluePrintsResources.Default_TenderCommodityCode);
+            NewItemRowPosition = IsReview ? NewItemRowPosition.None : NewItemRowPosition.Top;
         }
 
         protected override void addEntitiesLoader()
@@ -123,7 +124,7 @@ namespace BluePrints.ViewModels
             if (currentUserJOBCOST_RESOURCE != null)
             {
                 if (IsReview)
-                    timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.JOBNO != null).Where(x => x.WEEK_START_DATE == WeekBeginningDate).Where(x => subJobNos.Contains((int)x.JOBNO));
+                    timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.JOBNO != null && x.X_SUBMITTED == true).Where(x => x.WEEK_START_DATE == WeekBeginningDate).Where(x => subJobNos.Contains((int)x.JOBNO));
                 else
                     timesheetsQueryable = primeroEntitiesUnitOfWork.JOB_TIMESHEETS.Where(x => x.WEEK_START_DATE == WeekBeginningDate && x.STAFFNO == currentUserJOBCOST_RESOURCE.SEQNO);
 
@@ -142,6 +143,75 @@ namespace BluePrints.ViewModels
             MainViewModel.AlwaysSkipMessage = true;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, DesignTimesheet projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().MasterJobNo))
+            {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo), projection.CostGroupNo, null, EntityMessageType.Changed);
+                projection.CostGroupNo = null;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode), projection.AreaCode, null, EntityMessageType.Changed);
+                projection.AreaCode = null;
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo))
+            {
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode), projection.AreaCode, null, EntityMessageType.Changed);
+                projection.AreaCode = null;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName), projection.DeliverableInternalName, null, EntityMessageType.Changed);
+                projection.DeliverableInternalName = null;
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().COST_TYPE), projection.COST_TYPE, null, EntityMessageType.Changed);
+                projection.COST_TYPE = null;
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode))
+            {
+                if (new_value == null || new_value.ToString() == string.Empty)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().PhaseCode), projection.PhaseCode, null, EntityMessageType.Changed);
+                    projection.PhaseCode = null;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName), projection.DeliverableInternalName, null, EntityMessageType.Changed);
+                    projection.DeliverableInternalName = null;
+                }
+                else if (projection.PhaseCode == null || projection.PhaseCode == string.Empty)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().PhaseCode), projection.PhaseCode, BluePrintsResources.Default_Design_Phase, EntityMessageType.Changed);
+                    projection.PhaseCode = BluePrintsResources.Default_Design_Phase;
+                }
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().PhaseCode))
+            {
+                if (new_value == null || new_value.ToString() == string.Empty)
+                {
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode), projection.AreaCode, null, EntityMessageType.Changed);
+                    projection.AreaCode = null;
+
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName), projection.DeliverableInternalName, null, EntityMessageType.Changed);
+                    projection.DeliverableInternalName = null;
+                }
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName))
+            {
+                if (projection.DeliverableCollection != null)
+                {
+                    BASELINE_ITEM deliverable = projection.DeliverableCollection.FirstOrDefault(x => x.INTERNAL_NUM == projection.DeliverableInternalName);
+                    if (deliverable != null && deliverable.DOCTYPE != null)
+                    {
+                        JOB_COSTTYPES costType = primeroEntitiesUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == deliverable.DOCTYPE.CODE);
+                        if (costType != null)
+                        {
+                            MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().COST_TYPE), projection.COST_TYPE, costType.SEQNO, EntityMessageType.Changed);
+                            projection.COST_TYPE = costType.SEQNO;
+                        }
+                    }
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
         public override void UnifiedNewRowInitializationFromView(DesignTimesheet projection)
@@ -168,29 +238,6 @@ namespace BluePrints.ViewModels
 
         public bool FuncManualCellPastingIsContinue(DesignTimesheet projection, ColumnBase column, string pasteValue, List<UndoRedoArg<DesignTimesheet>> undoRedoArgs)
         {
-            if (DataUtils.FormatColumnFieldname(column.FieldName) == BindableBase.GetPropertyName(() => new DesignTimesheet().MasterJobNo))
-            {
-                int? oldValue = projection.MasterJobNo;
-                JOBCOST_HDR findJob = AuthorisedJobCollection.FirstOrDefault(x => x.JOBCODE == pasteValue);
-                if (findJob == null)
-                    projection.MasterJobNo = null;
-                else
-                    projection.MasterJobNo = findJob.JOBNO;
-
-                return false;
-            }
-            else if (DataUtils.FormatColumnFieldname(column.FieldName) == BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo))
-            {
-                int? oldValue = projection.CostGroupNo;
-                JOB_COSTGROUPS findCostGroup = projection.CostGroupCollection.FirstOrDefault(x => x.SHORTCODE == pasteValue);
-                if (findCostGroup == null)
-                    projection.CostGroupNo = null;
-                else
-                    projection.CostGroupNo = findCostGroup.SEQNO;
-
-                return false;
-            }
-
             return true;
         }
 
@@ -218,6 +265,86 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        private string projectionDataValidation(DesignTimesheet projection, string field_name, object new_value)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().MasterJobNo))
+            {
+                if (new_value != null)
+                {
+                    JOBCOST_HDR findJob = AuthorisedJobCollection.FirstOrDefault(x => x.JOBNO == (int)new_value);
+                    if (findJob == null)
+                        return "Unauthorised job";
+                    else
+                        projection.MasterJobNo = findJob.JOBNO;
+                }
+                else
+                    return "Job name cannot be empty";
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo))
+            {
+                if (new_value != null)
+                {
+                    JOB_COSTGROUPS findCostGroup = projection.CostGroupCollection.FirstOrDefault(x => x.SEQNO == (int)new_value);
+                    if (findCostGroup == null)
+                        return "Invalid cost group";
+                    else
+                        projection.CostGroupNo = findCostGroup.SEQNO;
+                }
+                else
+                    return "Cost group cannot be empty";
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode))
+            {
+                if (new_value != null && new_value.ToString() != string.Empty)
+                {
+                    string findArea = projection.AreaCollection.FirstOrDefault(x => x == new_value.ToString());
+                    if (findArea == null)
+                        return "Invalid area";
+                    else
+                        projection.AreaCode = findArea;
+                }
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().PhaseCode))
+            {
+                if (new_value != null && new_value.ToString() != string.Empty)
+                {
+                    if (projection.AreaCode == null || projection.AreaCode == string.Empty)
+                        return "Area cannot be empty when phase exist";
+                }
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().COST_TYPE))
+            {
+                if (new_value != null)
+                {
+                    JOB_COSTTYPES findCostType = projection.TaggedValidJOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == (int)new_value);
+                    if (findCostType == null)
+                        return "Invalid cost type";
+                    else
+                        projection.COST_TYPE = findCostType.SEQNO;
+                }
+                else
+                    return "Cost type cannot be empty";
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName))
+            {
+                if (new_value != null && new_value.ToString() != string.Empty)
+                {
+                    BASELINE_ITEM findDeliverable = projection.DeliverableCollection.FirstOrDefault(x => x.INTERNAL_NUM == new_value.ToString());
+                    if (findDeliverable == null)
+                        return "Invalid deliverable";
+                    else
+                        projection.DeliverableInternalName = findDeliverable.INTERNAL_NUM;
+                }
+            }
+
+            return string.Empty;
+        }
+
         public override string UnifiedRowValidation(DesignTimesheet projection)
         {
             if (projection.Timesheet == null)
@@ -226,11 +353,44 @@ namespace BluePrints.ViewModels
             if (projection.Timesheet.STAFFNO == null)
                 return "Staff number not populated";
 
+            string dataErrorString = "Data Error: ";
+
+            string errorString = string.Empty;
+            string errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().MasterJobNo), projection.MasterJobNo);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode), projection.AreaCode);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().PhaseCode), projection.PhaseCode);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo), projection.CostGroupNo);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName), projection.DeliverableInternalName);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            errorMessage = projectionDataValidation(projection, BindableBase.GetPropertyName(() => new DesignTimesheet().COST_TYPE), projection.COST_TYPE);
+            if (errorMessage != string.Empty)
+                errorString += errorMessage + ", ";
+
+            if (errorString != string.Empty)
+            {
+                errorString = errorString.Substring(0, errorString.Length - 2);
+                return dataErrorString + errorString;
+            }
+
             if (projection.Timesheet.COST_GROUP == null)
-                return "Discipline not selected";
+                return "Invalid discipline";
 
             if (projection.Timesheet.COST_TYPE == null)
-                return "Cost type not selected";
+                return "Invalid cost type";
 
             return string.Empty;
         }
@@ -288,7 +448,7 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                if (MessageBoxService.ShowMessage("Are you sure you want to submit this line?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                if (MessageBoxService.ShowMessage("Are you sure you want to submit this line for review?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
                     return;
 
                 designTimesheet.Timesheet.X_SUBMITTED = true;
@@ -381,6 +541,8 @@ namespace BluePrints.ViewModels
         string weekDateDay7;
         public string WeekDateDay7 { get => weekDateDay7; set { weekDateDay7 = value; this.RaisePropertyChanged(x => x.WeekDateDay7); } }
 
+        public NewItemRowPosition NewItemRowPosition { get; set; }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -408,6 +570,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<JOBCOST_HDR> JOBCOST_HDRCollection
+        {
+            get
+            {
+                if (primeroEntitiesUnitOfWork == null)
+                    return new List<JOBCOST_HDR>();
+
+                return primeroEntitiesUnitOfWork.JOBCOST_HDR;
+            }
+        }
+
         public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
         {
             get
@@ -416,6 +589,17 @@ namespace BluePrints.ViewModels
                     return new List<JOB_COSTTYPES>();
 
                 return primeroEntitiesUnitOfWork.JOB_COSTTYPES;
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
+        {
+            get
+            {
+                if (primeroEntitiesUnitOfWork == null)
+                    return new List<JOB_COSTGROUPS>();
+
+                return primeroEntitiesUnitOfWork.JOB_COSTGROUPS;
             }
         }
 
@@ -448,6 +632,22 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        List<string> phaseCollection;
+        public List<string> PHASECollection
+        {
+            get
+            {
+                if(phaseCollection == null)
+                {
+                    phaseCollection = new List<string>();
+                    phaseCollection.Add(BluePrintsResources.Default_Design_Phase);
+                    phaseCollection.Add(BluePrintsResources.Default_Indirect_Phase);
+                }
+
+                return phaseCollection;
+            }
+        }
         #endregion
     }
 
@@ -455,14 +655,27 @@ namespace BluePrints.ViewModels
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            string resourceName = "DeliverableCollectionEditor";
-            //GridCellData data = (GridCellData)item;
-            //var dataItem = data.RowData.Row as DesignTimesheet;
+            string resourceName = string.Empty;
+            EditGridCellData editGridCellData = (EditGridCellData)item;
 
-            //if (dataItem != null)
-            //    resourceName = dataItem.IsReview ? "DeliverableNameEditor" : "DeliverableCollectionEditor";
+            GridCellData data = (GridCellData)item;
+            var dataItem = data.RowData.Row as DesignTimesheet;
 
-            return (DataTemplate)((FrameworkElement)container).FindResource(resourceName);
+            //dataItem == null is new row
+            if (editGridCellData.Column.FieldName == BindableBase.GetPropertyName(() => new DesignTimesheet().MasterJobNo))
+                resourceName = dataItem == null || !dataItem.IsReview ? "MasterJobNoAuthorisedCollection" : null;
+            else if (editGridCellData.Column.FieldName == BindableBase.GetPropertyName(() => new DesignTimesheet().CostGroupNo))
+                resourceName = dataItem == null || !dataItem.IsReview ? "CostGroupAuthorisedCollection" : null;
+            else if (editGridCellData.Column.FieldName == BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode))
+                resourceName = dataItem == null || !dataItem.IsReview ? "AreaAuthorisedCollection" : null;
+            else if (editGridCellData.Column.FieldName == BindableBase.GetPropertyName(() => new DesignTimesheet().COST_TYPE))
+                resourceName = dataItem == null || !dataItem.IsReview ? "CostTypeAuthorisedCollection" : null;
+            else if (editGridCellData.Column.FieldName == BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName))
+                resourceName = dataItem == null || !dataItem.IsReview ? "DeliverableCollectionEditor" : "TextEditor";
+            if (resourceName == null)
+                return null;
+            else
+                return (DataTemplate)((FrameworkElement)container).FindResource(resourceName);
         }
     }
 }

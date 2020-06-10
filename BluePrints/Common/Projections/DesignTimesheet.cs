@@ -83,12 +83,16 @@ namespace BluePrints.Common.Projections
                 string narrative = timesheet.X_NARRATIVE;
 
                 JOBCOST_HDR findSubJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == this.Timesheet.JOBNO);
-                string areaCode = string.Empty;
+                string areaCode = null;
+                string phaseCode = null;
                 if(findSubJob != null)
                 {
                     //store narrative before assigning masterjobno and costgroupno because that'll clear areacode
                     if (findSubJob.JOBCODE.Length >= 12)
                         areaCode = findSubJob.JOBCODE.Substring(6, 3);
+
+                    if (findSubJob.JOBCODE.Length >= 15)
+                        phaseCode = findSubJob.JOBCODE.Substring(13, 2);
 
                     JOBCOST_HDR findMasterJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == findSubJob.MASTER_JOBNO);
                     MasterJobNo = findMasterJob?.JOBNO;
@@ -98,6 +102,9 @@ namespace BluePrints.Common.Projections
 
                 //reassign areaCode
                 AreaCode = areaCode;
+
+                //reassign phaseCode
+                PhaseCode = phaseCode;
 
                 //reassign narrative
                 DeliverableInternalName = narrative;
@@ -125,13 +132,12 @@ namespace BluePrints.Common.Projections
                         this.Timesheet.TITLE = getTitle(masterJob);
                     }
                 }
+
                 filteredExoTimeAuthorisations = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == value).ToList();
 
                 costGroupCollection = null;
-                CostGroupNo = null;
                 areaCollection = null;
-                AreaCode = null;
-                variationCodes = null;
+                variationCodeCollection = null;
                 deliverableCollection = null;
                 this.Update();
             }
@@ -171,16 +177,11 @@ namespace BluePrints.Common.Projections
                     costGroupCode = primeroUOW.JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == value)?.SHORTCODE;
                 }
 
-                //if (value == null)
-                    filteredExoTimeAuthorisations = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == masterJobNo).ToList();
-                //else
-                //    filteredExoTimeAuthorisations = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == masterJobNo).Where(x => x.DisciplineId == value).ToList();
+                filteredExoTimeAuthorisations = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == masterJobNo).ToList();
 
                 areaCollection = null;
-                AreaCode = string.Empty;
-                variationCodes = null;
+                variationCodeCollection = null;
                 deliverableCollection = null;
-                DeliverableInternalName = null;
                 validCommodityCodes = null;
                 taggedValidJobCostTypes = null;
 
@@ -217,15 +218,15 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        List<string> variationCodes;
-        public List<string> VariationCodes
+        List<string> variationCodeCollection;
+        public List<string> VariationCodeCollection
         {
             get
             {
-                if (variationCodes == null)
-                    variationCodes = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == masterJobNo).Select(x => x.VariationCode).Distinct().ToList();
+                if (variationCodeCollection == null)
+                    variationCodeCollection = this.exoTimeAuthorisations.Where(x => x.MasterJobNo == masterJobNo).Select(x => x.VariationCode).Distinct().ToList();
 
-                return variationCodes;
+                return variationCodeCollection;
             }
         }
 
@@ -236,9 +237,24 @@ namespace BluePrints.Common.Projections
             set
             {
                 areaCode = value;
+                deliverableCollection = null;
+                this.Update();
+            }
+        }
+
+        string phaseCode = null;
+        public string PhaseCode
+        {
+            get
+            {
+                return phaseCode;
+            }
+            set
+            {
+                phaseCode = value;
                 if (value == null || value == string.Empty)
                 {
-                    if(masterJob != null)
+                    if (masterJob != null)
                     {
                         this.Timesheet.JOBNO = masterJob.JOBNO;
                         this.Timesheet.TITLE = getTitle(masterJob);
@@ -246,9 +262,9 @@ namespace BluePrints.Common.Projections
                 }
                 else
                 {
-                    if (masterJobCode != null && masterJobCode != string.Empty && value != null && value != string.Empty)
+                    if (masterJobCode != null && masterJobCode != string.Empty && AreaCode != null && AreaCode != string.Empty)
                     {
-                        string designSubjobCode = masterJobCode + "-" + value + "-" + BluePrintsResources.Default_Sub_Area + "-" + BluePrintsResources.Default_Design_Phase;
+                        string designSubjobCode = masterJobCode + "-" + AreaCode + "-" + BluePrintsResources.Default_Sub_Area + "-" + PhaseCode;
                         JOBCOST_HDR subJob = primeroUOW.JOBCOST_HDR.FirstOrDefault(x => x.JOBCODE == designSubjobCode);
                         if (subJob != null)
                         {
@@ -280,8 +296,8 @@ namespace BluePrints.Common.Projections
                 if (deliverableCollection == null && deliverables != null && CostGroupNo != null && masterJobCode != null)
                 {
                     string costGroupSubCode = costGroupCode.Length >= 2 ? costGroupCode.Substring(0, 2) : costGroupCode;
-                    deliverableCollection = deliverables.Where(x => x.BASELINE != null && x.BASELINE.PROJECT != null && x.AREA != null && x.DISCIPLINE != null && x.DOCTYPE != null)
-                                            .Where(x => x.BASELINE.PROJECT.NUMBER == masterJobCode && x.AREA.INTERNAL_NUM == AreaCode && x.DISCIPLINE.CODE == costGroupSubCode).ToList();
+                    deliverableCollection = deliverables.Where(x => x.BASELINE != null && x.BASELINE.PROJECT != null && x.AREA != null && x.PHASE != null && x.DISCIPLINE != null && x.DOCTYPE != null)
+                                            .Where(x => x.BASELINE.PROJECT.NUMBER == masterJobCode && x.PHASE.INTERNAL_NUM == PhaseCode && x.AREA.INTERNAL_NUM == AreaCode && x.DISCIPLINE.CODE == costGroupSubCode).ToList();
                 }
 
                 return deliverableCollection;
@@ -295,27 +311,7 @@ namespace BluePrints.Common.Projections
             set
             {
                 deliverableInternalName = value;
-                if (value == null || value == string.Empty)
-                {
-                    Timesheet.X_NARRATIVE = string.Empty;
-                }
-                else
-                {
-                    if (DeliverableCollection != null)
-                    {
-                        BASELINE_ITEM deliverable = DeliverableCollection.FirstOrDefault(x => x.INTERNAL_NUM == value);
-                        if (deliverable != null && deliverable.DOCTYPE != null)
-                        {
-                            JOB_COSTTYPES costType = primeroUOW.JOB_COSTTYPES.FirstOrDefault(x => x.SHORTCODE == deliverable.DOCTYPE.CODE);
-                            if (costType != null)
-                            {
-                                COST_TYPE = costType.SEQNO;
-                                Timesheet.X_NARRATIVE = deliverable.INTERNAL_NUM;
-                            }
-                        }
-                    }
-                }
-
+                Timesheet.X_NARRATIVE = deliverableInternalName;
                 this.Update();
             }
         }
@@ -325,9 +321,6 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (CostGroupNo == null)
-                    return new List<JOB_COSTTYPES>();
-
                 if(taggedValidJobCostTypes == null)
                 {
                     taggedValidJobCostTypes = new List<JOB_COSTTYPES>();
