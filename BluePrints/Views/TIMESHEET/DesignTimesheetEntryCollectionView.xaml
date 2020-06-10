@@ -230,8 +230,8 @@
                                         <DataTemplate>
                                             <Button Height="18" Command="{Binding View.DataContext.ToggleTimesheetSubmitCommand}" CommandParameter="{Binding RowData.Row}" IsEnabled="{Binding RowData.Row.CanSubmit}">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Image Source="{dxc:DXImage Image=IconSetSymbolsCircled3_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
-                                                    <TextBlock VerticalAlignment="Center" Text="Submit" />
+                                                    <Image Margin="0,0,3,0" Source="{Binding Path=RowData.Row.IsSubmitted, Converter={StaticResource BoolToImageConverter}}" />
+                                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=RowData.Row.SubmitButtonText}" />
                                                 </StackPanel>
                                             </Button>
                                         </DataTemplate>

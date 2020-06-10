@@ -7,12 +7,15 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Core;
+using DevExpress.Xpf.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace BluePrints.Common.Projections
 {
@@ -31,6 +34,27 @@ namespace BluePrints.Common.Projections
         int defaultTenderCostGroupSeqNo;
         int defaultTenderCostTypeSeqNo;
         IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection;
+
+        public string SubmitButtonText { get; set; }
+        public BitmapImage SubmitButtonImage { get; set; }
+
+        public void RefreshSubmitStatus()
+        {
+            DXImageInfo a;
+            if(this.Timesheet == null || this.Timesheet.X_SUBMITTED == null || this.Timesheet.X_SUBMITTED == false)
+            {
+                SubmitButtonText = "Submit";
+                a = (DXImageInfo)new DXImageConverter().ConvertFromString("AddFile_16x16.png");
+            }
+            else
+            {
+                SubmitButtonText = "Unsubmit";
+                a = (DXImageInfo)new DXImageConverter().ConvertFromString("DeleteList_16x16.png");
+            }
+
+            SubmitButtonImage = new BitmapImage(a.MakeUri());
+            this.Update();
+        }
 
         bool canUnsubmit { get; set; }
         public bool CanSubmit
@@ -110,7 +134,7 @@ namespace BluePrints.Common.Projections
                 DeliverableInternalName = narrative;
             }
 
-            this.Update();
+            RefreshSubmitStatus();
         }
 
         List<ExoTimeAuthorisation> filteredExoTimeAuthorisations = new List<ExoTimeAuthorisation>();

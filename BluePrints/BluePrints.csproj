@@ -755,6 +755,7 @@
     <Compile Include="Common\ViewModel\Converters\ValueOutOfRangeMessageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\RateMaximumPercentageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\StringToImageConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\BoolToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />

@@ -16,6 +16,8 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Core;
+using DevExpress.Xpf.Core.Native;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -470,8 +472,11 @@ namespace BluePrints.ViewModels
                     if (designTimesheet.Timesheet.DAY7 != null)
                         designTimesheet.Timesheet.DAY7_NARRATIVE = narrativeId;
                 }
+
+                designTimesheet.Update();
             }
 
+            designTimesheet.RefreshSubmitStatus();
             primeroEntitiesUnitOfWork.SaveChanges();
             designTimesheet.Update();
         }
