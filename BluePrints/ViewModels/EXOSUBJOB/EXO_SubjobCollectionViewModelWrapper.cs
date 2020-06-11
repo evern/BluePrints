@@ -329,7 +329,7 @@ namespace BluePrints.ViewModels
 
         protected override void CellValueChangedImmediatePost(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobProjection().CommodityCode)))
+            if (e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobProjection().VariationCode)))
             {
                 TableView tableView = e.Source as TableView;
                 if (tableView != null && e.RowHandle != GridControl.NewItemRowHandle)

@@ -56,7 +56,7 @@ namespace BluePrints.Common.Projections
         public DateTime Date { get; set; }
     }
 
-    [ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, StockCode, VariationCode")]
+    //[ConstraintAttributes("SubJobCode, DisciplineCode, CommodityCode, StockCode, VariationCode")]
     public class ExoSubJobProjection : CodesValidationModel, IGuidEntityKey
     {
         public ExoSubJobProjection()
