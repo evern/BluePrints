@@ -310,7 +310,7 @@ namespace BluePrints.ViewModels
             forecastJob.UOM = row[columnUOM].ToString();
         }
 
-        private void updateRowReadOnlyAttributes(DataRow row)
+        private void updateRowReadOnlyAttributes(DataRow row, bool isNewRow = false)
         {
             if (row[columnProjection] == DBNull.Value)
                 return;
@@ -336,9 +336,17 @@ namespace BluePrints.ViewModels
                         newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
 
                     if (newDecimalValue == null)
+                    {
                         row[columnRecommendedForecastRate] = DBNull.Value;
+                        if(isNewRow)
+                            forecastJob.FORECAST_RATE = 0;
+                    }
                     else
+                    {
                         row[columnRecommendedForecastRate] = newDecimalValue;
+                        if (isNewRow)
+                            forecastJob.FORECAST_RATE = newDecimalValue;
+                    }
                 }
                 else
                     row[columnStockItemName] = string.Empty;
@@ -814,10 +822,10 @@ namespace BluePrints.ViewModels
                     ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == e.Value.ToString());
                     dataRowView[columnProjection] = queryJob;
                     dataRowView[columnStockItem] = findDefaultStockCode(queryJob);
-                    mapDataTableToJobData(dataRowView.Row);
                 }
 
-                updateRowReadOnlyAttributes(dataRowView.Row);
+                mapDataTableToJobData(dataRowView.Row);
+                updateRowReadOnlyAttributes(dataRowView.Row, true);
                 return;
             }
 

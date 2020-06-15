@@ -74,7 +74,14 @@
                 </dxg:LookUpEdit>
             </DataTemplate>
             <DataTemplate x:Key="WeekStartDateHeaderTemplate">
-                <dxe:DateEdit EditValue="{Binding DataContext.WeekBeginningDate, ElementName=userControl}" />
+                <Grid Height="60">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <Label Content="Mon" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                    <dxe:DateEdit EditValue="{Binding DataContext.WeekBeginningDate, ElementName=userControl}" Grid.Row="1" />
+                </Grid>
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -178,47 +185,119 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day2" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay2}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day2" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Tue" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay2, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day3" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay3}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day3" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Wed" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay3, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day4" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay4}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day4" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Thu" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay4, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day5" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay5}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day5" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Fri" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay5, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day6" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay6}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day6" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Sat" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay6, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Day7" AllowBestFit="false" Width="70" Header="{Binding WeekDateDay7}" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="Day7" AllowBestFit="false" Width="70" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:SpinEdit x:Name="PART_Editor" Mask="n2" MinValue="0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.CanSubmit, Converter={dxmvvm:BooleanNegationConverter}}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="60">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="30" />
+                                                </Grid.RowDefinitions>
+                                                <Label Content="Sun" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" />
+                                                <Label Content="{Binding DataContext.WeekDateDay7, ElementName=userControl}" Grid.Row="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.HeaderTemplate>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="TotalHours" AllowBestFit="false" Width="70" ReadOnly="True" Header="Total Hours">
                                     <dxg:GridColumn.EditSettings>
@@ -238,6 +317,17 @@
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day1" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day2" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day3" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day4" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day5" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day6" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="Day7" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n2" FieldName="TotalHours" SummaryType="Sum" />
+                            </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
                                 <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="{Binding NewItemRowPosition}">
                                     <dxg:TableView.RowCellMenuCustomizations>

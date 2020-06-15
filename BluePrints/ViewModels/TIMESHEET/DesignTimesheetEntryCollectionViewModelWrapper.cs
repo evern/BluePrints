@@ -213,6 +213,11 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day1) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day2) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day3) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day4) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day5) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day6) || field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().Day7))
+            {
+                GridControlService.RefreshSummary();
+            }
+
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
