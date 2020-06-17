@@ -513,13 +513,14 @@ namespace BluePrints.Common.ViewModel.Utils
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
                                   select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
+            var jobTransactionsList = jobTransactions.ToList();
             if (showLoadingScreen)
             {
-                LoadingScreenManager.ShowLoadingScreen(jobTransactions.Count());
+                LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count());
                 LoadingScreenManager.SetMessage("Loading Actuals...");
             }
 
-            foreach (var jobTransaction in jobTransactions)
+            foreach (var jobTransaction in jobTransactionsList)
             {
                 if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                 {
@@ -564,7 +565,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 {
                     SUBJOB missingSUBJOB = new SUBJOB();
                     missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
-                    missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactions.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
+                    missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
                     missingSUBJOBS.Add(missingSUBJOB);
                 }
 
@@ -602,7 +603,8 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading Materials...");
             }
 
-            foreach(var jobMaterial in jobMaterials)
+            var jobMaterialsList = jobMaterials.ToList();
+            foreach(var jobMaterial in jobMaterialsList)
             {
                 if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
                 {

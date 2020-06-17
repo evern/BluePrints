@@ -2108,9 +2108,9 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
 
-            IQueryable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
-            IQueryable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-            IQueryable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
+            IEnumerable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
+            IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+            IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
             FORECAST costFORECAST = findCostFORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
             FORECAST p6FORECAST = findP6FORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
             
@@ -2799,11 +2799,17 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IQueryable<FORECAST> FORECASTCollection
+        List<FORECAST> forecastCollection;
+        public List<FORECAST> FORECASTCollection
         {
             get
             {
-                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+                if(bluePrintsUnitOfWork != null && forecastCollection == null)
+                {
+                    forecastCollection = bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID).ToList();
+                }
+
+                return forecastCollection;
             }
         }
 
