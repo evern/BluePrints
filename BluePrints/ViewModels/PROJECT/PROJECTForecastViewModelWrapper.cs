@@ -567,6 +567,7 @@ namespace BluePrints.ViewModels
             DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
+            forecastCollection = null;
             ForecastSummary.Reset();
             loadSummaryStats();
             base.FullRefresh();
