@@ -567,7 +567,6 @@ namespace BluePrints.ViewModels
             DetailedData.Clear();
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
-            forecastCollection = null;
             ForecastSummary.Reset();
             loadSummaryStats();
             base.FullRefresh();
@@ -2802,17 +2801,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        List<FORECAST> forecastCollection;
-        public List<FORECAST> FORECASTCollection
+        public IQueryable<FORECAST> FORECASTCollection
         {
             get
             {
-                if(bluePrintsUnitOfWork != null && forecastCollection == null)
-                {
-                    forecastCollection = bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID).ToList();
-                }
-
-                return forecastCollection;
+                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
             }
         }
 
