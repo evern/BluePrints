@@ -2110,12 +2110,29 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
 
-            IEnumerable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
-            IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-            IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
-            FORECAST costFORECAST = findCostFORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
-            FORECAST p6FORECAST = findP6FORECASTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date);
+            IQueryable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
+            IQueryable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+            IQueryable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
+
+            List<FORECAST> costFORECASTS = findCostFORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
+            List<FORECAST> p6FORECASTS = findP6FORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
+            FORECAST costFORECAST = costFORECASTS.First();
+            FORECAST p6FORECAST = p6FORECASTS.First();
             
+            //fix duplicate entries due to concurrency issues
+            foreach(FORECAST duplicateFORECAST in costFORECASTS)
+            {
+                if (duplicateFORECAST != costFORECAST)
+                    bluePrintsUnitOfWork.FORECASTS.Remove(duplicateFORECAST);
+            }
+
+            //fix duplicate entries due to concurrency issues
+            foreach (FORECAST duplicateFORECAST in p6FORECASTS)
+            {
+                if (duplicateFORECAST != p6FORECAST)
+                    bluePrintsUnitOfWork.FORECASTS.Remove(duplicateFORECAST);
+            }
+
             FORECAST editFORECAST = editForecastDataType == ForecastDataType.Cost ? costFORECAST : p6FORECAST;
             FORECAST resetFORECAST = editForecastDataType == ForecastDataType.Cost ? p6FORECAST : costFORECAST;
 
